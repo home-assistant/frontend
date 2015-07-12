@@ -1,0 +1,23 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="../../bower_components/iron-icons/notification-icons.html">
+
+<dom-module id="stream-status">
+  <style>
+  :host {
+    display: inline-block;
+    height: 24px;
+  }
+
+  paper-toggle-button {
+    vertical-align: middle;
+  }
+  </style>
+  <template>
+    <iron-icon icon="warning" hidden$="[[!hasError]]"></iron-icon>
+    <paper-toggle-button id="toggle" on-change='toggleChanged' checked$='[[isStreaming]]' hidden$="[[hasError]]"></paper-toggle-button>
+  </template>
+</dom-module>

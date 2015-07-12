@@ -1,0 +1,51 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+
+<link rel='import' href='../components/loading-box.html'>
+
+<dom-module id='more-info-configurator'>
+  <style>
+    p {
+      margin: 8px 0;
+    }
+
+    p > img {
+      max-width: 100%;
+    }
+
+    p.center {
+      text-align: center;
+    }
+
+    p.error {
+      color: #C62828;
+    }
+
+    p.submit {
+      text-align: center;
+      height: 41px;
+    }
+  </style>
+  <template>
+    <div class='layout vertical'>
+      <template is='dom-if' if='[[isConfigurable]]'>
+
+        <p hidden$='[[!stateObj.attributes.description]]'>[[stateObj.attributes.description]]</p>
+
+        <p class='error' hidden$='[[!stateObj.attributes.errors]]'>[[stateObj.attributes.errors]]</p>
+
+        <p class='center' hidden$='[[!stateObj.attributes.description_image]]'>
+          <img src='[[stateObj.attributes.description_image]]' />
+        </p>
+
+        <p class='submit'>
+          <paper-button raised on-click='submitClicked'
+                        hidden$='[[isConfiguring]]'>[[submitCaption]]</paper-button>
+
+          <loading-box hidden$='[[!isConfiguring]]'>Configuring</loading-box>
+        </p>
+
+      </template>
+    </div>
+  </template>
+</dom-module>

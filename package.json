@@ -1,0 +1,29 @@
+{
+  "name": "home-assistant-polymer",
+  "version": "1.0.0",
+  "description": "A frontend for Home Assistant using the Polymer framework",
+  "scripts": {
+    "js_dev": "webpack --colors --progress -d --watch",
+    "js_dev_demo": "BUILD_DEMO=1 webpack --colors --progress -d --watch",
+    "js_prod": "BUILD_DEV=0 webpack --colors --progress -p -d",
+    "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --colors --progress -p -d",
+    "frontend_html": "vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html",
+    "frontend_minify": "node scripts/minify.js",
+    "frontend_prod": "npm run js_prod && bower install && npm run frontend_html && npm run frontend_minify",
+    "frontend_demo": "npm run js_demo && bower install && npm run frontend_html && npm run frontend_minify"
+  },
+  "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^5.6.18",
+    "babel-loader": "^5.3.1",
+    "bower": "^1.4.1",
+    "eslint-config-airbnb": "0.0.6",
+    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#d6159b2654e070e13017bc8f99418246c5112d9a",
+    "html-minifier": "^0.7.2",
+    "lodash": "^3.10.0",
+    "node-libs-browser": "^0.5.2",
+    "vulcanize": "^1.10.1",
+    "webpack": "^1.10.1"
+  }
+}

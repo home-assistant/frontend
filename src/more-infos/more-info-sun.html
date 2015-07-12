@@ -1,0 +1,21 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../components/relative-ha-datetime.html">
+
+<dom-module id="more-info-sun">
+  <template>
+    <div class='data-entry layout justified horizontal' id='rising'>
+      <div class='key'>
+        Rising <relative-ha-datetime datetime-obj="[[risingDate]]"></relative-ha-datetime>
+      </div>
+      <div class='value'>[[risingTime]]</div>
+    </div>
+
+    <div class='data-entry layout justified horizontal' id='setting'>
+      <div class='key'>
+        Setting <relative-ha-datetime datetime-obj="[[settingDate]]"></relative-ha-datetime>
+      </div>
+      <div class='value'>[[settingTime]]</div>
+    </div>
+  </template>
+</dom-module>
