@@ -1,0 +1,11 @@
+{
+  "extends": "eslint-config-airbnb",
+  "globals": {
+    "__DEV__": false,
+    "__DEMO__": false
+  },
+  "rules": {
+    "comma-dangle": [2, "always-multiline"],
+    "no-underscore-dangle": false
+  }
+}

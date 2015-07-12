@@ -1,0 +1,47 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+
+<link rel="import" href="./partial-base.html">
+
+<link rel="import" href="../components/services-list.html">
+
+<dom-module id="partial-dev-call-service">
+  <style>
+    .form {
+      padding: 24px;
+      background-color: white;
+    }
+
+    .ha-form {
+      margin-right: 16px;
+    }
+  </style>
+  <template>
+    <partial-base narrow="[[narrow]]">
+      <span header-title>Call Service</span>
+
+      <div class='form fit'>
+        <p>
+          Call a service from a component.
+        </p>
+
+        <div class$='[[computeFormClasses(narrow)]]'>
+          <div class='ha-form flex'>
+            <paper-input label="Domain" autofocus value='{{domain}}'></paper-input>
+            <paper-input label="Service" value='{{service}}'></paper-input>
+            <paper-textarea label="Service Data (JSON, optional)" value='{{serviceData}}'></paper-textarea>
+            <paper-button on-click='callService' raised>Call Service</paper-button>
+          </div>
+
+          <div>
+            <h4>Available services:</h4>
+            <services-list on-service-selected='serviceSelected'></services-list>
+          </div>
+        </div>
+      </div>
+    </partial-base>
+  </template>
+</dom-module>

@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/google-apis/google-legacy-loader.html">
+
+<link rel="import" href="./loading-box.html">
+<link rel="import" href="./state-history-chart-timeline.html">
+<link rel="import" href="./state-history-chart-line.html">
+
+<dom-module id="state-history-charts">
+  <style>
+  :host {
+    display: block;
+  }
+
+  .loading-container {
+    text-align: center;
+    padding: 8px;
+  }
+
+  .loading {
+    height: 0px;
+    overflow: hidden;
+  }
+  </style>
+  <template>
+    <google-legacy-loader on-api-load="googleApiLoaded"></google-legacy-loader>
+
+    <div hidden$="{{!isLoading}}" class='loading-container'>
+      <loading-box>Updating history data</loading-box>
+    </div>
+
+    <div class$='[[computeContentClasses(isLoading)]]'>
+      <template is='dom-if' if='[[computeIsEmpty(stateHistory)]]'>
+        No state history found.
+      </template>
+
+      <state-history-chart-timeline
+        data='[[groupedStateHistory.timeline]]'
+        is-single-device='[[isSingleDevice]]'>
+      </state-history-chart-timeline>
+
+      <template is='dom-repeat' items='[[groupedStateHistory.line]]'>
+        <state-history-chart-line unit='[[extractUnit(item)]]'
+          data='[[extractData(item)]]' is-single-device='[[isSingleDevice]]'>
+        </state-history-chart-line>
+      </template>
+    </div>
+  </template>
+</dom-module>

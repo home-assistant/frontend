@@ -1,0 +1,14 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+
+<dom-module id="notification-manager">
+  <style>
+    paper-toast {
+      z-index: 1;
+    }
+  </style>
+  <template>
+    <paper-toast id="toast" text='{{text}}'></paper-toast>
+  </template>
+</dom-module>

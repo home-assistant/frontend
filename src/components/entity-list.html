@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="entity-list">
+  <style>
+    ul {
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      list-style: none;
+      line-height: 2em;
+    }
+
+    a {
+      color: var(--accent-color);
+    }
+  </style>
+
+  <template>
+    <ul>
+      <template is='dom-repeat' items='[[entities]]' as='entity'>
+        <li><a href='#' on-click='entitySelected'>[[entity.entityId]]</a></li>
+      </template>
+    </ul>
+  </template>
+</dom-module>

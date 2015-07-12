@@ -1,0 +1,40 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/paper-slider/paper-slider.html'>
+<link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
+
+<dom-module id='more-info-thermostat'>
+  <style>
+    paper-slider {
+      width: 100%;
+    }
+
+    .away-mode-toggle {
+      display: none;
+      margin-top: 16px;
+    }
+
+    .has-away_mode .away-mode-toggle {
+      display: block;
+    }
+  </style>
+  <template>
+    <div class$='[[computeClassNames(stateObj)]]'>
+      <div>
+        <div>Target Temperature</div>
+        <paper-slider
+          min='[[tempMin]]' max='[[tempMax]]'
+          value='[[targetTemperatureSliderValue]]' pin
+          on-change='targetTemperatureSliderChanged'>
+        </paper-slider>
+      </div>
+
+      <div class='away-mode-toggle'>
+        <div class='center horizontal layout'>
+          <div class='flex'>Away Mode</div>
+          <paper-toggle-button checked='[[awayToggleChecked]]' on-change='toggleChanged'>
+          </paper-toggle-button>
+        </div>
+      </div>
+    </div>
+  </template>
+</dom-module>
