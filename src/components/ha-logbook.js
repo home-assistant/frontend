@@ -1,5 +1,7 @@
 import Polymer from '../polymer';
 
+require('./logbook-entry');
+
 Polymer({
   is: 'ha-logbook',
 
