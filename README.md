@@ -11,7 +11,7 @@ This is the repository for the official Home Assistant frontend. The frontend is
 
 [![Screenshot of the frontend](https://raw.githubusercontent.com/balloob/home-assistant-polymer/master/docs/screenshot.png)](https://home-assistant.io/demo/)
 
-[_Click here for a demo_](https://home-assistant.io/demo/)
+[_More information about Home Assistant_](https://home-assistant.io) — [_View demo of the Polymer frontend_](https://home-assistant.io/demo/)
 
 ## An unusual approach to Polymer
 
