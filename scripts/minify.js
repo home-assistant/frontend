@@ -9,7 +9,6 @@ var minifiedHtml = minify.minify(html, {
     "removeCommentsFromCDATA": true,
     "removeCDATASectionsFromCDATA": true,
     "collapseWhitespace": true,
-    "collapseBooleanAttributes": true,
     "removeScriptTypeAttributes": true,
     "removeStyleLinkTypeAttributes": true,
     "minifyJS": true,
