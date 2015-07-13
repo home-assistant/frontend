@@ -7,10 +7,10 @@
     "js_dev_demo": "BUILD_DEMO=1 webpack --colors --progress -d --watch",
     "js_prod": "BUILD_DEV=0 webpack --colors --progress -p -d",
     "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --colors --progress -p -d",
-    "frontend_html": "vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html",
-    "frontend_minify": "node scripts/minify.js",
-    "frontend_prod": "npm run js_prod && bower install && npm run frontend_html && npm run frontend_minify",
-    "frontend_demo": "npm run js_demo && bower install && npm run frontend_html && npm run frontend_minify"
+    "frontend_html": "vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html && node scripts/minify.js",
+    "frontend_prod": "npm run js_prod && bower install && npm run frontend_html",
+    "frontend_demo": "npm run js_demo && bower install && npm run frontend_html",
+    "setup_js_dev": "npm install && cd node_modules && rm -rf home-assistant-js && git clone https://github.com/balloob/home-assistant-js.git && cd home-assistant-js && npm install"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#d6159b2654e070e13017bc8f99418246c5112d9a",
     "html-minifier": "^0.7.2",
     "lodash": "^3.10.0",
+    "moment": "^2.10.3",
     "node-libs-browser": "^0.5.2",
     "vulcanize": "^1.10.1",
     "webpack": "^1.10.1"

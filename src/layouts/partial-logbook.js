@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { logbookGetters, logbookActions } from 'home-assistant-js';
 
 import Polymer from '../polymer';
