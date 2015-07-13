@@ -3,8 +3,6 @@ var fs = require('fs');
 
 var html = fs.readFileSync('build/frontend.vulcan.html').toString();
 
-    // removeComments: true,
-    // collapseWhitespace: true,
 var minifiedHtml = minify.minify(html, {
     customAttrAssign: [/\$=/],
     "removeComments": true,
