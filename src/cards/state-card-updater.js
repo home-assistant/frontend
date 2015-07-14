@@ -15,6 +15,6 @@ export default Polymer({
 
   buttonTapped: function(ev) {
     ev.stopPropagation();
-    window.hass.serviceActions.callService('updater', 'update', {})
+    serviceActions.callService('updater', 'update', {})
   },
 });
