@@ -51,6 +51,13 @@ export default function domainIcon(domain, state) {
     case 'scene':
       return 'social:pages';
 
+    case 'updater':
+      if(state == "True") {
+        return 'icons:cloud-download';
+      } else {
+        return 'icons:cloud-done';
+      }
+
     default:
       return "bookmark";
   }

@@ -1,5 +1,6 @@
 const DOMAINS_WITH_MORE_INFO = [
-  'light', 'group', 'sun', 'configurator', 'thermostat', 'script', 'media_player', 'camera'
+  'light', 'group', 'sun', 'configurator', 'thermostat', 'script',
+  'media_player', 'camera', 'updater'
 ];
 
 export default function stateMoreInfoType(state) {
