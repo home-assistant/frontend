@@ -1,7 +1,7 @@
 import { reactor, serviceGetters } from 'home-assistant-js';
 
 const DOMAINS_WITH_CARD = [
-  'thermostat', 'configurator', 'scene', 'media_player'];
+  'thermostat', 'configurator', 'scene', 'media_player', 'updater'];
 
 export default function stateCardType(state) {
   if(DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {
