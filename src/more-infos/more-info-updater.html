@@ -1,0 +1,60 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="more-info-updater">
+  <style>
+    .data-entry .value {
+      max-width: 200px;
+    }
+    .center {
+      text-align: center;
+    }
+    .centered {
+      margin: auto;
+    }
+    .divider {
+      padding: 5px;
+    }
+    .link {
+      color: #03A9F4;
+    }
+  </style>
+  <template>
+    <div class='layout vertical'>
+
+      <div class='horizontal layout center'>
+        <paper-button raised class='centered link' raised on-tap="updateTapped">
+          Update
+        </paper-button>
+
+        <paper-button raised class='centered link' on-tap="linkTapped">
+          View on GitHub
+        </paper-button>
+      </div>
+
+      <div class='divider'></div>
+
+      <div class='data-entry layout justified horizontal'>
+        <div class='key'>Updated On:</div>
+        <div class='value'>[[stateObj.attributes.date]]</div>
+      </div>
+
+      <div class='data-entry layout justified vertical' hidden='[[!stateObj.attributes.message]]'>
+        <div class='key'>Release Notes:</div>
+        <div class='centered'>[[stateObj.attributes.message]]<br /></div>
+      </div>
+
+      <div class='divider'></div>
+
+      <div class='data-entry layout justified vertical'>
+        <div class='key'>Remote SHA:</div>
+        <div class='centered'>[[stateObj.attributes.remote_sha]]<br /></div>
+      </div>
+
+      <div class='data-entry layout justified vertical'>
+        <div class='key'>Local SHA:</div>
+        <div class='centered'>[[stateObj.attributes.local_sha]]<br /></div>
+      </div>
+    </div>
+  </template>
+</dom-module>
