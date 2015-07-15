@@ -39,7 +39,7 @@ export default Polymer({
       type: Array,
       bindNuclear: [
         logbookGetters.currentEntries,
-        function(entries) { return entries.toArray(); },
+        (entries) => entries.toArray(),
       ],
     },
 
@@ -51,8 +51,7 @@ export default Polymer({
   isStaleChanged(newVal) {
     if (newVal) {
       // isLoading wouldn't update without async <_<
-      this.async(
-        function() { logbookActions.fetchDate(this.selectedDate); }, 10);
+      this.async(() => logbookActions.fetchDate(this.selectedDate), 10);
     }
   },
 

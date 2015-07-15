@@ -23,7 +23,7 @@ export default Polymer({
       bindNuclear: [
         moreInfoGetters.currentEntity,
         entityGetters.entityMap,
-        function(currentEntity, entities) {
+        (currentEntity, entities) => {
           // weird bug??
           if (!currentEntity) {
             return;

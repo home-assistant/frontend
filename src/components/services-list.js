@@ -15,11 +15,7 @@ export default Polymer({
       type: Array,
       bindNuclear: [
         serviceGetters.entityMap,
-        function(map) {
-          return map.valueSeq()
-                  .sortBy(function(domain) { return domain.domain; })
-                  .toJS();
-          },
+        (map) => map.valueSeq().sortBy((domain) => domain.domain).toJS()
       ],
     },
   },

@@ -78,8 +78,7 @@ export default Polymer({
       if (this.mouseMoveIsThrottled) {
         this.mouseMoveIsThrottled = false;
         this.onColorSelect(e);
-        this.async(
-          function() { this.mouseMoveIsThrottled = true; }.bind(this), 100);
+        this.async(() => this.mouseMoveIsThrottled = true, 100);
       }
     },
 

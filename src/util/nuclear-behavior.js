@@ -2,25 +2,24 @@ export default function NuclearObserver(reactor) {
   return {
 
     attached: function() {
-      var component = this;
-      this.__unwatchFns = Object.keys(component.properties).reduce(
-        function(unwatchFns, key) {
-          if (!('bindNuclear' in component.properties[key])) {
+      this.__unwatchFns = Object.keys(this.properties).reduce(
+        (unwatchFns, key) => {
+          if (!('bindNuclear' in this.properties[key])) {
             return unwatchFns;
           }
-          var getter = component.properties[key].bindNuclear;
+          var getter = this.properties[key].bindNuclear;
 
           if (!getter) {
             throw 'Undefined getter specified for key ' + key;
           }
 
-          component[key] = reactor.evaluate(getter);
+          this[key] = reactor.evaluate(getter);
 
-          return unwatchFns.concat(reactor.observe(getter, function(val) {
+          return unwatchFns.concat(reactor.observe(getter, (val) => {
             if (__DEV__) {
-              console.log(component, key, val);
+              console.log(this, key, val);
             }
-            component[key] = val;
+            this[key] = val;
           }));
       }, []);
     },

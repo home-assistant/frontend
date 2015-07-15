@@ -61,16 +61,16 @@ export default Polymer({
     };
 
     serviceActions.callService('configurator', 'configure', data).then(
-      function() {
+      () => {
         this.isConfiguring = false;
 
         if (!this.isStreaming) {
           syncActions.fetchAll();
         }
-      }.bind(this),
-
-      function() {
+      },
+      () => {
         this.isConfiguring = false;
-      }.bind(this));
+      }
+    );
   },
 });

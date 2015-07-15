@@ -20,7 +20,6 @@ export default Polymer({
   },
 
   ready() {
-    this.forceStateChange = this.forceStateChange.bind(this);
     this.forceStateChange();
   },
 
@@ -57,7 +56,7 @@ export default Polymer({
     // with the state. It will be out of sync if our service call did not
     // result in the entity to be turned on. Since the state is not changing,
     // the resync is not called automatic.
-    serviceActions.callTurnOn(this.stateObj.entityId).then(this.forceStateChange);
+    serviceActions.callTurnOn(this.stateObj.entityId).then(() => this.forceStateChange());
   },
 
   turn_off() {
@@ -65,6 +64,6 @@ export default Polymer({
     // with the state. It will be out of sync if our service call did not
     // result in the entity to be turned on. Since the state is not changing,
     // the resync is not called automatic.
-    serviceActions.callTurnOff(this.stateObj.entityId).then(this.forceStateChange);
+    serviceActions.callTurnOff(this.stateObj.entityId).then(() => this.forceStateChange());
   },
 });

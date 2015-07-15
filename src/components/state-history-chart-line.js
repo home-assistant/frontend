@@ -30,15 +30,15 @@ export default Polymer({
     },
   },
 
-  created: function() {
+  created() {
     this.style.display = 'block';
   },
 
-  attached: function() {
+  attached() {
     this.isAttached = true;
   },
 
-  dataChanged: function() {
+  dataChanged() {
     this.drawChart();
   },
 
@@ -115,11 +115,7 @@ export default Polymer({
     // Get a unique list of times of state changes for all the device
     // for a particular unit of measureent.
     var times = pluck(flatten(deviceStates), "lastChangedAsDate");
-    times = uniq(times, function(e) {
-        return e.getTime();
-      });
-
-    times = sortBy(times, function(o) { return o; });
+    times = sortBy(uniq(times, (e) => e.getTime()));
 
     var data = [];
     var empty = new Array(deviceStates.length);
@@ -143,9 +139,8 @@ export default Polymer({
     }
     data.push([endDate].concat(empty));
 
-
     var deviceCount = 0;
-    deviceStates.forEach(function(device) {
+    deviceStates.forEach((device) => {
       var attributes = device[device.length - 1].attributes;
       dataTable.addColumn('number', attributes.friendly_name);
 
@@ -154,7 +149,7 @@ export default Polymer({
       var lastIndex = 0;
       var count = 0;
       var prevTime = data[0][0];
-      device.forEach(function(state) {
+      device.forEach((state) => {
 
         currentState = state.state;
         var start = state.lastChangedAsDate;
@@ -178,7 +173,7 @@ export default Polymer({
         previousState = currentState;
 
         count++;
-      }.bind(this));
+      });
 
       //fill in the rest of the Array
       for(var i = lastIndex; i < data.length; i++) {
@@ -186,7 +181,7 @@ export default Polymer({
       }
 
       deviceCount++;
-    }.bind(this));
+    });
 
     dataTable.addRows(data);
     chart.draw(dataTable, options);

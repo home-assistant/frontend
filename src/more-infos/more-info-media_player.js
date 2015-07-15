@@ -86,7 +86,7 @@ export default Polymer({
       this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
     }
 
-    this.async(function() { this.fire('iron-resize'); }.bind(this), 500);
+    this.async(() => this.fire('iron-resize'), 500);
   },
 
   computeClassNames(stateObj) {

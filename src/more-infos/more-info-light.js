@@ -27,9 +27,7 @@ export default Polymer({
       this.brightnessSliderValue = newVal.attributes.brightness;
     }
 
-    this.async(function() {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    this.async(() => this.fire('iron-resize'), 500);
   },
 
   computeClassNames(stateObj) {

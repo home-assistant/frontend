@@ -50,9 +50,7 @@ export default Polymer({
       bindNuclear: [
         voiceGetters.isVoiceSupported,
         configGetters.isComponentLoaded('conversation'),
-        function(isVoiceSupported, componentLoaded) {
-          return isVoiceSupported && componentLoaded;
-        }
+        (isVoiceSupported, componentLoaded) => isVoiceSupported && componentLoaded
       ]
     },
 
@@ -66,9 +64,7 @@ export default Polymer({
       bindNuclear: [
         voiceGetters.isListening,
         voiceGetters.isTransmitting,
-        function(isListening, isTransmitting) {
-          return isListening || isTransmitting;
-        },
+        (isListening, isTransmitting) => isListening || isTransmitting
       ],
     },
 
@@ -79,7 +75,7 @@ export default Polymer({
         // are here so a change to services causes a re-render.
         // we need this to decide if we show toggles for states.
         serviceGetters.entityMap,
-        function(states) { return states.toArray(); },
+        (states) => states.toArray(),
       ],
     },
   },

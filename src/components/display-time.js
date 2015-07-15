@@ -11,7 +11,7 @@ export default Polymer({
     },
   },
 
-  computeTime: function(dateObj) {
+  computeTime(dateObj) {
     return dateObj ? formatTime(dateObj) : '';
   },
 });

@@ -13,11 +13,7 @@ export default Polymer({
       type: Array,
       bindNuclear: [
         eventGetters.entityMap,
-        function(map) {
-          return map.valueSeq()
-                  .sortBy(function(event) { return event.event; })
-                  .toArray();
-        }
+        (map) => map.valueSeq().sortBy((event) => event.event).toArray()
       ],
     },
   },

@@ -53,10 +53,8 @@ export default Polymer({
     };
 
     var startTime = new Date(
-      stateHistory.reduce(function(minTime, stateInfo) {
-        return Math.min(
-          minTime, stateInfo[0].lastChangedAsDate);
-      }, new Date())
+      stateHistory.reduce((minTime, stateInfo) => Math.min(
+          minTime, stateInfo[0].lastChangedAsDate), new Date())
     );
 
     // end time is Math.min(curTime, start time + 1 day)
@@ -68,13 +66,13 @@ export default Polymer({
 
     var numTimelines = 0;
     // stateHistory is a list of lists of sorted state objects
-    stateHistory.forEach(function(stateInfo) {
+    stateHistory.forEach((stateInfo) => {
       if(stateInfo.length === 0) return;
 
       var entityDisplay = stateInfo[0].entityDisplay;
       var newLastChanged, prevState = null, prevLastChanged = null;
 
-      stateInfo.forEach(function(state) {
+      stateInfo.forEach((state) => {
         if (prevState !== null && state.state !== prevState) {
           newLastChanged = state.lastChangedAsDate;
 
@@ -90,7 +88,7 @@ export default Polymer({
 
       addRow(entityDisplay, prevState, prevLastChanged, endTime);
       numTimelines++;
-    }.bind(this));
+    });
 
     chart.draw(dataTable, {
        height: 55 + numTimelines * 42,
