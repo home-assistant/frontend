@@ -52,7 +52,7 @@ export default function domainIcon(domain, state) {
       return 'social:pages';
 
     case 'updater':
-      if(state == "True") {
+      if(state == "update_available") {
         return 'icons:cloud-download';
       } else {
         return 'icons:cloud-done';
