@@ -10,11 +10,11 @@ export default Polymer({
     },
   },
 
-  updateTapped: function(stateObj) {
+  updateTapped(stateObj) {
     serviceActions.callService('updater', 'update', {})
   },
 
-  linkTapped: function(stateObj) {
+  linkTapped(stateObj) {
     window.open(this.stateObj.attributes.link, '_blank');
   },
 });

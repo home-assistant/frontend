@@ -78,10 +78,8 @@ export default Polymer({
     // the resync is not called automatic.
     serviceActions.callService(
       'thermostat', 'set_away_mode',
-      {entity_id: this.stateObj.entityId, away_mode: away_mode})
+      { away_mode, entity_id: this.stateObj.entityId })
 
-    .then(function() {
-      this.stateObjChanged(this.stateObj);
-    }.bind(this));
+    .then(() => this.stateObjChanged(this.stateObj));
   },
 });

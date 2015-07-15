@@ -16,9 +16,7 @@ export default Polymer({
       return [];
     }
 
-    return Object.keys(stateObj.attributes).filter(function(key) {
-      return FILTER_KEYS.indexOf(key) === -1;
-    });
+    return Object.keys(stateObj.attributes).filter((key) => FILTER_KEYS.indexOf(key) === -1);
   },
 
   getAttributeValue(stateObj, attribute) {

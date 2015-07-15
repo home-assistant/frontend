@@ -13,16 +13,12 @@ export default Polymer({
       type: Array,
       bindNuclear: [
         entityGetters.entityMap,
-        function(map) {
-          return map.valueSeq().
-                  sortBy(function(entity) { return entity.entityId; })
-                  .toArray();
-        },
+        (map) => map.valueSeq().sortBy((entity) => entity.entityId).toArray()
       ],
     },
   },
 
-  entitySelected: function(ev) {
+  entitySelected(ev) {
     ev.preventDefault();
     this.fire('entity-selected', {entityId: ev.model.entity.entityId});
   },

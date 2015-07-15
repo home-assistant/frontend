@@ -50,14 +50,13 @@ export default Polymer({
     var lineChartDevices = {};
     var timelineDevices = [];
 
-    stateHistory.forEach(function(stateInfo) {
+    stateHistory.forEach((stateInfo) => {
       if (!stateInfo || stateInfo.size === 0) {
         return;
       }
 
-      var stateWithUnit = stateInfo.find(function(state) {
-        return 'unit_of_measurement' in state.attributes;
-      });
+      var stateWithUnit = stateInfo.find(
+        (state) => 'unit_of_measurement' in state.attributes);
 
       var unit = stateWithUnit ?
         stateWithUnit.attributes.unit_of_measurement : false;
@@ -73,8 +72,8 @@ export default Polymer({
 
     timelineDevices = timelineDevices.length > 0 && timelineDevices;
 
-    var unitStates = Object.keys(lineChartDevices).map(function(unit) {
-      return [unit, lineChartDevices[unit]]; });
+    var unitStates = Object.keys(lineChartDevices).map(
+      (unit) => [unit, lineChartDevices[unit]]);
 
     return {line: unitStates, timeline: timelineDevices};
   },
@@ -82,9 +81,7 @@ export default Polymer({
   googleApiLoaded() {
     google.load("visualization", "1", {
       packages: ["timeline", "corechart"],
-      callback: function() {
-        this.apiLoaded = true;
-      }.bind(this)
+      callback: () => this.apiLoaded = true
     });
   },
 

@@ -36,7 +36,7 @@ Polymer({
       value: [],
       bindNuclear: [
         navigationGetters.possibleEntityDomainFilters,
-        function(domains) { return domains.toArray(); }
+        (domains) => domains.toArray()
       ],
     },
 

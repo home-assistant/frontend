@@ -32,9 +32,7 @@ export default Polymer({
       type: Object,
       bindNuclear: [
         moreInfoGetters.currentEntityHistory,
-        function(history) {
-          return history ? [history] : false;
-        },
+        (history) => history ? [history] : false
       ],
     },
 
@@ -92,9 +90,7 @@ export default Polymer({
 
     // allow dialog to render content before showing it so it is
     // positioned correctly.
-    this.async(function() {
-      this.dialogOpen = true;
-    }.bind(this), 10);
+    this.async(() => this.dialogOpen = true, 10);
   },
 
   dialogOpenChanged(newVal) {

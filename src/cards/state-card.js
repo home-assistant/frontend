@@ -19,7 +19,6 @@ export default Polymer({
 
   cardTapped(ev) {
     ev.stopPropagation();
-    this.async(moreInfoActions.selectEntity.bind(
-      this, this.stateObj.entityId), 100);
+    this.async(() => moreInfoActions.selectEntity(this.stateObj.entityId), 100);
   },
 });

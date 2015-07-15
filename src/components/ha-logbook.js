@@ -12,7 +12,7 @@ Polymer({
     },
   },
 
-  noEntries: function(entries) {
+  noEntries(entries) {
     return !entries.length;
   }
 });

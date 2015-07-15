@@ -45,7 +45,7 @@ export default Polymer({
 
   isValidatingChanged: function(newVal) {
     if (!newVal) {
-      this.async(function() { this.$.passwordInput.focus(); }.bind(this), 10);
+      this.async(() => this.$.passwordInput.focus(), 10);
     }
   },
 
