@@ -8,7 +8,6 @@ require('./state-card-thermostat');
 require('./state-card-configurator');
 require('./state-card-scene');
 require('./state-card-media_player');
-require('./state-card-updater');
 
 export default Polymer({
   is: 'state-card-content',
