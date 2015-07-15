@@ -22,24 +22,29 @@
   <template>
     <div class='layout vertical'>
 
-      <!-- GitHub Link -->
-      <div class='data-entry layout justified horizontal center' style="width:100%" id='setting'>
-        <paper-button class='centered link' on-tap="linkTapped">
+      <div class='horizontal layout center'>
+        <paper-button raised class='centered link' raised on-tap="updateTapped">
+          Update
+        </paper-button>
+
+        <paper-button raised class='centered link' on-tap="linkTapped">
           View on GitHub
         </paper-button>
       </div>
+
+      <div class='divider'></div>
 
       <div class='data-entry layout justified horizontal'>
         <div class='key'>Updated On:</div>
         <div class='value'>[[stateObj.attributes.date]]</div>
       </div>
 
-      <div class='data-entry layout justified vertical'>
+      <div class='data-entry layout justified vertical' hidden='[[!stateObj.attributes.message]]'>
         <div class='key'>Release Notes:</div>
         <div class='centered'>[[stateObj.attributes.message]]<br /></div>
       </div>
 
-    <div class='divider'></div>
+      <div class='divider'></div>
 
       <div class='data-entry layout justified vertical'>
         <div class='key'>Remote SHA:</div>
