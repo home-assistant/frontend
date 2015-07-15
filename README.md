@@ -11,7 +11,9 @@ This is the repository for the official Home Assistant frontend. The frontend is
 
 [![Screenshot of the frontend](https://raw.githubusercontent.com/balloob/home-assistant-polymer/master/docs/screenshot.png)](https://home-assistant.io/demo/)
 
-[_More information about Home Assistant_](https://home-assistant.io) — [_View demo of the Polymer frontend_](https://home-assistant.io/demo/)
+[View demo of the Polymer frontend](https://home-assistant.io/demo/)  
+[More information about Home Assistant](https://home-assistant.io)  
+[Frontend development instructions](https://home-assistant.io/developers/frontend.html)
 
 ## An unusual approach to Polymer
 
@@ -39,9 +41,9 @@ Instead of having each webcomponent reference its own JavaScript file, we now ha
 
 ## The tale of two package managers
 
-The CSS and HTML template part of our webcomponents can depend on our own or third party webcomponents. Currently bower is the only way webcomponents are being distributed. This cannot be done via NPM because NPM only distributes JavaScript files and no CSS or HTML templates.
+The CSS and HTML template part of our webcomponents can depend on our own or third party webcomponents. Currently Bower is the only way webcomponents are being distributed. This cannot be done via NPM because NPM only distributes JavaScript files and no CSS or HTML templates. Therefore, we use Bower for webcomponent dependencies.
 
-For our JavaScript we want to have fine grain control of which parts of our third party components get included, which is possible using NPM. For example, instead of importing the whole lodash library, we only [import the functions that we will use](https://github.com/balloob/home-assistant-polymer/blob/8e143c2e4461771a51cdead553b7fa9e5bbdf772/src/components/state-history-chart-line.js#L1-L4).
+For our JavaScript we want to have fine grain control of which parts of our third party components get included, which is possible using NPM. For example, instead of importing the whole lodash library, we only [import the functions that we will use](https://github.com/balloob/home-assistant-polymer/blob/8e143c2e4461771a51cdead553b7fa9e5bbdf772/src/components/state-history-chart-line.js#L1-L4). Therefore, we use NPM for JavaScript dependencies.
 
 ## License
 Home Assistant is open-source and MIT licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
