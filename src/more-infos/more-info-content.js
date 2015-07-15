@@ -10,6 +10,7 @@ require('./more-info-script');
 require('./more-info-light');
 require('./more-info-media_player');
 require('./more-info-camera');
+require('./more-info-updater');
 
 export default Polymer({
   is: 'more-info-content',
