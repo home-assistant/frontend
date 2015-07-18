@@ -70,14 +70,6 @@ export default Polymer({
         this.shouldFetchHistory) {
       entityHistoryActions.fetchRecent(this.stateObj.entityId);
     }
-    if(this.stateObj) {
-      if(DOMAINS_WITH_NO_HISTORY.indexOf(this.stateObj.domain) !== -1) {
-        this.showHistoryComponent = false;
-      }
-      else {
-        this.showHistoryComponent = this.hasHistoryComponent;
-      }
-    }
   },
 
   stateObjChanged(newVal) {
@@ -86,15 +78,22 @@ export default Polymer({
       return;
     }
 
-    this.fetchHistoryData();
+    this.showHistoryComponent = (
+      DOMAINS_WITH_NO_HISTORY.indexOf(this.stateObj.domain) === -1 &&
+      this.hasHistoryComponent
+    );
 
-    // allow dialog to render content before showing it so it is
-    // positioned correctly.
-    this.async(() => this.dialogOpen = true, 10);
+    this.async(() => {
+      // Firing action while other action is happening confuses nuclear
+      this.fetchHistoryData();
+      // allow dialog to render content before showing it so it is
+      // positioned correctly.
+      this.dialogOpen = true
+    }, 10);
   },
 
   dialogOpenChanged(newVal) {
-    if (!newVal) {
+    if (!newVal && this.stateObj) {
       moreInfoActions.deselectEntity();
     }
   },
