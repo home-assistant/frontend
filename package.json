@@ -19,7 +19,7 @@
     "babel-loader": "^5.3.1",
     "bower": "^1.4.1",
     "eslint-config-airbnb": "0.0.6",
-    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#d6159b2654e070e13017bc8f99418246c5112d9a",
+    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#2819bd78ce5cc0048bfa8c42a2073a20783b75f9",
     "html-minifier": "^0.7.2",
     "lodash": "^3.10.0",
     "moment": "^2.10.3",
