@@ -1,0 +1,10 @@
+{
+  "stage": 1,
+  "highlightCode": true,
+  "optional": ["es7.objectRestSpread", "es7.classProperties"],
+  "env": {
+    "production": {
+      "optional": ["optimisation"]
+    }
+  }
+}
