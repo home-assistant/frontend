@@ -91,7 +91,7 @@ export default Polymer({
     });
 
     chart.draw(dataTable, {
-       height: 55 + numTimelines * 42,
+      height: 55 + numTimelines * 42,
 
       timeline: {
         showRowLabels: stateHistory.length > 1
