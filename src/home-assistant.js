@@ -32,7 +32,8 @@ export default Polymer({
 
   ready() {
     // remove the HTML init message
-    document.getElementById('init').remove();
+    var initMsg = document.getElementById('init');
+    initMsg.parentElement.removeChild(initMsg);
 
     // if auth was given, tell the backend
     if(this.auth) {

@@ -64,7 +64,7 @@ Polymer({
     var menuItems = this.querySelectorAll('.menu [data-panel]');
 
     for (var i = 0; i < menuItems.length; i++) {
-      if(menuItems[i].dataset.panel === newVal) {
+      if(menuItems[i].getAttribute('data-panel') === newVal) {
         menuItems[i].classList.add('selected');
       } else {
         menuItems[i].classList.remove('selected');
@@ -77,13 +77,13 @@ Polymer({
     var checks = 5;
 
     // find panel to select
-    while(checks && !target.dataset.panel) {
+    while(checks && !target.getAttribute('data-panel')) {
       target = target.parentElement;
       checks--;
     }
 
     if (checks) {
-      this.selectPanel(target.dataset.panel);
+      this.selectPanel(target.getAttribute('data-panel'));
     }
   },
 
