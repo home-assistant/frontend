@@ -36,14 +36,8 @@ export default Polymer({
     this.targetTemperatureSliderValue = this.stateObj.state;
     this.awayToggleChecked = this.stateObj.attributes.away_mode == 'on';
 
-    if (this.stateObj.attributes.unit_of_measurement ===
-        temperatureUnits.UNIT_TEMP_F) {
-      this.tempMin = 45;
-      this.tempMax = 95;
-    } else {
-      this.tempMin = 7;
-      this.tempMax = 35;
-    }
+    this.tempMin = this.stateObj.attributes.min_temp;
+    this.tempMax = this.stateObj.attributes.max_temp;
   },
 
   computeClassNames(stateObj) {
