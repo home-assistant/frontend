@@ -5,7 +5,7 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./domain-icon');
 
-export default Polymer({
+export default new Polymer({
   is: 'services-list',
 
   behaviors: [nuclearObserver],
@@ -15,7 +15,7 @@ export default Polymer({
       type: Array,
       bindNuclear: [
         serviceGetters.entityMap,
-        (map) => map.valueSeq().sortBy((domain) => domain.domain).toJS()
+        (map) => map.valueSeq().sortBy((domain) => domain.domain).toJS(),
       ],
     },
   },

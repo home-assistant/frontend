@@ -2,7 +2,7 @@ import Polymer from '../polymer';
 
 import formatTime from '../util/format-time';
 
-export default Polymer({
+export default new Polymer({
   is: 'display-time',
 
   properties: {

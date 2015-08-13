@@ -1,5 +1,5 @@
 import { reactor } from 'home-assistant-js';
 
-import NuclearObserver from './nuclear-behavior';
+import nuclearObserver from './nuclear-behavior';
 
-export default NuclearObserver(reactor);
+export default nuclearObserver(reactor);

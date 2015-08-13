@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-script',
 
   properties: {

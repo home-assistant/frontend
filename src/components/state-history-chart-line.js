@@ -5,7 +5,7 @@ import sortBy from 'lodash/collection/sortBy';
 
 import Polymer from '../polymer';
 
-export default Polymer({
+export default new Polymer({
   is: 'state-history-chart-line',
 
   properties: {
@@ -42,7 +42,7 @@ export default Polymer({
     this.drawChart();
   },
 
-  /**************************************************
+  /* *************************************************
   The following code gererates line graphs for devices with continuous
   values(which are devices that have a unit_of_measurement values defined).
   On each graph the devices are grouped by their unit of measurement, eg. all
@@ -66,9 +66,9 @@ export default Polymer({
       return;
     }
 
-    var root = Polymer.dom(this);
-    var unit = this.unit;
-    var deviceStates = this.data;
+    const root = Polymer.dom(this);
+    const unit = this.unit;
+    const deviceStates = this.data;
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -78,32 +78,32 @@ export default Polymer({
       return;
     }
 
-    var chart = new google.visualization.LineChart(this);
-    var dataTable = new google.visualization.DataTable();
+    const chart = new google.visualization.LineChart(this);
+    const dataTable = new google.visualization.DataTable();
 
     dataTable.addColumn({ type: 'datetime', id: 'Time' });
 
-    var options = {
-        legend: { position: 'top' },
-        titlePosition: 'none',
-        vAxes: {
-          // Adds units to the left hand side of the graph
-          0: {title: unit}
-        },
-        hAxis: {
-          format: 'H:mm'
-        },
-        lineWidth: 1,
-        chartArea:{left:'60',width:"95%"},
-        explorer: {
-          actions: ['dragToZoom', 'rightClickToReset', 'dragToPan'],
-           keepInBounds: true,
-          axis: 'horizontal',
-          maxZoomIn: 0.1
-        }
-      };
+    const options = {
+      legend: { position: 'top' },
+      titlePosition: 'none',
+      vAxes: {
+        // Adds units to the left hand side of the graph
+        0: {title: unit},
+      },
+      hAxis: {
+        format: 'H:mm',
+      },
+      lineWidth: 1,
+      chartArea: { left: '60', width: '95%'},
+      explorer: {
+        actions: ['dragToZoom', 'rightClickToReset', 'dragToPan'],
+        keepInBounds: true,
+        axis: 'horizontal',
+        maxZoomIn: 0.1,
+      },
+    };
 
-    if(this.isSingleDevice) {
+    if (this.isSingleDevice) {
       options.legend.position = 'none';
       options.vAxes[0].title = null;
       options.chartArea.left = 40;
@@ -114,54 +114,51 @@ export default Polymer({
 
     // Get a unique list of times of state changes for all the device
     // for a particular unit of measureent.
-    var times = pluck(flatten(deviceStates), "lastChangedAsDate");
+    let times = pluck(flatten(deviceStates), 'lastChangedAsDate');
     times = sortBy(uniq(times, (e) => e.getTime()));
 
-    var data = [];
-    var empty = new Array(deviceStates.length);
-    for(var i = 0; i < empty.length; i++) {
+    const data = [];
+    const empty = new Array(deviceStates.length);
+    for (let i = 0; i < empty.length; i++) {
       empty[i] = 0;
     }
 
-    var timeIndex = 1;
-    var endDate = new Date();
-    var prevDate = times[0];
+    let timeIndex = 1;
+    const endDate = new Date();
 
-    for(i = 0; i < times.length; i++) {
+    for (i = 0; i < times.length; i++) {
       // because we only have state changes we add an extra point at the same time
       // that holds the previous state which makes the line display correctly
-      var beforePoint = new Date(times[i]);
+      const beforePoint = new Date(times[i]);
       data.push([beforePoint].concat(empty));
 
       data.push([times[i]].concat(empty));
-      prevDate = times[i];
       timeIndex++;
     }
     data.push([endDate].concat(empty));
 
-    var deviceCount = 0;
+    let deviceCount = 0;
     deviceStates.forEach((device) => {
-      var attributes = device[device.length - 1].attributes;
+      const attributes = device[device.length - 1].attributes;
       dataTable.addColumn('number', attributes.friendly_name);
 
-      var currentState = 0;
-      var previousState = 0;
-      var lastIndex = 0;
-      var count = 0;
-      var prevTime = data[0][0];
+      let currentState = 0;
+      let previousState = 0;
+      let lastIndex = 0;
+      let count = 0;
+      let prevTime = data[0][0];
       device.forEach((state) => {
-
         currentState = state.state;
-        var start = state.lastChangedAsDate;
-        if(state.state == 'None') {
+        const start = state.lastChangedAsDate;
+        if (state.state === 'None') {
           currentState = previousState;
         }
-        for(var i = lastIndex; i < data.length; i++) {
+        for (let i = lastIndex; i < data.length; i++) {
           data[i][1 + deviceCount] = parseFloat(previousState);
           // this is where data gets filled in for each time for the particular device
           // because for each time two entries were create we fill the first one with the
           // previous value and the second one with the new value
-          if(prevTime.getTime() == data[i][0].getTime() && data[i][0].getTime() == start.getTime()) {
+          if (prevTime.getTime() === data[i][0].getTime() && data[i][0].getTime() === start.getTime()) {
             data[i][1 + deviceCount] = parseFloat(currentState);
             lastIndex = i;
             prevTime = data[i][0];
@@ -175,8 +172,8 @@ export default Polymer({
         count++;
       });
 
-      //fill in the rest of the Array
-      for(var i = lastIndex; i < data.length; i++) {
+      // fill in the rest of the Array
+      for (let i = lastIndex; i < data.length; i++) {
         data[i][1 + deviceCount] = parseFloat(previousState);
       }
 

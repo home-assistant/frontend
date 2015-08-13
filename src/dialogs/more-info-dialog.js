@@ -16,7 +16,7 @@ require('../more-infos/more-info-content');
 // if you don't want the history component to show add the domain to this array
 const DOMAINS_WITH_NO_HISTORY = ['camera'];
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-dialog',
 
   behaviors: [nuclearObserver],
@@ -32,7 +32,7 @@ export default Polymer({
       type: Object,
       bindNuclear: [
         moreInfoGetters.currentEntityHistory,
-        (history) => history ? [history] : false
+        (history) => history ? [history] : false,
       ],
     },
 
@@ -88,7 +88,7 @@ export default Polymer({
       this.fetchHistoryData();
       // allow dialog to render content before showing it so it is
       // positioned correctly.
-      this.dialogOpen = true
+      this.dialogOpen = true;
     }, 10);
   },
 

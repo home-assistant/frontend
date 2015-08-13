@@ -19,7 +19,7 @@ require('./partial-base');
 require('../components/state-cards');
 require('../components/ha-voice-command-progress');
 
-export default Polymer({
+export default new Polymer({
   is: 'partial-states',
 
   behaviors: [nuclearObserver],
@@ -50,8 +50,8 @@ export default Polymer({
       bindNuclear: [
         voiceGetters.isVoiceSupported,
         configGetters.isComponentLoaded('conversation'),
-        (isVoiceSupported, componentLoaded) => isVoiceSupported && componentLoaded
-      ]
+        (isVoiceSupported, componentLoaded) => isVoiceSupported && componentLoaded,
+      ],
     },
 
     isListening: {
@@ -64,7 +64,7 @@ export default Polymer({
       bindNuclear: [
         voiceGetters.isListening,
         voiceGetters.isTransmitting,
-        (isListening, isTransmitting) => isListening || isTransmitting
+        (isListening, isTransmitting) => isListening || isTransmitting,
       ],
     },
 

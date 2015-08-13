@@ -4,7 +4,7 @@ require('./loading-box');
 require('./state-history-chart-timeline');
 require('./state-history-chart-line');
 
-export default Polymer({
+export default new Polymer({
   is: 'state-history-charts',
 
   properties: {
@@ -39,7 +39,7 @@ export default Polymer({
   },
 
   computeIsSingleDevice(stateHistory) {
-    return stateHistory && stateHistory.size == 1;
+    return stateHistory && stateHistory.size === 1;
   },
 
   computeGroupedStateHistory(isLoading, stateHistory) {
@@ -47,23 +47,23 @@ export default Polymer({
       return {line: [], timeline: []};
     }
 
-    var lineChartDevices = {};
-    var timelineDevices = [];
+    const lineChartDevices = {};
+    let timelineDevices = [];
 
     stateHistory.forEach((stateInfo) => {
       if (!stateInfo || stateInfo.size === 0) {
         return;
       }
 
-      var stateWithUnit = stateInfo.find(
+      const stateWithUnit = stateInfo.find(
         (state) => 'unit_of_measurement' in state.attributes);
 
-      var unit = stateWithUnit ?
+      const unit = stateWithUnit ?
         stateWithUnit.attributes.unit_of_measurement : false;
 
       if (!unit) {
         timelineDevices.push(stateInfo.toArray());
-      } else if(unit in lineChartDevices) {
+      } else if (unit in lineChartDevices) {
         lineChartDevices[unit].push(stateInfo.toArray());
       } else {
         lineChartDevices[unit] = [stateInfo.toArray()];
@@ -72,16 +72,16 @@ export default Polymer({
 
     timelineDevices = timelineDevices.length > 0 && timelineDevices;
 
-    var unitStates = Object.keys(lineChartDevices).map(
+    const unitStates = Object.keys(lineChartDevices).map(
       (unit) => [unit, lineChartDevices[unit]]);
 
     return {line: unitStates, timeline: timelineDevices};
   },
 
   googleApiLoaded() {
-    google.load("visualization", "1", {
-      packages: ["timeline", "corechart"],
-      callback: () => this.apiLoaded = true
+    google.load('visualization', '1', {
+      packages: ['timeline', 'corechart'],
+      callback: () => this.apiLoaded = true,
     });
   },
 

@@ -3,7 +3,7 @@ import { entityGetters } from 'home-assistant-js';
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
-export default Polymer({
+export default new Polymer({
   is: 'entity-list',
 
   behaviors: [nuclearObserver],
@@ -13,7 +13,7 @@ export default Polymer({
       type: Array,
       bindNuclear: [
         entityGetters.entityMap,
-        (map) => map.valueSeq().sortBy((entity) => entity.entityId).toArray()
+        (map) => map.valueSeq().sortBy((entity) => entity.entityId).toArray(),
       ],
     },
   },

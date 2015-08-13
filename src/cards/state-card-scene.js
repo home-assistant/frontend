@@ -3,7 +3,7 @@ import Polymer from '../polymer';
 require('./state-card-display');
 require('./state-card-toggle');
 
-export default Polymer({
+export default new Polymer({
   is: 'state-card-scene',
 
   properties: {
@@ -18,7 +18,7 @@ export default Polymer({
     },
   },
 
-  computeAllowToggle: function(stateObj) {
+  computeAllowToggle(stateObj) {
     return stateObj.state === 'off' || stateObj.attributes.active_requested;
   },
 });

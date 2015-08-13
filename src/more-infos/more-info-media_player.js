@@ -5,7 +5,7 @@ import attributeClassNames from '../util/attribute-class-names';
 
 const ATTRIBUTE_CLASSES = ['volume_level'];
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-media_player',
 
   properties: {
@@ -26,7 +26,7 @@ export default Polymer({
 
     isMuted: {
       type: Boolean,
-      value: false
+      value: false,
     },
 
     volumeSliderValue: {
@@ -73,8 +73,8 @@ export default Polymer({
 
   stateObjChanged(newVal) {
     if (newVal) {
-      this.isOff = newVal.state == 'off';
-      this.isPlaying = newVal.state == 'playing';
+      this.isOff = newVal.state === 'off';
+      this.isPlaying = newVal.state === 'playing';
       this.volumeSliderValue = newVal.attributes.volume_level * 100;
       this.isMuted = newVal.attributes.is_volume_muted;
       this.supportsPause = (newVal.attributes.supported_media_commands & 1) !== 0;
@@ -94,14 +94,14 @@ export default Polymer({
   },
 
   computeIsOff(stateObj) {
-    return stateObj.state == 'off';
+    return stateObj.state === 'off';
   },
 
   computeMuteVolumeIcon(isMuted) {
     return isMuted ? 'av:volume-off' : 'av:volume-up';
   },
 
-  computePlaybackControlIcon(stateObj) {
+  computePlaybackControlIcon() {
     if (this.isPlaying) {
       return this.supportsPause ? 'av:pause' : 'av:stop';
     }
@@ -121,9 +121,6 @@ export default Polymer({
   },
 
   handlePlaybackControl() {
-    if (this.isPlaying && !this.supportsPause) {
-      alert('This case is not supported yet');
-    }
     this.callService('media_play_pause');
   },
 
@@ -139,14 +136,14 @@ export default Polymer({
   },
 
   volumeSliderChanged(ev) {
-    var volPercentage = parseFloat(ev.target.value);
-    var vol = volPercentage > 0 ? volPercentage / 100 : 0;
+    const volPercentage = parseFloat(ev.target.value);
+    const vol = volPercentage > 0 ? volPercentage / 100 : 0;
     this.callService('volume_set', { volume_level: vol });
   },
 
   callService(service, data) {
-    data = data || {};
-    data.entity_id = this.stateObj.entityId;
-    serviceActions.callService('media_player', service, data);
+    const serviceData = data || {};
+    serviceData.entity_id = this.stateObj.entityId;
+    serviceActions.callService('media_player', service, serviceData);
   },
 });

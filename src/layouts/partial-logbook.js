@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { logbookGetters, logbookActions } from 'home-assistant-js';
 
 import Polymer from '../polymer';
@@ -8,7 +7,7 @@ require('./partial-base');
 require('../components/ha-logbook');
 require('../components/loading-box');
 
-export default Polymer({
+export default new Polymer({
   is: 'partial-logbook',
 
   behaviors: [nuclearObserver],
@@ -50,8 +49,7 @@ export default Polymer({
 
   isStaleChanged(newVal) {
     if (newVal) {
-      // isLoading wouldn't update without async <_<
-      this.async(() => logbookActions.fetchDate(this.selectedDate), 10);
+      this.async(() => logbookActions.fetchDate(this.selectedDate), 1);
     }
   },
 
@@ -61,7 +59,6 @@ export default Polymer({
 
   datepickerFocus() {
     this.datePicker.adjustPosition();
-    this.datePicker.gotoDate(moment('2015-06-30').toDate());
   },
 
   attached() {

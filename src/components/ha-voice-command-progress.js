@@ -3,7 +3,7 @@ import { voiceGetters } from 'home-assistant-js';
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
-export default Polymer({
+export default new Polymer({
   is: 'ha-voice-command-progress',
 
   behaviors: [nuclearObserver],

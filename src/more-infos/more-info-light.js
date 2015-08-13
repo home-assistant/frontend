@@ -7,7 +7,7 @@ require('../components/ha-color-picker');
 
 const ATTRIBUTE_CLASSES = ['brightness', 'xy_color'];
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-light',
 
   properties: {
@@ -19,10 +19,10 @@ export default Polymer({
     brightnessSliderValue: {
       type: Number,
       value: 0,
-    }
+    },
   },
 
-  stateObjChanged(newVal, oldVal) {
+  stateObjChanged(newVal) {
     if (newVal && newVal.state === 'on') {
       this.brightnessSliderValue = newVal.attributes.brightness;
     }
@@ -35,27 +35,27 @@ export default Polymer({
   },
 
   brightnessSliderChanged(ev) {
-    var bri = parseInt(ev.target.value);
+    const bri = parseInt(ev.target.value, 10);
 
-    if(isNaN(bri)) return;
+    if (isNaN(bri)) return;
 
-    if(bri === 0) {
+    if (bri === 0) {
       serviceActions.callTurnOff(this.stateObj.entityId);
     } else {
       serviceActions.callService('light', 'turn_on', {
         entity_id: this.stateObj.entityId,
-        brightness: bri
+        brightness: bri,
       });
     }
   },
 
   colorPicked(ev) {
-    var color = ev.detail.rgb;
+    const color = ev.detail.rgb;
 
     serviceActions.callService('light', 'turn_on', {
       entity_id: this.stateObj.entityId,
-      rgb_color: [color.r, color.g, color.b]
+      rgb_color: [color.r, color.g, color.b],
     });
-  }
+  },
 
 });

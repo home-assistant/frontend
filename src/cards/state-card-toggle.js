@@ -4,7 +4,7 @@ import Polymer from '../polymer';
 
 require('../components/state-info');
 
-export default Polymer({
+export default new Polymer({
   is: 'state-card-toggle',
 
   properties: {
@@ -28,11 +28,11 @@ export default Polymer({
   },
 
   toggleChanged(ev) {
-    var newVal = ev.target.checked;
+    const newVal = ev.target.checked;
 
-    if(newVal && this.stateObj.state === "off") {
+    if (newVal && this.stateObj.state === 'off') {
       this.turn_on();
-    } else if(!newVal && this.stateObj.state === "on") {
+    } else if (!newVal && this.stateObj.state === 'on') {
       this.turn_off();
     }
   },
@@ -44,7 +44,7 @@ export default Polymer({
   },
 
   updateToggle(stateObj) {
-    this.toggleChecked = stateObj && stateObj.state === "on";
+    this.toggleChecked = stateObj && stateObj.state === 'on';
   },
 
   forceStateChange() {

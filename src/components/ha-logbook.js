@@ -2,7 +2,7 @@ import Polymer from '../polymer';
 
 require('./logbook-entry');
 
-Polymer({
+export default new Polymer({
   is: 'ha-logbook',
 
   properties: {
@@ -14,5 +14,5 @@ Polymer({
 
   noEntries(entries) {
     return !entries.length;
-  }
+  },
 });

@@ -1,7 +1,6 @@
-import { util } from 'home-assistant-js';
 import { serviceActions } from 'home-assistant-js';
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-updater',
 
   properties: {
@@ -10,11 +9,11 @@ export default Polymer({
     },
   },
 
-  updateTapped(stateObj) {
-    serviceActions.callService('updater', 'update', {})
+  updateTapped() {
+    serviceActions.callService('updater', 'update', {});
   },
 
-  linkTapped(stateObj) {
+  linkTapped() {
     window.open(this.stateObj.attributes.link, '_blank');
   },
 });

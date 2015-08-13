@@ -2,7 +2,7 @@ import Polymer from '../polymer';
 
 import domainIcon from '../util/domain-icon';
 
-export default Polymer({
+export default new Polymer({
   is: 'domain-icon',
 
   properties: {

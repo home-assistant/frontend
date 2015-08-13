@@ -8,7 +8,7 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../cards/state-card-content');
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-group',
 
   behaviors: [nuclearObserver],
@@ -26,7 +26,7 @@ export default Polymer({
         (currentEntity, entities) => {
           // weird bug??
           if (!currentEntity) {
-            return;
+            return [];
           }
           return currentEntity.attributes.entity_id.map(
             entities.get.bind(entities));

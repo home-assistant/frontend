@@ -1,5 +1,4 @@
 import {
-  uiActions,
   entityHistoryGetters,
   entityHistoryActions
 } from 'home-assistant-js';
@@ -10,7 +9,7 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 require('./partial-base');
 require('../components/state-history-charts');
 
-export default Polymer({
+export default new Polymer({
   is: 'partial-history',
 
   behaviors: [nuclearObserver],
@@ -45,7 +44,7 @@ export default Polymer({
 
   isDataLoadedChanged(newVal) {
     if (!newVal) {
-      entityHistoryActions.fetchSelectedDate();
+      this.async(() => entityHistoryActions.fetchSelectedDate(), 1);
     }
   },
 
@@ -55,7 +54,6 @@ export default Polymer({
 
   datepickerFocus() {
     this.datePicker.adjustPosition();
-    this.datePicker.gotoDate(moment('2015-06-30').toDate());
   },
 
   attached() {

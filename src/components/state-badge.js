@@ -4,7 +4,7 @@ import xyBriToRgb from '../util/xybri-to-rgb';
 
 require('./domain-icon');
 
-export default Polymer({
+export default new Polymer({
   is: 'state-badge',
 
   properties: {
@@ -19,13 +19,12 @@ export default Polymer({
    */
   updateIconColor(newVal) {
     // for domain light, set color of icon to light color if available
-    if(newVal.domain == "light" && newVal.state == "on" &&
+    if (newVal.domain === 'light' && newVal.state === 'on' &&
        newVal.attributes.brightness && newVal.attributes.xy_color) {
-
-      var rgb = xyBriToRgb(newVal.attributes.xy_color[0],
-                           newVal.attributes.xy_color[1],
-                           newVal.attributes.brightness);
-      this.$.icon.style.color = "rgb(" + rgb.map(Math.floor).join(",") + ")";
+      const rgb = xyBriToRgb(newVal.attributes.xy_color[0],
+                             newVal.attributes.xy_color[1],
+                             newVal.attributes.brightness);
+      this.$.icon.style.color = 'rgb(' + rgb.map(Math.floor).join(',') + ')';
     } else {
       this.$.icon.style.color = null;
     }

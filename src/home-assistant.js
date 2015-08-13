@@ -2,7 +2,8 @@ import Polymer from './polymer';
 
 import {
   syncGetters,
-  localStoragePreferences
+  localStoragePreferences,
+  startLocalStoragePreferencesSync
 } from 'home-assistant-js';
 
 import nuclearObserver from './util/bound-nuclear-behavior';
@@ -11,7 +12,7 @@ import validateAuth from './util/validate-auth';
 require('./layouts/login-form');
 require('./layouts/home-assistant-main');
 
-export default Polymer({
+export default new Polymer({
   is: 'home-assistant',
 
   hostAttributes: {
@@ -32,16 +33,16 @@ export default Polymer({
 
   ready() {
     // remove the HTML init message
-    var initMsg = document.getElementById('init');
+    const initMsg = document.getElementById('init');
     initMsg.parentElement.removeChild(initMsg);
 
     // if auth was given, tell the backend
-    if(this.auth) {
+    if (this.auth) {
       validateAuth(this.auth, false);
     } else if (localStoragePreferences.authToken) {
       validateAuth(localStoragePreferences.authToken, true);
     }
 
-    localStoragePreferences.startSync();
+    startLocalStoragePreferencesSync();
   },
 });

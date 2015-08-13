@@ -5,7 +5,7 @@ import Polymer from '../polymer';
 require('./partial-base');
 require('../components/services-list');
 
-export default Polymer({
+export default new Polymer({
   is: 'partial-dev-call-service',
 
   properties: {
@@ -36,12 +36,13 @@ export default Polymer({
   },
 
   callService() {
-    var serviceData;
-
+    let serviceData;
     try {
-      serviceData = this.serviceData ? JSON.parse(this.serviceData): {};
+      serviceData = this.serviceData ? JSON.parse(this.serviceData) : {};
     } catch (err) {
-      alert("Error parsing JSON: " + err);
+      /* eslint-disable no-alert */
+      alert(`Error parsing JSON: ${err}`);
+      /* eslint-enable no-alert */
       return;
     }
 

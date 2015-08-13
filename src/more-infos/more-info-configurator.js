@@ -9,7 +9,7 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/loading-box');
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-configurator',
 
   behaviors: [nuclearObserver],
@@ -46,7 +46,7 @@ export default Polymer({
   },
 
   computeIsConfigurable(stateObj) {
-    return stateObj.state == 'configure';
+    return stateObj.state === 'configure';
   },
 
   computeSubmitCaption(stateObj) {
@@ -56,8 +56,8 @@ export default Polymer({
   submitClicked() {
     this.isConfiguring = true;
 
-    var data = {
-      configure_id: this.stateObj.attributes.configure_id
+    const data = {
+      configure_id: this.stateObj.attributes.configure_id,
     };
 
     serviceActions.callService('configurator', 'configure', data).then(

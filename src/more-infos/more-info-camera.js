@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-camera',
 
   properties: {
@@ -21,9 +21,8 @@ export default Polymer({
       return 'http://194.218.96.92/jpg/image.jpg';
     } else if (dialogOpen) {
       return '/api/camera_proxy_stream/' + this.stateObj.entityId;
-    } else {
-      // Return an empty image if dialog is not open
-      return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
     }
+    // Return an empty image if dialog is not open
+    return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
   },
 });

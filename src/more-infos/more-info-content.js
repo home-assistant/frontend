@@ -12,7 +12,7 @@ require('./more-info-media_player');
 require('./more-info-camera');
 require('./more-info-updater');
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-content',
 
   properties: {
@@ -28,8 +28,8 @@ export default Polymer({
     },
   },
 
-  dialogOpenChanged(newVal, oldVal) {
-    var root = Polymer.dom(this);
+  dialogOpenChanged(newVal) {
+    const root = Polymer.dom(this);
 
     if (root.lastChild) {
       root.lastChild.dialogOpen = newVal;
@@ -37,7 +37,7 @@ export default Polymer({
   },
 
   stateObjChanged(newVal, oldVal) {
-    var root = Polymer.dom(this);
+    const root = Polymer.dom(this);
 
     if (!newVal) {
       if (root.lastChild) {
@@ -46,24 +46,20 @@ export default Polymer({
       return;
     }
 
-    var newMoreInfoType = stateMoreInfoType(newVal);
+    const newMoreInfoType = stateMoreInfoType(newVal);
 
-    if (!oldVal || stateMoreInfoType(oldVal) != newMoreInfoType) {
-
+    if (!oldVal || stateMoreInfoType(oldVal) !== newMoreInfoType) {
       if (root.lastChild) {
         root.removeChild(root.lastChild);
       }
 
-      var moreInfo = document.createElement('more-info-' + newMoreInfoType);
+      const moreInfo = document.createElement('more-info-' + newMoreInfoType);
       moreInfo.stateObj = newVal;
       moreInfo.dialogOpen = this.dialogOpen;
       root.appendChild(moreInfo);
-
     } else {
-
       root.lastChild.dialogOpen = this.dialogOpen;
       root.lastChild.stateObj = newVal;
-
     }
   },
 });
