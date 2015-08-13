@@ -1,4 +1,4 @@
-import { notificationGetters } from 'home-assistant-js';
+import { notificationGetters } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';

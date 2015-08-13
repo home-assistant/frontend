@@ -2,7 +2,7 @@ import {
   navigationGetters,
   startUrlSync,
   stopUrlSync,
-} from 'home-assistant-js';
+} from '../util/home-assistant-js-instance';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
 

@@ -1,4 +1,4 @@
-import { streamGetters, streamActions } from 'home-assistant-js';
+import { streamGetters, streamActions } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';

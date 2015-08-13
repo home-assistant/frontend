@@ -1,4 +1,4 @@
-import { authActions, localStoragePreferences } from 'home-assistant-js';
+import { authActions, localStoragePreferences } from '../util/home-assistant-js-instance';
 
 export default function(authToken, rememberAuth) {
   authActions.validate(authToken, {

@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('../cards/state-card');
+require('../state-summary/state-card');
 
 export default new Polymer({
   is: 'state-cards',

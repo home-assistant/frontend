@@ -1,4 +1,4 @@
-import { reactor, entityGetters, entityActions } from 'home-assistant-js';
+import { reactor, entityGetters, entityActions } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
