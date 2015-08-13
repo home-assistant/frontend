@@ -1,4 +1,4 @@
-# Home Assistant Polymer
+# Home Assistant Polymer [![Build Status](https://travis-ci.org/balloob/home-assistant-polymer.svg?branch=master)](https://travis-ci.org/balloob/home-assistant-polymer)
 
 This is the repository for the official Home Assistant frontend. The frontend is built on top of the following technologies:
 
