@@ -3,7 +3,7 @@ import { streamGetters, streamActions } from 'home-assistant-js';
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
-export default Polymer({
+export default new Polymer({
   is: 'stream-status',
 
   behaviors: [nuclearObserver],
@@ -20,7 +20,7 @@ export default Polymer({
     },
   },
 
-  toggleChanged: function() {
+  toggleChanged() {
     if (this.isStreaming) {
       streamActions.stop();
     } else {

@@ -3,7 +3,7 @@ import { notificationGetters } from 'home-assistant-js';
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
-export default Polymer({
+export default new Polymer({
   is: 'notification-manager',
 
   behaviors: [nuclearObserver],
@@ -20,5 +20,5 @@ export default Polymer({
     if (newText) {
       this.$.toast.show();
     }
-  }
+  },
 });

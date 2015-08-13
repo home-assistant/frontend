@@ -5,7 +5,7 @@ import Polymer from '../polymer';
 require('./partial-base');
 require('../components/events-list');
 
-export default Polymer({
+export default new Polymer({
   is: 'partial-dev-fire-event',
 
   properties: {
@@ -25,12 +25,14 @@ export default Polymer({
   },
 
   fireEvent() {
-    var eventData;
+    let eventData;
 
     try {
       eventData = this.eventData ? JSON.parse(this.eventData) : {};
     } catch (err) {
-      alert("Error parsing JSON: " + err);
+      /* eslint-disable no-alert */
+      alert(`Error parsing JSON: ${err}`);
+      /* eslint-enable no-alert */
       return;
     }
 

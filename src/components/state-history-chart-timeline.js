@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-export default Polymer({
+export default new Polymer({
   is: 'state-history-chart-timeline',
 
   properties: {
@@ -28,8 +28,8 @@ export default Polymer({
     if (!this.isAttached) {
       return;
     }
-    var root = Polymer.dom(this);
-    var stateHistory = this.data;
+    const root = Polymer.dom(this);
+    const stateHistory = this.data;
 
     while (root.node.lastChild) {
       root.node.removeChild(root.node.lastChild);
@@ -39,38 +39,40 @@ export default Polymer({
       return;
     }
 
-    var chart = new google.visualization.Timeline(this);
-    var dataTable = new google.visualization.DataTable();
+    const chart = new google.visualization.Timeline(this);
+    const dataTable = new google.visualization.DataTable();
 
     dataTable.addColumn({ type: 'string', id: 'Entity' });
     dataTable.addColumn({ type: 'string', id: 'State' });
     dataTable.addColumn({ type: 'date', id: 'Start' });
     dataTable.addColumn({ type: 'date', id: 'End' });
 
-    var addRow = function(entityDisplay, stateStr, start, end) {
-      stateStr = stateStr.replace(/_/g, ' ');
-      dataTable.addRow([entityDisplay, stateStr, start, end]);
-    };
+    function addRow(entityDisplay, stateStr, start, end) {
+      const stateDisplay = stateStr.replace(/_/g, ' ');
+      dataTable.addRow([entityDisplay, stateDisplay, start, end]);
+    }
 
-    var startTime = new Date(
+    const startTime = new Date(
       stateHistory.reduce((minTime, stateInfo) => Math.min(
           minTime, stateInfo[0].lastChangedAsDate), new Date())
     );
 
     // end time is Math.min(curTime, start time + 1 day)
-    var endTime = new Date(startTime);
-    endTime.setDate(endTime.getDate()+1);
+    let endTime = new Date(startTime);
+    endTime.setDate(endTime.getDate() + 1);
     if (endTime > new Date()) {
       endTime = new Date();
     }
 
-    var numTimelines = 0;
+    let numTimelines = 0;
     // stateHistory is a list of lists of sorted state objects
     stateHistory.forEach((stateInfo) => {
-      if(stateInfo.length === 0) return;
+      if (stateInfo.length === 0) return;
 
-      var entityDisplay = stateInfo[0].entityDisplay;
-      var newLastChanged, prevState = null, prevLastChanged = null;
+      const entityDisplay = stateInfo[0].entityDisplay;
+      let newLastChanged;
+      let prevState = null;
+      let prevLastChanged = null;
 
       stateInfo.forEach((state) => {
         if (prevState !== null && state.state !== prevState) {
@@ -94,11 +96,11 @@ export default Polymer({
       height: 55 + numTimelines * 42,
 
       timeline: {
-        showRowLabels: stateHistory.length > 1
+        showRowLabels: stateHistory.length > 1,
       },
 
       hAxis: {
-        format: 'H:mm'
+        format: 'H:mm',
       },
     });
   },

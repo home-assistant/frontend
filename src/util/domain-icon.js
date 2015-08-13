@@ -1,64 +1,61 @@
 export default function domainIcon(domain, state) {
-  switch(domain) {
-    case "homeassistant":
-      return "home";
+  switch (domain) {
+  case 'homeassistant':
+    return 'home';
 
-    case "group":
-      return "homeassistant-24:group";
+  case 'group':
+    return 'homeassistant-24:group';
 
-    case "device_tracker":
-      return "social:person";
+  case 'device_tracker':
+    return 'social:person';
 
-    case "switch":
-      return "image:flash-on";
+  case 'switch':
+    return 'image:flash-on';
 
-    case "media_player":
-      var icon = "hardware:cast";
+  case 'media_player':
+    let icon = 'hardware:cast';
 
-      if (state && state !== "off" && state !== 'idle') {
-        icon += "-connected";
-      }
+    if (state && state !== 'off' && state !== 'idle') {
+      icon += '-connected';
+    }
 
-      return icon;
+    return icon;
 
-    case "sun":
-      return "image:wb-sunny";
+  case 'sun':
+    return 'image:wb-sunny';
 
-    case "light":
-      return "image:wb-incandescent";
+  case 'light':
+    return 'image:wb-incandescent';
 
-    case "simple_alarm":
-      return "social:notifications";
+  case 'simple_alarm':
+    return 'social:notifications';
 
-    case "notify":
-      return "announcement";
+  case 'notify':
+    return 'announcement';
 
-    case "thermostat":
-      return "homeassistant-100:thermostat";
+  case 'thermostat':
+    return 'homeassistant-100:thermostat';
 
-    case "sensor":
-      return "visibility";
+  case 'sensor':
+    return 'visibility';
 
-    case "configurator":
-      return "settings";
+  case 'configurator':
+    return 'settings';
 
-    case "conversation":
-      return "av:hearing";
+  case 'conversation':
+    return 'av:hearing';
 
-    case "script":
-      return "description";
+  case 'script':
+    return 'description';
 
-    case 'scene':
-      return 'social:pages';
+  case 'scene':
+    return 'social:pages';
 
-    case 'updater':
-      if(state == "update_available") {
-        return 'icons:cloud-download';
-      } else {
-        return 'icons:cloud-done';
-      }
+  case 'updater':
+    return state === 'update_available' ?
+      'icons:cloud-download' : 'icons:cloud-done';
 
-    default:
-      return "bookmark";
+  default:
+    return 'bookmark';
   }
-};
+}

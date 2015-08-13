@@ -4,7 +4,7 @@ import formatTime from '../util/format-time';
 
 const { parseDateTime } = util;
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-sun',
 
   properties: {
@@ -37,12 +37,12 @@ export default Polymer({
     this.settingDate = parseDateTime(this.stateObj.attributes.next_setting);
     this.settingTime = formatTime(this.settingDate);
 
-    var root = Polymer.dom(this);
+    const root = Polymer.dom(this);
 
-    if(self.risingDate > self.settingDate) {
+    if (self.risingDate > self.settingDate) {
       root.appendChild(this.$.rising);
     } else {
       root.appendChild(this.$.setting);
     }
-  }
+  },
 });

@@ -2,7 +2,7 @@ import Polymer from '../polymer';
 
 const FILTER_KEYS = ['entity_picture', 'friendly_name', 'unit_of_measurement'];
 
-export default Polymer({
+export default new Polymer({
   is: 'more-info-default',
 
   properties: {

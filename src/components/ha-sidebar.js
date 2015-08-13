@@ -14,7 +14,7 @@ require('./stream-status');
 
 const { entityDomainFilters } = util;
 
-Polymer({
+export default new Polymer({
   is: 'ha-sidebar',
 
   behaviors: [nuclearObserver],
@@ -36,7 +36,7 @@ Polymer({
       value: [],
       bindNuclear: [
         navigationGetters.possibleEntityDomainFilters,
-        (domains) => domains.toArray()
+        (domains) => domains.toArray(),
       ],
     },
 
@@ -61,10 +61,10 @@ Polymer({
     // if (this.menuSelected !== newVal) {
     //   this.menuSelected = newVal;
     // }
-    var menuItems = this.querySelectorAll('.menu [data-panel]');
+    const menuItems = this.querySelectorAll('.menu [data-panel]');
 
-    for (var i = 0; i < menuItems.length; i++) {
-      if(menuItems[i].getAttribute('data-panel') === newVal) {
+    for (let i = 0; i < menuItems.length; i++) {
+      if (menuItems[i].getAttribute('data-panel') === newVal) {
         menuItems[i].classList.add('selected');
       } else {
         menuItems[i].classList.remove('selected');
@@ -73,11 +73,11 @@ Polymer({
   },
 
   menuClicked(ev) {
-    var target = ev.target;
-    var checks = 5;
+    let target = ev.target;
+    let checks = 5;
 
     // find panel to select
-    while(checks && !target.getAttribute('data-panel')) {
+    while (checks && !target.getAttribute('data-panel')) {
       target = target.parentElement;
       checks--;
     }
@@ -94,9 +94,9 @@ Polymer({
   },
 
   selectPanel(newChoice) {
-    if(newChoice === this.selected) {
+    if (newChoice === this.selected) {
       return;
-    } else if (newChoice == 'logout') {
+    } else if (newChoice === 'logout') {
       this.handleLogOut();
       return;
     }

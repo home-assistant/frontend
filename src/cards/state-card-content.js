@@ -9,18 +9,18 @@ require('./state-card-configurator');
 require('./state-card-scene');
 require('./state-card-media_player');
 
-export default Polymer({
+export default new Polymer({
   is: 'state-card-content',
 
   properties: {
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
-    }
+    },
   },
 
-  stateObjChanged: function(newVal, oldVal) {
-    var root = Polymer.dom(this);
+  stateObjChanged(newVal, oldVal) {
+    const root = Polymer.dom(this);
 
     if (!newVal) {
       if (root.lastChild) {
@@ -29,14 +29,14 @@ export default Polymer({
       return;
     }
 
-    var newCardType = stateCardType(newVal);
+    const newCardType = stateCardType(newVal);
 
-    if (!oldVal || stateCardType(oldVal) != newCardType) {
+    if (!oldVal || stateCardType(oldVal) !== newCardType) {
       if (root.lastChild) {
         root.removeChild(root.lastChild);
       }
 
-      var stateCard = document.createElement("state-card-" + newCardType);
+      const stateCard = document.createElement(`state-card-${newCardType}`);
       stateCard.stateObj = newVal;
       root.appendChild(stateCard);
     } else {

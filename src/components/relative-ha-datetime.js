@@ -6,7 +6,7 @@ const UPDATE_INTERVAL = 60000; // 60 seconds
 
 const { parseDateTime } = util;
 
-export default Polymer({
+export default new Polymer({
   is: 'relative-ha-datetime',
 
   properties: {
@@ -56,6 +56,6 @@ export default Polymer({
 
   updateRelative() {
     this.relativeTime = this.parsedDateTime ?
-      moment(this.parsedDateTime).fromNow() : "";
+      moment(this.parsedDateTime).fromNow() : '';
   },
 });

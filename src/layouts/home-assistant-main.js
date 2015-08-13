@@ -1,11 +1,7 @@
 import {
-  configGetters,
-  entityGetters,
   navigationGetters,
-  authActions,
-  navigationActions,
-  urlSync,
-  util
+  startUrlSync,
+  stopUrlSync,
 } from 'home-assistant-js';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
@@ -20,7 +16,7 @@ require('../layouts/partial-dev-set-state');
 require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
 
-export default Polymer({
+export default new Polymer({
   is: 'home-assistant-main',
 
   behaviors: [nuclearObserver],
@@ -71,19 +67,19 @@ export default Polymer({
     'open-menu': 'openDrawer',
   },
 
-  openDrawer: function() {
+  openDrawer() {
     this.$.drawer.openDrawer();
   },
 
-  activePageChanged: function() {
+  activePageChanged() {
     this.$.drawer.closeDrawer();
   },
 
-  attached: function() {
-    urlSync.startSync();
+  attached() {
+    startUrlSync();
   },
 
-  detached: function() {
-    urlSync.stopSync();
+  detached() {
+    stopUrlSync();
   },
 });

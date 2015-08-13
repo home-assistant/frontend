@@ -4,7 +4,7 @@ import Polymer from '../polymer';
 
 require('./state-card-content');
 
-export default Polymer({
+export default new Polymer({
   is: 'state-card',
 
   properties: {

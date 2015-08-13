@@ -2,7 +2,7 @@ import Polymer from '../polymer';
 
 require('../components/state-info');
 
-export default Polymer({
+export default new Polymer({
   is: 'state-card-thermostat',
 
   properties: {

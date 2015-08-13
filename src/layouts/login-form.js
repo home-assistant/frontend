@@ -5,7 +5,7 @@ import { authGetters } from 'home-assistant-js';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 import validateAuth from '../util/validate-auth';
 
-export default Polymer({
+export default new Polymer({
   is: 'login-form',
 
   behaviors: [nuclearObserver],
@@ -37,31 +37,31 @@ export default Polymer({
     'validatingChanged(isValidating, isInvalid)',
   ],
 
-  validatingChanged: function(isValidating, isInvalid) {
+  validatingChanged(isValidating, isInvalid) {
     if (!isValidating && !isInvalid) {
       this.$.passwordInput.value = '';
     }
   },
 
-  isValidatingChanged: function(newVal) {
+  isValidatingChanged(newVal) {
     if (!newVal) {
       this.async(() => this.$.passwordInput.focus(), 10);
     }
   },
 
-  passwordKeyDown: function(ev) {
+  passwordKeyDown(ev) {
     // validate on enter
-    if(ev.keyCode === 13) {
+    if (ev.keyCode === 13) {
       this.validatePassword();
       ev.preventDefault();
 
     // clear error after we start typing again
-    } else if(this.isInvalid) {
+    } else if (this.isInvalid) {
       this.isInvalid = false;
     }
   },
 
-  validatePassword: function() {
+  validatePassword() {
     this.$.hideKeyboardOnFocus.focus();
 
     validateAuth(this.$.passwordInput.value, this.$.rememberLogin.checked);

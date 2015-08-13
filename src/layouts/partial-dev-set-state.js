@@ -5,7 +5,7 @@ import Polymer from '../polymer';
 require('./partial-base');
 require('../components/entity-list');
 
-export default Polymer({
+export default new Polymer({
   is: 'partial-dev-set-state',
 
   properties: {
@@ -26,7 +26,7 @@ export default Polymer({
   },
 
   setStateData(stateData) {
-    var value = stateData ? JSON.stringify(stateData, null, '  ') : "";
+    const value = stateData ? JSON.stringify(stateData, null, '  ') : '';
 
     this.$.inputData.value = value;
 
@@ -35,7 +35,7 @@ export default Polymer({
   },
 
   entitySelected(ev) {
-    var state = reactor.evaluate(entityGetters.byId(ev.detail.entityId));
+    const state = reactor.evaluate(entityGetters.byId(ev.detail.entityId));
 
     this.entityId = state.entityId;
     this.state = state.state;
@@ -43,11 +43,13 @@ export default Polymer({
   },
 
   handleSetState() {
-    var attr;
+    let attr;
     try {
       attr = this.stateAttributes ? JSON.parse(this.stateAttributes) : {};
     } catch (err) {
-      alert("Error parsing JSON: " + err);
+      /* eslint-disable no-alert */
+      alert(`Error parsing JSON: ${err}`);
+      /* eslint-enable no-alert */
       return;
     }
 

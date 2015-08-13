@@ -2,7 +2,7 @@ import Polymer from '../polymer';
 
 require('../cards/state-card');
 
-Polymer({
+export default new Polymer({
   is: 'state-cards',
 
   properties: {
