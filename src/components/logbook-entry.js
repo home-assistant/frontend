@@ -1,4 +1,4 @@
-import { moreInfoActions } from 'home-assistant-js';
+import { moreInfoActions } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 

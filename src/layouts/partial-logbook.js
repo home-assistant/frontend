@@ -1,4 +1,4 @@
-import { logbookGetters, logbookActions } from 'home-assistant-js';
+import { logbookGetters, logbookActions } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';

@@ -1,12 +1,12 @@
 import {
   entityGetters,
   moreInfoGetters
-} from 'home-assistant-js';
+} from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
-require('../cards/state-card-content');
+require('../state-summary/state-card-content');
 
 export default new Polymer({
   is: 'more-info-group',

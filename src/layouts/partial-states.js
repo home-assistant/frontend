@@ -8,7 +8,7 @@ import {
   syncActions,
   voiceActions,
   util
-} from 'home-assistant-js';
+} from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';

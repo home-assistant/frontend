@@ -1,4 +1,4 @@
-import { util } from 'home-assistant-js';
+import { util } from '../util/home-assistant-js-instance';
 
 import formatTime from '../util/format-time';
 

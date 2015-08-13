@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-import { authGetters } from 'home-assistant-js';
+import { authGetters } from '../util/home-assistant-js-instance';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
 import validateAuth from '../util/validate-auth';

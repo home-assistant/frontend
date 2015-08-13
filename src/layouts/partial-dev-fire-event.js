@@ -1,4 +1,4 @@
-import { eventActions } from 'home-assistant-js';
+import { eventActions } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 

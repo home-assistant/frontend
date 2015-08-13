@@ -1,4 +1,4 @@
-import { serviceActions } from 'home-assistant-js';
+import { serviceActions } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';

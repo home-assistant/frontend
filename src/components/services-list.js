@@ -1,4 +1,4 @@
-import { serviceGetters } from 'home-assistant-js';
+import { serviceGetters } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';

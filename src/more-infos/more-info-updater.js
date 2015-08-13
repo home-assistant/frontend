@@ -1,4 +1,4 @@
-import { serviceActions } from 'home-assistant-js';
+import { serviceActions } from '../util/home-assistant-js-instance';
 
 export default new Polymer({
   is: 'more-info-updater',

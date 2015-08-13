@@ -4,12 +4,12 @@ import {
   entityHistoryActions,
   moreInfoGetters,
   moreInfoActions
-} from 'home-assistant-js';
+} from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
-require('../cards/state-card-content');
+require('../state-summary/state-card-content');
 require('../components/state-history-charts');
 require('../more-infos/more-info-content');
 

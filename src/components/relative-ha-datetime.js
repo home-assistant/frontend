@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { util } from 'home-assistant-js';
+import { util } from '../util/home-assistant-js-instance';
 import Polymer from '../polymer';
 
 const UPDATE_INTERVAL = 60000; // 60 seconds

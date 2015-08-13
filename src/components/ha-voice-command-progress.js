@@ -1,4 +1,4 @@
-import { voiceGetters } from 'home-assistant-js';
+import { voiceGetters } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
