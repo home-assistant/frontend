@@ -126,7 +126,7 @@ export default new Polymer({
     let timeIndex = 1;
     const endDate = new Date();
 
-    for (i = 0; i < times.length; i++) {
+    for (let i = 0; i < times.length; i++) {
       // because we only have state changes we add an extra point at the same time
       // that holds the previous state which makes the line display correctly
       const beforePoint = new Date(times[i]);

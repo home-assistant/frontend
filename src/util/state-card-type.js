@@ -1,4 +1,4 @@
-import { reactor, serviceGetters } from '../util/home-assistant-js-instance';
+import canToggle from './can-toggle';
 
 const DOMAINS_WITH_CARD = [
   'thermostat', 'configurator', 'scene', 'media_player'];
@@ -6,7 +6,7 @@ const DOMAINS_WITH_CARD = [
 export default function stateCardType(state) {
   if (DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {
     return state.domain;
-  } else if (reactor.evaluate(serviceGetters.canToggleEntity(state.entityId))) {
+  } else if (canToggle(state.entityId)) {
     return 'toggle';
   }
   return 'display';

@@ -14,11 +14,6 @@ export default function NuclearObserver(reactor) {
           this[key] = reactor.evaluate(getter);
 
           return unwatchFns.concat(reactor.observe(getter, (val) => {
-            if (__DEV__) {
-              /* eslint-disable no-console */
-              console.log(this, key, val);
-              /* eslint-enable no-console */
-            }
             this[key] = val;
           }));
         }, []);
