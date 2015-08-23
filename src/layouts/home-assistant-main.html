@@ -2,7 +2,7 @@
 <link rel='import' href='../../bower_components/layout/layout.html'>
 
 <link rel='import' href='../../bower_components/paper-drawer-panel/paper-drawer-panel.html'>
-<link rel='import' href='../layouts/partial-states.html'>
+<link rel='import' href='../layouts/partial-zone.html'>
 <link rel='import' href='../layouts/partial-logbook.html'>
 <link rel='import' href='../layouts/partial-history.html'>
 <link rel='import' href='../layouts/partial-dev-call-service.html'>
@@ -22,8 +22,7 @@
       <ha-sidebar drawer></ha-sidebar>
 
       <template is='dom-if' if='[[isSelectedStates]]'>
-        <partial-states main narrow='[[narrow]]'>
-        </partial-states>
+        <partial-zone main narrow='[[narrow]]'></partial-zone>
       </template>
       <template is='dom-if' if='[[isSelectedLogbook]]'>
         <partial-logbook main narrow='[[narrow]]'></partial-logbook>

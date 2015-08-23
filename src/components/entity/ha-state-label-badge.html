@@ -1,0 +1,32 @@
+<link rel='import' href='../../../bower_components/polymer/polymer.html'>
+
+<link rel='import' href='../ha-label-badge.html'>
+
+<dom-module id='ha-state-label-badge'>
+  <style>
+    :host {
+      cursor: pointer;
+    }
+
+    ha-label-badge {
+      --ha-label-badge-color: rgb(223, 76, 30);
+    }
+
+    .blue {
+      --ha-label-badge-color: #039be5; 
+    }
+
+    .grey {
+      --ha-label-badge-color: var(--paper-grey-500);
+    }
+  </style>
+  <template>
+    <ha-label-badge class$='[[computeClasses(state)]]'
+      value='[[computeValue(state)]]'
+      icon='[[computeIcon(state)]]'
+      image='[[computeImage(state)]]'
+      label='[[computeLabel(state)]]'
+      description='[[computeDescription(state)]]'
+    ></ha-label-badge>
+  </template>
+</dom-module>
