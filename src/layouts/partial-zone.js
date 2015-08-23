@@ -123,4 +123,8 @@ export default new Polymer({
       return 'ha-spin';
     }
   },
+
+  toggleMenu() {
+    this.fire('open-menu');
+  },
 });
