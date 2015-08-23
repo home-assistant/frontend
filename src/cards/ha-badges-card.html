@@ -1,0 +1,13 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel='import' href='../components/entity/ha-state-label-badge.html'>
+
+<dom-module id='ha-badges-card'>
+  <style>
+  </style>
+  <template>
+    <template is='dom-repeat' items='[[states]]'>
+      <ha-state-label-badge state='[[item]]'></ha-state-label-badge>
+    </template>
+  </template>
+</dom-module>

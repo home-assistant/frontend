@@ -1,26 +1,22 @@
 import {
   configGetters,
-  navigationGetters,
+  entityGetters,
   voiceGetters,
   streamGetters,
-  serviceGetters,
   syncGetters,
   syncActions,
   voiceActions,
-  util
 } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
-const { entityDomainFilters } = util;
-
 require('./partial-base');
-require('../components/state-cards');
 require('../components/ha-voice-command-progress');
+require('../components/ha-zone-cards');
 
 export default new Polymer({
-  is: 'partial-states',
+  is: 'partial-zone',
 
   behaviors: [nuclearObserver],
 
@@ -28,11 +24,6 @@ export default new Polymer({
     narrow: {
       type: Boolean,
       value: false,
-    },
-
-    filter: {
-      type: String,
-      bindNuclear: navigationGetters.activeFilter,
     },
 
     isFetching: {
@@ -69,15 +60,38 @@ export default new Polymer({
     },
 
     states: {
-      type: Array,
-      bindNuclear: [
-        navigationGetters.filteredStates,
-        // are here so a change to services causes a re-render.
-        // we need this to decide if we show toggles for states.
-        serviceGetters.entityMap,
-        (states) => states.toArray(),
-      ],
+      type: Object,
+      bindNuclear: entityGetters.visibleEntityMap,
     },
+
+    columns: {
+      type: Number,
+    },
+  },
+
+  created() {
+    this.windowChange = this.windowChange.bind(this);
+  },
+
+  attached() {
+    const sizes = [];
+    for (let i = 0; i < 4; i++) {
+      sizes.push(940 + i * 350);
+    }
+    this.mqls = sizes.map(width => {
+      const mql = window.matchMedia(`(min-width: ${width}px)`);
+      mql.addListener(this.windowChange);
+      return mql;
+    });
+    this.windowChange();
+  },
+
+  detached() {
+    this.mqls.forEach(mql => mql.removeListener(this.windowChange));
+  },
+
+  windowChange() {
+    this.columns = this.mqls.reduce((cols, mql) => cols + mql.matches, 1);
   },
 
   handleRefresh() {
@@ -92,8 +106,12 @@ export default new Polymer({
     }
   },
 
-  computeHeaderTitle(filter) {
-    return filter ? entityDomainFilters[filter] : 'States';
+  computeDomains(states) {
+    return states.keySeq().toArray();
+  },
+
+  computeStatesOfDomain(states, domain) {
+    return states.get(domain).toArray();
   },
 
   computeListenButtonIcon(isListening) {

@@ -1,0 +1,35 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel='import' href='../components/ha-card.html'>
+<link rel='import' href='../state-summary/state-card-content.html'>
+
+<dom-module id='ha-domain-card'>
+  <style>
+    .domain-title {
+      font-size: 24px;
+      padding: 24px 16px 16px;
+      border-bottom: 2px solid #E8E8E8;
+      text-transform: capitalize;
+    }
+    .states {
+      padding: 8px 0;
+    }
+    .state {
+      padding: 8px 16px;
+    }
+    state-card-content {
+      cursor: pointer;      
+    }
+  </style>
+  <template>
+    <ha-card title='[[computeDomainTitle(domain)]]'>
+      <div class='states'>
+        <template is='dom-repeat' items="[[states]]">
+          <div class='state'>
+            <state-card-content class="state-card" state-obj="[[item]]" on-tap='entityTapped'></state-card-content>
+          </div>
+        </template>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>

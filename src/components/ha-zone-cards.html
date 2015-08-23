@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../cards/ha-badges-card.html">
+<link rel="import" href="../cards/ha-domain-card.html">
+
+<dom-module id="ha-zone-cards">
+  <style>
+    :host {
+      display: block;
+      padding-right: 8px;
+    }
+
+    .badges {
+      margin-top: 8px;
+      margin-left: 8px;
+      font-size: 80%;
+      text-align: center;
+    }
+
+    .zone-card {
+      margin-left: 8px;
+      margin-bottom: 8px;
+    }
+  </style>
+
+  <template>
+    <div class='main'>
+      <template is='dom-if' if='domains.badges'>
+        <div class='badges'>
+          <ha-badges-card states='[[cards._badges]]'></ha-badges-card>
+        </div>
+      </template>
+      <div class='horizontal layout'>
+        <div class='column flex-1'>
+          <template is='dom-repeat' items='[[cards._columns.0]]'>
+            <div class='zone-card'>
+              <ha-domain-card domain='[[item]]'
+                states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
+            </div>
+          </template>
+        </div>
+        <template is='dom-if' if='[[cards._columns.1]]'>
+          <div class='column flex-1'>
+            <template is='dom-repeat' items='[[cards._columns.1]]'>
+              <div class='zone-card'>
+                <ha-domain-card domain='[[item]]'
+                  states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template is='dom-if' if='[[cards._columns.2]]'>
+          <div class='column flex-1'>
+            <template is='dom-repeat' items='[[cards._columns.2]]'>
+              <div class='zone-card'>
+                <ha-domain-card domain='[[item]]'
+                  states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
+              </div>
+            </template>
+          </div>
+        </template>
+        <template is='dom-if' if='[[cards._columns.3]]'>
+          <div class='column flex-1'>
+            <template is='dom-repeat' items='[[cards._columns.3]]'>
+              <div class='zone-card'>
+                <ha-domain-card domain='[[item]]'
+                  states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+  </template>
+
+</dom-module>

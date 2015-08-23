@@ -7,7 +7,7 @@ import {
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/ha-sidebar');
-require('../layouts/partial-states');
+require('../layouts/partial-zone');
 require('../layouts/partial-logbook');
 require('../layouts/partial-history');
 require('../layouts/partial-dev-call-service');
@@ -26,10 +26,10 @@ export default new Polymer({
       type: Boolean,
     },
 
-    activePage: {
+    activePane: {
       type: String,
-      bindNuclear: navigationGetters.activePage,
-      observer: 'activePageChanged',
+      bindNuclear: navigationGetters.activePane,
+      observer: 'activePaneChanged',
     },
 
     isSelectedStates: {
@@ -71,7 +71,7 @@ export default new Polymer({
     this.$.drawer.openDrawer();
   },
 
-  activePageChanged() {
+  activePaneChanged() {
     this.$.drawer.closeDrawer();
   },
 

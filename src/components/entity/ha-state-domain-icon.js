@@ -1,11 +1,11 @@
-import Polymer from '../polymer';
+import Polymer from '../../polymer';
 
-import xyBriToRgb from '../util/xybri-to-rgb';
+import xyBriToRgb from '../../util/xybri-to-rgb';
 
 require('./domain-icon');
 
 export default new Polymer({
-  is: 'state-badge',
+  is: 'ha-state-domain-icon',
 
   properties: {
     stateObj: {
