@@ -67,6 +67,8 @@ export default new Polymer({
     case 'scene':
     case 'script':
       return undefined;
+    case 'sensor':
+      return state.attributes.unit_of_measurement && state.state;
     default:
       return state.state;
     }
@@ -77,6 +79,8 @@ export default new Polymer({
     case 'scene':
     case 'script':
       return domainIcon(state.domain);
+    case 'sensor':
+      return !state.attributes.unit_of_measurement && domainIcon(state.domain);
     case 'sun':
       return state.state === 'above_horizon' ?
         'image:wb-sunny' : 'image:brightness-3';
@@ -99,6 +103,8 @@ export default new Polymer({
     case 'scene':
     case 'script':
       return state.domain;
+    case 'sensor':
+      return !state.attributes.unit_of_measurement && state.state;
     case 'device_tracker':
       return state.state === 'home' ? 'Home' : 'Away';
     default:
