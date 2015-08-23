@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('./state-badge');
+require('./entity/state-badge');
 require('./relative-ha-datetime');
 
 export default new Polymer({

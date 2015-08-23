@@ -2,15 +2,20 @@
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="./partial-base.html">
-<link rel="import" href="../components/state-cards.html">
 <link rel="import" href="../components/ha-voice-command-progress.html">
+<link rel="import" href="../components/ha-zone-cards.html">
 
-<dom-module id="partial-states">
+<dom-module id="partial-zone">
   <style>
+    .root {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
     .content-wrapper {
-      position: relative;
-      height: 100%;
+      overflow: scroll;
       background-color: #E5E5E5;
     }
 
@@ -31,10 +36,11 @@
   </style>
 
   <template>
-    <partial-base narrow="[[narrow]]">
-      <span header-title>[[computeHeaderTitle(filter)]]</span>
+    <div class='root layout vertical'>
+      <paper-toolbar>
+        <paper-icon-button icon='menu' hidden$='[[!narrow]]' on-click='toggleMenu'></paper-icon-button>
+        <div class='title'>States</div>
 
-      <span header-buttons>
         <paper-icon-button
           icon="refresh"
           class$="[[computeRefreshButtonClass(isFetching)]]"
@@ -44,25 +50,17 @@
           icon="[[computeListenButtonIcon(isListening)]]"
           hidden$='[[!canListen]]'
           on-click="handleListenClick"></paper-icon-button>
-      </span>
+      </paper-toolbar>
 
-      <div class='content-wrapper'>
+      <div class='content-wrapper flex'>
         <div class='listening' hidden$="[[!showListenInterface]]"
           on-click="handleListenClick">
           <ha-voice-command-progress></ha-voice-command-progress>
         </div>
 
-        <state-cards states="[[states]]">
-          <h3>Hi there!</h3>
-          <p>
-            It looks like we have nothing to show you right now. It could be that we have not yet discovered all your devices but it is more likely that you have not configured Home Assistant yet.
-          </p>
-          <p>
-            Please see the <a href='https://home-assistant.io/getting-started/' target='_blank'>Getting Started</a> section on how to setup your devices.
-          </p>
-        </state-cards>
+        <ha-zone-cards states='[[states]]' columns='[[columns]]'></ha-zone-cards>
       </div>
-    </partial-base>
+    </div>
   </template>
 
 </dom-module>

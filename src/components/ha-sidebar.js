@@ -3,16 +3,12 @@ import {
   navigationGetters,
   authActions,
   navigationActions,
-  util
 } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
-import domainIcon from '../util/domain-icon';
 
 require('./stream-status');
-
-const { entityDomainFilters } = util;
 
 export default new Polymer({
   is: 'ha-sidebar',
@@ -22,22 +18,12 @@ export default new Polymer({
   properties: {
     menuSelected: {
       type: String,
-      // observer: 'menuSelectedChanged',
     },
 
     selected: {
       type: String,
-      bindNuclear: navigationGetters.activePage,
+      bindNuclear: navigationGetters.activePane,
       observer: 'selectedChanged',
-    },
-
-    possibleFilters: {
-      type: Array,
-      value: [],
-      bindNuclear: [
-        navigationGetters.possibleEntityDomainFilters,
-        (domains) => domains.toArray(),
-      ],
     },
 
     hasHistoryComponent: {
@@ -51,16 +37,7 @@ export default new Polymer({
     },
   },
 
-  // menuSelectedChanged: function(newVal) {
-  //   if (this.selected !== newVal) {
-  //     this.selectPanel(newVal);
-  //   }
-  // },
-
   selectedChanged(newVal) {
-    // if (this.menuSelected !== newVal) {
-    //   this.menuSelected = newVal;
-    // }
     const menuItems = this.querySelectorAll('.menu [data-panel]');
 
     for (let i = 0; i < menuItems.length; i++) {
@@ -105,17 +82,5 @@ export default new Polymer({
 
   handleLogOut() {
     authActions.logOut();
-  },
-
-  filterIcon(filter) {
-    return domainIcon(filter);
-  },
-
-  filterName(filter) {
-    return entityDomainFilters[filter];
-  },
-
-  filterType(filter) {
-    return 'states/' + filter;
   },
 });
