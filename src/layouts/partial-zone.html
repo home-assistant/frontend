@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-
+<link rel="import" href="../../bower_components/paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../components/ha-voice-command-progress.html">
@@ -7,19 +7,12 @@
 
 <dom-module id="partial-zone">
   <style>
-    .root {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-    }
-    .content-wrapper {
-      overflow: scroll;
+    :host {
+      display: block;
       background-color: #E5E5E5;
     }
 
-    .content-wrapper ::content .listening {
+    .content .listening {
       position: absolute;
       top: 0;
       left: 0;
@@ -36,7 +29,7 @@
   </style>
 
   <template>
-    <div class='root layout vertical'>
+    <paper-header-panel mode="waterfall">
       <paper-toolbar>
         <paper-icon-button icon='menu' hidden$='[[!narrow]]' on-tap='toggleMenu'></paper-icon-button>
         <div class='title'>States</div>
@@ -52,7 +45,7 @@
           on-click="handleListenClick"></paper-icon-button>
       </paper-toolbar>
 
-      <div class='content-wrapper flex'>
+      <div class='content fit'>
         <div class='listening' hidden$="[[!showListenInterface]]"
           on-click="handleListenClick">
           <ha-voice-command-progress></ha-voice-command-progress>
@@ -60,7 +53,7 @@
 
         <ha-zone-cards states='[[states]]' columns='[[columns]]'></ha-zone-cards>
       </div>
-    </div>
+    </paper-header-panel>
   </template>
 
 </dom-module>
