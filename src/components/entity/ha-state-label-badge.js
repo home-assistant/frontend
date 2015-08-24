@@ -76,6 +76,8 @@ export default new Polymer({
 
   computeIcon(state) {
     switch (state.domain) {
+    case 'device_tracker':
+      return !state.attributes.entity_picture && domainIcon(state.domain);
     case 'scene':
     case 'script':
       return domainIcon(state.domain);
@@ -104,7 +106,7 @@ export default new Polymer({
     case 'script':
       return state.domain;
     case 'sensor':
-      return !state.attributes.unit_of_measurement && state.state;
+      return state.attributes.unit_of_measurement || state.state;
     case 'device_tracker':
       return state.state === 'home' ? 'Home' : 'Away';
     default:
