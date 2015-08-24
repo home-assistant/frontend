@@ -4,18 +4,14 @@
 
 <dom-module id="more-info-sun">
   <template>
-    <div class='data-entry layout justified horizontal' id='rising'>
-      <div class='key'>
-        Rising <relative-ha-datetime datetime-obj="[[risingDate]]"></relative-ha-datetime>
+    <template is='dom-repeat' items='[[computeOrder(risingDate, settingDate)]]'>
+      <div class='data-entry layout justified horizontal' id='rising'>
+        <div class='key'>
+          <span>[[itemCaption(item)]]</span>
+          <relative-ha-datetime datetime-obj="[[itemDate(item)]]"></relative-ha-datetime>
+        </div>
+        <div class='value'>[[itemValue(item)]]</div>
       </div>
-      <div class='value'>[[risingTime]]</div>
-    </div>
-
-    <div class='data-entry layout justified horizontal' id='setting'>
-      <div class='key'>
-        Setting <relative-ha-datetime datetime-obj="[[settingDate]]"></relative-ha-datetime>
-      </div>
-      <div class='value'>[[settingTime]]</div>
-    </div>
+    </template>
   </template>
 </dom-module>
