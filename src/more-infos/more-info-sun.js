@@ -10,39 +10,40 @@ export default new Polymer({
   properties: {
     stateObj: {
       type: Object,
-      observer: 'stateObjChanged',
     },
 
     risingDate: {
       type: Object,
+      computed: 'computeRising(stateObj)',
     },
 
     settingDate: {
       type: Object,
-    },
-
-    risingTime: {
-      type: String,
-    },
-
-    settingTime: {
-      type: String,
+      computed: 'computeSetting(stateObj)',
     },
   },
 
-  stateObjChanged() {
-    this.risingDate = parseDateTime(this.stateObj.attributes.next_rising);
-    this.risingTime = formatTime(this.risingDate);
+  computeRising(stateObj) {
+    return parseDateTime(stateObj.attributes.next_rising);
+  },
 
-    this.settingDate = parseDateTime(this.stateObj.attributes.next_setting);
-    this.settingTime = formatTime(this.settingDate);
+  computeSetting(stateObj) {
+    return parseDateTime(stateObj.attributes.next_setting);
+  },
 
-    const root = Polymer.dom(this);
+  computeOrder(risingDate, settingDate) {
+    return risingDate > settingDate ?  ['set', 'ris'] : ['ris', 'set'];
+  },
 
-    if (self.risingDate > self.settingDate) {
-      root.appendChild(this.$.rising);
-    } else {
-      root.appendChild(this.$.setting);
-    }
+  itemCaption(type) {
+    return type === 'ris' ? 'Rising ' : 'Setting ';
+  },
+
+  itemDate(type) {
+    return type === 'ris' ? this.risingDate : this.settingDate;
+  },
+
+  itemValue(type) {
+    return formatTime(this.itemDate(type));
   },
 });
