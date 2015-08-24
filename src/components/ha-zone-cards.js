@@ -74,7 +74,9 @@ export default new Polymer({
         if (domain === 'a') {
           cards._demo = true;
         } else if (getPriority(domain) < 10) {
-          cards._badges.push.apply(cards._badges, byDomain.get(domain).toArray());
+          cards._badges.push.apply(
+            cards._badges, byDomain.get(domain).sortBy(
+              entity => entity.entityDisplay).toArray());
         } else if (domain === 'group') {
           byDomain.get(domain).filter(st => !st.attributes.auto)
             .forEach(groupState => {
@@ -84,7 +86,8 @@ export default new Polymer({
             }
           );
         } else {
-          pushCard(domain, byDomain.get(domain).toArray());
+          pushCard(domain, byDomain.get(domain).sortBy(
+            entity => entity.entityDisplay).toArray());
         }
       }
     );
