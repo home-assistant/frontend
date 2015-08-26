@@ -25,4 +25,8 @@ export default new Polymer({
       observe: 'imageChanged',
     },
   },
+
+  computeClasses(value) {
+    return value && value.length > 5 ? 'value big' : 'value';
+  },
 });

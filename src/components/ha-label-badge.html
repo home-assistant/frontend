@@ -32,6 +32,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  .label-badge .value.big {
+    font-size: 70%;
+  }
   .label-badge .label {
     position: absolute;
     bottom: -1em;
@@ -70,7 +73,7 @@
   <template>
     <div class='badge-container'>
       <div class='label-badge' id='badge'>
-        <div class='value'>
+        <div class$='[[computeClasses(value)]]'>
           <template is='dom-if' if='[[icon]]'>
             <iron-icon icon='[[icon]]'></iron-icon>
           </template>
