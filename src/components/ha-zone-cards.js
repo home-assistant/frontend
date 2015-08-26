@@ -82,7 +82,7 @@ export default new Polymer({
             .forEach(groupState => {
               const entities = util.expandGroup(groupState, states);
               entities.forEach(entity => hasGroup[entity.entityId] = true);
-              pushCard(groupState.entityDisplay, entities, false);
+              pushCard(groupState.entityDisplay, entities.toArray(), false);
             }
           );
         } else {
