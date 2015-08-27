@@ -2,12 +2,17 @@
 
 <link rel="import" href="../cards/ha-badges-card.html">
 <link rel="import" href="../cards/ha-domain-card.html">
+<link rel="import" href="../cards/ha-introduction-card.html">
 
 <dom-module id="ha-zone-cards">
   <style>
     :host {
       display: block;
       padding-right: 8px;
+    }
+
+    .no-badges {
+      height: 8px;
     }
 
     .badges {
@@ -25,13 +30,21 @@
 
   <template>
     <div class='main'>
-      <template is='dom-if' if='domains.badges'>
+      <template is='dom-if' if='[[cards._badges]]'>
         <div class='badges'>
           <ha-badges-card states='[[cards._badges]]'></ha-badges-card>
         </div>
       </template>
+      <template is='dom-if' if='[[!cards._badges]]'>
+        <div class='no-badges'> </div>
+      </template>
       <div class='horizontal layout'>
         <div class='column flex-1'>
+          <template is='dom-if' if='[[showIntroduction]]'>
+            <div class='zone-card'>
+              <ha-introduction-card show-hide-instruction='[[computeShowHideInstruction(states)]]'></ha-introduction-card>
+            </div>
+          </template>
           <template is='dom-repeat' items='[[cards._columns.0]]'>
             <div class='zone-card'>
               <ha-domain-card domain='[[item]]'

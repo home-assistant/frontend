@@ -1,0 +1,47 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel='import' href='../components/ha-card.html'>
+
+<dom-module id='ha-introduction-card'>
+  <style>
+    :host {
+      font-size: 14px;
+    }
+    a {
+      color: var(--dark-primary-color);
+    }
+    ul {
+      margin: 8px;
+      padding-left: 16px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    .content {
+      padding: 0 16px 16px;
+    }
+  </style>
+  <template>
+    <ha-card header="Welcome to Home Assistant!">
+      <div class='content'>
+        Here are some resources to get started.
+        <ul>
+          <li><a href='https://home-assistant.io/getting-started/configuration.html' target='_blank'>
+            Configuring Home Assistant
+          </a></li>
+          <li><a href='https://home-assistant.io/components/' target='_blank'>
+            Available components
+          </a></li>
+          <li><a href='https://gitter.im/balloob/home-assistant' target='_blank'>
+            Chat room
+          </a></li>
+        </ul>
+        <template is='dom-if' if='[[showHideInstruction]]'>
+          To remove this card, edit your config in
+          <code>configuration.yaml</code> and disable the
+          <code>introduction</code> component.
+        </template>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>

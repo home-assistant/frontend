@@ -59,6 +59,11 @@ export default new Polymer({
       ],
     },
 
+    introductionLoaded: {
+      type: Boolean,
+      bindNuclear: configGetters.isComponentLoaded('introduction'),
+    },
+
     states: {
       type: Object,
       bindNuclear: entityGetters.visibleEntityMap,
@@ -122,6 +127,10 @@ export default new Polymer({
     if (isFetching) {
       return 'ha-spin';
     }
+  },
+
+  computeShowIntroduction(introductionLoaded, states) {
+    return introductionLoaded || states.size === 0;
   },
 
   toggleMenu() {
