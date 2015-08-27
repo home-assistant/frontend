@@ -1,8 +1,8 @@
 import Polymer from '../polymer';
 import { util } from '../util/home-assistant-js-instance';
 
-require('../cards/ha-domain-card');
 require('../cards/ha-badges-card');
+require('../cards/ha-domain-card');
 
 const PRIORITY = {
   a: -1,
