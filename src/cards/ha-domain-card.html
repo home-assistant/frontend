@@ -5,24 +5,18 @@
 
 <dom-module id='ha-domain-card'>
   <style>
-    .domain-title {
-      font-size: 24px;
-      padding: 24px 16px 16px;
-      border-bottom: 2px solid #E8E8E8;
-      text-transform: capitalize;
-    }
     .states {
-      padding: 8px 0;
+      padding-bottom: 16px;
     }
     .state {
       padding: 8px 16px;
     }
     state-card-content {
-      cursor: pointer;      
+      cursor: pointer;
     }
   </style>
   <template>
-    <ha-card title='[[computeDomainTitle(domain)]]'>
+    <ha-card header='[[computeDomainTitle(domain)]]'>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
           <div class='state'>
