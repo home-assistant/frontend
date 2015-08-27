@@ -3,6 +3,7 @@ import { util } from '../util/home-assistant-js-instance';
 
 require('../cards/ha-badges-card');
 require('../cards/ha-domain-card');
+require('../cards/ha-introduction-card');
 
 const PRIORITY = {
   a: -1,
@@ -30,6 +31,11 @@ export default new Polymer({
   is: 'ha-zone-cards',
 
   properties: {
+    showIntroduction: {
+      type: Boolean,
+      value: false,
+    },
+
     columns: {
       type: Number,
       value: 2,
@@ -92,6 +98,10 @@ export default new Polymer({
       }
     );
     return cards;
+  },
+
+  computeShowHideInstruction(states) {
+    return states.size > 0 && !__DEMO__;
   },
 
   computeStatesOfCard(cards, card) {

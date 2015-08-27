@@ -51,7 +51,9 @@
           <ha-voice-command-progress></ha-voice-command-progress>
         </div>
 
-        <ha-zone-cards states='[[states]]' columns='[[columns]]'></ha-zone-cards>
+        <ha-zone-cards
+          show-introduction='[[computeShowIntroduction(introductionLoaded, states)]]'
+          states='[[states]]' columns='[[columns]]'></ha-zone-cards>
       </div>
     </paper-header-panel>
   </template>
