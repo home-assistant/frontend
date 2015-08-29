@@ -17,7 +17,7 @@
     <ha-card header='[[computeDomainTitle(domain)]]'>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
-          <div class='state' on-tap='entityTapped'>
+          <div class='state' on-click='entityTapped'>
             <state-card-content class="state-card" state-obj="[[item]]"></state-card-content>
           </div>
         </template>
