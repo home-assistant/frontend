@@ -22,7 +22,7 @@ export default new Polymer({
 
   entityTapped(ev) {
     ev.stopPropagation();
-    const entityId = ev.currentTarget.stateObj.entityId;
+    const entityId = ev.model.item.entityId;
     this.async(() => moreInfoActions.selectEntity(entityId), 1);
   },
 });
