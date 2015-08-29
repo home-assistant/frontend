@@ -10,8 +10,6 @@
     }
     .state {
       padding: 8px 16px;
-    }
-    state-card-content {
       cursor: pointer;
     }
   </style>
@@ -19,8 +17,8 @@
     <ha-card header='[[computeDomainTitle(domain)]]'>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
-          <div class='state'>
-            <state-card-content class="state-card" state-obj="[[item]]" on-tap='entityTapped'></state-card-content>
+          <div class='state' on-tap='entityTapped'>
+            <state-card-content class="state-card" state-obj="[[item]]"></state-card-content>
           </div>
         </template>
       </div>
