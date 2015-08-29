@@ -14,7 +14,7 @@ require('../components/state-history-charts');
 require('../more-infos/more-info-content');
 
 // if you don't want the history component to show add the domain to this array
-const DOMAINS_WITH_NO_HISTORY = ['camera'];
+const DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator'];
 
 export default new Polymer({
   is: 'more-info-dialog',
