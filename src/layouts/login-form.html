@@ -41,6 +41,7 @@
     }
 
     #validatebox {
+      margin-top: 16px;
       text-align: center;
     }
 
@@ -50,32 +51,24 @@
   </style>
 
   <template>
-    <div class="layout horizontal center fit login" id="splash">
-      <div class="layout vertical center flex">
-
-        <img src="/static/favicon-192x192.png" />
-        <h1>Home Assistant</h1>
-
-        <a href="#" id="hideKeyboardOnFocus"></a>
-
-        <div class='interact'>
-          <div id='loginform' hidden$="[[isValidating]]">
-            <paper-input-container id="passwordDecorator" invalid="[[isInvalid]]">
-              <label>Password</label>
-              <input is="iron-input" type="password" id="passwordInput" />
-              <paper-input-error invalid="[[isInvalid]]">[[errorMessage]]</paper-input-error>
-            </paper-input-container>
-
-            <div class="layout horizontal center">
-              <paper-checkbox for id='rememberLogin'>Remember</paper-checkbox>
-              <paper-button id='loginButton'>Log In</paper-button>
-            </div>
+    <div class="layout vertical center center-center fit">
+      <img src="/static/splash.png" height="230" />
+      <a href="#" id="hideKeyboardOnFocus"></a>
+      <div class='interact'>
+        <div id='loginform' hidden$="[[isValidating]]">
+          <paper-input-container id="passwordDecorator" invalid="[[isInvalid]]">
+            <label>Password</label>
+            <input is="iron-input" type="password" id="passwordInput" />
+            <paper-input-error invalid="[[isInvalid]]">[[errorMessage]]</paper-input-error>
+          </paper-input-container>
+          <div class="layout horizontal center">
+            <paper-checkbox for id='rememberLogin'>Remember</paper-checkbox>
+            <paper-button id='loginButton'>Log In</paper-button>
           </div>
-
-          <div id="validatebox" hidden$="[[!isValidating]]">
-            <paper-spinner active="true"></paper-spinner><br />
-            <div class="validatemessage">Loading data…</div>
-          </div>
+        </div>
+        <div id="validatebox" hidden$="[[!isValidating]]">
+          <paper-spinner active="true"></paper-spinner><br />
+          <div class="validatemessage">Loading data</div>
         </div>
       </div>
     </div>

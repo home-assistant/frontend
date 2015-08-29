@@ -54,7 +54,6 @@ export default new Polymer({
     if (ev.keyCode === 13) {
       this.validatePassword();
       ev.preventDefault();
-
     // clear error after we start typing again
     } else if (this.isInvalid) {
       this.isInvalid = false;
