@@ -63,6 +63,13 @@ export default new Polymer({
       value: false,
       observer: 'dialogOpenChanged',
     },
+
+    _boundOnBackdropTap: {
+      type: Function,
+      value: function bindBackdropTap() {
+        return this._onBackdropTap.bind(this);
+      },
+    },
   },
 
   fetchHistoryData() {
@@ -93,8 +100,17 @@ export default new Polymer({
   },
 
   dialogOpenChanged(newVal) {
-    if (!newVal && this.stateObj) {
+    if (newVal) {
+      this.$.dialog.backdropElement.addEventListener('click',
+                                                     this._boundOnBackdropTap);
+    } else if (!newVal && this.stateObj) {
       moreInfoActions.deselectEntity();
     }
+  },
+
+  _onBackdropTap() {
+    this.$.dialog.backdropElement.removeEventListener('click',
+                                                      this._boundOnBackdropTap);
+    this.dialogOpen = false;
   },
 });
