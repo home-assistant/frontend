@@ -17,10 +17,10 @@
   <template>
     <notification-manager></notification-manager>
     <more-info-dialog></more-info-dialog>
-    <iron-media-query query="(max-width: 600px)" query-matches="{{narrow}}">
+    <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
     </iron-media-query>
 
-    <paper-drawer-panel id='drawer' force-narrow='[[computeForceNarrow(narrow, showSidebar)]]'>
+    <paper-drawer-panel id='drawer' force-narrow='[[computeForceNarrow(narrow, showSidebar)]]' responsive-width='0'>
       <ha-sidebar drawer></ha-sidebar>
 
       <template is='dom-if' if='[[isSelectedStates]]'>

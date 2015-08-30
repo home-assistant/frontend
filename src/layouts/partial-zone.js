@@ -72,6 +72,7 @@ export default new Polymer({
     showMenu: {
       type: Boolean,
       value: false,
+      observer: 'windowChange',
     },
 
     states: {
@@ -86,19 +87,15 @@ export default new Polymer({
 
   created() {
     this.windowChange = this.windowChange.bind(this);
-  },
-
-  attached() {
     const sizes = [];
-    for (let i = 0; i < 4; i++) {
-      sizes.push(940 + i * 350);
+    for (let i = 0; i < 5; i++) {
+      sizes.push(278 + i * 278);
     }
     this.mqls = sizes.map(width => {
       const mql = window.matchMedia(`(min-width: ${width}px)`);
       mql.addListener(this.windowChange);
       return mql;
     });
-    this.windowChange();
   },
 
   detached() {
@@ -106,7 +103,8 @@ export default new Polymer({
   },
 
   windowChange() {
-    this.columns = this.mqls.reduce((cols, mql) => cols + mql.matches, 1);
+    const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
+    this.columns = Math.max(1, matchColumns - this.showMenu);
   },
 
   handleRefresh() {
