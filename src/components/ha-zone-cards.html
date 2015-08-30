@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
+<link rel="import" href="./ha-demo-badge.html">
 <link rel="import" href="../cards/ha-badges-card.html">
 <link rel="import" href="../cards/ha-domain-card.html">
 <link rel="import" href="../cards/ha-introduction-card.html">
@@ -32,6 +33,10 @@
     <div class='main'>
       <template is='dom-if' if='[[cards._badges]]'>
         <div class='badges'>
+          <template is='dom-if' if='[[cards._demo]]'>
+            <ha-demo-badge></ha-demo-badge>
+          </template>
+
           <ha-badges-card states='[[cards._badges]]'></ha-badges-card>
         </div>
       </template>
@@ -40,9 +45,9 @@
       </template>
       <div class='horizontal layout'>
         <div class='column flex-1'>
-          <template is='dom-if' if='[[showIntroduction]]'>
+          <template is='dom-if' if='[[computeShowIntroduction(showIntroduction, cards)]]'>
             <div class='zone-card'>
-              <ha-introduction-card show-hide-instruction='[[computeShowHideInstruction(states)]]'></ha-introduction-card>
+              <ha-introduction-card show-hide-instruction='[[computeShowHideInstruction(states, cards)]]'></ha-introduction-card>
             </div>
           </template>
           <template is='dom-repeat' items='[[cards._columns.0]]'>

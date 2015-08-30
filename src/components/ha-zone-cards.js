@@ -1,6 +1,7 @@
 import Polymer from '../polymer';
 import { util } from '../util/home-assistant-js-instance';
 
+require('.//ha-demo-badge');
 require('../cards/ha-badges-card');
 require('../cards/ha-domain-card');
 require('../cards/ha-introduction-card');
@@ -113,8 +114,12 @@ export default new Polymer({
     return cards;
   },
 
-  computeShowHideInstruction(states) {
-    return states.size > 0 && !__DEMO__;
+  computeShowIntroduction(showIntroduction, cards) {
+    return showIntroduction || cards._demo;
+  },
+
+  computeShowHideInstruction(states, cards) {
+    return states.size > 0 && !__DEMO__ && !cards._demo;
   },
 
   computeStatesOfCard(cards, card) {
