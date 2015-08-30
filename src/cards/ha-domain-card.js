@@ -21,6 +21,9 @@ export default new Polymer({
   },
 
   entityTapped(ev) {
+    if (ev.target.classList.contains('paper-toggle-button')) {
+      return;
+    }
     ev.stopPropagation();
     const entityId = ev.model.item.entityId;
     this.async(() => moreInfoActions.selectEntity(entityId), 1);
