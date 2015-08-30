@@ -38,6 +38,11 @@ export default new Polymer({
 
     isLoadingHistoryData: {
       type: Boolean,
+      computed: 'computeIsLoadingHistoryData(_delayedDialogOpen, _isLoadingHistoryData)',
+    },
+
+    _isLoadingHistoryData: {
+      type: Boolean,
       bindNuclear: entityHistoryGetters.isLoadingEntityHistory,
     },
 
@@ -64,12 +69,27 @@ export default new Polymer({
       observer: 'dialogOpenChanged',
     },
 
+    _delayedDialogOpen: {
+      type: Boolean,
+      value: false,
+    },
+
     _boundOnBackdropTap: {
       type: Function,
       value: function bindBackdropTap() {
         return this._onBackdropTap.bind(this);
       },
     },
+  },
+
+  /**
+   * We depend on a delayed dialogOpen value to tell the chart component
+   * that the data is there. Otherwise the chart component will render
+   * before the dialog is attached to the screen and is unable to determine
+   * graph size resulting in scroll bars.
+   */
+  computeIsLoadingHistoryData(_delayedDialogOpen, _isLoadingHistoryData) {
+    return !_delayedDialogOpen || _isLoadingHistoryData;
   },
 
   fetchHistoryData() {
@@ -103,8 +123,10 @@ export default new Polymer({
     if (newVal) {
       this.$.dialog.backdropElement.addEventListener('click',
                                                      this._boundOnBackdropTap);
+      this.async(() => this._delayedDialogOpen = true, 10);
     } else if (!newVal && this.stateObj) {
       moreInfoActions.deselectEntity();
+      this._delayedDialogOpen = false;
     }
   },
 
