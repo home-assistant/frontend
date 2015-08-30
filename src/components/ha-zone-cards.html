@@ -31,7 +31,7 @@
 
   <template>
     <div class='main'>
-      <template is='dom-if' if='[[cards._badges]]'>
+      <template is='dom-if' if='[[cards._badges.length]]'>
         <div class='badges'>
           <template is='dom-if' if='[[cards._demo]]'>
             <ha-demo-badge></ha-demo-badge>
@@ -40,54 +40,29 @@
           <ha-badges-card states='[[cards._badges]]'></ha-badges-card>
         </div>
       </template>
-      <template is='dom-if' if='[[!cards._badges]]'>
+      <template is='dom-if' if='[[!cards._badges.length]]'>
         <div class='no-badges'> </div>
       </template>
       <div class='horizontal layout'>
-        <div class='column flex-1'>
-          <template is='dom-if' if='[[computeShowIntroduction(showIntroduction, cards)]]'>
-            <div class='zone-card'>
-              <ha-introduction-card show-hide-instruction='[[computeShowHideInstruction(states, cards)]]'></ha-introduction-card>
+        <template is='dom-repeat' items='[[cards._columns]]' as='column'>
+          <template is='dom-if'
+                    if='[[computeShouldRenderColumn(index, column)]]'>
+            <div class='column flex-1'>
+              <template is='dom-if' if='[[computeShowIntroduction(index, showIntroduction, cards)]]'>
+                <div class='zone-card'>
+                  <ha-introduction-card show-hide-instruction='[[computeShowHideInstruction(states, cards)]]'></ha-introduction-card>
+                </div>
+              </template>
+              <template is='dom-repeat' items='[[column]]' as='domain'>
+                <div class='zone-card'>
+                  <ha-domain-card domain='[[domain]]'
+                    states='[[computeStatesOfCard(cards, domain)]]'
+                  ></ha-domain-card>
+                </div>
+              </template>
             </div>
           </template>
-          <template is='dom-repeat' items='[[cards._columns.0]]'>
-            <div class='zone-card'>
-              <ha-domain-card domain='[[item]]'
-                states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
-            </div>
-          </template>
-        </div>
-        <template is='dom-if' if='[[cards._columns.1]]'>
-          <div class='column flex-1'>
-            <template is='dom-repeat' items='[[cards._columns.1]]'>
-              <div class='zone-card'>
-                <ha-domain-card domain='[[item]]'
-                  states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
-              </div>
-            </template>
-          </div>
         </template>
-        <template is='dom-if' if='[[cards._columns.2]]'>
-          <div class='column flex-1'>
-            <template is='dom-repeat' items='[[cards._columns.2]]'>
-              <div class='zone-card'>
-                <ha-domain-card domain='[[item]]'
-                  states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
-              </div>
-            </template>
-          </div>
-        </template>
-        <template is='dom-if' if='[[cards._columns.3]]'>
-          <div class='column flex-1'>
-            <template is='dom-repeat' items='[[cards._columns.3]]'>
-              <div class='zone-card'>
-                <ha-domain-card domain='[[item]]'
-                  states='[[computeStatesOfCard(cards, item)]]'></ha-domain-card>
-              </div>
-            </template>
-          </div>
-        </template>
-      </div>
     </div>
   </template>
 
