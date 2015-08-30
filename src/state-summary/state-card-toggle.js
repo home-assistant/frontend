@@ -23,10 +23,6 @@ export default new Polymer({
     this.forceStateChange();
   },
 
-  toggleTapped(ev) {
-    ev.stopPropagation();
-  },
-
   toggleChanged(ev) {
     const newVal = ev.target.checked;
 

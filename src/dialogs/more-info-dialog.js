@@ -106,8 +106,8 @@ export default new Polymer({
     }
 
     this.showHistoryComponent = (
-      DOMAINS_WITH_NO_HISTORY.indexOf(this.stateObj.domain) === -1 &&
-      this.hasHistoryComponent
+      this.hasHistoryComponent &&
+      DOMAINS_WITH_NO_HISTORY.indexOf(this.stateObj.domain) === -1
     );
 
     this.async(() => {
