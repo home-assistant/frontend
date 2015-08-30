@@ -14,6 +14,11 @@ export default new Polymer({
       value: false,
     },
 
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
     domain: {
       type: String,
       value: '',

@@ -1,9 +1,11 @@
 import Polymer from './polymer';
 
 import {
-  syncGetters,
   localStoragePreferences,
-  startLocalStoragePreferencesSync
+  navigationActions,
+  reactor,
+  startLocalStoragePreferencesSync,
+  syncGetters
 } from './util/home-assistant-js-instance';
 
 import nuclearObserver from './util/bound-nuclear-behavior';
@@ -32,17 +34,20 @@ export default new Polymer({
   },
 
   ready() {
+    reactor.batch(() => {
+      // if auth was given, tell the backend
+      if (this.auth) {
+        validateAuth(this.auth, false);
+      } else if (localStoragePreferences.authToken) {
+        validateAuth(localStoragePreferences.authToken, true);
+      }
+      navigationActions.showSidebar(localStoragePreferences.showSidebar);
+    });
+
+    startLocalStoragePreferencesSync();
+
     // remove the HTML init message
     const initMsg = document.getElementById('init');
     initMsg.parentElement.removeChild(initMsg);
-
-    // if auth was given, tell the backend
-    if (this.auth) {
-      validateAuth(this.auth, false);
-    } else if (localStoragePreferences.authToken) {
-      validateAuth(localStoragePreferences.authToken, true);
-    }
-
-    startLocalStoragePreferencesSync();
   },
 });

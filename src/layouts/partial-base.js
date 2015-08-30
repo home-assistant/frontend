@@ -8,6 +8,15 @@ export default new Polymer({
       type: Boolean,
       value: false,
     },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  computeMenuButtonClass(narrow, showMenu) {
+    return !narrow && showMenu ? 'invisible' : '';
   },
 
   toggleMenu() {

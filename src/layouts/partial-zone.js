@@ -64,6 +64,16 @@ export default new Polymer({
       bindNuclear: configGetters.isComponentLoaded('introduction'),
     },
 
+    locationName: {
+      type: String,
+      bindNuclear: configGetters.locationName,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
     states: {
       type: Object,
       bindNuclear: entityGetters.visibleEntityMap,
@@ -113,6 +123,10 @@ export default new Polymer({
 
   computeDomains(states) {
     return states.keySeq().toArray();
+  },
+
+  computeMenuButtonClass(narrow, showMenu) {
+    return !narrow && showMenu ? 'invisible' : '';
   },
 
   computeStatesOfDomain(states, domain) {

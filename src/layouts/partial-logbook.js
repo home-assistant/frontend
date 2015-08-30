@@ -18,6 +18,11 @@ export default new Polymer({
       value: false,
     },
 
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
     selectedDate: {
       type: String,
       bindNuclear: logbookGetters.currentDate,

@@ -9,6 +9,16 @@ export default new Polymer({
   is: 'partial-dev-set-state',
 
   properties: {
+    narrow: {
+      type: Boolean,
+      value: false,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
     entityId: {
       type: String,
       value: '',

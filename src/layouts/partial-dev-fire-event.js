@@ -9,6 +9,16 @@ export default new Polymer({
   is: 'partial-dev-fire-event',
 
   properties: {
+    narrow: {
+      type: Boolean,
+      value: false,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
     eventType: {
       type: String,
       value: '',
