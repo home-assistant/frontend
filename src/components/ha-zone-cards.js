@@ -59,7 +59,7 @@ export default new Polymer({
     const cards = {
       _demo: false,
       _badges: [],
-      _columns: {},
+      _columns: [],
     };
     for (let i = 0; i < columns; i++) { cards._columns[i] = []; }
 
@@ -114,8 +114,12 @@ export default new Polymer({
     return cards;
   },
 
-  computeShowIntroduction(showIntroduction, cards) {
-    return showIntroduction || cards._demo;
+  computeShouldRenderColumn(index, items) {
+    return index === 0 || items.length;
+  },
+
+  computeShowIntroduction(index, showIntroduction, cards) {
+    return index === 0 && (showIntroduction || cards._demo);
   },
 
   computeShowHideInstruction(states, cards) {
