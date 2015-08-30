@@ -1,7 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel='import' href='../../bower_components/layout/layout.html'>
-
 <link rel='import' href='../../bower_components/paper-drawer-panel/paper-drawer-panel.html'>
+<link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel='import' href='../layouts/partial-zone.html'>
 <link rel='import' href='../layouts/partial-logbook.html'>
 <link rel='import' href='../layouts/partial-history.html'>
@@ -17,27 +17,29 @@
   <template>
     <notification-manager></notification-manager>
     <more-info-dialog></more-info-dialog>
+    <iron-media-query query="(max-width: 600px)" query-matches="{{narrow}}">
+    </iron-media-query>
 
-    <paper-drawer-panel id='drawer' narrow='{{narrow}}'>
+    <paper-drawer-panel id='drawer' force-narrow='[[computeForceNarrow(narrow, showSidebar)]]'>
       <ha-sidebar drawer></ha-sidebar>
 
       <template is='dom-if' if='[[isSelectedStates]]'>
-        <partial-zone main narrow='[[narrow]]'></partial-zone>
+        <partial-zone main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-zone>
       </template>
       <template is='dom-if' if='[[isSelectedLogbook]]'>
-        <partial-logbook main narrow='[[narrow]]'></partial-logbook>
+        <partial-logbook main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-logbook>
       </template>
       <template is='dom-if' if='[[isSelectedHistory]]'>
-        <partial-history main narrow='[[narrow]]'></partial-history>
+        <partial-history main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-history>
       </template>
       <template is='dom-if' if='[[isSelectedDevService]]'>
-        <partial-dev-call-service main narrow='[[narrow]]'></partial-dev-call-service>
+        <partial-dev-call-service main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-dev-call-service>
       </template>
       <template is='dom-if' if='[[isSelectedDevEvent]]'>
-        <partial-dev-fire-event main narrow='[[narrow]]'></partial-dev-fire-event>
+        <partial-dev-fire-event main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-dev-fire-event>
       </template>
       <template is='dom-if' if='[[isSelectedDevState]]'>
-        <partial-dev-set-state main narrow='[[narrow]]'></partial-dev-set-state>
+        <partial-dev-set-state main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-dev-set-state>
       </template>
     </paper-drawer-panel>
 

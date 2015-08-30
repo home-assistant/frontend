@@ -16,6 +16,10 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    menuShown: {
+      type: Boolean,
+    },
+
     menuSelected: {
       type: String,
     },
@@ -68,6 +72,10 @@ export default new Polymer({
     // prevent it from highlighting first menu item
     document.activeElement.blur();
     this.menuClicked(ev);
+  },
+
+  toggleMenu() {
+    this.fire('close-menu');
   },
 
   selectPanel(newChoice) {

@@ -1,4 +1,5 @@
 import {
+  navigationActions,
   navigationGetters,
   startUrlSync,
   stopUrlSync,
@@ -24,6 +25,7 @@ export default new Polymer({
   properties: {
     narrow: {
       type: Boolean,
+      value: false,
     },
 
     activePane: {
@@ -61,22 +63,45 @@ export default new Polymer({
       type: Boolean,
       bindNuclear: navigationGetters.isActivePane('devService'),
     },
+
+    showSidebar: {
+      type: Boolean,
+      bindNuclear: navigationGetters.showSidebar,
+    },
   },
 
   listeners: {
-    'open-menu': 'openDrawer',
+    'open-menu': 'openMenu',
+    'close-menu': 'closeMenu',
   },
 
-  openDrawer() {
-    this.$.drawer.openDrawer();
+  openMenu() {
+    if (this.narrow) {
+      this.$.drawer.openDrawer();
+    } else {
+      navigationActions.showSidebar(true);
+    }
+  },
+
+  closeMenu() {
+    this.$.drawer.closeDrawer();
+    if (this.showSidebar) {
+      navigationActions.showSidebar(false);
+    }
   },
 
   activePaneChanged() {
-    this.$.drawer.closeDrawer();
+    if (this.narrow) {
+      this.$.drawer.closeDrawer();
+    }
   },
 
   attached() {
     startUrlSync();
+  },
+
+  computeForceNarrow(narrow, showSidebar) {
+    return narrow || !showSidebar;
   },
 
   detached() {

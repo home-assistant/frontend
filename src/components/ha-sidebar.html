@@ -13,15 +13,14 @@
 <dom-module id='ha-sidebar'>
   <style>
     .sidenav {
-      background: #fafafa;
-      box-shadow: 1px 0 1px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-
-      white-space: nowrap;
-
       -ms-user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
+    }
+
+    paper-toolbar {
+      --paper-toolbar-background: #fff;
+      --paper-toolbar-color: #000;
     }
 
     div.title {
@@ -30,15 +29,17 @@
 
     div.menu {
       color: var(--secondary-text-color);
-      background-color: #fafafa;
+      margin-top: 8px;
     }
 
     paper-icon-item {
       cursor: pointer;
+      font-weight: 500;
     }
 
     paper-icon-item.selected {
-      font-weight: bold;
+      color: var(--default-primary-color);
+      background-color: #f0f0f0;
     }
 
     paper-icon-item.logout {
@@ -52,6 +53,7 @@
     .text {
       padding: 16px;
       font-size: 14px;
+      font-weight: 500;
     }
 
     .dev-tools {
@@ -63,7 +65,7 @@
     <paper-header-panel mode='scroll' class='sidenav fit'>
       <paper-toolbar>
         <!-- forces paper toolbar to style title appropriate -->
-        <paper-icon-button hidden></paper-icon-button>
+        <paper-icon-button icon='menu' hidden$='[[!narrow]]' on-tap='toggleMenu'></paper-icon-button>
         <div class="title">Home Assistant</div>
       </paper-toolbar>
       <div class='menu'>

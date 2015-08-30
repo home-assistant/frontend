@@ -19,6 +19,11 @@ export default new Polymer({
       type: Boolean,
     },
 
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
     isDataLoaded: {
       type: Boolean,
       bindNuclear: entityHistoryGetters.hasDataForCurrentDate,

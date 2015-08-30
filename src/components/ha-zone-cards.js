@@ -6,14 +6,14 @@ require('../cards/ha-domain-card');
 require('../cards/ha-introduction-card');
 
 const PRIORITY = {
+  configurator: -20,
+  group: -10,
   a: -1,
   sun: 0,
   device_tracker: 1,
   sensor: 2,
   scene: 3,
   script: 4,
-  configurator: 10,
-  group: 20,
   thermostat: 40,
   media_player: 50,
   camera: 60,
@@ -23,8 +23,8 @@ function getPriority(domain) {
   return (domain in PRIORITY) ? PRIORITY[domain] : 30;
 }
 
-function entityDomainMap(entityMap) {
-  return entityMap.groupBy(entity => entity.domain);
+function entitySortBy(entity) {
+  return entity.entityDisplay.toLowerCase();
 }
 
 export default new Polymer({
@@ -47,12 +47,12 @@ export default new Polymer({
 
     cards: {
       type: Object,
-      computed: 'computeDomains(columns, states)',
+      computed: 'computeDomains(columns, states, showIntroduction)',
     },
   },
 
-  computeDomains(columns, states) {
-    const byDomain = entityDomainMap(states);
+  computeDomains(columns, states, showIntroduction) {
+    const byDomain = states.groupBy(entity => entity.domain);
     const hasGroup = {};
 
     const cards = {
@@ -62,38 +62,51 @@ export default new Polymer({
     };
     for (let i = 0; i < columns; i++) { cards._columns[i] = []; }
 
+    function filterGrouped(entities) {
+      return entities.filter(entity => !(entity.entityId in hasGroup));
+    }
+
     let index = 0;
-    function pushCard(name, entities, filterGrouped = true) {
-      const filtered = filterGrouped ?
-        entities.filter(entity => !(entity.entityId in hasGroup)) :
-        entities;
-      if (filtered.length === 0) {
+    function increaseIndex() {
+      const old = index;
+      index = (index + 1) % columns;
+      return old;
+    }
+    if (showIntroduction) {
+      increaseIndex();
+    }
+
+    function pushCard(name, entities) {
+      if (entities.length === 0) {
         return;
       }
-      cards._columns[index].push(name);
-      index = (index + 1) % columns;
-      cards[name] = filtered;
+      cards._columns[increaseIndex()].push(name);
+      cards[name] = entities;
     }
 
     byDomain.keySeq().sortBy(domain => getPriority(domain))
       .forEach(domain => {
         if (domain === 'a') {
           cards._demo = true;
-        } else if (getPriority(domain) < 10) {
+          return;
+        }
+
+        const priority = getPriority(domain);
+
+        if (priority >= 0 && priority < 10) {
           cards._badges.push.apply(
-            cards._badges, byDomain.get(domain).sortBy(
-              entity => entity.entityDisplay).toArray());
+            cards._badges, filterGrouped(byDomain.get(domain)).sortBy(
+              entitySortBy).toArray());
         } else if (domain === 'group') {
-          byDomain.get(domain).filter(st => !st.attributes.auto)
+          byDomain.get(domain).filter(st => !st.attributes.auto).sortBy(entitySortBy)
             .forEach(groupState => {
               const entities = util.expandGroup(groupState, states);
               entities.forEach(entity => hasGroup[entity.entityId] = true);
-              pushCard(groupState.entityDisplay, entities.toArray(), false);
+              pushCard(groupState.entityDisplay, entities.toArray());
             }
           );
         } else {
-          pushCard(domain, byDomain.get(domain).sortBy(
-            entity => entity.entityDisplay).toArray());
+          pushCard(domain, filterGrouped(byDomain.get(domain)).sortBy(entitySortBy).toArray());
         }
       }
     );
