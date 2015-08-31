@@ -22,7 +22,6 @@
     }
     .install {
       display: block;
-      white-space: pre;
       line-height: 1.5em;
       margin-top: 8px;
       margin-bottom: 16px;
@@ -33,8 +32,10 @@
       <div class='content'>
         <template is='dom-if' if='[[showInstallInstruction]]'>
           To install Home Assistant, run:<br />
-          <code class='install'>pip3 install homeassistant
-hass --open-ui</code>
+          <code class='install'>
+            pip3 install homeassistant<br />
+            hass --open-ui
+          </code>
         </template>
         Here are some resources to get started.
         <ul>
