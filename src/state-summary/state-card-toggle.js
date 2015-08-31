@@ -28,7 +28,7 @@ export default new Polymer({
 
     if (newVal && this.stateObj.state === 'off') {
       this.turn_on();
-    } else if (!newVal && this.stateObj.state === 'on') {
+    } else if (!newVal && this.stateObj.state !== 'off') {
       this.turn_off();
     }
   },
@@ -40,7 +40,7 @@ export default new Polymer({
   },
 
   updateToggle(stateObj) {
-    this.toggleChecked = stateObj && stateObj.state === 'on';
+    this.toggleChecked = stateObj && stateObj.state !== 'off';
   },
 
   forceStateChange() {
