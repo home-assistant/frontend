@@ -1,0 +1,45 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
+
+<dom-module id='more-info-alarm'>
+  <template>
+      <div class='layout horizontal'>
+          <paper-input value='[[entered_value]]' hidden='true'></paper-input>
+      </div>
+      <div>
+         <paper-dropdown-menu label="Your favourite pastry">
+	     <paper-menu class="dropdown-content">
+			    <paper-item>Croissant</paper-item>
+			        <paper-item>Donut</paper-item>
+				    <paper-item>Financier</paper-item>
+				        <paper-item>Madeleine</paper-item>
+					  </paper-menu>
+      </paper-dropdown-menu>
+      </div>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handle1Tap'>1</paper-button>
+        <paper-button on-tap='handle2Tap'>2</paper-button>
+        <paper-button on-tap='handle3Tap'>3</paper-button>
+      </div>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handle4Tap'>4</paper-button>
+        <paper-button on-tap='handle5Tap'>5</paper-button>
+        <paper-button on-tap='handle6Tap'>6</paper-button>
+      </div>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handle7Tap'>7</paper-button>
+        <paper-button on-tap='handle8Tap'>8</paper-button>
+        <paper-button on-tap='handle9Tap'>9</paper-button>
+      </div>
+       <div class='layout horizontal' style='center'>
+        <paper-button on-tap='handle0Tap'>0</paper-button>
+      </div>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handleDisarmTap'>D</paper-button>
+        <paper-button on-tap='handleHomeTap'>H</paper-button>
+        <paper-button on-tap='handleAwayTap'>A</paper-button>
+      </div>
+  </template>
+</dom-module>
