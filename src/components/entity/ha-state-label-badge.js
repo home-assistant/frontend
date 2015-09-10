@@ -108,7 +108,7 @@ export default new Polymer({
     case 'sensor':
       return state.attributes.unit_of_measurement || state.state;
     case 'device_tracker':
-      return state.state === 'home' ? 'Home' : 'Away';
+      return state.state === 'not_home' ? 'Away' : state.state;
     default:
       return state.attributes.unit_of_measurement;
     }
