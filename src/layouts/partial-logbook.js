@@ -43,7 +43,7 @@ export default new Polymer({
       type: Array,
       bindNuclear: [
         logbookGetters.currentEntries,
-        (entries) => entries.toArray(),
+        (entries) => entries.reverse().toArray(),
       ],
     },
 
