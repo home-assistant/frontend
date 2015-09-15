@@ -66,6 +66,7 @@ export default new Polymer({
     case 'sun':
     case 'scene':
     case 'script':
+    case 'alarm_control_panel':
       return undefined;
     case 'sensor':
       return state.attributes.unit_of_measurement && state.state;
@@ -76,6 +77,9 @@ export default new Polymer({
 
   computeIcon(state) {
     switch (state.domain) {
+    case 'alarm_control_panel':
+      return state.state === 'disarmed' ?
+        'icons:lock-open' : 'icons:lock';
     case 'device_tracker':
       return !state.attributes.entity_picture && domainIcon(state.domain);
     case 'scene':
@@ -109,6 +113,8 @@ export default new Polymer({
       return state.attributes.unit_of_measurement || state.state;
     case 'device_tracker':
       return state.state === 'home' ? 'Home' : 'Away';
+    case 'alarm_control_panel':
+      return state.state;
     default:
       return state.attributes.unit_of_measurement;
     }

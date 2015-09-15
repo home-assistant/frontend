@@ -6,37 +6,7 @@ import attributeClassNames from '../util/attribute-class-names';
 const ATTRIBUTE_CLASSES = [];
 
 export default new Polymer({
-  is: 'more-info-alarm',
-  handle0Tap(number) {
-    this.entered_code += '0';
-  },
-  handle1Tap(number) {
-    this.entered_code += '1';
-  },
-  handle2Tap(number) {
-    this.entered_code += '2';
-  },
-  handle3Tap(number) {
-    this.entered_code += '3';
-  },
-  handle4Tap(number) {
-    this.entered_code += '4';
-  },
-  handle5Tap(number) {
-    this.entered_code += '5';
-  },
-  handle6Tap(number) {
-    this.entered_code += '6';
-  },
-  handle7Tap(number) {
-    this.entered_code += '7';
-  },
-  handle8Tap(number) {
-    this.entered_code += '8';
-  },
-  handle9Tap(number) {
-    this.entered_code += '9';
-  },
+  is: 'more-info-alarm_control_panel',
   handleDisarmTap(number) {
     this.callService('alarm_disarm', {code: this.entered_code});
   },
@@ -52,10 +22,12 @@ export default new Polymer({
       value: '',
     },
   },
-
+  enteredCodeChanged(ev) {
+    this.entered_code = ev.target.value;
+  },
   callService(service, data) {
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;
-    serviceActions.callService('alarm', service, serviceData);
+    serviceActions.callService('alarm_control_panel', service, serviceData);
   },
 });
