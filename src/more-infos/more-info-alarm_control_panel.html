@@ -9,9 +9,9 @@
           <paper-input label='code' value='[[entered_code]]' pattern='[0-9]*' type='password' on-change='enteredCodeChanged'></paper-input>
       </div>
       <div class='layout horizontal'>
-        <paper-button on-tap='handleDisarmTap'>Disarm</paper-button>
-        <paper-button on-tap='handleHomeTap'>Arm Home</paper-button>
-        <paper-button on-tap='handleAwayTap'>Arm Away</paper-button>
+        <paper-button on-tap='handleDisarmTap' hidden$='[[!disarm_button_enabled]]'>Disarm</paper-button>
+        <paper-button on-tap='handleHomeTap' hidden$='[[!arm_home_button_enabled]]'>Arm Home</paper-button>
+        <paper-button on-tap='handleAwayTap' hidden$='[[!arm_away_button_enabled]]'>Arm Away</paper-button>
       </div>
   </template>
 </dom-module>
