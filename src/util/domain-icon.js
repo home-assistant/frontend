@@ -11,10 +11,16 @@ export default function domainIcon(domain, state) {
 
   case 'switch':
     return 'image:flash-on';
+    
+  case 'alarm_control_panel':
+    if (state && state === 'disarmed'){
+      return 'icons:lock-open';
+    }else{
+      return 'icons:lock';
+    }
 
   case 'media_player':
     let icon = 'hardware:cast';
-
     if (state && state !== 'off' && state !== 'idle') {
       icon += '-connected';
     }
