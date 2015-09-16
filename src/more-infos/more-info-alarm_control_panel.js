@@ -1,19 +1,16 @@
 import { serviceActions } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
-import attributeClassNames from '../util/attribute-class-names';
-
-const ATTRIBUTE_CLASSES = [];
 
 export default new Polymer({
   is: 'more-info-alarm_control_panel',
-  handleDisarmTap(number) {
+  handleDisarmTap() {
     this.callService('alarm_disarm', {code: this.entered_code});
   },
-  handleHomeTap(number) {
+  handleHomeTap() {
     this.callService('alarm_arm_home', {code: this.entered_code});
   },
-  handleAwayTap(number) {
+  handleAwayTap() {
     this.callService('alarm_arm_away', {code: this.entered_code});
   },
   properties: {

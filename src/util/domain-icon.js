@@ -11,13 +11,9 @@ export default function domainIcon(domain, state) {
 
   case 'switch':
     return 'image:flash-on';
-    
+
   case 'alarm_control_panel':
-    if (state && state === 'disarmed'){
-      return 'icons:lock-open';
-    }else{
-      return 'icons:lock';
-    }
+    return state && state === 'disarmed' ? 'icons:lock-open' : 'icons:lock';
 
   case 'media_player':
     let icon = 'hardware:cast';
