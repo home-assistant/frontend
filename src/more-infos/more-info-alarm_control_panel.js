@@ -40,7 +40,7 @@ export default new Polymer({
   },
   stateObjChanged(newVal) {
     if (newVal) {
-      this.disarm_button_enabled = newVal.state === 'armed_home' || newVal.state ==='armed_away';
+      this.disarm_button_enabled = newVal.state === 'armed_home' || newVal.state === 'armed_away';
       this.arm_home_button_enabled = newVal.state === 'disarmed';
       this.arm_away_button_enabled = newVal.state === 'disarmed';
     }
