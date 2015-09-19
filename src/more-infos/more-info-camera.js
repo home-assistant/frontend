@@ -18,7 +18,7 @@ export default new Polymer({
 
   computeCameraImageUrl(dialogOpen) {
     if (__DEMO__) {
-      return 'http://194.218.96.92/jpg/image.jpg';
+      return '/demo/webcam.jpg';
     } else if (dialogOpen) {
       return '/api/camera_proxy_stream/' + this.stateObj.entityId;
     }
