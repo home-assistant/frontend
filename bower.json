@@ -36,7 +36,8 @@
     "layout": "Polymer/layout",
     "paper-styles": "polymerelements/paper-styles#^1.0.11",
     "pikaday": "~1.3.3",
-    "iron-media-query": "polymerelements/iron-media-query#~1.0.2"
+    "iron-media-query": "polymerelements/iron-media-query#~1.0.2",
+    "leaflet-map": "~1.1.0"
   },
   "resolutions": {
     "polymer": "^1.0.0",

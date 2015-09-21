@@ -11,6 +11,7 @@ require('../components/ha-sidebar');
 require('../layouts/partial-zone');
 require('../layouts/partial-logbook');
 require('../layouts/partial-history');
+require('../layouts/partial-map');
 require('../layouts/partial-dev-call-service');
 require('../layouts/partial-dev-fire-event');
 require('../layouts/partial-dev-set-state');
@@ -42,6 +43,11 @@ export default new Polymer({
     isSelectedHistory: {
       type: Boolean,
       bindNuclear: navigationGetters.isActivePane('history'),
+    },
+
+    isSelectedMap: {
+      type: Boolean,
+      bindNuclear: navigationGetters.isActivePane('map'),
     },
 
     isSelectedLogbook: {

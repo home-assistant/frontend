@@ -1,0 +1,59 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../bower_components/paper-toolbar/paper-toolbar.html'>
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../bower_components/leaflet-map/leaflet-map.html">
+
+<link rel="import" href="../components/entity/ha-entity-marker.html">
+
+<style>
+  /* Otherwise they go through overlays. */
+  .leaflet-top, .leaflet-bottom {
+    z-index: 0;
+  }
+</style>
+
+<dom-module id="partial-map">
+  <style>
+    .map {
+      position: relative;
+    }
+  </style>
+  <template>
+    <div class='layout vertical fit'>
+      <paper-toolbar>
+          <paper-icon-button icon='menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>
+        <div class='title'>Map</div>
+      </paper-toolbar>
+
+      <div class="flex map">
+        <leaflet-map class="fit" fit-to-markers max-zoom="18">
+          <leaflet-divicon id="home" icon-height="45" icon-width="45">
+            <ha-entity-marker></ha-entity-marker>
+          </leaflet-divicon>
+
+          <leaflet-marker latitude="[[locationGPS.latitude]]" icon="home"
+            longitude="[[locationGPS.longitude]]" title="[[locationName]]"
+            ></leaflet-marker>
+
+          <template is='dom-repeat' items='[[locationEntities]]'>
+            <leaflet-divicon id="[[item.entityId]]" icon-height="45" icon-width="45">
+              <ha-entity-marker entity-id$="[[item.entityId]]"></ha-entity-marker>
+            </leaflet-divicon>
+
+            <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
+              longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
+              ></leaflet-marker>
+
+            <template is='dom-if' if='[[item.attributes.gps_accuracy]]'>
+              <leaflet-circle latitude="[[item.attributes.latitude]]"
+                longitude="[[item.attributes.longitude]]"
+                radius="[[item.attributes.gps_accuracy]]" color="#d00">
+              </leaflet-circle>
+            </template>
+          </template>
+        </leaflet-map>
+      </div>
+    </partial-base>
+  </template>
+</dom-module>

@@ -77,14 +77,12 @@ export default new Polymer({
 
   computeIcon(state) {
     switch (state.domain) {
-    case 'alarm_control_panel':
-      return state.state === 'disarmed' ?
-        'icons:lock-open' : 'icons:lock';
     case 'device_tracker':
       return !state.attributes.entity_picture && domainIcon(state.domain);
+    case 'alarm_control_panel':
     case 'scene':
     case 'script':
-      return domainIcon(state.domain);
+      return domainIcon(state.domain, state.state);
     case 'sensor':
       return !state.attributes.unit_of_measurement && domainIcon(state.domain);
     case 'sun':
