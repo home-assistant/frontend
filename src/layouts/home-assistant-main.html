@@ -5,6 +5,7 @@
 <link rel='import' href='../layouts/partial-zone.html'>
 <link rel='import' href='../layouts/partial-logbook.html'>
 <link rel='import' href='../layouts/partial-history.html'>
+<link rel='import' href='../layouts/partial-map.html'>
 <link rel='import' href='../layouts/partial-dev-call-service.html'>
 <link rel='import' href='../layouts/partial-dev-fire-event.html'>
 <link rel='import' href='../layouts/partial-dev-set-state.html'>
@@ -20,7 +21,10 @@
     <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
     </iron-media-query>
 
-    <paper-drawer-panel id='drawer' force-narrow='[[computeForceNarrow(narrow, showSidebar)]]' responsive-width='0'>
+    <paper-drawer-panel id='drawer'
+      force-narrow='[[computeForceNarrow(narrow, showSidebar)]]'
+      responsive-width='0' disable-swipe='[[isSelectedMap]]'
+      disable-edge-swipe='[[isSelectedMap]]'>
       <ha-sidebar drawer></ha-sidebar>
 
       <template is='dom-if' if='[[isSelectedStates]]'>
@@ -31,6 +35,9 @@
       </template>
       <template is='dom-if' if='[[isSelectedHistory]]'>
         <partial-history main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-history>
+      </template>
+      <template is='dom-if' if='[[isSelectedMap]]'>
+        <partial-map main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-map>
       </template>
       <template is='dom-if' if='[[isSelectedDevService]]'>
         <partial-dev-call-service main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-dev-call-service>
