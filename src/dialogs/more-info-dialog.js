@@ -3,7 +3,7 @@ import {
   entityHistoryGetters,
   entityHistoryActions,
   moreInfoGetters,
-  moreInfoActions
+  moreInfoActions,
 } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';

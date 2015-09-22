@@ -1,5 +1,5 @@
 {
-  "extends": "eslint-config-airbnb",
+  "extends": "airbnb",
   "globals": {
     "__DEV__": false,
     "__DEMO__": false

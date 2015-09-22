@@ -14,7 +14,7 @@ export default new Polymer({
   properties: {
     entityId: {
       type: String,
-      value: "",
+      value: '',
     },
 
     state: {

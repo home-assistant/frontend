@@ -1,7 +1,7 @@
 import {
   streamGetters,
   syncActions,
-  serviceActions
+  serviceActions,
 } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';

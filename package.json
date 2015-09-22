@@ -16,7 +16,7 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
   "dependencies": {
-    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#bb8bd7bd19cae511e43d4815191921c78c6f00fb",
+    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#ca8787e90e1176d46dba7fc26fad719ec61ef5be",
     "lodash": "^3.10.1",
     "moment": "^2.10.6"
   },
