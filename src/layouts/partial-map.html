@@ -30,7 +30,11 @@
       </paper-toolbar>
 
       <div class="flex map">
-        <leaflet-map class="fit" fit-to-markers max-zoom="18" id="map">
+        <leaflet-map class="fit" fit-to-markers id="map" max-zoom="17">
+          <leaflet-tilelayer detect-retina max-zoom="18"
+            url="http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png">
+            &copy; <a href="/copyright">OpenStreetMap contributors</a>. Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="https://developer.mapquest.com/content/osm/mq_logo.png">
+          </leaflet-tilelayer>
           <leaflet-divicon id="home" icon-height="45" icon-width="45">
             <ha-entity-marker></ha-entity-marker>
           </leaflet-divicon>
