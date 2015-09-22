@@ -1,6 +1,6 @@
 import {
   reactor,
-  serviceGetters
+  serviceGetters,
 } from '../util/home-assistant-js-instance';
 
 // Return boolean if entity can be toggled.

@@ -1,6 +1,6 @@
 import {
   entityHistoryGetters,
-  entityHistoryActions
+  entityHistoryActions,
 } from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';

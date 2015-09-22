@@ -5,7 +5,7 @@ import {
   navigationActions,
   reactor,
   startLocalStoragePreferencesSync,
-  syncGetters
+  syncGetters,
 } from './util/home-assistant-js-instance';
 
 import nuclearObserver from './util/bound-nuclear-behavior';
