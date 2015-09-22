@@ -44,11 +44,19 @@ export default new Polymer({
       type: Boolean,
       value: false,
     },
-
   },
 
   attached() {
-    window.el = this;
+    // On iPhone 5, 5s and some 6 I have observed that the user would be
+    // unable to pan on initial load. This fixes it.
+    if (L.Browser.mobileWebkit) {
+      this.async(() => {
+        const map = this.$.map;
+        const prev = map.style.display;
+        map.style.display = 'none';
+        this.async(() => { map.style.display = prev; }, 1);
+      }, 1);
+    }
   },
 
   computeMenuButtonClass(narrow, showMenu) {
