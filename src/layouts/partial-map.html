@@ -30,14 +30,14 @@
       </paper-toolbar>
 
       <div class="flex map">
-        <leaflet-map class="fit" fit-to-markers max-zoom="18">
+        <leaflet-map class="fit" fit-to-markers max-zoom="18" id="map">
           <leaflet-divicon id="home" icon-height="45" icon-width="45">
             <ha-entity-marker></ha-entity-marker>
           </leaflet-divicon>
 
           <leaflet-marker latitude="[[locationGPS.latitude]]" icon="home"
             longitude="[[locationGPS.longitude]]" title="[[locationName]]"
-            ></leaflet-marker>
+             no-clickable></leaflet-marker>
 
           <template is='dom-repeat' items='[[locationEntities]]'>
             <leaflet-divicon id="[[item.entityId]]" icon-height="45" icon-width="45">
@@ -50,8 +50,8 @@
 
             <template is='dom-if' if='[[item.attributes.gps_accuracy]]'>
               <leaflet-circle latitude="[[item.attributes.latitude]]"
-                longitude="[[item.attributes.longitude]]"
-                radius="[[item.attributes.gps_accuracy]]" color="#d00">
+                longitude="[[item.attributes.longitude]]" no-clickable
+                radius="[[item.attributes.gps_accuracy]]" fill color="#0288D1">
               </leaflet-circle>
             </template>
           </template>
