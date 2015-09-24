@@ -2,6 +2,7 @@ import Polymer from '../polymer';
 import { moreInfoActions } from '../util/home-assistant-js-instance';
 
 require('../components/ha-card');
+require('../components/entity/ha-entity-toggle');
 require('../state-summary/state-card-content');
 
 export default new Polymer({
@@ -13,6 +14,9 @@ export default new Polymer({
     },
     states: {
       type: Array,
+    },
+    groupEntity: {
+      type: Object,
     },
   },
 

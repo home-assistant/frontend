@@ -78,12 +78,12 @@ export default new Polymer({
       increaseIndex();
     }
 
-    function pushCard(name, entities) {
+    function pushCard(name, entities, groupEntity = false) {
       if (entities.length === 0) {
         return;
       }
       cards._columns[increaseIndex()].push(name);
-      cards[name] = entities;
+      cards[name] = {entities, groupEntity};
     }
 
     byDomain.keySeq().sortBy(domain => getPriority(domain))
@@ -104,7 +104,7 @@ export default new Polymer({
             .forEach(groupState => {
               const entities = util.expandGroup(groupState, states);
               entities.forEach(entity => hasGroup[entity.entityId] = true);
-              pushCard(groupState.entityDisplay, entities.toArray());
+              pushCard(groupState.entityDisplay, entities.toArray(), groupState);
             }
           );
         } else {
@@ -127,7 +127,11 @@ export default new Polymer({
     return states.size > 0 && !__DEMO__ && !cards._demo;
   },
 
+  computeGroupEntityOfCard(cards, card) {
+    return cards[card].groupEntity;
+  },
+
   computeStatesOfCard(cards, card) {
-    return cards[card];
+    return cards[card].entities;
   },
 });
