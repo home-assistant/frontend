@@ -52,11 +52,11 @@ export default new Polymer({
     },
   },
   validate_code(code) {
-    if(this.code_format == null){
+    const re = new RegExp(this.code_format);
+    if (this.code_format === null) {
       this.code_valid = true;
       return;
     }
-    var re = new RegExp(this.code_format);
     this.code_valid = re.test(code);
   },
   entered_code_changed(ev) {
@@ -66,7 +66,7 @@ export default new Polymer({
     if (newVal) {
       this.code_format = newVal.attributes.code_format;
       this.validate_code(this.entered_code);
-      this.code_input_visible = newVal.attributes.code_format != null;
+      this.code_input_visible = newVal.attributes.code_format !== null;
       this.code_input_enabled = (newVal.state === 'armed_home' || newVal.state === 'armed_away' || newVal.state === 'disarmed');
       this.disarm_button_enabled = (newVal.state === 'armed_home' || newVal.state === 'armed_away');
       this.arm_home_button_enabled = newVal.state === 'disarmed';
