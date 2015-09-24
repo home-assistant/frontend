@@ -30,7 +30,7 @@
     <ha-card>
       <div class='header horizontal layout center'>
         <div class='flex name'>[[computeDomainTitle(domain)]]</div>
-        <template is='dom-if' if='[[groupEntity]]'>
+        <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
           <ha-entity-toggle state-obj='[[groupEntity]]'></ha-entity-toggle>
         </template>
       </div>
