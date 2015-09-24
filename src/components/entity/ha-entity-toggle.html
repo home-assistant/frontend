@@ -2,6 +2,11 @@
 <link rel="import" href="../../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <dom-module id="ha-entity-toggle">
+  <style>
+    paper-toggle-button {
+      cursor: pointer;
+    }
+  </style>
   <template>
     <paper-toggle-button class='self-center'
       checked="[[toggleChecked]]"
