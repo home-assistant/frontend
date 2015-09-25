@@ -31,6 +31,11 @@ export default new Polymer({
       type: Object,
       computed: 'computeImage(state)',
     },
+
+    value: {
+      type: String,
+      computed: 'computeValue(state)',
+    },
   },
 
   listeners: {
@@ -49,13 +54,15 @@ export default new Polymer({
   },
 
   computeIcon(state) {
-    return state ?
-      !state.attributes.entity_picture && domainIcon(state.domain) :
-      'home';
+    return !state && 'home';
   },
 
   computeImage(state) {
     return state && state.attributes.entity_picture;
   },
 
+  computeValue(state) {
+    return state &&
+      state.entityDisplay.split(' ').map(part => part.substr(0, 1)).join('');
+  },
 });
