@@ -5,72 +5,72 @@ import Polymer from '../polymer';
 export default new Polymer({
   is: 'more-info-alarm_control_panel',
   handleDisarmTap() {
-    this.callService('alarm_disarm', {code: this.entered_code});
+    this.callService('alarm_disarm', {code: this.enteredCode});
   },
   handleHomeTap() {
-    this.callService('alarm_arm_home', {code: this.entered_code});
+    this.callService('alarm_arm_home', {code: this.enteredCode});
   },
   handleAwayTap() {
-    this.callService('alarm_arm_away', {code: this.entered_code});
+    this.callService('alarm_arm_away', {code: this.enteredCode});
   },
   properties: {
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
     },
-    entered_code: {
+    enteredCode: {
       type: String,
       value: '',
     },
-    disarm_button_enabled: {
+    disarmButtonVisible: {
       type: Boolean,
       value: false,
     },
-    arm_home_button_enabled: {
+    armHomeButtonVisible: {
       type: Boolean,
       value: false,
     },
-    arm_away_button_enabled: {
+    armAwayButtonVisible: {
       type: Boolean,
       value: false,
     },
-    code_input_visible: {
+    codeInputVisible: {
       type: Boolean,
       value: false,
     },
-    code_input_enabled: {
+    codeInputEnabled: {
       type: Boolean,
       value: false,
     },
-    code_format: {
+    codeFormat: {
       type: String,
       value: '',
     },
-    code_valid: {
+    codeValid: {
       type: Boolean,
-      value: false,
+      computed: 'validateCode(enteredCode, codeFormat)',
     },
   },
-  validate_code(code) {
-    const re = new RegExp(this.code_format);
-    if (this.code_format === null) {
-      this.code_valid = true;
-      return;
+  validateCode: function(code, format) {
+    const re = new RegExp(format);
+    if (format === null) {
+      return true;
     }
-    this.code_valid = re.test(code);
-  },
-  entered_code_changed(ev) {
-    this.validate_code(ev.target.value);
+    return re.test(code);
   },
   stateObjChanged(newVal) {
     if (newVal) {
-      this.code_format = newVal.attributes.code_format;
-      this.validate_code(this.entered_code);
-      this.code_input_visible = newVal.attributes.code_format !== null;
-      this.code_input_enabled = (newVal.state === 'armed_home' || newVal.state === 'armed_away' || newVal.state === 'disarmed');
-      this.disarm_button_enabled = (newVal.state === 'armed_home' || newVal.state === 'armed_away');
-      this.arm_home_button_enabled = newVal.state === 'disarmed';
-      this.arm_away_button_enabled = newVal.state === 'disarmed';
+      this.codeFormat = newVal.attributes.code_format;
+      this.codeInputVisible = this.codeFormat !== null;
+      this.codeInputEnabled = (
+        newVal.state === 'armed_home' ||
+	newVal.state === 'armed_away' ||
+	newVal.state === 'disarmed');
+      this.disarmButtonVisible = (
+	newVal.state === 'armed_home' ||
+	newVal.state === 'armed_away');
+      this.armHomeButtonVisible = newVal.state === 'disarmed';
+      this.armAwayButtonVisible = newVal.state === 'disarmed';
     }
     this.async(() => this.fire('iron-resize'), 500);
   },
