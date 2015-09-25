@@ -4,7 +4,6 @@ import {
   entityGetters,
   moreInfoActions,
 } from '../../util/home-assistant-js-instance';
-import domainIcon from '../../util/domain-icon';
 
 require('../../components/ha-label-badge');
 
