@@ -78,7 +78,6 @@ export default new Polymer({
   computeIcon(state) {
     switch (state.domain) {
     case 'device_tracker':
-      return !state.attributes.entity_picture && domainIcon(state.domain);
     case 'alarm_control_panel':
     case 'scene':
     case 'script':
@@ -94,12 +93,7 @@ export default new Polymer({
   },
 
   computeImage(state) {
-    switch (state.domain) {
-    case 'device_tracker':
-      return state.attributes.entity_picture;
-    default:
-      return undefined;
-    }
+    return state.attributes.entity_picture;
   },
 
   computeLabel(state) {
