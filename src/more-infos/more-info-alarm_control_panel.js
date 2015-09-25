@@ -51,7 +51,7 @@ export default new Polymer({
       computed: 'validateCode(enteredCode, codeFormat)',
     },
   },
-  validateCode: function(code, format) {
+  validateCode(code, format) {
     const re = new RegExp(format);
     if (format === null) {
       return true;
