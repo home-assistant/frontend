@@ -1,4 +1,8 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
+import {
+  reactor,
+  serviceActions,
+  serviceGetters,
+} from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
@@ -33,6 +37,20 @@ export default new Polymer({
       type: String,
       value: '',
     },
+
+    description: {
+      type: String,
+      computed: 'computeDescription(domain, service)',
+    },
+  },
+
+  computeDescription(domain, service) {
+    return reactor.evaluate([
+      serviceGetters.entityMap,
+      map => map.has(domain) && map.get(domain).get('services').has(service) ?
+             JSON.stringify(map.get(domain).get('services').get(service).toJS(), null, 2) :
+             'No description available',
+    ]);
   },
 
   serviceSelected(ev) {

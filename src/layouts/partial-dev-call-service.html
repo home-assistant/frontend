@@ -18,6 +18,11 @@
     .ha-form {
       margin-right: 16px;
     }
+
+    .description {
+      margin-top: 24px;
+      white-space: pre-wrap;
+    }
   </style>
   <template>
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
@@ -29,13 +34,15 @@
         </p>
 
         <div class$='[[computeFormClasses(narrow)]]'>
-          <div class='ha-form flex'>
-            <paper-input label="Domain" autofocus value='{{domain}}'></paper-input>
-            <paper-input label="Service" value='{{service}}'></paper-input>
-            <paper-textarea label="Service Data (JSON, optional)" value='{{serviceData}}'></paper-textarea>
-            <paper-button on-click='callService' raised>Call Service</paper-button>
+          <div class='layout vertical flex'>
+            <div class='ha-form'>
+              <paper-input label="Domain" autofocus value='{{domain}}'></paper-input>
+              <paper-input label="Service" value='{{service}}'></paper-input>
+              <paper-textarea label="Service Data (JSON, optional)" value='{{serviceData}}'></paper-textarea>
+              <paper-button on-click='callService' raised>Call Service</paper-button>
+            </div>
+            <div class='description'>[[description]]</div>
           </div>
-
           <div>
             <h4>Available services:</h4>
             <services-list on-service-selected='serviceSelected'></services-list>

@@ -23,10 +23,10 @@
 
   <template>
     <ul>
-      <template is='dom-repeat' items="[[serviceDomains]]" as="domain">
-          <template is='dom-repeat' items="[[domain.services]]" as="service">
+      <template is='dom-repeat' items="[[computeDomains(serviceDomains)]]" as="domain">
+          <template is='dom-repeat' items="[[computeServices(serviceDomains, domain)]]" as="service">
             <li><a href='#' on-click='serviceClicked'>
-              <span>[[domain.domain]]</span>/<span>[[service]]</span>
+              <span>[[domain]]</span>/<span>[[service]]</span>
             </a></li>
           </template>
       </template>
