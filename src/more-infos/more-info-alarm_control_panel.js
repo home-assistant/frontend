@@ -65,10 +65,14 @@ export default new Polymer({
       this.codeInputEnabled = (
         newVal.state === 'armed_home' ||
 	newVal.state === 'armed_away' ||
-	newVal.state === 'disarmed');
+	newVal.state === 'disarmed' ||
+	newVal.state === 'pending' ||
+	newVal.state === 'triggered');
       this.disarmButtonVisible = (
 	newVal.state === 'armed_home' ||
-	newVal.state === 'armed_away');
+	newVal.state === 'armed_away' ||
+	newVal.state === 'pending' ||
+	newVal.state === 'triggered');
       this.armHomeButtonVisible = newVal.state === 'disarmed';
       this.armAwayButtonVisible = newVal.state === 'disarmed';
     }
