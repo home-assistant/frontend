@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel='import' href='../../bower_components/paper-toolbar/paper-toolbar.html'>
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 
 <link rel="import" href="../../bower_components/leaflet-map/leaflet-map.html">
 
@@ -35,13 +36,24 @@
             url="http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png">
             &copy; <a href="/copyright">OpenStreetMap contributors</a>. Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="https://developer.mapquest.com/content/osm/mq_logo.png">
           </leaflet-tilelayer>
-          <leaflet-divicon id="home" icon-height="45" icon-width="45">
-            <ha-entity-marker></ha-entity-marker>
-          </leaflet-divicon>
 
-          <leaflet-marker latitude="[[locationGPS.latitude]]" icon="home"
-            longitude="[[locationGPS.longitude]]" title="[[locationName]]"
-             no-clickable></leaflet-marker>
+          <template is='dom-repeat' items='[[zoneEntities]]'>
+            <leaflet-divicon id="[[item.entityId]]" icon-width="24" icon-height="24">
+              <template is='dom-if' if='[[item.attributes.icon]]'>
+                <iron-icon icon$='[[item.attributes.icon]]'></iron-icon>
+              </template>
+              <template is='dom-if' if='[[!item.attributes.icon]]'>[[item.entityDisplay]]</template>
+            </leaflet-divicon>
+
+            <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
+              longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
+              no-clickable></leaflet-marker>
+
+            <leaflet-circle latitude="[[item.attributes.latitude]]"
+              longitude="[[item.attributes.longitude]]" no-clickable
+              radius="[[item.attributes.radius]]" fill color="#FF9800">
+            </leaflet-circle>
+          </template>
 
           <template is='dom-repeat' items='[[locationEntities]]'>
             <leaflet-divicon id="[[item.entityId]]" icon-height="45" icon-width="45">

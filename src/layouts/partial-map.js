@@ -36,6 +36,15 @@ export default new Polymer({
       ],
     },
 
+    zoneEntities: {
+      type: Array,
+      bindNuclear: [
+        entityGetters.entityMap,
+        entities => entities.valueSeq()
+          .filter(entity => entity.domain == 'zone').toArray(),
+      ],
+    },
+
     narrow: {
       type: Boolean,
     },
