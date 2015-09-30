@@ -41,7 +41,7 @@ export default new Polymer({
       bindNuclear: [
         entityGetters.entityMap,
         entities => entities.valueSeq()
-          .filter(entity => entity.domain == 'zone').toArray(),
+          .filter(entity => entity.domain === 'zone').toArray(),
       ],
     },
 
