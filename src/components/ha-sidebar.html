@@ -74,6 +74,11 @@
           <iron-icon item-icon icon='apps'></iron-icon> States
         </paper-icon-item>
 
+        <paper-icon-item on-click='menuClicked' data-panel='map'>
+          <iron-icon item-icon icon='maps:person-pin'></iron-icon>
+          Map
+        </paper-icon-item>
+
         <template is='dom-if' if='[[hasHistoryComponent]]'>
           <paper-icon-item on-click='menuClicked' data-panel='history'>
             <iron-icon item-icon icon='assessment'></iron-icon>
@@ -87,11 +92,6 @@
             Logbook
           </paper-icon-item>
         </template>
-
-        <paper-icon-item on-click='menuClicked' data-panel='map'>
-          <iron-icon item-icon icon='maps:person-pin'></iron-icon>
-          Map
-        </paper-icon-item>
 
         <paper-icon-item on-click='menuClicked' data-panel='logout' class='logout'>
           <iron-icon item-icon icon='exit-to-app'></iron-icon>
