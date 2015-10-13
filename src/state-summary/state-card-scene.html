@@ -1,15 +1,22 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="./state-card-display.html">
-<link rel="import" href="./state-card-toggle.html">
+<link rel="import" href="../components/state-info.html">
 
 <dom-module id="state-card-scene">
+  <style>
+    paper-icon-button {
+      border: 1px solid;
+      border-radius: 50%;
+      color: var(--default-primary-color);
+      line-height: 24px;
+    }
+  </style>
+
   <template>
-    <template is='dom-if' if='[[allowToggle]]'>
-      <state-card-toggle state-obj="[[stateObj]]"></state-card-toggle>
-    </template>
-    <template is='dom-if' if='[[!allowToggle]]'>
-      <state-card-display state-obj="[[stateObj]]"></state-card-display>
-    </template>
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]"></state-info>
+      <paper-icon-button on-tap='activateScene' icon='av:play-arrow'></paper-icon-button>
+    </div>
   </template>
 </dom-module>

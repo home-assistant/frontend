@@ -28,11 +28,8 @@ export default new Polymer({
       this.async(() => moreInfoActions.selectEntity(this.state.entityId), 1);
       return;
     }
-    if (this.state.domain === 'scene' && this.state.state === 'on' &&
-        !this.state.attributes.active_requested) {
-      // Scenes that are on but by virtue of other events then itself
-      // being turned on cannot be turned off.
-      return;
+    if (this.state.domain === 'scene') {
+      serviceActions.callTurnOn(this.state.entityId);
     } else if (this.state.state === 'off') {
       serviceActions.callTurnOn(this.state.entityId);
     } else {
@@ -43,6 +40,7 @@ export default new Polymer({
   computeClasses(state) {
     switch (state.domain) {
     case 'scene':
+      return 'green';
     case 'script':
       return state.state === 'on' ? 'blue' : 'grey';
     default:

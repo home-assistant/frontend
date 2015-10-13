@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
+import { serviceActions } from '../util/home-assistant-js-instance';
 
-require('./state-card-display');
-require('./state-card-toggle');
+require('../components/state-info.js');
 
 export default new Polymer({
   is: 'state-card-scene',
@@ -10,15 +10,11 @@ export default new Polymer({
     stateObj: {
       type: Object,
     },
-
-    allowToggle: {
-      type: Boolean,
-      value: false,
-      computed: 'computeAllowToggle(stateObj)',
-    },
   },
 
-  computeAllowToggle(stateObj) {
-    return stateObj.state === 'off' || stateObj.attributes.active_requested;
+  activateScene(ev) {
+    // ev.preventDefault();
+    // ev.stopPropagation();
+    serviceActions.callTurnOn(this.stateObj.entityId);
   },
 });
