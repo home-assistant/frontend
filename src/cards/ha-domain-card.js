@@ -26,7 +26,8 @@ export default new Polymer({
   },
 
   entityTapped(ev) {
-    if (ev.target.classList.contains('paper-toggle-button')) {
+    if (ev.target.classList.contains('paper-toggle-button') ||
+        ev.target.classList.contains('paper-icon-button')) {
       return;
     }
     ev.stopPropagation();
