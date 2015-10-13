@@ -12,9 +12,7 @@ export default new Polymer({
     },
   },
 
-  activateScene(ev) {
-    // ev.preventDefault();
-    // ev.stopPropagation();
+  activateScene() {
     serviceActions.callTurnOn(this.stateObj.entityId);
   },
 });
