@@ -44,11 +44,11 @@ export default new Polymer({
   selectedChanged(newVal) {
     const menuItems = this.querySelectorAll('.menu [data-panel]');
 
-    for (let i = 0; i < menuItems.length; i++) {
-      if (menuItems[i].getAttribute('data-panel') === newVal) {
-        menuItems[i].classList.add('selected');
+    for (let idx = 0; idx < menuItems.length; idx++) {
+      if (menuItems[idx].getAttribute('data-panel') === newVal) {
+        menuItems[idx].classList.add('selected');
       } else {
-        menuItems[i].classList.remove('selected');
+        menuItems[idx].classList.remove('selected');
       }
     }
   },

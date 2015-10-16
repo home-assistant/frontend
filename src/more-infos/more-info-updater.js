@@ -1,3 +1,4 @@
+import Polymer from '../polymer';
 import { serviceActions } from '../util/home-assistant-js-instance';
 
 export default new Polymer({

@@ -62,7 +62,7 @@ export default new Polymer({
       _badges: [],
       _columns: [],
     };
-    for (let i = 0; i < columns; i++) { cards._columns[i] = []; }
+    for (let idx = 0; idx < columns; idx++) { cards._columns[idx] = []; }
 
     function filterGrouped(entities) {
       return entities.filter(entity => !(entity.entityId in hasGroup));

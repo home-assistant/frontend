@@ -1,3 +1,4 @@
+import Polymer from '../polymer';
 import {
   navigationActions,
   navigationGetters,

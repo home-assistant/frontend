@@ -62,7 +62,7 @@ export default new Polymer({
   },
 
   attached() {
-    this.datePicker = new Pikaday({
+    this.datePicker = new window.Pikaday({
       field: this.$.datePicker.inputElement,
       onSelect: entityHistoryActions.changeCurrentDate,
     });

@@ -79,7 +79,7 @@ export default new Polymer({
   },
 
   googleApiLoaded() {
-    google.load('visualization', '1', {
+    window.google.load('visualization', '1', {
       packages: ['timeline', 'corechart'],
       callback: () => this.apiLoaded = true,
     });

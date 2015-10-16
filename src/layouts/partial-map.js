@@ -8,7 +8,7 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/entity/ha-entity-marker');
 
-L.Icon.Default.imagePath = '/static/images/leaflet';
+window.L.Icon.Default.imagePath = '/static/images/leaflet';
 
 export default new Polymer({
   is: 'partial-map',
@@ -58,7 +58,7 @@ export default new Polymer({
   attached() {
     // On iPhone 5, 5s and some 6 I have observed that the user would be
     // unable to pan on initial load. This fixes it.
-    if (L.Browser.mobileWebkit) {
+    if (window.L.Browser.mobileWebkit) {
       this.async(() => {
         const map = this.$.map;
         const prev = map.style.display;

@@ -39,8 +39,8 @@ export default new Polymer({
       return;
     }
 
-    const chart = new google.visualization.Timeline(this);
-    const dataTable = new google.visualization.DataTable();
+    const chart = new window.google.visualization.Timeline(this);
+    const dataTable = new window.google.visualization.DataTable();
 
     dataTable.addColumn({ type: 'string', id: 'Entity' });
     dataTable.addColumn({ type: 'string', id: 'State' });
