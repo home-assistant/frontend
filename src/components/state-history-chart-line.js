@@ -1,7 +1,4 @@
-import pluck from 'lodash/collection/pluck';
-import flatten from 'lodash/array/flatten';
 import uniq from 'lodash/array/uniq';
-import sortBy from 'lodash/collection/sortBy';
 
 import Polymer from '../polymer';
 
@@ -28,6 +25,10 @@ export default new Polymer({
       value: false,
       observer: 'dataChanged',
     },
+
+    chartEngine: {
+      type: Object,
+    },
   },
 
   created() {
@@ -42,44 +43,23 @@ export default new Polymer({
     this.drawChart();
   },
 
-  /* *************************************************
-  The following code gererates line graphs for devices with continuous
-  values(which are devices that have a unit_of_measurement values defined).
-  On each graph the devices are grouped by their unit of measurement, eg. all
-  sensors measuring MB will be a separate line on single graph.  The google
-  chart API takes data as a 2 dimensional array in the format:
-
-  DateTime,   device1,  device2,  device3
-  2015-04-01, 1,        2,        0
-  2015-04-01, 0,        1,        0
-  2015-04-01, 2,        1,        1
-
-  NOTE: the first column is a javascript date objects.
-
-  The first thing we do is build up the data with rows for each time of a state
-  change and initialise the values to 0.  THen we loop through each device and
-  fill in its data.
-
-  **************************************************/
   drawChart() {
     if (!this.isAttached) {
       return;
     }
 
-    const root = Polymer.dom(this);
+    if (!this.chartEngine) {
+      this.chartEngine = new window.google.visualization.LineChart(this);
+    }
+
     const unit = this.unit;
     const deviceStates = this.data;
-
-    while (root.lastChild) {
-      root.removeChild(root.lastChild);
-    }
 
     if (deviceStates.length === 0) {
       return;
     }
 
-    const chart = new google.visualization.LineChart(this);
-    const dataTable = new google.visualization.DataTable();
+    const dataTable = new window.google.visualization.DataTable();
 
     dataTable.addColumn({ type: 'datetime', id: 'Time' });
 
@@ -112,75 +92,79 @@ export default new Polymer({
       options.enableInteractivity = false;
     }
 
-    // Get a unique list of times of state changes for all the device
-    // for a particular unit of measureent.
-    let times = pluck(flatten(deviceStates), 'lastChangedAsDate');
-    times = sortBy(uniq(times, (e) => e.getTime()));
+    // Get a unique list of times of state changes for all the devices
+    let times = uniq(deviceStates.map(
+                  states => states.map(
+                    state => state.lastChangedAsDate)).reduce(
+                      (tot, cur) => tot.concat(cur), [])).sort();
+
+    // end time is Math.min(curTime, start time + 1 day)
+    let endTime = new Date(times[0]);
+    endTime.setDate(endTime.getDate() + 1);
+    if (endTime > new Date()) {
+      endTime = new Date();
+    }
+
+    times = times.concat(endTime);
+
+    // This is going to be an array of arrays. Each array contains:
+    // [Time, valueSensor1, valueSensor2, etc]
+
+    // Google Graph requires each data series to have an entry for each point.
+    // Since not all sensors have a value for each time, we'll put in the last
+    // known value at that point in time.
+
+    // Because we put in last known value, the 'average' line shown between
+    // times is incorrect. To fix this, we add each time twice and have
+    // transitions shown as a vertical line :-(
 
     const data = [];
-    const empty = new Array(deviceStates.length);
-    for (let i = 0; i < empty.length; i++) {
-      empty[i] = 0;
-    }
+    times.forEach(time => {
+      data.push([time]);
+      data.push([time]);
+    });
 
-    let timeIndex = 1;
-    const endDate = new Date();
+    deviceStates.forEach(states => {
+      let startIndex = 0;
+      let curTime;
+      let curValue;
 
-    for (let i = 0; i < times.length; i++) {
-      // because we only have state changes we add an extra point at the same time
-      // that holds the previous state which makes the line display correctly
-      const beforePoint = new Date(times[i]);
-      data.push([beforePoint].concat(empty));
-
-      data.push([times[i]].concat(empty));
-      timeIndex++;
-    }
-    data.push([endDate].concat(empty));
-
-    let deviceCount = 0;
-    deviceStates.forEach((device) => {
-      const attributes = device[device.length - 1].attributes;
-      dataTable.addColumn('number', attributes.friendly_name);
-
-      let currentState = 0;
-      let previousState = 0;
-      let lastIndex = 0;
-      let count = 0;
-      let prevTime = data[0][0];
-      device.forEach((state) => {
-        currentState = state.state;
-        const start = state.lastChangedAsDate;
-        if (state.state === 'None') {
-          currentState = previousState;
+      const nextState = function nextState() {
+        if (startIndex === null) {
+          return;
         }
-        for (let i = lastIndex; i < data.length; i++) {
-          data[i][1 + deviceCount] = parseFloat(previousState);
-          // this is where data gets filled in for each time for the particular device
-          // because for each time two entries were create we fill the first one with the
-          // previous value and the second one with the new value
-          if (prevTime.getTime() === data[i][0].getTime() && data[i][0].getTime() === start.getTime()) {
-            data[i][1 + deviceCount] = parseFloat(currentState);
-            lastIndex = i;
-            prevTime = data[i][0];
-            break;
+        let value;
+        for (let ind = startIndex; ind < states.length; ind++) {
+          value = parseFloat(states[ind].state);
+          if (!isNaN(value) && isFinite(value)) {
+            startIndex = ind + 1;
+            curValue = value;
+            curTime = states[ind].lastChangedAsDate;
+            return;
           }
-          prevTime = data[i][0];
         }
+        startIndex = null;
+      };
 
-        previousState = currentState;
+      nextState();
 
-        count++;
-      });
-
-      // fill in the rest of the Array
-      for (let i = lastIndex; i < data.length; i++) {
-        data[i][1 + deviceCount] = parseFloat(previousState);
+      // no usable states found.
+      if (startIndex === null) {
+        return;
       }
 
-      deviceCount++;
+      dataTable.addColumn('number', states[states.length - 1].entityDisplay);
+
+      times.forEach((time, index) => {
+        data[index * 2].push(curValue);
+        if (curTime === time) {
+          nextState();
+        }
+        data[index * 2 + 1].push(curValue);
+      });
     });
 
     dataTable.addRows(data);
-    chart.draw(dataTable, options);
+    this.chartEngine.draw(dataTable, options);
   },
 });
