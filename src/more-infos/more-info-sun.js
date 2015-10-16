@@ -1,3 +1,4 @@
+import Polymer from '../polymer';
 import { util } from '../util/home-assistant-js-instance';
 
 import formatTime from '../util/format-time';
@@ -32,7 +33,7 @@ export default new Polymer({
   },
 
   computeOrder(risingDate, settingDate) {
-    return risingDate > settingDate ?  ['set', 'ris'] : ['ris', 'set'];
+    return risingDate > settingDate ? ['set', 'ris'] : ['ris', 'set'];
   },
 
   itemCaption(type) {

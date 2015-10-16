@@ -34,10 +34,4 @@ export default new Polymer({
       ],
     },
   },
-
-
-  updateStates() {
-    this.states = this.stateObj && this.stateObj.attributes.entity_id ?
-      stateStore.gets(this.stateObj.attributes.entity_id).toArray() : [];
-  },
 });

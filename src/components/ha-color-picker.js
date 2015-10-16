@@ -11,8 +11,8 @@ import Polymer from '../polymer';
  * given red, green, blue values, return the equivalent hexidecimal value
  * base source: http://stackoverflow.com/a/5624139
  */
-function componentToHex(c) {
-  const hex = c.toString(16);
+function componentToHex(comp) {
+  const hex = comp.toString(16);
   return hex.length === 1 ? '0' + hex : hex;
 }
 
@@ -46,8 +46,8 @@ export default new Polymer({
     'tap': 'onTap',
   },
 
-  onMouseDown(e) {
-    this.onMouseMove(e);
+  onMouseDown(ev) {
+    this.onMouseMove(ev);
     this.addEventListener('mousemove', this.onMouseMove);
   },
 
@@ -55,8 +55,8 @@ export default new Polymer({
     this.removeEventListener('mousemove', this.onMouseMove);
   },
 
-  onTouchStart(e) {
-    this.onTouchMove(e);
+  onTouchStart(ev) {
+    this.onTouchMove(ev);
     this.addEventListener('touchmove', this.onTouchMove);
   },
 
@@ -64,27 +64,27 @@ export default new Polymer({
     this.removeEventListener('touchmove', this.onTouchMove);
   },
 
-  onTap(e) {
-    e.stopPropagation();
+  onTap(ev) {
+    ev.stopPropagation();
   },
 
-  onTouchMove(e) {
-    const touch = e.touches[0];
-    this.onColorSelect(e, {x: touch.clientX, y: touch.clientY});
+  onTouchMove(ev) {
+    const touch = ev.touches[0];
+    this.onColorSelect(ev, {x: touch.clientX, y: touch.clientY});
   },
 
-  onMouseMove(e) {
-    e.preventDefault();
+  onMouseMove(ev) {
+    ev.preventDefault();
     if (this.mouseMoveIsThrottled) {
       this.mouseMoveIsThrottled = false;
-      this.onColorSelect(e);
+      this.onColorSelect(ev);
       this.async(() => this.mouseMoveIsThrottled = true, 100);
     }
   },
 
-  onColorSelect(e, coords) {
+  onColorSelect(ev, coords) {
     if (this.context) {
-      const colorCoords = coords || this.relativeMouseCoordinates(e);
+      const colorCoords = coords || this.relativeMouseCoordinates(ev);
       const data = this.context.getImageData(colorCoords.x, colorCoords.y, 1, 1).data;
 
       this.setColor({r: data[0], g: data[1], b: data[2]});
@@ -105,19 +105,19 @@ export default new Polymer({
    * given a mouse click event, return x,y coordinates relative to the clicked target
    * @returns object with x, y values
    */
-  relativeMouseCoordinates(e) {
-    let x = 0;
-    let y = 0;
+  relativeMouseCoordinates(ev) {
+    let xCoord = 0;
+    let yCoord = 0;
 
     if (this.canvas) {
       const rect = this.canvas.getBoundingClientRect();
-      x = e.clientX - rect.left;
-      y = e.clientY - rect.top;
+      xCoord = ev.clientX - rect.left;
+      yCoord = ev.clientY - rect.top;
     }
 
     return {
-      x: x,
-      y: y,
+      x: xCoord,
+      y: yCoord,
     };
   },
 
