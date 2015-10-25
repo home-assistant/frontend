@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "polymer": "Polymer/polymer#^1.1.5",
+    "polymer": "Polymer/polymer#^1.2",
     "pikaday": "1.3.3",
     "leaflet-map": "1.1.0",
     "iron-elements": "PolymerElements/iron-elements#~1.0.4",
