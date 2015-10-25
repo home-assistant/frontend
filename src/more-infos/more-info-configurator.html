@@ -38,6 +38,13 @@
           <img src='[[stateObj.attributes.description_image]]' />
         </p>
 
+        <template is='dom-repeat' items='[[stateObj.attributes.fields]]'>
+          <paper-input-container id='paper-input-fields-{{item.id}}'>
+            <label>{{item.name}}</label>
+            <input is="iron-input" type="{{item.type}}" id='{{item.id}}' on-change="fieldChanged"/>
+          </paper-input-container>
+        </template>
+
         <p class='submit'>
           <paper-button raised on-click='submitClicked'
                         hidden$='[[isConfiguring]]'>[[submitCaption]]</paper-button>
