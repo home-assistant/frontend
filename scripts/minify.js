@@ -4,7 +4,7 @@ var fs = require('fs');
 var html = fs.readFileSync('build/frontend.vulcan.html').toString();
 
 var minifiedHtml = minify.minify(html, {
-    customAttrAssign: [/\$=/],
+    customAttrAssign: [/(\$|\?)=/],
     "removeComments": true,
     "removeCommentsFromCDATA": true,
     "removeCDATASectionsFromCDATA": true,
