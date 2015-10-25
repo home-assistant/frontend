@@ -67,7 +67,7 @@ export default new Polymer({
 
     const data = {
       configure_id: this.stateObj.attributes.configure_id,
-      fields: this.fieldInput;
+      fields: this.fieldInput,
     };
 
     serviceActions.callService('configurator', 'configure', data).then(
