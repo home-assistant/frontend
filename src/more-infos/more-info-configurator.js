@@ -43,6 +43,10 @@ export default new Polymer({
       type: String,
       computed: 'computeSubmitCaption(stateObj)',
     },
+
+    fieldInput: {
+      type: Object, value: {},
+    },
   },
 
   computeIsConfigurable(stateObj) {
@@ -53,11 +57,17 @@ export default new Polymer({
     return stateObj.attributes.submit_caption || 'Set configuration';
   },
 
+  fieldChanged(ev) {
+    const el = ev.target;
+    this.fieldInput[el.id] = el.value;
+  },
+
   submitClicked() {
     this.isConfiguring = true;
 
     const data = {
       configure_id: this.stateObj.attributes.configure_id,
+      fields: this.fieldInput,
     };
 
     serviceActions.callService('configurator', 'configure', data).then(
