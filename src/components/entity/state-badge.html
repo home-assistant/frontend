@@ -23,7 +23,7 @@
     border-radius: 50%;
   }
 
-  domain-icon {
+  domain-icon, .custom-icon {
     margin: 0 auto;
     transition: color .3s ease-in-out;
   }
@@ -38,10 +38,15 @@
 
   <template>
     <div class='layout horizontal center badge'>
-      <domain-icon id='icon'
+      <domain-icon class='icon' hidden='{{stateObj.attributes.icon}}'
         domain='[[stateObj.domain]]' data-domain$='[[stateObj.domain]]'
         state='[[stateObj.state]]' data-state$='[[stateObj.state]]'>
       </domain-icon>
+      <template is='dom-if' if='[[stateObj.attributes.icon]]'>
+        <div class='custom-icon icon'>
+          <iron-icon icon="[[stateObj.attributes.icon]]"></iron-icon>
+        </div>
+      </template>
       <template is='dom-if' if='[[stateObj.attributes.entity_picture]]'>
         <iron-image
           sizing='cover' class='fit'

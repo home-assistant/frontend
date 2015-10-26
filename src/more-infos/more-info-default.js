@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-const FILTER_KEYS = ['entity_picture', 'friendly_name', 'unit_of_measurement'];
+const FILTER_KEYS = ['entity_picture', 'friendly_name', 'icon', 'unit_of_measurement'];
 
 export default new Polymer({
   is: 'more-info-default',
