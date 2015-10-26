@@ -1,4 +1,4 @@
-import uniq from 'lodash/array/uniq';
+import range from 'lodash/utility/range';
 
 import Polymer from '../polymer';
 
@@ -59,12 +59,9 @@ export default new Polymer({
       return;
     }
 
-    const dataTable = new window.google.visualization.DataTable();
-
-    dataTable.addColumn({ type: 'datetime', id: 'Time' });
-
     const options = {
       legend: { position: 'top' },
+      interpolateNulls: true,
       titlePosition: 'none',
       vAxes: {
         // Adds units to the left hand side of the graph
@@ -92,79 +89,55 @@ export default new Polymer({
       options.enableInteractivity = false;
     }
 
-    // Get a unique list of times of state changes for all the devices
-    let times = uniq(deviceStates.map(
-                  states => states.map(
-                    state => state.lastChangedAsDate)).reduce(
-                      (tot, cur) => tot.concat(cur), [])).sort();
+    const startTime = new Date(Math.min.apply(
+      null, deviceStates.map(states => states[0].lastChangedAsDate)));
 
-    // end time is Math.min(curTime, start time + 1 day)
-    let endTime = new Date(times[0]);
+    let endTime = new Date(startTime);
     endTime.setDate(endTime.getDate() + 1);
     if (endTime > new Date()) {
       endTime = new Date();
     }
 
-    times = times.concat(endTime);
+    const dataTables = deviceStates.map(states => {
+      // Only do interpolation for sensors, makes no sense for ie. thermostat
+      const noInterpolation = states[0].domain !== 'sensor';
 
-    // This is going to be an array of arrays. Each array contains:
-    // [Time, valueSensor1, valueSensor2, etc]
-
-    // Google Graph requires each data series to have an entry for each point.
-    // Since not all sensors have a value for each time, we'll put in the last
-    // known value at that point in time.
-
-    // Because we put in last known value, the 'average' line shown between
-    // times is incorrect. To fix this, we add each time twice and have
-    // transitions shown as a vertical line :-(
-
-    const data = [];
-    times.forEach(time => {
-      data.push([time]);
-      data.push([time]);
-    });
-
-    deviceStates.forEach(states => {
-      let startIndex = 0;
-      let curTime;
-      let curValue;
-
-      const nextState = function nextState() {
-        if (startIndex === null) {
-          return;
-        }
-        let value;
-        for (let ind = startIndex; ind < states.length; ind++) {
-          value = parseFloat(states[ind].state);
-          if (!isNaN(value) && isFinite(value)) {
-            startIndex = ind + 1;
-            curValue = value;
-            curTime = states[ind].lastChangedAsDate;
-            return;
-          }
-        }
-        startIndex = null;
-      };
-
-      nextState();
-
-      // no usable states found.
-      if (startIndex === null) {
-        return;
-      }
-
+      const dataTable = new window.google.visualization.DataTable();
+      dataTable.addColumn({ type: 'datetime', id: 'Time' });
       dataTable.addColumn('number', states[states.length - 1].entityDisplay);
+      const data = [];
 
-      times.forEach((time, index) => {
-        data[index * 2].push(curValue);
-        if (curTime === time) {
-          nextState();
+      let prevValue;
+
+      states.forEach(state => {
+        const value = parseFloat(state.state);
+        if (!isNaN(value) && isFinite(value)) {
+          if (noInterpolation) {
+            data.push([state.lastChangedAsDate, prevValue]);
+          }
+          data.push([state.lastChangedAsDate, value]);
+          prevValue = value;
         }
-        data[index * 2 + 1].push(curValue);
       });
+
+      data.push([endTime, prevValue]);
+
+      dataTable.addRows(data);
+      return dataTable;
     });
 
-    dataTable.addRows(data);
-    this.chartEngine.draw(dataTable, options);
+
+    let finalDataTable;
+
+    if (dataTables.length === 1) {
+      finalDataTable = dataTables[0];
+    } else {
+      finalDataTable = dataTables.slice(1).reduce(
+        (tot, cur) => window.google.visualization.data.join(
+          tot, cur, 'full', [[0, 0]], range(1, tot.getNumberOfColumns()), [1]),
+        dataTables[0]);
+    }
+
+    this.chartEngine.draw(finalDataTable, options);
   },
 });
