@@ -2,6 +2,11 @@ import range from 'lodash/utility/range';
 
 import Polymer from '../polymer';
 
+function saveParseFloat(value) {
+  const parsed = parseFloat(value);
+  return !isNaN(parsed) && isFinite(parsed) ? parsed : null;
+}
+
 export default new Polymer({
   is: 'state-history-chart-line',
 
@@ -70,7 +75,6 @@ export default new Polymer({
       hAxis: {
         format: 'H:mm',
       },
-      lineWidth: 1,
       chartArea: { left: '60', width: '95%'},
       explorer: {
         actions: ['dragToZoom', 'rightClickToReset', 'dragToPan'],
@@ -99,28 +103,77 @@ export default new Polymer({
     }
 
     const dataTables = deviceStates.map(states => {
-      // Only do interpolation for sensors, makes no sense for ie. thermostat
-      const noInterpolation = states[0].domain !== 'sensor';
-
+      const last = states[states.length - 1];
+      const domain = last.domain;
+      const name = last.entityDisplay;
       const dataTable = new window.google.visualization.DataTable();
       dataTable.addColumn({ type: 'datetime', id: 'Time' });
-      dataTable.addColumn('number', states[states.length - 1].entityDisplay);
       const data = [];
 
-      let prevValue;
-
-      states.forEach(state => {
-        const value = parseFloat(state.state);
-        if (!isNaN(value) && isFinite(value)) {
-          if (noInterpolation) {
-            data.push([state.lastChangedAsDate, prevValue]);
-          }
-          data.push([state.lastChangedAsDate, value]);
-          prevValue = value;
+      // array containing [time, value1, value2, etc]
+      let prevValues;
+      function pushData(values, noInterpolations) {
+        if (prevValues && noInterpolations) {
+          // if we have to prevent interpolation, we add an old value for each
+          // value that should not be interpolated at the same time that our new
+          // line will be published.
+          data.push([values[0]].concat(prevValues.slice(1).map(
+            (val, index) => noInterpolations[index] ? val : null)));
         }
-      });
+        data.push(values);
+        prevValues = values;
+      }
 
-      data.push([endTime, prevValue]);
+      if (domain === 'thermostat') {
+        // We differentiate between thermostats that have a target temperature
+        // range versus ones that have just a target temperature
+        const hasTargetRange = states.reduce(
+          (cum, cur) => cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low,
+          false);
+
+        dataTable.addColumn('number', `${name} current temperature`);
+
+        let processState;
+
+        if (hasTargetRange) {
+          dataTable.addColumn('number', `${name} target temperature high`);
+          dataTable.addColumn('number', `${name} target temperature low`);
+
+          const noInterpolations = [false, true, true];
+
+          processState = state => {
+            const curTemp = saveParseFloat(state.attributes.current_temperature);
+            const targetHigh = saveParseFloat(state.attributes.target_temp_high);
+            const targetLow = saveParseFloat(state.attributes.target_temp_low);
+            pushData([state.lastChangedAsDate, curTemp, targetHigh, targetLow], noInterpolations);
+          };
+        } else {
+          dataTable.addColumn('number', `${name} target temperature`);
+
+          const noInterpolations = [false, true];
+
+          processState = state => {
+            const curTemp = saveParseFloat(state.attributes.current_temperature);
+            const target = saveParseFloat(state.attributes.temperature);
+            pushData([state.lastChangedAsDate, curTemp, target], noInterpolations);
+          };
+        }
+
+        states.forEach(processState);
+      } else {
+        dataTable.addColumn('number', name);
+
+        // Only disable interpolation for sensors
+        const noInterpolation = domain !== 'sensor' && [true];
+
+        states.forEach(state => {
+          const value = saveParseFloat(state.state);
+          pushData([state.lastChangedAsDate, value], noInterpolation);
+        });
+      }
+
+      // Add an entry for final values
+      pushData([endTime].concat(prevValues.slice(1)), false);
 
       dataTable.addRows(data);
       return dataTable;
@@ -134,7 +187,9 @@ export default new Polymer({
     } else {
       finalDataTable = dataTables.slice(1).reduce(
         (tot, cur) => window.google.visualization.data.join(
-          tot, cur, 'full', [[0, 0]], range(1, tot.getNumberOfColumns()), [1]),
+          tot, cur, 'full', [[0, 0]],
+          range(1, tot.getNumberOfColumns()),
+          range(1, cur.getNumberOfColumns())),
         dataTables[0]);
     }
 
