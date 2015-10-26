@@ -14,13 +14,13 @@
     "frontend_html": "vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html && node script/minify.js",
     "frontend_prod": "npm run js_prod && bower install && npm run frontend_html",
     "frontend_demo": "npm run js_demo && bower install && npm run frontend_html",
-    "setup_js_dev": "npm install && cd node_modules && rm -rf home-assistant-js && git clone https://github.com/balloob/home-assistant-js.git && cd home-assistant-js",
+    "setup_js_dev": "npm install && cd node_modules && rm -rf home-assistant-js && git clone https://github.com/balloob/home-assistant-js.git && cd home-assistant-js && npm install",
     "test": "eslint src"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
   "dependencies": {
-    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#011686c4e03ec4b7f01c1d4888a5fc521400a499",
+    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#6bb404fc2dc84c4c70c7c410644283ad41c9db67",
     "lodash": "^3.10.1",
     "moment": "^2.10.6"
   },
