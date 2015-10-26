@@ -10,4 +10,8 @@ export default new Polymer({
       type: Object,
     },
   },
+
+  computeTargetTemperature(stateObj) {
+    return `${stateObj.attributes.temperature} ${stateObj.attributes.unit_of_measurement}`;
+  },
 });
