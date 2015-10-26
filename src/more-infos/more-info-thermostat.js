@@ -32,7 +32,7 @@ export default new Polymer({
   },
 
   stateObjChanged(newVal) {
-    this.targetTemperatureSliderValue = newVal.state;
+    this.targetTemperatureSliderValue = newVal.attributes.temperature;
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
 
     this.tempMin = newVal.attributes.min_temp;
