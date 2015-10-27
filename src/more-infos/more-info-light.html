@@ -40,9 +40,19 @@
           on-change='brightnessSliderChanged' class='flex'>
         </paper-slider>
       </div>
+      <template is="dom-if" if="{{ctSliderValue}}">
+        <div class='brightness center horizontal layout'>
+          <div>Color temperature</div>
+          <paper-slider min="154" max="500"
+            id='ct' value='{{ctSliderValue}}'
+            on-change='ctSliderChanged' class='flex'>
+          </paper-slider>
+        </div>
+      </template>
 
       <ha-color-picker on-colorselected='colorPicked' width='350' height='200'>
-      </color-picker>
+      </ha-color-picker>
+
     </div>
   </template>
 </dom-module>
