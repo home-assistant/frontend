@@ -5,7 +5,7 @@ import attributeClassNames from '../util/attribute-class-names';
 
 require('../components/ha-color-picker');
 
-const ATTRIBUTE_CLASSES = ['brightness', 'xy_color', 'ct_color'];
+const ATTRIBUTE_CLASSES = ['brightness', 'xy_color', 'color_temp'];
 
 export default new Polymer({
   is: 'more-info-light',
@@ -30,7 +30,7 @@ export default new Polymer({
   stateObjChanged(newVal) {
     if (newVal && newVal.state === 'on') {
       this.brightnessSliderValue = newVal.attributes.brightness;
-      this.ctSliderValue = newVal.attributes.ct_color;
+      this.ctSliderValue = newVal.attributes.color_temp;
     }
 
     this.async(() => this.fire('iron-resize'), 500);
@@ -62,7 +62,7 @@ export default new Polymer({
 
     serviceActions.callService('light', 'turn_on', {
       entity_id: this.stateObj.entityId,
-      ct_color: ct,
+      color_temp: ct,
     });
   },
 
