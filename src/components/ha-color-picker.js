@@ -43,7 +43,6 @@ export default new Polymer({
     'mouseup': 'onMouseUp',
     'touchstart': 'onTouchStart',
     'touchend': 'onTouchEnd',
-    'tap': 'onTap',
   },
 
   onMouseDown(ev) {
@@ -62,10 +61,6 @@ export default new Polymer({
 
   onTouchEnd() {
     this.removeEventListener('touchmove', this.onTouchMove);
-  },
-
-  onTap(ev) {
-    ev.stopPropagation();
   },
 
   onTouchMove(ev) {
