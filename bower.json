@@ -9,7 +9,7 @@
   "private": true,
   "devDependencies": {
     "polymer": "Polymer/polymer#^1.2",
-    "pikaday": "1.3.3",
+    "pikaday": "1.4",
     "leaflet-map": "1.1.0",
     "iron-elements": "PolymerElements/iron-elements#~1.0.4",
     "paper-elements": "PolymerElements/paper-elements#~1.0.5"
