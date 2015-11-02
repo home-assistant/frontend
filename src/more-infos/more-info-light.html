@@ -5,7 +5,7 @@
 
 <dom-module id='more-info-light'>
   <style>
-    .brightness {
+    .brightness, .color_temp {
       margin-bottom: 8px;
 
       max-height: 0px;
@@ -27,6 +27,10 @@
       max-height: 40px;
     }
 
+    .has-color_temp .color_temp {
+      max-height: 40px;
+    }
+
     .has-xy_color ha-color-picker {
       max-height: 500px;
     }
@@ -40,9 +44,17 @@
           on-change='brightnessSliderChanged' class='flex'>
         </paper-slider>
       </div>
+      <div class='color_temp center horizontal layout'>
+        <div>Color temperature</div>
+        <paper-slider min="154" max="500"
+          id='color_temp' value='{{ctSliderValue}}'
+          on-change='ctSliderChanged' class='flex'>
+        </paper-slider>
+      </div>
 
       <ha-color-picker on-colorselected='colorPicked' width='350' height='200'>
-      </color-picker>
+      </ha-color-picker>
+
     </div>
   </template>
 </dom-module>
