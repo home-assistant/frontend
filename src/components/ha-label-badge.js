@@ -27,6 +27,6 @@ export default new Polymer({
   },
 
   computeClasses(value) {
-    return value && value.length > 5 ? 'value big' : 'value';
+    return value && value.length > 4 ? 'value big' : 'value';
   },
 });
