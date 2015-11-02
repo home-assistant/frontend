@@ -1,3 +1,5 @@
+import defaultIcon from './default-icon';
+
 export default function domainIcon(domain, state) {
   switch (domain) {
   case 'homeassistant':
@@ -36,7 +38,7 @@ export default function domainIcon(domain, state) {
     return 'announcement';
 
   case 'thermostat':
-    return 'homeassistant-100:thermostat';
+    return 'settings-brightness';
 
   case 'sensor':
     return 'visibility';
@@ -58,6 +60,6 @@ export default function domainIcon(domain, state) {
       'icons:cloud-download' : 'icons:cloud-done';
 
   default:
-    return 'bookmark';
+    return defaultIcon;
   }
 }
