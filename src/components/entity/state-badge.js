@@ -2,7 +2,7 @@ import Polymer from '../../polymer';
 
 import xyBriToRgb from '../../util/xybri-to-rgb';
 
-require('../domain-icon');
+require('./ha-state-icon');
 
 export default new Polymer({
   is: 'state-badge',

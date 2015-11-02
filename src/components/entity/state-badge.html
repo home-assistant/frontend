@@ -1,7 +1,7 @@
 <link rel='import' href='../../../bower_components/polymer/polymer.html'>
 <link rel='import' href='../../../bower_components/iron-image/iron-image.html'>
 
-<link rel='import' href='../domain-icon.html'>
+<link rel='import' href='./ha-state-icon.html'>
 
 <dom-module id='state-badge'>
   <style>
@@ -23,25 +23,24 @@
     border-radius: 50%;
   }
 
-  domain-icon {
+  ha-state-icon {
     margin: 0 auto;
     transition: color .3s ease-in-out;
   }
 
   /* Color the icon if light or sun is on */
-  domain-icon[data-domain=light][data-state=on],
-  domain-icon[data-domain=switch][data-state=on],
-  domain-icon[data-domain=sun][data-state=above_horizon] {
+  ha-state-icon[data-domain=light][data-state=on],
+  ha-state-icon[data-domain=switch][data-state=on],
+  ha-state-icon[data-domain=sun][data-state=above_horizon] {
     color: #DCC91F;
   }
   </style>
 
   <template>
     <div class='layout horizontal center badge'>
-      <domain-icon id='icon'
-        domain='[[stateObj.domain]]' data-domain$='[[stateObj.domain]]'
-        state='[[stateObj.state]]' data-state$='[[stateObj.state]]'>
-      </domain-icon>
+      <ha-state-icon id='icon' state-obj='[[stateObj]]'
+        data-domain$='[[stateObj.domain]]' data-state$='[[stateObj.state]]'>
+      </ha-state-icon>
       <template is='dom-if' if='[[stateObj.attributes.entity_picture]]'>
         <iron-image
           sizing='cover' class='fit'
