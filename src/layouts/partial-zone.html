@@ -31,11 +31,11 @@
   <template>
     <paper-header-panel mode="waterfall">
       <paper-toolbar>
-        <paper-icon-button icon='menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>
+        <paper-icon-button icon='mdi:menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>
         <div class='title'>[[locationName]]</div>
 
         <paper-icon-button
-          icon="refresh"
+          icon="mdi:refresh"
           class$="[[computeRefreshButtonClass(isFetching)]]"
           on-click="handleRefresh" hidden$="[[isStreaming]]"
         ></paper-icon-button>

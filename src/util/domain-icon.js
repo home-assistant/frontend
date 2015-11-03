@@ -2,64 +2,66 @@ import defaultIcon from './default-icon';
 
 export default function domainIcon(domain, state) {
   switch (domain) {
-  case 'homeassistant':
-    return 'home';
+  case 'alarm_control_panel':
+    return state && state === 'disarmed' ? 'mdi:lock-open' : 'mdi:lock';
 
-  case 'group':
-    return 'homeassistant-24:group';
+  case 'camera':
+    return 'mdi:video';
+
+  case 'configurator':
+    return 'mdi:settings';
+
+  case 'conversation':
+    return 'mdi:text-to-speech';
 
   case 'device_tracker':
-    return 'social:person';
+    return 'mdi:account';
 
-  case 'switch':
-    return 'image:flash-on';
+  case 'group':
+    return 'mdi:google-circles-communities';
 
-  case 'alarm_control_panel':
-    return state && state === 'disarmed' ? 'icons:lock-open' : 'icons:lock';
+  case 'homeassistant':
+    return 'mdi:home';
+
+  case 'light':
+    return 'mdi:lightbulb';
 
   case 'media_player':
-    let icon = 'hardware:cast';
+    let icon = 'mdi:cast';
     if (state && state !== 'off' && state !== 'idle') {
       icon += '-connected';
     }
 
     return icon;
 
-  case 'sun':
-    return 'image:wb-sunny';
+  case 'notify':
+    return 'mdi:comment-alert';
 
-  case 'light':
-    return 'image:wb-incandescent';
+  case 'sun':
+    return 'mdi:white-balance-sunny';
+
+  case 'switch':
+    return 'mdi:flash';
 
   case 'simple_alarm':
-    return 'social:notifications';
-
-  case 'notify':
-    return 'announcement';
-
-  case 'thermostat':
-    return 'settings-brightness';
-
-  case 'sensor':
-    return 'visibility';
-
-  case 'configurator':
-    return 'settings';
-
-  case 'conversation':
-    return 'av:hearing';
-
-  case 'script':
-    return 'description';
+    return 'mdi:bell';
 
   case 'scene':
-    return 'social:pages';
+    return 'mdi:google-pages';
 
-  case 'updater':
-    return state === 'update_available' ?
-      'icons:cloud-download' : 'icons:cloud-done';
+  case 'script':
+    return 'mdi:file-document';
+
+  case 'sensor':
+    return 'mdi:eye';
+
+  case 'thermostat':
+    return 'mdi:nest-thermostat';
 
   default:
+    /* eslint-disable no-console */
+    console.warn(`Unable to find icon for domain ${domain} (${state})`);
+    /* eslint-enable no-console */
     return defaultIcon;
   }
 }

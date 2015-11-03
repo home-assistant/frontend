@@ -19,6 +19,7 @@ export default new Polymer({
 
   hostAttributes: {
     auth: null,
+    icons: null,
   },
 
   behaviors: [nuclearObserver],
@@ -27,10 +28,35 @@ export default new Polymer({
     auth: {
       type: String,
     },
-    loaded: {
+    icons: {
+      type: String,
+    },
+    dataLoaded: {
       type: Boolean,
       bindNuclear: syncGetters.isDataLoaded,
     },
+    iconsLoaded: {
+      type: Boolean,
+      value: false,
+    },
+    loaded: {
+      type: Boolean,
+      computed: 'computeLoaded(dataLoaded, iconsLoaded)',
+    },
+  },
+
+  computeLoaded(dataLoaded, iconsLoaded) {
+    return dataLoaded && iconsLoaded;
+  },
+
+  computeForceShowLoading(dataLoaded, iconsLoaded) {
+    return dataLoaded && !iconsLoaded;
+  },
+
+  loadIcons() {
+    this.importHref(`/static/mdi-${this.icons}.html`,
+                    () => this.iconsLoaded = true,
+                    () => this.loadIcons());
   },
 
   ready() {
@@ -49,5 +75,7 @@ export default new Polymer({
     // remove the HTML init message
     const initMsg = document.getElementById('init');
     initMsg.parentElement.removeChild(initMsg);
+
+    this.loadIcons();
   },
 });
