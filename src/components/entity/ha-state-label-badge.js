@@ -82,7 +82,7 @@ export default new Polymer({
       return domainIcon(state.domain, state.state);
     case 'sun':
       return state.state === 'above_horizon' ?
-        'image:wb-sunny' : 'image:brightness-3';
+        domainIcon(state.domain) : 'mdi:brightness-3';
     default:
       return undefined;
     }

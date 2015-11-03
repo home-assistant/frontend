@@ -28,17 +28,17 @@
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='layout horizontal'>
         <div class='flex'>
-          <paper-icon-button icon='power-settings-new' highlight$='[[isOff]]'
+          <paper-icon-button icon='mdi:power' highlight$='[[isOff]]'
             on-tap='handleTogglePower'
             hidden$='[[computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff)]]'></paper-icon-button>
         </div>
         <div>
           <template is='dom-if' if='[[!isOff]]'>
-            <paper-icon-button icon='av:skip-previous' on-tap='handlePrevious'
+            <paper-icon-button icon='mdi:skip-previous' on-tap='handlePrevious'
               hidden$='[[!supportsPreviousTrack]]'></paper-icon-button>
             <paper-icon-button icon='[[computePlaybackControlIcon(stateObj)]]'
               on-tap='handlePlaybackControl' highlight></paper-icon-button>
-            <paper-icon-button icon='av:skip-next' on-tap='handleNext'
+            <paper-icon-button icon='mdi:skip-next' on-tap='handleNext'
               hidden$='[[!supportsNextTrack]]'></paper-icon-button>
           </template>
         </div>

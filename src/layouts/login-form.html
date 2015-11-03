@@ -54,7 +54,7 @@
       <img src="/static/splash.png" height="230" />
       <a href="#" id="hideKeyboardOnFocus"></a>
       <div class='interact'>
-        <div id='loginform' hidden$="[[isValidating]]">
+        <div id='loginform' hidden$="[[showLoading]]">
           <paper-input-container id="passwordDecorator" invalid="[[isInvalid]]">
             <label>Password</label>
             <input is="iron-input" type="password" id="passwordInput" />
@@ -65,7 +65,7 @@
             <paper-button id='loginButton'>Log In</paper-button>
           </div>
         </div>
-        <div id="validatebox" hidden$="[[!isValidating]]">
+        <div id="validatebox" hidden$="[[!showLoading]]">
           <paper-spinner active="true"></paper-spinner><br />
           <div class="validatemessage">Loading data</div>
         </div>

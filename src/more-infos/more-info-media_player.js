@@ -98,14 +98,14 @@ export default new Polymer({
   },
 
   computeMuteVolumeIcon(isMuted) {
-    return isMuted ? 'av:volume-off' : 'av:volume-up';
+    return isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
   },
 
   computePlaybackControlIcon() {
     if (this.isPlaying) {
-      return this.supportsPause ? 'av:pause' : 'av:stop';
+      return this.supportsPause ? 'mdi:pause' : 'mdi:stop';
     }
-    return 'av:play-arrow';
+    return 'mdi:play';
   },
 
   computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff) {

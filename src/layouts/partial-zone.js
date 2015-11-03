@@ -132,7 +132,7 @@ export default new Polymer({
   },
 
   computeListenButtonIcon(isListening) {
-    return isListening ? 'av:mic-off' : 'av:mic';
+    return isListening ? 'mdi:microphone-off' : 'mdi:microphone';
   },
 
   computeRefreshButtonClass(isFetching) {

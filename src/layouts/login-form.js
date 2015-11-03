@@ -11,10 +11,9 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
-    isValidating: {
-      type: Boolean,
-      observer: 'isValidatingChanged',
-      bindNuclear: authGetters.isValidating,
+    errorMessage: {
+      type: String,
+      bindNuclear: authGetters.attemptErrorMessage,
     },
 
     isInvalid: {
@@ -22,9 +21,25 @@ export default new Polymer({
       bindNuclear: authGetters.isInvalidAttempt,
     },
 
-    errorMessage: {
-      type: String,
-      bindNuclear: authGetters.attemptErrorMessage,
+    isValidating: {
+      type: Boolean,
+      observer: 'isValidatingChanged',
+      bindNuclear: authGetters.isValidating,
+    },
+
+    loadingResources: {
+      type: Boolean,
+      value: false,
+    },
+
+    forceShowLoading: {
+      type: Boolean,
+      value: false,
+    },
+
+    showLoading: {
+      type: Boolean,
+      computed: 'computeShowSpinner(forceShowLoading, isValidating)',
     },
   },
 
@@ -36,6 +51,10 @@ export default new Polymer({
   observers: [
     'validatingChanged(isValidating, isInvalid)',
   ],
+
+  computeShowSpinner(forceShowLoading, isValidating) {
+    return forceShowLoading || isValidating;
+  },
 
   validatingChanged(isValidating, isInvalid) {
     if (!isValidating && !isInvalid) {

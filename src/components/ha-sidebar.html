@@ -23,6 +23,7 @@
 
     div.title {
       text-align: left;
+      margin-left: 24px !important;
     }
 
     div.menu {
@@ -64,35 +65,35 @@
     <paper-header-panel mode='scroll' class='sidenav fit'>
       <paper-toolbar>
         <!-- forces paper toolbar to style title appropriate -->
-        <paper-icon-button icon='menu' hidden$='[[!narrow]]' on-tap='toggleMenu'></paper-icon-button>
+        <paper-icon-button icon='mdi:menu' hidden$='[[!narrow]]' on-tap='toggleMenu'></paper-icon-button>
         <div class="title">Home Assistant</div>
       </paper-toolbar>
       <div class='menu'>
         <paper-icon-item on-click='menuClicked' data-panel='states'>
-          <iron-icon item-icon icon='apps'></iron-icon> States
+          <iron-icon item-icon icon='mdi:apps'></iron-icon> States
         </paper-icon-item>
 
         <paper-icon-item on-click='menuClicked' data-panel='map'>
-          <iron-icon item-icon icon='maps:person-pin'></iron-icon>
+          <iron-icon item-icon icon='mdi:account-location'></iron-icon>
           Map
         </paper-icon-item>
 
         <template is='dom-if' if='[[hasHistoryComponent]]'>
           <paper-icon-item on-click='menuClicked' data-panel='history'>
-            <iron-icon item-icon icon='assessment'></iron-icon>
+            <iron-icon item-icon icon='mdi:poll-box'></iron-icon>
             History
           </paper-icon-item>
         </template>
 
         <template is='dom-if' if='[[hasLogbookComponent]]'>
           <paper-icon-item on-click='menuClicked' data-panel='logbook'>
-            <iron-icon item-icon icon='list'></iron-icon>
+            <iron-icon item-icon icon='mdi:format-list-bulleted-type'></iron-icon>
             Logbook
           </paper-icon-item>
         </template>
 
         <paper-icon-item on-click='menuClicked' data-panel='logout' class='logout'>
-          <iron-icon item-icon icon='exit-to-app'></iron-icon>
+          <iron-icon item-icon icon='mdi:exit-to-app'></iron-icon>
           Log Out
         </paper-icon-item>
 
@@ -104,13 +105,13 @@
         <div class='text label divider'>Developer Tools</div>
         <div class='dev-tools layout horizontal justified'>
           <paper-icon-button
-            icon='settings-remote' data-panel='devService'
+            icon='mdi:remote' data-panel='devService'
             on-click='handleDevClick'></paper-icon-button>
           <paper-icon-button
-            icon='settings-ethernet' data-panel='devState'
+            icon='mdi:code-tags' data-panel='devState'
             on-click='handleDevClick'></paper-icon-button>
           <paper-icon-button
-            icon='settings-input-antenna' data-panel='devEvent'
+            icon='mdi:nfc' data-panel='devEvent'
             on-click='handleDevClick'></paper-icon-button>
         </div>
       </div>

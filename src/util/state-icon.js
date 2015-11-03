@@ -17,7 +17,7 @@ export default function stateIcon(state) {
   if (unit && state.domain === 'sensor') {
     if (unit === util.temperatureUnits.UNIT_TEMP_C ||
         unit === util.temperatureUnits.UNIT_TEMP_F) {
-      return 'homeassistant-100:thermostat';
+      return 'mdi:thermometer';
     }
   }
 
