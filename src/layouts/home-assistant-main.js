@@ -18,6 +18,7 @@ require('../layouts/partial-dev-fire-event');
 require('../layouts/partial-dev-set-state');
 require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
+require('../dialogs/ha-voice-command-dialog');
 
 export default new Polymer({
   is: 'home-assistant-main',

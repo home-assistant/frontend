@@ -12,7 +12,6 @@ import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
-require('../components/ha-voice-command-progress');
 require('../components/ha-zone-cards');
 
 export default new Polymer({
@@ -42,20 +41,6 @@ export default new Polymer({
         voiceGetters.isVoiceSupported,
         configGetters.isComponentLoaded('conversation'),
         (isVoiceSupported, componentLoaded) => isVoiceSupported && componentLoaded,
-      ],
-    },
-
-    isListening: {
-      type: Boolean,
-      bindNuclear: voiceGetters.isListening,
-    },
-
-    showListenInterface: {
-      type: Boolean,
-      bindNuclear: [
-        voiceGetters.isListening,
-        voiceGetters.isTransmitting,
-        (isListening, isTransmitting) => isListening || isTransmitting,
       ],
     },
 
@@ -112,11 +97,7 @@ export default new Polymer({
   },
 
   handleListenClick() {
-    if (this.isListening) {
-      voiceActions.stop();
-    } else {
-      voiceActions.listen();
-    }
+    voiceActions.listen();
   },
 
   computeDomains(states) {
@@ -129,10 +110,6 @@ export default new Polymer({
 
   computeStatesOfDomain(states, domain) {
     return states.get(domain).toArray();
-  },
-
-  computeListenButtonIcon(isListening) {
-    return isListening ? 'mdi:microphone-off' : 'mdi:microphone';
   },
 
   computeRefreshButtonClass(isFetching) {
