@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="../components/ha-voice-command-progress.html">
 <link rel="import" href="../components/ha-zone-cards.html">
 
 <dom-module id="partial-zone">
@@ -40,17 +39,11 @@
           on-click="handleRefresh" hidden$="[[isStreaming]]"
         ></paper-icon-button>
         <paper-icon-button
-          icon="[[computeListenButtonIcon(isListening)]]"
-          hidden$='[[!canListen]]'
+          icon="mdi:microphone" hidden$='[[!canListen]]'
           on-click="handleListenClick"></paper-icon-button>
       </paper-toolbar>
 
       <div class='content fit'>
-        <div class='listening' hidden$="[[!showListenInterface]]"
-          on-click="handleListenClick">
-          <ha-voice-command-progress></ha-voice-command-progress>
-        </div>
-
         <ha-zone-cards
           show-introduction='[[computeShowIntroduction(introductionLoaded, states)]]'
           states='[[states]]' columns='[[columns]]'></ha-zone-cards>

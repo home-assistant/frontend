@@ -1,0 +1,64 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+
+<dom-module id="ha-voice-command-dialog">
+  <style>
+    iron-icon {
+      margin-right: 8px;
+    }
+
+    .content {
+      width: 300px;
+      min-height: 80px;
+      font-size: 18px;
+    }
+
+    .icon {
+      float: left;
+    }
+
+    .text {
+      margin-left: 48px;
+      margin-right: 24px;
+    }
+
+    .interimTranscript {
+      color: darkgrey;
+    }
+
+    @media all and (max-width: 450px) {
+      paper-dialog {
+        margin: 0;
+        width: 100%;
+        max-height: calc(100% - 64px);
+
+        position: fixed !important;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        overflow: scroll;
+      }
+    }
+  </style>
+
+  <template>
+    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
+      <div class='content'>
+        <div class='icon'>
+          <iron-icon icon="mdi:text-to-speech" hidden$="[[isTransmitting]]"></iron-icon>
+          <paper-spinner active$="[[isTransmitting]]" hidden$="[[!isTransmitting]]"></paper-spinner>
+        </div>
+        <div class='text'>
+          <span>{{finalTranscript}}</span>
+          <span class='interimTranscript'>[[interimTranscript]]</span>
+          …
+        </div>
+      </div>
+    </paper-dialog>
+  </template>
+
+</dom-module>
