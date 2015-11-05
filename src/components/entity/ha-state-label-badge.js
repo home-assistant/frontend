@@ -48,16 +48,6 @@ export default new Polymer({
     }
   },
 
-  computeGlow(state) {
-    switch (state.domain) {
-    case 'scene':
-    case 'script':
-      return state.state === 'on';
-    default:
-      return false;
-    }
-  },
-
   computeValue(state) {
     switch (state.domain) {
     case 'device_tracker':
@@ -75,8 +65,17 @@ export default new Polymer({
 
   computeIcon(state) {
     switch (state.domain) {
-    case 'device_tracker':
     case 'alarm_control_panel':
+      if (state.state === 'pending') {
+        return 'mdi:clock-fast';
+      } else if (state.state === 'armed_away') {
+        return 'mdi:nature';
+      } else if (state.state === 'armed_home') {
+        return 'mdi:home-variant';
+      }
+      // state == 'disarmed'
+      return 'mdi:lock-open';
+    case 'device_tracker':
     case 'scene':
     case 'script':
       return domainIcon(state.domain, state.state);
@@ -100,7 +99,13 @@ export default new Polymer({
     case 'device_tracker':
       return state.state === 'not_home' ? 'Away' : state.state;
     case 'alarm_control_panel':
-      return state.state;
+      if (state.state === 'pending') {
+        return 'pend';
+      } else if (state.state === 'armed_away' || state.state === 'armed_home') {
+        return 'armed';
+      }
+      // state == 'disarmed'
+      return 'disarm';
     default:
       return state.attributes.unit_of_measurement;
     }
