@@ -13,12 +13,12 @@ const PRIORITY = {
   sun: 0,
   device_tracker: 1,
   alarm_control_panel: 2,
-  sensor: 3,
-  scene: 4,
-  script: 5,
+  camera: 3,
+  sensor: 4,
+  scene: 5,
+  script: 6,
   thermostat: 40,
   media_player: 50,
-  camera: 60,
 };
 
 function getPriority(domain) {
