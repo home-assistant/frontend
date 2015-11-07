@@ -5,7 +5,7 @@ import attributeClassNames from '../util/attribute-class-names';
 
 require('../components/ha-color-picker');
 
-const ATTRIBUTE_CLASSES = ['brightness', 'xy_color', 'color_temp'];
+const ATTRIBUTE_CLASSES = ['brightness', 'rgb_color', 'color_temp'];
 
 export default new Polymer({
   is: 'more-info-light',
