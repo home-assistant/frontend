@@ -128,10 +128,10 @@ export default new Polymer({
   },
 
   computeGroupEntityOfCard(cards, card) {
-    return cards[card].groupEntity;
+    return card in cards && cards[card].groupEntity;
   },
 
   computeStatesOfCard(cards, card) {
-    return cards[card].entities;
+    return card in cards && cards[card].entities;
   },
 });
