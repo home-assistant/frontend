@@ -1,15 +1,11 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
 <dom-module id='ha-card'>
-  <style>
-    .title {
-      padding: 8px 0;
-      text-transform: uppercase;
-    }
-    .card {
+  <style include="paper-material">
+    :host {
       display: block;
       border-radius: 2px;
-      box-shadow: rgba(0, 0, 0, 0.098) 0px 2px 4px, rgba(0, 0, 0, 0.098) 0px 0px 3px;
       transition: all 0.30s ease-out;
 
       background-color: white;
@@ -21,14 +17,9 @@
     }
   </style>
   <template>
-    <template is='dom-if' if='[[title]]'>
-      <div class='title'>[[title]]</div>
+    <template is='dom-if' if='[[header]]'>
+      <div class='header'>[[header]]</div>
     </template>
-    <div class='card'>
-      <template is='dom-if' if='[[header]]'>
-        <div class='header'>[[header]]</div>
-      </template>
-      <content></content>
-    </div>
+    <content></content>
   </template>
 </dom-module>

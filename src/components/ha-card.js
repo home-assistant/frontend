@@ -4,11 +4,16 @@ export default new Polymer({
   is: 'ha-card',
 
   properties: {
-    title: {
-      type: String,
-    },
     header: {
       type: String,
+    },
+    /**
+     * The z-depth of the card, from 0-5.
+     */
+    elevation: {
+      type: Number,
+      value: 1,
+      reflectToAttribute: true,
     },
   },
 });
