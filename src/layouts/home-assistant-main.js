@@ -16,6 +16,7 @@ require('../layouts/partial-map');
 require('../layouts/partial-dev-call-service');
 require('../layouts/partial-dev-fire-event');
 require('../layouts/partial-dev-set-state');
+require('../layouts/partial-dev-info');
 require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
 require('../dialogs/ha-voice-command-dialog');
@@ -70,6 +71,11 @@ export default new Polymer({
     isSelectedDevService: {
       type: Boolean,
       bindNuclear: navigationGetters.isActivePane('devService'),
+    },
+
+    isSelectedDevInfo: {
+      type: Boolean,
+      bindNuclear: navigationGetters.isActivePane('devInfo'),
     },
 
     showSidebar: {
