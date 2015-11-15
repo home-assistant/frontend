@@ -38,11 +38,15 @@ export default new Polymer({
   },
 
   updateToggle(stateObj) {
-    this.toggleChecked = stateObj && stateObj.state !== 'off';
+    this.toggleChecked = this._checkToggle(stateObj);
   },
 
   forceStateChange() {
-    this.updateToggle(this.stateObj);
+    const newState = this._checkToggle(this.stateObj);
+    if (this.toggleChecked === newState) {
+      this.toggleChecked = !this.toggleChecked;
+    }
+    this.toggleChecked = newState;
   },
 
   turn_on() {
@@ -59,5 +63,9 @@ export default new Polymer({
     // result in the entity to be turned on. Since the state is not changing,
     // the resync is not called automatic.
     serviceActions.callTurnOff(this.stateObj.entityId).then(() => this.forceStateChange());
+  },
+
+  _checkToggle(stateObj) {
+    return stateObj && stateObj.state !== 'off';
   },
 });
