@@ -43,6 +43,8 @@ export default new Polymer({
       return 'green';
     case 'script':
       return state.state === 'on' ? 'blue' : 'grey';
+    case 'updater':
+      return 'blue';
     default:
       return '';
     }
@@ -51,6 +53,7 @@ export default new Polymer({
   computeValue(state) {
     switch (state.domain) {
     case 'device_tracker':
+    case 'updater':
     case 'sun':
     case 'scene':
     case 'script':
@@ -79,6 +82,8 @@ export default new Polymer({
     case 'scene':
     case 'script':
       return domainIcon(state.domain, state.state);
+    case 'updater':
+      return domainIcon(state.domain);
     case 'sun':
       return state.state === 'above_horizon' ?
         domainIcon(state.domain) : 'mdi:brightness-3';

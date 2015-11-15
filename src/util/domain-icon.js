@@ -37,6 +37,9 @@ export default function domainIcon(domain, state) {
   case 'notify':
     return 'mdi:comment-alert';
 
+  case 'updater':
+    return 'mdi:cloud-upload';
+
   case 'sun':
     return 'mdi:white-balance-sunny';
 
