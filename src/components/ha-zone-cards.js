@@ -16,8 +16,9 @@ const PRIORITY = {
   alarm_control_panel: 3,
   camera: 4,
   sensor: 5,
-  scene: 6,
-  script: 7,
+  binary_sensor: 6,
+  scene: 7,
+  script: 8,
   thermostat: 40,
   media_player: 50,
 };
