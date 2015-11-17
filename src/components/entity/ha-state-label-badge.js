@@ -39,6 +39,8 @@ export default new Polymer({
 
   computeClasses(state) {
     switch (state.domain) {
+    case 'binary_sensor':
+      return state.state === 'on' ? 'green' : 'red';
     case 'scene':
       return 'green';
     case 'script':
@@ -52,6 +54,7 @@ export default new Polymer({
 
   computeValue(state) {
     switch (state.domain) {
+    case 'binary_sensor':
     case 'device_tracker':
     case 'updater':
     case 'sun':
@@ -78,6 +81,12 @@ export default new Polymer({
       }
       // state == 'disarmed'
       return 'mdi:lock-open';
+    case 'binary_sensor':
+      if (state.state === 'on') {
+        return 'mdi:radiobox-marked';
+      }
+      // state == 'off'
+      return 'mdi:radiobox-blank';
     case 'device_tracker':
     case 'scene':
     case 'script':
