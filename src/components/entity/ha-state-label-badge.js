@@ -39,10 +39,9 @@ export default new Polymer({
 
   computeClasses(state) {
     switch (state.domain) {
-    case 'binary_sensor':
-      return state.state === 'on' ? 'blue' : 'grey';
     case 'scene':
       return 'green';
+    case 'binary_sensor':
     case 'script':
       return state.state === 'on' ? 'blue' : 'grey';
     case 'updater':
