@@ -41,6 +41,7 @@ export default new Polymer({
     switch (state.domain) {
     case 'scene':
       return 'green';
+    case 'binary_sensor':
     case 'script':
       return state.state === 'on' ? 'blue' : 'grey';
     case 'updater':
@@ -52,6 +53,7 @@ export default new Polymer({
 
   computeValue(state) {
     switch (state.domain) {
+    case 'binary_sensor':
     case 'device_tracker':
     case 'updater':
     case 'sun':
@@ -78,12 +80,12 @@ export default new Polymer({
       }
       // state == 'disarmed'
       return 'mdi:lock-open';
+    case 'binary_sensor':
     case 'device_tracker':
     case 'scene':
+    case 'updater':
     case 'script':
       return domainIcon(state.domain, state.state);
-    case 'updater':
-      return domainIcon(state.domain);
     case 'sun':
       return state.state === 'above_horizon' ?
         domainIcon(state.domain) : 'mdi:brightness-3';
