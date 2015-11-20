@@ -5,6 +5,9 @@ export default function domainIcon(domain, state) {
   case 'alarm_control_panel':
     return state && state === 'disarmed' ? 'mdi:lock-open' : 'mdi:lock';
 
+  case 'binary_sensor':
+    return state && state === 'off' ? 'mdi:radiobox-blank' : 'mdi:radiobox-marked';
+
   case 'camera':
     return 'mdi:video';
 
