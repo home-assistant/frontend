@@ -84,4 +84,10 @@ export default new Polymer({
 
     validateAuth(this.$.passwordInput.value, this.$.rememberLogin.checked);
   },
+
+  attached() {
+    // remove the HTML init message
+    const initMsg = document.getElementById('init');
+    initMsg.parentElement.removeChild(initMsg);
+  },
 });

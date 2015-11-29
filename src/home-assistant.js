@@ -72,10 +72,6 @@ export default new Polymer({
 
     startLocalStoragePreferencesSync();
 
-    // remove the HTML init message
-    const initMsg = document.getElementById('init');
-    initMsg.parentElement.removeChild(initMsg);
-
     this.loadIcons();
   },
 });
