@@ -59,7 +59,7 @@ export default new Polymer({
     const success = () => this.iconsLoaded = true;
     this.importHref(`/static/mdi-${this.icons}.html`,
                     success,
-                    this.importHref(`/static/mdi.html`, success, success));
+                    () => this.importHref(`/static/mdi.html`, success, success));
   },
 
   ready() {
