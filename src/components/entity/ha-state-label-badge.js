@@ -79,7 +79,7 @@ export default new Polymer({
         return 'mdi:home-variant';
       }
       // state == 'disarmed'
-      return 'mdi:lock-open';
+      return domainIcon(state.domain, state.state);
     case 'binary_sensor':
     case 'device_tracker':
     case 'scene':

@@ -19,8 +19,6 @@ const PRIORITY = {
   binary_sensor: 6,
   scene: 7,
   script: 8,
-  thermostat: 40,
-  media_player: 50,
 };
 
 function getPriority(domain) {
