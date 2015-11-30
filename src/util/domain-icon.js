@@ -3,10 +3,10 @@ import defaultIcon from './default-icon';
 export default function domainIcon(domain, state) {
   switch (domain) {
   case 'alarm_control_panel':
-    return state && state === 'disarmed' ? 'mdi:lock-open' : 'mdi:lock';
+    return state && state === 'disarmed' ? 'mdi:bell-outline' : 'mdi:bell';
 
   case 'binary_sensor':
-    return state && state === 'off' ? 'mdi:radiobox-blank' : 'mdi:radiobox-marked';
+    return state && state === 'off' ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
 
   case 'camera':
     return 'mdi:video';
@@ -29,6 +29,9 @@ export default function domainIcon(domain, state) {
   case 'light':
     return 'mdi:lightbulb';
 
+  case 'lock':
+    return state && state === 'unlocked' ? 'mdi:lock-open' : 'mdi:lock';
+
   case 'media_player':
     let icon = 'mdi:cast';
     if (state && state !== 'off' && state !== 'idle') {
@@ -43,15 +46,6 @@ export default function domainIcon(domain, state) {
   case 'updater':
     return 'mdi:cloud-upload';
 
-  case 'sun':
-    return 'mdi:white-balance-sunny';
-
-  case 'switch':
-    return 'mdi:flash';
-
-  case 'simple_alarm':
-    return 'mdi:bell';
-
   case 'scene':
     return 'mdi:google-pages';
 
@@ -60,6 +54,15 @@ export default function domainIcon(domain, state) {
 
   case 'sensor':
     return 'mdi:eye';
+
+  case 'simple_alarm':
+    return 'mdi:bell';
+
+  case 'sun':
+    return 'mdi:white-balance-sunny';
+
+  case 'switch':
+    return 'mdi:flash';
 
   case 'thermostat':
     return 'mdi:nest-thermostat';
