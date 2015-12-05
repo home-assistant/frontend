@@ -23,13 +23,25 @@
       text-align: center;
     }
 
-    .column {
-      max-width: 500px;
-    }
-
     .zone-card {
       margin-left: 8px;
       margin-bottom: 8px;
+    }
+
+    @media (max-width: 500px) {
+      :host {
+        padding-right: 0;
+      }
+
+      .zone-card {
+        margin-left: 0;
+      }
+    }
+
+    @media (min-width: 2000px) {
+      .column {
+        max-width: 500px;
+      }
     }
   </style>
 
