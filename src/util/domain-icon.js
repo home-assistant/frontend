@@ -46,6 +46,9 @@ export default function domainIcon(domain, state) {
   case 'updater':
     return 'mdi:cloud-upload';
 
+  case 'rollershutter':
+    return 'mdi:blinds';
+
   case 'scene':
     return 'mdi:google-pages';
 
