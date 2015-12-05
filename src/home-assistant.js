@@ -77,4 +77,10 @@ export default new Polymer({
 
     this.loadIcons();
   },
+
+  attached() {
+    // remove the HTML init message
+    const initMsg = document.getElementById('init');
+    initMsg.parentElement.removeChild(initMsg);
+  },
 });
