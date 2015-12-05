@@ -1,0 +1,28 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../components/state-info.html">
+
+<dom-module id="state-card-rollershutter">
+  <style>
+  :host {
+    line-height: 1.5;
+  }
+
+  .state {
+    margin-left: 16px;
+    text-align: right;
+  }
+
+  </style>
+  <template>
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]"></state-info>
+      <div class='state'>
+        <paper-icon-button icon="mdi:arrow-up" on-tap='onMoveUpTap'></paper-icon-button>
+        <paper-icon-button icon="mdi:arrow-down" on-tap='onMoveDownTap'></paper-icon-button>
+        <paper-icon-button icon="mdi:stop" on-tap='onStopTap'></paper-icon-button>
+      </div>
+    </div>
+  </template>
+</dom-module>
