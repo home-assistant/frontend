@@ -20,9 +20,11 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]"></state-info>
       <div class='state'>
-        <paper-icon-button icon="mdi:arrow-up" on-tap='onMoveUpTap'></paper-icon-button>
-        <paper-icon-button icon="mdi:arrow-down" on-tap='onMoveDownTap'></paper-icon-button>
+        <paper-icon-button icon="mdi:arrow-up" on-tap='onMoveUpTap'
+          disabled='[[computeIsFullyClosed(stateObj)]]'></paper-icon-button>
         <paper-icon-button icon="mdi:stop" on-tap='onStopTap'></paper-icon-button>
+        <paper-icon-button icon="mdi:arrow-down" on-tap='onMoveDownTap'
+          disabled='[[computeIsFullyOpen(stateObj)]]'></paper-icon-button>
       </div>
     </div>
   </template>

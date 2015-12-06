@@ -13,6 +13,14 @@ export default new Polymer({
     },
   },
 
+  computeIsFullyOpen(stateObj) {
+    return stateObj.attributes.current_position === 100;
+  },
+
+  computeIsFullyClosed(stateObj) {
+    return stateObj.attributes.current_position === 0;
+  },
+
   onMoveUpTap() {
     serviceActions.callService('rollershutter', 'move_up',
                                {entity_id: this.stateObj.entityId});
