@@ -73,13 +73,6 @@ export default new Polymer({
       type: Boolean,
       value: false,
     },
-
-    _boundOnBackdropTap: {
-      type: Function,
-      value: function bindBackdropTap() {
-        return this._onBackdropTap.bind(this);
-      },
-    },
   },
 
   /**
@@ -121,18 +114,10 @@ export default new Polymer({
 
   dialogOpenChanged(newVal) {
     if (newVal) {
-      this.$.dialog.backdropElement.addEventListener('click',
-                                                     this._boundOnBackdropTap);
       this.async(() => this._delayedDialogOpen = true, 10);
     } else if (!newVal && this.stateObj) {
       moreInfoActions.deselectEntity();
       this._delayedDialogOpen = false;
     }
-  },
-
-  _onBackdropTap() {
-    this.$.dialog.backdropElement.removeEventListener('click',
-                                                      this._boundOnBackdropTap);
-    this.dialogOpen = false;
   },
 });
