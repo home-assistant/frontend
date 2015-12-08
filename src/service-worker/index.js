@@ -36,7 +36,7 @@ self.addEventListener('fetch', event => {
   const path = event.request.url.substr(event.request.url.indexOf('/', 7));
 
   if (event.request.mode !== 'same-origin' || !INDEX_ROUTES.includes(path)) {
-    return fetch(event.request);
+    return;
   }
 
   event.respondWith(
