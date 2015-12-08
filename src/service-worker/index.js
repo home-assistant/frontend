@@ -3,6 +3,9 @@ const CACHE = '0.10';
 const INDEX_CACHE_URL = '/';
 const INDEX_ROUTES = ['/', '/logbook', '/history', '/map', '/devService', '/devState',
                       '/devEvent', '/devInfo', '/states'];
+const CACHE_URLS = [
+  '/static/favicon-192x192.png',
+];
 
 if (__DEV__) {
   console.log('Service Worker initialized.');
@@ -14,7 +17,7 @@ self.addEventListener('install', event => {
   }
 
   event.waitUntil(
-    caches.open(CACHE).then(cache => cache.add(INDEX_CACHE_URL))
+    caches.open(CACHE).then(cache => cache.addAll(CACHE_URLS.concat(INDEX_CACHE_URL)))
   );
 });
 
@@ -35,7 +38,15 @@ self.addEventListener('message', event => {
 self.addEventListener('fetch', event => {
   const path = event.request.url.substr(event.request.url.indexOf('/', 7));
 
-  if (event.request.mode !== 'same-origin' || !INDEX_ROUTES.includes(path)) {
+  // TODO: do not cache requests to 3rd party hosts (or remove those calls)
+
+  if (CACHE_URLS.includes(path)) {
+    event.respondWith(
+      caches.open(CACHE).then(cache => cache.match(event.request))
+    );
+  }
+
+  if (!INDEX_ROUTES.includes(path)) {
     return;
   }
 
@@ -46,10 +57,6 @@ self.addEventListener('fetch', event => {
           cache.put(INDEX_CACHE_URL, response.clone());
           return response;
         });
-
-        if (__DEV__ && cachedResponse) {
-          console.log('Serving cached response for', path);
-        }
 
         return cachedResponse || networkFetch;
       });
