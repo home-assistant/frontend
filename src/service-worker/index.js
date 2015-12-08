@@ -36,7 +36,7 @@ self.addEventListener('message', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const path = event.request.url.substr(event.request.url.indexOf('/', 7));
+  const path = event.request.url.substr(event.request.url.indexOf('/', 8));
 
   // TODO: do not cache requests to 3rd party hosts (or remove those calls)
 
