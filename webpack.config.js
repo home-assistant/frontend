@@ -1,5 +1,3 @@
-'use strict';
-
 var webpack = require("webpack");
 
 var definePlugin = new webpack.DefinePlugin({
@@ -8,22 +6,25 @@ var definePlugin = new webpack.DefinePlugin({
 });
 
 module.exports = {
-  entry: "./src/home-assistant.js",
+  entry: {
+    _app_compiled: './src/home-assistant.js',
+    service_worker: './src/service-worker/index.js',
+  },
   output: {
-      path: 'build',
-      filename: "_app_compiled.js"
+    path: 'build',
+    filename: '[name].js',
   },
   module: {
     loaders: [
       {
-        loader: "babel-loader",
+        loader: 'babel-loader',
         test: /.js$/,
-        exclude: /node_modules\/(^home-assistant-js)/
-      }
-    ]
+        exclude: /node_modules\/(^home-assistant-js)/,
+      },
+    ],
   },
   plugins: [
     definePlugin,
-    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /no-other-locales-for-now/)
-  ]
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /no-other-locales-for-now/),
+  ],
 };

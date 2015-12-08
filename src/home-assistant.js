@@ -62,6 +62,16 @@ export default new Polymer({
                     () => this.importHref(`/static/mdi.html`, success, success));
   },
 
+  created() {
+    this.registerServiceWorker();
+  },
+
+  attached() {
+    // remove the HTML init message
+    const initMsg = document.getElementById('init');
+    initMsg.parentElement.removeChild(initMsg);
+  },
+
   ready() {
     reactor.batch(() => {
       // if auth was given, tell the backend
@@ -78,9 +88,15 @@ export default new Polymer({
     this.loadIcons();
   },
 
-  attached() {
-    // remove the HTML init message
-    const initMsg = document.getElementById('init');
-    initMsg.parentElement.removeChild(initMsg);
+  registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    navigator.serviceWorker.register('./service_worker.js').then(reg => {
+      console.log('Service Worker registration succeeded.');
+    }).catch(error => {
+      console.log(`Service Worker registration failed: ${error}`);
+    });
   },
 });
