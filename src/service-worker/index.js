@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const CACHE = '0.10';
 const INDEX_CACHE_URL = '/';
 const INDEX_ROUTES = ['/', '/logbook', '/history', '/map', '/devService', '/devState',
