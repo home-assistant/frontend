@@ -95,10 +95,6 @@ export default new Polymer({
       return;
     }
 
-    navigator.serviceWorker.register('./service_worker.js').then(reg => {
-      console.log('Service Worker registration succeeded.');
-    }).catch(error => {
-      console.log(`Service Worker registration failed: ${error}`);
-    });
+    navigator.serviceWorker.register('./service_worker.js');
   },
 });
