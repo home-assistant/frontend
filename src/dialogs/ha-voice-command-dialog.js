@@ -1,10 +1,12 @@
-import {
-  voiceActions,
-  voiceGetters,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
+
+const {
+  voiceActions,
+  voiceGetters,
+} = hass;
 
 export default new Polymer({
   is: 'ha-voice-command-dialog',

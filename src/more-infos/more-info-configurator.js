@@ -1,13 +1,15 @@
-import {
-  streamGetters,
-  syncActions,
-  serviceActions,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/loading-box');
+
+const {
+  streamGetters,
+  syncActions,
+  serviceActions,
+} = hass;
 
 export default new Polymer({
   is: 'more-info-configurator',

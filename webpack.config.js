@@ -1,3 +1,4 @@
+var path = require('path');
 var webpack = require("webpack");
 
 var definePlugin = new webpack.DefinePlugin({
@@ -19,7 +20,10 @@ module.exports = {
       {
         loader: 'babel-loader',
         test: /.js$/,
-        exclude: /node_modules\/(^home-assistant-js)/,
+        include: [
+          path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, 'node_modules/home-assistant-js/src'),
+        ],
       },
     ],
   },

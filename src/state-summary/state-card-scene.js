@@ -1,7 +1,9 @@
 import Polymer from '../polymer';
-import { serviceActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 require('../components/state-info.js');
+
+const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'state-card-scene',

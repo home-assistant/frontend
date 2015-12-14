@@ -1,4 +1,4 @@
-import { logbookGetters, logbookActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
@@ -6,6 +6,8 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 require('./partial-base');
 require('../components/ha-logbook');
 require('../components/loading-box');
+
+const { logbookGetters, logbookActions } = hass;
 
 export default new Polymer({
   is: 'partial-logbook',

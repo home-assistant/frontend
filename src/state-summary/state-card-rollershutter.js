@@ -1,8 +1,10 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
 require('../components/state-info');
+
+const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'state-card-rollershutter',

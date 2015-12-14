@@ -1,9 +1,11 @@
-import { eventActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/events-list');
+
+const { eventActions } = hass;
 
 export default new Polymer({
   is: 'partial-dev-fire-event',

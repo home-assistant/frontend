@@ -1,10 +1,5 @@
 import Polymer from '../polymer';
-import {
-  navigationActions,
-  navigationGetters,
-  startUrlSync,
-  stopUrlSync,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
@@ -20,6 +15,13 @@ require('../layouts/partial-dev-info');
 require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
 require('../dialogs/ha-voice-command-dialog');
+
+const {
+  navigationActions,
+  navigationGetters,
+  startUrlSync,
+  stopUrlSync,
+} = hass;
 
 export default new Polymer({
   is: 'home-assistant-main',

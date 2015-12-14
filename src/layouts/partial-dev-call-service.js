@@ -1,13 +1,15 @@
-import {
-  reactor,
-  serviceActions,
-  serviceGetters,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/services-list');
+
+const {
+  reactor,
+  serviceActions,
+  serviceGetters,
+} = hass;
 
 export default new Polymer({
   is: 'partial-dev-call-service',
