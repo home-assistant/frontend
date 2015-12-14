@@ -1,18 +1,20 @@
 import Polymer from './polymer';
 
-import {
-  localStoragePreferences,
-  navigationActions,
-  reactor,
-  startLocalStoragePreferencesSync,
-  syncGetters,
-} from './util/home-assistant-js-instance';
+import hass from './util/home-assistant-js-instance';
 
 import nuclearObserver from './util/bound-nuclear-behavior';
 import validateAuth from './util/validate-auth';
 
 require('./layouts/login-form');
 require('./layouts/home-assistant-main');
+
+const {
+  localStoragePreferences,
+  navigationActions,
+  reactor,
+  startLocalStoragePreferencesSync,
+  syncGetters,
+} = hass;
 
 export default new Polymer({
   is: 'home-assistant',

@@ -1,12 +1,14 @@
-import {
-  configGetters,
-  errorLogActions,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
+
+const {
+  configGetters,
+  errorLogActions,
+} = hass;
 
 export default new Polymer({
   is: 'partial-dev-info',

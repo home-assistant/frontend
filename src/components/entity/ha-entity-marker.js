@@ -1,11 +1,13 @@
 import Polymer from '../../polymer';
-import {
+import hass from '../../util/home-assistant-js-instance';
+
+require('../../components/ha-label-badge');
+
+const {
   reactor,
   entityGetters,
   moreInfoActions,
-} from '../../util/home-assistant-js-instance';
-
-require('../../components/ha-label-badge');
+} = hass;
 
 export default new Polymer({
   is: 'ha-entity-marker',

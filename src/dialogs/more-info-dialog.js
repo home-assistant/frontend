@@ -1,10 +1,4 @@
-import {
-  configGetters,
-  entityHistoryGetters,
-  entityHistoryActions,
-  moreInfoGetters,
-  moreInfoActions,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
@@ -12,6 +6,14 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 require('../state-summary/state-card-content');
 require('../components/state-history-charts');
 require('../more-infos/more-info-content');
+
+const {
+  configGetters,
+  entityHistoryGetters,
+  entityHistoryActions,
+  moreInfoGetters,
+  moreInfoActions,
+} = hass;
 
 // if you don't want the history component to show add the domain to this array
 const DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];

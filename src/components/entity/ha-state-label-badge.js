@@ -1,12 +1,14 @@
 import Polymer from '../../polymer';
-import {
-  moreInfoActions,
-  serviceActions,
-} from '../../util/home-assistant-js-instance';
+import hass from '../../util/home-assistant-js-instance';
 import domainIcon from '../../util/domain-icon';
 import canToggle from '../../util/can-toggle';
 
 require('../../components/ha-label-badge');
+
+const {
+  moreInfoActions,
+  serviceActions,
+} = hass;
 
 export default new Polymer({
   is: 'ha-state-label-badge',

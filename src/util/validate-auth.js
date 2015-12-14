@@ -1,4 +1,6 @@
-import { authActions, localStoragePreferences } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
+
+const { authActions, localStoragePreferences } = hass;
 
 export default function(authToken, rememberAuth) {
   authActions.validate(authToken, {

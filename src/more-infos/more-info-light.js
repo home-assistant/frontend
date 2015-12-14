@@ -1,10 +1,11 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
 require('../components/ha-color-picker');
 
+const { serviceActions } = hass;
 const ATTRIBUTE_CLASSES = ['brightness', 'rgb_color', 'color_temp'];
 
 export default new Polymer({

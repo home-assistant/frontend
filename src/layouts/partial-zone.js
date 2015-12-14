@@ -1,4 +1,12 @@
-import {
+import hass from '../util/home-assistant-js-instance';
+
+import Polymer from '../polymer';
+import nuclearObserver from '../util/bound-nuclear-behavior';
+
+require('./partial-base');
+require('../components/ha-zone-cards');
+
+const {
   configGetters,
   entityGetters,
   voiceGetters,
@@ -6,13 +14,7 @@ import {
   syncGetters,
   syncActions,
   voiceActions,
-} from '../util/home-assistant-js-instance';
-
-import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
-
-require('./partial-base');
-require('../components/ha-zone-cards');
+} = hass;
 
 export default new Polymer({
   is: 'partial-zone',
@@ -67,6 +69,7 @@ export default new Polymer({
 
     columns: {
       type: Number,
+      value: 1,
     },
   },
 
