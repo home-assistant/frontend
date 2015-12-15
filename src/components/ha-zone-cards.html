@@ -25,6 +25,7 @@
 
     .column {
       max-width: 500px;
+      overflow-x: hidden;
     }
 
     .zone-card {
@@ -41,6 +42,13 @@
         margin-left: 0;
       }
     }
+
+    @media (max-width: 599px) {
+      .column {
+        max-width: 600px;
+      }
+    }
+
   </style>
 
   <template>
