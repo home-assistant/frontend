@@ -68,12 +68,6 @@ export default new Polymer({
     this.registerServiceWorker();
   },
 
-  attached() {
-    // remove the HTML init message
-    const initMsg = document.getElementById('init');
-    initMsg.parentElement.removeChild(initMsg);
-  },
-
   ready() {
     reactor.batch(() => {
       // if auth was given, tell the backend

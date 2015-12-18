@@ -2,6 +2,7 @@ import Polymer from '../polymer';
 import hass from '../util/home-assistant-js-instance';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
+import removeInitMsg from '../util/remove-init-message';
 
 require('../components/ha-sidebar');
 require('../layouts/partial-zone');
@@ -113,6 +114,7 @@ export default new Polymer({
   },
 
   attached() {
+    removeInitMsg();
     startUrlSync();
   },
 
