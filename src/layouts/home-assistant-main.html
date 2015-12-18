@@ -8,6 +8,7 @@
 <link rel='import' href='../layouts/partial-dev-call-service.html'>
 <link rel='import' href='../layouts/partial-dev-fire-event.html'>
 <link rel='import' href='../layouts/partial-dev-set-state.html'>
+<link rel='import' href='../layouts/partial-dev-template.html'>
 <link rel='import' href='../layouts/partial-dev-info.html'>
 <link rel='import' href='../managers/notification-manager.html'>
 <link rel="import" href="../dialogs/more-info-dialog.html">
@@ -49,6 +50,9 @@
       </template>
       <template is='dom-if' if='[[isSelectedDevState]]'>
         <partial-dev-set-state main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-dev-set-state>
+      </template>
+      <template is='dom-if' if='[[isSelectedDevTemplate]]'>
+        <partial-dev-template main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-dev-template>
       </template>
       <template is='dom-if' if='[[isSelectedDevInfo]]'>
         <partial-dev-info main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-dev-info>
