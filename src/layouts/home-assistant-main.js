@@ -12,6 +12,7 @@ require('../layouts/partial-map');
 require('../layouts/partial-dev-call-service');
 require('../layouts/partial-dev-fire-event');
 require('../layouts/partial-dev-set-state');
+require('../layouts/partial-dev-template');
 require('../layouts/partial-dev-info');
 require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
@@ -69,6 +70,11 @@ export default new Polymer({
     isSelectedDevState: {
       type: Boolean,
       bindNuclear: navigationGetters.isActivePane('devState'),
+    },
+
+    isSelectedDevTemplate: {
+      type: Boolean,
+      bindNuclear: navigationGetters.isActivePane('devTemplate'),
     },
 
     isSelectedDevService: {
