@@ -1,10 +1,12 @@
 import Polymer from '../polymer';
-import { moreInfoActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 import canToggle from '../util/can-toggle';
 
 require('../components/ha-card');
 require('../components/entity/ha-entity-toggle');
 require('../state-summary/state-card-content');
+
+const { moreInfoActions } = hass;
 
 export default new Polymer({
   is: 'ha-domain-card',
@@ -36,7 +38,7 @@ export default new Polymer({
   },
 
   showGroupToggle(groupEntity, states) {
-    if (!groupEntity || groupEntity.state !== 'on' && groupEntity.state !== 'off') {
+    if (!groupEntity || !states || groupEntity.state !== 'on' && groupEntity.state !== 'off') {
       return false;
     }
 

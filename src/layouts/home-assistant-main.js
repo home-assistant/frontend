@@ -1,12 +1,8 @@
 import Polymer from '../polymer';
-import {
-  navigationActions,
-  navigationGetters,
-  startUrlSync,
-  stopUrlSync,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
+import removeInitMsg from '../util/remove-init-message';
 
 require('../components/ha-sidebar');
 require('../layouts/partial-zone');
@@ -16,10 +12,18 @@ require('../layouts/partial-map');
 require('../layouts/partial-dev-call-service');
 require('../layouts/partial-dev-fire-event');
 require('../layouts/partial-dev-set-state');
+require('../layouts/partial-dev-template');
 require('../layouts/partial-dev-info');
 require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
 require('../dialogs/ha-voice-command-dialog');
+
+const {
+  navigationActions,
+  navigationGetters,
+  startUrlSync,
+  stopUrlSync,
+} = hass;
 
 export default new Polymer({
   is: 'home-assistant-main',
@@ -68,6 +72,11 @@ export default new Polymer({
       bindNuclear: navigationGetters.isActivePane('devState'),
     },
 
+    isSelectedDevTemplate: {
+      type: Boolean,
+      bindNuclear: navigationGetters.isActivePane('devTemplate'),
+    },
+
     isSelectedDevService: {
       type: Boolean,
       bindNuclear: navigationGetters.isActivePane('devService'),
@@ -111,6 +120,7 @@ export default new Polymer({
   },
 
   attached() {
+    removeInitMsg();
     startUrlSync();
   },
 

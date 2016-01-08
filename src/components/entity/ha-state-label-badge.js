@@ -1,12 +1,14 @@
 import Polymer from '../../polymer';
-import {
-  moreInfoActions,
-  serviceActions,
-} from '../../util/home-assistant-js-instance';
+import hass from '../../util/home-assistant-js-instance';
 import domainIcon from '../../util/domain-icon';
 import canToggle from '../../util/can-toggle';
 
 require('../../components/ha-label-badge');
+
+const {
+  moreInfoActions,
+  serviceActions,
+} = hass;
 
 export default new Polymer({
   is: 'ha-state-label-badge',
@@ -41,6 +43,7 @@ export default new Polymer({
     switch (state.domain) {
     case 'scene':
       return 'green';
+    case 'binary_sensor':
     case 'script':
       return state.state === 'on' ? 'blue' : 'grey';
     case 'updater':
@@ -52,6 +55,7 @@ export default new Polymer({
 
   computeValue(state) {
     switch (state.domain) {
+    case 'binary_sensor':
     case 'device_tracker':
     case 'updater':
     case 'sun':
@@ -77,13 +81,13 @@ export default new Polymer({
         return 'mdi:home-variant';
       }
       // state == 'disarmed'
-      return 'mdi:lock-open';
+      return domainIcon(state.domain, state.state);
+    case 'binary_sensor':
     case 'device_tracker':
     case 'scene':
+    case 'updater':
     case 'script':
       return domainIcon(state.domain, state.state);
-    case 'updater':
-      return domainIcon(state.domain);
     case 'sun':
       return state.state === 'above_horizon' ?
         domainIcon(state.domain) : 'mdi:brightness-3';

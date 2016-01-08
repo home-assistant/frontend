@@ -1,10 +1,6 @@
 {
-  "stage": 1,
-  "highlightCode": true,
-  "optional": ["es7.objectRestSpread", "es7.classProperties"],
-  "env": {
-    "production": {
-      "optional": ["optimisation"]
-    }
-  }
+  "presets": ["es2015"],
+  "plugins": ["transform-object-rest-spread", "transform-export-extensions",
+              "transform-class-properties", "babel-plugin-default-import-checker"],
+  "highlightCode": true
 }

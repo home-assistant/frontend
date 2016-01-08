@@ -1,9 +1,11 @@
-import { reactor, entityGetters, entityActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/entity-list');
+
+const { reactor, entityGetters, entityActions } = hass;
 
 export default new Polymer({
   is: 'partial-dev-set-state',

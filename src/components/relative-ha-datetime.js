@@ -1,10 +1,10 @@
 import moment from 'moment';
-import { util } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 import Polymer from '../polymer';
 
 const UPDATE_INTERVAL = 60000; // 60 seconds
 
-const { parseDateTime } = util;
+const { util: { parseDateTime } } = hass;
 
 export default new Polymer({
   is: 'relative-ha-datetime',

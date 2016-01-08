@@ -1,6 +1,8 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
+
+const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'more-info-alarm_control_panel',

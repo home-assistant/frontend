@@ -1,11 +1,19 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
 require('../components/ha-color-picker');
 
+const { serviceActions } = hass;
 const ATTRIBUTE_CLASSES = ['brightness', 'rgb_color', 'color_temp'];
+
+function pickColor(entityId, color) {
+  serviceActions.callService('light', 'turn_on', {
+    entity_id: entityId,
+    rgb_color: [color.r, color.g, color.b],
+  });
+}
 
 export default new Polymer({
   is: 'more-info-light',
@@ -66,13 +74,29 @@ export default new Polymer({
     });
   },
 
+  /**
+   * Called when a new color has been picked. We will not respond to every
+   * color pick event but have a pause between requests.
+   */
   colorPicked(ev) {
-    const color = ev.detail.rgb;
+    if (this.skipColorPicked) {
+      this.colorChanged = true;
+      return;
+    }
 
-    serviceActions.callService('light', 'turn_on', {
-      entity_id: this.stateObj.entityId,
-      rgb_color: [color.r, color.g, color.b],
-    });
+    this.color = ev.detail.rgb;
+
+    pickColor(this.stateObj.entityId, this.color);
+
+    this.colorChanged = false;
+    this.skipColorPicked = true;
+
+    this.colorDebounce = setTimeout(() => {
+      if (this.colorChanged) {
+        pickColor(this.stateObj.entityId, this.color);
+      }
+      this.skipColorPicked = false;
+    }, 500);
   },
 
 });

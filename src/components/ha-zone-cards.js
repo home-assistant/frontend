@@ -1,11 +1,12 @@
 import Polymer from '../polymer';
-import { util } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 require('.//ha-demo-badge');
 require('../cards/ha-badges-card');
 require('../cards/ha-domain-card');
 require('../cards/ha-introduction-card');
 
+const { util } = hass;
 const PRIORITY = {
   configurator: -20,
   group: -10,
@@ -16,10 +17,9 @@ const PRIORITY = {
   alarm_control_panel: 3,
   camera: 4,
   sensor: 5,
-  scene: 6,
-  script: 7,
-  thermostat: 40,
-  media_player: 50,
+  binary_sensor: 6,
+  scene: 7,
+  script: 8,
 };
 
 function getPriority(domain) {

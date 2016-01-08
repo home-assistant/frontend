@@ -1,14 +1,16 @@
-import {
-  configGetters,
-  navigationGetters,
-  authActions,
-  navigationActions,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./stream-status');
+
+const {
+  configGetters,
+  navigationGetters,
+  authActions,
+  navigationActions,
+} = hass;
 
 export default new Polymer({
   is: 'ha-sidebar',

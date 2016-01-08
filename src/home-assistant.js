@@ -1,18 +1,20 @@
 import Polymer from './polymer';
 
-import {
-  localStoragePreferences,
-  navigationActions,
-  reactor,
-  startLocalStoragePreferencesSync,
-  syncGetters,
-} from './util/home-assistant-js-instance';
+import hass from './util/home-assistant-js-instance';
 
 import nuclearObserver from './util/bound-nuclear-behavior';
 import validateAuth from './util/validate-auth';
 
 require('./layouts/login-form');
 require('./layouts/home-assistant-main');
+
+const {
+  localStoragePreferences,
+  navigationActions,
+  reactor,
+  startLocalStoragePreferencesSync,
+  syncGetters,
+} = hass;
 
 export default new Polymer({
   is: 'home-assistant',
@@ -54,9 +56,16 @@ export default new Polymer({
   },
 
   loadIcons() {
+    // If the import fails, we'll try to import again, must be a server glitch
+    // Since HTML imports only resolve once, we import another url.
+    const success = () => this.iconsLoaded = true;
     this.importHref(`/static/mdi-${this.icons}.html`,
-                    () => this.iconsLoaded = true,
-                    () => this.loadIcons());
+                    success,
+                    () => this.importHref(`/static/mdi.html`, success, success));
+  },
+
+  created() {
+    this.registerServiceWorker();
   },
 
   ready() {
@@ -72,10 +81,14 @@ export default new Polymer({
 
     startLocalStoragePreferencesSync();
 
-    // remove the HTML init message
-    const initMsg = document.getElementById('init');
-    initMsg.parentElement.removeChild(initMsg);
-
     this.loadIcons();
+  },
+
+  registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    navigator.serviceWorker.register('./service_worker.js');
   },
 });

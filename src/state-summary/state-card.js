@@ -1,8 +1,10 @@
-import { moreInfoActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
 require('./state-card-content');
+
+const { moreInfoActions } = hass;
 
 export default new Polymer({
   is: 'state-card',

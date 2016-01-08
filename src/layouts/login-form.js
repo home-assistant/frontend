@@ -1,9 +1,12 @@
 import Polymer from '../polymer';
 
-import { authGetters } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
 import validateAuth from '../util/validate-auth';
+import removeInitMsg from '../util/remove-init-message';
+
+const { authGetters } = hass;
 
 export default new Polymer({
   is: 'login-form',
@@ -51,6 +54,10 @@ export default new Polymer({
   observers: [
     'validatingChanged(isValidating, isInvalid)',
   ],
+
+  attached() {
+    removeInitMsg();
+  },
 
   computeShowSpinner(forceShowLoading, isValidating) {
     return forceShowLoading || isValidating;
