@@ -1,0 +1,71 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+
+<link rel="import" href="./partial-base.html">
+
+<link rel="import" href="../components/services-list.html">
+
+<dom-module id="partial-dev-template">
+  <style>
+    .content {
+      margin-top: 64px;
+      padding: 16px;
+      background-color: white;
+      -ms-user-select: initial;
+      -webkit-user-select: initial;
+      -moz-user-select: initial;
+    }
+
+    .edit-pane {
+      margin-right: 16px;
+    }
+
+    .horizontal .edit-pane {
+      max-width: 50%;      
+    }
+
+    .render-pane {
+      position: relative;
+    }
+
+    .render-spinner {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+
+    .rendered {
+      clear: both;
+      white-space: pre-wrap;
+    }
+
+    .rendered.error {
+      color: red;
+    }
+  </style>
+  <template>
+    <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
+      <span header-title>Template Editor</span>
+
+      <div class$='[[computeFormClasses(narrow)]]'>
+        <div class='edit-pane'>
+          <p>
+            Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.
+          </p>
+            <ul>
+              <li><a href='http://jinja.pocoo.org/docs/dev/templates/' target='_blank'>Jinja2 tempate documentation</a></li>
+              <li><a href='https://home-assistant.io/getting-started/templating/' target='_blank'>Home Assistant template extensions</a></li>
+            </ul>
+          </p>
+          <paper-textarea label="Template" value='{{template}}'></paper-textarea>
+        </div>
+        <div class='render-pane'>
+          <paper-spinner class='render-spinner' active='[[rendering]]'></paper-spinner>
+          <pre class$='[[computeRenderedClasses(error)]]'>[[processed]]</pre>
+        </div>
+      </div>
+    </partial-base>
+  </template>
+</dom-module>

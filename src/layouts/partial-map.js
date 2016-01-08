@@ -1,12 +1,14 @@
-import {
-  configGetters,
-  entityGetters,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/entity/ha-entity-marker');
+
+const {
+  configGetters,
+  entityGetters,
+} = hass;
 
 window.L.Icon.Default.imagePath = '/static/images/leaflet';
 

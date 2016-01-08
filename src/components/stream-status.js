@@ -1,7 +1,9 @@
-import { streamGetters, streamActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
+
+const { streamGetters, streamActions } = hass;
 
 export default new Polymer({
   is: 'stream-status',

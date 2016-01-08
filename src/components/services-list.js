@@ -1,9 +1,11 @@
-import { serviceGetters } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./domain-icon');
+
+const { serviceGetters } = hass;
 
 export default new Polymer({
   is: 'services-list',

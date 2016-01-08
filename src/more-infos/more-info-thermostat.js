@@ -1,8 +1,9 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
+const { serviceActions } = hass;
 const ATTRIBUTE_CLASSES = ['away_mode'];
 
 export default new Polymer({
@@ -44,13 +45,9 @@ export default new Polymer({
   },
 
   targetTemperatureSliderChanged(ev) {
-    const temp = parseInt(ev.target.value, 10);
-
-    if (isNaN(temp)) return;
-
     serviceActions.callService('thermostat', 'set_temperature', {
       entity_id: this.stateObj.entityId,
-      temperature: temp,
+      temperature: ev.target.value,
     });
   },
 

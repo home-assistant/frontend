@@ -1,9 +1,9 @@
 import Polymer from '../polymer';
-import { util } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import formatTime from '../util/format-time';
 
-const { parseDateTime } = util;
+const { util: { parseDateTime } } = hass;
 
 export default new Polymer({
   is: 'more-info-sun',

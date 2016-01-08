@@ -1,7 +1,9 @@
-import { eventGetters } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
+
+const { eventGetters } = hass;
 
 export default new Polymer({
   is: 'events-list',

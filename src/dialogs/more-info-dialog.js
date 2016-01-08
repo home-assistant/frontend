@@ -1,10 +1,4 @@
-import {
-  configGetters,
-  entityHistoryGetters,
-  entityHistoryActions,
-  moreInfoGetters,
-  moreInfoActions,
-} from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
@@ -12,6 +6,14 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 require('../state-summary/state-card-content');
 require('../components/state-history-charts');
 require('../more-infos/more-info-content');
+
+const {
+  configGetters,
+  entityHistoryGetters,
+  entityHistoryActions,
+  moreInfoGetters,
+  moreInfoActions,
+} = hass;
 
 // if you don't want the history component to show add the domain to this array
 const DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
@@ -73,13 +75,6 @@ export default new Polymer({
       type: Boolean,
       value: false,
     },
-
-    _boundOnBackdropTap: {
-      type: Function,
-      value: function bindBackdropTap() {
-        return this._onBackdropTap.bind(this);
-      },
-    },
   },
 
   /**
@@ -121,18 +116,10 @@ export default new Polymer({
 
   dialogOpenChanged(newVal) {
     if (newVal) {
-      this.$.dialog.backdropElement.addEventListener('click',
-                                                     this._boundOnBackdropTap);
       this.async(() => this._delayedDialogOpen = true, 10);
     } else if (!newVal && this.stateObj) {
       moreInfoActions.deselectEntity();
       this._delayedDialogOpen = false;
     }
-  },
-
-  _onBackdropTap() {
-    this.$.dialog.backdropElement.removeEventListener('click',
-                                                      this._boundOnBackdropTap);
-    this.dialogOpen = false;
   },
 });

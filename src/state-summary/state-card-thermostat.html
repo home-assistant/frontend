@@ -11,15 +11,22 @@
   .state {
     margin-left: 16px;
     text-align: right;
+    overflow-x: hidden;
   }
 
   .target {
-      text-transform: capitalize;
-      font-weight: 400;
+    text-transform: capitalize;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
   }
 
   .current {
-      color: var(--secondary-text-color);
+    color: var(--secondary-text-color);
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
   }
   </style>
   <template>
