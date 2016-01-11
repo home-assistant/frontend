@@ -12,7 +12,7 @@
       color: var(--accent-color);
     }
 
-    .volume {
+    .volume .volume_buttons {
       margin-bottom: 8px;
 
       max-height: 0px;
@@ -43,8 +43,18 @@
           </template>
         </div>
       </div>
+      <div class='volume_buttons center horizontal layout'
+          hidden$='[[computeHideVolumeButtons(isOff, supportsVolumeButtons)]]'>
+        <paper-icon-button on-tap="handleVolumeTap"
+          icon="mdi:volume-off"></paper-icon-button>
+        <paper-icon-button id="volumeDown" disabled$='[[isMuted]]'
+          icon="mdi:volume-medium"></paper-icon-button>
+        <paper-icon-button id="volumeUp" disabled$='[[isMuted]]'
+          icon="mdi:volume-high"></paper-icon-button>
+      </div>
       <div class='volume center horizontal layout' hidden$='[[!supportsVolumeSet]]'>
         <paper-icon-button on-tap="handleVolumeTap"
+          hidden$="[[supportsVolumeButtons]]"
           icon="[[computeMuteVolumeIcon(isMuted)]]"></paper-icon-button>
         <paper-slider disabled$='[[isMuted]]'
           min='0' max='100' value='[[volumeSliderValue]]'
