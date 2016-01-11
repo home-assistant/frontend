@@ -80,7 +80,6 @@ export default new Polymer({
   attached() {
     // This is required to bind a mousedown event in all browsers
     const _this = this;
-    window.test = this.$.volumeUp;
     this.$.volumeUp.onmousedown = function onVolumeUpDown() {_this.handleVolumeUp();};
     this.$.volumeUp.ontouchstart = function onVolumeUpDown() {_this.handleVolumeUp();};
     this.$.volumeDown.onmousedown = function onVolumeDownDown() {_this.handleVolumeDown();};
