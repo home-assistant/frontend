@@ -79,7 +79,7 @@ export default new Polymer({
 
   attached() {
     // This is required to bind a mousedown event in all browsers
-    let _this = this;
+    const _this = this;
     window.test = this.$.volumeUp;
     this.$.volumeUp.onmousedown = function onVolumeUpDown() {_this.handleVolumeUp();};
     this.$.volumeUp.ontouchstart = function onVolumeUpDown() {_this.handleVolumeUp();};
@@ -157,19 +157,19 @@ export default new Polymer({
   },
 
   handleVolumeUp() {
-    let obj = this.$.volumeUp;
+    const obj = this.$.volumeUp;
     this.handleVolumeWorker('volume_up', obj, true);
   },
 
   handleVolumeDown() {
-    let obj = this.$.volumeDown;
+    const obj = this.$.volumeDown;
     this.handleVolumeWorker('volume_down', obj, true);
   },
 
   handleVolumeWorker(service, obj, force) {
     if (force || (obj !== undefined && obj.pointerDown)) {
       this.callService(service);
-      let _this = this;
+      const _this = this;
       setTimeout(function callback() {_this.handleVolumeWorker(service, obj, false);}, 500);
     }
   },
