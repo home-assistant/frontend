@@ -73,16 +73,18 @@ export default new Polymer({
     supportsVolumeButtons: {
       type: Boolean,
       value: false,
-    }
+    },
 
   },
 
   attached() {
     // This is required to bind a mousedown event in all browsers
-    // Specifically, Safari does not allow the on-down flag
-    var _this = this;
-    this.$.volumeUp.onmousedown = function() {_this.handleVolumeUp()};
-    this.$.volumeDown.onmousedown = function() {_this.handleVolumeDown()};
+    let _this = this;
+    window.test = this.$.volumeUp;
+    this.$.volumeUp.onmousedown = function onVolumeUpDown() {_this.handleVolumeUp();};
+    this.$.volumeUp.ontouchstart = function onVolumeUpDown() {_this.handleVolumeUp();};
+    this.$.volumeDown.onmousedown = function onVolumeDownDown() {_this.handleVolumeDown();};
+    this.$.volumeDown.ontouchstart = function onVolumeDownDown() {_this.handleVolumeDown();};
   },
 
   stateObjChanged(newVal) {
@@ -154,21 +156,21 @@ export default new Polymer({
     this.callService('volume_mute', { is_volume_muted: !this.isMuted });
   },
 
-  handleVolumeUp(ev) {
-    var obj = this.$.volumeUp;
+  handleVolumeUp() {
+    let obj = this.$.volumeUp;
     this.handleVolumeWorker('volume_up', obj, true);
   },
 
-  handleVolumeDown(ev) {
-    var obj = this.$.volumeDown;
+  handleVolumeDown() {
+    let obj = this.$.volumeDown;
     this.handleVolumeWorker('volume_down', obj, true);
   },
 
   handleVolumeWorker(service, obj, force) {
-    if (force || (obj != undefined && obj.pointerDown)) {
+    if (force || (obj !== undefined && obj.pointerDown)) {
       this.callService(service);
-      var _this = this;
-      setTimeout(function(){ _this.handleVolumeWorker(service, obj, false); }, 500);
+      let _this = this;
+      setTimeout(function callback() {_this.handleVolumeWorker(service, obj, false);}, 500);
     }
   },
 
