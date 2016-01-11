@@ -70,6 +70,19 @@ export default new Polymer({
       value: false,
     },
 
+    supportsVolumeButtons: {
+      type: Boolean,
+      value: false,
+    }
+
+  },
+
+  attached() {
+    // This is required to bind a mousedown event in all browsers
+    // Specifically, Safari does not allow the on-down flag
+    var _this = this;
+    this.$.volumeUp.onmousedown = function() {_this.handleVolumeUp()};
+    this.$.volumeDown.onmousedown = function() {_this.handleVolumeDown()};
   },
 
   stateObjChanged(newVal) {
@@ -85,6 +98,7 @@ export default new Polymer({
       this.supportsNextTrack = (newVal.attributes.supported_media_commands & 32) !== 0;
       this.supportsTurnOn = (newVal.attributes.supported_media_commands & 128) !== 0;
       this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
+      this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
     }
 
     this.async(() => this.fire('iron-resize'), 500);
@@ -100,6 +114,10 @@ export default new Polymer({
 
   computeMuteVolumeIcon(isMuted) {
     return isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
+  },
+
+  computeHideVolumeButtons(isOff, supportsVolumeButtons) {
+    return !supportsVolumeButtons || isOff;
   },
 
   computePlaybackControlIcon() {
@@ -134,6 +152,24 @@ export default new Polymer({
       return;
     }
     this.callService('volume_mute', { is_volume_muted: !this.isMuted });
+  },
+
+  handleVolumeUp(ev) {
+    var obj = this.$.volumeUp;
+    this.handleVolumeWorker('volume_up', obj, true);
+  },
+
+  handleVolumeDown(ev) {
+    var obj = this.$.volumeDown;
+    this.handleVolumeWorker('volume_down', obj, true);
+  },
+
+  handleVolumeWorker(service, obj, force) {
+    if (force || (obj != undefined && obj.pointerDown)) {
+      this.callService(service);
+      var _this = this;
+      setTimeout(function(){ _this.handleVolumeWorker(service, obj, false); }, 500);
+    }
   },
 
   volumeSliderChanged(ev) {
