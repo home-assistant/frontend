@@ -12,7 +12,7 @@
       color: var(--accent-color);
     }
 
-    .volume .volume_buttons {
+    .volume {
       margin-bottom: 8px;
 
       max-height: 0px;
@@ -33,7 +33,7 @@
             hidden$='[[computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff)]]'></paper-icon-button>
         </div>
         <div>
-          <template is='dom-if' if='[[!isOff]]'>
+          <template is='dom-if' if='[[computeShowPlaybackControls(isOff, hasMediaControl)]]'>
             <paper-icon-button icon='mdi:skip-previous' on-tap='handlePrevious'
               hidden$='[[!supportsPreviousTrack]]'></paper-icon-button>
             <paper-icon-button icon='[[computePlaybackControlIcon(stateObj)]]'

@@ -75,6 +75,11 @@ export default new Polymer({
       value: false,
     },
 
+    hasMediaControl: {
+      type: Boolean,
+      value: false,
+    },
+
   },
 
   attached() {
@@ -88,8 +93,11 @@ export default new Polymer({
 
   stateObjChanged(newVal) {
     if (newVal) {
+      const hasMediaStates = ['playing', 'paused', 'unknown'];
+
       this.isOff = newVal.state === 'off';
       this.isPlaying = newVal.state === 'playing';
+      this.hasMediaControl = hasMediaStates.indexOf(newVal.state) !== -1;
       this.volumeSliderValue = newVal.attributes.volume_level * 100;
       this.isMuted = newVal.attributes.is_volume_muted;
       this.supportsPause = (newVal.attributes.supported_media_commands & 1) !== 0;
@@ -119,6 +127,10 @@ export default new Polymer({
 
   computeHideVolumeButtons(isOff, supportsVolumeButtons) {
     return !supportsVolumeButtons || isOff;
+  },
+
+  computeShowPlaybackControls(isOff, hasMedia) {
+    return !isOff && hasMedia;
   },
 
   computePlaybackControlIcon() {
