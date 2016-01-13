@@ -48,8 +48,10 @@
         <paper-icon-button on-tap="handleVolumeTap"
           icon="mdi:volume-off"></paper-icon-button>
         <paper-icon-button id="volumeDown" disabled$='[[isMuted]]'
+          on-mousedown="handleVolumeDown" on-touchstart="handleVolumeDown"
           icon="mdi:volume-medium"></paper-icon-button>
         <paper-icon-button id="volumeUp" disabled$='[[isMuted]]'
+          on-mousedown="handleVolumeUp" on-touchstart="handleVolumeUp"
           icon="mdi:volume-high"></paper-icon-button>
       </div>
       <div class='volume center horizontal layout' hidden$='[[!supportsVolumeSet]]'>
