@@ -45,13 +45,6 @@ export default new Polymer({
       computed: 'computeShowListenInterface(isListening, isTransmitting)',
       observer: 'showListenInterfaceChanged',
     },
-
-    _boundOnBackdropTap: {
-      type: Function,
-      value: function bindBackdropTap() {
-        return this._onBackdropTap.bind(this);
-      },
-    },
   },
 
   computeShowListenInterface(isListening, isTransmitting) {
@@ -59,10 +52,7 @@ export default new Polymer({
   },
 
   dialogOpenChanged(newVal) {
-    if (newVal) {
-      this.$.dialog.backdropElement.addEventListener('click',
-                                                     this._boundOnBackdropTap);
-    } else if (!newVal && this.isListening) {
+    if (!newVal && this.isListening) {
       voiceActions.stop();
     }
   },
@@ -72,14 +62,6 @@ export default new Polymer({
       this.dialogOpen = false;
     } else if (newVal) {
       this.dialogOpen = true;
-    }
-  },
-
-  _onBackdropTap() {
-    this.$.dialog.backdropElement.removeEventListener('click',
-                                                      this._boundOnBackdropTap);
-    if (this.isListening) {
-      voiceActions.stop();
     }
   },
 });
