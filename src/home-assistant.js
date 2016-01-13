@@ -89,6 +89,11 @@ export default new Polymer({
       return;
     }
 
-    navigator.serviceWorker.register('./service_worker.js');
+    navigator.serviceWorker.register('./service_worker.js').catch(err => {
+      if (__DEV__) {
+        console.warn('Unable to register service worker', err);
+      }
+
+    });
   },
 });
