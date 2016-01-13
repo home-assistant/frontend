@@ -24,11 +24,11 @@
         <paper-icon-button
           icon="mdi:refresh"
           class$="[[computeRefreshButtonClass(isFetching)]]"
-          on-click="handleRefresh" hidden$="[[isStreaming]]"
+          on-tap="handleRefresh" hidden$="[[isStreaming]]"
         ></paper-icon-button>
         <paper-icon-button
           icon="mdi:microphone" hidden$='[[!canListen]]'
-          on-click="handleListenClick"></paper-icon-button>
+          on-tap="handleListenClick"></paper-icon-button>
       </paper-toolbar>
 
       <div class='fit'>

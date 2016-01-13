@@ -46,7 +46,7 @@
         </template>
 
         <p class='submit'>
-          <paper-button raised on-click='submitClicked'
+          <paper-button raised on-tap='submitClicked'
                         hidden$='[[isConfiguring]]'>[[submitCaption]]</paper-button>
 
           <loading-box hidden$='[[!isConfiguring]]'>Configuring</loading-box>

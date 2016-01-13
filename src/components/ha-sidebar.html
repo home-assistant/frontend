@@ -69,30 +69,30 @@
         <div class="title">Home Assistant</div>
       </paper-toolbar>
       <div class='menu'>
-        <paper-icon-item on-click='menuClicked' data-panel='states'>
+        <paper-icon-item on-tap='menuClicked' data-panel='states'>
           <iron-icon item-icon icon='mdi:apps'></iron-icon> States
         </paper-icon-item>
 
-        <paper-icon-item on-click='menuClicked' data-panel='map'>
+        <paper-icon-item on-tap='menuClicked' data-panel='map'>
           <iron-icon item-icon icon='mdi:account-location'></iron-icon>
           Map
         </paper-icon-item>
 
         <template is='dom-if' if='[[hasHistoryComponent]]'>
-          <paper-icon-item on-click='menuClicked' data-panel='history'>
+          <paper-icon-item on-tap='menuClicked' data-panel='history'>
             <iron-icon item-icon icon='mdi:poll-box'></iron-icon>
             History
           </paper-icon-item>
         </template>
 
         <template is='dom-if' if='[[hasLogbookComponent]]'>
-          <paper-icon-item on-click='menuClicked' data-panel='logbook'>
+          <paper-icon-item on-tap='menuClicked' data-panel='logbook'>
             <iron-icon item-icon icon='mdi:format-list-bulleted-type'></iron-icon>
             Logbook
           </paper-icon-item>
         </template>
 
-        <paper-icon-item on-click='menuClicked' data-panel='logout' class='logout'>
+        <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
           <iron-icon item-icon icon='mdi:exit-to-app'></iron-icon>
           Log Out
         </paper-icon-item>
@@ -106,19 +106,19 @@
         <div class='dev-tools layout horizontal justified'>
           <paper-icon-button
             icon='mdi:remote' data-panel='devService'
-            on-click='handleDevClick'></paper-icon-button>
+            on-tap='handleDevClick'></paper-icon-button>
           <paper-icon-button
             icon='mdi:code-tags' data-panel='devState'
-            on-click='handleDevClick'></paper-icon-button>
+            on-tap='handleDevClick'></paper-icon-button>
           <paper-icon-button
             icon='mdi:nfc' data-panel='devEvent'
-            on-click='handleDevClick'></paper-icon-button>
+            on-tap='handleDevClick'></paper-icon-button>
           <paper-icon-button
             icon='mdi:file-xml' data-panel='devTemplate'
-            on-click='handleDevClick'></paper-icon-button>
+            on-tap='handleDevClick'></paper-icon-button>
           <paper-icon-button
             icon='mdi:information-outline' data-panel='devInfo'
-            on-click='handleDevClick'></paper-icon-button>
+            on-tap='handleDevClick'></paper-icon-button>
         </div>
       </div>
     </paper-header-panel>

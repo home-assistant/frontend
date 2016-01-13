@@ -36,7 +36,7 @@
       </div>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
-          <div class='state' on-click='entityTapped'>
+          <div class='state' on-tap='entityTapped'>
             <state-card-content class="state-card" state-obj="[[item]]"></state-card-content>
           </div>
         </template>
