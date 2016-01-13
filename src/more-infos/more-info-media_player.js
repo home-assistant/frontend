@@ -70,12 +70,25 @@ export default new Polymer({
       value: false,
     },
 
+    supportsVolumeButtons: {
+      type: Boolean,
+      value: false,
+    },
+
+    hasMediaControl: {
+      type: Boolean,
+      value: false,
+    },
+
   },
 
   stateObjChanged(newVal) {
     if (newVal) {
+      const hasMediaStates = ['playing', 'paused', 'unknown'];
+
       this.isOff = newVal.state === 'off';
       this.isPlaying = newVal.state === 'playing';
+      this.hasMediaControl = hasMediaStates.indexOf(newVal.state) !== -1;
       this.volumeSliderValue = newVal.attributes.volume_level * 100;
       this.isMuted = newVal.attributes.is_volume_muted;
       this.supportsPause = (newVal.attributes.supported_media_commands & 1) !== 0;
@@ -85,6 +98,7 @@ export default new Polymer({
       this.supportsNextTrack = (newVal.attributes.supported_media_commands & 32) !== 0;
       this.supportsTurnOn = (newVal.attributes.supported_media_commands & 128) !== 0;
       this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
+      this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
     }
 
     this.async(() => this.fire('iron-resize'), 500);
@@ -100,6 +114,14 @@ export default new Polymer({
 
   computeMuteVolumeIcon(isMuted) {
     return isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
+  },
+
+  computeHideVolumeButtons(isOff, supportsVolumeButtons) {
+    return !supportsVolumeButtons || isOff;
+  },
+
+  computeShowPlaybackControls(isOff, hasMedia) {
+    return !isOff && hasMedia;
   },
 
   computePlaybackControlIcon() {
@@ -134,6 +156,23 @@ export default new Polymer({
       return;
     }
     this.callService('volume_mute', { is_volume_muted: !this.isMuted });
+  },
+
+  handleVolumeUp() {
+    const obj = this.$.volumeUp;
+    this.handleVolumeWorker('volume_up', obj, true);
+  },
+
+  handleVolumeDown() {
+    const obj = this.$.volumeDown;
+    this.handleVolumeWorker('volume_down', obj, true);
+  },
+
+  handleVolumeWorker(service, obj, force) {
+    if (force || (obj !== undefined && obj.pointerDown)) {
+      this.callService(service);
+      this.async(() => this.handleVolumeWorker(service, obj, false), 500);
+    }
   },
 
   volumeSliderChanged(ev) {
