@@ -82,15 +82,6 @@ export default new Polymer({
 
   },
 
-  attached() {
-    // This is required to bind a mousedown event in all browsers
-    const _this = this;
-    this.$.volumeUp.onmousedown = function onVolumeUpDown() {_this.handleVolumeUp();};
-    this.$.volumeUp.ontouchstart = function onVolumeUpDown() {_this.handleVolumeUp();};
-    this.$.volumeDown.onmousedown = function onVolumeDownDown() {_this.handleVolumeDown();};
-    this.$.volumeDown.ontouchstart = function onVolumeDownDown() {_this.handleVolumeDown();};
-  },
-
   stateObjChanged(newVal) {
     if (newVal) {
       const hasMediaStates = ['playing', 'paused', 'unknown'];
@@ -180,8 +171,7 @@ export default new Polymer({
   handleVolumeWorker(service, obj, force) {
     if (force || (obj !== undefined && obj.pointerDown)) {
       this.callService(service);
-      const _this = this;
-      setTimeout(function callback() {_this.handleVolumeWorker(service, obj, false);}, 500);
+      this.async(() => this.handleVolumeWorker(service, obj, false), 500);
     }
   },
 
