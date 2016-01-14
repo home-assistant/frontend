@@ -84,7 +84,7 @@ export default new Polymer({
         return;
       }
       cards._columns[increaseIndex()].push(name);
-      cards[name] = {entities, groupEntity};
+      cards[name] = { entities, groupEntity };
     }
 
     byDomain.keySeq().sortBy(domain => getPriority(domain))

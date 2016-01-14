@@ -1,4 +1,5 @@
 {
+  "parser": "babel-eslint",
   "extends": "airbnb/base",
   "globals": {
     "__DEV__": false,

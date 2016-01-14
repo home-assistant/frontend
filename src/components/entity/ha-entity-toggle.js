@@ -72,7 +72,7 @@ export default new Polymer({
       service = turnOn ? 'turn_on' : 'turn_off';
     }
 
-    serviceActions.callService(domain, service, {entity_id: this.stateObj.entityId})
+    serviceActions.callService(domain, service, { entity_id: this.stateObj.entityId })
       .then(() => this.forceStateChange());
   },
 });

@@ -44,7 +44,7 @@ export default new Polymer({
 
   computeGroupedStateHistory(isLoading, stateHistory) {
     if (isLoading || !stateHistory) {
-      return {line: [], timeline: []};
+      return { line: [], timeline: [] };
     }
 
     const lineChartDevices = {};
@@ -75,7 +75,7 @@ export default new Polymer({
     const unitStates = Object.keys(lineChartDevices).map(
       (unit) => [unit, lineChartDevices[unit]]);
 
-    return {line: unitStates, timeline: timelineDevices};
+    return { line: unitStates, timeline: timelineDevices };
   },
 
   googleApiLoaded() {

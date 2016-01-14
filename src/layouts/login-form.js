@@ -47,7 +47,7 @@ export default new Polymer({
   },
 
   listeners: {
-    'keydown': 'passwordKeyDown',
+    keydown: 'passwordKeyDown',
     'loginButton.tap': 'validatePassword',
   },
 

@@ -22,6 +22,6 @@ export default new Polymer({
 
   eventSelected(ev) {
     ev.preventDefault();
-    this.fire('event-selected', {eventType: ev.model.event.event});
+    this.fire('event-selected', { eventType: ev.model.event.event });
   },
 });

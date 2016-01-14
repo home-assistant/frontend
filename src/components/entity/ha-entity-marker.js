@@ -40,7 +40,7 @@ export default new Polymer({
   },
 
   listeners: {
-    'tap': 'badgeTap',
+    tap: 'badgeTap',
   },
 
   badgeTap(ev) {

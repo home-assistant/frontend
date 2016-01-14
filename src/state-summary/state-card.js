@@ -16,7 +16,7 @@ export default new Polymer({
   },
 
   listeners: {
-    'tap': 'cardTapped',
+    tap: 'cardTapped',
   },
 
   cardTapped(ev) {
