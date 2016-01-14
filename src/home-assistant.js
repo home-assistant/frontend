@@ -91,9 +91,10 @@ export default new Polymer({
 
     navigator.serviceWorker.register('./service_worker.js').catch(err => {
       if (__DEV__) {
+        /* eslint-disable no-console */
         console.warn('Unable to register service worker', err);
+        /* eslint-enable no-console */
       }
-
     });
   },
 });

@@ -22,6 +22,6 @@ export default new Polymer({
 
   entitySelected(ev) {
     ev.preventDefault();
-    this.fire('entity-selected', {entityId: ev.model.entity.entityId});
+    this.fire('entity-selected', { entityId: ev.model.entity.entityId });
   },
 });

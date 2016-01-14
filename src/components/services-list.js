@@ -30,7 +30,7 @@ export default new Polymer({
   serviceClicked(ev) {
     ev.preventDefault();
     this.fire(
-      'service-selected', {domain: ev.model.domain,
-                           service: ev.model.service});
+      'service-selected', { domain: ev.model.domain,
+                           service: ev.model.service });
   },
 });

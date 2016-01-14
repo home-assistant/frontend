@@ -37,6 +37,7 @@ export default new Polymer({
 
     template: {
       type: String,
+      /* eslint-disable max-len */
       value: '{%- if is_state("device_tracker.paulus", "home") and \n' +
              '       is_state("device_tracker.anne_therese", "home") -%}\n' +
              '\n' +
@@ -55,6 +56,7 @@ export default new Polymer({
              '  {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}\n' +
              '  {{ state.name | lower }} is {{state.state}} {{- state.attributes.unit_of_measurement}}\n' +
              '{%- endfor -%}.',
+      /* eslint-enable max-len */
       observer: 'templateChanged',
     },
 

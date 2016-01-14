@@ -25,10 +25,10 @@ export default new Polymer({
   },
 
   listeners: {
-    'mousedown': 'onMouseDown',
-    'mouseup': 'onMouseUp',
-    'touchstart': 'onTouchStart',
-    'touchend': 'onTouchEnd',
+    mousedown: 'onMouseDown',
+    mouseup: 'onMouseUp',
+    touchstart: 'onTouchStart',
+    touchend: 'onTouchEnd',
   },
 
   onMouseDown(ev) {
@@ -82,13 +82,13 @@ export default new Polymer({
   onColorSelect(x, y) {
     const data = this.context.getImageData(x, y, 1, 1).data;
 
-    this.setColor({r: data[0], g: data[1], b: data[2]});
+    this.setColor({ r: data[0], g: data[1], b: data[2] });
   },
 
   setColor(rgb) {
     this.color = rgb;
 
-    this.fire('colorselected', {rgb: this.color});
+    this.fire('colorselected', { rgb: this.color });
   },
 
   ready() {

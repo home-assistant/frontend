@@ -70,12 +70,12 @@ export default new Polymer({
       titlePosition: 'none',
       vAxes: {
         // Adds units to the left hand side of the graph
-        0: {title: unit},
+        0: { title: unit },
       },
       hAxis: {
         format: 'H:mm',
       },
-      chartArea: { left: '60', width: '95%'},
+      chartArea: { left: '60', width: '95%' },
       explorer: {
         actions: ['dragToZoom', 'rightClickToReset', 'dragToPan'],
         keepInBounds: true,

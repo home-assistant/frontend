@@ -7,13 +7,13 @@ const { serviceActions } = hass;
 export default new Polymer({
   is: 'more-info-alarm_control_panel',
   handleDisarmTap() {
-    this.callService('alarm_disarm', {code: this.enteredCode});
+    this.callService('alarm_disarm', { code: this.enteredCode });
   },
   handleHomeTap() {
-    this.callService('alarm_arm_home', {code: this.enteredCode});
+    this.callService('alarm_arm_home', { code: this.enteredCode });
   },
   handleAwayTap() {
-    this.callService('alarm_arm_away', {code: this.enteredCode});
+    this.callService('alarm_arm_away', { code: this.enteredCode });
   },
   properties: {
     stateObj: {
