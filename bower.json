@@ -10,7 +10,7 @@
   "devDependencies": {
     "polymer": "Polymer/polymer#~1.2.3",
     "pikaday": "1.4",
-    "leaflet-map": "1.1.0",
+    "leaflet-map": "1.2.0",
     "iron-elements": "PolymerElements/iron-elements#~1.0.7",
     "paper-elements": "PolymerElements/paper-elements#~1.0.7",
     "google-apis": "GoogleWebComponents/google-apis#~1.1.3"
