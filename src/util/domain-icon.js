@@ -26,6 +26,9 @@ export default function domainIcon(domain, state) {
     case 'homeassistant':
       return 'mdi:home';
 
+    case 'input_boolean':
+      return 'mdi:drawing';
+
     case 'light':
       return 'mdi:lightbulb';
 
