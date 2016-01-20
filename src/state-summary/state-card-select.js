@@ -1,11 +1,13 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
+import hass from '../util/home-assistant-js-instance';
 
 import Polymer from '../polymer';
 
 require('../components/state-info');
 
+const { serviceActions } = hass;
+
 export default new Polymer({
-  is: 'more-info-option',
+  is: 'state-card-select',
 
   properties: {
     stateObj: {
@@ -14,16 +16,12 @@ export default new Polymer({
   },
 
   handleSelect(ev) {
-    this.callService('set_option', { option: ev.target.value });
+    this.callService('set_option', { option: ev.detail.selected });
   },
 
   callService(service, data) {
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;
-    serviceActions.callService('option', service, serviceData);
-  },
-
-  computeIsActive(option, stateObj) {
-    return option == stateObj.state;
+    serviceActions.callService('select', service, serviceData);
   },
 });

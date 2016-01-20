@@ -29,7 +29,12 @@ export default new Polymer({
 
   entityTapped(ev) {
     if (ev.target.classList.contains('paper-toggle-button') ||
-        ev.target.classList.contains('paper-icon-button')) {
+        ev.target.classList.contains('paper-icon-button') ||
+
+        // state-card-select
+        ev.target.classList.contains('paper-dropdown-menu') ||
+        ev.target.classList.contains('paper-input') ||
+        ev.target.classList.contains('iron-selected')) {
       return;
     }
     ev.stopPropagation();
