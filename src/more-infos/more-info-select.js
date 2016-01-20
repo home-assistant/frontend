@@ -1,5 +1,3 @@
-import { serviceActions } from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 
 require('../components/state-info');
