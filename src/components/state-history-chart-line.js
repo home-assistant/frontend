@@ -145,7 +145,7 @@ export default new Polymer({
             const curTemp = saveParseFloat(state.attributes.current_temperature);
             const targetHigh = saveParseFloat(state.attributes.target_temp_high);
             const targetLow = saveParseFloat(state.attributes.target_temp_low);
-            pushData([state.lastChangedAsDate, curTemp, targetHigh, targetLow], noInterpolations);
+            pushData([state.lastUpdatedAsDate, curTemp, targetHigh, targetLow], noInterpolations);
           };
         } else {
           dataTable.addColumn('number', `${name} target temperature`);
@@ -155,7 +155,7 @@ export default new Polymer({
           processState = state => {
             const curTemp = saveParseFloat(state.attributes.current_temperature);
             const target = saveParseFloat(state.attributes.temperature);
-            pushData([state.lastChangedAsDate, curTemp, target], noInterpolations);
+            pushData([state.lastUpdatedAsDate, curTemp, target], noInterpolations);
           };
         }
 
