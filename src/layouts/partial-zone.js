@@ -8,7 +8,8 @@ require('../components/ha-zone-cards');
 
 const {
   configGetters,
-  entityGetters,
+  sectionActions,
+  sectionGetters,
   voiceGetters,
   streamGetters,
   syncGetters,
@@ -62,9 +63,32 @@ export default new Polymer({
       observer: 'windowChange',
     },
 
+    currentSection: {
+      type: String,
+      bindNuclear: [
+        sectionGetters.currentSection,
+        section => section || '',
+      ],
+    },
+
+    sections: {
+      type: Array,
+      bindNuclear: [
+        sectionGetters.sections,
+        sections => sections.valueSeq()
+                    .sortBy(section => section.attributes.order)
+                    .toArray(),
+      ],
+    },
+
+    hasSections: {
+      type: Boolean,
+      computed: 'computeHasSections(sections)',
+    },
+
     states: {
       type: Object,
-      bindNuclear: entityGetters.visibleEntityMap,
+      bindNuclear: sectionGetters.currentSectionEntities,
     },
 
     columns: {
@@ -103,16 +127,8 @@ export default new Polymer({
     voiceActions.listen();
   },
 
-  computeDomains(states) {
-    return states.keySeq().toArray();
-  },
-
   computeMenuButtonClass(narrow, showMenu) {
     return !narrow && showMenu ? 'invisible' : '';
-  },
-
-  computeStatesOfDomain(states, domain) {
-    return states.get(domain).toArray();
   },
 
   computeRefreshButtonClass(isFetching) {
@@ -121,11 +137,20 @@ export default new Polymer({
     }
   },
 
-  computeShowIntroduction(introductionLoaded, states) {
-    return introductionLoaded || states.size === 0;
+  computeShowIntroduction(currentSection, introductionLoaded, states) {
+    return currentSection === '' && (introductionLoaded || states.size === 0);
+  },
+
+  computeHasSections(sections) {
+    return sections.length > 0;
   },
 
   toggleMenu() {
     this.fire('open-menu');
+  },
+
+  sectionSelected(ev) {
+    const section = ev.detail.item.getAttribute('data-entity') || null;
+    this.async(() => sectionActions.selectSection(section), 0);
   },
 });

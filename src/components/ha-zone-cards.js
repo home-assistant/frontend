@@ -50,11 +50,11 @@ export default new Polymer({
 
     cards: {
       type: Object,
-      computed: 'computeDomains(columns, states, showIntroduction)',
+      computed: 'computeCards(columns, states, showIntroduction)',
     },
   },
 
-  computeDomains(columns, states, showIntroduction) {
+  computeCards(columns, states, showIntroduction) {
     const byDomain = states.groupBy(entity => entity.domain);
     const hasGroup = {};
 
