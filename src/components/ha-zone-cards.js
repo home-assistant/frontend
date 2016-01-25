@@ -27,7 +27,8 @@ function getPriority(domain) {
 }
 
 function entitySortBy(entity) {
-  return entity.entityDisplay.toLowerCase();
+  return entity.domain === 'group' ? entity.attributes.order :
+                                     entity.entityDisplay.toLowerCase();
 }
 
 export default new Polymer({
