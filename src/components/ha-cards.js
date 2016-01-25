@@ -32,7 +32,7 @@ function entitySortBy(entity) {
 }
 
 export default new Polymer({
-  is: 'ha-zone-cards',
+  is: 'ha-cards',
 
   properties: {
     showIntroduction: {

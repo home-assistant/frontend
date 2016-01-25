@@ -4,7 +4,7 @@ import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
-require('../components/ha-zone-cards');
+require('../components/ha-cards');
 
 const {
   configGetters,
