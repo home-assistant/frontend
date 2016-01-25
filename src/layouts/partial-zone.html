@@ -26,16 +26,16 @@
       <paper-toolbar class='medium'>
         <paper-icon-button icon='mdi:menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>
 
-        <template is='dom-if' if='[[!hasSections]]'>
+        <template is='dom-if' if='[[!hasViews]]'>
           <div class='title'>[[locationName]]</div>
         </template>
 
-        <template is='dom-if' if='[[hasSections]]'>
+        <template is='dom-if' if='[[hasViews]]'>
           <div class='flex'>
-            <paper-tabs selected='[[currentSection]]' attr-for-selected='data-entity'
-              on-iron-select='sectionSelected' scrollable='true'>
+            <paper-tabs selected='[[currentView]]' attr-for-selected='data-entity'
+              on-iron-select='viewSelected' scrollable='true'>
                 <paper-tab data-entity=''>[[locationName]]</paper-tab>
-                <template is='dom-repeat' items='[[sections]]'>
+                <template is='dom-repeat' items='[[views]]'>
                   <paper-tab data-entity$='[[item.entityId]]'>
                     <template is='dom-if' if='[[item.attributes.icon]]'>
                       <iron-icon icon='[[item.attributes.icon]]'></iron-icon>
@@ -61,7 +61,7 @@
 
       <div class='fit'>
         <ha-zone-cards
-          show-introduction='[[computeShowIntroduction(currentSection, introductionLoaded, states)]]'
+          show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
           states='[[states]]' columns='[[columns]]'></ha-zone-cards>
       </div>
     </paper-header-panel>

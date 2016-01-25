@@ -8,8 +8,8 @@ require('../components/ha-zone-cards');
 
 const {
   configGetters,
-  sectionActions,
-  sectionGetters,
+  viewActions,
+  viewGetters,
   voiceGetters,
   streamGetters,
   syncGetters,
@@ -63,32 +63,32 @@ export default new Polymer({
       observer: 'windowChange',
     },
 
-    currentSection: {
+    currentView: {
       type: String,
       bindNuclear: [
-        sectionGetters.currentSection,
-        section => section || '',
+        viewGetters.currentView,
+        view => view || '',
       ],
     },
 
-    sections: {
+    views: {
       type: Array,
       bindNuclear: [
-        sectionGetters.sections,
-        sections => sections.valueSeq()
-                    .sortBy(section => section.attributes.order)
+        viewGetters.views,
+        views => views.valueSeq()
+                    .sortBy(view => view.attributes.order)
                     .toArray(),
       ],
     },
 
-    hasSections: {
+    hasViews: {
       type: Boolean,
-      computed: 'computeHasSections(sections)',
+      computed: 'computeHasViews(views)',
     },
 
     states: {
       type: Object,
-      bindNuclear: sectionGetters.currentSectionEntities,
+      bindNuclear: viewGetters.currentViewEntities,
     },
 
     columns: {
@@ -137,20 +137,20 @@ export default new Polymer({
     }
   },
 
-  computeShowIntroduction(currentSection, introductionLoaded, states) {
-    return currentSection === '' && (introductionLoaded || states.size === 0);
+  computeShowIntroduction(currentView, introductionLoaded, states) {
+    return currentView === '' && (introductionLoaded || states.size === 0);
   },
 
-  computeHasSections(sections) {
-    return sections.length > 0;
+  computeHasViews(views) {
+    return views.length > 0;
   },
 
   toggleMenu() {
     this.fire('open-menu');
   },
 
-  sectionSelected(ev) {
+  viewSelected(ev) {
     const section = ev.detail.item.getAttribute('data-entity') || null;
-    this.async(() => sectionActions.selectSection(section), 0);
+    this.async(() => viewActions.selectView(section), 0);
   },
 });
