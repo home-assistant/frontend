@@ -38,7 +38,7 @@ export default new Polymer({
 
     nuclearVersion: {
       type: String,
-      value: '1.2.1',
+      value: '1.3.0',
     },
 
     errorLog: {
