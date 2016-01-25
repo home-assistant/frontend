@@ -22,7 +22,7 @@
       <template is='dom-repeat' items='[[events]]' as='event'>
         <li>
           <a href='#' on-click='eventSelected'>{{event.event}}</a>
-          <span> (</span><span>{{event.listener_count}}</span><span> listeners)</span>
+          <span> (</span><span>{{event.listenerCount}}</span><span> listeners)</span>
         </li>
       </template>
     </ul>
