@@ -18,7 +18,7 @@ const {
 } = hass;
 
 export default new Polymer({
-  is: 'partial-zone',
+  is: 'partial-cards',
 
   behaviors: [nuclearObserver],
 

@@ -1,7 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel='import' href='../../bower_components/paper-drawer-panel/paper-drawer-panel.html'>
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
-<link rel='import' href='../layouts/partial-zone.html'>
+<link rel='import' href='../layouts/partial-cards.html'>
 <link rel='import' href='../layouts/partial-logbook.html'>
 <link rel='import' href='../layouts/partial-history.html'>
 <link rel='import' href='../layouts/partial-map.html'>
@@ -31,7 +31,7 @@
       <ha-sidebar drawer></ha-sidebar>
 
       <template is='dom-if' if='[[isSelectedStates]]'>
-        <partial-zone main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-zone>
+        <partial-cards main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-cards>
       </template>
       <template is='dom-if' if='[[isSelectedLogbook]]'>
         <partial-logbook main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-logbook>

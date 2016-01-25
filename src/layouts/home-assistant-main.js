@@ -5,7 +5,7 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 import removeInitMsg from '../util/remove-init-message';
 
 require('../components/ha-sidebar');
-require('../layouts/partial-zone');
+require('../layouts/partial-cards');
 require('../layouts/partial-logbook');
 require('../layouts/partial-history');
 require('../layouts/partial-map');
