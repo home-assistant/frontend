@@ -102,7 +102,7 @@ export default new Polymer({
             cards._badges, filterGrouped(byDomain.get(domain)).sortBy(
               entitySortBy).toArray());
         } else if (domain === 'group') {
-          byDomain.get(domain).filter(st => !st.attributes.auto).sortBy(entitySortBy)
+          byDomain.get(domain).sortBy(entitySortBy)
             .forEach(groupState => {
               const entities = util.expandGroup(groupState, states);
               entities.forEach(entity => hasGroup[entity.entityId] = true);
