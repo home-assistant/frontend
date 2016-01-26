@@ -150,7 +150,10 @@ export default new Polymer({
   },
 
   viewSelected(ev) {
-    const section = ev.detail.item.getAttribute('data-entity') || null;
-    this.async(() => viewActions.selectView(section), 0);
+    const view = ev.detail.item.getAttribute('data-entity') || null;
+    const current = this.currentView || null;
+    if (view !== current) {
+      this.async(() => viewActions.selectView(view), 0);
+    }
   },
 });
