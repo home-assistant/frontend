@@ -9,6 +9,7 @@ require('./state-card-configurator');
 require('./state-card-scene');
 require('./state-card-media_player');
 require('./state-card-rollershutter');
+require('./state-card-select');
 
 export default new Polymer({
   is: 'state-card-content',

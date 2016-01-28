@@ -1,0 +1,36 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
+
+<link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
+<link rel="import" href="../components/state-info.html">
+
+<dom-module id="state-card-select">
+  <style>
+  :host {
+    line-height: 1.5;
+  }
+
+  .state {
+    text-align: right;
+    overflow-x: hidden;
+    margin-left: 16px;
+  }
+  </style>
+  <template>
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]"></state-info>
+        <div class='state'>
+          <paper-dropdown-menu id='select-menu' placeholder='unspecified' no-label-float>
+            <paper-listbox class='dropdown-content' attr-for-selected='value' selected='[[stateObj.state]]'
+                           on-iron-activate='handleSelect'>
+              <template is='dom-repeat' items="[[stateObj.attributes.options]]" as="option">
+                  <paper-item value='[[option]]'>[[option]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+    </div>
+  </template>
+</dom-module>
