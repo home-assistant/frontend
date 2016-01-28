@@ -69,6 +69,9 @@ export default function domainIcon(domain, state) {
 
   case 'thermostat':
     return 'mdi:nest-thermostat';
+    
+  case 'proximity':
+    return 'mdi:apple-safari';
 
   default:
     /* eslint-disable no-console */
