@@ -4,6 +4,7 @@ import stateCardType from '../util/state-card-type';
 
 require('./state-card-configurator');
 require('./state-card-display');
+require('./state-card-input_select');
 require('./state-card-media_player');
 require('./state-card-scene');
 require('./state-card-rollershutter');
