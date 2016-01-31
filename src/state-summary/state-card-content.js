@@ -2,13 +2,14 @@ import Polymer from '../polymer';
 
 import stateCardType from '../util/state-card-type';
 
-require('./state-card-display');
-require('./state-card-toggle');
-require('./state-card-thermostat');
 require('./state-card-configurator');
-require('./state-card-scene');
+require('./state-card-display');
 require('./state-card-media_player');
+require('./state-card-scene');
 require('./state-card-rollershutter');
+require('./state-card-thermostat');
+require('./state-card-toggle');
+require('./state-card-weblink');
 
 export default new Polymer({
   is: 'state-card-content',

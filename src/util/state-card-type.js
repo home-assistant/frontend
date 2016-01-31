@@ -1,7 +1,13 @@
 import canToggle from './can-toggle';
 
 const DOMAINS_WITH_CARD = [
-  'thermostat', 'configurator', 'scene', 'media_player', 'rollershutter'];
+  'configurator',
+  'media_player',
+  'rollershutter',
+  'scene',
+  'thermostat',
+  'weblink',
+];
 
 export default function stateCardType(state) {
   if (DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {

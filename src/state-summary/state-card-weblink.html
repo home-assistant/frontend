@@ -1,0 +1,25 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../components/entity/state-badge.html">
+
+<dom-module id="state-card-weblink">
+  <style>
+  state-badge {
+    float: left;
+  }
+
+  .name {
+    margin-left: 56px;
+    text-transform: capitalize;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    line-height: 40px;
+  }
+  </style>
+
+  <template>
+    <state-badge state-obj='[[stateObj]]'></state-badge>
+    <div class='name'>[[stateObj.entityDisplay]]</div>
+  </template>
+</dom-module>

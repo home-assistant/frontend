@@ -49,9 +49,6 @@ export default function domainIcon(domain, state) {
     case 'notify':
       return 'mdi:comment-alert';
 
-    case 'updater':
-      return 'mdi:cloud-upload';
-
     case 'rollershutter':
       return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
 
@@ -75,6 +72,12 @@ export default function domainIcon(domain, state) {
 
     case 'thermostat':
       return 'mdi:nest-thermostat';
+
+    case 'updater':
+      return 'mdi:cloud-upload';
+
+    case 'weblink':
+      return 'mdi:open-in-new';
 
     default:
     /* eslint-disable no-console */
