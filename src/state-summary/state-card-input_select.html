@@ -1,0 +1,25 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+
+<link rel="import" href="../components/state-info.html">
+
+<dom-module id="state-card-input_select">
+  <style>
+  paper-dropdown-menu {
+    margin-left: 16px;
+  }
+  </style>
+
+  <template>
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]"></state-info>
+      <paper-dropdown-menu no-label-float selected-item-label='{{selectedOption}}' on-tap='stopPropagation'>
+        <paper-menu class="dropdown-content" selected="[[computeSelected(stateObj)]]">
+          <template is='dom-repeat' items='[[stateObj.attributes.options]]'>
+            <paper-item>[[item]]</paper-item>
+          </template>
+        </paper-menu>
+      </paper-dropdown-menu>
+    </div>
+  </template>
+</dom-module>
