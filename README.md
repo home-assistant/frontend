@@ -1,6 +1,6 @@
 # Home Assistant Polymer [![Build Status](https://travis-ci.org/balloob/home-assistant-polymer.svg?branch=master)](https://travis-ci.org/balloob/home-assistant-polymer)
 
-This is the repository for the official Home Assistant frontend. The frontend is built on top of the following technologies:
+This is the repository for the official [Home Assistant](https://home-assistant.io) frontend. The frontend is built on top of the following technologies:
 
  * [Polymer](https://www.polymer-project.org/1.0/)
  * [NuclearJS](http://optimizely.github.io/nuclear-js/)
@@ -11,15 +11,15 @@ This is the repository for the official Home Assistant frontend. The frontend is
 
 [![Screenshot of the frontend](https://raw.githubusercontent.com/balloob/home-assistant-polymer/master/docs/screenshot.png)](https://home-assistant.io/demo/)
 
-[View demo of the Polymer frontend](https://home-assistant.io/demo/)  
-[More information about Home Assistant](https://home-assistant.io)  
+[View demo of the Polymer frontend](https://home-assistant.io/demo/)
+[More information about Home Assistant](https://home-assistant.io)
 [Frontend development instructions](https://home-assistant.io/developers/frontend.html)
 
 ## An unusual approach to Polymer
 
-As you might have noticed, we are using two different package managers. This might seem crazy but we have good reasons. Let us explain…
+As you might have noticed, we are using two different package managers. This might seem crazy but we have good reasons. Let us explain...
 
-One of the big advantages of webcomponents is that you can ship all your HTML resources in a single file: HTML-template, CSS and JavaScript. From your HTML template and JavaScript you are then able to embed extra webcomponents and use it to build a whole UI.
+One of the big advantages of webcomponents is that you can ship all your HTML resources in a single file: HTML template, CSS and JavaScript. From your HTML template and JavaScript you are then able to embed extra webcomponents and use it to build a whole UI.
 
 ![Structure webcomponents](https://raw.githubusercontent.com/balloob/home-assistant-polymer/master/docs/webcomponent-embed-js.png)
 
@@ -41,7 +41,7 @@ Instead of having each webcomponent reference its own JavaScript file, we now ha
 
 ## The tale of two package managers
 
-The CSS and HTML template part of our webcomponents can depend on our own or third party webcomponents. Currently Bower is the only way webcomponents are being distributed. This cannot be done via NPM because NPM only distributes JavaScript files and no CSS or HTML templates. Therefore, we use Bower for webcomponent dependencies.
+The CSS and HTML template part of our webcomponents can depend on our own or third party webcomponents. Currently Bower is the only way webcomponents are being distributed. This cannot be done via NPM because NPM only distributes JavaScript files and no CSS or HTML templates. Therefore, we use [Bower](http://bower.io/) for webcomponent dependencies.
 
 For our JavaScript we want to have fine grain control of which parts of our third party components get included, which is possible using NPM. For example, instead of importing the whole lodash library, we only [import the functions that we will use](https://github.com/balloob/home-assistant-polymer/blob/8e143c2e4461771a51cdead553b7fa9e5bbdf772/src/components/state-history-chart-line.js#L1-L4). Therefore, we use NPM for JavaScript dependencies.
 
