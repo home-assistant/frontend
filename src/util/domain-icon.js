@@ -38,6 +38,9 @@ export default function domainIcon(domain, state) {
     case 'lock':
       return state && state === 'unlocked' ? 'mdi:lock-open' : 'mdi:lock';
 
+    case 'garage_door':
+      return state && state === 'open' ? 'mdi:arrow-up' : 'mdi:arrow-down';
+
     case 'media_player':
       let icon = 'mdi:cast';
       if (state && state !== 'off' && state !== 'idle') {
