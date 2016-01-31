@@ -20,6 +20,8 @@ export default new Polymer({
   },
 
   getAttributeValue(stateObj, attribute) {
-    return stateObj.attributes[attribute];
+    const value = stateObj.attributes[attribute];
+
+    return Array.isArray(value) ? value.join(', ') : value;
   },
 });
