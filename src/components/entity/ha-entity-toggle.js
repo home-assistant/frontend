@@ -53,7 +53,10 @@ export default new Polymer({
   },
 
   _checkToggle(stateObj) {
-    return stateObj && stateObj.state !== 'off' && stateObj.state !== 'unlocked' && stateObj.state !== 'open';
+    return stateObj &&
+           stateObj.state !== 'off' &&
+           stateObj.state !== 'unlocked' &&
+           stateObj.state !== 'open';
   },
 
   // We call updateToggle after a successful call to re-sync the toggle
