@@ -16,6 +16,16 @@ export default new Polymer({
    * Called when an attribute changes that influences the color of the icon.
    */
   updateIconColor(newVal) {
+    // hide icon if we have entity picture
+    if (newVal.attributes.entity_picture) {
+      this.style.backgroundImage = `url(${newVal.attributes.entity_picture})`;
+      this.$.icon.style.display = 'none';
+      return;
+    }
+
+    this.style.backgroundImage = '';
+    this.$.icon.style.display = 'inline';
+
     // for domain light, set color of icon to light color if available and it is
     // not very white (sum rgb colors < 730)
     if (newVal.domain === 'light' && newVal.state === 'on' &&

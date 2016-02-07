@@ -1,5 +1,4 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-<link rel='import' href='../../bower_components/iron-image/iron-image.html'>
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 
 <dom-module id='ha-label-badge'>
@@ -25,6 +24,7 @@
 
     white-space: nowrap;
     background-color: white;
+    background-size: cover;
     transition: border .3s ease-in-out;
   }
   .label-badge .value {
@@ -74,17 +74,10 @@
     <div class='badge-container'>
       <div class='label-badge' id='badge'>
         <div class$='[[computeClasses(value)]]'>
-          <template is='dom-if' if='[[icon]]'>
-            <iron-icon icon='[[icon]]'></iron-icon>
-          </template>
-          <template is='dom-if' if='[[value]]'>[[value]]</template>
-          <template is='dom-if' if='[[image]]'>
-            <iron-image sizing='cover' class='fit'src='[[image]]'></iron-image>
-          </template>
+          <iron-icon icon='[[icon]]' hidden$='[[computeHideIcon(icon, value, image)]]'></iron-icon>
+          <span hidden$='[[computeHideValue(value, image)]]'>[[value]]</span>
         </div>
-        <template is='dom-if' if='[[label]]'>
-          <div class='label'><span>[[label]]</span></div>
-        </template>
+        <div class='label' hidden$='[[!label]]'><span>[[label]]</span></div>
       </div>
       <div class='title'>[[description]]</div>
     </div>
