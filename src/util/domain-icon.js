@@ -39,12 +39,8 @@ export default function domainIcon(domain, state) {
       return state && state === 'unlocked' ? 'mdi:lock-open' : 'mdi:lock';
 
     case 'media_player':
-      let icon = 'mdi:cast';
-      if (state && state !== 'off' && state !== 'idle') {
-        icon += '-connected';
-      }
-
-      return icon;
+      return state && state !== 'off' && state !== 'idle' ?
+        'mdi:cast-connected' : 'mdi:cast';
 
     case 'notify':
       return 'mdi:comment-alert';

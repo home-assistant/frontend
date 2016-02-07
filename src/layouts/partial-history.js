@@ -75,6 +75,6 @@ export default new Polymer({
   },
 
   computeContentClasses(narrow) {
-    return 'flex content ' + (narrow ? 'narrow' : 'wide');
+    return `flex content ${narrow ? 'narrow' : 'wide'}`;
   },
 });

@@ -67,7 +67,7 @@ export default new Polymer({
   },
 
   computeFormClasses(narrow) {
-    return 'content fit layout ' + (narrow ? 'vertical' : 'horizontal');
+    return `content fit layout ${narrow ? 'vertical' : 'horizontal'}`;
   },
 
   computeRenderedClasses(error) {

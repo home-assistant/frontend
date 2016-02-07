@@ -54,7 +54,7 @@ export default new Polymer({
         root.removeChild(root.lastChild);
       }
 
-      const moreInfo = document.createElement('more-info-' + newMoreInfoType);
+      const moreInfo = document.createElement(`more-info-${newMoreInfoType}`);
       moreInfo.stateObj = newVal;
       moreInfo.dialogOpen = this.dialogOpen;
       root.appendChild(moreInfo);
