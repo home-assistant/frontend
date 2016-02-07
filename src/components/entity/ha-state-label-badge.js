@@ -64,9 +64,8 @@ export default new Polymer({
       case 'alarm_control_panel':
         return undefined;
       case 'sensor':
-        return state.state;
       default:
-        return state.state;
+        return state.state === 'unknown' ? '-' : state.state;
     }
   },
 
