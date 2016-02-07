@@ -30,9 +30,7 @@ export default new Polymer({
       this.async(() => moreInfoActions.selectEntity(this.state.entityId), 1);
       return;
     }
-    if (this.state.domain === 'scene') {
-      serviceActions.callTurnOn(this.state.entityId);
-    } else if (this.state.state === 'off') {
+    if (this.state.domain === 'scene' || this.state.state === 'off') {
       serviceActions.callTurnOn(this.state.entityId);
     } else {
       serviceActions.callTurnOff(this.state.entityId);
@@ -62,7 +60,7 @@ export default new Polymer({
       case 'scene':
       case 'script':
       case 'alarm_control_panel':
-        return undefined;
+        return null;
       case 'sensor':
       default:
         return state.state === 'unknown' ? '-' : state.state;
@@ -91,12 +89,12 @@ export default new Polymer({
         return state.state === 'above_horizon' ?
         domainIcon(state.domain) : 'mdi:brightness-3';
       default:
-        return undefined;
+        return null;
     }
   },
 
   computeImage(state) {
-    return state.attributes.entity_picture;
+    return state.attributes.entity_picture || null;
   },
 
   computeLabel(state) {
@@ -115,7 +113,7 @@ export default new Polymer({
         // state == 'disarmed'
         return 'disarm';
       default:
-        return state.attributes.unit_of_measurement;
+        return state.attributes.unit_of_measurement || null;
     }
   },
 
