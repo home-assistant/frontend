@@ -51,15 +51,13 @@ self.addEventListener('fetch', event => {
   }
 
   event.respondWith(
-    caches.open(CACHE).then(cache => {
-      return cache.match(INDEX_CACHE_URL).then(cachedResponse => {
-        const networkFetch = fetch(event.request).then(response => {
+    caches.open(CACHE).then(cache =>
+      cache.match(INDEX_CACHE_URL).then(cachedResponse =>
+        cachedResponse || fetch(event.request).then(response => {
           cache.put(INDEX_CACHE_URL, response.clone());
           return response;
-        });
-
-        return cachedResponse || networkFetch;
-      });
-    })
+        })
+      )
+    )
   );
 });

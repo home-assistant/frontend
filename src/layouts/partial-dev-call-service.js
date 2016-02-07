@@ -75,6 +75,6 @@ export default new Polymer({
   },
 
   computeFormClasses(narrow) {
-    return 'layout ' + (narrow ? 'vertical' : 'horizontal');
+    return `layout ${narrow ? 'vertical' : 'horizontal'}`;
   },
 });

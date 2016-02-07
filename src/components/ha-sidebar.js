@@ -44,6 +44,10 @@ export default new Polymer({
   },
 
   selectedChanged(newVal) {
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+
     const menuItems = this.querySelectorAll('.menu [data-panel]');
 
     for (let idx = 0; idx < menuItems.length; idx++) {

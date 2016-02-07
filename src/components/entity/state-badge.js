@@ -21,7 +21,7 @@ export default new Polymer({
     if (newVal.domain === 'light' && newVal.state === 'on' &&
        newVal.attributes.rgb_color &&
        newVal.attributes.rgb_color.reduce((cur, tot) => cur + tot, 0) < 730) {
-      this.$.icon.style.color = 'rgb(' + newVal.attributes.rgb_color.join(',') + ')';
+      this.$.icon.style.color = `rgb(${newVal.attributes.rgb_color.join(',')})`;
     } else {
       this.$.icon.style.color = null;
     }
