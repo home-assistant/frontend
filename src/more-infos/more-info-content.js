@@ -12,6 +12,7 @@ require('./more-info-media_player');
 require('./more-info-camera');
 require('./more-info-updater');
 require('./more-info-alarm_control_panel');
+require('./more-info-lock');
 
 export default new Polymer({
   is: 'more-info-content',
