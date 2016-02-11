@@ -118,7 +118,7 @@ export default new Polymer({
     if (newVal) {
       this.async(() => this._delayedDialogOpen = true, 10);
     } else if (!newVal && this.stateObj) {
-      moreInfoActions.deselectEntity();
+      this.async(() => moreInfoActions.deselectEntity(), 10);
       this._delayedDialogOpen = false;
     }
   },
