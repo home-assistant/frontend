@@ -21,7 +21,7 @@
 
       max-height: 0px;
       overflow: hidden;
-      transition: max-height .5s ease-in;
+      transition: max-height .2s ease-in;
     }
 
     .has-brightness .brightness {
@@ -33,7 +33,7 @@
     }
 
     .has-rgb_color ha-color-picker {
-      max-height: 500px;
+      max-height: 200px;
     }
   </style>
   <template>
@@ -53,7 +53,7 @@
         </paper-slider>
       </div>
 
-      <ha-color-picker on-colorselected='colorPicked'>
+      <ha-color-picker on-colorselected='colorPicked' height='200'>
       </ha-color-picker>
     </div>
   </template>

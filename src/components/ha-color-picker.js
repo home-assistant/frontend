@@ -98,12 +98,12 @@ export default new Polymer({
     this.context = this.canvas.getContext('2d');
 
     this.debounce('drawGradient', () => {
-      const style = getComputedStyle(this);
-      const width = parseInt(style.width, 10);
-      const height = parseInt(style.height, 10);
-
-      this.width = width;
-      this.height = height;
+      let style;
+      if (!this.width || !this.height) {
+        style = getComputedStyle(this);
+      }
+      const width = this.width || parseInt(style.width, 10);
+      const height = this.height || parseInt(style.height, 10);
 
       const colorGradient = this.context.createLinearGradient(0, 0, width, 0);
       colorGradient.addColorStop(0, 'rgb(255,0,0)');
