@@ -23,6 +23,9 @@ export default function domainIcon(domain, state) {
     case 'device_tracker':
       return 'mdi:account';
 
+    case 'garage_door':
+      return 'mdi:glassdoor';
+
     case 'group':
       return 'mdi:google-circles-communities';
 
