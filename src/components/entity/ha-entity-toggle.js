@@ -53,7 +53,8 @@ export default new Polymer({
   },
 
   _checkToggle(stateObj) {
-    return stateObj && stateObj.state !== 'off' && stateObj.state !== 'unlocked';
+    return stateObj && stateObj.state !== 'off' &&
+      stateObj.state !== 'unlocked' && stateObj.state !== 'closed';
   },
 
   // We call updateToggle after a successful call to re-sync the toggle
@@ -67,6 +68,9 @@ export default new Polymer({
     if (this.stateObj.domain === 'lock') {
       domain = 'lock';
       service = turnOn ? 'lock' : 'unlock';
+    } else if (this.stateObj.domain === 'garage_door') {
+      domain = 'garage_door';
+      service = turnOn ? 'open' : 'close';
     } else {
       domain = 'homeassistant';
       service = turnOn ? 'turn_on' : 'turn_off';
