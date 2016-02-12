@@ -48,6 +48,9 @@ export default function domainIcon(domain, state) {
     case 'notify':
       return 'mdi:comment-alert';
 
+    case 'proximity':
+      return 'mdi:apple-safari';
+
     case 'rollershutter':
       return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
 
