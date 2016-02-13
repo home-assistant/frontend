@@ -17,6 +17,8 @@ export default function stateIcon(state) {
     if (unit === temperatureUnits.UNIT_TEMP_C ||
         unit === temperatureUnits.UNIT_TEMP_F) {
       return 'mdi:thermometer';
+    } else if (unit === 'Mice') {
+      return 'mdi:mouse-variant';
     }
   }
 
