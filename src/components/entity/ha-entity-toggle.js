@@ -10,12 +10,17 @@ export default new Polymer({
   properties: {
     stateObj: {
       type: Object,
-      observer: 'stateObjChanged',
     },
 
     toggleChecked: {
       type: Boolean,
       value: false,
+    },
+
+    isOn: {
+      type: Boolean,
+      computed: 'computeIsOn(stateObj)',
+      observer: 'isOnChanged',
     },
   },
 
@@ -25,34 +30,34 @@ export default new Polymer({
 
   toggleChanged(ev) {
     const newVal = ev.target.checked;
-    const curVal = this._checkToggle(this.stateObj);
 
-    if (newVal && !curVal) {
+    if (newVal && !this.isOn) {
       this._call_service(true);
-    } else if (!newVal && curVal) {
+    } else if (!newVal && this.isOn) {
       this._call_service(false);
     }
   },
 
-  stateObjChanged(newVal) {
-    if (newVal) {
-      this.updateToggle(newVal);
-    }
-  },
-
-  updateToggle(stateObj) {
-    this.toggleChecked = this._checkToggle(stateObj);
+  isOnChanged(newVal) {
+    this.toggleChecked = newVal;
   },
 
   forceStateChange() {
-    const newState = this._checkToggle(this.stateObj);
-    if (this.toggleChecked === newState) {
+    if (this.toggleChecked === this.isOn) {
       this.toggleChecked = !this.toggleChecked;
     }
-    this.toggleChecked = newState;
+    this.toggleChecked = this.isOn;
   },
 
-  _checkToggle(stateObj) {
+  turnOn() {
+    this._call_service(true);
+  },
+
+  turnOff() {
+    this._call_service(false);
+  },
+
+  computeIsOn(stateObj) {
     return stateObj && stateObj.state !== 'off' &&
       stateObj.state !== 'unlocked' && stateObj.state !== 'closed';
   },
@@ -76,7 +81,11 @@ export default new Polymer({
       service = turnOn ? 'turn_on' : 'turn_off';
     }
 
-    serviceActions.callService(domain, service, { entity_id: this.stateObj.entityId })
-      .then(() => this.forceStateChange());
+    const call = serviceActions.callService(domain, service,
+                                            { entity_id: this.stateObj.entityId });
+
+    if (!this.stateObj.attributes.assumed_state) {
+      call.then(() => this.forceStateChange());
+    }
   },
 });
