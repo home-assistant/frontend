@@ -5,4 +5,10 @@ require('../components/entity/ha-entity-toggle');
 
 export default new Polymer({
   is: 'state-card-toggle',
+
+  properties: {
+    stateObj: {
+      type: Object,
+    },
+  },
 });
