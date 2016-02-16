@@ -52,6 +52,10 @@ export default new Polymer({
   },
 
   computeValue(state) {
+    // If an icon was provided, don't render the value
+    if (state.attributes.icon) {
+      return null;
+    }
     switch (state.domain) {
       case 'binary_sensor':
       case 'device_tracker':
@@ -68,6 +72,10 @@ export default new Polymer({
   },
 
   computeIcon(state) {
+    // Render the icon, if set
+    if (state.attributes.icon) {
+      return state.attributes.icon;
+    }
     switch (state.domain) {
       case 'alarm_control_panel':
         if (state.state === 'pending') {
