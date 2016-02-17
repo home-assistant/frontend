@@ -15,7 +15,6 @@ const {
   moreInfoActions,
 } = hass;
 
-// if you don't want the history component to show add the domain to this array
 const DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
 
 export default new Polymer({
@@ -63,6 +62,7 @@ export default new Polymer({
     showHistoryComponent: {
       type: Boolean,
       value: false,
+      computed: 'computeShowHistoryComponent(hasHistoryComponent, stateObj)',
     },
 
     dialogOpen: {
@@ -87,6 +87,11 @@ export default new Polymer({
     return !_delayedDialogOpen || _isLoadingHistoryData;
   },
 
+  computeShowHistoryComponent(hasHistoryComponent, stateObj) {
+    return this.hasHistoryComponent && stateObj &&
+      DOMAINS_WITH_NO_HISTORY.indexOf(stateObj.domain) === -1;
+  },
+
   fetchHistoryData() {
     if (this.stateObj && this.hasHistoryComponent &&
         this.shouldFetchHistory) {
@@ -99,11 +104,6 @@ export default new Polymer({
       this.dialogOpen = false;
       return;
     }
-
-    this.showHistoryComponent = (
-      this.hasHistoryComponent &&
-      DOMAINS_WITH_NO_HISTORY.indexOf(this.stateObj.domain) === -1
-    );
 
     this.async(() => {
       // Firing action while other action is happening confuses nuclear
