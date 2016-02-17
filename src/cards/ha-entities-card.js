@@ -9,12 +9,9 @@ require('../state-summary/state-card-content');
 const { moreInfoActions } = hass;
 
 export default new Polymer({
-  is: 'ha-domain-card',
+  is: 'ha-entities-card',
 
   properties: {
-    domain: {
-      type: String,
-    },
     states: {
       type: Array,
     },
@@ -23,8 +20,9 @@ export default new Polymer({
     },
   },
 
-  computeDomainTitle(domain) {
-    return domain.replace(/_/g, ' ');
+  computeTitle(states, groupEntity) {
+    return groupEntity ? groupEntity.entityDisplay :
+                         states[0].domain.replace(/_/g, ' ');
   },
 
   entityTapped(ev) {
@@ -43,6 +41,6 @@ export default new Polymer({
     }
 
     // only show if we can toggle 2+ entities in group
-    return states.reduce((sum, state) => sum + canToggle(state.entityId), 0) > 1;
+    return states.reduce((sum, state) => sum + canToggle(state.entityId)) > 1;
   },
 });
