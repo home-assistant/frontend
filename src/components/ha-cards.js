@@ -3,7 +3,7 @@ import hass from '../util/home-assistant-js-instance';
 
 require('.//ha-demo-badge');
 require('../cards/ha-badges-card');
-require('../cards/ha-domain-card');
+require('../cards/ha-entities-card');
 require('../cards/ha-introduction-card');
 
 const { util } = hass;
