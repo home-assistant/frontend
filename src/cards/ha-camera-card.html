@@ -1,0 +1,37 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id='ha-camera-card'>
+  <style include="paper-material">
+    :host {
+      display: block;
+      position: relative;
+      font-size: 0px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .camera-feed {
+      width: 100%;
+      height: auto;
+    }
+    .caption {
+      position: absolute;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 16px;
+
+      text-transform: capitalize;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 16px;
+      color: white;
+    }
+  </style>
+  <template>
+    <img src='[[cameraFeedSrc]]' class='camera-feed'>
+    <div class='caption'>[[stateObj.entityDisplay]]</div>
+  </template>
+</dom-module>
