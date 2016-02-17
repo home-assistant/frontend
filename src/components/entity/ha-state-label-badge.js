@@ -2,6 +2,7 @@ import Polymer from '../../polymer';
 import hass from '../../util/home-assistant-js-instance';
 import domainIcon from '../../util/domain-icon';
 import canToggle from '../../util/can-toggle';
+import stateIcon from '../../util/state-icon';
 
 require('../../components/ha-label-badge');
 
@@ -84,7 +85,7 @@ export default new Polymer({
       case 'scene':
       case 'updater':
       case 'script':
-        return domainIcon(state.domain, state.state);
+        return stateIcon(state);
       case 'sun':
         return state.state === 'above_horizon' ?
         domainIcon(state.domain) : 'mdi:brightness-3';
