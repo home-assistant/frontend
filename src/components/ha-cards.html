@@ -2,8 +2,7 @@
 
 <link rel="import" href="./ha-demo-badge.html">
 <link rel="import" href="../cards/ha-badges-card.html">
-<link rel="import" href="../cards/ha-entities-card.html">
-<link rel="import" href="../cards/ha-introduction-card.html">
+<link rel="import" href="../cards/ha-card-chooser.html">
 
 <dom-module id="ha-cards">
   <style>
@@ -53,7 +52,7 @@
 
   <template>
     <div class='main'>
-      <template is='dom-if' if='[[cards._badges.length]]'>
+      <template is='dom-if' if='[[cards._badges]]'>
         <div class='badges'>
           <template is='dom-if' if='[[cards._demo]]'>
             <ha-demo-badge></ha-demo-badge>
@@ -62,29 +61,20 @@
           <ha-badges-card states='[[cards._badges]]'></ha-badges-card>
         </div>
       </template>
-      <template is='dom-if' if='[[!cards._badges.length]]'>
+      <template is='dom-if' if='[[!cards._badges]]'>
         <div class='no-badges'> </div>
       </template>
+
       <div class='horizontal layout'>
         <template is='dom-repeat' items='[[cards._columns]]' as='column'>
-          <template is='dom-if'
-                    if='[[computeShouldRenderColumn(index, column)]]'>
-            <div class='column flex-1'>
-              <template is='dom-if' if='[[computeShowIntroduction(index, showIntroduction, cards)]]'>
-                <div class='zone-card'>
-                  <ha-introduction-card show-hide-instruction='[[computeShowHideInstruction(states, cards)]]'></ha-introduction-card>
-                </div>
-              </template>
-              <template is='dom-repeat' items='[[column]]' as='domain'>
-                <div class='zone-card'>
-                  <ha-entities-card
-                    states='[[computeStatesOfCard(cards, domain)]]'
-                    group-entity='[[computeGroupEntityOfCard(cards, domain)]]'
-                  ></ha-entities-card>
-                </div>
-              </template>
-            </div>
-          </template>
+          <div class='column flex-1'>
+            <template is='dom-repeat' items='[[column]]' as='card'>
+              <div class='zone-card'>
+                <ha-card-chooser card-data='[[computeCardDataOfCard(cards, card)]]'
+                ></ha-entities-card>
+              </div>
+            </template>
+          </div>
         </template>
     </div>
   </template>

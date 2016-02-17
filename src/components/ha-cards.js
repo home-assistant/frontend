@@ -3,10 +3,12 @@ import hass from '../util/home-assistant-js-instance';
 
 require('.//ha-demo-badge');
 require('../cards/ha-badges-card');
-require('../cards/ha-entities-card');
-require('../cards/ha-introduction-card');
+require('../cards/ha-card-chooser');
 
 const { util } = hass;
+
+const DOMAINS_WITH_CARD = ['camera'];
+
 const PRIORITY = {
   configurator: -20,
   group: -10,
@@ -15,7 +17,6 @@ const PRIORITY = {
   sun: 1,
   device_tracker: 2,
   alarm_control_panel: 3,
-  camera: 4,
   sensor: 5,
   binary_sensor: 6,
   scene: 7,
@@ -77,15 +78,45 @@ export default new Polymer({
       return old;
     }
     if (showIntroduction) {
-      increaseIndex();
+      cards._columns[increaseIndex()].push('ha-introduction');
+      cards['ha-introduction'] = {
+        cardType: 'introduction',
+        showHideInstruction: states.size > 0 && !__DEMO__,
+      };
     }
 
-    function pushCard(name, entities, groupEntity = false) {
-      if (entities.length === 0) {
-        return;
+    function addEntitiesCard(name, entities, groupEntity = false) {
+      if (entities.length === 0) return;
+
+      const owncard = [];
+      const other = [];
+
+      entities.forEach(entity => {
+        if (DOMAINS_WITH_CARD.indexOf(entity.domain) === -1) {
+          other.push(entity);
+        } else {
+          owncard.push(entity);
+        }
+      });
+
+      const curIndex = increaseIndex();
+
+      if (other.length > 0) {
+        cards._columns[curIndex].push(name);
+        cards[name] = {
+          cardType: 'entities',
+          states: other,
+          groupEntity,
+        };
       }
-      cards._columns[increaseIndex()].push(name);
-      cards[name] = { entities, groupEntity };
+
+      owncard.forEach(entity => {
+        cards._columns[curIndex].push(entity.entityId);
+        cards[entity.entityId] = {
+          cardType: entity.domain,
+          stateObj: entity,
+        };
+      });
     }
 
     byDomain.keySeq().sortBy(domain => getPriority(domain))
@@ -106,34 +137,19 @@ export default new Polymer({
             .forEach(groupState => {
               const entities = util.expandGroup(groupState, states);
               entities.forEach(entity => hasGroup[entity.entityId] = true);
-              pushCard(groupState.entityDisplay, entities.toArray(), groupState);
+              addEntitiesCard(groupState.entityId, entities.toArray(), groupState);
             }
           );
         } else {
-          pushCard(domain, filterGrouped(byDomain.get(domain)).sortBy(entitySortBy).toArray());
+          addEntitiesCard(
+            domain, filterGrouped(byDomain.get(domain)).sortBy(entitySortBy).toArray());
         }
       }
     );
     return cards;
   },
 
-  computeShouldRenderColumn(index, items) {
-    return index === 0 || items.length;
-  },
-
-  computeShowIntroduction(index, showIntroduction, cards) {
-    return index === 0 && (showIntroduction || cards._demo);
-  },
-
-  computeShowHideInstruction(states, cards) {
-    return states.size > 0 && !__DEMO__ && !cards._demo;
-  },
-
-  computeGroupEntityOfCard(cards, card) {
-    return card in cards && cards[card].groupEntity;
-  },
-
-  computeStatesOfCard(cards, card) {
-    return card in cards && cards[card].entities;
+  computeCardDataOfCard(cards, card) {
+    return cards[card];
   },
 });
