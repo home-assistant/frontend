@@ -4,7 +4,7 @@
 <link rel='import' href='../components/entity/ha-entity-toggle.html'>
 <link rel='import' href='../state-summary/state-card-content.html'>
 
-<dom-module id='ha-domain-card'>
+<dom-module id='ha-entities-card'>
   <style>
     .states {
       padding-bottom: 16px;
@@ -29,7 +29,7 @@
   <template>
     <ha-card>
       <div class='header horizontal layout center'>
-        <div class='flex name'>[[computeDomainTitle(domain)]]</div>
+        <div class='flex name'>[[computeTitle(states, groupEntity)]]</div>
         <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
           <ha-entity-toggle state-obj='[[groupEntity]]'></ha-entity-toggle>
         </template>

@@ -2,7 +2,7 @@
 
 <link rel="import" href="./ha-demo-badge.html">
 <link rel="import" href="../cards/ha-badges-card.html">
-<link rel="import" href="../cards/ha-domain-card.html">
+<link rel="import" href="../cards/ha-entities-card.html">
 <link rel="import" href="../cards/ha-introduction-card.html">
 
 <dom-module id="ha-cards">
@@ -77,10 +77,10 @@
               </template>
               <template is='dom-repeat' items='[[column]]' as='domain'>
                 <div class='zone-card'>
-                  <ha-domain-card domain='[[domain]]'
+                  <ha-entities-card
                     states='[[computeStatesOfCard(cards, domain)]]'
                     group-entity='[[computeGroupEntityOfCard(cards, domain)]]'
-                  ></ha-domain-card>
+                  ></ha-entities-card>
                 </div>
               </template>
             </div>
