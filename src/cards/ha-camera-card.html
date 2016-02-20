@@ -9,6 +9,7 @@
       font-size: 0px;
       border-radius: 2px;
       cursor: pointer;
+      min-height: 48px;
     }
     .camera-feed {
       width: 100%;
@@ -28,10 +29,19 @@
       font-weight: 500;
       line-height: 16px;
       color: white;
+      white-space: nowrap;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
     }
   </style>
   <template>
-    <img src='[[cameraFeedSrc]]' class='camera-feed'>
-    <div class='caption'>[[stateObj.entityDisplay]]</div>
+    <img src='[[cameraFeedSrc]]' class='camera-feed' hidden$='[[!imageLoaded]]'
+      on-load='imageLoadSuccess' on-error='imageLoadFail'>
+    <div class='caption'>
+      [[stateObj.entityDisplay]]
+      <template is='dom-if' if='[[!imageLoaded]]'>
+        (Error loading image)
+      </template>
+    </div>
   </template>
 </dom-module>

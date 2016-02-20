@@ -18,6 +18,11 @@ export default new Polymer({
       type: String,
     },
 
+    imageLoaded: {
+      type: Boolean,
+      value: true,
+    },
+
     /**
      * The z-depth of the card, from 0-5.
      */
@@ -48,5 +53,13 @@ export default new Polymer({
   updateCameraFeedSrc(stateObj) {
     const time = (new Date()).getTime();
     this.cameraFeedSrc = `${stateObj.attributes.entity_picture}?time=${time}`;
+  },
+
+  imageLoadSuccess() {
+    this.imageLoaded = true;
+  },
+
+  imageLoadFail() {
+    this.imageLoaded = false;
   },
 });
