@@ -41,6 +41,6 @@ export default new Polymer({
     }
 
     // only show if we can toggle 2+ entities in group
-    return states.reduce((sum, state) => sum + canToggle(state.entityId)) > 1;
+    return states.reduce((sum, state) => sum + canToggle(state.entityId), 0) > 1;
   },
 });
