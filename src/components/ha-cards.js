@@ -52,8 +52,19 @@ export default new Polymer({
 
     cards: {
       type: Object,
-      computed: 'computeCards(columns, states, showIntroduction)',
     },
+  },
+
+  observers: [
+    'updateCards(columns, states, showIntroduction)',
+  ],
+
+  updateCards(columns, states, showIntroduction) {
+    this.debounce(
+      'updateCards',
+      () => this.cards = this.computeCards(columns, states, showIntroduction),
+      0
+    );
   },
 
   computeCards(columns, states, showIntroduction) {
