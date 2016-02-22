@@ -4,13 +4,16 @@
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
 
 <dom-module id='more-info-lock'>
+  <style>
+    paper-input {
+      display: inline-block;
+    }
+  </style>
   <template>
-      <div class='layout horizontal'>
-        <paper-input label='code' value='{{enteredCode}}' pattern='[[codeFormat]]' type='password' hidden='[[!codeInputVisible]]' disabled='[[!codeInputEnabled]]'></paper-input>
-      </div>
-      <div class='layout horizontal'>
-	      <paper-button on-tap='handleUnlockTap' hidden='[[!codeInputVisible]]' disabled='[[!unlockButtonVisible]]'>Unlock</paper-button>
-	      <paper-button on-tap='handleLockTap' hidden='[[!codeInputVisible]]' disabled=[[!lockButtonVisible]]>Lock</paper-button>
-      </div>
+    <div hidden='[[!stateObj.attributes.codeFormat]]'>
+      <paper-input label='code' value='{{enteredCode}}' pattern='[[stateObj.attributes.codeFormat]]' type='password'></paper-input>
+      <paper-button on-tap='handleUnlockTap' hidden$='[[!isLocked]]'>Unlock</paper-button>
+      <paper-button on-tap='handleLockTap' hidden$=[[isLocked]]>Lock</paper-button>
+    </div>
   </template>
 </dom-module>
