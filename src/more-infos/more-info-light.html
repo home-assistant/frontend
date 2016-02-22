@@ -6,8 +6,6 @@
 <dom-module id='more-info-light'>
   <style>
     .brightness, .color_temp {
-      margin-bottom: 8px;
-
       max-height: 0px;
       overflow: hidden;
       transition: max-height .5s ease-in;
@@ -15,20 +13,17 @@
 
     ha-color-picker {
       display: block;
-      max-width: 350px;
-      height: 200px;
       margin: 0 auto;
+      width: 250px;
 
       max-height: 0px;
       overflow: hidden;
       transition: max-height .2s ease-in;
     }
 
-    .has-brightness .brightness {
-      max-height: 40px;
-    }
-
+    .has-brightness .brightness,
     .has-color_temp .color_temp {
+      margin-bottom: 8px;
       max-height: 40px;
     }
 
@@ -53,7 +48,7 @@
         </paper-slider>
       </div>
 
-      <ha-color-picker on-colorselected='colorPicked' height='200'>
+      <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>
       </ha-color-picker>
     </div>
   </template>

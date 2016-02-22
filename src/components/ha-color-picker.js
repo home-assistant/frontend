@@ -96,35 +96,35 @@ export default new Polymer({
     this.mouseMoveIsThrottled = true;
     this.canvas = this.children[0];
     this.context = this.canvas.getContext('2d');
-
-    this.debounce('drawGradient', () => {
-      let style;
-      if (!this.width || !this.height) {
-        style = getComputedStyle(this);
-      }
-      const width = this.width || parseInt(style.width, 10);
-      const height = this.height || parseInt(style.height, 10);
-
-      const colorGradient = this.context.createLinearGradient(0, 0, width, 0);
-      colorGradient.addColorStop(0, 'rgb(255,0,0)');
-      colorGradient.addColorStop(0.16, 'rgb(255,0,255)');
-      colorGradient.addColorStop(0.32, 'rgb(0,0,255)');
-      colorGradient.addColorStop(0.48, 'rgb(0,255,255)');
-      colorGradient.addColorStop(0.64, 'rgb(0,255,0)');
-      colorGradient.addColorStop(0.80, 'rgb(255,255,0)');
-      colorGradient.addColorStop(1, 'rgb(255,0,0)');
-      this.context.fillStyle = colorGradient;
-      this.context.fillRect(0, 0, width, height);
-
-      const bwGradient = this.context.createLinearGradient(0, 0, 0, height);
-      bwGradient.addColorStop(0, 'rgba(255,255,255,1)');
-      bwGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
-      bwGradient.addColorStop(0.5, 'rgba(0,0,0,0)');
-      bwGradient.addColorStop(1, 'rgba(0,0,0,1)');
-
-      this.context.fillStyle = bwGradient;
-      this.context.fillRect(0, 0, width, height);
-    }, 100);
+    this.drawGradient();
   },
 
+  drawGradient() {
+    let style;
+    if (!this.width || !this.height) {
+      style = getComputedStyle(this);
+    }
+    const width = this.width || parseInt(style.width, 10);
+    const height = this.height || parseInt(style.height, 10);
+
+    const colorGradient = this.context.createLinearGradient(0, 0, width, 0);
+    colorGradient.addColorStop(0, 'rgb(255,0,0)');
+    colorGradient.addColorStop(0.16, 'rgb(255,0,255)');
+    colorGradient.addColorStop(0.32, 'rgb(0,0,255)');
+    colorGradient.addColorStop(0.48, 'rgb(0,255,255)');
+    colorGradient.addColorStop(0.64, 'rgb(0,255,0)');
+    colorGradient.addColorStop(0.80, 'rgb(255,255,0)');
+    colorGradient.addColorStop(1, 'rgb(255,0,0)');
+    this.context.fillStyle = colorGradient;
+    this.context.fillRect(0, 0, width, height);
+
+    const bwGradient = this.context.createLinearGradient(0, 0, 0, height);
+    bwGradient.addColorStop(0, 'rgba(255,255,255,1)');
+    bwGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
+    bwGradient.addColorStop(0.5, 'rgba(0,0,0,0)');
+    bwGradient.addColorStop(1, 'rgba(0,0,0,1)');
+
+    this.context.fillStyle = bwGradient;
+    this.context.fillRect(0, 0, width, height);
+  },
 });
