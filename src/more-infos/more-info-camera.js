@@ -7,22 +7,19 @@ export default new Polymer({
     stateObj: {
       type: Object,
     },
-    dialogOpen: {
-      type: Boolean,
-    },
   },
 
   imageLoaded() {
     this.fire('iron-resize');
   },
 
-  computeCameraImageUrl(dialogOpen) {
+  computeCameraImageUrl(stateObj) {
     if (__DEMO__) {
       return '/demo/webcam.jpg';
-    } else if (dialogOpen) {
+    } else if (stateObj) {
       return `/api/camera_proxy_stream/${this.stateObj.entityId}`;
     }
-    // Return an empty image if dialog is not open
+    // Return an empty image if no stateObj (= dialog not open)
     return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
   },
 });

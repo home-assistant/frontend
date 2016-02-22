@@ -1,4 +1,6 @@
 import Polymer from '../polymer';
+
+import dynamicContentUpdater from '../util/dynamic-content-updater';
 import stateMoreInfoType from '../util/state-more-info-type';
 
 require('./more-info-default');
@@ -22,46 +24,12 @@ export default new Polymer({
       type: Object,
       observer: 'stateObjChanged',
     },
-
-    dialogOpen: {
-      type: Boolean,
-      value: false,
-      observer: 'dialogOpenChanged',
-    },
   },
 
-  dialogOpenChanged(newVal) {
-    const root = Polymer.dom(this);
+  stateObjChanged(stateObj) {
+    if (!stateObj) return;
 
-    if (root.lastChild) {
-      root.lastChild.dialogOpen = newVal;
-    }
-  },
-
-  stateObjChanged(newVal, oldVal) {
-    const root = Polymer.dom(this);
-
-    if (!newVal) {
-      if (root.lastChild) {
-        root.removeChild(root.lastChild);
-      }
-      return;
-    }
-
-    const newMoreInfoType = stateMoreInfoType(newVal);
-
-    if (!oldVal || stateMoreInfoType(oldVal) !== newMoreInfoType) {
-      if (root.lastChild) {
-        root.removeChild(root.lastChild);
-      }
-
-      const moreInfo = document.createElement(`more-info-${newMoreInfoType}`);
-      moreInfo.stateObj = newVal;
-      moreInfo.dialogOpen = this.dialogOpen;
-      root.appendChild(moreInfo);
-    } else {
-      root.lastChild.dialogOpen = this.dialogOpen;
-      root.lastChild.stateObj = newVal;
-    }
+    dynamicContentUpdater(
+      this, `MORE-INFO-${stateMoreInfoType(stateObj).toUpperCase()}`, { stateObj });
   },
 });

@@ -1,6 +1,7 @@
 import Polymer from '../polymer';
 
 import stateCardType from '../util/state-card-type';
+import dynamicContentUpdater from '../util/dynamic-content-updater';
 
 require('./state-card-configurator');
 require('./state-card-display');
@@ -22,28 +23,10 @@ export default new Polymer({
     },
   },
 
-  stateObjChanged(newVal, oldVal) {
-    const root = Polymer.dom(this);
+  stateObjChanged(stateObj) {
+    if (!stateObj) return;
 
-    if (!newVal) {
-      if (root.lastChild) {
-        root.removeChild(root.lastChild);
-      }
-      return;
-    }
-
-    const newCardType = stateCardType(newVal);
-
-    if (!oldVal || stateCardType(oldVal) !== newCardType) {
-      if (root.lastChild) {
-        root.removeChild(root.lastChild);
-      }
-
-      const stateCard = document.createElement(`state-card-${newCardType}`);
-      stateCard.stateObj = newVal;
-      root.appendChild(stateCard);
-    } else {
-      root.lastChild.stateObj = newVal;
-    }
+    dynamicContentUpdater(
+      this, `STATE-CARD-${stateCardType(stateObj).toUpperCase()}`, { stateObj });
   },
 });

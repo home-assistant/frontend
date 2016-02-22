@@ -1,5 +1,7 @@
 import Polymer from '../polymer';
 
+import dynamicContentUpdater from '../util/dynamic-content-updater';
+
 require('./ha-camera-card');
 require('./ha-entities-card');
 require('./ha-introduction-card');
@@ -14,40 +16,10 @@ export default new Polymer({
     },
   },
 
-  cardDataChanged(newData, oldData) {
-    const root = Polymer.dom(this);
+  cardDataChanged(newData) {
+    if (!newData) return;
 
-    if (!newData) {
-      if (root.lastChild) {
-        root.removeChild(root.lastChild);
-      }
-      return;
-    }
-
-    const newElement = !oldData || oldData.cardType !== newData.cardType;
-    let card;
-    if (newElement) {
-      if (root.lastChild) {
-        root.removeChild(root.lastChild);
-      }
-
-      card = document.createElement(`ha-${newData.cardType}-card`);
-    } else {
-      card = root.lastChild;
-    }
-
-    Object.keys(newData).forEach(key => card[key] = newData[key]);
-
-    if (oldData) {
-      Object.keys(oldData).forEach(key => {
-        if (!(key in newData)) {
-          card[key] = undefined;
-        }
-      });
-    }
-
-    if (newElement) {
-      root.appendChild(card);
-    }
+    dynamicContentUpdater(this, `HA-${newData.cardType.toUpperCase()}-CARD`,
+                          newData);
   },
 });
