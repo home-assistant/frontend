@@ -14,11 +14,11 @@ function binarySensorIcon(state) {
     case 'safety':
     case 'gas':
     case 'light':
-      return activated ? 'mdi:brightness-5' : 'mdi:brightness-7'
+      return activated ? 'mdi:brightness-5' : 'mdi:brightness-7';
     case 'sound':
-      return activated ? 'mdi:bell-off' : 'mdi:bell-ring'
+      return activated ? 'mdi:bell-off' : 'mdi:bell-ring';
     case 'vibration':
-      return activated ? 'mdi:crop-portrait' : 'mdi:vibrate'
+      return activated ? 'mdi:crop-portrait' : 'mdi:vibrate';
     case 'smoke':
     case 'power':
       return activated ? 'mdi:verified' : 'mdi:alert';
