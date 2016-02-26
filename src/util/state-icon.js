@@ -16,7 +16,7 @@ function binarySensorIcon(state) {
     case 'light':
       return activated ? 'mdi:brightness-5' : 'mdi:brightness-7';
     case 'sound':
-      return activated ? 'mdi:bell-off' : 'mdi:bell-ring';
+      return activated ? 'mdi:music-note-off' : 'mdi:music-note';
     case 'vibration':
       return activated ? 'mdi:crop-portrait' : 'mdi:vibrate';
     case 'smoke':
