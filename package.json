@@ -25,19 +25,19 @@
     "moment": "^2.11.2"
   },
   "devDependencies": {
-    "babel-core": "^6.4",
-    "babel-eslint": "^5.0.0-beta6",
+    "babel-core": "^6.5",
+    "babel-eslint": "^5.0.0",
     "babel-loader": "^6.2",
     "babel-plugin-default-import-checker": "^1.0.8",
-    "babel-plugin-transform-class-properties": "^6.4.0",
+    "babel-plugin-transform-class-properties": "^6.5.2",
     "babel-plugin-transform-export-extensions": "^6.4.0",
     "babel-plugin-transform-object-rest-spread": "^6.3.13",
     "babel-preset-es2015": "^6.3.13",
     "bower": "^1.7.7",
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^5.0.0",
-    "html-minifier": "^1.1.1",
-    "vulcanize": "^1.14.5",
+    "html-minifier": "^1.2.0",
+    "vulcanize": "^1.14.6",
     "webpack": "^1.12"
   }
 }
