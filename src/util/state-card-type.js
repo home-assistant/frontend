@@ -6,6 +6,7 @@ const DOMAINS_WITH_CARD = [
   'media_player',
   'rollershutter',
   'scene',
+  'script',
   'thermostat',
   'weblink',
 ];
