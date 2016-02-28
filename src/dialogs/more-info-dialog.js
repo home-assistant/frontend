@@ -116,7 +116,7 @@ export default new Polymer({
 
   dialogOpenChanged(newVal) {
     if (newVal) {
-      this.async(() => this._delayedDialogOpen = true, 10);
+      this.async(() => { this._delayedDialogOpen = true; }, 10);
     } else if (!newVal && this.stateObj) {
       this.async(() => moreInfoActions.deselectEntity(), 10);
       this._delayedDialogOpen = false;

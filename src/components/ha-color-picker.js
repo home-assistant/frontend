@@ -55,7 +55,7 @@ export default new Polymer({
     }
     this.mouseMoveIsThrottled = false;
     this.processColorSelect(ev.touches[0]);
-    this.async(() => this.mouseMoveIsThrottled = true, 100);
+    this.async(() => { this.mouseMoveIsThrottled = true; }, 100);
   },
 
   onMouseMove(ev) {
@@ -64,7 +64,7 @@ export default new Polymer({
     }
     this.mouseMoveIsThrottled = false;
     this.processColorSelect(ev);
-    this.async(() => this.mouseMoveIsThrottled = true, 100);
+    this.async(() => { this.mouseMoveIsThrottled = true; }, 100);
   },
 
   processColorSelect(ev) {

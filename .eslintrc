@@ -1,12 +1,7 @@
 {
-  "parser": "babel-eslint",
   "extends": "airbnb/base",
   "globals": {
     "__DEV__": false,
     "__DEMO__": false
-  },
-  "rules": {
-    "comma-dangle": [2, "always-multiline"],
-    "no-underscore-dangle": 0
   }
 }
