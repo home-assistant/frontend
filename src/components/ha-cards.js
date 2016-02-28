@@ -62,7 +62,7 @@ export default new Polymer({
   updateCards(columns, states, showIntroduction) {
     this.debounce(
       'updateCards',
-      () => this.cards = this.computeCards(columns, states, showIntroduction),
+      () => { this.cards = this.computeCards(columns, states, showIntroduction); },
       0
     );
   },
@@ -147,7 +147,7 @@ export default new Polymer({
           byDomain.get(domain).sortBy(entitySortBy)
             .forEach(groupState => {
               const entities = util.expandGroup(groupState, states);
-              entities.forEach(entity => hasGroup[entity.entityId] = true);
+              entities.forEach(entity => { hasGroup[entity.entityId] = true; });
               addEntitiesCard(groupState.entityId, entities.toArray(), groupState);
             }
           );

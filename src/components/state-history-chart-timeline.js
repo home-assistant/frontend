@@ -70,7 +70,9 @@ export default new Polymer({
       if (stateInfo.length === 0) return;
 
       const entityDisplay = stateInfo[0].entityDisplay;
+      /* eslint-disable prefer-const */
       let newLastChanged;
+      /* eslint-enable prefer-const */
       let prevState = null;
       let prevLastChanged = null;
 

@@ -57,6 +57,6 @@ export default new Polymer({
     this.errorLog = 'Loading error log…';
 
     errorLogActions.fetchErrorLog().then(
-      log => this.errorLog = log || 'No errors have been reported.');
+      log => { this.errorLog = log || 'No errors have been reported.'; });
   },
 });

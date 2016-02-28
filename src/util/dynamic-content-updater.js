@@ -14,7 +14,7 @@ export default function dynamicContentUpdater(root, newElementTag, attributes) {
     customEl = document.createElement(newElementTag);
   }
 
-  Object.keys(attributes).forEach(key => customEl[key] = attributes[key]);
+  Object.keys(attributes).forEach(key => { customEl[key] = attributes[key]; });
 
   if (customEl.parentNode === null) {
     rootEl.appendChild(customEl);

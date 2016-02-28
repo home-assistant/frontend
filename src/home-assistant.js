@@ -58,10 +58,10 @@ export default new Polymer({
   loadIcons() {
     // If the import fails, we'll try to import again, must be a server glitch
     // Since HTML imports only resolve once, we import another url.
-    const success = () => this.iconsLoaded = true;
+    const success = () => { this.iconsLoaded = true; };
     this.importHref(`/static/mdi-${this.icons}.html`,
                     success,
-                    () => this.importHref(`/static/mdi.html`, success, success));
+                    () => this.importHref('/static/mdi.html', success, success));
   },
 
   created() {

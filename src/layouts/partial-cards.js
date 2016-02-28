@@ -140,9 +140,7 @@ export default new Polymer({
   },
 
   computeRefreshButtonClass(isFetching) {
-    if (isFetching) {
-      return 'ha-spin';
-    }
+    return isFetching ? 'ha-spin' : '';
   },
 
   computeShowIntroduction(currentView, introductionLoaded, states) {
