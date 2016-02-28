@@ -8,6 +8,7 @@ require('./state-card-display');
 require('./state-card-input_select');
 require('./state-card-media_player');
 require('./state-card-scene');
+require('./state-card-script');
 require('./state-card-rollershutter');
 require('./state-card-thermostat');
 require('./state-card-toggle');
