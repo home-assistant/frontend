@@ -6,9 +6,6 @@ const { util: { temperatureUnits } } = hass;
 
 function binarySensorIcon(state) {
   const activated = state.state && state.state === 'off';
-  if (state.state && state.state === 'unavailable') {
-    return 'mdi:alert-circle-outline';
-  }
   switch (state.attributes.sensor_class) {
     case 'opening':
       return activated ? 'mdi:crop-square' : 'mdi:exit-to-app';
