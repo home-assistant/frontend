@@ -33,8 +33,6 @@ function binarySensorIcon(state) {
 export default function stateIcon(state) {
   if (!state) {
     return defaultIcon;
-  } else if (state.state && state.state === 'unavailable') {
-    return 'mdi:alert-circle-outline';
   } else if (state.attributes.icon) {
     return state.attributes.icon;
   }
