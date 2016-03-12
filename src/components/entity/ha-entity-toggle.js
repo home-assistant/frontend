@@ -1,6 +1,7 @@
-import hass from '../../util/home-assistant-js-instance';
-
 import Polymer from '../../polymer';
+
+import hass from '../../util/home-assistant-js-instance';
+import OFF_STATES from '../../util/off-states';
 
 const { serviceActions } = hass;
 
@@ -58,9 +59,7 @@ export default new Polymer({
   },
 
   computeIsOn(stateObj) {
-    return stateObj && stateObj.state !== 'off' &&
-      stateObj.state !== 'unlocked' && stateObj.state !== 'closed' &&
-      stateObj.state !== 'unavailable';
+    return stateObj && OFF_STATES.indexOf(stateObj.state) === -1;
   },
 
   // We call updateToggle after a successful call to re-sync the toggle
@@ -82,8 +81,8 @@ export default new Polymer({
       service = turnOn ? 'turn_on' : 'turn_off';
     }
 
-    const call = serviceActions.callService(domain, service,
-                                            { entity_id: this.stateObj.entityId });
+    const call = serviceActions.callService(
+      domain, service, { entity_id: this.stateObj.entityId });
 
     if (!this.stateObj.attributes.assumed_state) {
       call.then(() => this.forceStateChange());
