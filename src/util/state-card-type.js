@@ -12,7 +12,9 @@ const DOMAINS_WITH_CARD = [
 ];
 
 export default function stateCardType(state) {
-  if (DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {
+  if (state.state === 'unavailable') {
+    return 'display';
+  } else if (DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {
     return state.domain;
   } else if (canToggle(state.entityId)) {
     return 'toggle';
