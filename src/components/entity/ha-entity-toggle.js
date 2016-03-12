@@ -59,7 +59,8 @@ export default new Polymer({
 
   computeIsOn(stateObj) {
     return stateObj && stateObj.state !== 'off' &&
-      stateObj.state !== 'unlocked' && stateObj.state !== 'closed';
+      stateObj.state !== 'unlocked' && stateObj.state !== 'closed' &&
+      stateObj.state !== 'unavailable';
   },
 
   // We call updateToggle after a successful call to re-sync the toggle
