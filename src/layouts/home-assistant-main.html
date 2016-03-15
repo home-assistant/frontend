@@ -28,7 +28,7 @@
       force-narrow='[[computeForceNarrow(narrow, showSidebar)]]'
       responsive-width='0' disable-swipe='[[isSelectedMap]]'
       disable-edge-swipe='[[isSelectedMap]]'>
-      <ha-sidebar drawer></ha-sidebar>
+      <ha-sidebar drawer narrow='[[narrow]]'></ha-sidebar>
 
       <template is='dom-if' if='[[isSelectedStates]]'>
         <partial-cards main narrow='[[narrow]]' show-menu='[[showSidebar]]'></partial-cards>
