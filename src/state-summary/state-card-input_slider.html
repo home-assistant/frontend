@@ -1,0 +1,20 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+
+<link rel="import" href="../components/state-info.html">
+
+<dom-module id="state-card-input_slider">
+  <style>
+  paper-slider {
+    margin-left: 16px;
+  }
+  </style>
+
+  <template>
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]"></state-info>
+      <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' on-change='selectedValueChanged'>
+      </paper-slider>
+    </div>
+  </template>
+</dom-module>
