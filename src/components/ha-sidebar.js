@@ -47,7 +47,7 @@ export default new Polymer({
     },
   },
 
-  menuSelect(ev) {
+  menuSelect() {
     this.updateStyles();
   },
 
