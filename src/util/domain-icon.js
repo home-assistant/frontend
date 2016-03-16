@@ -38,6 +38,9 @@ export default function domainIcon(domain, state) {
     case 'input_select':
       return 'mdi:format-list-bulleted';
 
+    case 'input_slider':
+      return 'mdi:ray-vertex';
+
     case 'light':
       return 'mdi:lightbulb';
 
