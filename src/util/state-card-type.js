@@ -3,6 +3,7 @@ import canToggle from './can-toggle';
 const DOMAINS_WITH_CARD = [
   'configurator',
   'input_select',
+  'input_slider',
   'media_player',
   'rollershutter',
   'scene',
