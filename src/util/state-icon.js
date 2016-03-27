@@ -17,6 +17,8 @@ function binarySensorIcon(state) {
       return activated ? 'mdi:music-note-off' : 'mdi:music-note';
     case 'vibration':
       return activated ? 'mdi:crop-portrait' : 'mdi:vibrate';
+    case 'connectivity':
+      return activated ? 'mdi:server-network-off' : 'mdi:server-network';
     case 'safety':
     case 'gas':
     case 'smoke':
