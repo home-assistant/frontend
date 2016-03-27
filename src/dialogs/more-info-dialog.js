@@ -33,7 +33,7 @@ export default new Polymer({
       type: Object,
       bindNuclear: [
         moreInfoGetters.currentEntityHistory,
-        (history) => history ? [history] : false,
+        (history) => (history ? [history] : false),
       ],
     },
 

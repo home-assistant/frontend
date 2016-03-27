@@ -118,7 +118,7 @@ export default new Polymer({
           // value that should not be interpolated at the same time that our new
           // line will be published.
           data.push([values[0]].concat(prevValues.slice(1).map(
-            (val, index) => noInterpolations[index] ? val : null)));
+            (val, index) => (noInterpolations[index] ? val : null))));
         }
         data.push(values);
         prevValues = values;
