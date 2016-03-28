@@ -33,7 +33,6 @@ export default new Polymer({
     selected: {
       type: String,
       bindNuclear: navigationGetters.activePane,
-      // observer: 'selectedChanged',
     },
 
     hasHistoryComponent: {
@@ -48,7 +47,7 @@ export default new Polymer({
   },
 
   menuSelect() {
-    this.updateStyles();
+    this.debounce('updateStyles', () => this.updateStyles(), 1);
   },
 
   menuClicked(ev) {
@@ -78,6 +77,7 @@ export default new Polymer({
       return;
     }
     navigationActions.navigate.apply(null, newChoice.split('/'));
+    this.debounce('updateStyles', () => this.updateStyles(), 1);
   },
 
   handleLogOut() {
