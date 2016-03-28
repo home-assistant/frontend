@@ -4,6 +4,7 @@
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
 
 <dom-module id='more-info-alarm_control_panel'>
+  <style is="custom-style" include="iron-flex"></style>
   <template>
       <div class='layout horizontal'>
         <paper-input label='code' value='{{enteredCode}}' pattern='[[codeFormat]]' type='password' hidden='[[!codeInputVisible]]' disabled='[[!codeInputEnabled]]'></paper-input>
