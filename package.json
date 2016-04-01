@@ -20,8 +20,8 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
   "dependencies": {
-    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#e1eeafb110be2e298c037467ddce72381dc9f9e4",
-    "lodash": "^4.6.1",
+    "home-assistant-js": "git+https://github.com/balloob/home-assistant-js.git#dbc094446b225aa9f1cbc7285b37734f7cc11b75",
+    "lodash": "^4.7.0",
     "moment": "^2.12.0"
   },
   "devDependencies": {
@@ -29,9 +29,9 @@
     "babel-loader": "^6.2",
     "babel-preset-es2015": "^6.6.0",
     "bower": "^1.7.7",
-    "eslint": "^2.5.1",
+    "eslint": "^2.5.3",
     "eslint-config-airbnb": "^6.2.0",
-    "html-minifier": "^1.3.1",
+    "html-minifier": "^1.4.0",
     "vulcanize": "^1.14.8",
     "webpack": "^1.12"
   }
