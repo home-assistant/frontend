@@ -1,1 +1,1 @@
-export default 'bookmark';
+export default 'mdi:bookmark';
