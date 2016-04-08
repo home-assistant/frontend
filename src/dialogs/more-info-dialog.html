@@ -37,7 +37,7 @@
   <template>
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
     <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
-      <h2><state-card-content state-obj="[[stateObj]]"></state-card-content></h2>
+      <h2><state-card-content state-obj="[[stateObj]]" in-dialog></state-card-content></h2>
       <paper-dialog-scrollable>
       <template is='dom-if' if="[[showHistoryComponent]]">
         <state-history-charts state-history="[[stateHistory]]"

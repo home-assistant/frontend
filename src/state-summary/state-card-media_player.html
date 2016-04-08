@@ -10,29 +10,26 @@
   }
 
   .state {
+    @apply(--paper-font-common-nowrap);
+    @apply(--paper-font-body1);
     margin-left: 16px;
     text-align: right;
-    overflow-x: hidden;
   }
 
   .main-text {
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
+    @apply(--paper-font-common-nowrap);
+    color: var(--primary-text-color);
     text-transform: capitalize;
-    font-weight: 400;
   }
 
   .secondary-text {
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
+    @apply(--paper-font-common-nowrap);
     color: var(--secondary-text-color);
   }
   </style>
   <template>
     <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]"></state-info>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
         <div class='main-text'>[[computePrimaryText(stateObj, isPlaying)]]</div>
         <div class='secondary-text'>[[computeSecondaryText(stateObj)]]</div>

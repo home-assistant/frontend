@@ -25,6 +25,14 @@ export default new Polymer({
     },
   },
 
+  listeners: {
+    tap: 'onTap',
+  },
+
+  onTap(ev) {
+    ev.stopPropagation();
+  },
+
   ready() {
     this.forceStateChange();
   },

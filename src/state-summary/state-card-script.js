@@ -10,12 +10,18 @@ export default new Polymer({
   is: 'state-card-script',
 
   properties: {
+    detailed: {
+      type: Boolean,
+      value: false,
+    },
+
     stateObj: {
       type: Object,
     },
   },
 
-  fireScript() {
+  fireScript(ev) {
+    ev.stopPropagation();
     serviceActions.callTurnOn(this.stateObj.entityId);
   },
 });

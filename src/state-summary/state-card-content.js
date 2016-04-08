@@ -19,16 +19,24 @@ export default new Polymer({
   is: 'state-card-content',
 
   properties: {
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
     stateObj: {
       type: Object,
-      observer: 'stateObjChanged',
     },
   },
 
-  stateObjChanged(stateObj) {
+  observers: [
+    'inputChanged(inDialog, stateObj)',
+  ],
+
+  inputChanged(inDialog, stateObj) {
     if (!stateObj) return;
 
     dynamicContentUpdater(
-      this, `STATE-CARD-${stateCardType(stateObj).toUpperCase()}`, { stateObj });
+      this, `STATE-CARD-${stateCardType(stateObj).toUpperCase()}`, { stateObj, inDialog });
   },
 });

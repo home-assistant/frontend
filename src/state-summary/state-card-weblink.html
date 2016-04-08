@@ -4,22 +4,22 @@
 
 <dom-module id="state-card-weblink">
   <style>
-  state-badge {
-    float: left;
+  :host {
+    display: block;
   }
-
   .name {
-    margin-left: 56px;
+    @apply(--paper-font-common-nowrap);
+    @apply(--paper-font-body1);
+    color: var(--primary-color);
+
     text-transform: capitalize;
-    font-weight: 400;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
     line-height: 40px;
+    margin-left: 16px;
   }
   </style>
 
   <template>
-    <state-badge state-obj='[[stateObj]]'></state-badge>
-    <div class='name'>[[stateObj.entityDisplay]]</div>
+    <state-badge state-obj='[[stateObj]]' in-dialog='[[inDialog]]'></state-badge>
+    <a href='[[stateObj.entityDisplay]]' target='_blank' class='name' id='link'>[[stateObj.entityDisplay]]</a>
   </template>
 </dom-module>

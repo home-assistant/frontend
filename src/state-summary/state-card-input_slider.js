@@ -9,6 +9,11 @@ export default new Polymer({
   is: 'state-card-input_slider',
 
   properties: {
+    detailed: {
+      type: Boolean,
+      value: false,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjectChanged',

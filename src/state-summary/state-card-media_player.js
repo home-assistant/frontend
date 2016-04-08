@@ -8,6 +8,11 @@ export default new Polymer({
   is: 'state-card-media_player',
 
   properties: {
+    detailed: {
+      type: Boolean,
+      value: false,
+    },
+
     stateObj: {
       type: Object,
     },

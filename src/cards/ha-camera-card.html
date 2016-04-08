@@ -17,6 +17,7 @@
       border-radius: 2px;
     }
     .caption {
+      @apply(--paper-font-common-nowrap);
       position: absolute;
       left: 0px;
       right: 0px;
@@ -32,9 +33,6 @@
       font-weight: 500;
       line-height: 16px;
       color: white;
-      white-space: nowrap;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
     }
   </style>
   <template>

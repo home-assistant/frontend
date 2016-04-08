@@ -1,11 +1,26 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
-<link rel='import' href='./state-card-display.html'>
+<link rel="import" href="../components/state-info.html">
+
 <link rel='import' href='../components/state-info.html'>
 
 <dom-module id='state-card-configurator'>
+  <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+  <style>
+    paper-button {
+      color: var(--default-primary-color);
+      font-weight: 500;
+      top: 3px;
+      height: 37px;
+    }
+  </style>
+
   <template>
-    <state-card-display state-obj='[[stateObj]]'></state-card-display>
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+      <paper-button hidden$='[[inDialog]]'>[[stateObj.state]]</paper-button>
+    </div>
 
     <!-- pre load the image so the dialog is rendered the proper size -->
     <template is='dom-if' if='[[stateObj.attributes.description_image]]'>
