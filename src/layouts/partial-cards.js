@@ -117,7 +117,8 @@ export default new Polymer({
 
   windowChange() {
     const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
-    this.columns = Math.max(1, matchColumns - !this.narrow);
+    // Do -1 column if the menu is docked and open
+    this.columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   },
 
   // When user changes tab by pressing back button, blur former tab
