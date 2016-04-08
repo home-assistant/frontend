@@ -22,6 +22,10 @@
     text-transform: capitalize;
   }
 
+  .main-text[take-height] {
+    line-height: 40px;
+  }
+
   .secondary-text {
     @apply(--paper-font-common-nowrap);
     color: var(--secondary-text-color);
@@ -31,8 +35,8 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
-        <div class='main-text'>[[computePrimaryText(stateObj, isPlaying)]]</div>
-        <div class='secondary-text'>[[computeSecondaryText(stateObj)]]</div>
+        <div class='main-text' take-height$='[[!secondaryText]]'>[[computePrimaryText(stateObj, isPlaying)]]</div>
+        <div class='secondary-text'>[[secondaryText]]</div>
       </div>
     </div>
   </template>

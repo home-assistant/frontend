@@ -21,6 +21,11 @@ export default new Polymer({
       type: Boolean,
       computed: 'computeIsPlaying(stateObj)',
     },
+
+    secondaryText: {
+      type: String,
+      computed: 'computeSecondaryText(stateObj)',
+    },
   },
 
   computeIsPlaying(stateObj) {
