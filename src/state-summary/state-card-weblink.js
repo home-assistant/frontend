@@ -6,6 +6,11 @@ export default new Polymer({
   is: 'state-card-weblink',
 
   properties: {
+    detailed: {
+      type: Boolean,
+      value: false,
+    },
+
     stateObj: {
       type: Object,
     },
@@ -17,6 +22,10 @@ export default new Polymer({
 
   onTap(ev) {
     ev.stopPropagation();
+    if (ev.target === this.$.link) {
+      // Only open window if we clicked on card but not the link
+      return;
+    }
     window.open(this.stateObj.state, '_blank');
   },
 });

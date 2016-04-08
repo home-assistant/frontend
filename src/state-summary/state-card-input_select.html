@@ -13,7 +13,7 @@
 
   <template>
     <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]"></state-info>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <paper-dropdown-menu no-label-float selected-item-label='{{selectedOption}}' on-tap='stopPropagation'>
         <paper-menu class="dropdown-content" selected="[[computeSelected(stateObj)]]">
           <template is='dom-repeat' items='[[stateObj.attributes.options]]'>

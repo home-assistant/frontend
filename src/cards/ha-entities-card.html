@@ -15,13 +15,13 @@
       cursor: pointer;
     }
     .header {
-      font-size: 24px;
+      @apply(--paper-font-headline);
+      color: var(--primary-text-color);
       padding: 24px 16px 16px;
       text-transform: capitalize;
     }
     .header .name {
-      overflow: hidden;
-      text-overflow: ellipsis;
+      @apply(--paper-font-common-nowrap);
     }
     ha-entity-toggle {
       margin-left: 16px;

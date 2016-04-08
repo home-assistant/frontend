@@ -11,7 +11,9 @@
       background-color: white;
     }
     .header {
-      font-size: 24px;
+      @apply(--paper-font-headline);
+      @apply(--paper-font-common-expensive-kerning);
+      opacity: var(--dark-primary-opacity);
       padding: 24px 16px 16px;
       text-transform: capitalize;
     }

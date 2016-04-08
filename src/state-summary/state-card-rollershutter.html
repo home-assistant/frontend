@@ -19,7 +19,7 @@
   </style>
   <template>
     <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]"></state-info>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
         <paper-icon-button icon="mdi:arrow-up" on-tap='onMoveUpTap'
           disabled='[[computeIsFullyClosed(stateObj)]]'></paper-icon-button>

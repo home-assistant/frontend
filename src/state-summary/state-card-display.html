@@ -6,17 +6,19 @@
   <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
   <style>
   .state {
+    @apply(--paper-font-body1);
+    color: var(--primary-text-color);
+
     margin-left: 16px;
     text-transform: capitalize;
-    font-weight: 400;
     text-align: right;
-    line-height: 1.5;
+    line-height: 40px;
   }
   </style>
 
   <template>
     <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]"></state-info>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>[[stateObj.stateDisplay]]</div>
     </div>
   </template>

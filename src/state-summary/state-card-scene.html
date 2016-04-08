@@ -1,23 +1,23 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="../components/state-info.html">
 
 <dom-module id="state-card-scene">
   <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
   <style>
-    paper-icon-button {
-      border: 1px solid;
-      border-radius: 50%;
+    paper-button {
       color: var(--default-primary-color);
-      line-height: 24px;
+      font-weight: 500;
+      top: 3px;
+      height: 37px;
     }
   </style>
 
   <template>
     <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]"></state-info>
-      <paper-icon-button on-tap='activateScene' icon='mdi:play'></paper-icon-button>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+      <paper-button on-tap='activateScene'>ACTIVATE</paper-button>
     </div>
   </template>
 </dom-module>

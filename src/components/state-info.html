@@ -6,7 +6,7 @@
 <dom-module id="state-info">
   <style>
   :host {
-    line-height: 1.5;
+    @apply(--paper-font-body1);
     min-width: 150px;
     white-space: nowrap;
   }
@@ -20,17 +20,19 @@
   }
 
   .name {
+    @apply(--paper-font-common-nowrap);
     text-transform: capitalize;
-    font-weight: 400;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
+    color: var(--primary-text-color);
+    line-height: 40px;
+  }
+
+  .name[in-dialog] {
+    line-height: 20px;
   }
 
   .time-ago {
+    @apply(--paper-font-common-nowrap);
     color: var(--secondary-text-color);
-    margin-top: -2px;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
   }
   </style>
 
@@ -39,11 +41,13 @@
       <state-badge state-obj='[[stateObj]]'></state-badge>
 
       <div class='info'>
-        <div class='name'>[[stateObj.entityDisplay]]</div>
+        <div class='name' in-dialog$='[[inDialog]]'>[[stateObj.entityDisplay]]</div>
 
-        <div class='time-ago'>
-          <relative-ha-datetime datetime-obj='[[stateObj.lastChangedAsDate]]'></relative-ha-datetime>
-        </div>
+        <template is='dom-if' if='[[inDialog]]'>
+          <div class='time-ago'>
+            <relative-ha-datetime datetime-obj='[[stateObj.lastChangedAsDate]]'></relative-ha-datetime>
+          </div>
+        </template>
 
       </div>
     </div>

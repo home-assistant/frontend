@@ -22,11 +22,11 @@
     }
 
     .version {
-      font-size: 24px;
+      @apply(--paper-font-headline);
     }
 
     .develop {
-      font-size: 18px;
+      @apply(--paper-font-subhead);
     }
 
     .about a {
@@ -44,6 +44,7 @@
     }
 
     .error-log {
+      @apply(--paper-font-code1)
       clear: both;
       white-space: pre-wrap;
     }
@@ -83,7 +84,7 @@
           The following errors have been logged this session:
           <paper-icon-button icon='mdi:refresh' on-tap='refreshErrorLog'></paper-icon-button>
         </p>
-        <pre class='error-log'>[[errorLog]]</pre>
+        <div class='error-log'>[[errorLog]]</div>
       </div>
     </partial-base>
   </template>
