@@ -11,7 +11,7 @@
     "js_dev_demo": "BUILD_DEMO=1 webpack --colors --progress -d --watch",
     "js_prod": "BUILD_DEV=0 webpack --colors --progress -p -d",
     "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --colors --progress -p -d",
-    "frontend_html": "vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html && node script/minify.js",
+    "frontend_html": "node script/fix-roboto.js && vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html && node script/minify.js",
     "frontend_prod": "npm run js_prod && bower install && npm run frontend_html",
     "frontend_demo": "npm run js_demo && bower install && npm run frontend_html",
     "setup_js_dev": "npm install && cd node_modules && rm -rf home-assistant-js && git clone https://github.com/balloob/home-assistant-js.git && cd home-assistant-js && npm install",
