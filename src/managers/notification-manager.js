@@ -11,6 +11,12 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    // Otherwise we cannot close a modal when a notification is being shown.
+    neg: {
+      type: Boolean,
+      value: false,
+    },
+
     text: {
       type: String,
       bindNuclear: notificationGetters.lastNotificationMessage,
