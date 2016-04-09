@@ -6,15 +6,17 @@
 
 <link rel="import" href="./partial-base.html">
 
+<link rel="import" href="../components/ha-dev-responsive-content.html">
 <link rel="import" href="../components/entity-list.html">
 
 <dom-module id="partial-dev-set-state">
   <style is="custom-style" include="iron-flex iron-positioning"></style>
   <style>
-    .form {
+    .content {
+      @apply(--paper-font-body1);
+      margin-top: 64px;
       padding: 24px;
       background-color: white;
-      margin-top: 64px;
       -ms-user-select: initial;
       -webkit-user-select: initial;
       -moz-user-select: initial;
@@ -23,30 +25,34 @@
     .ha-form {
       margin-right: 16px;
     }
+
+    .header {
+      @apply(--paper-font-title);
+    }
   </style>
 
   <template>
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
       <span header-title>Set State</span>
 
-      <div class='form fit'>
-        <div>
-          Set the representation of a device within Home Assistant.<br />
-          This will not communicate with the actual device.
-        </div>
+      <div class$='[[computeFormClasses(narrow)]]'>
+        <div class='flex'>
+          <p>
+            Set the representation of a device within Home Assistant.<br />
+            This will not communicate with the actual device.
+          </p>
 
-        <div class$='[[computeFormClasses(narrow)]]'>
-          <div class='ha-form flex'>
+          <div class='ha-form'>
             <paper-input label="Entity ID" autofocus required value='{{entityId}}'></paper-input>
             <paper-input label="State" required value='{{state}}'></paper-input>
             <paper-textarea label="State attributes (JSON, optional)" value='{{stateAttributes}}'></paper-textarea>
             <paper-button on-tap='handleSetState' raised>Set State</paper-button>
           </div>
+        </div>
 
-          <div class='sidebar'>
-            <h4>Current entities:</h4>
-            <entity-list on-entity-selected='entitySelected'></entity-list>
-          </div>
+        <div>
+          <div class='header'>Current entities</div>
+          <entity-list on-entity-selected='entitySelected'></entity-list>
         </div>
       </div>
     </partial-base>
