@@ -4,7 +4,6 @@ import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/entity-list');
-require('../components/ha-dev-responsive-content');
 
 const { reactor, entityGetters, entityActions } = hass;
 
