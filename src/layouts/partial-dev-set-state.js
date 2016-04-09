@@ -4,6 +4,7 @@ import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/entity-list');
+require('../components/ha-dev-responsive-content');
 
 const { reactor, entityGetters, entityActions } = hass;
 
@@ -73,6 +74,6 @@ export default new Polymer({
   },
 
   computeFormClasses(narrow) {
-    return `layout ${narrow ? 'vertical' : 'horizontal'}`;
+    return `content fit ${narrow ? '' : 'layout horizontal'}`;
   },
 });

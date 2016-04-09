@@ -11,10 +11,11 @@
 <dom-module id="partial-dev-fire-event">
   <style is="custom-style" include="iron-flex iron-positioning"></style>
   <style>
-    .form {
+    .content {
+      @apply(--paper-font-body1);
+      margin-top: 64px;
       padding: 24px;
       background-color: white;
-      margin-top: 64px;
       -ms-user-select: initial;
       -webkit-user-select: initial;
       -moz-user-select: initial;
@@ -23,28 +24,32 @@
     .ha-form {
       margin-right: 16px;
     }
+
+    .header {
+      @apply(--paper-font-title);
+    }
   </style>
 
   <template>
     <partial-base narrow="{{narrow}}" show-menu='[[showMenu]]'>
       <span header-title>Fire Event</span>
 
-      <div class='form fit'>
-        <p>
-          Fire an event on the event bus.
-        </p>
+      <div class$='[[computeFormClasses(narrow)]]'>
+        <div class='flex'>
+          <p>
+            Fire an event on the event bus.
+          </p>
 
-        <div class$='[[computeFormClasses(narrow)]]'>
-          <div class='ha-form flex'>
+          <div class='ha-form'>
             <paper-input label="Event Type" autofocus required value='{{eventType}}'></paper-input>
             <paper-textarea label="Event Data (JSON, optional)" value='{{eventData}}'></paper-textarea>
             <paper-button on-tap='fireEvent' raised>Fire Event</paper-button>
           </div>
+        </div>
 
-          <div>
-            <h4>Available events:</h4>
-            <events-list on-event-selected='eventSelected'></event-list>
-          </div>
+        <div>
+          <div class='header'>Available Events</div>
+          <events-list on-event-selected='eventSelected'></event-list>
         </div>
       </div>
     </partial-base>

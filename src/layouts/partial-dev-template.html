@@ -11,6 +11,7 @@
   <style is="custom-style" include="iron-flex iron-positioning"></style>
   <style>
     .content {
+      @apply(--paper-font-body1);
       margin-top: 64px;
       padding: 16px;
       background-color: white;
@@ -42,6 +43,7 @@
     }
 
     .rendered {
+      @apply(--paper-font-code1)
       clear: both;
       white-space: pre-wrap;
     }
@@ -59,13 +61,13 @@
           <p>
             Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.
           </p>
-            <ul>
-              <li><a href='http://jinja.pocoo.org/docs/dev/templates/' target='_blank'>Jinja2 tempate documentation</a></li>
-              <li><a href='https://home-assistant.io/topics/templating/' target='_blank'>Home Assistant template extensions</a></li>
-            </ul>
-          </p>
+          <ul>
+            <li><a href='http://jinja.pocoo.org/docs/dev/templates/' target='_blank'>Jinja2 tempate documentation</a></li>
+            <li><a href='https://home-assistant.io/topics/templating/' target='_blank'>Home Assistant template extensions</a></li>
+          </ul>
           <paper-textarea label="Template" value='{{template}}'></paper-textarea>
         </div>
+
         <div class='render-pane'>
           <paper-spinner class='render-spinner' active='[[rendering]]'></paper-spinner>
           <pre class$='[[computeRenderedClasses(error)]]'>[[processed]]</pre>
