@@ -7,7 +7,11 @@ require('../cards/ha-card-chooser');
 
 const { util } = hass;
 
-const DOMAINS_WITH_CARD = ['camera', 'media_player'];
+// mapping domain to size of the card.
+const DOMAINS_WITH_CARD = {
+  camera: 4,
+  media_player: 3,
+};
 
 const PRIORITY = {
   configurator: -20,
@@ -76,20 +80,35 @@ export default new Polymer({
       _badges: [],
       _columns: [],
     };
-    for (let idx = 0; idx < columns; idx++) { cards._columns[idx] = []; }
+    const entityCount = [];
+    for (let idx = 0; idx < columns; idx++) {
+      cards._columns.push([]);
+      entityCount.push(0);
+    }
 
     function filterGrouped(entities) {
       return entities.filter(entity => !(entity.entityId in hasGroup));
     }
 
-    let index = 0;
-    function increaseIndex() {
-      const old = index;
-      index = (index + 1) % columns;
-      return old;
+    // Find column with < 5 entities, else column with lowest count
+    function getIndex(size) {
+      let minIndex = 0;
+      for (let i = minIndex; i < entityCount.length; i++) {
+        if (entityCount[i] < 5) {
+          minIndex = i;
+          break;
+        }
+        if (entityCount[i] < entityCount[minIndex]) {
+          minIndex = i;
+        }
+      }
+
+      entityCount[minIndex] += size;
+
+      return minIndex;
     }
     if (showIntroduction) {
-      cards._columns[increaseIndex()].push('ha-introduction');
+      cards._columns[getIndex(5)].push('ha-introduction');
       cards['ha-introduction'] = {
         cardType: 'introduction',
         showHideInstruction: states.size > 0 && !__DEMO__,
@@ -102,15 +121,22 @@ export default new Polymer({
       const owncard = [];
       const other = [];
 
+      let size = 0;
+
       entities.forEach(entity => {
-        if (DOMAINS_WITH_CARD.indexOf(entity.domain) === -1) {
-          other.push(entity);
-        } else {
+        if (entity.domain in DOMAINS_WITH_CARD) {
           owncard.push(entity);
+          size += DOMAINS_WITH_CARD[entity.domain];
+        } else {
+          other.push(entity);
+          size++;
         }
       });
 
-      const curIndex = increaseIndex();
+      // Add 1 to the size if we're rendering entities card
+      size += other.length > 1;
+
+      const curIndex = getIndex(size);
 
       if (other.length > 0) {
         cards._columns[curIndex].push(name);
@@ -157,6 +183,10 @@ export default new Polymer({
         }
       }
     );
+
+    // Remove empty columns
+    cards._columns = cards._columns.filter(val => val.length > 0);
+
     return cards;
   },
 
