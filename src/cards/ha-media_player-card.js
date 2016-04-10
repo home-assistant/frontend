@@ -73,7 +73,7 @@ export default new Polymer({
   },
 
   computeVolumeMuteIcon(playerObj) {
-    return playerObj.isMuted ? 'mdi:volume-high' : 'mdi:volume-off';
+    return playerObj.isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
   },
 
   handleNext(ev) {
