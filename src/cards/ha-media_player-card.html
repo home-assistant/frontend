@@ -1,0 +1,139 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+
+<dom-module id='ha-media_player-card'>
+  <style include="paper-material iron-flex iron-flex-alignment iron-positioning">
+    :host {
+      display: block;
+      position: relative;
+      font-size: 0px;
+      border-radius: 2px;
+
+      transition: height .5s;
+
+      background-size: cover;
+      background-position: center center;
+      background-color: var(--paper-grey-500);
+
+      overflow: hidden;
+    }
+
+    .options {
+      float: right;
+      margin-right: -8px;
+      margin-top: -8px;
+    }
+
+    .caption {
+      @apply(--paper-font-caption);
+      border-bottom-left-radius: 2px;
+      border-bottom-right-radius: 2px;
+
+      background: linear-gradient(to bottom,
+                                  rgba(0,0,0,0.5) 0%,
+                                  rgba(0,0,0,0) 100%);
+
+      padding: 8px;
+
+      text-transform: capitalize;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+    }
+
+    .caption .title {
+      @apply(--paper-font-common-nowrap);
+      font-size: 1.2em;
+      margin-bottom: 4px;
+    }
+
+    .controls-container {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 91px;
+    }
+
+    .controls {
+      @apply(--paper-font-body1);
+      padding: 8px;
+      border-radius: 2px;
+      background-color: white;
+      text-align: center;
+    }
+
+    .primary {
+      width: 60px;
+      height: 60px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      padding: 5px;
+    }
+
+    [invisible] {
+      visibility: hidden !important;
+    }
+  </style>
+  <template>
+    <img src='[[stateObj.attributes.entity_picture]]' hidden
+      on-load='imageLoadSuccess' on-error='imageLoadFail'>
+
+    <div class='caption'>
+      <div class='options'>
+        <paper-icon-button
+          class='power-on'
+          icon='mdi:power'
+          on-tap='handlePowerOn'
+          hidden$='[[computeHidePowerOnButton(playerObj)]]'
+        ></paper-icon-button>
+        <paper-icon-button
+          icon='mdi:open-in-app'
+          on-tap='handleOpenMoreInfo'
+        ></paper-icon-button>
+      </div>
+      <div class='title'>[[playerObj.primaryText]]</div>
+      [[playerObj.secondaryText]]<br />
+      @[[stateObj.entityDisplay]]
+    </div>
+
+    <div class='controls-container'>
+      <paper-material elevation="1">
+        <div class='controls layout horizontal justified'>
+          <paper-icon-button
+            icon='[[computeVolumeMuteIcon(playerObj)]]'
+            on-tap='handleVolumeMute'
+            invisible$='[[!playerObj.supportsVolumeMute]]'
+            class='self-center'
+          ></paper-icon-button>
+
+          <div>
+            <paper-icon-button
+              icon='mdi:skip-previous'
+              invisible$='[[!playerObj.supportsPreviousTrack]]'
+              on-tap='handlePrevious'
+            ></paper-icon-button>
+            <paper-icon-button
+              class='primary'
+              icon='[[computePlaybackControlIcon(playerObj)]]'
+              on-tap='handlePlaybackControl'
+            ></paper-icon-button>
+            <paper-icon-button
+              icon='mdi:skip-next'
+              invisible$='[[!playerObj.supportsNextTrack]]'
+              on-tap='handleNext'
+            ></paper-icon-button>
+          </div>
+
+          <paper-icon-button
+            icon='mdi:power'
+            on-tap='handlePowerOff'
+            invisible$='[[!playerObj.supportsTurnOff]]'
+            class='self-center'
+          ></paper-icon-button>
+        </div>
+      </paper-material>
+    </div>
+  </template>
+</dom-module>

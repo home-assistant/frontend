@@ -7,7 +7,7 @@ require('../cards/ha-card-chooser');
 
 const { util } = hass;
 
-const DOMAINS_WITH_CARD = ['camera'];
+const DOMAINS_WITH_CARD = ['camera', 'media_player'];
 
 const PRIORITY = {
   configurator: -20,
