@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
 import hass from '../util/home-assistant-js-instance';
 
-const { moreInfoActions, serviceActions } = hass;
+const { moreInfoActions } = hass;
 
 export default new Polymer({
   is: 'ha-media_player-card',
@@ -45,7 +45,7 @@ export default new Polymer({
   playerObjChanged(playerObj) {
     this.style.height = '78px';
     if (this.computeShowControls(playerObj)) {
-        this.style.height = playerObj.supportsSelectInputSource ? '232px' : '175px';
+      this.style.height = playerObj.supportsSelectInputSource ? '232px' : '175px';
     }
 
     this.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
