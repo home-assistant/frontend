@@ -152,7 +152,7 @@
           <paper-icon-button
             icon="mdi:login-variant">
           </paper-icon-button>
-          <paper-dropdown-menu selected-item-label='{{selectedSource}}' on-tap='stopPropagation'>
+          <paper-dropdown-menu no-label-float selected-item-label='{{selectedSource}}' on-tap='stopPropagation'>
             <paper-menu class="dropdown-content" selected="[[computeSelectedSource(stateObj)]]">
               <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
                 <paper-item>[[item]]</paper-item>
