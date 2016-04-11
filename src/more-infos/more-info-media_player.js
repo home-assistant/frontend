@@ -75,9 +75,19 @@ export default new Polymer({
       value: false,
     },
 
+    supportsSelectInputSource: {
+      type: Boolean,
+      value: false,
+    },
+
     hasMediaControl: {
       type: Boolean,
       value: false,
+    },
+
+    selectedSource: {
+      type: String,
+      observer: 'selectedSourceChanged',
     },
 
   },
@@ -99,6 +109,7 @@ export default new Polymer({
       this.supportsTurnOn = (newVal.attributes.supported_media_commands & 128) !== 0;
       this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
       this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
+      this.supportsSelectInputSource = (newVal.attributes.supported_media_commands & 2048) !== 0;
     }
 
     this.async(() => this.fire('iron-resize'), 500);
@@ -133,6 +144,18 @@ export default new Polymer({
 
   computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff) {
     return isOff ? !supportsTurnOn : !supportsTurnOff;
+  },
+
+  computeSelectedSource(stateObj) {
+    return stateObj.attributes.source_list.indexOf(stateObj.attributes.source);
+  },
+
+  selectedSourceChanged(option) {
+    // Selected Option will transition to '' before transitioning to new value
+    if (option === '' || option === this.stateObj.attributes.source) {
+      return;
+    }
+    this.callService('select_source', { source: option });
   },
 
   handleTogglePower() {
@@ -185,5 +208,9 @@ export default new Polymer({
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;
     serviceActions.callService('media_player', service, serviceData);
+  },
+
+  stopPropagation(ev) {
+    ev.stopPropagation();
   },
 });
