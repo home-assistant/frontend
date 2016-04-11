@@ -64,6 +64,21 @@
           on-change='volumeSliderChanged' class='flex'>
         </paper-slider>
       </div>
+      <div
+          class='controls layout horizontal justified'
+          hidden$='[[!supportsSelectInputSource]]'
+        >
+          <paper-icon-button
+            icon="mdi:login-variant">
+          </paper-icon-button>
+          <paper-dropdown-menu style="margin-left: 10px;" no-label-float selected-item-label='{{selectedSource}}' on-tap='stopPropagation'>
+            <paper-menu class="dropdown-content" selected="[[computeSelectedSource(stateObj)]]">
+              <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
+                <paper-item>[[item]]</paper-item>
+              </template>
+            </paper-menu>
+          </paper-dropdown-menu>
+        </div>
     </div>
   </template>
 </dom-module>

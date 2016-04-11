@@ -55,6 +55,13 @@
       top: 91px;
     }
 
+    .source-container {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      top: 170px;
+    }
+
     .controls {
       @apply(--paper-font-body1);
       padding: 8px;
@@ -138,6 +145,28 @@
             class='self-center'
           ></paper-icon-button>
         </div>
+        <div
+          class='controls layout horizontal justified'
+          invisible$='[[!playerObj.supportsSelectInputSource]]'
+        >
+          <paper-icon-button
+            icon="mdi:login-variant">
+          </paper-icon-button>
+          <paper-dropdown-menu selected-item-label='{{selectedSource}}' on-tap='stopPropagation'>
+            <paper-menu class="dropdown-content" selected="[[computeSelectedSource(stateObj)]]">
+              <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
+                <paper-item>[[item]]</paper-item>
+              </template>
+            </paper-menu>
+          </paper-dropdown-menu>
+        </div>
+      </paper-material>
+    </div>
+
+    <div class='source-container'
+      >
+      <paper-material elevation="1">
+
       </paper-material>
     </div>
   </template>
