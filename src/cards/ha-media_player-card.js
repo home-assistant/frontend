@@ -27,11 +27,6 @@ export default new Polymer({
       computed: 'computePlaybackControlIcon(playerObj)',
     },
 
-    selectedSource: {
-      type: String,
-      observer: 'selectedSourceChanged',
-    },
-
     /**
      * The z-depth of the card, from 0-5.
      */
@@ -43,11 +38,7 @@ export default new Polymer({
   },
 
   playerObjChanged(playerObj) {
-    this.style.height = '78px';
-    if (this.computeShowControls(playerObj)) {
-      this.style.height = playerObj.supportsSelectInputSource ? '232px' : '175px';
-    }
-
+    this.style.height = this.computeShowControls(playerObj) ? '175px' : '78px';
     this.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
       `url(${playerObj.stateObj.attributes.entity_picture})` : '';
   },
@@ -85,18 +76,6 @@ export default new Polymer({
     return playerObj.isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
   },
 
-  computeSelectedSource(stateObj) {
-    return stateObj.attributes.source_list.indexOf(stateObj.attributes.source);
-  },
-
-  selectedSourceChanged(option) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (option === '' || option === this.stateObj.attributes.source) {
-      return;
-    }
-    this.playerObj.input(option);
-  },
-
   handleNext(ev) {
     ev.stopPropagation();
     this.playerObj.nextTrack();
@@ -130,10 +109,6 @@ export default new Polymer({
   handleVolumeMute(ev) {
     ev.stopPropagation();
     this.playerObj.volumeMute(!this.playerObj.isMuted);
-  },
-
-  stopPropagation(ev) {
-    ev.stopPropagation();
   },
 
 });
