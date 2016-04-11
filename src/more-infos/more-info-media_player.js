@@ -166,12 +166,12 @@ export default new Polymer({
     this.callService('media_next_track');
   },
 
-  handleSourceChanged(source) {
+  handleSourceChanged(sourceInput) {
     // Selected Option will transition to '' before transitioning to new value
-    if (source === '' || source === this.stateObj.attributes.source) {
+    if (sourceInput === '' || sourceInput === this.stateObj.attributes.source) {
       return;
     }
-    this.callService('select_source', { source: source });
+    this.callService('select_source', { source: sourceInput });
   },
 
   handleVolumeTap() {
