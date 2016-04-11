@@ -75,7 +75,7 @@ export default new Polymer({
       value: false,
     },
 
-    supportsSelectInputSource: {
+    supportsSelectSource: {
       type: Boolean,
       value: false,
     },
@@ -87,7 +87,7 @@ export default new Polymer({
 
     selectedSource: {
       type: String,
-      observer: 'selectedSourceChanged',
+      observer: 'handleSourceChanged',
     },
 
   },
@@ -109,7 +109,7 @@ export default new Polymer({
       this.supportsTurnOn = (newVal.attributes.supported_media_commands & 128) !== 0;
       this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
       this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
-      this.supportsSelectInputSource = (newVal.attributes.supported_media_commands & 2048) !== 0;
+      this.supportsSelectSource = (newVal.attributes.supported_media_commands & 2048) !== 0;
     }
 
     this.async(() => this.fire('iron-resize'), 500);
@@ -150,14 +150,6 @@ export default new Polymer({
     return stateObj.attributes.source_list.indexOf(stateObj.attributes.source);
   },
 
-  selectedSourceChanged(option) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (option === '' || option === this.stateObj.attributes.source) {
-      return;
-    }
-    this.callService('select_source', { source: option });
-  },
-
   handleTogglePower() {
     this.callService(this.isOff ? 'turn_on' : 'turn_off');
   },
@@ -172,6 +164,14 @@ export default new Polymer({
 
   handleNext() {
     this.callService('media_next_track');
+  },
+
+  handleSourceChanged(source) {
+    // Selected Option will transition to '' before transitioning to new value
+    if (source === '' || source === this.stateObj.attributes.source) {
+      return;
+    }
+    this.callService('select_source', { source: source });
   },
 
   handleVolumeTap() {
