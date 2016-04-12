@@ -25,7 +25,11 @@
       max-height: 40px;
     }
 
-    .source-input {
+    iron-icon.source-input {
+      padding: 7px;
+    }
+
+    paper-dropdown-menu.source-input {
       margin-left: 10px;
     }
   </style>
@@ -69,7 +73,7 @@
         </paper-slider>
       </div>
       <div class='controls layout horizontal justified' hidden$='[[!supportsSelectSource]]'>
-          <iron-icon icon="mdi:login-variant"></iron-icon>
+          <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
           <paper-dropdown-menu class="source-input" no-label-float label='[[source]]'>
             <paper-menu class="dropdown-content" selected="{{sourceIndex}}">
               <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
