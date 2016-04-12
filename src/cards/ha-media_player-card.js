@@ -1,3 +1,5 @@
+import classnames from 'classnames';
+
 import Polymer from '../polymer';
 import hass from '../util/home-assistant-js-instance';
 
@@ -17,11 +19,6 @@ export default new Polymer({
       observer: 'playerObjChanged',
     },
 
-    imageLoaded: {
-      type: Boolean,
-      value: true,
-    },
-
     playbackControlIcon: {
       type: String,
       computed: 'computePlaybackControlIcon(playerObj)',
@@ -38,17 +35,17 @@ export default new Polymer({
   },
 
   playerObjChanged(playerObj) {
-    this.style.height = this.computeShowControls(playerObj) ? '175px' : '78px';
-    this.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
-      `url(${playerObj.stateObj.attributes.entity_picture})` : '';
+    if (!playerObj.isOff && !playerObj.isIdle) {
+      this.$.cover.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
+        `url(${playerObj.stateObj.attributes.entity_picture})` : '';
+    }
   },
 
-  imageLoadSuccess() {
-    this.imageLoaded = true;
-  },
-
-  imageLoadFail() {
-    this.imageLoaded = false;
+  computeBannerClasses(playerObj) {
+    return classnames({
+      banner: true,
+      'is-off': playerObj.isOff || playerObj.isIdle,
+    });
   },
 
   computeHidePowerOnButton(playerObj) {
@@ -62,7 +59,7 @@ export default new Polymer({
   computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
       return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
-    } else if (playerObj.isPaused) {
+    } else if (playerObj.isPaused || playerObj.isOff) {
       return 'mdi:play';
     }
     return '';
@@ -70,10 +67,6 @@ export default new Polymer({
 
   computeShowControls(playerObj) {
     return !playerObj.isOff;
-  },
-
-  computeVolumeMuteIcon(playerObj) {
-    return playerObj.isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
   },
 
   handleNext(ev) {
@@ -96,19 +89,8 @@ export default new Polymer({
     this.playerObj.previousTrack();
   },
 
-  handlePowerOff(ev) {
+  handleTogglePower(ev) {
     ev.stopPropagation();
-    this.playerObj.turnOff();
+    this.playerObj.togglePower();
   },
-
-  handlePowerOn(ev) {
-    ev.stopPropagation();
-    this.playerObj.turnOn();
-  },
-
-  handleVolumeMute(ev) {
-    ev.stopPropagation();
-    this.playerObj.volumeMute(!this.playerObj.isMuted);
-  },
-
 });
