@@ -98,6 +98,10 @@
       color: var(--primary-text-color);
     }
 
+    paper-icon-button[disabled] {
+      color: var(--paper-grey-400);
+    }
+
     paper-icon-button.primary {
       width: 56px !important;
       height: 56px !important;
@@ -139,6 +143,7 @@
         <paper-icon-button
           icon='mdi:skip-previous'
           invisible$='[[!playerObj.supportsPreviousTrack]]'
+          disabled='[[playerObj.isOff]]'
           on-tap='handlePrevious'
         ></paper-icon-button>
         <paper-icon-button
@@ -151,6 +156,7 @@
         <paper-icon-button
           icon='mdi:skip-next'
           invisible$='[[!playerObj.supportsNextTrack]]'
+          disabled='[[playerObj.isOff]]'
           on-tap='handleNext'
         ></paper-icon-button>
       </div>
