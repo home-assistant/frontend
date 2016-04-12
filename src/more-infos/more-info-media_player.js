@@ -108,7 +108,7 @@ export default new Polymer({
       this.volumeSliderValue = newVal.attributes.volume_level * 100;
       this.isMuted = newVal.attributes.is_volume_muted;
       this.source = newVal.attributes.source;
-      this.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
+      this.sourceIndex = newVal.attributes.source_list === undefined ? 0 : newVal.attributes.source_list.indexOf(this.source);
       this.supportsPause = (newVal.attributes.supported_media_commands & 1) !== 0;
       this.supportsVolumeSet = (newVal.attributes.supported_media_commands & 4) !== 0;
       this.supportsVolumeMute = (newVal.attributes.supported_media_commands & 8) !== 0;
@@ -177,6 +177,7 @@ export default new Polymer({
   handleSourceChanged(sourceIndex) {
     // Selected Option will transition to '' before transitioning to new value
     if (!this.stateObj
+        || this.stateObj.attributes.source_list === undefined
         || sourceIndex < 0
         || sourceIndex >= this.stateObj.attributes.source_list.length
     ) {
