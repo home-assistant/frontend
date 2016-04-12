@@ -24,6 +24,10 @@
     .has-volume_level .volume {
       max-height: 40px;
     }
+
+    .source-input {
+      margin-left: 10px;
+    }
   </style>
   <template>
     <div class$='[[computeClassNames(stateObj)]]'>
@@ -65,9 +69,9 @@
         </paper-slider>
       </div>
       <div class='controls layout horizontal justified' hidden$='[[!supportsSelectSource]]'>
-          <paper-icon-button icon="mdi:login-variant"></paper-icon-button>
-          <paper-dropdown-menu style="margin-left: 10px;" no-label-float selected-item-label='{{selectedSource}}' on-tap='stopPropagation'>
-            <paper-menu class="dropdown-content" selected="[[computeSelectedSource(stateObj)]]">
+          <iron-icon icon="mdi:login-variant"></iron-icon>
+          <paper-dropdown-menu class="source-input" no-label-float label='[[source]]'>
+            <paper-menu class="dropdown-content" selected="{{sourceIndex}}">
               <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
                 <paper-item>[[item]]</paper-item>
               </template>
