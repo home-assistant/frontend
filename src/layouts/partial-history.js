@@ -64,10 +64,13 @@ export default new Polymer({
   },
 
   attached() {
+    Date.prototype.toLocaleStringShort = function(){
+        return [(1900 + this.getYear()), (this.getMonth() + 1), this.getDate()].join('-');
+    };
     this.datePicker = new window.Pikaday({
       field: this.$.datePicker.inputElement,
       onSelect: entityHistoryActions.changeCurrentDate,
-    });
+    }).setDate((new Date()).toLocaleStringShort());
   },
 
   detached() {
