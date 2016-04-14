@@ -24,6 +24,15 @@
     .has-volume_level .volume {
       max-height: 40px;
     }
+
+    iron-icon.source-input {
+      padding: 7px;
+      margin-top: 15px;
+    }
+
+    paper-dropdown-menu.source-input {
+      margin-left: 10px;
+    }
   </style>
   <template>
     <div class$='[[computeClassNames(stateObj)]]'>
@@ -64,6 +73,16 @@
           on-change='volumeSliderChanged' class='flex'>
         </paper-slider>
       </div>
+      <div class='controls layout horizontal justified' hidden$='[[!supportsSelectSource]]'>
+          <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
+          <paper-dropdown-menu class="source-input" label-float label='Source'>
+            <paper-menu class="dropdown-content" selected="{{sourceIndex}}">
+              <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
+                <paper-item>[[item]]</paper-item>
+              </template>
+            </paper-menu>
+          </paper-dropdown-menu>
+        </div>
     </div>
   </template>
 </dom-module>

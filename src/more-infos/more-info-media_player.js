@@ -30,6 +30,17 @@ export default new Polymer({
       value: false,
     },
 
+    source: {
+      type: String,
+      value: '',
+    },
+
+    sourceIndex: {
+      type: Number,
+      value: 0,
+      observer: 'handleSourceChanged',
+    },
+
     volumeSliderValue: {
       type: Number,
       value: 0,
@@ -75,6 +86,11 @@ export default new Polymer({
       value: false,
     },
 
+    supportsSelectSource: {
+      type: Boolean,
+      value: false,
+    },
+
     hasMediaControl: {
       type: Boolean,
       value: false,
@@ -91,6 +107,8 @@ export default new Polymer({
       this.hasMediaControl = hasMediaStates.indexOf(newVal.state) !== -1;
       this.volumeSliderValue = newVal.attributes.volume_level * 100;
       this.isMuted = newVal.attributes.is_volume_muted;
+      this.source = newVal.attributes.source;
+      this.sourceIndex = 0;
       this.supportsPause = (newVal.attributes.supported_media_commands & 1) !== 0;
       this.supportsVolumeSet = (newVal.attributes.supported_media_commands & 4) !== 0;
       this.supportsVolumeMute = (newVal.attributes.supported_media_commands & 8) !== 0;
@@ -99,6 +117,11 @@ export default new Polymer({
       this.supportsTurnOn = (newVal.attributes.supported_media_commands & 128) !== 0;
       this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
       this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
+      this.supportsSelectSource = (newVal.attributes.supported_media_commands & 2048) !== 0;
+
+      if (newVal.attributes.source_list !== undefined) {
+        this.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
+      }
     }
 
     this.async(() => this.fire('iron-resize'), 500);
@@ -135,6 +158,10 @@ export default new Polymer({
     return isOff ? !supportsTurnOn : !supportsTurnOff;
   },
 
+  computeSelectedSource(stateObj) {
+    return stateObj.attributes.source_list.indexOf(stateObj.attributes.source);
+  },
+
   handleTogglePower() {
     this.callService(this.isOff ? 'turn_on' : 'turn_off');
   },
@@ -149,6 +176,24 @@ export default new Polymer({
 
   handleNext() {
     this.callService('media_next_track');
+  },
+
+  handleSourceChanged(sourceIndex) {
+    // Selected Option will transition to '' before transitioning to new value
+    if (!this.stateObj
+        || this.stateObj.attributes.source_list === undefined
+        || sourceIndex < 0
+        || sourceIndex >= this.stateObj.attributes.source_list.length
+    ) {
+      return;
+    }
+
+    const sourceInput = this.stateObj.attributes.source_list[sourceIndex];
+    if (sourceInput === this.stateObj.attributes.source) {
+      return;
+    }
+
+    this.callService('select_source', { source: sourceInput });
   },
 
   handleVolumeTap() {
