@@ -231,8 +231,4 @@ export default new Polymer({
     serviceData.entity_id = this.stateObj.entityId;
     serviceActions.callService('media_player', service, serviceData);
   },
-
-  stopPropagation(ev) {
-    ev.stopPropagation();
-  },
 });
