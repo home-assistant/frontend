@@ -20,7 +20,7 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
   "dependencies": {
-    "home-assistant-js": "git+https://github.com/home-assistant/home-assistant-js.git#53a648b5839e1a71bdc61b9bf4f02e0283d30851",
+    "home-assistant-js": "git+https://github.com/home-assistant/home-assistant-js.git#94726f0ef680c999c8cc796e50aa96e9c90b7329",
     "lodash": "^4.11.1",
     "moment": "^2.12.0"
   },
