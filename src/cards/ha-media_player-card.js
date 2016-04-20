@@ -45,6 +45,7 @@ export default new Polymer({
     return classnames({
       banner: true,
       'is-off': playerObj.isOff || playerObj.isIdle,
+      'no-cover': !playerObj.stateObj.attributes.entity_picture,
     });
   },
 
