@@ -10,6 +10,7 @@ const DOMAINS_WITH_CARD = [
   'script',
   'thermostat',
   'weblink',
+  'hvac',
 ];
 
 export default function stateCardType(state) {

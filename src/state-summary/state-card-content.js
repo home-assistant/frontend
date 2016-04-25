@@ -14,6 +14,7 @@ require('./state-card-rollershutter');
 require('./state-card-thermostat');
 require('./state-card-toggle');
 require('./state-card-weblink');
+require('./state-card-hvac');
 
 export default new Polymer({
   is: 'state-card-content',

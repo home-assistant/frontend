@@ -15,6 +15,7 @@ require('./more-info-camera');
 require('./more-info-updater');
 require('./more-info-alarm_control_panel');
 require('./more-info-lock');
+require('./more-info-hvac');
 
 export default new Polymer({
   is: 'more-info-content',
