@@ -76,13 +76,13 @@ export default new Polymer({
     const hasGroup = {};
 
     const cards = {
-      _demo: false,
-      _badges: [],
-      _columns: [],
+      demo: false,
+      badges: [],
+      columns: [],
     };
     const entityCount = [];
     for (let idx = 0; idx < columns; idx++) {
-      cards._columns.push([]);
+      cards.columns.push([]);
       entityCount.push(0);
     }
 
@@ -108,11 +108,10 @@ export default new Polymer({
       return minIndex;
     }
     if (showIntroduction) {
-      cards._columns[getIndex(5)].push('ha-introduction');
-      cards['ha-introduction'] = {
+      cards.columns[getIndex(5)].push({
         cardType: 'introduction',
         showHideInstruction: states.size > 0 && !__DEMO__,
-      };
+      });
     }
 
     function addEntitiesCard(name, entities, groupEntity = false) {
@@ -139,35 +138,33 @@ export default new Polymer({
       const curIndex = getIndex(size);
 
       if (other.length > 0) {
-        cards._columns[curIndex].push(name);
-        cards[name] = {
+        cards.columns[curIndex].push({
           cardType: 'entities',
           states: other,
           groupEntity,
-        };
+        });
       }
 
       owncard.forEach(entity => {
-        cards._columns[curIndex].push(entity.entityId);
-        cards[entity.entityId] = {
+        cards.columns[curIndex].push({
           cardType: entity.domain,
           stateObj: entity,
-        };
+        });
       });
     }
 
     byDomain.keySeq().sortBy(domain => getPriority(domain))
       .forEach(domain => {
         if (domain === 'a') {
-          cards._demo = true;
+          cards.demo = true;
           return;
         }
 
         const priority = getPriority(domain);
 
         if (priority >= 0 && priority < 10) {
-          cards._badges.push.apply(
-            cards._badges, filterGrouped(byDomain.get(domain)).sortBy(
+          cards.badges.push.apply(
+            cards.badges, filterGrouped(byDomain.get(domain)).sortBy(
               entitySortBy).toArray());
         } else if (domain === 'group') {
           byDomain.get(domain).sortBy(entitySortBy)
@@ -185,12 +182,8 @@ export default new Polymer({
     );
 
     // Remove empty columns
-    cards._columns = cards._columns.filter(val => val.length > 0);
+    cards.columns = cards.columns.filter(val => val.length > 0);
 
     return cards;
-  },
-
-  computeCardDataOfCard(cards, card) {
-    return cards[card];
   },
 });

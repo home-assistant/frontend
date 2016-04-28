@@ -2,7 +2,7 @@ export default function NuclearObserver(reactor) {
   return {
 
     attached() {
-      this.__unwatchFns = Object.keys(this.properties).reduce(
+      this.nuclearUnwatchFns = Object.keys(this.properties).reduce(
         (unwatchFns, key) => {
           if (!('bindNuclear' in this.properties[key])) {
             return unwatchFns;
@@ -20,8 +20,8 @@ export default function NuclearObserver(reactor) {
     },
 
     detached() {
-      while (this.__unwatchFns.length) {
-        this.__unwatchFns.shift()();
+      while (this.nuclearUnwatchFns.length) {
+        this.nuclearUnwatchFns.shift()();
       }
     },
 

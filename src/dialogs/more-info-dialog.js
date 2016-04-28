@@ -39,10 +39,10 @@ export default new Polymer({
 
     isLoadingHistoryData: {
       type: Boolean,
-      computed: 'computeIsLoadingHistoryData(_delayedDialogOpen, _isLoadingHistoryData)',
+      computed: 'computeIsLoadingHistoryData(delayedDialogOpen, isLoadingEntityHistoryData)',
     },
 
-    _isLoadingHistoryData: {
+    isLoadingEntityHistoryData: {
       type: Boolean,
       bindNuclear: entityHistoryGetters.isLoadingEntityHistory,
     },
@@ -71,7 +71,7 @@ export default new Polymer({
       observer: 'dialogOpenChanged',
     },
 
-    _delayedDialogOpen: {
+    delayedDialogOpen: {
       type: Boolean,
       value: false,
     },
@@ -83,8 +83,8 @@ export default new Polymer({
    * before the dialog is attached to the screen and is unable to determine
    * graph size resulting in scroll bars.
    */
-  computeIsLoadingHistoryData(_delayedDialogOpen, _isLoadingHistoryData) {
-    return !_delayedDialogOpen || _isLoadingHistoryData;
+  computeIsLoadingHistoryData(delayedDialogOpen, isLoadingEntityHistoryData) {
+    return !delayedDialogOpen || isLoadingEntityHistoryData;
   },
 
   computeShowHistoryComponent(hasHistoryComponent, stateObj) {
@@ -116,10 +116,10 @@ export default new Polymer({
 
   dialogOpenChanged(newVal) {
     if (newVal) {
-      this.async(() => { this._delayedDialogOpen = true; }, 10);
+      this.async(() => { this.delayedDialogOpen = true; }, 10);
     } else if (!newVal && this.stateObj) {
       this.async(() => moreInfoActions.deselectEntity(), 10);
-      this._delayedDialogOpen = false;
+      this.delayedDialogOpen = false;
     }
   },
 });

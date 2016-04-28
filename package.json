@@ -31,8 +31,9 @@
     "bower": "^1.7.9",
     "classnames": "^2.2.3",
     "eslint": "^2.8.0",
-    "eslint-config-airbnb": "^7.0.0",
     "html-minifier": "^1.5.0",
+    "eslint-config-airbnb-base": "^1.0.4",
+    "eslint-plugin-import": "^1.6.1",
     "vulcanize": "^1.14.8",
     "webpack": "^1.13"
   }

@@ -41,9 +41,9 @@ export default new Polymer({
     const newVal = ev.target.checked;
 
     if (newVal && !this.isOn) {
-      this._call_service(true);
+      this.callService(true);
     } else if (!newVal && this.isOn) {
-      this._call_service(false);
+      this.callService(false);
     }
   },
 
@@ -59,11 +59,11 @@ export default new Polymer({
   },
 
   turnOn() {
-    this._call_service(true);
+    this.callService(true);
   },
 
   turnOff() {
-    this._call_service(false);
+    this.callService(false);
   },
 
   computeIsOn(stateObj) {
@@ -74,7 +74,7 @@ export default new Polymer({
   // with the state. It will be out of sync if our service call did not
   // result in the entity to be turned on. Since the state is not changing,
   // the resync is not called automatic.
-  _call_service(turnOn) {
+  callService(turnOn) {
     let domain;
     let service;
 
