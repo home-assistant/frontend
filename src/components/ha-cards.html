@@ -53,25 +53,25 @@
 
   <template>
     <div class='main'>
-      <template is='dom-if' if='[[cards._badges]]'>
+      <template is='dom-if' if='[[cards.badges]]'>
         <div class='badges'>
-          <template is='dom-if' if='[[cards._demo]]'>
+          <template is='dom-if' if='[[cards.demo]]'>
             <ha-demo-badge></ha-demo-badge>
           </template>
 
-          <ha-badges-card states='[[cards._badges]]'></ha-badges-card>
+          <ha-badges-card states='[[cards.badges]]'></ha-badges-card>
         </div>
       </template>
-      <template is='dom-if' if='[[!cards._badges]]'>
+      <template is='dom-if' if='[[!cards.badges]]'>
         <div class='no-badges'> </div>
       </template>
 
       <div class='horizontal layout center-justified'>
-        <template is='dom-repeat' items='[[cards._columns]]' as='column'>
+        <template is='dom-repeat' items='[[cards.columns]]' as='column'>
           <div class='column flex-1'>
             <template is='dom-repeat' items='[[column]]' as='card'>
               <div class='zone-card'>
-                <ha-card-chooser card-data='[[computeCardDataOfCard(cards, card)]]'
+                <ha-card-chooser card-data='[[card]]'
                 ></ha-card-chooser>
               </div>
             </template>

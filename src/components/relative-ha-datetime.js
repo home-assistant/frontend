@@ -35,11 +35,11 @@ export default new Polymer({
   },
 
   attached() {
-    this._interval = setInterval(this.updateRelative, UPDATE_INTERVAL);
+    this.updateInterval = setInterval(this.updateRelative, UPDATE_INTERVAL);
   },
 
   detached() {
-    clearInterval(this._interval);
+    clearInterval(this.updateInterval);
   },
 
   datetimeChanged(newVal) {
