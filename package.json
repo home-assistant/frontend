@@ -7,10 +7,10 @@
     "url": "https://github.com/balloob/home-assistant-polymer"
   },
   "scripts": {
-    "js_dev": "webpack --colors --progress -d --watch",
-    "js_dev_demo": "BUILD_DEMO=1 webpack --colors --progress -d --watch",
-    "js_prod": "BUILD_DEV=0 webpack --colors --progress -p -d",
-    "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --colors --progress -p -d",
+    "js_dev": "webpack --color --progress -d --watch",
+    "js_dev_demo": "BUILD_DEMO=1 webpack --color --progress -d --watch",
+    "js_prod": "BUILD_DEV=0 webpack --color --progress -p",
+    "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --color --progress -p",
     "frontend_html": "node script/fix-roboto.js && vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html && node script/minify.js",
     "frontend_prod": "npm run js_prod && bower install && npm run frontend_html",
     "frontend_demo": "npm run js_demo && bower install && npm run frontend_html",
@@ -20,21 +20,21 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
   "dependencies": {
-    "home-assistant-js": "git+https://github.com/home-assistant/home-assistant-js.git#94726f0ef680c999c8cc796e50aa96e9c90b7329",
+    "home-assistant-js": "git+https://github.com/home-assistant/home-assistant-js.git#1e0a2700e33d5dd82a7142dc14338473a214a645",
     "lodash": "^4.11.1",
-    "moment": "^2.12.0"
+    "moment": "^2.13.0"
   },
   "devDependencies": {
     "babel-core": "^6.7",
     "babel-loader": "^6.2",
-    "babel-preset-es2015": "^6.6.0",
+    "babel-preset-es2015-webpack": "^6.4.1",
     "bower": "^1.7.9",
-    "classnames": "^2.2.3",
+    "classnames": "^2.2.4",
     "eslint": "^2.8.0",
-    "html-minifier": "^1.5.0",
     "eslint-config-airbnb-base": "^1.0.4",
     "eslint-plugin-import": "^1.6.1",
+    "html-minifier": "^2.1.0",
     "vulcanize": "^1.14.8",
-    "webpack": "^1.13"
+    "webpack": "^2.1.0-beta.6"
   }
 }
