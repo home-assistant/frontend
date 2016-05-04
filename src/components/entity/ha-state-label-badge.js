@@ -69,6 +69,9 @@ export default new Polymer({
   },
 
   computeIcon(state) {
+    if (state.state === 'unavailable') {
+      return null;
+    }
     switch (state.domain) {
       case 'alarm_control_panel':
         if (state.state === 'pending') {
@@ -99,6 +102,9 @@ export default new Polymer({
   },
 
   computeLabel(state) {
+    if (state.state === 'unavailable') {
+      return 'unavai';
+    }
     switch (state.domain) {
       case 'scene':
       case 'script':
