@@ -108,7 +108,6 @@ export default new Polymer({
       this.volumeSliderValue = newVal.attributes.volume_level * 100;
       this.isMuted = newVal.attributes.is_volume_muted;
       this.source = newVal.attributes.source;
-      this.sourceIndex = 0;
       this.supportsPause = (newVal.attributes.supported_media_commands & 1) !== 0;
       this.supportsVolumeSet = (newVal.attributes.supported_media_commands & 4) !== 0;
       this.supportsVolumeMute = (newVal.attributes.supported_media_commands & 8) !== 0;
@@ -156,6 +155,10 @@ export default new Polymer({
 
   computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff) {
     return isOff ? !supportsTurnOn : !supportsTurnOff;
+  },
+
+  computeHideSelectSource(isOff, supportsSelectSource) {
+    return !isOff && supportsSelectSource;
   },
 
   computeSelectedSource(stateObj) {
