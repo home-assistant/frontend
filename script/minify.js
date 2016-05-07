@@ -12,6 +12,7 @@ var minifiedHtml = minify.minify(html, {
   removeScriptTypeAttributes: true,
   removeStyleLinkTypeAttributes: true,
   minifyJS: true,
+  minifyCSS: true,
 });
 
 fs.writeFileSync('build/frontend.html', minifiedHtml);
