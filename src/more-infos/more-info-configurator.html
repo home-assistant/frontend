@@ -32,6 +32,7 @@
       <template is='dom-if' if='[[isConfigurable]]'>
 
         <p hidden$='[[!stateObj.attributes.description]]'>[[stateObj.attributes.description]]</p>
+        <element hidden$='[[!stateObj.attributes.description_html]]' inner-h-t-m-l="{{stateObj.attributes.description_html}}"></element>
 
         <p class='error' hidden$='[[!stateObj.attributes.errors]]'>[[stateObj.attributes.errors]]</p>
 
