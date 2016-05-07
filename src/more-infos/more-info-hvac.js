@@ -96,15 +96,15 @@ export default new Polymer({
     this.humMin = newVal.attributes.min_humidity;
     this.humMax = newVal.attributes.max_humidity;
 
-    if (newVal.attributes.fan_list !== null) {
+    if (newVal.attributes.fan_list !== undefined) {
       this.fanIndex = newVal.attributes.fan_list.indexOf(this.fanMode);
     }
 
-    if (newVal.attributes.operation_list !== null) {
+    if (newVal.attributes.operation_list !== undefined) {
       this.operationIndex = newVal.attributes.operation_list.indexOf(this.operationMode);
     }
 
-    if (newVal.attributes.swing_list !== null) {
+    if (newVal.attributes.swing_list !== undefined) {
       this.swingIndex = newVal.attributes.swing_list.indexOf(this.swingMode);
     }
   },
@@ -173,7 +173,9 @@ export default new Polymer({
     }
 
     serviceActions.callService('hvac', 'set_fan_mode', {
-      entity_id: this.stateObj.entityId, fan: fanInput });
+      entity_id: this.stateObj.entityId, fan: fanInput })
+
+    .then(() => this.stateObjChanged(this.stateObj));
   },
 
   handleOperationmodeChanged(operationIndex) {
@@ -191,7 +193,9 @@ export default new Polymer({
     }
 
     serviceActions.callService('hvac', 'set_operation_mode', {
-      entity_id: this.stateObj.entityId, operation_mode: operationInput });
+      entity_id: this.stateObj.entityId, operation_mode: operationInput })
+
+    .then(() => this.stateObjChanged(this.stateObj));
   },
 
   handleSwingmodeChanged(swingIndex) {
@@ -209,7 +213,9 @@ export default new Polymer({
     }
 
     serviceActions.callService('hvac', 'set_swing_mode', {
-      entity_id: this.stateObj.entityId, swing_mode: swingInput });
+      entity_id: this.stateObj.entityId, swing_mode: swingInput })
+
+    .then(() => this.stateObjChanged(this.stateObj));
   },
 
   service_set_away(awayMode) {

@@ -33,7 +33,7 @@ export default function domainIcon(domain, state) {
       return 'mdi:home';
 
     case 'hvac':
-      return 'mdi:theme-light-dark';
+      return 'mdi:air-conditioner';
 
     case 'input_boolean':
       return 'mdi:drawing';
