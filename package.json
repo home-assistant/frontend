@@ -11,7 +11,7 @@
     "js_dev_demo": "BUILD_DEMO=1 webpack --color --progress -d --watch",
     "js_prod": "BUILD_DEV=0 webpack --color --progress -p",
     "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --color --progress -p",
-    "frontend_html": "node script/fix-roboto.js && vulcanize --inline-css --inline-scripts --strip-comments src/home-assistant.html > build/frontend.vulcan.html && node script/minify.js",
+    "frontend_html": "vulcanize --inline-css --inline-scripts --strip-comments --strip-exclude bower_components/font-roboto/roboto.html src/home-assistant.html > build/frontend.vulcan.html && node script/minify.js",
     "frontend_prod": "npm run js_prod && bower install && npm run frontend_html",
     "frontend_demo": "npm run js_demo && bower install && npm run frontend_html",
     "setup_js_dev": "npm install && cd node_modules && rm -rf home-assistant-js && git clone https://github.com/balloob/home-assistant-js.git && cd home-assistant-js && npm install",
@@ -21,20 +21,20 @@
   "license": "MIT",
   "dependencies": {
     "home-assistant-js": "git+https://github.com/home-assistant/home-assistant-js.git#1e0a2700e33d5dd82a7142dc14338473a214a645",
-    "lodash": "^4.11.1",
+    "lodash": "^4.11.2",
     "moment": "^2.13.0"
   },
   "devDependencies": {
-    "babel-core": "^6.7",
+    "babel-core": "^6.8",
     "babel-loader": "^6.2",
     "babel-preset-es2015-webpack": "^6.4.1",
     "bower": "^1.7.9",
-    "classnames": "^2.2.4",
-    "eslint": "^2.8.0",
-    "eslint-config-airbnb-base": "^1.0.4",
-    "eslint-plugin-import": "^1.6.1",
-    "html-minifier": "^2.1.0",
+    "classnames": "^2.2.5",
+    "eslint": "^2.9.0",
+    "eslint-config-airbnb-base": "^2.0.0",
+    "eslint-plugin-import": "^1.7.0",
+    "html-minifier": "^2.1.2",
     "vulcanize": "^1.14.8",
-    "webpack": "^2.1.0-beta.6"
+    "webpack": "^2.1.0-beta.7"
   }
 }
