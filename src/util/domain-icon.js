@@ -32,6 +32,9 @@ export default function domainIcon(domain, state) {
     case 'homeassistant':
       return 'mdi:home';
 
+    case 'hvac':
+      return 'mdi:air-conditioner';
+
     case 'input_boolean':
       return 'mdi:drawing';
 

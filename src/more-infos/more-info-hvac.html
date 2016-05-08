@@ -1,0 +1,128 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/paper-slider/paper-slider.html'>
+<link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
+
+<dom-module id='more-info-hvac'>
+  <style is="custom-style" include="iron-flex"></style>
+  <style>
+    paper-slider {
+      width: 100%;
+    }
+
+    paper-toggle-button.away-mode-toggle {
+      display: none;
+      margin-top: 16px;
+    }
+
+    paper-toggle-button.aux-heat-toggle {
+      display: none;
+      margin-top: 16px;
+    }
+
+    iron-icon.fan {
+      padding: 7px;
+      margin-top: 15px;
+    }
+
+    paper-dropdown-menu.fan {
+      margin-left: 10px;
+    }
+
+    iron-icon.operation_mode {
+      padding: 7px;
+      margin-top: 15px;
+    }
+    paper-dropdown-menu.operation_mode {
+      margin-left: 10px;
+    }
+
+    iron-icon.swing_mode {
+      padding: 7px;
+      margin-top: 15px;
+    }
+    paper-dropdown-menu.swing_mode {
+      margin-left: 10px;
+    }
+
+  </style>
+  <template>
+    <div class$='[[computeClassNames(stateObj)]]'>
+      <div hidden='[[!stateObj.attributes.current_temperature]]'>
+        <div>Target Temperature</div>
+        <paper-slider
+          min='[[tempMin]]' max='[[tempMax]]' step='0.5'
+          value='[[targetTemperatureSliderValue]]' pin
+          on-change='targetTemperatureSliderChanged'>
+        </paper-slider>
+        </div>
+
+        <div hidden='[[!stateObj.attributes.humidity]]'>
+        <div>Target Humidity</div>
+        <paper-slider
+          min='[[humMin]]' max='[[humMax]]' step='1'
+          value='[[targetHumiditySliderValue]]' pin
+          on-change='targetHumiditySliderChanged'>
+        </paper-slider>
+        </div>
+
+        <div hidden='[[!stateObj.attributes.operation_list]]'>
+          <div class='controls layout horizontal justified'>
+          <iron-icon class="operation_mode" icon="mdi:brightness-6"></iron-icon>
+          <paper-dropdown-menu class="operation_mode" label-float label='Operation'>
+          <paper-menu class="dropdown-content" selected="{{operationIndex}}">
+            <template is='dom-repeat' items='[[stateObj.attributes.operation_list]]'>
+            <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-menu>
+          </paper-dropdown-menu>
+          </div>
+        </div>
+
+      <div hidden='[[!stateObj.attributes.fan_list]]'>
+        <div class='controls layout horizontal justified'>
+        <iron-icon class="fan" icon="mdi:fan"></iron-icon>
+        <paper-dropdown-menu class="fan" label-float label='Fan Mode'>
+          <paper-menu class="dropdown-content" selected="{{fanIndex}}">
+            <template is='dom-repeat' items='[[stateObj.attributes.fan_list]]'>
+            <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-menu>
+        </paper-dropdown-menu>
+        </div>
+      </div>
+
+      <div hidden='[[!stateObj.attributes.swing_list]]'>
+        <div class='controls layout horizontal justified'>
+        <iron-icon class="swing_mode" icon="mdi:sync"></iron-icon>
+        <paper-dropdown-menu class="swing_mode" label-float label='Swing Mode'>
+          <paper-menu class="dropdown-content" selected="{{swingIndex}}">
+            <template is='dom-repeat' items='[[stateObj.attributes.swing_list]]'>
+            <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-menu>
+        </paper-dropdown-menu>
+        </div>
+       </div>
+      
+      <div hidden='[[!stateObj.attributes.away_mode]]'>
+        <div class='away-mode-toggle'>
+          <div class='center horizontal layout'>
+          <div class='flex'>Away Mode</div>
+          <paper-toggle-button checked='[[awayToggleChecked]]' on-change='awayToggleChanged'>
+          </paper-toggle-button>
+          </div>
+        </div>
+      </div>
+
+      <div hidden='[[!stateObj.attributes.aux_heat]]'>
+        <div class='aux-heat-toggle'>
+          <div class='center horizontal layout'>
+          <div class='flex'>Aux Heat</div>
+          <paper-toggle-button checked='[[auxToggleChecked]]' on-change='auxToggleChanged'>
+          </paper-toggle-button>
+        </div>
+      </div>
+
+    </div>
+  </template>
+</dom-module>
