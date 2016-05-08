@@ -96,15 +96,15 @@ export default new Polymer({
     this.humMin = newVal.attributes.min_humidity;
     this.humMax = newVal.attributes.max_humidity;
 
-    if (newVal.attributes.fan_list !== undefined) {
+    if (newVal.attributes.fan_list !== null) {
       this.fanIndex = newVal.attributes.fan_list.indexOf(this.fanMode);
     }
 
-    if (newVal.attributes.operation_list !== undefined) {
+    if (newVal.attributes.operation_list !== null) {
       this.operationIndex = newVal.attributes.operation_list.indexOf(this.operationMode);
     }
 
-    if (newVal.attributes.swing_list !== undefined) {
+    if (newVal.attributes.swing_list !== null) {
       this.swingIndex = newVal.attributes.swing_list.indexOf(this.swingMode);
     }
   },
@@ -125,18 +125,6 @@ export default new Polymer({
       entity_id: this.stateObj.entityId,
       humidity: ev.target.value,
     });
-  },
-
-  computeSelectedFanmode(stateObj) {
-    return stateObj.attributes.fan_list.indexOf(stateObj.attributes.fan);
-  },
-
-  computeSelectedOperationmode(stateObj) {
-    return stateObj.attributes.operation_list.indexOf(stateObj.attributes.operation_mode);
-  },
-
-  computeSelectedSwingmode(stateObj) {
-    return stateObj.attributes.swing_list.indexOf(stateObj.attributes.swing_mode);
   },
 
   awayToggleChanged(ev) {
