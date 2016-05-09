@@ -6,7 +6,7 @@ export default new Polymer({
   is: 'state-card-thermostat',
 
   properties: {
-    detailed: {
+    inDialog: {
       type: Boolean,
       value: false,
     },
