@@ -5,6 +5,7 @@ import dynamicContentUpdater from '../util/dynamic-content-updater';
 
 require('./state-card-configurator');
 require('./state-card-display');
+require('./state-card-hvac');
 require('./state-card-input_select');
 require('./state-card-input_slider');
 require('./state-card-media_player');
