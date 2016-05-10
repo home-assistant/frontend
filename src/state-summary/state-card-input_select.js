@@ -9,7 +9,7 @@ export default new Polymer({
   is: 'state-card-input_select',
 
   properties: {
-    detailed: {
+    inDialog: {
       type: Boolean,
       value: false,
     },

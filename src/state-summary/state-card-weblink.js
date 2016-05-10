@@ -6,7 +6,7 @@ export default new Polymer({
   is: 'state-card-weblink',
 
   properties: {
-    detailed: {
+    inDialog: {
       type: Boolean,
       value: false,
     },

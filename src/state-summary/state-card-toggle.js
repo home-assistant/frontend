@@ -7,7 +7,7 @@ export default new Polymer({
   is: 'state-card-toggle',
 
   properties: {
-    detailed: {
+    inDialog: {
       type: Boolean,
       value: false,
     },

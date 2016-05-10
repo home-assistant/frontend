@@ -2,6 +2,7 @@ import canToggle from './can-toggle';
 
 const DOMAINS_WITH_CARD = [
   'configurator',
+  'hvac',
   'input_select',
   'input_slider',
   'media_player',
