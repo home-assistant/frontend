@@ -31,7 +31,9 @@
     <div class='layout vertical'>
       <template is='dom-if' if='[[isConfigurable]]'>
 
-        <p hidden$='[[!stateObj.attributes.description]]'>[[stateObj.attributes.description]]</p>
+        <p hidden$='[[!stateObj.attributes.description]]'>[[stateObj.attributes.description]]
+            <a hidden$='[[!stateObj.attributes.link.url]]' href='[[stateObj.attributes.link.url]]' target='_blank'>[[stateObj.attributes.link.name]]</a>
+        </p>
 
         <p class='error' hidden$='[[!stateObj.attributes.errors]]'>[[stateObj.attributes.errors]]</p>
 
