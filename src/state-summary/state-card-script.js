@@ -10,7 +10,7 @@ export default new Polymer({
   is: 'state-card-script',
 
   properties: {
-    detailed: {
+    inDialog: {
       type: Boolean,
       value: false,
     },
