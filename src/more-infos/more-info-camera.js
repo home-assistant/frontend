@@ -17,7 +17,8 @@ export default new Polymer({
     if (__DEMO__) {
       return '/demo/webcam.jpg';
     } else if (stateObj) {
-      return `/api/camera_proxy_stream/${this.stateObj.entityId}`;
+      return `/api/camera_proxy_stream/${stateObj.entityId}` +
+             `?token=${stateObj.attributes.access_token}`;
     }
     // Return an empty image if no stateObj (= dialog not open)
     return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
