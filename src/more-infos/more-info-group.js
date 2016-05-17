@@ -1,5 +1,6 @@
 import hass from '../util/home-assistant-js-instance';
 
+import maxBy from 'lodash/maxBy';
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 import dynamicContentUpdater from '../util/dynamic-content-updater';
@@ -46,26 +47,28 @@ export default new Polymer({
 
   statesChanged(stateObj, states) {
     let groupDomainStateObj = false;
+
+    if (states && states.length > 0) {
+      const baseStateObj = maxBy(states, (s) => Object.keys(s.attributes).length);
+      groupDomainStateObj = {
+        attributes: Object.assign({}, baseStateObj.attributes),
+        domain: baseStateObj.domain,
+        entityDisplay: stateObj.entityDisplay,
+        entityId: stateObj.entityId,
+        id: stateObj.id,
+        isCustomGroup: baseStateObj.isCustomGroup,
+        lastChanged: baseStateObj.lastChanged,
+        lastChangedAsDate: baseStateObj.lastChangedAsDate,
+        lastUpdatedAt: baseStateObj.lastUpdatedAt,
+        lastUpdatedAsDate: baseStateObj.lastUpdatedAsDate,
+        objectId: stateObj.objectId,
+        state: baseStateObj.state,
+        stateDisplay: baseStateObj.stateDisplay,
+      };
+    }
+
     for (const s of states) {
       if (s && s.domain) {
-        if (!groupDomainStateObj) {
-          groupDomainStateObj = {
-            attributes: Object.assign({}, s.attributes),
-            domain: s.domain,
-            entityDisplay: stateObj.entityDisplay,
-            entityId: stateObj.entityId,
-            id: stateObj.id,
-            isCustomGroup: s.isCustomGroup,
-            lastChanged: s.lastChanged,
-            lastChangedAsDate: s.lastChangedAsDate,
-            lastUpdatedAt: s.lastUpdatedAt,
-            lastUpdatedAsDate: s.lastUpdatedAsDate,
-            objectId: stateObj.objectId,
-            state: s.state,
-            stateDisplay: s.stateDisplay,
-          };
-          continue;
-        }
         if (groupDomainStateObj.domain !== s.domain) {
           groupDomainStateObj = false;
           break;
