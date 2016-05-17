@@ -25,25 +25,25 @@ export default new Polymer({
                          states[0].domain.replace(/_/g, ' ');
   },
   computeTitleClass(groupEntity) {
-    let classes = "header horizontal layout center ";
-    if(groupEntity){
-        classes += "header-more-info"
+    let classes = 'header horizontal layout center ';
+    if (groupEntity) {
+      classes += 'header-more-info';
     }
     return classes;
   },
   entityTapped(ev) {
     if (ev.target.classList.contains('paper-toggle-button') ||
-        ev.target.classList.contains('paper-icon-button') || 
-        (!ev.model && !this.groupEntity)){
+        ev.target.classList.contains('paper-icon-button') ||
+        (!ev.model && !this.groupEntity)) {
       return;
     }
     ev.stopPropagation();
 
     let entityId;
-    if(ev.model){
-        entityId = ev.model.item.entityId;
+    if (ev.model) {
+      entityId = ev.model.item.entityId;
     } else {
-        entityId = this.groupEntity.entityId;
+      entityId = this.groupEntity.entityId;
     }
     this.async(() => moreInfoActions.selectEntity(entityId), 1);
   },

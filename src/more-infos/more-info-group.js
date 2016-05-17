@@ -5,9 +5,7 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 import dynamicContentUpdater from '../util/dynamic-content-updater';
 import stateMoreInfoType from '../util/state-more-info-type';
 
-
 require('../state-summary/state-card-content');
-
 
 
 const {
@@ -22,7 +20,7 @@ export default new Polymer({
 
   properties: {
     stateObj: {
-      type: Object
+      type: Object,
     },
 
     states: {
@@ -43,14 +41,14 @@ export default new Polymer({
   },
 
   observers: [
-      'statesChanged(stateObj, states)'
+    'statesChanged(stateObj, states)',
   ],
 
   statesChanged(stateObj, states) {
     let groupDomainStateObj = false;
-    for(let s of states){
-      if(s && s.domain){
-        if(!groupDomainStateObj){
+    for (const s of states) {
+      if (s && s.domain) {
+        if (!groupDomainStateObj) {
           groupDomainStateObj = {
             attributes: Object.assign({}, s.attributes),
             domain: s.domain,
@@ -64,19 +62,19 @@ export default new Polymer({
             lastUpdatedAsDate: s.lastUpdatedAsDate,
             objectId: stateObj.objectId,
             state: s.state,
-            stateDisplay: s.stateDisplay
+            stateDisplay: s.stateDisplay,
           };
           continue;
         }
-        if(groupDomainStateObj.domain != s.domain) {
+        if (groupDomainStateObj.domain !== s.domain) {
           groupDomainStateObj = false;
           break;
         }
       }
     }
-    
-    if (!groupDomainStateObj){
-      let el = Polymer.dom(this.$.groupedControlDetails);
+
+    if (!groupDomainStateObj) {
+      const el = Polymer.dom(this.$.groupedControlDetails);
       if (el.lastChild) {
         el.removeChild(el.lastChild);
       }
@@ -86,7 +84,5 @@ export default new Polymer({
           `MORE-INFO-${stateMoreInfoType(groupDomainStateObj).toUpperCase()}`,
           { stateObj: groupDomainStateObj });
     }
-
   },
-  
 });
