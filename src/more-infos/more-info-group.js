@@ -1,5 +1,4 @@
 import hass from '../util/home-assistant-js-instance';
-import maxBy from 'lodash/maxBy';
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 import dynamicContentUpdater from '../util/dynamic-content-updater';
@@ -48,17 +47,17 @@ export default new Polymer({
     let groupDomainStateObj = false;
 
     if (states && states.length > 0) {
-      const baseStateObj = maxBy(states, (s) => Object.keys(s.attributes).length);
+      const baseStateObj = states[0];
 
       groupDomainStateObj = baseStateObj.set('entityId', stateObj.entityId).set(
           'attributes', Object.assign({}, baseStateObj.attributes));
-    }
 
-    for (const s of states) {
-      if (s && s.domain) {
-        if (groupDomainStateObj.domain !== s.domain) {
-          groupDomainStateObj = false;
-          break;
+      for (let i = 0; i < states.length; i++) {
+        const s = states[i];
+        if (s && s.domain) {
+          if (groupDomainStateObj.domain !== s.domain) {
+            groupDomainStateObj = false;
+          }
         }
       }
     }
