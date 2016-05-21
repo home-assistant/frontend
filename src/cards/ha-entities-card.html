@@ -29,10 +29,13 @@
     ha-entity-toggle {
       margin-left: 16px;
     }
+    .header-more-info {
+      cursor: pointer;
+    }
   </style>
   <template>
     <ha-card>
-      <div class='header horizontal layout center'>
+      <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
         <div class='flex name'>[[computeTitle(states, groupEntity)]]</div>
         <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
           <ha-entity-toggle state-obj='[[groupEntity]]'></ha-entity-toggle>

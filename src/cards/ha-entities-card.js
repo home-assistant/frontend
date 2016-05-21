@@ -24,14 +24,27 @@ export default new Polymer({
     return groupEntity ? groupEntity.entityDisplay :
                          states[0].domain.replace(/_/g, ' ');
   },
-
+  computeTitleClass(groupEntity) {
+    let classes = 'header horizontal layout center ';
+    if (groupEntity) {
+      classes += 'header-more-info';
+    }
+    return classes;
+  },
   entityTapped(ev) {
     if (ev.target.classList.contains('paper-toggle-button') ||
-        ev.target.classList.contains('paper-icon-button')) {
+        ev.target.classList.contains('paper-icon-button') ||
+        (!ev.model && !this.groupEntity)) {
       return;
     }
     ev.stopPropagation();
-    const entityId = ev.model.item.entityId;
+
+    let entityId;
+    if (ev.model) {
+      entityId = ev.model.item.entityId;
+    } else {
+      entityId = this.groupEntity.entityId;
+    }
     this.async(() => moreInfoActions.selectEntity(entityId), 1);
   },
 
