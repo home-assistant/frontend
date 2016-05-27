@@ -53,7 +53,7 @@ export default new Polymer({
   updateCameraFeedSrc(stateObj) {
     const attr = stateObj.attributes;
     const time = (new Date()).getTime();
-    this.cameraFeedSrc = `${attr.entity_picture}?token=${attr.access_token}&time=${time}`;
+    this.cameraFeedSrc = `${attr.entity_picture}&time=${time}`;
   },
 
   imageLoadSuccess() {
