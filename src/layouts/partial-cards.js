@@ -136,12 +136,29 @@ export default new Polymer({
     voiceActions.listen();
   },
 
+  headerScrollAdjust(ev) {
+    if (!this.hasViews) return;
+    Polymer.Base.transform(`translateY(-${ev.detail.y}px)`, this.$.menu);
+  },
+
+  computeHeaderHeight(hasViews) {
+    return hasViews ? 128 : 64;
+  },
+
+  computeCondensedHeaderHeight(hasViews) {
+    return hasViews ? 48 : 64;
+  },
+
   computeMenuButtonClass(narrow, showMenu) {
-    return !narrow && showMenu ? 'invisible' : '';
+    return !narrow && showMenu ? 'menu-icon invisible' : 'menu-icon';
   },
 
   computeRefreshButtonClass(isFetching) {
     return isFetching ? 'ha-spin' : '';
+  },
+
+  computeTitle(hasViews, locationName) {
+    return hasViews ? 'Home Assistant' : locationName;
   },
 
   computeShowIntroduction(currentView, introductionLoaded, states) {
