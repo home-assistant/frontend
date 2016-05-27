@@ -1,14 +1,12 @@
 import Polymer from '../../polymer';
 import hass from '../../util/home-assistant-js-instance';
 import domainIcon from '../../util/domain-icon';
-import canToggle from '../../util/can-toggle';
 import stateIcon from '../../util/state-icon';
 
 require('../../components/ha-label-badge');
 
 const {
   moreInfoActions,
-  serviceActions,
 } = hass;
 
 export default new Polymer({
@@ -27,24 +25,12 @@ export default new Polymer({
 
   badgeTap(ev) {
     ev.stopPropagation();
-    if (!canToggle(this.state.entityId)) {
-      this.async(() => moreInfoActions.selectEntity(this.state.entityId), 1);
-      return;
-    }
-    if (this.state.domain === 'scene' || this.state.state === 'off') {
-      serviceActions.callTurnOn(this.state.entityId);
-    } else {
-      serviceActions.callTurnOff(this.state.entityId);
-    }
+    this.async(() => moreInfoActions.selectEntity(this.state.entityId), 1);
   },
 
   computeClasses(state) {
     switch (state.domain) {
-      case 'scene':
-        return 'green';
       case 'binary_sensor':
-      case 'script':
-        return state.state === 'on' ? 'blue' : 'grey';
       case 'updater':
         return 'blue';
       default:
@@ -58,8 +44,6 @@ export default new Polymer({
       case 'device_tracker':
       case 'updater':
       case 'sun':
-      case 'scene':
-      case 'script':
       case 'alarm_control_panel':
         return null;
       case 'sensor':
@@ -85,9 +69,7 @@ export default new Polymer({
         return domainIcon(state.domain, state.state);
       case 'binary_sensor':
       case 'device_tracker':
-      case 'scene':
       case 'updater':
-      case 'script':
         return stateIcon(state);
       case 'sun':
         return state.state === 'above_horizon' ?
@@ -106,9 +88,6 @@ export default new Polymer({
       return 'unavai';
     }
     switch (state.domain) {
-      case 'scene':
-      case 'script':
-        return state.domain;
       case 'device_tracker':
         return state.state === 'not_home' ? 'Away' : state.state;
       case 'alarm_control_panel':

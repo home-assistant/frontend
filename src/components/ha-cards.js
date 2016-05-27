@@ -23,8 +23,6 @@ const PRIORITY = {
   alarm_control_panel: 3,
   sensor: 5,
   binary_sensor: 6,
-  scene: 7,
-  script: 8,
 };
 
 function getPriority(domain) {
