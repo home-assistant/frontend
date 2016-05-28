@@ -21,7 +21,6 @@
   "license": "MIT",
   "dependencies": {
     "home-assistant-js": "git+https://github.com/home-assistant/home-assistant-js.git#ff2bd7efd23bb731d1bcc88996154c5d573395ed",
-    "lodash": "^4.11.2",
     "moment": "^2.13.0"
   },
   "devDependencies": {
