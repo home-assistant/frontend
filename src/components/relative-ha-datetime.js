@@ -1,4 +1,3 @@
-import moment from 'moment';
 import Polymer from '../polymer';
 
 const UPDATE_INTERVAL = 60000; // 60 seconds
@@ -53,6 +52,6 @@ export default new Polymer({
 
   updateRelative() {
     this.relativeTime = this.parsedDateTime ?
-      moment(this.parsedDateTime).fromNow() : '';
+      window.moment(this.parsedDateTime).fromNow() : '';
   },
 });
