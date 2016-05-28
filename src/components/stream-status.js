@@ -1,32 +1,31 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
-
-const { streamGetters, streamActions } = hass;
 
 export default new Polymer({
   is: 'stream-status',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     isStreaming: {
       type: Boolean,
-      bindNuclear: streamGetters.isStreamingEvents,
+      bindNuclear: hass => hass.streamGetters.isStreamingEvents,
     },
 
     hasError: {
       type: Boolean,
-      bindNuclear: streamGetters.hasStreamingEventsError,
+      bindNuclear: hass => hass.streamGetters.hasStreamingEventsError,
     },
   },
 
   toggleChanged() {
     if (this.isStreaming) {
-      streamActions.stop();
+      this.hass.streamActions.stop();
     } else {
-      streamActions.start();
+      this.hass.streamActions.start();
     }
   },
 });

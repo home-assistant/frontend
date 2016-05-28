@@ -1,14 +1,15 @@
-import hass from '../util/home-assistant-js-instance';
 import Polymer from '../polymer';
 
 require('../components/state-info');
-
-const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'state-card-input_select',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     inDialog: {
       type: Boolean,
       value: false,
@@ -33,7 +34,7 @@ export default new Polymer({
     if (option === '' || option === this.stateObj.state) {
       return;
     }
-    serviceActions.callService('input_select', 'select_option', {
+    this.hass.serviceActions.callService('input_select', 'select_option', {
       option,
       entity_id: this.stateObj.entityId,
     });

@@ -1,16 +1,16 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/entity-list');
 
-const { reactor, entityGetters, entityActions } = hass;
-
 export default new Polymer({
   is: 'partial-dev-set-state',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
       value: false,
@@ -47,7 +47,7 @@ export default new Polymer({
   },
 
   entitySelected(ev) {
-    const state = reactor.evaluate(entityGetters.byId(ev.detail.entityId));
+    const state = this.hass.reactor.evaluate(this.hass.entityGetters.byId(ev.detail.entityId));
 
     this.entityId = state.entityId;
     this.state = state.state;
@@ -65,7 +65,7 @@ export default new Polymer({
       return;
     }
 
-    entityActions.save({
+    this.hass.entityActions.save({
       entityId: this.entityId,
       state: this.state,
       attributes: attr,

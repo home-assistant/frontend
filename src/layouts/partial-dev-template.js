@@ -1,20 +1,17 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
-
-const {
-  templateActions,
-} = hass;
 
 export default new Polymer({
   is: 'partial-dev-template',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
       value: false,
@@ -84,7 +81,7 @@ export default new Polymer({
   renderTemplate() {
     this.rendering = true;
 
-    templateActions.render(this.template).then(processed => {
+    this.hass.templateActions.render(this.template).then(processed => {
       this.processed = processed;
       this.rendering = false;
     }, error => {

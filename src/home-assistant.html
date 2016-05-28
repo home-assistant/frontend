@@ -22,12 +22,14 @@
 
   <template>
     <template is='dom-if' if='[[!loaded]]'>
-      <login-form force-show-loading='[[computeForceShowLoading(dataLoaded, iconsLoaded)]]'>
+      <login-form
+        hass='[[hass]]'
+        force-show-loading='[[computeForceShowLoading(dataLoaded, iconsLoaded)]]'>
       </login-form>
     </template>
 
     <template is='dom-if' if='[[loaded]]'>
-      <home-assistant-main></home-assistant-main>
+      <home-assistant-main hass='[[hass]]'></home-assistant-main>
     </template>
   </template>
 </dom-module>

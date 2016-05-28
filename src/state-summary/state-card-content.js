@@ -20,6 +20,10 @@ export default new Polymer({
   is: 'state-card-content',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     inDialog: {
       type: Boolean,
       value: false,
@@ -31,13 +35,14 @@ export default new Polymer({
   },
 
   observers: [
-    'inputChanged(inDialog, stateObj)',
+    'inputChanged(hass, inDialog, stateObj)',
   ],
 
-  inputChanged(inDialog, stateObj) {
+  inputChanged(hass, inDialog, stateObj) {
     if (!stateObj) return;
 
     dynamicContentUpdater(
-      this, `STATE-CARD-${stateCardType(stateObj).toUpperCase()}`, { stateObj, inDialog });
+      this, `STATE-CARD-${stateCardType(this.hass, stateObj).toUpperCase()}`,
+      { hass, stateObj, inDialog });
   },
 });

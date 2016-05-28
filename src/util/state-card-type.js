@@ -13,12 +13,12 @@ const DOMAINS_WITH_CARD = [
   'weblink',
 ];
 
-export default function stateCardType(state) {
+export default function stateCardType(hass, state) {
   if (state.state === 'unavailable') {
     return 'display';
   } else if (DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {
     return state.domain;
-  } else if (canToggle(state.entityId)) {
+  } else if (canToggle(hass, state.entityId)) {
     return 'toggle';
   }
   return 'display';

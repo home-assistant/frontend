@@ -1,7 +1,4 @@
 import Polymer from '../polymer';
-import hass from '../util/home-assistant-js-instance';
-
-const { moreInfoActions } = hass;
 
 const UPDATE_INTERVAL = 10000; // ms
 
@@ -9,6 +6,10 @@ export default new Polymer({
   is: 'ha-camera-card',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'updateCameraFeedSrc',
@@ -47,7 +48,7 @@ export default new Polymer({
   },
 
   cardTapped() {
-    this.async(() => moreInfoActions.selectEntity(this.stateObj.entityId), 1);
+    this.async(() => this.hass.moreInfoActions.selectEntity(this.stateObj.entityId), 1);
   },
 
   updateCameraFeedSrc(stateObj) {

@@ -1,14 +1,15 @@
 import classnames from 'classnames';
 
 import Polymer from '../polymer';
-import hass from '../util/home-assistant-js-instance';
-
-const { moreInfoActions } = hass;
 
 export default new Polymer({
   is: 'ha-media_player-card',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
     },
@@ -54,7 +55,7 @@ export default new Polymer({
   },
 
   computePlayerObj(stateObj) {
-    return stateObj.domainModel(hass);
+    return stateObj.domainModel(this.hass);
   },
 
   computePlaybackControlIcon(playerObj) {
@@ -77,7 +78,7 @@ export default new Polymer({
 
   handleOpenMoreInfo(ev) {
     ev.stopPropagation();
-    this.async(() => moreInfoActions.selectEntity(this.stateObj.entityId), 1);
+    this.async(() => this.hass.moreInfoActions.selectEntity(this.stateObj.entityId), 1);
   },
 
   handlePlaybackControl(ev) {

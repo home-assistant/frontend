@@ -17,7 +17,7 @@
     <div id="groupedControlDetails"></div>
     <template is='dom-repeat' items="[[states]]" as='state'>
       <div class='child-card'>
-        <state-card-content state-obj="[[state]]"></state-card-content>
+        <state-card-content state-obj="[[state]]" hass='[[hass]]'></state-card-content>
       </div>
     </template>
   </template>

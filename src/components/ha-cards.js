@@ -1,11 +1,8 @@
 import Polymer from '../polymer';
-import hass from '../util/home-assistant-js-instance';
 
 require('.//ha-demo-badge');
 require('../cards/ha-badges-card');
 require('../cards/ha-card-chooser');
-
-const { util } = hass;
 
 // mapping domain to size of the card.
 const DOMAINS_WITH_CARD = {
@@ -38,6 +35,10 @@ export default new Polymer({
   is: 'ha-cards',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     showIntroduction: {
       type: Boolean,
       value: false,
@@ -70,6 +71,7 @@ export default new Polymer({
   },
 
   computeCards(columns, states, showIntroduction) {
+    const hass = this.hass;
     const byDomain = states.groupBy(entity => entity.domain);
     const hasGroup = {};
 
@@ -137,6 +139,7 @@ export default new Polymer({
 
       if (other.length > 0) {
         cards.columns[curIndex].push({
+          hass,
           cardType: 'entities',
           states: other,
           groupEntity,
@@ -145,11 +148,14 @@ export default new Polymer({
 
       owncard.forEach(entity => {
         cards.columns[curIndex].push({
+          hass,
           cardType: entity.domain,
           stateObj: entity,
         });
       });
     }
+
+    const expandGroup = this.hass.util.expandGroup;
 
     byDomain.keySeq().sortBy(domain => getPriority(domain))
       .forEach(domain => {
@@ -167,7 +173,7 @@ export default new Polymer({
         } else if (domain === 'group') {
           byDomain.get(domain).sortBy(entitySortBy)
             .forEach(groupState => {
-              const entities = util.expandGroup(groupState, states);
+              const entities = expandGroup(groupState, states);
               entities.forEach(entity => { hasGroup[entity.entityId] = true; });
               addEntitiesCard(groupState.entityId, entities.toArray(), groupState);
             }

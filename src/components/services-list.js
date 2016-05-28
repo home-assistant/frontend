@@ -1,21 +1,20 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./domain-icon');
-
-const { serviceGetters } = hass;
 
 export default new Polymer({
   is: 'services-list',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     serviceDomains: {
       type: Array,
-      bindNuclear: serviceGetters.entityMap,
+      bindNuclear: hass => hass.serviceGetters.entityMap,
     },
   },
 

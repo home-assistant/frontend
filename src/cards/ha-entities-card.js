@@ -1,17 +1,18 @@
 import Polymer from '../polymer';
-import hass from '../util/home-assistant-js-instance';
 import canToggle from '../util/can-toggle';
 
 require('../components/ha-card');
 require('../components/entity/ha-entity-toggle');
 require('../state-summary/state-card-content');
 
-const { moreInfoActions } = hass;
-
 export default new Polymer({
   is: 'ha-entities-card',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     states: {
       type: Array,
     },
@@ -45,7 +46,7 @@ export default new Polymer({
     } else {
       entityId = this.groupEntity.entityId;
     }
-    this.async(() => moreInfoActions.selectEntity(entityId), 1);
+    this.async(() => this.hass.moreInfoActions.selectEntity(entityId), 1);
   },
 
   showGroupToggle(groupEntity, states) {
@@ -54,6 +55,6 @@ export default new Polymer({
     }
 
     // only show if we can toggle 2+ entities in group
-    return states.reduce((sum, state) => sum + canToggle(state.entityId), 0) > 1;
+    return states.reduce((sum, state) => sum + canToggle(this.hass, state.entityId), 0) > 1;
   },
 });

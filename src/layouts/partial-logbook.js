@@ -1,20 +1,19 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
 require('../components/ha-logbook');
 require('../components/loading-box');
 
-const { logbookGetters, logbookActions } = hass;
-
 export default new Polymer({
   is: 'partial-logbook',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
       value: false,
@@ -27,24 +26,24 @@ export default new Polymer({
 
     selectedDate: {
       type: String,
-      bindNuclear: logbookGetters.currentDate,
+      bindNuclear: hass => hass.logbookGetters.currentDate,
     },
 
     isLoading: {
       type: Boolean,
-      bindNuclear: logbookGetters.isLoadingEntries,
+      bindNuclear: hass => hass.logbookGetters.isLoadingEntries,
     },
 
     isStale: {
       type: Boolean,
-      bindNuclear: logbookGetters.isCurrentStale,
+      bindNuclear: hass => hass.logbookGetters.isCurrentStale,
       observer: 'isStaleChanged',
     },
 
     entries: {
       type: Array,
-      bindNuclear: [
-        logbookGetters.currentEntries,
+      bindNuclear: hass => [
+        hass.logbookGetters.currentEntries,
         (entries) => entries.reverse().toArray(),
       ],
     },
@@ -56,12 +55,12 @@ export default new Polymer({
 
   isStaleChanged(newVal) {
     if (newVal) {
-      this.async(() => logbookActions.fetchDate(this.selectedDate), 1);
+      this.async(() => this.hass.logbookActions.fetchDate(this.selectedDate), 1);
     }
   },
 
   handleRefresh() {
-    logbookActions.fetchDate(this.selectedDate);
+    this.hass.logbookActions.fetchDate(this.selectedDate);
   },
 
   datepickerFocus() {
@@ -71,7 +70,7 @@ export default new Polymer({
   attached() {
     this.datePicker = new window.Pikaday({
       field: this.$.datePicker.inputElement,
-      onSelect: logbookActions.changeCurrentDate,
+      onSelect: this.hass.logbookActions.changeCurrentDate,
     });
   },
 
