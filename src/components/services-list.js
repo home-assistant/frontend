@@ -1,12 +1,11 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./domain-icon');
 
 export default new Polymer({
   is: 'services-list',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

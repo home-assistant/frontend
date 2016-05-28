@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../state-summary/state-card-content');
 require('../components/state-history-charts');
@@ -10,7 +9,7 @@ const DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
 export default new Polymer({
   is: 'more-info-dialog',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     stateObj: {

@@ -1,6 +1,5 @@
 import Polymer from '../polymer';
 
-import nuclearObserver from '../util/bound-nuclear-behavior';
 import removeInitMsg from '../util/remove-init-message';
 
 require('../components/ha-sidebar');
@@ -27,7 +26,7 @@ require('../dialogs/ha-voice-command-dialog');
 export default new Polymer({
   is: 'home-assistant-main',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

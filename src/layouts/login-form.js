@@ -1,13 +1,12 @@
 import Polymer from '../polymer';
 
-import nuclearObserver from '../util/bound-nuclear-behavior';
 import validateAuth from '../util/validate-auth';
 import removeInitMsg from '../util/remove-init-message';
 
 export default new Polymer({
   is: 'login-form',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

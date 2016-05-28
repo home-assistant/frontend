@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
 require('../components/state-history-charts');
@@ -7,7 +6,7 @@ require('../components/state-history-charts');
 export default new Polymer({
   is: 'partial-history',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

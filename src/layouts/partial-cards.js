@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
 require('../components/ha-cards');
@@ -8,7 +7,7 @@ require('../components/ha-view-tabs');
 export default new Polymer({
   is: 'partial-cards',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

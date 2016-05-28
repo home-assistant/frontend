@@ -2,13 +2,16 @@ import moment from 'moment';
 import Polymer from './polymer';
 
 import HomeAssistant from 'home-assistant-js';
-import nuclearObserver from './util/bound-nuclear-behavior';
 import validateAuth from './util/validate-auth';
+import hassBehavior from './util/hass-behavior';
+
+window.hassBehavior = hassBehavior;
 window.moment = moment;
 
 require('./layouts/login-form');
 require('./layouts/home-assistant-main');
 
+// While we figure out how ha-entity-marker can keep it's references
 window.hass = new HomeAssistant();
 
 export default new Polymer({
@@ -19,7 +22,7 @@ export default new Polymer({
     icons: null,
   },
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

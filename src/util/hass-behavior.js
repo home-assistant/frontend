@@ -16,7 +16,9 @@ export default {
         let getter = this.properties[key].bindNuclear;
 
         if (typeof getter !== 'function') {
+          /* eslint-disable no-console */
           console.warn(`Component ${this.nodeName} uses old style bindNuclear`);
+          /* eslint-enable no-console */
         } else {
           getter = getter(hass);
         }
