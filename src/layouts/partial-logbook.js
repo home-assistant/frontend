@@ -1,8 +1,7 @@
 import Polymer from '../polymer';
 
 require('./partial-base');
-require('../components/ha-logbook');
-require('../components/loading-box');
+require('../components/logbook-entry');
 
 export default new Polymer({
   is: 'partial-logbook',

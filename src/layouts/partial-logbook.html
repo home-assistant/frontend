@@ -34,7 +34,7 @@
 
           <loading-box hidden$='[[!isLoading]]'>Loading logbook entries</loading-box>
         </div>
-        <ha-logbook entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
+        <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
       </div>
     </partial-base>
   </template>

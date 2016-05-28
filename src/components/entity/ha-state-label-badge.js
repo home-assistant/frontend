@@ -2,8 +2,6 @@ import Polymer from '../../polymer';
 import domainIcon from '../../util/domain-icon';
 import stateIcon from '../../util/state-icon';
 
-require('../../components/ha-label-badge');
-
 export default new Polymer({
   is: 'ha-state-label-badge',
 

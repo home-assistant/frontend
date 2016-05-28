@@ -83,3 +83,54 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+// Beware: Polymer will not call computeHideIcon and computeHideValue if any of
+// the parameters are undefined. Set to null if not using.
+Polymer({
+  is: 'ha-label-badge',
+
+  properties: {
+    value: {
+      type: String,
+      value: null,
+    },
+
+    icon: {
+      type: String,
+      value: null,
+    },
+
+    label: {
+      type: String,
+      value: null,
+    },
+
+    description: {
+      type: String,
+    },
+
+    image: {
+      type: String,
+      value: null,
+      observer: 'imageChanged',
+    },
+  },
+
+  computeClasses: function (value) {
+    return value && value.length > 4 ? 'value big' : 'value';
+  },
+
+  computeHideIcon: function (icon, value, image) {
+    return !icon || value || image;
+  },
+
+  computeHideValue: function (value, image) {
+    return !value || image;
+  },
+
+  imageChanged: function (newVal) {
+    this.$.badge.style.backgroundImage = newVal ? `url(${newVal})` : '';
+  },
+});
+</script>

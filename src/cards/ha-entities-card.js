@@ -1,7 +1,6 @@
 import Polymer from '../polymer';
 import canToggle from '../util/can-toggle';
 
-require('../components/ha-card');
 require('../components/entity/ha-entity-toggle');
 require('../state-summary/state-card-content');
 
