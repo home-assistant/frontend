@@ -45,7 +45,7 @@
       condenses keep-condensed-header class='fit' has-views$='[[hasViews]]'
       header-height="[[computeHeaderHeight(hasViews)]]"
       condensed-header-height="[[computeCondensedHeaderHeight(hasViews)]]"
-      on-paper-header-transform='headerScrollAdjust'
+      on-paper-header-transform='headerScrollAdjust' id='panel'
       >
       <paper-toolbar>
         <div class='flex layout horizontal' id='menu'>
@@ -65,7 +65,7 @@
 
         <template is='dom-if' if='[[hasViews]]'>
           <div class='fit bottom views'>
-            <ha-view-tabs></ha-view-tabs>
+            <ha-view-tabs on-view-tapped='scrollToTop'></ha-view-tabs>
           </div>
         </template>
       </paper-toolbar>

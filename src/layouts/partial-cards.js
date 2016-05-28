@@ -113,6 +113,28 @@ export default new Polymer({
     this.columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   },
 
+  scrollToTop() {
+    const scrollEl = this.$.panel.scroller;
+    const begin = scrollEl.scrollTop;
+
+    if (!begin) return;
+
+    const duration = Math.round(begin / 5);
+    let start = null;
+
+    function scroll(timestamp) {
+      if (!start) start = timestamp;
+      const progress = timestamp - start;
+
+      scrollEl.scrollTop = begin - (progress / duration * begin);
+
+      if (progress < duration) {
+        requestAnimationFrame(scroll);
+      }
+    }
+    requestAnimationFrame(scroll);
+  },
+
   handleRefresh() {
     syncActions.fetchAll();
   },
