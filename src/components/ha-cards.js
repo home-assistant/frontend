@@ -1,6 +1,5 @@
 import Polymer from '../polymer';
 
-require('.//ha-demo-badge');
 require('../cards/ha-badges-card');
 require('../cards/ha-card-chooser');
 
@@ -109,8 +108,9 @@ export default new Polymer({
     }
     if (showIntroduction) {
       cards.columns[getIndex(5)].push({
+        hass,
         cardType: 'introduction',
-        showHideInstruction: states.size > 0 && !__DEMO__,
+        showHideInstruction: states.size > 0 && !hass.demo,
       });
     }
 

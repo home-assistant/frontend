@@ -2,7 +2,6 @@ import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/ha-cards');
-require('../components/ha-view-tabs');
 
 export default new Polymer({
   is: 'partial-cards',

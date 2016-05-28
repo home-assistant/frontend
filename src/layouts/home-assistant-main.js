@@ -1,8 +1,5 @@
 import Polymer from '../polymer';
 
-import removeInitMsg from '../util/remove-init-message';
-
-require('../components/ha-sidebar');
 require('../layouts/partial-cards');
 require('../layouts/partial-logbook');
 require('../layouts/partial-history');
@@ -16,13 +13,6 @@ require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
 require('../dialogs/ha-voice-command-dialog');
 
-// const {
-//   navigationActions,
-//   navigationGetters,
-//   startUrlSync,
-//   stopUrlSync,
-// } = hass;
-
 export default new Polymer({
   is: 'home-assistant-main',
 
@@ -35,7 +25,7 @@ export default new Polymer({
 
     narrow: {
       type: Boolean,
-      value: false,
+      value: true,
     },
 
     activePane: {
@@ -91,6 +81,7 @@ export default new Polymer({
 
     showSidebar: {
       type: Boolean,
+      value: false,
       bindNuclear: hass => hass.navigationGetters.showSidebar,
     },
   },
@@ -122,7 +113,7 @@ export default new Polymer({
   },
 
   attached() {
-    removeInitMsg();
+    window.removeInitMsg();
     this.hass.startUrlSync();
   },
 

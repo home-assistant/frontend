@@ -1,7 +1,6 @@
 import Polymer from '../polymer';
 
 require('./partial-base');
-require('../components/events-list');
 
 export default new Polymer({
   is: 'partial-dev-fire-event',

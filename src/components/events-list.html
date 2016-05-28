@@ -28,3 +28,34 @@
     </ul>
   </template>
 </dom-module>
+
+<script>
+  Polymer({
+    is: 'events-list',
+
+    behaviors: [window.hassBehavior],
+
+    properties: {
+      hass: {
+        type: Object,
+      },
+
+      events: {
+        type: Array,
+        bindNuclear: function (hass) {
+          return [
+            hass.eventGetters.entityMap,
+            function (map) {
+              return map.valueSeq().sortBy(function (event) { return event.event; }).toArray();
+            },
+          ];
+        },
+      },
+    },
+
+    eventSelected: function (ev) {
+      ev.preventDefault();
+      this.fire('event-selected', { eventType: ev.model.event.event });
+    },
+  });
+</script>

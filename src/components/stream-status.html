@@ -25,3 +25,35 @@
     <paper-toggle-button id="toggle" on-change='toggleChanged' checked$='[[isStreaming]]' hidden$="[[hasError]]"></paper-toggle-button>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'stream-status',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    isStreaming: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.streamGetters.isStreamingEvents; },
+    },
+
+    hasError: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.streamGetters.hasStreamingEventsError; },
+    },
+  },
+
+  toggleChanged: function () {
+    if (this.isStreaming) {
+      this.hass.streamActions.stop();
+    } else {
+      this.hass.streamActions.start();
+    }
+  },
+});
+</script>
