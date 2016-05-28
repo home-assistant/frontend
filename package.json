@@ -34,6 +34,7 @@
     "eslint-config-airbnb-base": "^2.0.0",
     "eslint-plugin-import": "^1.7.0",
     "html-minifier": "^2.1.2",
+    "sw-precache": "^3.2.0",
     "vulcanize": "^1.14.8",
     "webpack": "^2.1.0-beta.7"
   }
