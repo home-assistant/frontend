@@ -9,7 +9,6 @@ var definePlugin = new webpack.DefinePlugin({
 module.exports = {
   entry: {
     _app_compiled: './src/home-assistant.js',
-    service_worker: './src/service-worker/index.js',
   },
   output: {
     path: 'build',
