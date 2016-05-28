@@ -1,15 +1,7 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/loading-box');
-
-const {
-  streamGetters,
-  syncActions,
-  serviceActions,
-} = hass;
 
 export default new Polymer({
   is: 'more-info-configurator',
@@ -28,7 +20,7 @@ export default new Polymer({
 
     isStreaming: {
       type: Boolean,
-      bindNuclear: streamGetters.isStreamingEvents,
+      bindNuclear: hass => hass.streamGetters.isStreamingEvents,
     },
 
     isConfigurable: {
@@ -72,12 +64,12 @@ export default new Polymer({
       fields: this.fieldInput,
     };
 
-    serviceActions.callService('configurator', 'configure', data).then(
+    this.hass.serviceActions.callService('configurator', 'configure', data).then(
       () => {
         this.isConfiguring = false;
 
         if (!this.isStreaming) {
-          syncActions.fetchAll();
+          this.hass.syncActions.fetchAll();
         }
       },
       () => {

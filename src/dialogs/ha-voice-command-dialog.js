@@ -1,12 +1,5 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
-
-const {
-  voiceActions,
-  voiceGetters,
-} = hass;
 
 export default new Polymer({
   is: 'ha-voice-command-dialog',
@@ -14,6 +7,10 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     dialogOpen: {
       type: Boolean,
       value: false,
@@ -22,22 +19,22 @@ export default new Polymer({
 
     finalTranscript: {
       type: String,
-      bindNuclear: voiceGetters.finalTranscript,
+      bindNuclear: hass => hass.voiceGetters.finalTranscript,
     },
 
     interimTranscript: {
       type: String,
-      bindNuclear: voiceGetters.extraInterimTranscript,
+      bindNuclear: hass => hass.voiceGetters.extraInterimTranscript,
     },
 
     isTransmitting: {
       type: Boolean,
-      bindNuclear: voiceGetters.isTransmitting,
+      bindNuclear: hass => hass.voiceGetters.isTransmitting,
     },
 
     isListening: {
       type: Boolean,
-      bindNuclear: voiceGetters.isListening,
+      bindNuclear: hass => hass.voiceGetters.isListening,
     },
 
     showListenInterface: {
@@ -53,7 +50,7 @@ export default new Polymer({
 
   dialogOpenChanged(newVal) {
     if (!newVal && this.isListening) {
-      voiceActions.stop();
+      this.hass.voiceActions.stop();
     }
   },
 

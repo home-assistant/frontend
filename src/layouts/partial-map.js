@@ -1,14 +1,7 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/entity/ha-entity-marker');
-
-const {
-  configGetters,
-  entityGetters,
-} = hass;
 
 window.L.Icon.Default.imagePath = '/static/images/leaflet';
 
@@ -18,20 +11,24 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     locationGPS: {
       type: Number,
-      bindNuclear: configGetters.locationGPS,
+      bindNuclear: hass => hass.configGetters.locationGPS,
     },
 
     locationName: {
       type: String,
-      bindNuclear: configGetters.locationName,
+      bindNuclear: hass => hass.configGetters.locationName,
     },
 
     locationEntities: {
       type: Array,
-      bindNuclear: [
-        entityGetters.visibleEntityMap,
+      bindNuclear: hass => [
+        hass.entityGetters.visibleEntityMap,
         entities => entities.valueSeq().filter(
           entity => entity.attributes.latitude && entity.state !== 'home'
         ).toArray(),
@@ -40,8 +37,8 @@ export default new Polymer({
 
     zoneEntities: {
       type: Array,
-      bindNuclear: [
-        entityGetters.entityMap,
+      bindNuclear: hass => [
+        hass.entityGetters.entityMap,
         entities => entities.valueSeq()
           .filter(entity => entity.domain === 'zone' &&
                             !entity.attributes.passive)

@@ -1,16 +1,7 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./stream-status');
-
-const {
-  configGetters,
-  navigationGetters,
-  authActions,
-  navigationActions,
-} = hass;
 
 export default new Polymer({
   is: 'ha-sidebar',
@@ -18,6 +9,10 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     menuShown: {
       type: Boolean,
     },
@@ -32,17 +27,17 @@ export default new Polymer({
 
     selected: {
       type: String,
-      bindNuclear: navigationGetters.activePane,
+      bindNuclear: hass => hass.navigationGetters.activePane,
     },
 
     hasHistoryComponent: {
       type: Boolean,
-      bindNuclear: configGetters.isComponentLoaded('history'),
+      bindNuclear: hass => hass.configGetters.isComponentLoaded('history'),
     },
 
     hasLogbookComponent: {
       type: Boolean,
-      bindNuclear: configGetters.isComponentLoaded('logbook'),
+      bindNuclear: hass => hass.configGetters.isComponentLoaded('logbook'),
     },
   },
 
@@ -76,11 +71,11 @@ export default new Polymer({
       this.handleLogOut();
       return;
     }
-    navigationActions.navigate.apply(null, newChoice.split('/'));
+    this.hass.navigationActions.navigate.apply(null, newChoice.split('/'));
     this.debounce('updateStyles', () => this.updateStyles(), 1);
   },
 
   handleLogOut() {
-    authActions.logOut();
+    this.hass.authActions.logOut();
   },
 });

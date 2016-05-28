@@ -1,9 +1,6 @@
 import Polymer from '../polymer';
-import hass from '../util/home-assistant-js-instance';
 
 import formatTime from '../util/format-time';
-
-const { util: { parseDateTime } } = hass;
 
 export default new Polymer({
   is: 'more-info-sun',
@@ -25,11 +22,11 @@ export default new Polymer({
   },
 
   computeRising(stateObj) {
-    return parseDateTime(stateObj.attributes.next_rising);
+    return new Date(stateObj.attributes.next_rising);
   },
 
   computeSetting(stateObj) {
-    return parseDateTime(stateObj.attributes.next_setting);
+    return new Date(stateObj.attributes.next_setting);
   },
 
   computeOrder(risingDate, settingDate) {

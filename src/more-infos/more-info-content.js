@@ -21,6 +21,10 @@ export default new Polymer({
   is: 'more-info-content',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -31,6 +35,7 @@ export default new Polymer({
     if (!stateObj) return;
 
     dynamicContentUpdater(
-      this, `MORE-INFO-${stateMoreInfoType(stateObj).toUpperCase()}`, { stateObj });
+      this, `MORE-INFO-${stateMoreInfoType(stateObj).toUpperCase()}`,
+      { hass: this.hass, stateObj });
   },
 });

@@ -1,12 +1,8 @@
 import Polymer from '../polymer';
 
-import hass from '../util/home-assistant-js-instance';
-
 import nuclearObserver from '../util/bound-nuclear-behavior';
 import validateAuth from '../util/validate-auth';
 import removeInitMsg from '../util/remove-init-message';
-
-const { authGetters } = hass;
 
 export default new Polymer({
   is: 'login-form',
@@ -14,20 +10,24 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     errorMessage: {
       type: String,
-      bindNuclear: authGetters.attemptErrorMessage,
+      bindNuclear: hass => hass.authGetters.attemptErrorMessage,
     },
 
     isInvalid: {
       type: Boolean,
-      bindNuclear: authGetters.isInvalidAttempt,
+      bindNuclear: hass => hass.authGetters.isInvalidAttempt,
     },
 
     isValidating: {
       type: Boolean,
       observer: 'isValidatingChanged',
-      bindNuclear: authGetters.isValidating,
+      bindNuclear: hass => hass.authGetters.isValidating,
     },
 
     loadingResources: {
@@ -89,6 +89,6 @@ export default new Polymer({
   validatePassword() {
     this.$.hideKeyboardOnFocus.focus();
 
-    validateAuth(this.$.passwordInput.value, this.$.rememberLogin.checked);
+    validateAuth(this.hass, this.$.passwordInput.value, this.$.rememberLogin.checked);
   },
 });

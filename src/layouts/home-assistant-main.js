@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import hass from '../util/home-assistant-js-instance';
 
 import nuclearObserver from '../util/bound-nuclear-behavior';
 import removeInitMsg from '../util/remove-init-message';
@@ -18,12 +17,12 @@ require('../managers/notification-manager');
 require('../dialogs/more-info-dialog');
 require('../dialogs/ha-voice-command-dialog');
 
-const {
-  navigationActions,
-  navigationGetters,
-  startUrlSync,
-  stopUrlSync,
-} = hass;
+// const {
+//   navigationActions,
+//   navigationGetters,
+//   startUrlSync,
+//   stopUrlSync,
+// } = hass;
 
 export default new Polymer({
   is: 'home-assistant-main',
@@ -31,6 +30,10 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
       value: false,
@@ -38,58 +41,58 @@ export default new Polymer({
 
     activePane: {
       type: String,
-      bindNuclear: navigationGetters.activePane,
+      bindNuclear: hass => hass.navigationGetters.activePane,
       observer: 'activePaneChanged',
     },
 
     isSelectedStates: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('states'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('states'),
     },
 
     isSelectedHistory: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('history'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('history'),
     },
 
     isSelectedMap: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('map'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('map'),
     },
 
     isSelectedLogbook: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('logbook'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('logbook'),
     },
 
     isSelectedDevEvent: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('devEvent'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('devEvent'),
     },
 
     isSelectedDevState: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('devState'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('devState'),
     },
 
     isSelectedDevTemplate: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('devTemplate'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('devTemplate'),
     },
 
     isSelectedDevService: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('devService'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('devService'),
     },
 
     isSelectedDevInfo: {
       type: Boolean,
-      bindNuclear: navigationGetters.isActivePane('devInfo'),
+      bindNuclear: hass => hass.navigationGetters.isActivePane('devInfo'),
     },
 
     showSidebar: {
       type: Boolean,
-      bindNuclear: navigationGetters.showSidebar,
+      bindNuclear: hass => hass.navigationGetters.showSidebar,
     },
   },
 
@@ -102,14 +105,14 @@ export default new Polymer({
     if (this.narrow) {
       this.$.drawer.openDrawer();
     } else {
-      navigationActions.showSidebar(true);
+      this.hass.navigationActions.showSidebar(true);
     }
   },
 
   closeMenu() {
     this.$.drawer.closeDrawer();
     if (this.showSidebar) {
-      navigationActions.showSidebar(false);
+      this.hass.navigationActions.showSidebar(false);
     }
   },
 
@@ -121,7 +124,7 @@ export default new Polymer({
 
   attached() {
     removeInitMsg();
-    startUrlSync();
+    this.hass.startUrlSync();
   },
 
   computeForceNarrow(narrow, showSidebar) {
@@ -129,6 +132,6 @@ export default new Polymer({
   },
 
   detached() {
-    stopUrlSync();
+    this.hass.stopUrlSync();
   },
 });

@@ -65,14 +65,14 @@
 
         <template is='dom-if' if='[[hasViews]]'>
           <div class='fit bottom views'>
-            <ha-view-tabs on-view-tapped='scrollToTop'></ha-view-tabs>
+            <ha-view-tabs hass='[[hass]]' on-view-tapped='scrollToTop'></ha-view-tabs>
           </div>
         </template>
       </paper-toolbar>
 
       <ha-cards
         show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
-        states='[[states]]' columns='[[columns]]'></ha-cards>
+        states='[[states]]' columns='[[columns]]' hass='[[hass]]'></ha-cards>
     </paper-header-panel>
   </template>
 

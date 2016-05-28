@@ -1,20 +1,16 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/services-list');
 
-const {
-  reactor,
-  serviceActions,
-  serviceGetters,
-} = hass;
-
 export default new Polymer({
   is: 'partial-dev-call-service',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
       value: false,
@@ -42,13 +38,13 @@ export default new Polymer({
 
     description: {
       type: String,
-      computed: 'computeDescription(domain, service)',
+      computed: 'computeDescription(hass, domain, service)',
     },
   },
 
-  computeDescription(domain, service) {
-    return reactor.evaluate([
-      serviceGetters.entityMap,
+  computeDescription(hass, domain, service) {
+    return hass.reactor.evaluate([
+      hass.serviceGetters.entityMap,
       map => (map.has(domain) && map.get(domain).get('services').has(service) ?
               JSON.stringify(map.get(domain).get('services').get(service).toJS(), null, 2) :
               'No description available'),
@@ -71,7 +67,7 @@ export default new Polymer({
       return;
     }
 
-    serviceActions.callService(this.domain, this.service, serviceData);
+    this.hass.serviceActions.callService(this.domain, this.service, serviceData);
   },
 
   computeFormClasses(narrow) {

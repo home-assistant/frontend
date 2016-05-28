@@ -1,20 +1,13 @@
 import Polymer from './polymer';
 
-import hass from './util/home-assistant-js-instance';
-
+import HomeAssistant from 'home-assistant-js';
 import nuclearObserver from './util/bound-nuclear-behavior';
 import validateAuth from './util/validate-auth';
 
 require('./layouts/login-form');
 require('./layouts/home-assistant-main');
 
-const {
-  localStoragePreferences,
-  navigationActions,
-  reactor,
-  startLocalStoragePreferencesSync,
-  syncGetters,
-} = hass;
+window.hass = new HomeAssistant();
 
 export default new Polymer({
   is: 'home-assistant',
@@ -27,6 +20,10 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+      value: window.hass,
+    },
     auth: {
       type: String,
     },
@@ -35,7 +32,7 @@ export default new Polymer({
     },
     dataLoaded: {
       type: Boolean,
-      bindNuclear: syncGetters.isDataLoaded,
+      bindNuclear: hass => hass.syncGetters.isDataLoaded,
     },
     iconsLoaded: {
       type: Boolean,
@@ -65,26 +62,6 @@ export default new Polymer({
   },
 
   created() {
-    this.registerServiceWorker();
-  },
-
-  ready() {
-    reactor.batch(() => {
-      // if auth was given, tell the backend
-      if (this.auth) {
-        validateAuth(this.auth, false);
-      } else if (localStoragePreferences.authToken) {
-        validateAuth(localStoragePreferences.authToken, true);
-      }
-      navigationActions.showSidebar(localStoragePreferences.showSidebar);
-    });
-
-    startLocalStoragePreferencesSync();
-
-    this.loadIcons();
-  },
-
-  registerServiceWorker() {
     if (!('serviceWorker' in navigator)) {
       return;
     }
@@ -96,5 +73,22 @@ export default new Polymer({
         /* eslint-enable no-console */
       }
     });
+  },
+
+  ready() {
+    const hass = this.hass;
+    hass.reactor.batch(() => {
+      // if auth was given, tell the backend
+      if (this.auth) {
+        validateAuth(this.hass, this.auth, false);
+      } else if (hass.localStoragePreferences.authToken) {
+        validateAuth(this.hass, hass.localStoragePreferences.authToken, true);
+      }
+      hass.navigationActions.showSidebar(hass.localStoragePreferences.showSidebar);
+    });
+
+    hass.startLocalStoragePreferencesSync();
+
+    this.loadIcons();
   },
 });
