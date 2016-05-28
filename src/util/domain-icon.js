@@ -91,9 +91,11 @@ export default function domainIcon(domain, state) {
       return 'mdi:open-in-new';
 
     default:
-    /* eslint-disable no-console */
-      console.warn(`Unable to find icon for domain ${domain} (${state})`);
-    /* eslint-enable no-console */
+      if (__DEV__) {
+        /* eslint-disable no-console */
+        console.warn(`Unable to find icon for domain ${domain} (${state})`);
+        /* eslint-enable no-console */
+      }
       return defaultIcon;
   }
 }

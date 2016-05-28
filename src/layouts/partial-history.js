@@ -1,22 +1,18 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
 require('../components/state-history-charts');
 
-const {
-  entityHistoryGetters,
-  entityHistoryActions,
-} = hass;
-
 export default new Polymer({
   is: 'partial-history',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
     },
@@ -28,35 +24,35 @@ export default new Polymer({
 
     isDataLoaded: {
       type: Boolean,
-      bindNuclear: entityHistoryGetters.hasDataForCurrentDate,
+      bindNuclear: hass => hass.entityHistoryGetters.hasDataForCurrentDate,
       observer: 'isDataLoadedChanged',
     },
 
     stateHistory: {
       type: Object,
-      bindNuclear: entityHistoryGetters.entityHistoryForCurrentDate,
+      bindNuclear: hass => hass.entityHistoryGetters.entityHistoryForCurrentDate,
     },
 
     isLoadingData: {
       type: Boolean,
-      bindNuclear: entityHistoryGetters.isLoadingEntityHistory,
+      bindNuclear: hass => hass.entityHistoryGetters.isLoadingEntityHistory,
     },
 
     selectedDate: {
       type: String,
       value: null,
-      bindNuclear: entityHistoryGetters.currentDate,
+      bindNuclear: hass => hass.entityHistoryGetters.currentDate,
     },
   },
 
   isDataLoadedChanged(newVal) {
     if (!newVal) {
-      this.async(() => entityHistoryActions.fetchSelectedDate(), 1);
+      this.async(() => this.hass.entityHistoryActions.fetchSelectedDate(), 1);
     }
   },
 
   handleRefreshClick() {
-    entityHistoryActions.fetchSelectedDate();
+    this.hass.entityHistoryActions.fetchSelectedDate();
   },
 
   datepickerFocus() {
@@ -66,7 +62,7 @@ export default new Polymer({
   attached() {
     this.datePicker = new window.Pikaday({
       field: this.$.datePicker.inputElement,
-      onSelect: entityHistoryActions.changeCurrentDate,
+      onSelect: this.hass.entityHistoryActions.changeCurrentDate,
     });
   },
 

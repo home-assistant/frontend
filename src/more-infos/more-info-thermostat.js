@@ -1,15 +1,16 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
-const { serviceActions } = hass;
 const ATTRIBUTE_CLASSES = ['away_mode'];
 
 export default new Polymer({
   is: 'more-info-thermostat',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -45,7 +46,7 @@ export default new Polymer({
   },
 
   targetTemperatureSliderChanged(ev) {
-    serviceActions.callService('thermostat', 'set_temperature', {
+    this.hass.serviceActions.callService('thermostat', 'set_temperature', {
       entity_id: this.stateObj.entityId,
       temperature: ev.target.value,
     });
@@ -66,7 +67,7 @@ export default new Polymer({
     // with the state. It will be out of sync if our service call did not
     // result in the entity to be turned on. Since the state is not changing,
     // the resync is not called automatic.
-    serviceActions.callService(
+    this.hass.serviceActions.callService(
       'thermostat', 'set_away_mode',
       { away_mode: awayMode, entity_id: this.stateObj.entityId })
 

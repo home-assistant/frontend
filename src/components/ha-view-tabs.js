@@ -1,37 +1,32 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
-
-const {
-  configGetters,
-  viewActions,
-  viewGetters,
-} = hass;
 
 export default new Polymer({
   is: 'ha-view-tabs',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     locationName: {
       type: String,
-      bindNuclear: configGetters.locationName,
+      bindNuclear: hass => hass.configGetters.locationName,
     },
 
     currentView: {
       type: String,
-      bindNuclear: [
-        viewGetters.currentView,
+      bindNuclear: hass => [
+        hass.viewGetters.currentView,
         view => view || '',
       ],
     },
 
     views: {
       type: Array,
-      bindNuclear: [
-        viewGetters.views,
+      bindNuclear: hass => [
+        hass.viewGetters.views,
         views => views.valueSeq()
                     .sortBy(view => view.attributes.order)
                     .toArray(),
@@ -48,7 +43,7 @@ export default new Polymer({
     const current = this.currentView || null;
     this.expectChange = true;
     if (view !== current) {
-      this.async(() => viewActions.selectView(view), 0);
+      this.async(() => this.hass.viewActions.selectView(view), 0);
     }
   },
 });

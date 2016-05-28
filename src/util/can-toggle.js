@@ -1,11 +1,4 @@
-import hass from './home-assistant-js-instance';
-
-const {
-  reactor,
-  serviceGetters,
-} = hass;
-
 // Return boolean if entity can be toggled.
-export default function canToggle(entityId) {
-  return reactor.evaluate(serviceGetters.canToggleEntity(entityId));
+export default function canToggle(hass, entityId) {
+  return hass.reactor.evaluate(hass.serviceGetters.canToggleEntity(entityId));
 }

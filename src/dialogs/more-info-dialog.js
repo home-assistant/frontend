@@ -1,38 +1,27 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../state-summary/state-card-content');
 require('../components/state-history-charts');
 require('../more-infos/more-info-content');
-
-const {
-  configGetters,
-  entityHistoryGetters,
-  entityHistoryActions,
-  moreInfoGetters,
-  moreInfoActions,
-} = hass;
 
 const DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
 
 export default new Polymer({
   is: 'more-info-dialog',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     stateObj: {
       type: Object,
-      bindNuclear: moreInfoGetters.currentEntity,
+      bindNuclear: hass => hass.moreInfoGetters.currentEntity,
       observer: 'stateObjChanged',
     },
 
     stateHistory: {
       type: Object,
-      bindNuclear: [
-        moreInfoGetters.currentEntityHistory,
+      bindNuclear: hass => [
+        hass.moreInfoGetters.currentEntityHistory,
         (history) => (history ? [history] : false),
       ],
     },
@@ -44,18 +33,18 @@ export default new Polymer({
 
     isLoadingEntityHistoryData: {
       type: Boolean,
-      bindNuclear: entityHistoryGetters.isLoadingEntityHistory,
+      bindNuclear: hass => hass.entityHistoryGetters.isLoadingEntityHistory,
     },
 
     hasHistoryComponent: {
       type: Boolean,
-      bindNuclear: configGetters.isComponentLoaded('history'),
+      bindNuclear: hass => hass.configGetters.isComponentLoaded('history'),
       observer: 'fetchHistoryData',
     },
 
     shouldFetchHistory: {
       type: Boolean,
-      bindNuclear: moreInfoGetters.isCurrentEntityHistoryStale,
+      bindNuclear: hass => hass.moreInfoGetters.isCurrentEntityHistoryStale,
       observer: 'fetchHistoryData',
     },
 
@@ -95,7 +84,7 @@ export default new Polymer({
   fetchHistoryData() {
     if (this.stateObj && this.hasHistoryComponent &&
         this.shouldFetchHistory) {
-      entityHistoryActions.fetchRecent(this.stateObj.entityId);
+      this.hass.entityHistoryActions.fetchRecent(this.stateObj.entityId);
     }
   },
 
@@ -118,7 +107,7 @@ export default new Polymer({
     if (newVal) {
       this.async(() => { this.delayedDialogOpen = true; }, 10);
     } else if (!newVal && this.stateObj) {
-      this.async(() => moreInfoActions.deselectEntity(), 10);
+      this.async(() => this.hass.moreInfoActions.deselectEntity(), 10);
       this.delayedDialogOpen = false;
     }
   },

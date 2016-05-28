@@ -62,7 +62,8 @@
 
           <template is='dom-repeat' items='[[locationEntities]]'>
             <leaflet-divicon id="[[item.entityId]]" icon-height="45" icon-width="45">
-              <ha-entity-marker entity-id$="[[item.entityId]]"></ha-entity-marker>
+              <ha-entity-marker hass='[[hass]]'
+                entity-id="[[item.entityId]]"></ha-entity-marker>
             </leaflet-divicon>
 
             <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"

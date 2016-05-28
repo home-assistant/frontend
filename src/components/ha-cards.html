@@ -58,7 +58,7 @@
             <ha-demo-badge></ha-demo-badge>
           </template>
 
-          <ha-badges-card states='[[cards.badges]]'></ha-badges-card>
+          <ha-badges-card states='[[cards.badges]]' hass='[[hass]]'></ha-badges-card>
         </div>
       </template>
       <template is='dom-if' if='[[!cards.badges]]'>
@@ -70,7 +70,7 @@
           <div class='column flex-1'>
             <template is='dom-repeat' items='[[column]]' as='card'>
               <div class='zone-card'>
-                <ha-card-chooser card-data='[[card]]'
+                <ha-card-chooser card-data='[[card]]' hass='[[hass]]'
                 ></ha-card-chooser>
               </div>
             </template>

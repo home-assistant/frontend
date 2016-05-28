@@ -1,16 +1,16 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 
 require('./partial-base');
 require('../components/events-list');
 
-const { eventActions } = hass;
-
 export default new Polymer({
   is: 'partial-dev-fire-event',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
       value: false,
@@ -48,7 +48,7 @@ export default new Polymer({
       return;
     }
 
-    eventActions.fireEvent(this.eventType, eventData);
+    this.hass.eventActions.fireEvent(this.eventType, eventData);
   },
 
   computeFormClasses(narrow) {

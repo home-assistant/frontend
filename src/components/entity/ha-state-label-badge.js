@@ -1,18 +1,17 @@
 import Polymer from '../../polymer';
-import hass from '../../util/home-assistant-js-instance';
 import domainIcon from '../../util/domain-icon';
 import stateIcon from '../../util/state-icon';
 
 require('../../components/ha-label-badge');
 
-const {
-  moreInfoActions,
-} = hass;
-
 export default new Polymer({
   is: 'ha-state-label-badge',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     state: {
       type: Object,
       observer: 'stateChanged',
@@ -25,7 +24,7 @@ export default new Polymer({
 
   badgeTap(ev) {
     ev.stopPropagation();
-    this.async(() => moreInfoActions.selectEntity(this.state.entityId), 1);
+    this.async(() => this.hass.moreInfoActions.selectEntity(this.state.entityId), 1);
   },
 
   computeClasses(state) {

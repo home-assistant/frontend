@@ -1,20 +1,19 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
-
-const { eventGetters } = hass;
 
 export default new Polymer({
   is: 'events-list',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     events: {
       type: Array,
-      bindNuclear: [
-        eventGetters.entityMap,
+      bindNuclear: hass => [
+        hass.eventGetters.entityMap,
         (map) => map.valueSeq().sortBy((event) => event.event).toArray(),
       ],
     },

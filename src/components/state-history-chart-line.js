@@ -1,6 +1,14 @@
-import range from 'lodash/range';
-
 import Polymer from '../polymer';
+
+function range(start, end) {
+  const result = [];
+
+  for (let i = start; i < end; i++) {
+    result.push(i);
+  }
+
+  return result;
+}
 
 function saveParseFloat(value) {
   const parsed = parseFloat(value);
