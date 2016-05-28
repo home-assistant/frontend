@@ -1,0 +1,25 @@
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+
+<dom-module id="ha-view-tabs">
+  <style>
+    paper-tab {
+      text-transform: uppercase;
+    }
+  </style>
+  <template>
+    <paper-tabs selected='[[currentView]]' attr-for-selected='data-entity'
+      on-iron-select='viewSelected' scrollable=''>
+        <paper-tab data-entity=''>[[locationName]]</paper-tab>
+        <template is='dom-repeat' items='[[views]]'>
+          <paper-tab data-entity$='[[item.entityId]]'>
+            <template is='dom-if' if='[[item.attributes.icon]]'>
+              <iron-icon icon='[[item.attributes.icon]]'></iron-icon>
+            </template>
+            <template is='dom-if' if='[[!item.attributes.icon]]'>
+              [[item.entityDisplay]]
+            </template>
+          </paper-tab>
+        </template>
+    </paper-tabs>
+  </template>
+</dom-module>

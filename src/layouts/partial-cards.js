@@ -5,10 +5,10 @@ import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
 require('../components/ha-cards');
+require('../components/ha-view-tabs');
 
 const {
   configGetters,
-  viewActions,
   viewGetters,
   voiceGetters,
   streamGetters,
@@ -69,22 +69,14 @@ export default new Polymer({
         viewGetters.currentView,
         view => view || '',
       ],
-      observer: 'removeFocus',
-    },
-
-    views: {
-      type: Array,
-      bindNuclear: [
-        viewGetters.views,
-        views => views.valueSeq()
-                    .sortBy(view => view.attributes.order)
-                    .toArray(),
-      ],
     },
 
     hasViews: {
       type: Boolean,
-      computed: 'computeHasViews(views)',
+      bindNuclear: [
+        viewGetters.views,
+        views => views.size > 0,
+      ],
     },
 
     states: {
@@ -119,13 +111,6 @@ export default new Polymer({
     const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
     // Do -1 column if the menu is docked and open
     this.columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
-  },
-
-  // When user changes tab by pressing back button, blur former tab
-  removeFocus() {
-    if (document.activeElement) {
-      document.activeElement.blur();
-    }
   },
 
   handleRefresh() {
@@ -171,13 +156,5 @@ export default new Polymer({
 
   toggleMenu() {
     this.fire('open-menu');
-  },
-
-  viewSelected(ev) {
-    const view = ev.detail.item.getAttribute('data-entity') || null;
-    const current = this.currentView || null;
-    if (view !== current) {
-      this.async(() => viewActions.selectView(view), 0);
-    }
   },
 });
