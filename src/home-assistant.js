@@ -1,8 +1,10 @@
+import moment from 'moment';
 import Polymer from './polymer';
 
 import HomeAssistant from 'home-assistant-js';
 import nuclearObserver from './util/bound-nuclear-behavior';
 import validateAuth from './util/validate-auth';
+window.moment = moment;
 
 require('./layouts/login-form');
 require('./layouts/home-assistant-main');
