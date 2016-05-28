@@ -1,8 +1,4 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-
-const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'more-info-alarm_control_panel',
@@ -16,6 +12,10 @@ export default new Polymer({
     this.callService('alarm_arm_away', { code: this.enteredCode });
   },
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -83,6 +83,6 @@ export default new Polymer({
   callService(service, data) {
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;
-    serviceActions.callService('alarm_control_panel', service, serviceData);
+    this.hass.serviceActions.callService('alarm_control_panel', service, serviceData);
   },
 });

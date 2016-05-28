@@ -1,5 +1,3 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
 
@@ -7,22 +5,16 @@ require('./partial-base');
 require('../components/ha-cards');
 require('../components/ha-view-tabs');
 
-const {
-  configGetters,
-  viewGetters,
-  voiceGetters,
-  streamGetters,
-  syncGetters,
-  syncActions,
-  voiceActions,
-} = hass;
-
 export default new Polymer({
   is: 'partial-cards',
 
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     narrow: {
       type: Boolean,
       value: false,
@@ -30,31 +22,31 @@ export default new Polymer({
 
     isFetching: {
       type: Boolean,
-      bindNuclear: syncGetters.isFetching,
+      bindNuclear: hass => hass.syncGetters.isFetching,
     },
 
     isStreaming: {
       type: Boolean,
-      bindNuclear: streamGetters.isStreamingEvents,
+      bindNuclear: hass => hass.streamGetters.isStreamingEvents,
     },
 
     canListen: {
       type: Boolean,
-      bindNuclear: [
-        voiceGetters.isVoiceSupported,
-        configGetters.isComponentLoaded('conversation'),
+      bindNuclear: hass => [
+        hass.voiceGetters.isVoiceSupported,
+        hass.configGetters.isComponentLoaded('conversation'),
         (isVoiceSupported, componentLoaded) => isVoiceSupported && componentLoaded,
       ],
     },
 
     introductionLoaded: {
       type: Boolean,
-      bindNuclear: configGetters.isComponentLoaded('introduction'),
+      bindNuclear: hass => hass.configGetters.isComponentLoaded('introduction'),
     },
 
     locationName: {
       type: String,
-      bindNuclear: configGetters.locationName,
+      bindNuclear: hass => hass.configGetters.locationName,
     },
 
     showMenu: {
@@ -65,23 +57,23 @@ export default new Polymer({
 
     currentView: {
       type: String,
-      bindNuclear: [
-        viewGetters.currentView,
+      bindNuclear: hass => [
+        hass.viewGetters.currentView,
         view => view || '',
       ],
     },
 
     hasViews: {
       type: Boolean,
-      bindNuclear: [
-        viewGetters.views,
+      bindNuclear: hass => [
+        hass.viewGetters.views,
         views => views.size > 0,
       ],
     },
 
     states: {
       type: Object,
-      bindNuclear: viewGetters.currentViewEntities,
+      bindNuclear: hass => hass.viewGetters.currentViewEntities,
     },
 
     columns: {
@@ -136,11 +128,11 @@ export default new Polymer({
   },
 
   handleRefresh() {
-    syncActions.fetchAll();
+    this.hass.syncActions.fetchAll();
   },
 
   handleListenClick() {
-    voiceActions.listen();
+    this.hass.voiceActions.listen();
   },
 
   headerScrollAdjust(ev) {

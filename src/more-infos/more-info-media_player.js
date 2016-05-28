@@ -1,15 +1,16 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
-const { serviceActions } = hass;
 const ATTRIBUTE_CLASSES = ['volume_level'];
 
 export default new Polymer({
   is: 'more-info-media_player',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -232,6 +233,6 @@ export default new Polymer({
   callService(service, data) {
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;
-    serviceActions.callService('media_player', service, serviceData);
+    this.hass.serviceActions.callService('media_player', service, serviceData);
   },
 });

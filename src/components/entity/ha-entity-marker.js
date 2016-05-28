@@ -1,21 +1,19 @@
 import Polymer from '../../polymer';
-import hass from '../../util/home-assistant-js-instance';
 
 require('../../components/ha-label-badge');
-
-const {
-  reactor,
-  entityGetters,
-  moreInfoActions,
-} = hass;
 
 export default new Polymer({
   is: 'ha-entity-marker',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     entityId: {
       type: String,
       value: '',
+      reflectToAttribute: true,
     },
 
     state: {
@@ -46,12 +44,12 @@ export default new Polymer({
   badgeTap(ev) {
     ev.stopPropagation();
     if (this.entityId) {
-      this.async(() => moreInfoActions.selectEntity(this.entityId), 1);
+      this.async(() => window.hass.moreInfoActions.selectEntity(this.entityId), 1);
     }
   },
 
   computeState(entityId) {
-    return entityId && reactor.evaluate(entityGetters.byId(entityId));
+    return entityId && window.hass.reactor.evaluate(window.hass.entityGetters.byId(entityId));
   },
 
   computeIcon(state) {

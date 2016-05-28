@@ -1,9 +1,6 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
-const { serviceActions } = hass;
 const ATTRIBUTE_CLASSES = [
   'away_mode',
   'aux_heat',
@@ -18,6 +15,10 @@ export default new Polymer({
   is: 'more-info-hvac',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -154,7 +155,7 @@ export default new Polymer({
     /* eslint-disable no-param-reassign */
     data.entity_id = this.stateObj.entityId;
     /* eslint-enable no-param-reassign */
-    serviceActions.callService('hvac', service, data)
+    this.hass.serviceActions.callService('hvac', service, data)
       .then(() => this.stateObjChanged(this.stateObj));
   },
 });

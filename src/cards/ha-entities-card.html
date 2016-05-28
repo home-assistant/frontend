@@ -38,13 +38,18 @@
       <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
         <div class='flex name'>[[computeTitle(states, groupEntity)]]</div>
         <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
-          <ha-entity-toggle state-obj='[[groupEntity]]'></ha-entity-toggle>
+          <ha-entity-toggle
+            hass='[[hass]]'
+            state-obj='[[groupEntity]]'></ha-entity-toggle>
         </template>
       </div>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
           <div class='state' on-tap='entityTapped'>
-            <state-card-content class="state-card" state-obj="[[item]]"></state-card-content>
+            <state-card-content
+              hass='[[hass]]'
+              class="state-card"
+              state-obj="[[item]]"></state-card-content>
           </div>
         </template>
       </div>

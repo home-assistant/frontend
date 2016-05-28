@@ -1,15 +1,12 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
 require('../components/ha-color-picker');
 
-const { serviceActions } = hass;
 const ATTRIBUTE_CLASSES = ['brightness', 'rgb_color', 'color_temp'];
 
-function pickColor(entityId, color) {
-  serviceActions.callService('light', 'turn_on', {
+function pickColor(hass, entityId, color) {
+  hass.serviceActions.callService('light', 'turn_on', {
     entity_id: entityId,
     rgb_color: [color.r, color.g, color.b],
   });
@@ -19,6 +16,10 @@ export default new Polymer({
   is: 'more-info-light',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -54,9 +55,9 @@ export default new Polymer({
     if (isNaN(bri)) return;
 
     if (bri === 0) {
-      serviceActions.callTurnOff(this.stateObj.entityId);
+      this.hass.serviceActions.callTurnOff(this.stateObj.entityId);
     } else {
-      serviceActions.callService('light', 'turn_on', {
+      this.hass.serviceActions.callService('light', 'turn_on', {
         entity_id: this.stateObj.entityId,
         brightness: bri,
       });
@@ -68,7 +69,7 @@ export default new Polymer({
 
     if (isNaN(ct)) return;
 
-    serviceActions.callService('light', 'turn_on', {
+    this.hass.serviceActions.callService('light', 'turn_on', {
       entity_id: this.stateObj.entityId,
       color_temp: ct,
     });
@@ -86,14 +87,14 @@ export default new Polymer({
 
     this.color = ev.detail.rgb;
 
-    pickColor(this.stateObj.entityId, this.color);
+    pickColor(this.hass, this.stateObj.entityId, this.color);
 
     this.colorChanged = false;
     this.skipColorPicked = true;
 
     this.colorDebounce = setTimeout(() => {
       if (this.colorChanged) {
-        pickColor(this.stateObj.entityId, this.color);
+        pickColor(this.hass, this.stateObj.entityId, this.color);
       }
       this.skipColorPicked = false;
     }, 500);

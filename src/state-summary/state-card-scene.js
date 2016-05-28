@@ -1,14 +1,15 @@
 import Polymer from '../polymer';
-import hass from '../util/home-assistant-js-instance';
 
 require('../components/state-info.js');
-
-const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'state-card-scene',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     inDialog: {
       type: Boolean,
       value: false,
@@ -21,6 +22,6 @@ export default new Polymer({
 
   activateScene(ev) {
     ev.stopPropagation();
-    serviceActions.callTurnOn(this.stateObj.entityId);
+    this.hass.serviceActions.callTurnOn(this.stateObj.entityId);
   },
 });

@@ -1,12 +1,12 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
-
-const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'more-info-lock',
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -35,6 +35,6 @@ export default new Polymer({
   callService(service, data) {
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;
-    serviceActions.callService('lock', service, serviceData);
+    this.hass.serviceActions.callService('lock', service, serviceData);
   },
 });

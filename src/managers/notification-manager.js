@@ -1,9 +1,5 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 import nuclearObserver from '../util/bound-nuclear-behavior';
-
-const { notificationGetters } = hass;
 
 export default new Polymer({
   is: 'notification-manager',
@@ -11,6 +7,10 @@ export default new Polymer({
   behaviors: [nuclearObserver],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     // Otherwise we cannot close a modal when a notification is being shown.
     neg: {
       type: Boolean,
@@ -19,7 +19,7 @@ export default new Polymer({
 
     text: {
       type: String,
-      bindNuclear: notificationGetters.lastNotificationMessage,
+      bindNuclear: hass => hass.notificationGetters.lastNotificationMessage,
       observer: 'showNotification',
     },
   },

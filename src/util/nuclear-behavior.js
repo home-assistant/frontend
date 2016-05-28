@@ -1,29 +1,42 @@
-export default function NuclearObserver(reactor) {
-  return {
+export default {
 
-    attached() {
-      this.nuclearUnwatchFns = Object.keys(this.properties).reduce(
-        (unwatchFns, key) => {
-          if (!('bindNuclear' in this.properties[key])) {
-            return unwatchFns;
-          }
-          const getter = this.properties[key].bindNuclear;
-          if (!getter) {
-            throw new Error(`Undefined getter specified for key ${key}`);
-          }
-          this[key] = reactor.evaluate(getter);
+  attached() {
+    const hass = this.hass;
 
-          return unwatchFns.concat(reactor.observe(getter, (val) => {
-            this[key] = val;
-          }));
-        }, []);
-    },
+    if (!hass) {
+      throw new Error(`No hass property found on ${this.nodeName}`);
+    }
 
-    detached() {
-      while (this.nuclearUnwatchFns.length) {
-        this.nuclearUnwatchFns.shift()();
-      }
-    },
+    this.nuclearUnwatchFns = Object.keys(this.properties).reduce(
+      (unwatchFns, key) => {
+        if (!('bindNuclear' in this.properties[key])) {
+          return unwatchFns;
+        }
 
-  };
-}
+        let getter = this.properties[key].bindNuclear;
+
+        if (typeof getter !== 'function') {
+          console.warn(`Component ${this.nodeName} uses old style bindNuclear`);
+        } else {
+          getter = getter(hass);
+        }
+
+        if (!getter) {
+          throw new Error(`Undefined getter specified for key ${key}`);
+        }
+
+        this[key] = hass.reactor.evaluate(getter);
+
+        return unwatchFns.concat(hass.reactor.observe(getter, (val) => {
+          this[key] = val;
+        }));
+      }, []);
+  },
+
+  detached() {
+    while (this.nuclearUnwatchFns.length) {
+      this.nuclearUnwatchFns.shift()();
+    }
+  },
+
+};

@@ -1,14 +1,15 @@
 import Polymer from '../../polymer';
 
-import hass from '../../util/home-assistant-js-instance';
 import OFF_STATES from '../../util/off-states';
-
-const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'ha-entity-toggle',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
     },
@@ -89,7 +90,7 @@ export default new Polymer({
       service = turnOn ? 'turn_on' : 'turn_off';
     }
 
-    const call = serviceActions.callService(
+    const call = this.hass.serviceActions.callService(
       domain, service, { entity_id: this.stateObj.entityId });
 
     if (!this.stateObj.attributes.assumed_state) {

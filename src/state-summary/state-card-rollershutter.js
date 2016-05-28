@@ -1,15 +1,15 @@
-import hass from '../util/home-assistant-js-instance';
-
 import Polymer from '../polymer';
 
 require('../components/state-info');
-
-const { serviceActions } = hass;
 
 export default new Polymer({
   is: 'state-card-rollershutter',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     inDialog: {
       type: Boolean,
       value: false,
@@ -29,17 +29,17 @@ export default new Polymer({
   },
 
   onMoveUpTap() {
-    serviceActions.callService('rollershutter', 'move_up',
-                               { entity_id: this.stateObj.entityId });
+    this.hass.serviceActions.callService('rollershutter', 'move_up',
+                                         { entity_id: this.stateObj.entityId });
   },
 
   onMoveDownTap() {
-    serviceActions.callService('rollershutter', 'move_down',
-                               { entity_id: this.stateObj.entityId });
+    this.hass.serviceActions.callService('rollershutter', 'move_down',
+                                         { entity_id: this.stateObj.entityId });
   },
 
   onStopTap() {
-    serviceActions.callService('rollershutter', 'stop',
-                               { entity_id: this.stateObj.entityId });
+    this.hass.serviceActions.callService('rollershutter', 'stop',
+                                         { entity_id: this.stateObj.entityId });
   },
 });
