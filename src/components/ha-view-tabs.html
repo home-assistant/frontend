@@ -9,9 +9,9 @@
   <template>
     <paper-tabs selected='[[currentView]]' attr-for-selected='data-entity'
       on-iron-select='viewSelected' scrollable=''>
-        <paper-tab data-entity=''>[[locationName]]</paper-tab>
+        <paper-tab data-entity='' on-tap='viewTapped'>[[locationName]]</paper-tab>
         <template is='dom-repeat' items='[[views]]'>
-          <paper-tab data-entity$='[[item.entityId]]'>
+          <paper-tab data-entity$='[[item.entityId]]' on-tap='viewTapped'>
             <template is='dom-if' if='[[item.attributes.icon]]'>
               <iron-icon icon='[[item.attributes.icon]]'></iron-icon>
             </template>

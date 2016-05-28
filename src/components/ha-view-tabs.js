@@ -39,6 +39,10 @@ export default new Polymer({
     },
   },
 
+  viewTapped() {
+    this.fire('view-tapped');
+  },
+
   viewSelected(ev) {
     const view = ev.detail.item.getAttribute('data-entity') || null;
     const current = this.currentView || null;
