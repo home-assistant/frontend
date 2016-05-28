@@ -73,7 +73,7 @@ export default new Polymer({
   },
 
   computeMenuButtonClass(narrow, showMenu) {
-    return !narrow && showMenu ? 'invisible' : '';
+    return !narrow && showMenu ? 'menu-icon invisible' : 'menu-icon';
   },
 
   toggleMenu() {
