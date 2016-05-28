@@ -1,12 +1,11 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
 
 export default new Polymer({
   is: 'partial-dev-template',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

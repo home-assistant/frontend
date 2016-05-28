@@ -1,12 +1,11 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/loading-box');
 
 export default new Polymer({
   is: 'more-info-configurator',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     stateObj: {

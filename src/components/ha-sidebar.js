@@ -1,12 +1,11 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./stream-status');
 
 export default new Polymer({
   is: 'ha-sidebar',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

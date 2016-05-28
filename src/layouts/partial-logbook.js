@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('./partial-base');
 require('../components/ha-logbook');
@@ -8,7 +7,7 @@ require('../components/loading-box');
 export default new Polymer({
   is: 'partial-logbook',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {

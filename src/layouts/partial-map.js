@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import nuclearObserver from '../util/bound-nuclear-behavior';
 
 require('../components/entity/ha-entity-marker');
 
@@ -8,7 +7,7 @@ window.L.Icon.Default.imagePath = '/static/images/leaflet';
 export default new Polymer({
   is: 'partial-map',
 
-  behaviors: [nuclearObserver],
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
