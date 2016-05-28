@@ -1,6 +1,5 @@
 import Polymer from '../polymer';
 
-require('./loading-box');
 require('./state-history-chart-timeline');
 require('./state-history-chart-line');
 

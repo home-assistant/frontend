@@ -14,7 +14,28 @@
       No logbook entries found.
     </template>
     <template is='dom-repeat' items="[[entries]]">
-      <logbook-entry entry-obj="[[item]]"></logbook-entry>
+      <logbook-entry entry-obj="[[item]]" hass='[[hass]]'></logbook-entry>
     </template>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-logbook',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    entries: {
+      type: Array,
+      value: [],
+    },
+  },
+
+  noEntries: function (entries) {
+    return !entries.length;
+  },
+});
+</script>

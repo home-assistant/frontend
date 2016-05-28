@@ -65,3 +65,95 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'login-form',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    errorMessage: {
+      type: String,
+      bindNuclear: function (hass) { return hass.authGetters.attemptErrorMessage; },
+    },
+
+    isInvalid: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.authGetters.isInvalidAttempt; },
+    },
+
+    isValidating: {
+      type: Boolean,
+      observer: 'isValidatingChanged',
+      bindNuclear: function (hass) { return hass.authGetters.isValidating; },
+    },
+
+    loadingResources: {
+      type: Boolean,
+      value: false,
+    },
+
+    forceShowLoading: {
+      type: Boolean,
+      value: false,
+    },
+
+    showLoading: {
+      type: Boolean,
+      computed: 'computeShowSpinner(forceShowLoading, isValidating)',
+    },
+  },
+
+  listeners: {
+    keydown: 'passwordKeyDown',
+    'loginButton.tap': 'validatePassword',
+  },
+
+  observers: [
+    'validatingChanged(isValidating, isInvalid)',
+  ],
+
+  attached: function () {
+    window.removeInitMsg();
+  },
+
+  computeShowSpinner: function (forceShowLoading, isValidating) {
+    return forceShowLoading || isValidating;
+  },
+
+  validatingChanged: function (isValidating, isInvalid) {
+    if (!isValidating && !isInvalid) {
+      this.$.passwordInput.value = '';
+    }
+  },
+
+  isValidatingChanged: function (newVal) {
+    if (!newVal) {
+      this.async(function () { this.$.passwordInput.focus(); }.bind(this), 10);
+    }
+  },
+
+  passwordKeyDown: function (ev) {
+    // validate on enter
+    if (ev.keyCode === 13) {
+      this.validatePassword();
+      ev.preventDefault();
+    // clear error after we start typing again
+    } else if (this.isInvalid) {
+      this.isInvalid = false;
+    }
+  },
+
+  validatePassword: function () {
+    this.$.hideKeyboardOnFocus.focus();
+
+    window.validateAuth(this.hass, this.$.passwordInput.value,
+                        this.$.rememberLogin.checked);
+  },
+});
+</script>

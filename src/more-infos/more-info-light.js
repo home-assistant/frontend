@@ -1,8 +1,6 @@
 import Polymer from '../polymer';
 import attributeClassNames from '../util/attribute-class-names';
 
-require('../components/ha-color-picker');
-
 const ATTRIBUTE_CLASSES = ['brightness', 'rgb_color', 'color_temp'];
 
 function pickColor(hass, entityId, color) {

@@ -1,0 +1,36 @@
+<script>
+window.hassBehavior = {
+  attached: function attached() {
+    var hass = this.hass;
+
+    if (!hass) {
+      throw new Error('No hass property found on ' + this.nodeName);
+    }
+
+    this.nuclearUnwatchFns = Object.keys(this.properties).reduce(
+      function bindGetters(unwatchFns, key) {
+        if (!('bindNuclear' in this.properties[key])) {
+          return unwatchFns;
+        }
+
+        var getter = this.properties[key].bindNuclear(hass);
+
+        if (!getter) {
+          throw new Error(`Undefined getter specified for key ${key}`);
+        }
+
+        this[key] = hass.reactor.evaluate(getter);
+
+        return unwatchFns.concat(hass.reactor.observe(getter, function updateAttribute(val) {
+          this[key] = val;
+        }.bind(this)));
+      }.bind(this), []);
+  },
+
+  detached: function detached() {
+    while (this.nuclearUnwatchFns.length) {
+      this.nuclearUnwatchFns.shift()();
+    }
+  },
+};
+</script>
