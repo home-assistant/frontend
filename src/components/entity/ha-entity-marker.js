@@ -1,7 +1,5 @@
 import Polymer from '../../polymer';
 
-require('../../components/ha-label-badge');
-
 /*
 Leaflet clones this element before adding it to the map. This messes up
 our Poylmer object and we lose the reference to the `hass` object.

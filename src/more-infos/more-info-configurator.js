@@ -1,7 +1,5 @@
 import Polymer from '../polymer';
 
-require('../components/loading-box');
-
 export default new Polymer({
   is: 'more-info-configurator',
 

@@ -23,3 +23,58 @@
     </paper-tabs>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-view-tabs',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    locationName: {
+      type: String,
+      bindNuclear: function (hass) { return hass.configGetters.locationName; },
+    },
+
+    currentView: {
+      type: String,
+      bindNuclear: function (hass) {
+        return [
+          hass.viewGetters.currentView,
+          function (view) { return view || ''; },
+        ];
+      },
+    },
+
+    views: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return [
+          hass.viewGetters.views,
+          function (views) {
+            return views.valueSeq()
+              .sortBy(function (view) { return view.attributes.order; })
+              .toArray();
+          },
+        ];
+      },
+    },
+  },
+
+  viewTapped() {
+    this.fire('view-tapped');
+  },
+
+  viewSelected(ev) {
+    var view = ev.detail.item.getAttribute('data-entity') || null;
+    var current = this.currentView || null;
+    if (view !== current) {
+      this.async(function () { this.hass.viewActions.selectView(view); }.bind(this), 0);
+    }
+  },
+});
+</script>

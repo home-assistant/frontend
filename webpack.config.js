@@ -9,6 +9,7 @@ var definePlugin = new webpack.DefinePlugin({
 module.exports = {
   entry: {
     _app_compiled: './src/home-assistant.js',
+    _app_core_compiled: './src/app-core.js',
   },
   output: {
     path: 'build',

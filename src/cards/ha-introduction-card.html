@@ -30,7 +30,7 @@
   <template>
     <ha-card header="Welcome Home!">
       <div class='content'>
-        <template is='dom-if' if='[[showInstallInstruction]]'>
+        <template is='dom-if' if='[[hass.demo]]'>
           To install Home Assistant, run:<br />
           <code class='install'>
             pip3 install homeassistant<br />
@@ -39,7 +39,7 @@
         </template>
         Here are some resources to get started.
         <ul>
-          <template is='dom-if' if='[[showInstallInstruction]]'>
+          <template is='dom-if' if='[[hass.demo]]'>
             <li><a href='https://home-assistant.io/getting-started/'>Home Assistant website</a></li>
             <li><a href='https://home-assistant.io/getting-started/'>Installation instructions</a></li>
             <li><a href='https://home-assistant.io/getting-started/troubleshooting/'>Troubleshooting your installation</a></li>
@@ -64,3 +64,20 @@
     </ha-card>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-introduction-card',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    showHideInstruction: {
+      type: Boolean,
+      value: true,
+    },
+  },
+});
+</script>

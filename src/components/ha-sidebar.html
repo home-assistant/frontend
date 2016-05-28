@@ -169,3 +169,86 @@
 
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-sidebar',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    menuShown: {
+      type: Boolean,
+    },
+
+    menuSelected: {
+      type: String,
+    },
+
+    narrow: {
+      type: Boolean,
+    },
+
+    selected: {
+      type: String,
+      bindNuclear: function (hass) { return hass.navigationGetters.activePane; },
+    },
+
+    hasHistoryComponent: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.configGetters.isComponentLoaded('history'); },
+    },
+
+    hasLogbookComponent: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.configGetters.isComponentLoaded('logbook'); },
+    },
+  },
+
+  created: function () {
+    this._boundUpdateStyles = this.updateStyles.bind(this);
+  },
+
+  menuSelect: function () {
+    this.debounce('updateStyles', this._boundUpdateStyles, 1);
+  },
+
+  menuClicked: function (ev) {
+    var target = ev.target;
+    var checks = 5;
+
+    // find panel to select
+    while (checks && !target.getAttribute('data-panel')) {
+      target = target.parentElement;
+      checks--;
+    }
+
+    if (checks) {
+      this.selectPanel(target.getAttribute('data-panel'));
+    }
+  },
+
+  toggleMenu: function () {
+    this.fire('close-menu');
+  },
+
+  selectPanel: function (newChoice) {
+    if (newChoice === this.selected) {
+      return;
+    } else if (newChoice === 'logout') {
+      this.handleLogOut();
+      return;
+    }
+    this.hass.navigationActions.navigate.apply(null, newChoice.split('/'));
+    this.debounce('updateStyles', this._boundUpdateStyles, 1);
+  },
+
+  handleLogOut: function () {
+    this.hass.authActions.logOut();
+  },
+});
+</script>

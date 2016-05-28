@@ -25,3 +25,34 @@
     </ul>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'entity-list',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    entities: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return [
+          hass.entityGetters.entityMap,
+          function (map) {
+            return map.valueSeq().sortBy(function (entity) { return entity.entityId; }).toArray();
+          },
+        ];
+      },
+    },
+  },
+
+  entitySelected: function (ev) {
+    ev.preventDefault();
+    this.fire('entity-selected', { entityId: ev.model.entity.entityId });
+  },
+});
+</script>

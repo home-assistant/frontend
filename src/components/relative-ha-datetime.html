@@ -5,3 +5,60 @@
     <span>[[relativeTime]]</span>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'relative-ha-datetime',
+
+  properties: {
+    datetime: {
+      type: String,
+      observer: 'datetimeChanged',
+    },
+
+    datetimeObj: {
+      type: Object,
+      observer: 'datetimeObjChanged',
+    },
+
+    parsedDateTime: {
+      type: Object,
+    },
+
+    relativeTime: {
+      type: String,
+      value: 'not set',
+    },
+  },
+
+  created: function () {
+    this.updateRelative = this.updateRelative.bind(this);
+  },
+
+  attached: function () {
+    // update every 60 seconds
+    this.updateInterval = setInterval(this.updateRelative, 60000);
+  },
+
+  detached: function () {
+    clearInterval(this.updateInterval);
+  },
+
+  datetimeChanged: function (newVal) {
+    this.parsedDateTime = newVal ? new Date(newVal) : null;
+
+    this.updateRelative();
+  },
+
+  datetimeObjChanged: function (newVal) {
+    this.parsedDateTime = newVal;
+
+    this.updateRelative();
+  },
+
+  updateRelative: function () {
+    this.relativeTime = this.parsedDateTime ?
+      window.moment(this.parsedDateTime).fromNow() : '';
+  },
+});
+</script>
