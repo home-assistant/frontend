@@ -135,11 +135,12 @@ export default new Polymer({
 
   headerScrollAdjust(ev) {
     if (!this.hasViews) return;
-    Polymer.Base.transform(`translateY(-${ev.detail.y}px)`, this.$.menu);
+    this.translate3d('0', `-${ev.detail.y}px`, '0', this.$.menu);
+    this.toggleClass('condensed', ev.detail.y === 56, this.$.panel);
   },
 
   computeHeaderHeight(hasViews) {
-    return hasViews ? 128 : 64;
+    return hasViews ? 104 : 64;
   },
 
   computeCondensedHeaderHeight(hasViews) {
