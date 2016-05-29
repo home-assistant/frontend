@@ -2,7 +2,7 @@ import Polymer from '../polymer';
 import dynamicContentUpdater from '../util/dynamic-content-updater';
 import stateMoreInfoType from '../util/state-more-info-type';
 
-require('../state-summary/state-card-content');
+import '../state-summary/state-card-content';
 
 export default new Polymer({
   is: 'more-info-group',

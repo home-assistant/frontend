@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
 
-require('./domain-icon');
-require('./display-time');
+import './domain-icon';
+import './display-time';
 
 export default new Polymer({
   is: 'logbook-entry',

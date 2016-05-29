@@ -3,18 +3,18 @@ import Polymer from '../polymer';
 import stateCardType from '../util/state-card-type';
 import dynamicContentUpdater from '../util/dynamic-content-updater';
 
-require('./state-card-configurator');
-require('./state-card-display');
-require('./state-card-hvac');
-require('./state-card-input_select');
-require('./state-card-input_slider');
-require('./state-card-media_player');
-require('./state-card-scene');
-require('./state-card-script');
-require('./state-card-rollershutter');
-require('./state-card-thermostat');
-require('./state-card-toggle');
-require('./state-card-weblink');
+import './state-card-configurator';
+import './state-card-display';
+import './state-card-hvac';
+import './state-card-input_select';
+import './state-card-input_slider';
+import './state-card-media_player';
+import './state-card-scene';
+import './state-card-script';
+import './state-card-rollershutter';
+import './state-card-thermostat';
+import './state-card-toggle';
+import './state-card-weblink';
 
 export default new Polymer({
   is: 'state-card-content',

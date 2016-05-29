@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
 
-require('./partial-base');
-require('../components/services-list');
+import './partial-base';
+import '../components/services-list';
 
 export default new Polymer({
   is: 'partial-dev-call-service',

@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('../components/state-info');
+import '../components/state-info';
 
 const PLAYING_STATES = ['playing', 'paused'];
 

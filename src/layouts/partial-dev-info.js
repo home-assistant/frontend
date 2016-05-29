@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('./partial-base');
+import './partial-base';
 
 export default new Polymer({
   is: 'partial-dev-info',

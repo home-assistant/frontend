@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
 
-require('../cards/ha-badges-card');
-require('../cards/ha-card-chooser');
+import '../cards/ha-badges-card';
+import '../cards/ha-card-chooser';
 
 // mapping domain to size of the card.
 const DOMAINS_WITH_CARD = {

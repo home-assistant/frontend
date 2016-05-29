@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('../components/entity/ha-entity-marker');
+import '../components/entity/ha-entity-marker';
 
 window.L.Icon.Default.imagePath = '/static/images/leaflet';
 

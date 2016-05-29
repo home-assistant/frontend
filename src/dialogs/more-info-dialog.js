@@ -1,8 +1,8 @@
 import Polymer from '../polymer';
 
-require('../state-summary/state-card-content');
-require('../components/state-history-charts');
-require('../more-infos/more-info-content');
+import '../state-summary/state-card-content';
+import '../components/state-history-charts';
+import '../more-infos/more-info-content';
 
 const DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
 
