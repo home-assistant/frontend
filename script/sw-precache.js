@@ -21,7 +21,7 @@ function md5(filename) {
 
 var appPaths = ['/', '/states', '/logbook', '/history', '/map',
     '/devService', '/devState', '/devEvent', '/devInfo', '/devTemplate'];
-var fingerprinted = ['frontend', 'mdi'];
+var fingerprinted = ['frontend.html', 'mdi.html', 'core.js'];
 
 var dynamicUrlToDependencies = {};
 
@@ -30,9 +30,11 @@ appPaths.forEach(ap => {
 });
 
 fingerprinted.forEach(fn => {
-  var hash = md5(rootDir + '/' + fn + '.html');
-  var url = '/static/' + fn + '-' + hash + '.html';
-  var fpath = rootDir + '/' + fn + '.html';
+  var parts = path.parse(fn);
+
+  var hash = md5(rootDir + '/' + parts.name + parts.ext);
+  var url = '/static/' + parts.name + '-' + hash + parts.ext;
+  var fpath = rootDir + '/' + parts.name + parts.ext;
   dynamicUrlToDependencies[url] = [fpath];
 });
 

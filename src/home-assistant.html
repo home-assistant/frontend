@@ -1,11 +1,8 @@
 <link rel='import' href='../bower_components/polymer/polymer.html'>
 <link rel='import' href='../bower_components/paper-spinner/paper-spinner.html'>
-
-<script src='../build/_app_core_compiled.js'></script>
-
-<link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 <link rel='import' href='./util/roboto.html'>
 <link rel='import' href='../bower_components/paper-styles/typography.html'>
+<link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 <link rel="import" href="../bower_components/iron-iconset-svg/iron-iconset-svg.html">
 
 <link rel='import' href='./util/hass-behavior.html'>
@@ -104,22 +101,9 @@ Polymer({
   },
 
   ready: function () {
-    var hass = this.hass;
-    hass.reactor.batch(function () {
-      // if auth was given, tell the backend
-      if (this.auth) {
-        window.validateAuth(this.hass, this.auth, false);
-      } else if (hass.localStoragePreferences.authToken) {
-        window.validateAuth(this.hass, hass.localStoragePreferences.authToken, true);
-      }
-      hass.navigationActions.showSidebar(hass.localStoragePreferences.showSidebar);
-    });
-
-    hass.startLocalStoragePreferencesSync();
-
     this.loadIcons();
   },
 });
 </script>
 
-<script src='../build/_app_compiled.js'></script>
+<script src='../build/_ui_compiled.js'></script>
