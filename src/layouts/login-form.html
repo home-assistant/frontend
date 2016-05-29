@@ -152,7 +152,7 @@ Polymer({
   validatePassword: function () {
     this.$.hideKeyboardOnFocus.focus();
 
-    window.validateAuth(this.hass, this.$.passwordInput.value,
+    window.validateAuth(this.$.passwordInput.value,
                         this.$.rememberLogin.checked);
   },
 });
