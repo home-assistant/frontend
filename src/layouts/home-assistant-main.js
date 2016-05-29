@@ -1,17 +1,17 @@
 import Polymer from '../polymer';
 
-require('../layouts/partial-cards');
-require('../layouts/partial-logbook');
-require('../layouts/partial-history');
-require('../layouts/partial-map');
-require('../layouts/partial-dev-call-service');
-require('../layouts/partial-dev-fire-event');
-require('../layouts/partial-dev-set-state');
-require('../layouts/partial-dev-template');
-require('../layouts/partial-dev-info');
-require('../managers/notification-manager');
-require('../dialogs/more-info-dialog');
-require('../dialogs/ha-voice-command-dialog');
+import '../layouts/partial-cards';
+import '../layouts/partial-logbook';
+import '../layouts/partial-history';
+import '../layouts/partial-map';
+import '../layouts/partial-dev-call-service';
+import '../layouts/partial-dev-fire-event';
+import '../layouts/partial-dev-set-state';
+import '../layouts/partial-dev-template';
+import '../layouts/partial-dev-info';
+import '../managers/notification-manager';
+import '../dialogs/more-info-dialog';
+import '../dialogs/ha-voice-command-dialog';
 
 export default new Polymer({
   is: 'home-assistant-main',

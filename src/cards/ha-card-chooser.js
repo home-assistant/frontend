@@ -2,9 +2,9 @@ import Polymer from '../polymer';
 
 import dynamicContentUpdater from '../util/dynamic-content-updater';
 
-require('./ha-camera-card');
-require('./ha-entities-card');
-require('./ha-media_player-card');
+import './ha-camera-card';
+import './ha-entities-card';
+import './ha-media_player-card';
 
 export default new Polymer({
   is: 'ha-card-chooser',

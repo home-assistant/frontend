@@ -1,6 +1,6 @@
 import Polymer from '../../polymer';
 
-require('./ha-state-icon');
+import './ha-state-icon';
 
 export default new Polymer({
   is: 'state-badge',

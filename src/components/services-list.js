@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('./domain-icon');
+import './domain-icon';
 
 export default new Polymer({
   is: 'services-list',

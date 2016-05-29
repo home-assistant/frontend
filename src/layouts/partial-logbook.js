@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
 
-require('./partial-base');
-require('../components/logbook-entry');
+import './partial-base';
+import '../components/logbook-entry';
 
 export default new Polymer({
   is: 'partial-logbook',

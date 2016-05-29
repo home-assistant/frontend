@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('./entity/state-badge');
+import './entity/state-badge';
 
 export default new Polymer({
   is: 'state-info',

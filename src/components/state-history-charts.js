@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
 
-require('./state-history-chart-timeline');
-require('./state-history-chart-line');
+import './state-history-chart-timeline';
+import './state-history-chart-line';
 
 export default new Polymer({
   is: 'state-history-charts',

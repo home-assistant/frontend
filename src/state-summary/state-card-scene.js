@@ -1,6 +1,6 @@
 import Polymer from '../polymer';
 
-require('../components/state-info.js');
+import '../components/state-info.js';
 
 export default new Polymer({
   is: 'state-card-scene',

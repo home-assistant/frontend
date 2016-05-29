@@ -1,7 +1,7 @@
 import Polymer from '../polymer';
 
-require('./partial-base');
-require('../components/state-history-charts');
+import './partial-base';
+import '../components/state-history-charts';
 
 export default new Polymer({
   is: 'partial-history',

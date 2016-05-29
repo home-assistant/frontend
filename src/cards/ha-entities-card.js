@@ -1,8 +1,8 @@
 import Polymer from '../polymer';
 import canToggle from '../util/can-toggle';
 
-require('../components/entity/ha-entity-toggle');
-require('../state-summary/state-card-content');
+import '../components/entity/ha-entity-toggle';
+import '../state-summary/state-card-content';
 
 export default new Polymer({
   is: 'ha-entities-card',
