@@ -45,9 +45,18 @@ export default new Polymer({
   computeDescription(hass, domain, service) {
     return hass.reactor.evaluate([
       hass.serviceGetters.entityMap,
-      map => (map.has(domain) && map.get(domain).get('services').has(service) ?
-              JSON.stringify(map.get(domain).get('services').get(service).toJS(), null, 2) :
-              'No description available'),
+      map => {
+        if (map.has(domain) && map.get(domain).get('services').has(service)) {
+          return JSON.stringify(
+            map
+              .get(domain)
+              .get('services')
+              .get(service)
+              .toJS(),
+            null, 2);
+        }
+        return 'No description available';
+      },
     ]);
   },
 
