@@ -19,11 +19,19 @@ export default new Polymer({
   },
 
   computeDomains(serviceDomains) {
-    return serviceDomains.valueSeq().map((domain) => domain.domain).sort().toJS();
+    return serviceDomains
+      .valueSeq()
+      .map((domain) => domain.domain)
+      .sort()
+      .toJS();
   },
 
   computeServices(serviceDomains, domain) {
-    return serviceDomains.get(domain).get('services').keySeq().toArray();
+    return serviceDomains
+      .get(domain)
+      .get('services')
+      .keySeq()
+      .toArray();
   },
 
   serviceClicked(ev) {
