@@ -13,7 +13,7 @@
 
   <template>
     <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj)]]"
-         on-load='imageLoaded' />
+         on-load='imageLoaded' alt='[[stateObj.entityDisplay]]' />
   </template>
 </dom-module>
 
