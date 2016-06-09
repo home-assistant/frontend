@@ -36,8 +36,8 @@
     }
   </style>
   <template>
-    <img src='[[cameraFeedSrc]]' class='camera-feed' hidden$='[[!imageLoaded]]'
-      on-load='imageLoadSuccess' on-error='imageLoadFail'>
+    <img src='[[cameraFeedSrc]]' class='camera-feed' hidden='[[!imageLoaded]]'
+      on-load='imageLoadSuccess' on-error='imageLoadFail' alt='[[stateObj.entityDisplay]]'>
     <div class='caption'>
       [[stateObj.entityDisplay]]
       <template is='dom-if' if='[[!imageLoaded]]'>
