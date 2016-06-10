@@ -3,8 +3,6 @@
 
 <link rel="import" href="../components/state-info.html">
 
-<link rel='import' href='../components/state-info.html'>
-
 <dom-module id='state-card-configurator'>
   <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
   <style>
@@ -28,3 +26,20 @@
     </template>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-configurator',
+
+  properties: {
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+});
+</script>

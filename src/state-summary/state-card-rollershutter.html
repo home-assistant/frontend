@@ -30,3 +30,47 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-rollershutter',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  computeIsFullyOpen: function (stateObj) {
+    return stateObj.attributes.current_position === 100;
+  },
+
+  computeIsFullyClosed: function (stateObj) {
+    return stateObj.attributes.current_position === 0;
+  },
+
+  onMoveUpTap: function () {
+    this.hass.serviceActions.callService('rollershutter', 'move_up',
+                                         { entity_id: this.stateObj.entityId });
+  },
+
+  onMoveDownTap: function () {
+    this.hass.serviceActions.callService('rollershutter', 'move_down',
+                                         { entity_id: this.stateObj.entityId });
+  },
+
+  onStopTap: function () {
+    this.hass.serviceActions.callService('rollershutter', 'stop',
+                                         { entity_id: this.stateObj.entityId });
+  },
+});
+</script>

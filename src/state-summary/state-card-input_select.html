@@ -1,26 +1,81 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 
-<link rel="import" href="../components/state-info.html">
+<link rel="import" href="../components/entity/state-badge.html">
 
 <dom-module id="state-card-input_select">
-  <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
   <style>
+  :host {
+    display: block;
+  }
+
+  state-badge {
+    float: left;
+    margin-top: 10px;
+  }
+
   paper-dropdown-menu {
-    margin-left: 16px;
+    display: block;
+    margin-left: 53px;
   }
   </style>
 
   <template>
-    <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <paper-dropdown-menu no-label-float selected-item-label='{{selectedOption}}' on-tap='stopPropagation'>
-        <paper-menu class="dropdown-content" selected="[[computeSelected(stateObj)]]">
-          <template is='dom-repeat' items='[[stateObj.attributes.options]]'>
-            <paper-item>[[item]]</paper-item>
-          </template>
-        </paper-menu>
-      </paper-dropdown-menu>
-    </div>
+    <state-badge state-obj='[[stateObj]]'></state-badge>
+    <paper-dropdown-menu
+      on-tap='stopPropagation'
+      selected-item-label='[[selectedOption]]'
+      label='[[stateObj.entityDisplay]]'>
+      <paper-menu class="dropdown-content" selected="[[computeSelected(stateObj)]]">
+        <template is='dom-repeat' items='[[stateObj.attributes.options]]'>
+          <paper-item>[[item]]</paper-item>
+        </template>
+      </paper-menu>
+    </paper-dropdown-menu>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-input_select',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+
+    selectedOption: {
+      type: String,
+      observer: 'selectedOptionChanged',
+    },
+  },
+
+  computeSelected: function (stateObj) {
+    return stateObj.attributes.options.indexOf(stateObj.state);
+  },
+
+  selectedOptionChanged: function (option) {
+    // Selected Option will transition to '' before transitioning to new value
+    if (option === '' || option === this.stateObj.state) {
+      return;
+    }
+    this.hass.serviceActions.callService('input_select', 'select_option', {
+      option,
+      entity_id: this.stateObj.entityId,
+    });
+  },
+
+  stopPropagation: function (ev) {
+    ev.stopPropagation();
+  },
+});
+</script>

@@ -23,3 +23,33 @@
     <a href='[[stateObj.state]]' target='_blank' class='name' id='link'>[[stateObj.entityDisplay]]</a>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-weblink',
+
+  properties: {
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  listeners: {
+    tap: 'onTap',
+  },
+
+  onTap: function (ev) {
+    ev.stopPropagation();
+    if (ev.target === this.$.link) {
+      // Only open window if we clicked on card but not the link
+      return;
+    }
+    window.open(this.stateObj.state, '_blank');
+  },
+});
+</script>

@@ -27,3 +27,25 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-script',
+
+  properties: {
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  fireScript: function (ev) {
+    ev.stopPropagation();
+    this.hass.serviceActions.callTurnOn(this.stateObj.entityId);
+  },
+});
+</script>
