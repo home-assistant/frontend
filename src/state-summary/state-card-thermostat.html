@@ -39,3 +39,24 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-thermostat',
+
+  properties: {
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  computeTargetTemperature: function (stateObj) {
+    return stateObj.attributes.temperature + ' ' + stateObj.attributes.unit_of_measurement;
+  },
+});
+</script>
