@@ -15,6 +15,11 @@
       font-size: 14px;
     }
 
+    state-history-charts {
+      position: relative;
+      z-index: 1;
+    }
+
     state-card-content {
       margin-bottom: 24px;
       font-size: 14px;
@@ -42,14 +47,16 @@
           state-obj="[[stateObj]]"
           hass='[[hass]]' in-dialog></state-card-content>
       </h2>
-      <paper-dialog-scrollable>
+      <div>
         <template is='dom-if' if="[[showHistoryComponent]]">
           <state-history-charts state-history="[[stateHistory]]"
             is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
         </template>
-        <more-info-content
-          state-obj="[[stateObj]]" hass='[[hass]]'></more-info-content>
-      </paper-dialog-scrollable>
+        <paper-dialog-scrollable id='scrollable'>
+          <more-info-content
+            state-obj="[[stateObj]]" hass='[[hass]]'></more-info-content>
+        </paper-dialog-scrollable>
+      </div>
     </paper-dialog>
   </template>
 </dom-module>
