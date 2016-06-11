@@ -11,10 +11,46 @@
     <div class='layout vertical'>
       <template is='dom-repeat' items="[[computeDisplayAttributes(stateObj)]]" as="attribute">
         <div class='data-entry layout justified horizontal'>
-          <div class='key'>[[attribute]]</div>
+          <div class='key'>[[formatAttribute(attribute)]]</div>
           <div class='value'>[[getAttributeValue(stateObj, attribute)]]</div>
         </div>
       </template>
     </div>
   </template>
 </dom-module>
+
+<script>
+(function () {
+  'use strict';
+  var FILTER_KEYS = ['entity_picture', 'friendly_name', 'icon', 'unit_of_measurement'];
+
+  Polymer({
+    is: 'more-info-default',
+
+    properties: {
+      stateObj: {
+        type: Object,
+      },
+    },
+
+    computeDisplayAttributes: function (stateObj) {
+      if (!stateObj) {
+        return [];
+      }
+
+      return Object.keys(stateObj.attributes).filter(
+        function (key) { return FILTER_KEYS.indexOf(key) === -1; });
+    },
+
+    formatAttribute: function (attribute) {
+      return attribute.replace(/_/g, ' ');
+    },
+
+    getAttributeValue: function (stateObj, attribute) {
+      const value = stateObj.attributes[attribute];
+
+      return Array.isArray(value) ? value.join(', ') : value;
+    },
+  });
+}());
+</script>

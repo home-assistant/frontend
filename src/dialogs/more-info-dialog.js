@@ -66,6 +66,10 @@ export default new Polymer({
     },
   },
 
+  ready() {
+    this.$.scrollable.dialogElement = this.$.dialog;
+  },
+
   /**
    * We depend on a delayed dialogOpen value to tell the chart component
    * that the data is there. Otherwise the chart component will render
