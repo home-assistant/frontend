@@ -1,6 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel='import' href='../../bower_components/paper-slider/paper-slider.html'>
 
+<link rel='import' href='../components/ha-labeled-slider.html'>
 <link rel='import' href='../components/ha-color-picker.html'>
 
 <dom-module id='more-info-light'>
@@ -14,7 +15,6 @@
 
     ha-color-picker {
       display: block;
-      margin: 0 auto;
       width: 250px;
 
       max-height: 0px;
@@ -24,8 +24,7 @@
 
     .has-brightness .brightness,
     .has-color_temp .color_temp {
-      margin-bottom: 8px;
-      max-height: 40px;
+      max-height: 84px;
     }
 
     .has-rgb_color ha-color-picker {
@@ -34,19 +33,20 @@
   </style>
   <template>
     <div class$='[[computeClassNames(stateObj)]]'>
-      <div class='brightness center horizontal layout'>
-        <div>Brightness</div>
-        <paper-slider
-          max='255' id='brightness' value='{{brightnessSliderValue}}'
-          on-change='brightnessSliderChanged' class='flex'>
-        </paper-slider>
+
+      <div class='brightness'>
+        <ha-labeled-slider
+          caption='Brightness' icon='mdi:brightness-5' max='255'
+          value='{{brightnessSliderValue}}'
+          on-change='brightnessSliderChanged'></ha-labeled-slider>
       </div>
-      <div class='color_temp center horizontal layout'>
-        <div>Color temperature</div>
-        <paper-slider min="154" max="500"
-          id='color_temp' value='{{ctSliderValue}}'
-          on-change='ctSliderChanged' class='flex'>
-        </paper-slider>
+
+      <div class='color_temp'>
+        <ha-labeled-slider
+          caption='Color Temperature' icon='mdi:thermometer'
+          min='154' max='500'
+          value='{{ctSliderValue}}'
+          on-change='ctSliderChanged'></ha-labeled-slider>
       </div>
 
       <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>

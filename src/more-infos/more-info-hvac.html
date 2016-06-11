@@ -47,8 +47,8 @@
 
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
-        <div class='center horizontal layout single-row'>
-          <div class='flex'>Target Temperature</div>
+        <div class='single-row'>
+          <div>Target Temperature</div>
           <paper-slider
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
@@ -60,8 +60,8 @@
       </div>
 
       <div class='container-humidity'>
-        <div class='center horizontal layout single-row'>
-          <div class='flex'>Target Humidity</div>
+        <div class='single-row'>
+          <div>Target Humidity</div>
           <paper-slider
             min='[[stateObj.attributes.min_humidity]]'
             max='[[stateObj.attributes.max_humidity]]'

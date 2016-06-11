@@ -2,15 +2,7 @@ import Polymer from '../polymer';
 
 export default new Polymer({
   is: 'more-info-alarm_control_panel',
-  handleDisarmTap() {
-    this.callService('alarm_disarm', { code: this.enteredCode });
-  },
-  handleHomeTap() {
-    this.callService('alarm_arm_home', { code: this.enteredCode });
-  },
-  handleAwayTap() {
-    this.callService('alarm_arm_away', { code: this.enteredCode });
-  },
+
   properties: {
     hass: {
       type: Object,
@@ -53,6 +45,7 @@ export default new Polymer({
       computed: 'validateCode(enteredCode, codeFormat)',
     },
   },
+
   validateCode(code, format) {
     const re = new RegExp(format);
     if (format === null) {
@@ -60,26 +53,40 @@ export default new Polymer({
     }
     return re.test(code);
   },
+
   stateObjChanged(newVal) {
     if (newVal) {
       this.codeFormat = newVal.attributes.code_format;
       this.codeInputVisible = this.codeFormat !== null;
       this.codeInputEnabled = (
         newVal.state === 'armed_home' ||
-	newVal.state === 'armed_away' ||
-	newVal.state === 'disarmed' ||
-	newVal.state === 'pending' ||
-	newVal.state === 'triggered');
+        newVal.state === 'armed_away' ||
+        newVal.state === 'disarmed' ||
+        newVal.state === 'pending' ||
+        newVal.state === 'triggered');
       this.disarmButtonVisible = (
-	newVal.state === 'armed_home' ||
-	newVal.state === 'armed_away' ||
-	newVal.state === 'pending' ||
-	newVal.state === 'triggered');
+        newVal.state === 'armed_home' ||
+        newVal.state === 'armed_away' ||
+        newVal.state === 'pending' ||
+        newVal.state === 'triggered');
       this.armHomeButtonVisible = newVal.state === 'disarmed';
       this.armAwayButtonVisible = newVal.state === 'disarmed';
     }
     this.async(() => this.fire('iron-resize'), 500);
   },
+
+  handleDisarmTap() {
+    this.callService('alarm_disarm', { code: this.enteredCode });
+  },
+
+  handleHomeTap() {
+    this.callService('alarm_arm_home', { code: this.enteredCode });
+  },
+
+  handleAwayTap() {
+    this.callService('alarm_arm_away', { code: this.enteredCode });
+  },
+
   callService(service, data) {
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;

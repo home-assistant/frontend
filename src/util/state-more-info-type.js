@@ -4,9 +4,16 @@ const DOMAINS_WITH_MORE_INFO = [
   'hvac',
 ];
 
+const HIDE_MORE_INFO = [
+  'input_select', 'scene', 'script', 'input_slider',
+];
+
 export default function stateMoreInfoType(state) {
   if (DOMAINS_WITH_MORE_INFO.indexOf(state.domain) !== -1) {
     return state.domain;
+  }
+  if (HIDE_MORE_INFO.indexOf(state.domain) !== -1) {
+    return 'hidden';
   }
   return 'default';
 }
