@@ -81,7 +81,7 @@ Polymer({
       this.iconsLoaded = true;
     }.bind(this);
 
-    this.importHref(`/static/mdi-${this.icons}.html`,
+    this.importHref('/static/mdi-' + this.icons + '.html',
                     success,
                     function () {
                       this.importHref('/static/mdi.html', success, success);

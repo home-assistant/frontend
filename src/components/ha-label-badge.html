@@ -130,7 +130,7 @@ Polymer({
   },
 
   imageChanged: function (newVal) {
-    this.$.badge.style.backgroundImage = newVal ? `url(${newVal})` : '';
+    this.$.badge.style.backgroundImage = newVal ? 'url(' + newVal + ')' : '';
   },
 });
 </script>

@@ -16,7 +16,7 @@ window.hassBehavior = {
         var getter = this.properties[key].bindNuclear(hass);
 
         if (!getter) {
-          throw new Error(`Undefined getter specified for key ${key}`);
+          throw new Error('Undefined getter specified for key ' + key);
         }
 
         this[key] = hass.reactor.evaluate(getter);
