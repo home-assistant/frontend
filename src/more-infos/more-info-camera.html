@@ -39,8 +39,8 @@ Polymer({
     if (hass.demo) {
       return '/demo/webcam.jpg';
     } else if (stateObj) {
-      return `/api/camera_proxy_stream/${stateObj.entityId}` +
-             `?token=${stateObj.attributes.access_token}`;
+      return '/api/camera_proxy_stream/' + stateObj.entityId +
+             '?token=' + stateObj.attributes.access_token;
     }
     // Return an empty image if no stateObj (= dialog not open)
     return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';

@@ -68,15 +68,17 @@ Polymer({
     },
   },
 
-  viewTapped() {
+  viewTapped: function () {
     this.fire('view-tapped');
   },
 
-  viewSelected(ev) {
+  viewSelected: function (ev) {
     var view = ev.detail.item.getAttribute('data-entity') || null;
     var current = this.currentView || null;
     if (view !== current) {
-      this.async(function () { this.hass.viewActions.selectView(view); }.bind(this), 0);
+      this.async(function () {
+        this.hass.viewActions.selectView(view);
+      }.bind(this), 0);
     }
   },
 });

@@ -69,7 +69,7 @@ Polymer({
       return;
     }
     this.hass.serviceActions.callService('input_select', 'select_option', {
-      option,
+      option: option,
       entity_id: this.stateObj.entityId,
     });
   },
