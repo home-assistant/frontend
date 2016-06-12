@@ -104,25 +104,7 @@ export default new Polymer({
   },
 
   scrollToTop() {
-    const scrollEl = this.$.panel.scroller;
-    const begin = scrollEl.scrollTop;
-
-    if (!begin) return;
-
-    const duration = Math.round(begin / 5);
-    let start = null;
-
-    function scroll(timestamp) {
-      if (!start) start = timestamp;
-      const progress = timestamp - start;
-
-      scrollEl.scrollTop = begin - (progress / duration * begin);
-
-      if (progress < duration) {
-        requestAnimationFrame(scroll);
-      }
-    }
-    requestAnimationFrame(scroll);
+    this.$.panel.scrollToTop(true);
   },
 
   handleRefresh() {
@@ -133,18 +115,44 @@ export default new Polymer({
     this.hass.voiceActions.listen();
   },
 
+  contentScroll() {
+    if (this.debouncedContentScroll) return;
+
+    this.debouncedContentScroll = this.async(() => {
+      this.checkRaised();
+      this.debouncedContentScroll = false;
+    }, 100);
+  },
+
+  checkRaised() {
+    this.toggleClass(
+      'raised',
+      this.$.panel.scroller.scrollTop > (this.hasViews ? 56 : 0),
+      this.$.panel);
+  },
+
   headerScrollAdjust(ev) {
     if (!this.hasViews) return;
     this.translate3d('0', `-${ev.detail.y}px`, '0', this.$.menu);
-    this.toggleClass('condensed', ev.detail.y === 56, this.$.panel);
+    // this.toggleClass('condensed', ev.detail.y === 56, this.$.panel);
   },
 
-  computeHeaderHeight(hasViews) {
-    return hasViews ? 104 : 64;
+  computeHeaderHeight(hasViews, narrow) {
+    if (hasViews) {
+      return 104;
+    } else if (narrow) {
+      return 56;
+    }
+    return 64;
   },
 
-  computeCondensedHeaderHeight(hasViews) {
-    return hasViews ? 48 : 64;
+  computeCondensedHeaderHeight(hasViews, narrow) {
+    if (hasViews) {
+      return 48;
+    } else if (narrow) {
+      return 56;
+    }
+    return 64;
   },
 
   computeMenuButtonClass(narrow, showMenu) {
