@@ -36,7 +36,7 @@
       transition: opacity 0.4s;
     }
 
-    paper-scroll-header-panel.condensed paper-toolbar:after {
+    paper-scroll-header-panel.raised paper-toolbar:after {
       opacity: 1;
     }
 
@@ -48,6 +48,10 @@
       line-height: 40px;
     }
 
+    #menu > .title > span {
+      pointer-events: auto;
+    }
+
     .views {
       padding-left: 12px;
       --paper-tabs-selection-bar-color: #FFF;
@@ -55,17 +59,22 @@
   </style>
 
   <template>
-    <paper-scroll-header-panel
+    <paper-scroll-header-panel id='panel'
       condenses keep-condensed-header class='fit' has-views$='[[hasViews]]'
-      header-height="[[computeHeaderHeight(hasViews)]]"
-      condensed-header-height="[[computeCondensedHeaderHeight(hasViews)]]"
-      on-paper-header-transform='headerScrollAdjust' id='panel'
+      header-height="[[computeHeaderHeight(hasViews, narrow)]]"
+      condensed-header-height="[[computeCondensedHeaderHeight(hasViews, narrow)]]"
+      on-paper-header-transform='headerScrollAdjust'
+      on-content-scroll='contentScroll'
       >
       <paper-toolbar>
         <div class='flex layout horizontal' id='menu'>
           <paper-icon-button icon='mdi:menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>
 
-          <span class='title flex'>[[computeTitle(hasViews, locationName)]]</span>
+          <span class='title flex'>
+            <span on-tap='scrollToTop'>
+              [[computeTitle(hasViews, locationName)]]
+            </span>
+          </span>
 
           <paper-icon-button
             icon="mdi:refresh"
