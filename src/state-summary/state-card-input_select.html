@@ -24,7 +24,7 @@
     <state-badge state-obj='[[stateObj]]'></state-badge>
     <paper-dropdown-menu
       on-tap='stopPropagation'
-      selected-item-label='[[selectedOption]]'
+      selected-item-label='{{selectedOption}}'
       label='[[stateObj.entityDisplay]]'>
       <paper-menu class="dropdown-content" selected="[[computeSelected(stateObj)]]">
         <template is='dom-repeat' items='[[stateObj.attributes.options]]'>
