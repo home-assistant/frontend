@@ -47,7 +47,7 @@
     },
 
     getAttributeValue: function (stateObj, attribute) {
-      const value = stateObj.attributes[attribute];
+      var value = stateObj.attributes[attribute];
 
       return Array.isArray(value) ? value.join(', ') : value;
     },
