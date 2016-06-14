@@ -10,6 +10,7 @@ module.exports = {
   entry: {
     _ui_compiled: './src/home-assistant.js',
     _core_compiled: './src/app-core.js',
+    _demo_data_compiled: './node_modules/home-assistant-js/demo_data/expose_window.js',
   },
   output: {
     path: 'build',
@@ -22,6 +23,7 @@ module.exports = {
         test: /.js$/,
         include: [
           path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, 'node_modules/home-assistant-js/demo_data'),
           path.resolve(__dirname, 'node_modules/home-assistant-js/src'),
         ],
       },
