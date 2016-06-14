@@ -1,6 +1,5 @@
 import HomeAssistant from 'home-assistant-js';
 
-// While we figure out how ha-entity-marker can keep it's references
 const hass = new HomeAssistant();
 
 window.validateAuth = function validateAuth(authToken, rememberAuth) {
@@ -32,4 +31,5 @@ hass.reactor.batch(function () {
 
 setTimeout(hass.startLocalStoragePreferencesSync, 5000);
 
+// While we figure out how ha-entity-marker can keep it's references
 window.hass = hass;
