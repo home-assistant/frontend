@@ -12,9 +12,9 @@
     "js_prod": "BUILD_DEV=0 webpack --color --progress -p",
     "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --color --progress -p",
     "frontend_html": "vulcanize --inline-css --inline-scripts --strip-comments --strip-exclude bower_components/font-roboto/roboto.html src/home-assistant.html > build/frontend.vulcan.html && node script/minify.js",
-    "frontend_prod": "npm run js_prod && bower install && npm run frontend_html",
-    "frontend_demo": "npm run js_demo && bower install && npm run frontend_html",
-    "setup_js_dev": "npm install && cd node_modules && rm -rf home-assistant-js && git clone https://github.com/balloob/home-assistant-js.git && cd home-assistant-js && npm install",
+    "frontend_prod": "npm run js_prod && npm run frontend_html",
+    "frontend_demo": "npm run js_demo && npm run frontend_html",
+    "setup_js_dev": "git submodule init && git submodule update && cd home-assistant-js && npm install",
     "test": "eslint src"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
