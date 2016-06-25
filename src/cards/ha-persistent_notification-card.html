@@ -1,0 +1,47 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+
+<link rel='import' href='../components/ha-card.html'>
+
+<dom-module id='ha-persistent_notification-card'>
+  <style>
+    :host {
+      @apply(--paper-font-body1);
+    }
+    .content {
+      padding: 0 16px 16px;
+    }
+    paper-button {
+      margin: 8px;
+      font-weight: 500;
+    }
+  </style>
+  <template>
+    <ha-card header="[[computeTitle(stateObj)]]">
+      <div class='content'>[[stateObj.state]]</div>
+      <paper-button on-tap='dismissTap'>DISMISS</paper-button>
+    </ha-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-persistent_notification-card',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+  },
+
+  computeTitle: function (stateObj) {
+    return stateObj.attributes.title || stateObj.entityDisplay;
+  },
+
+  dismissTap: function (ev) {
+    ev.preventDefault();
+
+    this.hass.entityActions.delete(this.stateObj);
+  },
+});
+</script>
