@@ -7,10 +7,12 @@ import '../cards/ha-card-chooser';
 const DOMAINS_WITH_CARD = {
   camera: 4,
   media_player: 3,
+  persistent_notification: 0,
 };
 
 const PRIORITY = {
   configurator: -20,
+  persistent_notification: -15,
   group: -10,
   a: -1,
   updater: 0,
