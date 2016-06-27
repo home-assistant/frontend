@@ -7,6 +7,7 @@ const DOMAINS_WITH_CARD = [
   'input_slider',
   'media_player',
   'rollershutter',
+  'cover',
   'scene',
   'script',
   'thermostat',

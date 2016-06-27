@@ -63,6 +63,9 @@ export default function domainIcon(domain, state) {
     case 'rollershutter':
       return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
 
+    case 'cover':
+      return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
+
     case 'scene':
       return 'mdi:google-pages';
 
