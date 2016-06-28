@@ -21,10 +21,10 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
-        <paper-icon-button icon="mdi:arrow-up" on-tap='onMoveUpTap'
+        <paper-icon-button icon="mdi:arrow-up" on-tap='onOpenTap'
           disabled='[[computeIsFullyClosed(stateObj)]]'></paper-icon-button>
         <paper-icon-button icon="mdi:stop" on-tap='onStopTap'></paper-icon-button>
-        <paper-icon-button icon="mdi:arrow-down" on-tap='onMoveDownTap'
+        <paper-icon-button icon="mdi:arrow-down" on-tap='onCloseTap'
           disabled='[[computeIsFullyOpen(stateObj)]]'></paper-icon-button>
       </div>
     </div>
@@ -58,18 +58,18 @@ Polymer({
     return stateObj.attributes.current_position === 0;
   },
 
-  onMoveUpTap: function () {
-    this.hass.serviceActions.callService('cover', 'move_up',
+  onOpenTap: function () {
+    this.hass.serviceActions.callService('cover', 'open_cover',
                                          { entity_id: this.stateObj.entityId });
   },
 
-  onMoveDownTap: function () {
-    this.hass.serviceActions.callService('cover', 'move_down',
+  onCloseTap: function () {
+    this.hass.serviceActions.callService('cover', 'close_cover',
                                          { entity_id: this.stateObj.entityId });
   },
 
   onStopTap: function () {
-    this.hass.serviceActions.callService('cover', 'stop',
+    this.hass.serviceActions.callService('cover', 'stop_cover',
                                          { entity_id: this.stateObj.entityId });
   },
 });
