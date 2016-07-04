@@ -90,6 +90,7 @@ export default new Polymer({
   callService(service, data) {
     const serviceData = data || {};
     serviceData.entity_id = this.stateObj.entityId;
-    this.hass.serviceActions.callService('alarm_control_panel', service, serviceData);
+    this.hass.serviceActions.callService('alarm_control_panel', service, serviceData)
+      .then(() => { this.enteredCode = ''; });
   },
 });
