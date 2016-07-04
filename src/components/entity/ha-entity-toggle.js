@@ -90,11 +90,15 @@ export default new Polymer({
       service = turnOn ? 'turn_on' : 'turn_off';
     }
 
-    const call = this.hass.serviceActions.callService(
-      domain, service, { entity_id: this.stateObj.entityId });
-
-    if (!this.stateObj.attributes.assumed_state) {
-      call.then(() => this.forceStateChange());
-    }
+    const currentState = this.stateObj;
+    this.hass.serviceActions.callService(domain, service,
+                                         { entity_id: this.stateObj.entityId })
+      .then(() => setTimeout(() => {
+        // If after 2 seconds we have not received a state update
+        // reset the switch to it's original state.
+        if (this.stateObj === currentState) {
+          this.forceStateChange();
+        }
+      }, 2000));
   },
 });
