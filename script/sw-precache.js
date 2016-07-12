@@ -19,17 +19,29 @@ function md5(filename) {
     .update(fs.readFileSync(filename)).digest('hex');
 }
 
-var appPaths = ['/', '/states', '/logbook', '/history', '/map',
-    '/devService', '/devState', '/devEvent', '/devInfo', '/devTemplate'];
+var appPaths = {
+  '/': [],
+  '/states': [],
+  '/logbook': [],
+  '/history': [],
+  '/map': ['/partial-map.html'],
+  '/devService': ['/dev-tools.html'],
+  '/devState': ['/dev-tools.html'],
+  '/devEvent': ['/dev-tools.html'],
+  '/devInfo': ['/dev-tools.html'],
+  '/devTemplate': ['/dev-tools.html'],
+};
+
 var fingerprinted = ['frontend.html', 'mdi.html', 'core.js', 'partial-map.html',
                      'dev-tools.html'];
 
 var dynamicUrlToDependencies = {};
 
-// Have all app paths be refreshed based on if frontend changed
-appPaths.forEach(ap => {
-  dynamicUrlToDependencies[ap] = [rootDir + '/frontend.html',
-                                  rootDir + '/partial-map.html'];
+// Have all app paths be refreshed based on if their dependencies changed
+Object.keys(appPaths).forEach(ap => {
+  dynamicUrlToDependencies[ap] = [
+    rootDir + '/frontend.html', rootDir + '/core.js',
+  ] + appPaths[ap].map(val => rootDir + val);
 });
 
 // Create fingerprinted versions of our dependencies.
