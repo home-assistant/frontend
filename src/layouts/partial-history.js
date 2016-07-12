@@ -1,6 +1,5 @@
 import Polymer from '../polymer';
 
-import './partial-base';
 import '../components/state-history-charts';
 
 export default new Polymer({

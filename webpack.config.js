@@ -9,7 +9,7 @@ var definePlugin = new webpack.DefinePlugin({
 module.exports = {
   entry: {
     _ui_compiled: './src/home-assistant.js',
-    _core_compiled: './src/app-core.js',
+    _core_compiled: './src/entry-points/app-core.js',
     _demo_data_compiled: './home-assistant-js/demo_data/expose_window.js',
   },
   output: {

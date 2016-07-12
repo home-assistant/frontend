@@ -1,6 +1,5 @@
 import Polymer from '../polymer';
 
-import './partial-base';
 import '../components/logbook-entry';
 
 export default new Polymer({

@@ -21,7 +21,8 @@ function md5(filename) {
 
 var appPaths = ['/', '/states', '/logbook', '/history', '/map',
     '/devService', '/devState', '/devEvent', '/devInfo', '/devTemplate'];
-var fingerprinted = ['frontend.html', 'mdi.html', 'core.js', 'partial-map.html'];
+var fingerprinted = ['frontend.html', 'mdi.html', 'core.js', 'partial-map.html',
+                     'dev-tools.html'];
 
 var dynamicUrlToDependencies = {};
 
