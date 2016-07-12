@@ -21,14 +21,17 @@ function md5(filename) {
 
 var appPaths = ['/', '/states', '/logbook', '/history', '/map',
     '/devService', '/devState', '/devEvent', '/devInfo', '/devTemplate'];
-var fingerprinted = ['frontend.html', 'mdi.html', 'core.js'];
+var fingerprinted = ['frontend.html', 'mdi.html', 'core.js', 'partial-map.html'];
 
 var dynamicUrlToDependencies = {};
 
+// Have all app paths be refreshed based on if frontend changed
 appPaths.forEach(ap => {
-  dynamicUrlToDependencies[ap] = [rootDir + '/frontend.html'];
+  dynamicUrlToDependencies[ap] = [rootDir + '/frontend.html',
+                                  rootDir + '/partial-map.html'];
 });
 
+// Create fingerprinted versions of our dependencies.
 fingerprinted.forEach(fn => {
   var parts = path.parse(fn);
 
