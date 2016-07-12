@@ -82,3 +82,94 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+window.L.Icon.Default.imagePath = '/static/images/leaflet';
+
+Polymer({
+  is: 'partial-map',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    locationGPS: {
+      type: Number,
+      bindNuclear: function (hass) {
+        return hass.configGetters.locationGPS;
+      },
+    },
+
+    locationName: {
+      type: String,
+      bindNuclear: function (hass) {
+        return hass.configGetters.locationName;
+      },
+    },
+
+    locationEntities: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return [
+          hass.entityGetters.visibleEntityMap,
+          function (entities) {
+            return entities.valueSeq().filter(
+              function (entity) {
+                return entity.attributes.latitude && entity.state !== 'home';
+              }
+            ).toArray();
+          },
+        ];
+      },
+    },
+
+    zoneEntities: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return [
+          hass.entityGetters.entityMap,
+          function (entities) {
+            return entities.valueSeq()
+              .filter(function (entity) {
+                return entity.domain === 'zone' && !entity.attributes.passive;
+              }).toArray();
+          },
+        ];
+      },
+    },
+
+    narrow: {
+      type: Boolean,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  attached: function () {
+    // On Safari, iPhone 5, 5s and some 6 I have observed that the user would be
+    // unable to pan on initial load. This fixes it.
+    if (window.L.Browser.mobileWebkit || window.L.Browser.webkit) {
+      this.async(() => {
+        const map = this.$.map;
+        const prev = map.style.display;
+        map.style.display = 'none';
+        this.async(() => { map.style.display = prev; }, 1);
+      }, 1);
+    }
+  },
+
+  computeMenuButtonClass: function (narrow, showMenu) {
+    return !narrow && showMenu ? 'menu-icon invisible' : 'menu-icon';
+  },
+
+  toggleMenu: function () {
+    this.fire('open-menu');
+  },
+});
+</script>
