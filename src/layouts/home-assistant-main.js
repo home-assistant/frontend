@@ -3,12 +3,6 @@ import Polymer from '../polymer';
 import '../layouts/partial-cards';
 import '../layouts/partial-logbook';
 import '../layouts/partial-history';
-// import '../layouts/partial-map';
-import '../layouts/partial-dev-call-service';
-import '../layouts/partial-dev-fire-event';
-import '../layouts/partial-dev-set-state';
-import '../layouts/partial-dev-template';
-import '../layouts/partial-dev-info';
 import '../managers/notification-manager';
 import '../dialogs/more-info-dialog';
 import '../dialogs/ha-voice-command-dialog';
@@ -110,9 +104,10 @@ export default new Polymer({
     if (this.narrow) {
       this.$.drawer.closeDrawer();
     }
-    if (window.deferredLoading[newValue]) {
-      this.importHref(window.deferredLoading[newValue]);
-      window.deferredLoading[newValue] = false;
+    const key = newValue.substr(0, 3) === 'dev' ? 'dev' : newValue;
+    if (window.deferredLoading[key]) {
+      this.importHref(window.deferredLoading[key]);
+      window.deferredLoading[key] = false;
     }
   },
 

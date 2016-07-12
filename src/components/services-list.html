@@ -2,8 +2,6 @@
 
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 
-<link rel="import" href="domain-icon.html">
-
 <dom-module id="services-list">
   <style>
     ul {
@@ -33,3 +31,47 @@
     </ul>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'services-list',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    serviceDomains: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return hass.serviceGetters.entityMap;
+      },
+    },
+  },
+
+  computeDomains(serviceDomains) {
+    return serviceDomains
+      .valueSeq()
+      .map(function (domain) { return domain.domain; })
+      .sort()
+      .toJS();
+  },
+
+  computeServices(serviceDomains, domain) {
+    return serviceDomains
+      .get(domain)
+      .get('services')
+      .keySeq()
+      .toArray();
+  },
+
+  serviceClicked(ev) {
+    ev.preventDefault();
+    this.fire(
+      'service-selected', { domain: ev.model.domain,
+                           service: ev.model.service });
+  },
+});
+</script>

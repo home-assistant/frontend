@@ -1,6 +1,5 @@
 import Polymer from '../polymer';
 
-import './partial-base';
 import '../components/ha-cards';
 
 export default new Polymer({
