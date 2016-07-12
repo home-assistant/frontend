@@ -84,7 +84,7 @@ export default new Polymer({
     this.windowChange = this.windowChange.bind(this);
     const sizes = [];
     for (let col = 0; col < 5; col++) {
-      sizes.push(300 + col * 300);
+      sizes.push(300 + (col * 300));
     }
     this.mqls = sizes.map(width => {
       const mql = window.matchMedia(`(min-width: ${width}px)`);

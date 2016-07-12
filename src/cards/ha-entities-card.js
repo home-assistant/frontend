@@ -49,7 +49,8 @@ export default new Polymer({
   },
 
   showGroupToggle(groupEntity, states) {
-    if (!groupEntity || !states || groupEntity.state !== 'on' && groupEntity.state !== 'off') {
+    if (!groupEntity || !states ||
+        (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;
     }
 

@@ -8,12 +8,12 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "polymer": "Polymer/polymer#~1.4",
+    "polymer": "Polymer/polymer#~1.6",
     "pikaday": "1.4",
     "leaflet-map": "1.2.0",
-    "iron-elements": "PolymerElements/iron-elements#~1.0.9",
+    "iron-elements": "PolymerElements/iron-elements#~1.0.10",
     "paper-elements": "PolymerElements/paper-elements#~1.0.7",
-    "google-apis": "GoogleWebComponents/google-apis#~1.1.4",
+    "google-apis": "GoogleWebComponents/google-apis#~1.1.6",
     "font-roboto-local": "^1.0.1"
   }
 }
