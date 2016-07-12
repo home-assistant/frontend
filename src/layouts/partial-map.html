@@ -37,9 +37,9 @@
 
       <div class="flex map">
         <leaflet-map class="fit" fit-to-markers id="map" max-zoom="17">
-          <leaflet-tilelayer detect-retina max-zoom="18"
-            url="https://otile1-s.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png">
-            &copy; <a href="/copyright">OpenStreetMap contributors</a>. Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="https://developer.mapquest.com/content/osm/mq_logo.png">
+          <leaflet-tilelayer max-zoom="18"
+            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png">
+            &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>
           </leaflet-tilelayer>
 
           <template is='dom-repeat' items='[[zoneEntities]]'>
