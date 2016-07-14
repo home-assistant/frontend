@@ -7,7 +7,7 @@ import '../managers/notification-manager';
 import '../dialogs/more-info-dialog';
 import '../dialogs/ha-voice-command-dialog';
 
-export default new Polymer({
+Polymer({
   is: 'home-assistant-main',
 
   behaviors: [window.hassBehavior],

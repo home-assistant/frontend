@@ -1,4 +1,4 @@
-import HomeAssistant from '../../home-assistant-js/dist/homeassistant.es6';
+import HomeAssistant from '../../home-assistant-js/src/index';
 
 const hass = new HomeAssistant();
 
