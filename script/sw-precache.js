@@ -41,7 +41,7 @@ var dynamicUrlToDependencies = {};
 Object.keys(appPaths).forEach(ap => {
   dynamicUrlToDependencies[ap] = [
     rootDir + '/frontend.html', rootDir + '/core.js',
-  ] + appPaths[ap].map(val => rootDir + val);
+  ].concat(appPaths[ap].map(val => rootDir + val));
 });
 
 // Create fingerprinted versions of our dependencies.
@@ -67,4 +67,4 @@ swPrecache.write(path.join('build', 'service_worker.js'), {
   ],
   stripPrefix: '..',
   replacePrefix: 'static',
-});
+}).catch(err => console.error(err));
