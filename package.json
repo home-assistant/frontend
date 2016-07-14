@@ -7,33 +7,49 @@
     "url": "https://github.com/balloob/home-assistant-polymer"
   },
   "scripts": {
-    "js_dev": "webpack --color --progress -d --watch",
-    "js_dev_demo": "BUILD_DEMO=1 webpack --color --progress -d --watch",
-    "js_prod": "BUILD_DEV=0 webpack --color --progress -p",
-    "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 webpack --color --progress -p",
-    "frontend_html": "node script/vulcanize.js",
+    "setup_js_dev": "git submodule init && git submodule update && cd home-assistant-js && npm install",
+    "js_dev": "watch_ru_all",
+    "js_dev_demo": "BUILD_DEMO=1 npm run watch_ru_all",
+    "js_prod": "BUILD_DEV=0 npm run ru_all",
+    "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 npm run ru_all",
+    "frontend_html": "script/vulcanize.js",
     "frontend_prod": "npm run js_prod && npm run frontend_html",
     "frontend_demo": "npm run js_demo && npm run frontend_html",
-    "setup_js_dev": "git submodule init && git submodule update && cd home-assistant-js && npm install",
+    "ru_all": "npm run ru_core | npm run ru_ui | npm run ru_demo",
+    "ru_core": "rollup --config rollup/core.js",
+    "ru_ui": "rollup --config rollup/ui.js",
+    "ru_demo": "rollup --config rollup/demo.js",
+    "watch_ru_all": "npm run watch_ru_core | npm run watch_ru_ui | npm run watch_ru_demo",
+    "watch_ru_core": "rollup --config rollup/core.js --watch",
+    "watch_ru_ui": "rollup --config rollup/ui.js --watch",
+    "watch_ru_demo": "rollup --config rollup/demo.js --watch",
     "test": "eslint src"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
+  "_depComment": "keymirror, nuclear-js, object-assign are for ha-js",
   "dependencies": {
-    "classnames": "^2.2.5",
-    "moment": "^2.14.1"
+    "keymirror": "^0.1.1",
+    "nuclear-js": "^1.3.0",
+    "object-assign": "^4.1.0",
+    "classnames": "^2.2.5"
   },
   "devDependencies": {
-    "babel-core": "^6.10",
-    "babel-loader": "^6.2",
-    "babel-preset-es2015-webpack": "^6.4.1",
     "bower": "^1.7.9",
     "eslint": "^3.0.1",
     "eslint-config-airbnb-base": "^4.0.0",
     "eslint-plugin-import": "^1.10.2",
     "html-minifier": "^3.0.1",
+    "rollup": "^0.34.1",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-buble": "^0.12.1",
+    "rollup-plugin-commonjs": "^3.1.0",
+    "rollup-plugin-multi-entry": "^2.0.0",
+    "rollup-plugin-node-resolve": "^1.7.1",
+    "rollup-plugin-replace": "^1.1.1",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^2.5.0",
     "sw-precache": "^3.2.0",
-    "vulcanize": "^1.14.8",
-    "webpack": "^2.1.0-beta.13"
+    "vulcanize": "^1.14.8"
   }
 }

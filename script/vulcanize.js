@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 var Vulcanize = require('vulcanize');
 var minify = require('html-minifier');
 var fs = require('fs');
