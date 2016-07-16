@@ -49,7 +49,7 @@ Polymer({
     },
   },
 
-  computeDomains(serviceDomains) {
+  computeDomains: function (serviceDomains) {
     return serviceDomains
       .valueSeq()
       .map(function (domain) { return domain.domain; })
@@ -57,7 +57,7 @@ Polymer({
       .toJS();
   },
 
-  computeServices(serviceDomains, domain) {
+  computeServices: function (serviceDomains, domain) {
     return serviceDomains
       .get(domain)
       .get('services')
@@ -65,7 +65,7 @@ Polymer({
       .toArray();
   },
 
-  serviceClicked(ev) {
+  serviceClicked: function (ev) {
     ev.preventDefault();
     this.fire(
       'service-selected', { domain: ev.model.domain,
