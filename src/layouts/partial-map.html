@@ -155,12 +155,12 @@ Polymer({
     // On Safari, iPhone 5, 5s and some 6 I have observed that the user would be
     // unable to pan on initial load. This fixes it.
     if (window.L.Browser.mobileWebkit || window.L.Browser.webkit) {
-      this.async(() => {
-        const map = this.$.map;
-        const prev = map.style.display;
+      this.async(function () {
+        var map = this.$.map;
+        var prev = map.style.display;
         map.style.display = 'none';
-        this.async(() => { map.style.display = prev; }, 1);
-      }, 1);
+        this.async(function () { map.style.display = prev; }, 1);
+      }.bind(this), 1);
     }
   },
 
