@@ -1,6 +1,8 @@
+<!--
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+-->
 
-<link rel="import" href="../components/logbook-entry.html">
+<link rel="import" href="./logbook-entry.html">
 
 <dom-module id="ha-logbook">
   <style>
@@ -10,7 +12,7 @@
     }
   </style>
   <template>
-    <template is='dom-if' if='[[noEntries(entries)]]'>
+    <template is='dom-if' if='[[!entries.length]]'>
       No logbook entries found.
     </template>
     <template is='dom-repeat' items="[[entries]]">
@@ -32,10 +34,6 @@ Polymer({
       type: Array,
       value: [],
     },
-  },
-
-  noEntries: function (entries) {
-    return !entries.length;
   },
 });
 </script>

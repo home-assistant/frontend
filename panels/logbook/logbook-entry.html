@@ -1,8 +1,10 @@
+<!--
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="domain-icon.html">
 <link rel="import" href="display-time.html">
 <link rel="import" href="relative-ha-datetime.html">
+-->
 
 <dom-module id="logbook-entry">
   <style is="custom-style" include="iron-flex"></style>
@@ -54,3 +56,20 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'logbook-entry',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+  },
+
+  entityClicked: function (ev) {
+    ev.preventDefault();
+    this.hass.moreInfoActions.selectEntity(this.entryObj.entityId);
+  },
+});
+</script>

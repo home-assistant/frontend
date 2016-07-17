@@ -11,10 +11,15 @@
   <style>
     :host {
       display: block;
-      background-color: #E5E5E5;
       -ms-user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
+    }
+
+    paper-scroll-header-panel {
+      --paper-scroll-header-panel-container: {
+        background-color: #E5E5E5;
+      };
     }
 
     paper-scroll-header-panel[has-views] paper-toolbar {

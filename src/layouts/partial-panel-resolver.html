@@ -1,0 +1,68 @@
+<script>
+Polymer({
+  is: 'partial-panel-resolver',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+      observer: 'updateAttributes',
+    },
+
+    narrow: {
+      type: Boolean,
+      value: false,
+      observer: 'updateAttributes',
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+      observer: 'updateAttributes',
+    },
+
+    panel: {
+      type: Object,
+      bindNuclear: function (hass) {
+        return hass.panelGetters.activePanel;
+      },
+      observer: 'panelChanged',
+    },
+  },
+
+  panelChanged: function (panel) {
+    if (!panel) {
+      // while (rootEl.lastChild) {
+      //   rootEl.removeChild(rootEl.lastChild);
+      // }
+      return;
+    }
+
+    const rootEl = Polymer.dom(this);
+    const tag = 'ha-panel-' + panel.get('component_name');
+
+    this.importHref(panel.get('url'));
+
+    while (rootEl.lastChild) {
+      rootEl.removeChild(rootEl.lastChild);
+    }
+
+    const customEl = document.createElement(tag);
+
+    customEl.hass = this.hass;
+    customEl.narrow = this.narrow;
+    customEl.showMenu = this.showMenu;
+    customEl.panel = panel.toJS();
+    rootEl.appendChild(customEl);
+  },
+
+  updateAttributes: function () {
+    const customEl = Polymer.dom(this).lastChild;
+    if (!customEl) return;
+    customEl.hass = this.hass;
+    customEl.narrow = this.narrow;
+    customEl.showMenu = this.showMenu;
+  },
+});
+</script>
