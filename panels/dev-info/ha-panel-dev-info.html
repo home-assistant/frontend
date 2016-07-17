@@ -1,10 +1,11 @@
+<!--
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="./partial-base.html">
-
-<dom-module id="partial-dev-info">
+-->
+<dom-module id="ha-panel-dev-info">
   <style is="custom-style" include="iron-positioning"></style>
   <style>
     .content {
@@ -56,7 +57,7 @@
       <div class='content fit'>
         <div class='about'>
           <p class='version'>
-            <a href='https://home-assistant.io'><img src="/static/favicon-192x192.png" height="192" /></a><br />
+            <a href='https://home-assistant.io'><img src="/static/icons/favicon-192x192.png" height="192" /></a><br />
             Home Assistant<br />
             [[hassVersion]]
           </p>
@@ -92,7 +93,7 @@
 
 <script>
 Polymer({
-  is: 'partial-dev-info',
+  is: 'ha-panel-dev-info',
 
   behaviors: [window.hassBehavior],
 

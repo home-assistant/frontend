@@ -4,6 +4,9 @@
     "__DEV__": false,
     "Polymer": true
   },
+  "env": {
+    "browser": true
+  },
   "rules": {
     "new-cap": 0,
     "prefer-template": 0,

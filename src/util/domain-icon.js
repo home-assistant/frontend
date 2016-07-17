@@ -1,6 +1,6 @@
 import defaultIcon from './default-icon';
 
-export default function domainIcon(domain, state) {
+window.domainIcon = function (domain, state) {
   switch (domain) {
     case 'alarm_control_panel':
       return state && state === 'disarmed' ? 'mdi:bell-outline' : 'mdi:bell';
@@ -98,4 +98,6 @@ export default function domainIcon(domain, state) {
       }
       return defaultIcon;
   }
-}
+};
+
+export default window.domainIcon;

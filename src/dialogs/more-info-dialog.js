@@ -12,6 +12,10 @@ export default new Polymer({
   behaviors: [window.hassBehavior],
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     stateObj: {
       type: Object,
       bindNuclear: hass => hass.moreInfoGetters.currentEntity,

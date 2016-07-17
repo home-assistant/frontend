@@ -1,0 +1,125 @@
+<!--
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="./partial-base.html">
+
+<link rel="import" href="../components/loading-box.html">
+-->
+
+<link rel="import" href="./ha-logbook.html">
+
+<link rel="import" href="../../src/resources/pikaday-js.html">
+
+<dom-module id="ha-panel-logbook">
+  <style>
+  .selected-date-container {
+    padding: 0 16px;
+  }
+
+  paper-input {
+    max-width: 200px;
+  }
+  </style>
+  <template>
+    <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
+      <span header-title>Logbook</span>
+
+      <paper-icon-button icon="mdi:refresh" header-buttons
+        on-tap="handleRefresh"></paper-icon-button>
+
+      <div>
+        <div class='selected-date-container'>
+          <paper-input label='Showing entries for' id='datePicker'
+            value='[[selectedDate]]' on-focus='datepickerFocus'></paper-input>
+
+          <loading-box hidden$='[[!isLoading]]'>Loading logbook entries</loading-box>
+        </div>
+        <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
+      </div>
+    </partial-base>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-panel-logbook',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+      value: false,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
+    selectedDate: {
+      type: String,
+      bindNuclear: function (hass) { return hass.logbookGetters.currentDate; },
+    },
+
+    isLoading: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.logbookGetters.isLoadingEntries; },
+    },
+
+    isStale: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.logbookGetters.isCurrentStale; },
+      observer: 'isStaleChanged',
+    },
+
+    entries: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return [
+          hass.logbookGetters.currentEntries,
+          function (entries) { return entries.reverse().toArray(); },
+        ];
+      },
+    },
+
+    datePicker: {
+      type: Object,
+    },
+  },
+
+  isStaleChanged: function (newVal) {
+    if (newVal) {
+      this.async(function () {
+        this.hass.logbookActions.fetchDate(this.selectedDate);
+      }.bind(this), 1);
+    }
+  },
+
+  handleRefresh: function () {
+    this.hass.logbookActions.fetchDate(this.selectedDate);
+  },
+
+  datepickerFocus: function () {
+    this.datePicker.adjustPosition();
+  },
+
+  attached: function () {
+    this.datePicker = new window.Pikaday({
+      field: this.$.datePicker.inputElement,
+      onSelect: this.hass.logbookActions.changeCurrentDate,
+    });
+  },
+
+  detached: function () {
+    this.datePicker.destroy();
+  },
+});
+</script>

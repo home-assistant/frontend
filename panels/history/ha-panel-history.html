@@ -1,0 +1,131 @@
+<!--
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="./partial-base.html">
+
+<link rel="import" href="../components/state-history-charts.html">
+-->
+
+<link rel="import" href="../../src/resources/pikaday-js.html">
+
+<dom-module id="ha-panel-history">
+  <style is="custom-style" include="iron-flex"></style>
+  <style>
+    .content {
+      background-color: white;
+    }
+
+    .content.wide {
+      padding: 8px;
+    }
+
+    paper-input {
+      max-width: 200px;
+    }
+
+    .narrow paper-input {
+      margin-left: 8px;
+    }
+  </style>
+  <template>
+    <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
+      <span header-title>History</span>
+
+      <paper-icon-button icon="mdi:refresh" header-buttons
+        on-tap="handleRefreshClick"></paper-icon-button>
+
+      <div class$="[[computeContentClasses(narrow)]]">
+        <paper-input label='Showing entries for' id='datePicker'
+          value='[[selectedDate]]'></paper-input>
+
+        <state-history-charts state-history="[[stateHistory]]"
+          is-loading-data="[[isLoadingData]]"></state-history-charts>
+      </div>
+    </partial-base>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-panel-history',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
+    isDataLoaded: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return hass.entityHistoryGetters.hasDataForCurrentDate;
+      },
+      observer: 'isDataLoadedChanged',
+    },
+
+    stateHistory: {
+      type: Object,
+      bindNuclear: function (hass) {
+        return hass.entityHistoryGetters.entityHistoryForCurrentDate;
+      },
+    },
+
+    isLoadingData: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return hass.entityHistoryGetters.isLoadingEntityHistory;
+      },
+    },
+
+    selectedDate: {
+      type: String,
+      value: null,
+      bindNuclear: function (hass) {
+        return hass.entityHistoryGetters.currentDate;
+      },
+    },
+  },
+
+  isDataLoadedChanged: function (newVal) {
+    if (!newVal) {
+      this.async(function () {
+        this.hass.entityHistoryActions.fetchSelectedDate();
+      }.bind(this), 1);
+    }
+  },
+
+  handleRefreshClick: function () {
+    this.hass.entityHistoryActions.fetchSelectedDate();
+  },
+
+  datepickerFocus: function () {
+    this.datePicker.adjustPosition();
+  },
+
+  attached: function () {
+    this.datePicker = new window.Pikaday({
+      field: this.$.datePicker.inputElement,
+      onSelect: this.hass.entityHistoryActions.changeCurrentDate,
+    });
+  },
+
+  detached: function () {
+    this.datePicker.destroy();
+  },
+
+  computeContentClasses: function (narrow) {
+    return narrow ? 'flex content narrow' : 'flex content wide';
+  },
+});
+</script>

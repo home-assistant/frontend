@@ -8,7 +8,8 @@
   },
   "scripts": {
     "setup_js_dev": "git submodule init && git submodule update && cd home-assistant-js && npm install",
-    "js_dev": "watch_ru_all",
+    "clean": "rm -rf build/* build-temp/*",
+    "js_dev": "npm run watch_ru_all",
     "js_dev_demo": "BUILD_DEMO=1 npm run watch_ru_all",
     "js_prod": "BUILD_DEV=0 npm run ru_all",
     "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 npm run ru_all",
@@ -36,9 +37,9 @@
   },
   "devDependencies": {
     "bower": "^1.7.9",
-    "eslint": "^3.0.1",
-    "eslint-config-airbnb-base": "^4.0.0",
-    "eslint-plugin-import": "^1.10.2",
+    "eslint": "^3.1.0",
+    "eslint-config-airbnb-base": "^4.0.2",
+    "eslint-plugin-import": "^1.10.3",
     "html-minifier": "^3.0.1",
     "rollup": "^0.34.1",
     "rollup-plugin-babel": "^2.6.1",

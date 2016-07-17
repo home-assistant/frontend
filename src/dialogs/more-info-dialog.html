@@ -15,12 +15,6 @@
       font-size: 14px;
     }
 
-    paper-dialog-scrollable {
-      --paper-dialog-scrollable: {
-        padding: 0;
-      };
-    }
-
     state-history-charts {
       position: relative;
       z-index: 1;
@@ -53,16 +47,14 @@
           state-obj="[[stateObj]]"
           hass='[[hass]]' in-dialog></state-card-content>
       </h2>
-      <div>
+      <paper-dialog-scrollable id='scrollable'>
         <template is='dom-if' if="[[showHistoryComponent]]">
           <state-history-charts state-history="[[stateHistory]]"
             is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
         </template>
-        <paper-dialog-scrollable id='scrollable'>
-          <more-info-content
-            state-obj="[[stateObj]]" hass='[[hass]]'></more-info-content>
-        </paper-dialog-scrollable>
-      </div>
+        <more-info-content
+          state-obj="[[stateObj]]" hass='[[hass]]'></more-info-content>
+      </paper-dialog-scrollable>
     </paper-dialog>
   </template>
 </dom-module>
