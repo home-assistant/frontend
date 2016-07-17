@@ -1,3 +1,4 @@
+<!--
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -5,10 +6,10 @@
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 
 <link rel="import" href="./partial-base.html">
+-->
+<link rel="import" href="./services-list.html">
 
-<link rel="import" href="../components/services-list.html">
-
-<dom-module id="partial-dev-call-service">
+<dom-module id="ha-panel-dev-service">
   <style is="custom-style" include="iron-flex iron-positioning"></style>
   <style>
     .content {
@@ -64,7 +65,7 @@
 
 <script>
 Polymer({
-  is: 'partial-dev-call-service',
+  is: 'ha-panel-dev-service',
 
   properties: {
     hass: {

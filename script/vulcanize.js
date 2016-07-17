@@ -4,6 +4,13 @@ var Vulcanize = require('vulcanize');
 var minify = require('html-minifier');
 var fs = require('fs');
 
+if (!fs.existsSync('build')) {
+  fs.mkdirSync('build');
+}
+if (!fs.existsSync('build/panels')) {
+  fs.mkdirSync('build/panels');
+}
+
 function minifyHTML(html) {
   return minify.minify(html, {
     customAttrAssign: [/\$=/],
@@ -25,6 +32,16 @@ const baseVulcanOptions = {
   stripComments: true,
 };
 
+const vulcan = new Vulcanize({
+  inlineScripts: true,
+  inlineCss: true,
+  implicitStrip: true,
+  stripComments: true,
+  stripExcludes: [
+    'bower_components/polymer/polymer.html',
+  ],
+});
+
 const toProcess = [
   {
     source: 'src/home-assistant.html',
@@ -35,41 +52,32 @@ const toProcess = [
       ],
     })),
   },
-  {
-    source: 'src/layouts/partial-map.html',
-    output: 'partial-map.html',
-    vulcan: new Vulcanize(Object.assign({}, baseVulcanOptions, {
-      stripExcludes: [
-        'bower_components/polymer/polymer.html',
-        'bower_components/paper-toolbar/paper-toolbar.html',
-        'bower_components/paper-icon-button/paper-icon-button.html',
-        'bower_components/iron-icon/iron-icon.html',
-        'bower_components/iron-image/iron-image.html',
-      ],
-    })),
-  },
-  {
-    source: 'src/entry-points/dev-tools.html',
-    output: 'dev-tools.html',
-    vulcan: new Vulcanize(Object.assign({}, baseVulcanOptions, {
-      stripExcludes: [
-        'bower_components/polymer/polymer.html',
-        'bower_components/paper-button/paper-button.html',
-        'bower_components/paper-input/paper-input.html',
-        'bower_components/paper-spinner/paper-spinner.html',
-        'src/layouts/partial-base.html',
-      ],
-    })),
-  },
 ];
 
-toProcess.forEach(info => {
-  info.vulcan.process(info.source, (err, inlinedHtml) => {
+fs.readdirSync('./panels').forEach(panel => {
+  toProcess.push({
+    source: `panels/${panel}/ha-panel-${panel}.html`,
+    output: `panels/ha-panel-${panel}.html`,
+  });
+});
+
+function process(entry) {
+  console.log('Processing', entry.source);
+  const vulc = entry.vulcan || vulcan;
+  vulc.process(entry.source, (err, inlinedHtml) => {
     if (err !== null) {
-      console.error(info.source, err);
+      console.error(entry.source, err);
       return;
     }
 
-    fs.writeFileSync('build/' + info.output, minifyHTML(inlinedHtml));
+    const out = 'build/' + entry.output;
+    console.log('Writing', out);
+    fs.writeFileSync(out, minifyHTML(inlinedHtml));
+
+    if (toProcess.length) {
+      process(toProcess.pop());
+    }
   });
-});
+}
+
+process(toProcess.pop());

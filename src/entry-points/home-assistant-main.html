@@ -1,9 +1,10 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 <link rel='import' href='../../bower_components/paper-drawer-panel/paper-drawer-panel.html'>
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
+<link rel='import' href='../../bower_components/iron-pages/iron-pages.html'>
+
 <link rel='import' href='../layouts/partial-cards.html'>
-<link rel='import' href='../layouts/partial-logbook.html'>
-<link rel='import' href='../layouts/partial-history.html'>
+<link rel='import' href='../layouts/partial-panel-resolver.html'>
 <link rel='import' href='../managers/notification-manager.html'>
 <link rel="import" href="../dialogs/more-info-dialog.html">
 <link rel="import" href="../dialogs/ha-voice-command-dialog.html">
@@ -24,34 +25,102 @@
       disable-edge-swipe='[[isSelectedMap]]'>
       <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
 
-      <template is='dom-if' if='[[isSelectedStates]]'>
-        <partial-cards main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-cards>
-      </template>
-      <template is='dom-if' if='[[isSelectedLogbook]]'>
-        <partial-logbook main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-logbook>
-      </template>
-      <template is='dom-if' if='[[isSelectedHistory]]'>
-        <partial-history main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-history>
-      </template>
-      <template is='dom-if' if='[[isSelectedMap]]'>
-        <partial-map main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-map>
-      </template>
-      <template is='dom-if' if='[[isSelectedDevService]]'>
-        <partial-dev-call-service main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-dev-call-service>
-      </template>
-      <template is='dom-if' if='[[isSelectedDevEvent]]'>
-        <partial-dev-fire-event main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-dev-fire-event>
-      </template>
-      <template is='dom-if' if='[[isSelectedDevState]]'>
-        <partial-dev-set-state main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-dev-set-state>
-      </template>
-      <template is='dom-if' if='[[isSelectedDevTemplate]]'>
-        <partial-dev-template main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-dev-template>
-      </template>
-      <template is='dom-if' if='[[isSelectedDevInfo]]'>
-        <partial-dev-info main narrow='[[narrow]]' hass='[[hass]]' show-menu='[[showSidebar]]'></partial-dev-info>
-      </template>
+      <iron-pages
+        main
+        attr-for-selected='id'
+        fallback-selection='panel-resolver'
+        selected='[[activePane]]'
+      >
+        <partial-cards
+          id='states'
+          narrow='[[narrow]]'
+          hass='[[hass]]'
+          show-menu='[[showSidebar]]'
+        ></partial-cards>
+
+        <partial-panel-resolver
+          id='panel-resolver'
+          narrow='[[narrow]]'
+          hass='[[hass]]'
+          show-menu='[[showSidebar]]'
+        ></partial-panel-resolver>
+
+      </iron-pages>
     </paper-drawer-panel>
 
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'home-assistant-main',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+      value: true,
+    },
+
+    activePane: {
+      type: String,
+      bindNuclear: function (hass) {
+        return hass.navigationGetters.activePane;
+      },
+      observer: 'activePaneChanged',
+    },
+
+    showSidebar: {
+      type: Boolean,
+      value: false,
+      bindNuclear: function (hass) {
+        return hass.navigationGetters.showSidebar;
+      },
+    },
+  },
+
+  listeners: {
+    'open-menu': 'openMenu',
+    'close-menu': 'closeMenu',
+  },
+
+  openMenu: function () {
+    if (this.narrow) {
+      this.$.drawer.openDrawer();
+    } else {
+      this.hass.navigationActions.showSidebar(true);
+    }
+  },
+
+  closeMenu: function () {
+    this.$.drawer.closeDrawer();
+    if (this.showSidebar) {
+      this.hass.navigationActions.showSidebar(false);
+    }
+  },
+
+  activePaneChanged: function () {
+    if (this.narrow) {
+      this.$.drawer.closeDrawer();
+    }
+  },
+
+  attached: function () {
+    window.removeInitMsg();
+    this.hass.startUrlSync();
+  },
+
+  computeForceNarrow: function (narrow, showSidebar) {
+    return narrow || !showSidebar;
+  },
+
+  detached: function () {
+    this.hass.stopUrlSync();
+  },
+});
+</script>
