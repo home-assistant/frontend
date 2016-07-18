@@ -36,7 +36,7 @@
 
       <div class$="[[computeContentClasses(narrow)]]">
         <paper-input label='Showing entries for' id='datePicker'
-          value='[[selectedDate]]'></paper-input>
+          value='[[selectedDateStr]]'></paper-input>
 
         <state-history-charts state-history="[[stateHistory]]"
           is-loading-data="[[isLoadingData]]"></state-history-charts>
@@ -92,6 +92,20 @@ Polymer({
       value: null,
       bindNuclear: function (hass) {
         return hass.entityHistoryGetters.currentDate;
+      },
+    },
+
+    selectedDateStr: {
+      type: String,
+      value: null,
+      bindNuclear: function (hass) {
+        return [
+            hass.entityHistoryGetters.currentDate,
+            function (currentDate) {
+                var dateObj = new Date(currentDate);
+                return dateObj.toLocaleDateString();
+            },
+        ];
       },
     },
   },
