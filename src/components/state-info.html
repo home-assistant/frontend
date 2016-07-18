@@ -52,3 +52,20 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-info',
+
+  properties: {
+    detailed: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+});
+</script>

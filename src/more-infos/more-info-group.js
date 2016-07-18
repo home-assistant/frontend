@@ -1,8 +1,4 @@
 import Polymer from '../polymer';
-import dynamicContentUpdater from '../util/dynamic-content-updater';
-import stateMoreInfoType from '../util/state-more-info-type';
-
-import '../state-summary/state-card-content';
 
 export default new Polymer({
   is: 'more-info-group',
@@ -64,9 +60,9 @@ export default new Polymer({
         el.removeChild(el.lastChild);
       }
     } else {
-      dynamicContentUpdater(
+      window.hassUtil.dynamicContentUpdater(
         this.$.groupedControlDetails,
-          `MORE-INFO-${stateMoreInfoType(groupDomainStateObj).toUpperCase()}`,
+          `MORE-INFO-${window.hassUtil.stateMoreInfoType(groupDomainStateObj).toUpperCase()}`,
           { stateObj: groupDomainStateObj });
     }
   },

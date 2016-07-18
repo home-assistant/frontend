@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import attributeClassNames from '../util/attribute-class-names';
 
 const ATTRIBUTE_CLASSES = ['volume_level'];
 
@@ -128,7 +127,7 @@ export default new Polymer({
   },
 
   computeClassNames(stateObj) {
-    return attributeClassNames(stateObj, ATTRIBUTE_CLASSES);
+    return window.hassUtil.attributeClassNames(stateObj, ATTRIBUTE_CLASSES);
   },
 
   computeIsOff(stateObj) {

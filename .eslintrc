@@ -16,5 +16,8 @@
     "no-underscore-dangle": 0,
     "no-var": 0,
     "strict": 0
-  }
+  },
+  plugins: [
+    "html"
+  ]
 }

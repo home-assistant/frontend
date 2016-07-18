@@ -178,3 +178,108 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-media_player-card',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+
+    playerObj: {
+      type: Object,
+      computed: 'computePlayerObj(stateObj)',
+      observer: 'playerObjChanged',
+    },
+
+    playbackControlIcon: {
+      type: String,
+      computed: 'computePlaybackControlIcon(playerObj)',
+    },
+
+    /**
+     * The z-depth of the card, from 0-5.
+     */
+    elevation: {
+      type: Number,
+      value: 1,
+      reflectToAttribute: true,
+    },
+  },
+
+  playerObjChanged: function (playerObj) {
+    if (!playerObj.isOff && !playerObj.isIdle) {
+      this.$.cover.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
+        'url(' + playerObj.stateObj.attributes.entity_picture + ')' : '';
+    }
+  },
+
+  computeBannerClasses: function (playerObj) {
+    var cls = 'banner';
+
+    if (playerObj.isOff || playerObj.isIdle) {
+      cls += ' is-off';
+    }
+
+    if (!playerObj.stateObj.attributes.entity_picture) {
+      cls += ' no-cover';
+    }
+
+    return cls;
+  },
+
+  computeHidePowerOnButton: function (playerObj) {
+    return !playerObj.isOff || !playerObj.supportsTurnOn;
+  },
+
+  computePlayerObj: function (stateObj) {
+    return stateObj.domainModel(this.hass);
+  },
+
+  computePlaybackControlIcon: function (playerObj) {
+    if (playerObj.isPlaying) {
+      return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
+    } else if (playerObj.isPaused || playerObj.isOff) {
+      return 'mdi:play';
+    }
+    return '';
+  },
+
+  computeShowControls: function (playerObj) {
+    return !playerObj.isOff;
+  },
+
+  handleNext: function (ev) {
+    ev.stopPropagation();
+    this.playerObj.nextTrack();
+  },
+
+  handleOpenMoreInfo: function (ev) {
+    ev.stopPropagation();
+    this.async(function () {
+      this.hass.moreInfoActions.selectEntity(this.stateObj.entityId);
+    }, 1);
+  },
+
+  handlePlaybackControl: function (ev) {
+    ev.stopPropagation();
+    this.playerObj.mediaPlayPause();
+  },
+
+  handlePrevious: function (ev) {
+    ev.stopPropagation();
+    this.playerObj.previousTrack();
+  },
+
+  handleTogglePower: function (ev) {
+    ev.stopPropagation();
+    this.playerObj.togglePower();
+  },
+});
+</script>

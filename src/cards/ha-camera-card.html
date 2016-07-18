@@ -46,3 +46,75 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-camera-card',
+  UPDATE_INTERVAL: 10000, // ms
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+      observer: 'updateCameraFeedSrc',
+    },
+
+    cameraFeedSrc: {
+      type: String,
+    },
+
+    imageLoaded: {
+      type: Boolean,
+      value: true,
+    },
+
+    /**
+     * The z-depth of the card, from 0-5.
+     */
+    elevation: {
+      type: Number,
+      value: 1,
+      reflectToAttribute: true,
+    },
+  },
+
+  listeners: {
+    tap: 'cardTapped',
+  },
+
+  attached: function () {
+    this.timer = setInterval(
+      function () {
+        this.updateCameraFeedSrc(this.stateObj);
+      }.bind(this),
+      this.UPDATE_INTERVAL);
+  },
+
+  detached: function () {
+    clearInterval(this.timer);
+  },
+
+  cardTapped: function () {
+    this.async(function () {
+      this.hass.moreInfoActions.selectEntity(this.stateObj.entityId);
+    }.bind(this), 1);
+  },
+
+  updateCameraFeedSrc: function (stateObj) {
+    const attr = stateObj.attributes;
+    const time = (new Date()).getTime();
+    this.cameraFeedSrc = attr.entity_picture + '&time=' + time;
+  },
+
+  imageLoadSuccess: function () {
+    this.imageLoaded = true;
+  },
+
+  imageLoadFail: function () {
+    this.imageLoaded = false;
+  },
+});
+</script>

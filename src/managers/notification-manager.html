@@ -12,3 +12,37 @@
     <paper-toast id="toast" text='{{text}}' no-cancel-on-outside-click='[[neg]]'></paper-toast>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'notification-manager',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    // Otherwise we cannot close a modal when a notification is being shown.
+    neg: {
+      type: Boolean,
+      value: false,
+    },
+
+    text: {
+      type: String,
+      bindNuclear: function (hass) {
+        return hass.notificationGetters.lastNotificationMessage;
+      },
+      observer: 'showNotification',
+    },
+  },
+
+  showNotification: function (newText) {
+    if (newText) {
+      this.$.toast.show();
+    }
+  },
+});
+</script>

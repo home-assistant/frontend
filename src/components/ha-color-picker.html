@@ -113,13 +113,17 @@ Polymer({
 
   drawGradient: function () {
     var style;
+    var width;
+    var height;
+    var colorGradient;
+    var bwGradient;
     if (!this.width || !this.height) {
       style = getComputedStyle(this);
     }
-    var width = this.width || parseInt(style.width, 10);
-    var height = this.height || parseInt(style.height, 10);
+    width = this.width || parseInt(style.width, 10);
+    height = this.height || parseInt(style.height, 10);
 
-    var colorGradient = this.context.createLinearGradient(0, 0, width, 0);
+    colorGradient = this.context.createLinearGradient(0, 0, width, 0);
     colorGradient.addColorStop(0, 'rgb(255,0,0)');
     colorGradient.addColorStop(0.16, 'rgb(255,0,255)');
     colorGradient.addColorStop(0.32, 'rgb(0,0,255)');
@@ -130,7 +134,7 @@ Polymer({
     this.context.fillStyle = colorGradient;
     this.context.fillRect(0, 0, width, height);
 
-    var bwGradient = this.context.createLinearGradient(0, 0, 0, height);
+    bwGradient = this.context.createLinearGradient(0, 0, 0, height);
     bwGradient.addColorStop(0, 'rgba(255,255,255,1)');
     bwGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
     bwGradient.addColorStop(0.5, 'rgba(0,0,0,0)');

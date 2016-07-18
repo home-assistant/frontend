@@ -24,7 +24,7 @@
     "watch_ru_core": "rollup --config rollup/core.js --watch",
     "watch_ru_ui": "rollup --config rollup/ui.js --watch",
     "watch_ru_demo": "rollup --config rollup/demo.js --watch",
-    "test": "eslint src"
+    "test": "eslint src panels --ext html"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
@@ -39,8 +39,10 @@
     "bower": "^1.7.9",
     "eslint": "^3.1.0",
     "eslint-config-airbnb-base": "^4.0.2",
-    "eslint-plugin-import": "^1.10.3",
+    "eslint-plugin-html": "^1.5.1",
+    "eslint-plugin-import": "^1.11.0",
     "html-minifier": "^3.0.1",
+    "polymer-cli": "^0.12.0",
     "rollup": "^0.34.1",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-buble": "^0.12.1",
