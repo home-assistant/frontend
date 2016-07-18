@@ -56,3 +56,69 @@
     </ha-card>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-entities-card',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    states: {
+      type: Array,
+    },
+    groupEntity: {
+      type: Object,
+    },
+  },
+
+  computeTitle: function (states, groupEntity) {
+    return groupEntity ? groupEntity.entityDisplay :
+                         states[0].domain.replace(/_/g, ' ');
+  },
+
+  computeTitleClass: function (groupEntity) {
+    var classes = 'header horizontal layout center ';
+    if (groupEntity) {
+      classes += 'header-more-info';
+    }
+    return classes;
+  },
+
+  entityTapped: function (ev) {
+    var entityId;
+    if (ev.target.classList.contains('paper-toggle-button') ||
+        ev.target.classList.contains('paper-icon-button') ||
+        (!ev.model && !this.groupEntity)) {
+      return;
+    }
+    ev.stopPropagation();
+
+    if (ev.model) {
+      entityId = ev.model.item.entityId;
+    } else {
+      entityId = this.groupEntity.entityId;
+    }
+    this.async(function () { this.hass.moreInfoActions.selectEntity(entityId); }.bind(this), 1);
+  },
+
+  showGroupToggle: function (groupEntity, states) {
+    var canToggleCount;
+
+    if (!groupEntity || !states ||
+        (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
+      return false;
+    }
+
+    // only show if we can toggle 2+ entities in group
+    canToggleCount = states.reduce(
+      function (sum, state) {
+        return sum + window.hassUtil.canToggle(this.hass, state.entityId);
+      }, 0);
+
+    return canToggleCount > 1;
+  },
+});
+</script>

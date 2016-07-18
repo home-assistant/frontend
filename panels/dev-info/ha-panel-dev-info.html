@@ -6,51 +6,52 @@
 <link rel="import" href="./partial-base.html">
 -->
 <dom-module id="ha-panel-dev-info">
-  <style is="custom-style" include="iron-positioning"></style>
-  <style>
-    .content {
-      margin-top: 64px;
-      padding: 24px;
-      background-color: white;
-      -ms-user-select: initial;
-      -webkit-user-select: initial;
-      -moz-user-select: initial;
-    }
-
-    .about {
-      text-align: center;
-      line-height: 2em;
-    }
-
-    .version {
-      @apply(--paper-font-headline);
-    }
-
-    .develop {
-      @apply(--paper-font-subhead);
-    }
-
-    .about a {
-      color: var(--dark-primary-color);
-    }
-
-    .error-log-intro {
-      margin-top: 16px;
-      border-top: 1px solid var(--light-primary-color);
-      padding-top: 16px;
-    }
-
-    paper-icon-button {
-      float: right;
-    }
-
-    .error-log {
-      @apply(--paper-font-code1)
-      clear: both;
-      white-space: pre-wrap;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-positioning"></style>
+    <style>
+      .content {
+        margin-top: 64px;
+        padding: 24px;
+        background-color: white;
+        -ms-user-select: initial;
+        -webkit-user-select: initial;
+        -moz-user-select: initial;
+      }
+
+      .about {
+        text-align: center;
+        line-height: 2em;
+      }
+
+      .version {
+        @apply(--paper-font-headline);
+      }
+
+      .develop {
+        @apply(--paper-font-subhead);
+      }
+
+      .about a {
+        color: var(--dark-primary-color);
+      }
+
+      .error-log-intro {
+        margin-top: 16px;
+        border-top: 1px solid var(--light-primary-color);
+        padding-top: 16px;
+      }
+
+      paper-icon-button {
+        float: right;
+      }
+
+      .error-log {
+        @apply(--paper-font-code1)
+        clear: both;
+        white-space: pre-wrap;
+      }
+    </style>
+
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
       <span header-title>About</span>
 

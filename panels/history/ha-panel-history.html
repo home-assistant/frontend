@@ -10,25 +10,26 @@
 <link rel="import" href="../../src/resources/pikaday-js.html">
 
 <dom-module id="ha-panel-history">
-  <style is="custom-style" include="iron-flex"></style>
-  <style>
-    .content {
-      background-color: white;
-    }
-
-    .content.wide {
-      padding: 8px;
-    }
-
-    paper-input {
-      max-width: 200px;
-    }
-
-    .narrow paper-input {
-      margin-left: 8px;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .content {
+        background-color: white;
+      }
+
+      .content.wide {
+        padding: 8px;
+      }
+
+      paper-input {
+        max-width: 200px;
+      }
+
+      .narrow paper-input {
+        margin-left: 8px;
+      }
+    </style>
+
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
       <span header-title>History</span>
 

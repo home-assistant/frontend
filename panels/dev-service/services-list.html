@@ -1,23 +1,23 @@
 <!-- <link rel="import" href="../../bower_components/polymer/polymer.html"> -->
 
 <dom-module id="services-list">
-  <style>
-    ul {
-      margin: 0;
-      padding: 0;
-    }
-
-    li {
-      list-style: none;
-      line-height: 2em;
-    }
-
-    a {
-      color: var(--dark-primary-color);
-    }
-  </style>
-
   <template>
+    <style>
+      ul {
+        margin: 0;
+        padding: 0;
+      }
+
+      li {
+        list-style: none;
+        line-height: 2em;
+      }
+
+      a {
+        color: var(--dark-primary-color);
+      }
+    </style>
+
     <ul>
       <template is='dom-repeat' items="[[computeDomains(serviceDomains)]]" as="domain">
           <template is='dom-repeat' items="[[computeServices(serviceDomains, domain)]]" as="service">

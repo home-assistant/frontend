@@ -105,3 +105,203 @@
   </template>
 
 </dom-module>
+
+<script>
+Polymer({
+  is: 'partial-cards',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+      value: false,
+    },
+
+    isFetching: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return hass.syncGetters.isFetching;
+      },
+    },
+
+    isStreaming: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return hass.streamGetters.isStreamingEvents;
+      },
+    },
+
+    canListen: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return [
+          hass.voiceGetters.isVoiceSupported,
+          hass.configGetters.isComponentLoaded('conversation'),
+          function (isVoiceSupported, componentLoaded) {
+            return isVoiceSupported && componentLoaded;
+          },
+        ];
+      },
+    },
+
+    introductionLoaded: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return hass.configGetters.isComponentLoaded('introduction');
+      },
+    },
+
+    locationName: {
+      type: String,
+      bindNuclear: function (hass) {
+        return hass.configGetters.locationName;
+      },
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+      observer: 'windowChange',
+    },
+
+    currentView: {
+      type: String,
+      bindNuclear: function (hass) {
+        return [
+          hass.viewGetters.currentView,
+          function (view) { return view || ''; },
+        ];
+      },
+    },
+
+    hasViews: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return [
+          hass.viewGetters.views,
+          function (views) { return views.size > 0; },
+        ];
+      },
+    },
+
+    states: {
+      type: Object,
+      bindNuclear: function (hass) {
+        return hass.viewGetters.currentViewEntities;
+      },
+    },
+
+    columns: {
+      type: Number,
+      value: 1,
+    },
+  },
+
+  created: function () {
+    var sizes = [];
+    var col;
+    this.windowChange = this.windowChange.bind(this);
+    for (col = 0; col < 5; col++) {
+      sizes.push(300 + (col * 300));
+    }
+    this.mqls = sizes.map(function (width) {
+      var mql = window.matchMedia('(min-width: ' + width + 'px)');
+      mql.addListener(this.windowChange);
+      return mql;
+    }.bind(this));
+  },
+
+  detached: function () {
+    this.mqls.forEach(function (mql) {
+      mql.removeListener(this.windowChange);
+    });
+  },
+
+  windowChange: function () {
+    var matchColumns = this.mqls.reduce(function (cols, mql) { return cols + mql.matches; }, 0);
+    // Do -1 column if the menu is docked and open
+    this.columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
+  },
+
+  scrollToTop: function () {
+    this.$.panel.scrollToTop(true);
+  },
+
+  handleRefresh: function () {
+    this.hass.syncActions.fetchAll();
+  },
+
+  handleListenClick: function () {
+    this.hass.voiceActions.listen();
+  },
+
+  contentScroll: function () {
+    if (this.debouncedContentScroll) return;
+
+    this.debouncedContentScroll = this.async(function () {
+      this.checkRaised();
+      this.debouncedContentScroll = false;
+    }.bind(this), 100);
+  },
+
+  checkRaised: function () {
+    this.toggleClass(
+      'raised',
+      this.$.panel.scroller.scrollTop > (this.hasViews ? 56 : 0),
+      this.$.panel);
+  },
+
+  headerScrollAdjust: function (ev) {
+    if (!this.hasViews) return;
+    this.translate3d('0', '-' + ev.detail.y + 'px', '0', this.$.menu);
+    // this.toggleClass('condensed', ev.detail.y === 56, this.$.panel);
+  },
+
+  computeHeaderHeight: function (hasViews, narrow) {
+    if (hasViews) {
+      return 104;
+    } else if (narrow) {
+      return 56;
+    }
+    return 64;
+  },
+
+  computeCondensedHeaderHeight: function (hasViews, narrow) {
+    if (hasViews) {
+      return 48;
+    } else if (narrow) {
+      return 56;
+    }
+    return 64;
+  },
+
+  computeMenuButtonClass: function (narrow, showMenu) {
+    return !narrow && showMenu ? 'menu-icon invisible' : 'menu-icon';
+  },
+
+  computeRefreshButtonClass: function (isFetching) {
+    return isFetching ? 'ha-spin' : '';
+  },
+
+  computeTitle: function (hasViews, locationName) {
+    return hasViews ? 'Home Assistant' : locationName;
+  },
+
+  computeShowIntroduction: function (currentView, introductionLoaded, states) {
+    return currentView === '' && (introductionLoaded || states.size === 0);
+  },
+
+  computeHasViews: function (views) {
+    return views.length > 0;
+  },
+
+  toggleMenu: function () {
+    this.fire('open-menu');
+  },
+});
+</script>

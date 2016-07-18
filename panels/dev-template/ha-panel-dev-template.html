@@ -8,52 +8,53 @@
 -->
 
 <dom-module id="ha-panel-dev-template">
-  <style is="custom-style" include="iron-flex iron-positioning"></style>
-  <style>
-    .content {
-      @apply(--paper-font-body1);
-      margin-top: 64px;
-      padding: 16px;
-      background-color: white;
-      -ms-user-select: initial;
-      -webkit-user-select: initial;
-      -moz-user-select: initial;
-    }
-
-    .edit-pane {
-      margin-right: 16px;
-    }
-
-    .edit-pane a {
-      color: var(--dark-primary-color);
-    }
-
-    .horizontal .edit-pane {
-      max-width: 50%;
-    }
-
-    .render-pane {
-      position: relative;
-      max-width: 50%;
-    }
-
-    .render-spinner {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-    }
-
-    .rendered {
-      @apply(--paper-font-code1)
-      clear: both;
-      white-space: pre-wrap;
-    }
-
-    .rendered.error {
-      color: red;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex iron-positioning"></style>
+    <style>
+      .content {
+        @apply(--paper-font-body1);
+        margin-top: 64px;
+        padding: 16px;
+        background-color: white;
+        -ms-user-select: initial;
+        -webkit-user-select: initial;
+        -moz-user-select: initial;
+      }
+
+      .edit-pane {
+        margin-right: 16px;
+      }
+
+      .edit-pane a {
+        color: var(--dark-primary-color);
+      }
+
+      .horizontal .edit-pane {
+        max-width: 50%;
+      }
+
+      .render-pane {
+        position: relative;
+        max-width: 50%;
+      }
+
+      .render-spinner {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+      }
+
+      .rendered {
+        @apply(--paper-font-code1)
+        clear: both;
+        white-space: pre-wrap;
+      }
+
+      .rendered.error {
+        color: red;
+      }
+    </style>
+
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
       <span header-title>Template Editor</span>
 

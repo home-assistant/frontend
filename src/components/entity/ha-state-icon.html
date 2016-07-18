@@ -7,3 +7,19 @@
     <iron-icon icon="[[computeIcon(stateObj)]]"></iron-icon>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-state-icon',
+
+  properties: {
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  computeIcon: function (stateObj) {
+    return window.hassUtil.stateIcon(stateObj);
+  },
+});
+</script>

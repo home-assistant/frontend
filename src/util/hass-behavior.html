@@ -9,11 +9,13 @@ window.hassBehavior = {
 
     this.nuclearUnwatchFns = Object.keys(this.properties).reduce(
       function bindGetters(unwatchFns, key) {
+        var getter;
+
         if (!('bindNuclear' in this.properties[key])) {
           return unwatchFns;
         }
 
-        var getter = this.properties[key].bindNuclear(hass);
+        getter = this.properties[key].bindNuclear(hass);
 
         if (!getter) {
           throw new Error('Undefined getter specified for key ' + key);

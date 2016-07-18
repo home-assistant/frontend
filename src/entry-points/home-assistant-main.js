@@ -1,4 +1,3 @@
-import '../layouts/partial-cards';
-import '../managers/notification-manager';
-import '../dialogs/more-info-dialog';
-import '../dialogs/ha-voice-command-dialog';
+// components that still require update
+import '../components/state-history-charts';
+import '../more-infos/more-info-content';

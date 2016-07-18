@@ -7,39 +7,40 @@
 -->
 
 <dom-module id="logbook-entry">
-  <style is="custom-style" include="iron-flex"></style>
-  <style>
-    :host {
-      @apply(--paper-font-body1);
-
-      display: block;
-      line-height: 2em;
-    }
-
-    display-time {
-      width: 55px;
-      font-size: .8em;
-      color: var(--secondary-text-color);
-    }
-
-    domain-icon {
-      margin: 0 8px 0 16px;
-      color: var(--primary-text-color);
-    }
-
-    .name {
-      text-transform: capitalize;
-    }
-
-    .message {
-      color: var(--primary-text-color);
-    }
-
-    a {
-      color: var(--primary-color);
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      :host {
+        @apply(--paper-font-body1);
+
+        display: block;
+        line-height: 2em;
+      }
+
+      display-time {
+        width: 55px;
+        font-size: .8em;
+        color: var(--secondary-text-color);
+      }
+
+      domain-icon {
+        margin: 0 8px 0 16px;
+        color: var(--primary-text-color);
+      }
+
+      .name {
+        text-transform: capitalize;
+      }
+
+      .message {
+        color: var(--primary-text-color);
+      }
+
+      a {
+        color: var(--primary-color);
+      }
+    </style>
+
     <div class='horizontal layout'>
       <display-time date-obj="[[entryObj.when]]"></display-time>
       <domain-icon domain="[[entryObj.domain]]" class='icon'></domain-icon>

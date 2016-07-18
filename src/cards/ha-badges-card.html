@@ -11,3 +11,19 @@
     </template>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'ha-badges-card',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    states: {
+      type: Array,
+    },
+  },
+});
+</script>

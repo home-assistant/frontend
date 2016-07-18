@@ -1,7 +1,5 @@
 import Polymer from '../polymer';
 
-import formatTime from '../util/format-time';
-
 export default new Polymer({
   is: 'more-info-sun',
 
@@ -42,6 +40,6 @@ export default new Polymer({
   },
 
   itemValue(type) {
-    return formatTime(this.itemDate(type));
+    return window.hassUtil.formatTime(this.itemDate(type));
   },
 });

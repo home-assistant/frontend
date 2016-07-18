@@ -10,32 +10,33 @@
 <link rel="import" href="./services-list.html">
 
 <dom-module id="ha-panel-dev-service">
-  <style is="custom-style" include="iron-flex iron-positioning"></style>
-  <style>
-    .content {
-      @apply(--paper-font-body1);
-      margin-top: 64px;
-      padding: 24px;
-      background-color: white;
-      -ms-user-select: initial;
-      -webkit-user-select: initial;
-      -moz-user-select: initial;
-    }
-
-    .ha-form {
-      margin-right: 16px;
-    }
-
-    .description {
-      margin-top: 24px;
-      white-space: pre-wrap;
-    }
-
-    .header {
-      @apply(--paper-font-title);
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex iron-positioning"></style>
+    <style>
+      .content {
+        @apply(--paper-font-body1);
+        margin-top: 64px;
+        padding: 24px;
+        background-color: white;
+        -ms-user-select: initial;
+        -webkit-user-select: initial;
+        -moz-user-select: initial;
+      }
+
+      .ha-form {
+        margin-right: 16px;
+      }
+
+      .description {
+        margin-top: 24px;
+        white-space: pre-wrap;
+      }
+
+      .header {
+        @apply(--paper-font-title);
+      }
+    </style>
+
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
       <span header-title>Services</span>
 

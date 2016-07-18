@@ -5,13 +5,14 @@
 <link rel="import" href="./logbook-entry.html">
 
 <dom-module id="ha-logbook">
-  <style>
-    :host {
-      display: block;
-      padding: 16px;
-    }
-  </style>
   <template>
+    <style>
+      :host {
+        display: block;
+        padding: 16px;
+      }
+    </style>
+
     <template is='dom-if' if='[[!entries.length]]'>
       No logbook entries found.
     </template>

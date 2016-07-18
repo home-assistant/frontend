@@ -14,16 +14,17 @@
 <link rel="import" href="../../src/resources/pikaday-js.html">
 
 <dom-module id="ha-panel-logbook">
-  <style>
-  .selected-date-container {
-    padding: 0 16px;
-  }
-
-  paper-input {
-    max-width: 200px;
-  }
-  </style>
   <template>
+    <style>
+    .selected-date-container {
+      padding: 0 16px;
+    }
+
+    paper-input {
+      max-width: 200px;
+    }
+    </style>
+
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
       <span header-title>Logbook</span>
 

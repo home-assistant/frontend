@@ -16,20 +16,21 @@
   .leaflet-top, .leaflet-bottom {
     z-index: 0;
   }
-
-  .menu-icon {
-    margin-right: 24px;
-  }
 </style>
 
 <dom-module id="ha-panel-map">
-  <style is="custom-style" include="iron-flex iron-positioning"></style>
-  <style>
-    .map {
-      position: relative;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex iron-positioning"></style>
+    <style>
+      .map {
+        position: relative;
+      }
+
+      .menu-icon {
+        margin-right: 24px;
+      }
+    </style>
+
     <div class='layout vertical fit'>
       <paper-toolbar>
           <paper-icon-button icon='mdi:menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>

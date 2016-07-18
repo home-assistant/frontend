@@ -1,5 +1,4 @@
 import Polymer from '../polymer';
-import attributeClassNames from '../util/attribute-class-names';
 
 const ATTRIBUTE_CLASSES = [
   'away_mode',
@@ -80,7 +79,7 @@ export default new Polymer({
   },
 
   computeClassNames(stateObj) {
-    return `more-info-hvac ${attributeClassNames(stateObj, ATTRIBUTE_CLASSES)}`;
+    return `more-info-hvac ${window.hassUtil.attributeClassNames(stateObj, ATTRIBUTE_CLASSES)}`;
   },
 
   targetTemperatureSliderChanged(ev) {
