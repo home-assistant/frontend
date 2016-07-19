@@ -54,3 +54,104 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'more-info-light',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+      observer: 'stateObjChanged',
+    },
+
+    brightnessSliderValue: {
+      type: Number,
+      value: 0,
+    },
+
+    ctSliderValue: {
+      type: Number,
+      value: 0,
+    },
+  },
+
+  stateObjChanged: function (newVal) {
+    if (newVal && newVal.state === 'on') {
+      this.brightnessSliderValue = newVal.attributes.brightness;
+      this.ctSliderValue = newVal.attributes.color_temp;
+    }
+
+    this.async(function () {
+      this.fire('iron-resize');
+    }.bind(this), 500);
+  },
+
+  computeClassNames: function (stateObj) {
+    return window.hassUtil.attributeClassNames(
+      stateObj, ['brightness', 'rgb_color', 'color_temp']);
+  },
+
+  brightnessSliderChanged: function (ev) {
+    var bri = parseInt(ev.target.value, 10);
+
+    if (isNaN(bri)) return;
+
+    if (bri === 0) {
+      this.hass.serviceActions.callTurnOff(this.stateObj.entityId);
+    } else {
+      this.hass.serviceActions.callService('light', 'turn_on', {
+        entity_id: this.stateObj.entityId,
+        brightness: bri,
+      });
+    }
+  },
+
+  ctSliderChanged: function (ev) {
+    var ct = parseInt(ev.target.value, 10);
+
+    if (isNaN(ct)) return;
+
+    this.hass.serviceActions.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entityId,
+      color_temp: ct,
+    });
+  },
+
+  serviceChangeColor: function (hass, entityId, color) {
+    hass.serviceActions.callService('light', 'turn_on', {
+      entity_id: entityId,
+      rgb_color: [color.r, color.g, color.b],
+    });
+  },
+
+  /**
+   * Called when a new color has been picked. We will not respond to every
+   * color pick event but have a pause between requests.
+   */
+  colorPicked: function (ev) {
+    if (this.skipColorPicked) {
+      this.colorChanged = true;
+      return;
+    }
+
+    this.color = ev.detail.rgb;
+
+    this.serviceChangeColor(this.hass, this.stateObj.entityId, this.color);
+
+    this.colorChanged = false;
+    this.skipColorPicked = true;
+
+    this.colorDebounce = setTimeout(function () {
+      if (this.colorChanged) {
+        this.serviceChangeColor(this.hass, this.stateObj.entityId, this.color);
+      }
+      this.skipColorPicked = false;
+    }.bind(this), 500);
+  },
+});
+</script>
