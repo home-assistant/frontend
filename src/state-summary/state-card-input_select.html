@@ -4,23 +4,23 @@
 <link rel="import" href="../components/entity/state-badge.html">
 
 <dom-module id="state-card-input_select">
-  <style>
-  :host {
-    display: block;
-  }
-
-  state-badge {
-    float: left;
-    margin-top: 10px;
-  }
-
-  paper-dropdown-menu {
-    display: block;
-    margin-left: 53px;
-  }
-  </style>
-
   <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      state-badge {
+        float: left;
+        margin-top: 10px;
+      }
+
+      paper-dropdown-menu {
+        display: block;
+        margin-left: 53px;
+      }
+    </style>
+
     <state-badge state-obj='[[stateObj]]'></state-badge>
     <paper-dropdown-menu
       on-tap='stopPropagation'

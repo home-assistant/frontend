@@ -4,38 +4,38 @@
 <link rel="import" href="relative-ha-datetime.html">
 
 <dom-module id="state-info">
-  <style>
-  :host {
-    @apply(--paper-font-body1);
-    min-width: 150px;
-    white-space: nowrap;
-  }
-
-  state-badge {
-    float: left;
-  }
-
-  .info {
-    margin-left: 56px;
-  }
-
-  .name {
-    @apply(--paper-font-common-nowrap);
-    color: var(--primary-text-color);
-    line-height: 40px;
-  }
-
-  .name[in-dialog] {
-    line-height: 20px;
-  }
-
-  .time-ago {
-    @apply(--paper-font-common-nowrap);
-    color: var(--secondary-text-color);
-  }
-  </style>
-
   <template>
+    <style>
+    :host {
+      @apply(--paper-font-body1);
+      min-width: 150px;
+      white-space: nowrap;
+    }
+
+    state-badge {
+      float: left;
+    }
+
+    .info {
+      margin-left: 56px;
+    }
+
+    .name {
+      @apply(--paper-font-common-nowrap);
+      color: var(--primary-text-color);
+      line-height: 40px;
+    }
+
+    .name[in-dialog] {
+      line-height: 20px;
+    }
+
+    .time-ago {
+      @apply(--paper-font-common-nowrap);
+      color: var(--secondary-text-color);
+    }
+    </style>
+
     <div>
       <state-badge state-obj='[[stateObj]]'></state-badge>
 

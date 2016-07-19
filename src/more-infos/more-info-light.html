@@ -5,33 +5,34 @@
 <link rel='import' href='../components/ha-color-picker.html'>
 
 <dom-module id='more-info-light'>
-  <style is="custom-style" include="iron-flex"></style>
-  <style>
-    .brightness, .color_temp {
-      max-height: 0px;
-      overflow: hidden;
-      transition: max-height .5s ease-in;
-    }
-
-    ha-color-picker {
-      display: block;
-      width: 250px;
-
-      max-height: 0px;
-      overflow: hidden;
-      transition: max-height .2s ease-in;
-    }
-
-    .has-brightness .brightness,
-    .has-color_temp .color_temp {
-      max-height: 84px;
-    }
-
-    .has-rgb_color ha-color-picker {
-      max-height: 200px;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .brightness, .color_temp {
+        max-height: 0px;
+        overflow: hidden;
+        transition: max-height .5s ease-in;
+      }
+
+      ha-color-picker {
+        display: block;
+        width: 250px;
+
+        max-height: 0px;
+        overflow: hidden;
+        transition: max-height .2s ease-in;
+      }
+
+      .has-brightness .brightness,
+      .has-color_temp .color_temp {
+        max-height: 84px;
+      }
+
+      .has-rgb_color ha-color-picker {
+        max-height: 200px;
+      }
+    </style>
+
     <div class$='[[computeClassNames(stateObj)]]'>
 
       <div class='brightness'>

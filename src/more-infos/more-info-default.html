@@ -1,13 +1,14 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id="more-info-default">
-  <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
-  <style>
-    .data-entry .value {
-      max-width: 200px;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      .data-entry .value {
+        max-width: 200px;
+      }
+    </style>
+
     <div class='layout vertical'>
       <template is='dom-repeat' items="[[computeDisplayAttributes(stateObj)]]" as="attribute">
         <div class='data-entry layout justified horizontal'>

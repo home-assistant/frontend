@@ -2,18 +2,18 @@
 
 <link rel="import" href="../state-summary/state-card-content.html">
 
-
 <dom-module id="more-info-group">
-  <style>
-    .child-card {
-      margin-bottom: 8px;
-    }
-
-    .child-card:last-child {
-      margin-bottom: 0;
-    }
-  </style>
   <template>
+    <style>
+      .child-card {
+        margin-bottom: 8px;
+      }
+
+      .child-card:last-child {
+        margin-bottom: 0;
+      }
+    </style>
+
     <div id="groupedControlDetails"></div>
     <template is='dom-repeat' items="[[states]]" as='state'>
       <div class='child-card'>

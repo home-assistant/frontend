@@ -5,17 +5,17 @@
 <link rel="import" href="../components/entity/ha-entity-toggle.html">
 
 <dom-module id="state-card-script">
-  <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
-  <style>
-    paper-button {
-      color: var(--default-primary-color);
-      font-weight: 500;
-      top: 3px;
-      height: 37px;
-    }
-  </style>
-
   <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      paper-button {
+        color: var(--default-primary-color);
+        font-weight: 500;
+        top: 3px;
+        height: 37px;
+      }
+    </style>
+
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <template is='dom-if' if='[[stateObj.attributes.can_cancel]]'>

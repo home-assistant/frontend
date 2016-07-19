@@ -10,36 +10,37 @@
 <link rel="import" href="../more-infos/more-info-content.html">
 
 <dom-module id="more-info-dialog">
-  <style>
-    paper-dialog {
-      font-size: 14px;
-    }
-
-    state-history-charts {
-      position: relative;
-      z-index: 1;
-    }
-
-    state-card-content {
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-
-    @media all and (max-width: 450px) {
-      paper-dialog {
-        margin: 0;
-        width: 100%;
-        max-height: calc(100% - 64px);
-
-        position: fixed !important;
-        bottom: 0px;
-        left: 0px;
-        right: 0px;
-        overflow: scroll;
-      }
-    }
-  </style>
   <template>
+    <style>
+      paper-dialog {
+        font-size: 14px;
+      }
+
+      state-history-charts {
+        position: relative;
+        z-index: 1;
+      }
+
+      state-card-content {
+        margin-bottom: 24px;
+        font-size: 14px;
+      }
+
+      @media all and (max-width: 450px) {
+        paper-dialog {
+          margin: 0;
+          width: 100%;
+          max-height: calc(100% - 64px);
+
+          position: fixed !important;
+          bottom: 0px;
+          left: 0px;
+          right: 0px;
+          overflow: scroll;
+        }
+      }
+    </style>
+
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
     <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
       <h2>

@@ -3,24 +3,25 @@
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <dom-module id="ha-entity-toggle">
-  <style>
-    :host {
-      white-space: nowrap;
-    }
-    paper-icon-button {
-      color: var(--primary-text-color);
-      transition: color .5s;
-    }
-    paper-icon-button[state-active] {
-      color: var(--default-primary-color);
-    }
-    paper-toggle-button {
-      cursor: pointer;
-      --paper-toggle-button-label-spacing: 0;
-      padding: 9px 0;
-    }
-  </style>
   <template>
+    <style>
+      :host {
+        white-space: nowrap;
+      }
+      paper-icon-button {
+        color: var(--primary-text-color);
+        transition: color .5s;
+      }
+      paper-icon-button[state-active] {
+        color: var(--default-primary-color);
+      }
+      paper-toggle-button {
+        cursor: pointer;
+        --paper-toggle-button-label-spacing: 0;
+        padding: 9px 0;
+      }
+    </style>
+
     <template is='dom-if' if='[[stateObj.attributes.assumed_state]]'>
       <paper-icon-button icon="mdi:flash-off" on-tap="turnOff" state-active$='[[!isOn]]'></paper-icon-button>
       <paper-icon-button icon="mdi:flash" on-tap="turnOn" state-active$='[[isOn]]'></paper-icon-button>

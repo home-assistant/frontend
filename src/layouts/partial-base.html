@@ -6,19 +6,20 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <dom-module id='partial-base'>
-  <style is="custom-style" include="iron-positioning"></style>
-  <style>
-    :host {
-      -ms-user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-    }
-
-    .menu-icon {
-      margin-right: 24px;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-positioning"></style>
+    <style>
+      :host {
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+      }
+
+      .menu-icon {
+        margin-right: 24px;
+      }
+    </style>
+
     <paper-scroll-header-panel class='fit'>
       <paper-toolbar>
         <paper-icon-button icon='mdi:menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>

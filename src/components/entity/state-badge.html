@@ -3,41 +3,44 @@
 <link rel='import' href='./ha-state-icon.html'>
 
 <dom-module id='state-badge'>
-  <style>
-  :host {
-    position: relative;
-    display: inline-block;
-    width: 40px;
-    color: #44739E;
-    border-radius: 50%;
-    height: 40px;
-    text-align: center;
-    background-size: cover;
-    line-height: 40px;
-  }
-
-  ha-state-icon {
-    transition: color .3s ease-in-out;
-  }
-
-  /* Color the icon if light or sun is on */
-  ha-state-icon[data-domain=light][data-state=on],
-  ha-state-icon[data-domain=switch][data-state=on],
-  ha-state-icon[data-domain=binary_sensor][data-state=on],
-  ha-state-icon[data-domain=sun][data-state=above_horizon] {
-    color: #DCC91F;
-  }
-
-  /* Color the icon if unavailable */
-  ha-state-icon[data-state=unavailable] {
-    color: var(--disabled-text-color);
-  }
-  </style>
-
   <template>
-    <ha-state-icon id='icon' state-obj='[[stateObj]]'
-      data-domain$='[[stateObj.domain]]' data-state$='[[stateObj.state]]'>
-    </ha-state-icon>
+    <style>
+    :host {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      color: #44739E;
+      border-radius: 50%;
+      height: 40px;
+      text-align: center;
+      background-size: cover;
+      line-height: 40px;
+    }
+
+    ha-state-icon {
+      transition: color .3s ease-in-out;
+    }
+
+    /* Color the icon if light or sun is on */
+    ha-state-icon[data-domain=light][data-state=on],
+    ha-state-icon[data-domain=switch][data-state=on],
+    ha-state-icon[data-domain=binary_sensor][data-state=on],
+    ha-state-icon[data-domain=sun][data-state=above_horizon] {
+      color: #DCC91F;
+    }
+
+    /* Color the icon if unavailable */
+    ha-state-icon[data-state=unavailable] {
+      color: var(--disabled-text-color);
+    }
+    </style>
+
+    <ha-state-icon
+      id='icon'
+      state-obj='[[stateObj]]'
+      data-domain$='[[stateObj.domain]]'
+      data-state$='[[stateObj.state]]'
+    ></ha-state-icon>
   </template>
 </dom-module>
 

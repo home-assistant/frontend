@@ -3,132 +3,133 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <dom-module id='ha-media_player-card'>
-  <style include="paper-material iron-flex iron-flex-alignment iron-positioning">
-    :host {
-      display: block;
-      position: relative;
-      font-size: 0px;
-      border-radius: 2px;
-
-      overflow: hidden;
-    }
-
-    .banner {
-      position: relative;
-
-      background-position: center center;
-      background-image: url(/static/images/card_media_player_bg.png);
-      background-repeat: no-repeat;
-      background-color: var(--primary-color);
-
-      border-top-left-radius: 2px;
-      border-top-right-radius: 2px;
-    }
-
-    .banner:before {
-      display: block;
-      content: "";
-      width: 100%;
-      /* removed .25% from 16:9 ratio to fix YT black bars */
-      padding-top: 56%;
-      transition: padding-top .8s;
-    }
-
-    .banner.no-cover:before {
-      padding-top: 91px;
-    }
-
-    .banner > .cover {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-
-      border-top-left-radius: 2px;
-      border-top-right-radius: 2px;
-
-      background-position: center center;
-      background-size: cover;
-      transition: opacity .8s;
-      opacity: 1;
-    }
-
-    .banner.is-off > .cover {
-      opacity: 0;
-    }
-
-    .banner > .caption {
-      @apply(--paper-font-caption);
-
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-
-      background-color: rgba(0, 0, 0, var(--dark-secondary-opacity));
-
-      padding: 8px 16px;
-
-      text-transform: capitalize;
-      font-size: 14px;
-      font-weight: 500;
-      color: white;
-
-      transition: background-color .5s;
-    }
-
-    .banner.is-off > .caption {
-      background-color: initial;
-    }
-
-
-    .banner > .caption .title {
-      @apply(--paper-font-common-nowrap);
-      font-size: 1.2em;
-      margin: 8px 0 4px;
-    }
-
-    .controls {
-      @apply(--paper-font-body1);
-      padding: 8px;
-      border-bottom-left-radius: 2px;
-      border-bottom-right-radius: 2px;
-      background-color: white;
-    }
-
-    .controls paper-icon-button {
-      width: 44px;
-      height: 44px;
-    }
-
-    paper-icon-button {
-      color: var(--primary-text-color);
-    }
-
-    paper-icon-button[disabled] {
-      color: var(--paper-grey-400);
-    }
-
-    paper-icon-button.primary {
-      width: 56px !important;
-      height: 56px !important;
-      background-color: var(--primary-color);
-      color: white;
-      border-radius: 50%;
-      padding: 8px;
-      transition: background-color .5s;
-    }
-
-    paper-icon-button.primary[disabled] {
-      background-color: rgba(0, 0, 0, var(--dark-disabled-opacity));
-    }
-
-    [invisible] {
-      visibility: hidden !important;
-    }
-  </style>
   <template>
+    <style include="paper-material iron-flex iron-flex-alignment iron-positioning">
+      :host {
+        display: block;
+        position: relative;
+        font-size: 0px;
+        border-radius: 2px;
+
+        overflow: hidden;
+      }
+
+      .banner {
+        position: relative;
+
+        background-position: center center;
+        background-image: url(/static/images/card_media_player_bg.png);
+        background-repeat: no-repeat;
+        background-color: var(--primary-color);
+
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+      }
+
+      .banner:before {
+        display: block;
+        content: "";
+        width: 100%;
+        /* removed .25% from 16:9 ratio to fix YT black bars */
+        padding-top: 56%;
+        transition: padding-top .8s;
+      }
+
+      .banner.no-cover:before {
+        padding-top: 91px;
+      }
+
+      .banner > .cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
+
+        background-position: center center;
+        background-size: cover;
+        transition: opacity .8s;
+        opacity: 1;
+      }
+
+      .banner.is-off > .cover {
+        opacity: 0;
+      }
+
+      .banner > .caption {
+        @apply(--paper-font-caption);
+
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        background-color: rgba(0, 0, 0, var(--dark-secondary-opacity));
+
+        padding: 8px 16px;
+
+        text-transform: capitalize;
+        font-size: 14px;
+        font-weight: 500;
+        color: white;
+
+        transition: background-color .5s;
+      }
+
+      .banner.is-off > .caption {
+        background-color: initial;
+      }
+
+
+      .banner > .caption .title {
+        @apply(--paper-font-common-nowrap);
+        font-size: 1.2em;
+        margin: 8px 0 4px;
+      }
+
+      .controls {
+        @apply(--paper-font-body1);
+        padding: 8px;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        background-color: white;
+      }
+
+      .controls paper-icon-button {
+        width: 44px;
+        height: 44px;
+      }
+
+      paper-icon-button {
+        color: var(--primary-text-color);
+      }
+
+      paper-icon-button[disabled] {
+        color: var(--paper-grey-400);
+      }
+
+      paper-icon-button.primary {
+        width: 56px !important;
+        height: 56px !important;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        padding: 8px;
+        transition: background-color .5s;
+      }
+
+      paper-icon-button.primary[disabled] {
+        background-color: rgba(0, 0, 0, var(--dark-disabled-opacity));
+      }
+
+      [invisible] {
+        visibility: hidden !important;
+      }
+    </style>
+
     <div class$='[[computeBannerClasses(playerObj)]]'>
       <div class='cover' id='cover'></div>
 

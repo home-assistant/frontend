@@ -1,11 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module id="relative-ha-datetime">
-  <template>
-    <span>[[relativeTime]]</span>
-  </template>
-</dom-module>
-
 <script>
 Polymer({
   is: 'relative-ha-datetime',
@@ -23,11 +17,6 @@ Polymer({
 
     parsedDateTime: {
       type: Object,
-    },
-
-    relativeTime: {
-      type: String,
-      value: 'not set',
     },
   },
 
@@ -57,7 +46,8 @@ Polymer({
   },
 
   updateRelative: function () {
-    this.relativeTime = this.parsedDateTime ?
+    var root = Polymer.dom(this);
+    root.innerHTML = this.parsedDateTime ?
       window.moment(this.parsedDateTime).fromNow() : '';
   },
 });

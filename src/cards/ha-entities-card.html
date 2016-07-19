@@ -5,35 +5,36 @@
 <link rel='import' href='../state-summary/state-card-content.html'>
 
 <dom-module id='ha-entities-card'>
-  <style is="custom-style" include="iron-flex"></style>
-  <style>
-    .states {
-      padding-bottom: 16px;
-    }
-    .state {
-      padding: 4px 16px;
-      cursor: pointer;
-    }
-    .header {
-      @apply(--paper-font-headline);
-      /* overwriting line-height +8 because entity-toggle can be 40px height,
-         compensating this with reduced padding */
-      line-height: 40px;
-      color: var(--primary-text-color);
-      padding: 20px 16px 12px;
-      text-transform: capitalize;
-    }
-    .header .name {
-      @apply(--paper-font-common-nowrap);
-    }
-    ha-entity-toggle {
-      margin-left: 16px;
-    }
-    .header-more-info {
-      cursor: pointer;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .states {
+        padding-bottom: 16px;
+      }
+      .state {
+        padding: 4px 16px;
+        cursor: pointer;
+      }
+      .header {
+        @apply(--paper-font-headline);
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+        text-transform: capitalize;
+      }
+      .header .name {
+        @apply(--paper-font-common-nowrap);
+      }
+      ha-entity-toggle {
+        margin-left: 16px;
+      }
+      .header-more-info {
+        cursor: pointer;
+      }
+    </style>
+
     <ha-card>
       <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
         <div class='flex name'>[[computeTitle(states, groupEntity)]]</div>

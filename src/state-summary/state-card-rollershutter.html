@@ -4,20 +4,20 @@
 <link rel="import" href="../components/state-info.html">
 
 <dom-module id="state-card-rollershutter">
-  <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
-  <style>
-  :host {
-    line-height: 1.5;
-  }
-
-  .state {
-    text-align: right;
-    white-space: nowrap;
-    width: 127px;
-  }
-
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      :host {
+        line-height: 1.5;
+      }
+
+      .state {
+        text-align: right;
+        white-space: nowrap;
+        width: 127px;
+      }
+    </style>
+
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>

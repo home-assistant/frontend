@@ -3,12 +3,13 @@
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
 <dom-module id="notification-manager">
-  <style>
-    paper-toast {
-      z-index: 1;
-    }
-  </style>
   <template>
+    <style>
+      paper-toast {
+        z-index: 1;
+      }
+    </style>
+
     <paper-toast id="toast" text='{{text}}' no-cancel-on-outside-click='[[neg]]'></paper-toast>
   </template>
 </dom-module>
