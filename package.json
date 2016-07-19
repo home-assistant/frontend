@@ -40,6 +40,7 @@
     "eslint-plugin-html": "^1.5.1",
     "eslint-plugin-import": "^1.11.0",
     "html-minifier": "^3.0.1",
+    "hydrolysis": "^1.24.1",
     "polymer-cli": "^0.12.0",
     "rollup": "^0.34.1",
     "rollup-plugin-babel": "^2.6.1",

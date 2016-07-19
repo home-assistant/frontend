@@ -2,6 +2,7 @@
 
 var Vulcanize = require('vulcanize');
 var minify = require('html-minifier');
+var hyd = require('hydrolysis');
 var fs = require('fs');
 
 if (!fs.existsSync('build')) {
@@ -32,14 +33,12 @@ const baseVulcanOptions = {
   stripComments: true,
 };
 
-const vulcan = new Vulcanize({
+const panelVulcan = new Vulcanize({
   inlineScripts: true,
   inlineCss: true,
   implicitStrip: true,
   stripComments: true,
-  stripExcludes: [
-    'bower_components/polymer/polymer.html',
-  ],
+  stripExcludes: undefined,
 });
 
 const toProcess = [
@@ -58,13 +57,13 @@ fs.readdirSync('./panels').forEach(panel => {
   toProcess.push({
     source: `panels/${panel}/ha-panel-${panel}.html`,
     output: `panels/ha-panel-${panel}.html`,
+    vulcan: panelVulcan,
   });
 });
 
 function process(entry) {
   console.log('Processing', entry.source);
-  const vulc = entry.vulcan || vulcan;
-  vulc.process(entry.source, (err, inlinedHtml) => {
+  entry.vulcan.process(entry.source, (err, inlinedHtml) => {
     if (err !== null) {
       console.error(entry.source, err);
       return;
@@ -80,4 +79,11 @@ function process(entry) {
   });
 }
 
-process(toProcess.pop());
+// Fetch all dependencies of main app and exclude them from panels
+hyd.Analyzer.analyze('src/home-assistant.html')
+    .then(function (analyzer) {
+      return analyzer._getDependencies('src/home-assistant.html');
+    })
+    .then(deps => { panelVulcan.stripExcludes = deps; })
+    // And then start vulcanizing!!
+    .then(() => process(toProcess.pop()));
