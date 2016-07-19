@@ -22,7 +22,7 @@
     "watch_ru_all": "npm run watch_ru_core | npm run watch_ru_demo",
     "watch_ru_core": "rollup --config rollup/core.js --watch",
     "watch_ru_demo": "rollup --config rollup/demo.js --watch",
-    "test": "eslint src panels --ext html"
+    "test": "eslint src panels --ext html && ls -1 src/**/*.html | xargs polymer lint --input"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "MIT",
