@@ -22,3 +22,77 @@
     </template>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'more-info-group',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+
+    states: {
+      type: Array,
+      bindNuclear: hass => [
+        hass.moreInfoGetters.currentEntity,
+        hass.entityGetters.entityMap,
+        (currentEntity, entities) => {
+          // weird bug??
+          if (!currentEntity) {
+            return [];
+          }
+          return currentEntity.attributes.entity_id.map(
+            entities.get.bind(entities));
+        },
+      ],
+    },
+  },
+
+  observers: [
+    'statesChanged(stateObj, states)',
+  ],
+
+  statesChanged: function (stateObj, states) {
+    var groupDomainStateObj = false;
+    var baseStateObj;
+    var i;
+    var state;
+    var el;
+
+    if (states && states.length > 0) {
+      baseStateObj = states[0];
+
+      groupDomainStateObj = baseStateObj.set('entityId', stateObj.entityId).set(
+          'attributes', Object.assign({}, baseStateObj.attributes));
+
+      for (i = 0; i < states.length; i++) {
+        state = states[i];
+        if (state && state.domain) {
+          if (groupDomainStateObj.domain !== state.domain) {
+            groupDomainStateObj = false;
+          }
+        }
+      }
+    }
+
+    if (!groupDomainStateObj) {
+      el = Polymer.dom(this.$.groupedControlDetails);
+      if (el.lastChild) {
+        el.removeChild(el.lastChild);
+      }
+    } else {
+      window.hassUtil.dynamicContentUpdater(
+        this.$.groupedControlDetails,
+          'MORE-INFO-' + window.hassUtil.stateMoreInfoType(groupDomainStateObj).toUpperCase(),
+          { stateObj: groupDomainStateObj });
+    }
+  },
+});
+</script>

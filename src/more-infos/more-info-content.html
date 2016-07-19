@@ -21,3 +21,28 @@
     }
   </style>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'more-info-content',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+      observer: 'stateObjChanged',
+    },
+  },
+
+  stateObjChanged: function (stateObj) {
+    if (!stateObj) return;
+
+    window.hassUtil.dynamicContentUpdater(
+      this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
+      { hass: this.hass, stateObj: stateObj });
+  },
+});
+</script>

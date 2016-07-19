@@ -7,63 +7,63 @@
 <link rel="import" href="../components/ha-view-tabs.html">
 
 <dom-module id="partial-cards">
-  <style is="custom-style" include="iron-flex iron-positioning"></style>
-  <style>
-    :host {
-      display: block;
-      -ms-user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-    }
-
-    paper-scroll-header-panel {
-      --paper-scroll-header-panel-container: {
-        background-color: #E5E5E5;
-      };
-    }
-
-    paper-scroll-header-panel[has-views] paper-toolbar {
-      height: 104px;
-    }
-
-    paper-toolbar:after {
-      content: "";
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      bottom: -5px;
-      width: 100%;
-      height: 5px;
-      pointer-events: none;
-      opacity: 0;
-      box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
-      will-change: opacity;
-      transition: opacity 0.4s;
-    }
-
-    paper-scroll-header-panel.raised paper-toolbar:after {
-      opacity: 1;
-    }
-
-    .menu-icon {
-      margin-right: 24px;
-    }
-
-    #menu > .title {
-      line-height: 40px;
-    }
-
-    #menu > .title > span {
-      pointer-events: auto;
-    }
-
-    .views {
-      padding-left: 12px;
-      --paper-tabs-selection-bar-color: #FFF;
-    }
-  </style>
-
   <template>
+    <style is="custom-style" include="iron-flex iron-positioning"></style>
+    <style>
+      :host {
+        display: block;
+        -ms-user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+      }
+
+      paper-scroll-header-panel {
+        --paper-scroll-header-panel-container: {
+          background-color: #E5E5E5;
+        };
+      }
+
+      paper-scroll-header-panel[has-views] paper-toolbar {
+        height: 104px;
+      }
+
+      paper-toolbar:after {
+        content: "";
+        position: absolute;
+        left: 0px;
+        right: 0px;
+        bottom: -5px;
+        width: 100%;
+        height: 5px;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+        will-change: opacity;
+        transition: opacity 0.4s;
+      }
+
+      paper-scroll-header-panel.raised paper-toolbar:after {
+        opacity: 1;
+      }
+
+      .menu-icon {
+        margin-right: 24px;
+      }
+
+      #menu > .title {
+        line-height: 40px;
+      }
+
+      #menu > .title > span {
+        pointer-events: auto;
+      }
+
+      .views {
+        padding-left: 12px;
+        --paper-tabs-selection-bar-color: #FFF;
+      }
+    </style>
+
     <paper-scroll-header-panel id='panel'
       condenses keep-condensed-header class='fit' has-views$='[[hasViews]]'
       header-height="[[computeHeaderHeight(hasViews, narrow)]]"

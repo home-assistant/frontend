@@ -4,38 +4,48 @@
 <link rel='import' href='../components/loading-box.html'>
 
 <dom-module id='more-info-configurator'>
-  <style is="custom-style" include="iron-flex"></style>
-  <style>
-    p {
-      margin: 8px 0;
-    }
-
-    p > img {
-      max-width: 100%;
-    }
-
-    p.center {
-      text-align: center;
-    }
-
-    p.error {
-      color: #C62828;
-    }
-
-    p.submit {
-      text-align: center;
-      height: 41px;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      p {
+        margin: 8px 0;
+      }
+
+      p > img {
+        max-width: 100%;
+      }
+
+      p.center {
+        text-align: center;
+      }
+
+      p.error {
+        color: #C62828;
+      }
+
+      p.submit {
+        text-align: center;
+        height: 41px;
+      }
+    </style>
+
     <div class='layout vertical'>
       <template is='dom-if' if='[[isConfigurable]]'>
 
-        <p hidden$='[[!stateObj.attributes.description]]'>[[stateObj.attributes.description]]
-            <a hidden$='[[!stateObj.attributes.link_url]]' href='[[stateObj.attributes.link_url]]' target='_blank'>[[stateObj.attributes.link_name]]</a>
+        <p hidden$='[[!stateObj.attributes.description]]'>
+          [[stateObj.attributes.description]]
+          <a
+            hidden$='[[!stateObj.attributes.link_url]]'
+            href='[[stateObj.attributes.link_url]]'
+            target='_blank'
+          >
+            [[stateObj.attributes.link_name]]
+          </a>
         </p>
 
-        <p class='error' hidden$='[[!stateObj.attributes.errors]]'>[[stateObj.attributes.errors]]</p>
+        <p class='error' hidden$='[[!stateObj.attributes.errors]]'>
+          [[stateObj.attributes.errors]]
+        </p>
 
         <p class='center' hidden$='[[!stateObj.attributes.description_image]]'>
           <img src='[[stateObj.attributes.description_image]]' />
@@ -43,14 +53,19 @@
 
         <template is='dom-repeat' items='[[stateObj.attributes.fields]]'>
           <paper-input-container id='paper-input-fields-{{item.id}}'>
-            <label>{{item.name}}</label>
-            <input is="iron-input" type="{{item.type}}" id='{{item.id}}' on-change="fieldChanged"/>
+            <label>[[item.name]]</label>
+            <input is="iron-input" type="[[item.type]]" id='[[item.id]]' on-change="fieldChanged"/>
           </paper-input-container>
         </template>
 
         <p class='submit'>
-          <paper-button raised on-tap='submitClicked'
-                        hidden$='[[isConfiguring]]'>[[submitCaption]]</paper-button>
+          <paper-button
+            raised
+            on-tap='submitClicked'
+            hidden$='[[isConfiguring]]'
+          >
+            [[submitCaption]]
+          </paper-button>
 
           <loading-box hidden$='[[!isConfiguring]]'>Configuring</loading-box>
         </p>
@@ -59,3 +74,83 @@
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'more-info-configurator',
+
+  behaviors: [window.hassBehavior],
+
+  properties: {
+    stateObj: {
+      type: Object,
+    },
+
+    action: {
+      type: String,
+      value: 'display',
+    },
+
+    isStreaming: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return hass.streamGetters.isStreamingEvents;
+      },
+    },
+
+    isConfigurable: {
+      type: Boolean,
+      computed: 'computeIsConfigurable(stateObj)',
+    },
+
+    isConfiguring: {
+      type: Boolean,
+      value: false,
+    },
+
+    submitCaption: {
+      type: String,
+      computed: 'computeSubmitCaption(stateObj)',
+    },
+
+    fieldInput: {
+      type: Object, value: {},
+    },
+  },
+
+  computeIsConfigurable: function (stateObj) {
+    return stateObj.state === 'configure';
+  },
+
+  computeSubmitCaption: function (stateObj) {
+    return stateObj.attributes.submit_caption || 'Set configuration';
+  },
+
+  fieldChanged: function (ev) {
+    var el = ev.target;
+    this.fieldInput[el.id] = el.value;
+  },
+
+  submitClicked: function () {
+    var data = {
+      configure_id: this.stateObj.attributes.configure_id,
+      fields: this.fieldInput,
+    };
+
+    this.isConfiguring = true;
+
+    this.hass.serviceActions.callService('configurator', 'configure', data).then(
+      function () {
+        this.isConfiguring = false;
+
+        if (!this.isStreaming) {
+          this.hass.syncActions.fetchAll();
+        }
+      }.bind(this),
+      function () {
+        this.isConfiguring = false;
+      }.bind(this)
+    );
+  },
+});
+</script>

@@ -25,7 +25,7 @@
   <template>
     <google-legacy-loader on-api-load="googleApiLoaded"></google-legacy-loader>
 
-    <div hidden$="{{!isLoading}}" class='loading-container'>
+    <div hidden$="[[!isLoading]]" class='loading-container'>
       <loading-box>Updating history data</loading-box>
     </div>
 
@@ -40,10 +40,116 @@
       </state-history-chart-timeline>
 
       <template is='dom-repeat' items='[[groupedStateHistory.line]]'>
-        <state-history-chart-line unit='[[extractUnit(item)]]'
-          data='[[extractData(item)]]' is-single-device='[[isSingleDevice]]'>
+        <state-history-chart-line
+          unit='[[item.unit]]'
+          data='[[item.data]]'
+          is-single-device='[[isSingleDevice]]'>
         </state-history-chart-line>
       </template>
     </div>
   </template>
 </dom-module>
+
+<script>
+Polymer({
+  is: 'state-history-charts',
+
+  properties: {
+    stateHistory: {
+      type: Object,
+    },
+
+    isLoadingData: {
+      type: Boolean,
+      value: false,
+    },
+
+    apiLoaded: {
+      type: Boolean,
+      value: false,
+    },
+
+    isLoading: {
+      type: Boolean,
+      computed: 'computeIsLoading(isLoadingData, apiLoaded)',
+    },
+
+    groupedStateHistory: {
+      type: Object,
+      computed: 'computeGroupedStateHistory(isLoading, stateHistory)',
+    },
+
+    isSingleDevice: {
+      type: Boolean,
+      computed: 'computeIsSingleDevice(stateHistory)',
+    },
+  },
+
+  computeIsSingleDevice: function (stateHistory) {
+    return stateHistory && stateHistory.size === 1;
+  },
+
+  computeGroupedStateHistory: function (isLoading, stateHistory) {
+    var lineChartDevices = {};
+    var timelineDevices = [];
+    var unitStates;
+
+    if (isLoading || !stateHistory) {
+      return { line: [], timeline: [] };
+    }
+
+    stateHistory.forEach(function (stateInfo) {
+      var stateWithUnit;
+      var unit;
+
+      if (!stateInfo || stateInfo.size === 0) {
+        return;
+      }
+
+      stateWithUnit = stateInfo.find(
+        (state) => 'unit_of_measurement' in state.attributes);
+
+      unit = stateWithUnit ?
+        stateWithUnit.attributes.unit_of_measurement : false;
+
+      if (!unit) {
+        timelineDevices.push(stateInfo.toArray());
+      } else if (unit in lineChartDevices) {
+        lineChartDevices[unit].push(stateInfo.toArray());
+      } else {
+        lineChartDevices[unit] = [stateInfo.toArray()];
+      }
+    });
+
+    timelineDevices = timelineDevices.length > 0 && timelineDevices;
+
+    unitStates = Object.keys(lineChartDevices).map(
+      function (unit) {
+        return { unit: unit, data: lineChartDevices[unit] };
+      });
+
+    return { line: unitStates, timeline: timelineDevices };
+  },
+
+  googleApiLoaded: function () {
+    window.google.load('visualization', '1', {
+      packages: ['timeline', 'corechart'],
+      callback: function () {
+        this.apiLoaded = true;
+      }.bind(this),
+    });
+  },
+
+  computeContentClasses: function (isLoading) {
+    return isLoading ? 'loading' : '';
+  },
+
+  computeIsLoading: function (isLoadingData, apiLoaded) {
+    return isLoadingData || !apiLoaded;
+  },
+
+  computeIsEmpty: function (stateHistory) {
+    return stateHistory && stateHistory.size === 0;
+  },
+});
+</script>

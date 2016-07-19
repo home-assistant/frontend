@@ -1,10 +1,122 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<dom-module is='state-history-chart-timeline'>
-  <style>
-    :host {
-      display: block;
+<script>
+Polymer({
+  is: 'state-history-chart-timeline',
+
+  properties: {
+    data: {
+      type: Object,
+      observer: 'dataChanged',
+    },
+
+    isAttached: {
+      type: Boolean,
+      value: false,
+      observer: 'dataChanged',
+    },
+  },
+
+  created: function () {
+    this.style.display = 'block';
+  },
+
+  attached: function () {
+    this.isAttached = true;
+  },
+
+  dataChanged: function () {
+    this.drawChart();
+  },
+
+  drawChart: function () {
+    var root = Polymer.dom(this);
+    var stateHistory = this.data;
+    var chart;
+    var dataTable;
+    var startTime;
+    var endTime;
+    var numTimelines;
+
+    if (!this.isAttached) {
+      return;
     }
-  </style>
-  <template></template>
-</dom-module>
+
+    while (root.node.lastChild) {
+      root.node.removeChild(root.node.lastChild);
+    }
+
+    if (!stateHistory || stateHistory.length === 0) {
+      return;
+    }
+
+    chart = new window.google.visualization.Timeline(this);
+    dataTable = new window.google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Entity' });
+    dataTable.addColumn({ type: 'string', id: 'State' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+
+    function addRow(entityDisplay, stateStr, start, end) {
+      var stateDisplay = stateStr.replace(/_/g, ' ');
+      dataTable.addRow([entityDisplay, stateDisplay, start, end]);
+    }
+
+    startTime = new Date(
+      stateHistory.reduce(
+        function (minTime, stateInfo) {
+          return Math.min(minTime, stateInfo[0].lastChangedAsDate);
+        }, new Date()));
+
+    // end time is Math.min(curTime, start time + 1 day)
+    endTime = new Date(startTime);
+    endTime.setDate(endTime.getDate() + 1);
+    if (endTime > new Date()) {
+      endTime = new Date();
+    }
+
+    numTimelines = 0;
+    // stateHistory is a list of lists of sorted state objects
+    stateHistory.forEach(function (stateInfo) {
+      var entityDisplay;
+      var newLastChanged;
+      var prevState = null;
+      var prevLastChanged = null;
+
+      if (stateInfo.length === 0) return;
+
+      entityDisplay = stateInfo[0].entityDisplay;
+
+      stateInfo.forEach(function (state) {
+        if (prevState !== null && state.state !== prevState) {
+          newLastChanged = state.lastChangedAsDate;
+
+          addRow(entityDisplay, prevState, prevLastChanged, newLastChanged);
+
+          prevState = state.state;
+          prevLastChanged = newLastChanged;
+        } else if (prevState === null) {
+          prevState = state.state;
+          prevLastChanged = state.lastChangedAsDate;
+        }
+      });
+
+      addRow(entityDisplay, prevState, prevLastChanged, endTime);
+      numTimelines++;
+    });
+
+    chart.draw(dataTable, {
+      height: 55 + (numTimelines * 42),
+
+      timeline: {
+        showRowLabels: stateHistory.length > 1,
+      },
+
+      hAxis: {
+        format: 'H:mm',
+      },
+    });
+  },
+});
+</script>
