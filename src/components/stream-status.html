@@ -4,23 +4,29 @@
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <dom-module id="stream-status">
-  <style>
-  :host {
-    display: inline-block;
-    height: 24px;
-  }
-
-  paper-toggle-button {
-    vertical-align: middle;
-  }
-
-  iron-icon {
-    opacity: var(--dark-primary-opacity);
-  }
-  </style>
   <template>
+    <style>
+    :host {
+      display: inline-block;
+      height: 24px;
+    }
+
+    paper-toggle-button {
+      vertical-align: middle;
+    }
+
+    iron-icon {
+      opacity: var(--dark-primary-opacity);
+    }
+    </style>
+
     <iron-icon icon="mdi:alert" hidden$="[[!hasError]]"></iron-icon>
-    <paper-toggle-button id="toggle" on-change='toggleChanged' checked$='[[isStreaming]]' hidden$="[[hasError]]"></paper-toggle-button>
+    <paper-toggle-button
+      id="toggle"
+      on-change='toggleChanged'
+      checked$='[[isStreaming]]'
+      hidden$="[[hasError]]"
+    ></paper-toggle-button>
   </template>
 </dom-module>
 

@@ -2,40 +2,41 @@
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
 <dom-module id='ha-camera-card'>
-  <style include="paper-material">
-    :host {
-      display: block;
-      position: relative;
-      font-size: 0px;
-      border-radius: 2px;
-      cursor: pointer;
-      min-height: 48px;
-    }
-    .camera-feed {
-      width: 100%;
-      height: auto;
-      border-radius: 2px;
-    }
-    .caption {
-      @apply(--paper-font-common-nowrap);
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      bottom: 0px;
-      border-bottom-left-radius: 2px;
-      border-bottom-right-radius: 2px;
-
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 16px;
-
-      text-transform: capitalize;
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 16px;
-      color: white;
-    }
-  </style>
   <template>
+    <style include="paper-material">
+      :host {
+        display: block;
+        position: relative;
+        font-size: 0px;
+        border-radius: 2px;
+        cursor: pointer;
+        min-height: 48px;
+      }
+      .camera-feed {
+        width: 100%;
+        height: auto;
+        border-radius: 2px;
+      }
+      .caption {
+        @apply(--paper-font-common-nowrap);
+        position: absolute;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 16px;
+
+        text-transform: capitalize;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 16px;
+        color: white;
+      }
+    </style>
+
     <img src='[[cameraFeedSrc]]' class='camera-feed' hidden='[[!imageLoaded]]'
       on-load='imageLoadSuccess' on-error='imageLoadFail' alt='[[stateObj.entityDisplay]]'>
     <div class='caption'>

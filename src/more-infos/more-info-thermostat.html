@@ -3,22 +3,23 @@
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
 
 <dom-module id='more-info-thermostat'>
-  <style is="custom-style" include="iron-flex"></style>
-  <style>
-    paper-slider {
-      width: 100%;
-    }
-
-    .away-mode-toggle {
-      display: none;
-      margin-top: 16px;
-    }
-
-    .has-away_mode .away-mode-toggle {
-      display: block;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      paper-slider {
+        width: 100%;
+      }
+
+      .away-mode-toggle {
+        display: none;
+        margin-top: 16px;
+      }
+
+      .has-away_mode .away-mode-toggle {
+        display: block;
+      }
+    </style>
+
     <div class$='[[computeClassNames(stateObj)]]'>
       <div>
         <div>Target Temperature</div>

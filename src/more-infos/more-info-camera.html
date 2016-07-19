@@ -1,17 +1,17 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <dom-module id='more-info-camera'>
-  <style>
-    :host {
-      max-width:640px;
-    }
-
-    .camera-image {
-      width: 100%;
-    }
-  </style>
-
   <template>
+    <style>
+      :host {
+        max-width:640px;
+      }
+
+      .camera-image {
+        width: 100%;
+      }
+    </style>
+
     <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj)]]"
          on-load='imageLoaded' alt='[[stateObj.entityDisplay]]' />
   </template>

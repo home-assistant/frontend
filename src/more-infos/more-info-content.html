@@ -14,14 +14,6 @@
 <link rel='import' href='more-info-lock.html'>
 <link rel='import' href='more-info-hvac.html'>
 
-<dom-module id='more-info-content'>
-  <style>
-    :host {
-      display: block;
-    }
-  </style>
-</dom-module>
-
 <script>
 Polymer({
   is: 'more-info-content',
@@ -35,6 +27,10 @@ Polymer({
       type: Object,
       observer: 'stateObjChanged',
     },
+  },
+
+  created: function () {
+    this.style.display = 'block';
   },
 
   stateObjChanged: function (stateObj) {

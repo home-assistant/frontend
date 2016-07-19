@@ -3,31 +3,32 @@
 <link rel='import' href='../components/ha-card.html'>
 
 <dom-module id='ha-introduction-card'>
-  <style>
-    :host {
-      @apply(--paper-font-body1)
-    }
-    a {
-      color: var(--dark-primary-color);
-    }
-    ul {
-      margin: 8px;
-      padding-left: 16px;
-    }
-    li {
-      margin-bottom: 8px;
-    }
-    .content {
-      padding: 0 16px 16px;
-    }
-    .install {
-      display: block;
-      line-height: 1.5em;
-      margin-top: 8px;
-      margin-bottom: 16px;
-    }
-  </style>
   <template>
+    <style>
+      :host {
+        @apply(--paper-font-body1)
+      }
+      a {
+        color: var(--dark-primary-color);
+      }
+      ul {
+        margin: 8px;
+        padding-left: 16px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      .content {
+        padding: 0 16px 16px;
+      }
+      .install {
+        display: block;
+        line-height: 1.5em;
+        margin-top: 8px;
+        margin-bottom: 16px;
+      }
+    </style>
+
     <ha-card header="Welcome Home!">
       <div class='content'>
         <template is='dom-if' if='[[hass.demo]]'>

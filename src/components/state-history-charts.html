@@ -7,22 +7,23 @@
 <link rel="import" href="./state-history-chart-line.html">
 
 <dom-module id="state-history-charts">
-  <style>
-  :host {
-    display: block;
-  }
-
-  .loading-container {
-    text-align: center;
-    padding: 8px;
-  }
-
-  .loading {
-    height: 0px;
-    overflow: hidden;
-  }
-  </style>
   <template>
+    <style>
+    :host {
+      display: block;
+    }
+
+    .loading-container {
+      text-align: center;
+      padding: 8px;
+    }
+
+    .loading {
+      height: 0px;
+      overflow: hidden;
+    }
+    </style>
+
     <google-legacy-loader on-api-load="googleApiLoaded"></google-legacy-loader>
 
     <div hidden$="[[!isLoading]]" class='loading-container'>

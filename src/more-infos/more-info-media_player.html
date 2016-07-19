@@ -3,38 +3,39 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <dom-module id='more-info-media_player'>
-  <style is="custom-style" include="iron-flex"></style>
-  <style>
-    .media-state {
-      text-transform: capitalize;
-    }
-
-    paper-icon-button[highlight] {
-      color: var(--accent-color);
-    }
-
-    .volume {
-      margin-bottom: 8px;
-
-      max-height: 0px;
-      overflow: hidden;
-      transition: max-height .5s ease-in;
-    }
-
-    .has-volume_level .volume {
-      max-height: 40px;
-    }
-
-    iron-icon.source-input {
-      padding: 7px;
-      margin-top: 15px;
-    }
-
-    paper-dropdown-menu.source-input {
-      margin-left: 10px;
-    }
-  </style>
   <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .media-state {
+        text-transform: capitalize;
+      }
+
+      paper-icon-button[highlight] {
+        color: var(--accent-color);
+      }
+
+      .volume {
+        margin-bottom: 8px;
+
+        max-height: 0px;
+        overflow: hidden;
+        transition: max-height .5s ease-in;
+      }
+
+      .has-volume_level .volume {
+        max-height: 40px;
+      }
+
+      iron-icon.source-input {
+        padding: 7px;
+        margin-top: 15px;
+      }
+
+      paper-dropdown-menu.source-input {
+        margin-left: 10px;
+      }
+    </style>
+
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='layout horizontal'>
         <div class='flex'>

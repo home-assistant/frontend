@@ -3,28 +3,29 @@
 <link rel='import' href='../../bower_components/paper-slider/paper-slider.html'>
 
 <dom-module id='ha-labeled-slider'>
-  <style>
-    :host {
-      display: block;
-      padding-bottom: 16px;
-    }
-
-    .title {
-      margin-bottom: 16px;
-      opacity: var(--dark-primary-opacity);
-    }
-
-    iron-icon {
-      float: left;
-      margin-top: 4px;
-      opacity: var(--dark-secondary-opacity);
-    }
-
-    .slider-container {
-      margin-left: 24px;
-    }
-  </style>
   <template>
+    <style>
+      :host {
+        display: block;
+        padding-bottom: 16px;
+      }
+
+      .title {
+        margin-bottom: 16px;
+        opacity: var(--dark-primary-opacity);
+      }
+
+      iron-icon {
+        float: left;
+        margin-top: 4px;
+        opacity: var(--dark-secondary-opacity);
+      }
+
+      .slider-container {
+        margin-left: 24px;
+      }
+    </style>
+
     <div class='title'>[[caption]]</div>
     <iron-icon icon='[[icon]]'></iron-icon>
     <div class='slider-container'>

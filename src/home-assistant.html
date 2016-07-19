@@ -15,15 +15,6 @@
 <link rel='import' href='./resources/panel-imports.html'>
 
 <dom-module id='home-assistant'>
-  <style>
-    :host {
-      font-family: 'Roboto', 'Noto', sans-serif;
-      font-weight: 300;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-  </style>
-
   <template>
     <home-assistant-main hass='[[hass]]' hidden$='[[!loaded]]'></home-assistant-main>
 
