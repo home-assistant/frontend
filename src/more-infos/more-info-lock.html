@@ -11,7 +11,7 @@
       }
     </style>
 
-    <div hidden='[[!stateObj.attributes.code_format]]'>
+    <div hidden$='[[!stateObj.attributes.code_format]]'>
       <paper-input label='code' value='{{enteredCode}}' pattern='[[stateObj.attributes.code_format]]' type='password'></paper-input>
       <paper-button on-tap='handleUnlockTap' hidden$='[[!isLocked]]'>Unlock</paper-button>
       <paper-button on-tap='handleLockTap' hidden$=[[isLocked]]>Lock</paper-button>
