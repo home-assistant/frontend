@@ -217,7 +217,7 @@ Polymer({
 
     if (temperature === this.stateObj.attributes.temperature) return;
 
-    this.callServiceHelper('set_temperature', { temperature });
+    this.callServiceHelper('set_temperature', { temperature: temperature });
   },
 
   targetHumiditySliderChanged: function (ev) {
@@ -225,7 +225,7 @@ Polymer({
 
     if (humidity === this.stateObj.attributes.humidity) return;
 
-    this.callServiceHelper('set_humidity', { humidity });
+    this.callServiceHelper('set_humidity', { humidity: humidity });
   },
 
   awayToggleChanged: function (ev) {

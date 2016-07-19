@@ -6,8 +6,9 @@
 
   function range(start, end) {
     var result = [];
+    var i;
 
-    for (let i = start; i < end; i++) {
+    for (i = start; i < end; i++) {
       result.push(i);
     }
 
@@ -151,14 +152,15 @@
           // We differentiate between thermostats that have a target temperature
           // range versus ones that have just a target temperature
           hasTargetRange = states.reduce(
-            (cum, cur) => cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low,
-            false);
+            function (cum, cur) {
+              return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
+            }, false);
 
-          dataTable.addColumn('number', `${name} current temperature`);
+          dataTable.addColumn('number', name + ' current temperature');
 
           if (hasTargetRange) {
-            dataTable.addColumn('number', `${name} target temperature high`);
-            dataTable.addColumn('number', `${name} target temperature low`);
+            dataTable.addColumn('number', name + ' target temperature high');
+            dataTable.addColumn('number', name + ' target temperature low');
 
             noInterpolations = [false, true, true];
 
@@ -169,7 +171,7 @@
               pushData([state.lastUpdatedAsDate, curTemp, targetHigh, targetLow], noInterpolations);
             };
           } else {
-            dataTable.addColumn('number', `${name} target temperature`);
+            dataTable.addColumn('number', name + ' target temperature');
 
             noInterpolations = [false, true];
 
