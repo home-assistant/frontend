@@ -108,7 +108,7 @@ Polymer({
       }
 
       stateWithUnit = stateInfo.find(
-        (state) => 'unit_of_measurement' in state.attributes);
+        function (state) { return 'unit_of_measurement' in state.attributes; });
 
       unit = stateWithUnit ?
         stateWithUnit.attributes.unit_of_measurement : false;

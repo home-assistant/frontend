@@ -42,18 +42,20 @@ Polymer({
 
     states: {
       type: Array,
-      bindNuclear: hass => [
-        hass.moreInfoGetters.currentEntity,
-        hass.entityGetters.entityMap,
-        (currentEntity, entities) => {
-          // weird bug??
-          if (!currentEntity) {
-            return [];
-          }
-          return currentEntity.attributes.entity_id.map(
-            entities.get.bind(entities));
-        },
-      ],
+      bindNuclear: function (hass) {
+        return [
+          hass.moreInfoGetters.currentEntity,
+          hass.entityGetters.entityMap,
+          function (currentEntity, entities) {
+            // weird bug??
+            if (!currentEntity) {
+              return [];
+            }
+            return currentEntity.attributes.entity_id.map(
+              entities.get.bind(entities));
+          },
+        ];
+      },
     },
   },
 
