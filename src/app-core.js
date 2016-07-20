@@ -31,5 +31,11 @@ hass.reactor.batch(function () {
 
 setTimeout(hass.startLocalStoragePreferencesSync, 5000);
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js');
+  });
+}
+
 // While we figure out how ha-entity-marker can keep it's references
 window.hass = hass;

@@ -82,14 +82,6 @@ Polymer({
                     });
   },
 
-  created: function () {
-    if (!('serviceWorker' in navigator)) {
-      return;
-    }
-
-    navigator.serviceWorker.register('/service_worker.js');
-  },
-
   ready: function () {
     this.loadIcons();
   },

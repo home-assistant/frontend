@@ -1,21 +1,69 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<link rel="import" href="./logbook-entry.html">
+<link rel="import" href="../../src/components/domain-icon.html">
+<link rel="import" href="../../src/components/display-time.html">
+<link rel="import" href="../../src/components/relative-ha-datetime.html">
+
 
 <dom-module id="ha-logbook">
   <template>
+    <style is="custom-style" include="iron-flex"></style>
     <style>
       :host {
         display: block;
         padding: 16px;
+      }
+
+      .entry {
+        @apply(--paper-font-body1);
+
+        display: block;
+        line-height: 2em;
+      }
+
+      display-time {
+        width: 55px;
+        font-size: .8em;
+        color: var(--secondary-text-color);
+      }
+
+      domain-icon {
+        margin: 0 8px 0 16px;
+        color: var(--primary-text-color);
+      }
+
+      .name {
+        text-transform: capitalize;
+      }
+
+      .message {
+        color: var(--primary-text-color);
+      }
+
+      a {
+        color: var(--primary-color);
       }
     </style>
 
     <template is='dom-if' if='[[!entries.length]]'>
       No logbook entries found.
     </template>
+
     <template is='dom-repeat' items="[[entries]]">
-      <logbook-entry entry-obj="[[item]]" hass='[[hass]]'></logbook-entry>
+      <div class='horizontal layout entry'>
+        <display-time date-obj="[[item.when]]"></display-time>
+        <domain-icon domain="[[item.domain]]" class='icon'></domain-icon>
+        <div class='message' flex>
+          <template is='dom-if' if="[[!item.entityId]]">
+            <span class='name'>[[item.name]]</span>
+          </template>
+          <template is='dom-if' if="[[item.entityId]]">
+            <a href='#' on-click="entityClicked" class='name'>[[item.name]]</a>
+          </template>
+          <span> </span>
+          <span>[[item.message]]</span>
+        </div>
+      </div>
     </template>
   </template>
 </dom-module>
