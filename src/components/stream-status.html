@@ -8,18 +8,22 @@
 <dom-module id="stream-status">
   <template>
     <style>
-    :host {
-      display: inline-block;
-      height: 24px;
-    }
+      :host {
+        display: inline-block;
+        height: 24px;
+      }
 
-    paper-toggle-button {
-      vertical-align: middle;
-    }
+      paper-toggle-button {
+        vertical-align: middle;
+      }
 
-    iron-icon {
-      opacity: var(--dark-primary-opacity);
-    }
+      iron-icon {
+        opacity: var(--dark-primary-opacity);
+      }
+
+      [hidden] {
+        display: none !important;
+      }
     </style>
 
     <iron-icon icon="mdi:alert" hidden$="[[!hasError]]"></iron-icon>

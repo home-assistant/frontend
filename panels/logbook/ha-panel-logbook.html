@@ -20,6 +20,10 @@
     paper-input {
       max-width: 200px;
     }
+
+    [hidden] {
+      display: none !important;
+    }
     </style>
 
     <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
@@ -30,8 +34,12 @@
 
       <div>
         <div class='selected-date-container'>
-          <paper-input label='Showing entries for' id='datePicker'
-            value='[[selectedDate]]' on-focus='datepickerFocus'></paper-input>
+          <paper-input
+            label='Showing entries for'
+            id='datePicker'
+            value='[[selectedDate]]'
+            on-focus='datepickerFocus'
+          ></paper-input>
 
           <loading-box hidden$='[[!isLoading]]'>Loading logbook entries</loading-box>
         </div>
@@ -106,7 +114,7 @@ Polymer({
   },
 
   datepickerFocus: function () {
-    this.datePicker.adjustPosition();
+    // this.datePicker.adjustPosition();
   },
 
   attached: function () {

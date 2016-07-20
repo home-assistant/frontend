@@ -34,29 +34,17 @@ Polymer({
   },
 
   panelChanged: function (panel) {
-    if (!panel) {
-      // while (rootEl.lastChild) {
-      //   rootEl.removeChild(rootEl.lastChild);
-      // }
-      return;
-    }
-
-    const rootEl = Polymer.dom(this);
-    const tag = 'ha-panel-' + panel.get('component_name');
+    if (!panel) return;
 
     this.importHref(panel.get('url'));
 
-    while (rootEl.lastChild) {
-      rootEl.removeChild(rootEl.lastChild);
-    }
-
-    const customEl = document.createElement(tag);
-
-    customEl.hass = this.hass;
-    customEl.narrow = this.narrow;
-    customEl.showMenu = this.showMenu;
-    customEl.panel = panel.toJS();
-    rootEl.appendChild(customEl);
+    window.hassUtil.dynamicContentUpdater(
+      this, 'ha-panel-' + panel.get('component_name'), {
+        hass: this.hass,
+        narrow: this.narrow,
+        showMenu: this.showMenu,
+        panel: panel,
+      })
   },
 
   updateAttributes: function () {
