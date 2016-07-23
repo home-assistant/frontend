@@ -58,7 +58,7 @@
             <span class='name'>[[item.name]]</span>
           </template>
           <template is='dom-if' if="[[item.entityId]]">
-            <a href='#' on-click="entityClicked" class='name'>[[item.name]]</a>
+            <a href='#' on-tap="entityClicked" class='name'>[[item.name]]</a>
           </template>
           <span> </span>
           <span>[[item.message]]</span>
@@ -82,5 +82,10 @@ Polymer({
       value: [],
     },
   },
+
+  entityClicked: function (ev) {
+    ev.preventDefault();
+    this.hass.moreInfoActions.selectEntity(ev.model.item.entityId);
+  }
 });
 </script>
