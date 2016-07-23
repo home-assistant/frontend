@@ -43,8 +43,8 @@ const panelVulcan = new Vulcanize({
 
 const toProcess = [
   {
-    source: 'src/home-assistant.html',
-    output: 'frontend.html',
+    source: './src/home-assistant.html',
+    output: './build/frontend.html',
     vulcan: new Vulcanize(Object.assign({}, baseVulcanOptions, {
       stripExcludes: [
         'bower_components/font-roboto/roboto.html',
@@ -55,27 +55,25 @@ const toProcess = [
 
 fs.readdirSync('./panels').forEach(panel => {
   toProcess.push({
-    source: `panels/${panel}/ha-panel-${panel}.html`,
-    output: `panels/ha-panel-${panel}.html`,
+    source: `./panels/${panel}/ha-panel-${panel}.html`,
+    output: `./build/panels/ha-panel-${panel}.html`,
     vulcan: panelVulcan,
   });
 });
 
-function process(entry) {
-  console.log('Processing', entry.source);
-  entry.vulcan.process(entry.source, (err, inlinedHtml) => {
-    if (err !== null) {
-      console.error(entry.source, err);
-      return;
-    }
+function vulcanizeEntry(entry) {
+  return new Promise((resolve, reject) => {
+    console.log('Processing', entry.source);
+    entry.vulcan.process(entry.source, (err, inlinedHtml) => {
+      if (err !== null) {
+        reject(`${entry.source}: ${err}`);
+        return;
+      }
 
-    const out = 'build/' + entry.output;
-    console.log('Writing', out);
-    fs.writeFileSync(out, minifyHTML(inlinedHtml));
-
-    if (toProcess.length) {
-      process(toProcess.pop());
-    }
+      console.log('Writing', entry.output);
+      fs.writeFileSync(entry.output, minifyHTML(inlinedHtml));
+      resolve();
+    });
   });
 }
 
@@ -85,5 +83,7 @@ hyd.Analyzer.analyze('src/home-assistant.html')
       return analyzer._getDependencies('src/home-assistant.html');
     })
     .then(deps => { panelVulcan.stripExcludes = deps; })
-    // And then start vulcanizing!!
-    .then(() => process(toProcess.pop()));
+    // Chain all vulcanizing work as promises
+    .then(() => toProcess.reduce(
+      (p, entry) => p.then(() => vulcanizeEntry(entry)),
+      Promise.resolve()));
