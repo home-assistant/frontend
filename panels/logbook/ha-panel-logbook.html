@@ -72,17 +72,23 @@ Polymer({
 
     selectedDate: {
       type: String,
-      bindNuclear: function (hass) { return hass.logbookGetters.currentDate; },
+      bindNuclear: function (hass) {
+        return hass.logbookGetters.currentDate;
+      },
     },
 
     isLoading: {
       type: Boolean,
-      bindNuclear: function (hass) { return hass.logbookGetters.isLoadingEntries; },
+      bindNuclear: function (hass) {
+        return hass.logbookGetters.isLoadingEntries;
+      },
     },
 
     isStale: {
       type: Boolean,
-      bindNuclear: function (hass) { return hass.logbookGetters.isCurrentStale; },
+      bindNuclear: function (hass) {
+        return hass.logbookGetters.isCurrentStale;
+      },
       observer: 'isStaleChanged',
     },
 
@@ -114,7 +120,7 @@ Polymer({
   },
 
   datepickerFocus: function () {
-    // this.datePicker.adjustPosition();
+    this.datePicker.adjustPosition();
   },
 
   attached: function () {
