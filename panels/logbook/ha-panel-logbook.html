@@ -82,11 +82,11 @@ Polymer({
       value: null,
       bindNuclear: function (hass) {
         return [
-            hass.logbookGetters.currentDate,
-            function (currentDate) {
-                var dateObj = new Date(currentDate);
-                return dateObj.toLocaleDateString();
-            },
+          hass.logbookGetters.currentDate,
+          function (currentDate) {
+            var dateObj = new Date(currentDate);
+            return dateObj.toLocaleDateString();
+          },
         ];
       },
     },
