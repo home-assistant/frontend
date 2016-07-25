@@ -100,11 +100,11 @@ Polymer({
       value: null,
       bindNuclear: function (hass) {
         return [
-            hass.entityHistoryGetters.currentDate,
-            function (currentDate) {
-                var dateObj = new Date(currentDate);
-                return dateObj.toLocaleDateString();
-            },
+          hass.entityHistoryGetters.currentDate,
+          function (currentDate) {
+            var dateObj = new Date(currentDate);
+            return dateObj.toLocaleDateString();
+          },
         ];
       },
     },
