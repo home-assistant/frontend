@@ -139,9 +139,12 @@ Polymer({
 
   attached: function () {
     this.datePicker = new window.Pikaday({
-      field: this.$.datePicker.inputElement,
+      field: document.createElement("input"),
+      trigger: this.$.datePicker.inputElement,
       onSelect: this.hass.logbookActions.changeCurrentDate,
     });
+    // Set the initial datePicker date, without triggering onSelect handler.
+    this.datePicker.setDate(this.selectedDate, true);
   },
 
   detached: function () {

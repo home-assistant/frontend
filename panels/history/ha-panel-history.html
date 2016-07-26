@@ -35,8 +35,12 @@
         on-tap="handleRefreshClick"></paper-icon-button>
 
       <div class$="[[computeContentClasses(narrow)]]">
-        <paper-input label='Showing entries for' id='datePicker'
-          value='[[selectedDateStr]]'></paper-input>
+        <paper-input
+          label='Showing entries for'
+          id='datePicker'
+          value='[[selectedDateStr]]'
+          on-focus='datepickerFocus'
+        ></paper-input>
 
         <state-history-charts state-history="[[stateHistory]]"
           is-loading-data="[[isLoadingData]]"></state-history-charts>
@@ -128,9 +132,12 @@ Polymer({
 
   attached: function () {
     this.datePicker = new window.Pikaday({
-      field: this.$.datePicker.inputElement,
+      field: document.createElement("input"),
+      trigger: this.$.datePicker.inputElement,
       onSelect: this.hass.entityHistoryActions.changeCurrentDate,
     });
+    // Set the initial datePicker date, without triggering onSelect handler.
+    this.datePicker.setDate(this.selectedDate, true);
   },
 
   detached: function () {
