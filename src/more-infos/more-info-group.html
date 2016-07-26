@@ -95,7 +95,7 @@ Polymer({
       window.hassUtil.dynamicContentUpdater(
         this.$.groupedControlDetails,
           'MORE-INFO-' + window.hassUtil.stateMoreInfoType(groupDomainStateObj).toUpperCase(),
-          { stateObj: groupDomainStateObj });
+          { stateObj: groupDomainStateObj, hass: this.hass });
     }
   },
 });
