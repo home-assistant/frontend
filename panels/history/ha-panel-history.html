@@ -132,7 +132,7 @@ Polymer({
 
   attached: function () {
     this.datePicker = new window.Pikaday({
-      field: document.createElement("input"),
+      field: document.createElement('input'),
       trigger: this.$.datePicker.inputElement,
       onSelect: this.hass.entityHistoryActions.changeCurrentDate,
     });
