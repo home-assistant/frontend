@@ -132,6 +132,8 @@ Polymer({
 
   attached: function () {
     this.datePicker = new window.Pikaday({
+      // Bind field to dummy input to prevent pikaday from overwriting
+      // field value with its internal formatting.
       field: document.createElement('input'),
       trigger: this.$.datePicker.inputElement,
       onSelect: this.hass.entityHistoryActions.changeCurrentDate,
