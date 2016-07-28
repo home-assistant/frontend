@@ -87,27 +87,25 @@ Polymer({
     this.resolved = false;
     this.errorLoading = false;
 
-    // Debounced otherwise importHref will add an HTML import to the DOM
-    // which blocks painting till loaded.
-    this.debounce('import-panel', function () {
-      this.importHref(
-        panel.get('url'),
+    this.importHref(
+      panel.get('url'),
 
-        function success() {
-          window.hassUtil.dynamicContentUpdater(
-            this.$.panel, 'ha-panel-' + panel.get('component_name'), {
-              hass: this.hass,
-              narrow: this.narrow,
-              showMenu: this.showMenu,
-              panel: panel.toJS(),
-            });
-          this.resolved = true;
-        }.bind(this),
+      function success() {
+        window.hassUtil.dynamicContentUpdater(
+          this.$.panel, 'ha-panel-' + panel.get('component_name'), {
+            hass: this.hass,
+            narrow: this.narrow,
+            showMenu: this.showMenu,
+            panel: panel.toJS(),
+          });
+        this.resolved = true;
+      }.bind(this),
 
-        function error() {
-          this.errorLoading = true;
-        }.bind(this));
-    }.bind(this));
+      function error() {
+        this.errorLoading = true;
+      }.bind(this),
+
+      true /* async */);
   },
 
   updateAttributes: function () {
