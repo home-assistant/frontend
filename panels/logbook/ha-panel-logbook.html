@@ -37,7 +37,7 @@
           <paper-input
             label='Showing entries for'
             id='datePicker'
-            value='[[selectedDate]]'
+            value='[[selectedDateStr]]'
             on-focus='datepickerFocus'
           ></paper-input>
 
@@ -74,6 +74,20 @@ Polymer({
       type: String,
       bindNuclear: function (hass) {
         return hass.logbookGetters.currentDate;
+      },
+    },
+
+    selectedDateStr: {
+      type: String,
+      value: null,
+      bindNuclear: function (hass) {
+        return [
+          hass.logbookGetters.currentDate,
+          function (currentDate) {
+            var dateObj = new Date(currentDate);
+            return dateObj.toLocaleDateString();
+          },
+        ];
       },
     },
 
@@ -125,9 +139,14 @@ Polymer({
 
   attached: function () {
     this.datePicker = new window.Pikaday({
-      field: this.$.datePicker.inputElement,
+      // Bind field to dummy input to prevent pikaday from overwriting
+      // field value with its internal formatting.
+      field: document.createElement('input'),
+      trigger: this.$.datePicker.inputElement,
       onSelect: this.hass.logbookActions.changeCurrentDate,
     });
+    // Set the initial datePicker date, without triggering onSelect handler.
+    this.datePicker.setDate(this.selectedDate, true);
   },
 
   detached: function () {

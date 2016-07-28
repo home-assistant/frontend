@@ -35,8 +35,12 @@
         on-tap="handleRefreshClick"></paper-icon-button>
 
       <div class$="[[computeContentClasses(narrow)]]">
-        <paper-input label='Showing entries for' id='datePicker'
-          value='[[selectedDate]]'></paper-input>
+        <paper-input
+          label='Showing entries for'
+          id='datePicker'
+          value='[[selectedDateStr]]'
+          on-focus='datepickerFocus'
+        ></paper-input>
 
         <state-history-charts state-history="[[stateHistory]]"
           is-loading-data="[[isLoadingData]]"></state-history-charts>
@@ -94,6 +98,20 @@ Polymer({
         return hass.entityHistoryGetters.currentDate;
       },
     },
+
+    selectedDateStr: {
+      type: String,
+      value: null,
+      bindNuclear: function (hass) {
+        return [
+          hass.entityHistoryGetters.currentDate,
+          function (currentDate) {
+            var dateObj = new Date(currentDate);
+            return dateObj.toLocaleDateString();
+          },
+        ];
+      },
+    },
   },
 
   isDataLoadedChanged: function (newVal) {
@@ -114,9 +132,14 @@ Polymer({
 
   attached: function () {
     this.datePicker = new window.Pikaday({
-      field: this.$.datePicker.inputElement,
+      // Bind field to dummy input to prevent pikaday from overwriting
+      // field value with its internal formatting.
+      field: document.createElement('input'),
+      trigger: this.$.datePicker.inputElement,
       onSelect: this.hass.entityHistoryActions.changeCurrentDate,
     });
+    // Set the initial datePicker date, without triggering onSelect handler.
+    this.datePicker.setDate(this.selectedDate, true);
   },
 
   detached: function () {
