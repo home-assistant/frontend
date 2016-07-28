@@ -1,4 +1,42 @@
+<link rel='import' href='../../bower_components/paper-toolbar/paper-toolbar.html'>
+<link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
+
+<link rel='import' href='../components/ha-menu-button.html'>
 <link rel='import' href='../util/hass-behavior.html'>
+
+<dom-module id='partial-panel-resolver'>
+  <template>
+    <style include='iron-flex'>
+      [hidden] {
+        display: none !important;
+      }
+
+      .placeholder {
+        height: 100%;
+      }
+
+      .layout {
+        height: calc(100% - 64px);
+      }
+    </style>
+
+    <div hidden$='[[resolved]]' class='placeholder'>
+      <paper-toolbar>
+        <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+      </paper-toolbar>
+      <div class='layout horizontal center-center'>
+        <template is='dom-if' if='[[!errorLoading]]'>
+          <paper-spinner active></paper-spinner>
+        </template>
+        <template is='dom-if' if='[[errorLoading]]'>
+          Error loading panel :(
+        </template>
+      </div>
+    </div>
+
+    <div id='panel' hidden$='[[!resolved]]'></div>
+  </template>
+</dom-module>
 
 <script>
 Polymer({
@@ -24,6 +62,16 @@ Polymer({
       observer: 'updateAttributes',
     },
 
+    resolved: {
+      type: Boolean,
+      value: false,
+    },
+
+    errorLoading: {
+      type: Boolean,
+      value: false,
+    },
+
     panel: {
       type: Object,
       bindNuclear: function (hass) {
@@ -36,19 +84,34 @@ Polymer({
   panelChanged: function (panel) {
     if (!panel) return;
 
-    this.importHref(panel.get('url'));
+    this.resolved = false;
+    this.errorLoading = false;
 
-    window.hassUtil.dynamicContentUpdater(
-      this, 'ha-panel-' + panel.get('component_name'), {
-        hass: this.hass,
-        narrow: this.narrow,
-        showMenu: this.showMenu,
-        panel: panel.toJS(),
-      });
+    // Debounced otherwise importHref will add an HTML import to the DOM
+    // which blocks painting till loaded.
+    this.debounce('import-panel', function () {
+      this.importHref(
+        panel.get('url'),
+
+        function success() {
+          window.hassUtil.dynamicContentUpdater(
+            this.$.panel, 'ha-panel-' + panel.get('component_name'), {
+              hass: this.hass,
+              narrow: this.narrow,
+              showMenu: this.showMenu,
+              panel: panel.toJS(),
+            });
+          this.resolved = true;
+        }.bind(this),
+
+        function error() {
+          this.errorLoading = true;
+        }.bind(this));
+    }.bind(this));
   },
 
   updateAttributes: function () {
-    const customEl = Polymer.dom(this).lastChild;
+    var customEl = Polymer.dom(this.$.panel).lastChild;
     if (!customEl) return;
     customEl.hass = this.hass;
     customEl.narrow = this.narrow;
