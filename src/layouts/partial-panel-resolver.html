@@ -84,7 +84,12 @@ Polymer({
   },
 
   panelChanged: function (panel) {
-    if (!panel) return;
+    if (!panel) {
+      if (this.$.panel.lastChild) {
+        this.$.panel.removeChild(this.$.panel.lastChild);
+      }
+      return;
+    }
 
     this.resolved = false;
     this.errorLoading = false;

@@ -128,7 +128,11 @@
         type: Object,
       },
 
-      paneVisible: {
+      panelVisible: {
+        type: Boolean,
+      },
+
+      viewVisible: {
         type: Boolean,
       },
 
@@ -138,13 +142,19 @@
     },
 
     observers: [
-      'updateCards(columns, states, showIntroduction, paneVisible)',
+      'updateCards(columns, states, showIntroduction, panelVisible, viewVisible)',
     ],
 
-    updateCards: function (columns, states, showIntroduction, paneVisible) {
-      if (!paneVisible) {
+    updateCards: function (columns, states, showIntroduction,
+                           panelVisible, viewVisible) {
+      if (!panelVisible || !viewVisible) {
+        console.log('cancelling update cards',
+                    this.getAttribute('data-view') || 'default-view',
+                    panelVisible, viewVisible);
         return;
       }
+      console.log('updateCards', this.getAttribute('data-view') || 'default-view',
+                  panelVisible, viewVisible);
       this.debounce(
         'updateCards',
         function () { this.cards = this.computeCards(columns, states,
@@ -153,6 +163,11 @@
     },
 
     computeCards: function (columns, states, showIntroduction) {
+      // Things might have changed since it got scheduled.
+      if (!this.panelVisible || !this.viewVisible) {
+        return;
+      }
+      console.error('computeCards', this.getAttribute('data-view') || 'default-view', states.size, this.viewVisible)
       var hass = this.hass;
       var byDomain = states.groupBy(function (entity) { return entity.domain; });
       var hasGroup = {};
