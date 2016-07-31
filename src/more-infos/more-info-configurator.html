@@ -1,8 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input-container.html'>
-
-<link rel='import' href='../components/loading-box.html'>
 
 <link rel='import' href='../util/hass-behavior.html'>
 
@@ -29,6 +28,12 @@
       p.submit {
         text-align: center;
         height: 41px;
+      }
+
+      paper-spinner {
+        width: 14px;
+        height: 14px;
+        margin-right: 20px;
       }
     </style>
 
@@ -64,13 +69,16 @@
         <p class='submit'>
           <paper-button
             raised
+            disabled='[[isConfiguring]]'
             on-tap='submitClicked'
-            hidden$='[[isConfiguring]]'
           >
+            <paper-spinner
+              active='[[isConfiguring]]'
+              hidden='[[!isConfiguring]]'
+              alt='Configuring'></paper-spinner>
             [[submitCaption]]
           </paper-button>
 
-          <loading-box hidden$='[[!isConfiguring]]'>Configuring</loading-box>
         </p>
 
       </template>
