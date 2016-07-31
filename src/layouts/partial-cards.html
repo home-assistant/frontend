@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
@@ -9,7 +10,6 @@
 
 <link rel="import" href="../components/ha-menu-button.html">
 <link rel="import" href="../components/ha-cards.html">
-<link rel="import" href="../components/ha-view-tabs.html">
 
 <dom-module id="partial-cards">
   <template>
@@ -24,9 +24,10 @@
         background-color: #E5E5E5;
       }
 
-      ha-view-tabs {
+      paper-tabs {
         margin-left: 12px;
         --paper-tabs-selection-bar-color: #FFF;
+        text-transform: uppercase;
       }
     </style>
 
@@ -34,7 +35,7 @@
       <app-header effects="waterfall" condenses fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[computeTitle(hasViews, locationName)]]</div>
+          <div main-title>[[computeTitle(views, locationName)]]</div>
           <paper-icon-button
             icon="mdi:refresh"
             class$="[[computeRefreshButtonClass(isFetching)]]"
@@ -45,20 +46,60 @@
             on-tap="handleListenClick"></paper-icon-button>
         </app-toolbar>
 
-        <ha-view-tabs
-          sticky
-          hass='[[hass]]'
-          on-view-tapped='scrollToTop'
-        ></ha-view-tabs>
+        <div sticky>
+          <paper-tabs
+            scrollable
+            selected='[[currentView]]'
+            attr-for-selected='data-entity'
+            on-iron-select='handleViewSelected'
+          >
+            <paper-tab
+              data-entity=''
+              on-tap='handleViewTapped'
+            >[[locationName]]</paper-tab>
+            <template is='dom-repeat' items='[[views]]'>
+              <paper-tab
+                data-entity$='[[item.entityId]]'
+                on-tap='handleViewTapped'
+              >
+                <template is='dom-if' if='[[item.attributes.icon]]'>
+                  <iron-icon icon='[[item.attributes.icon]]'></iron-icon>
+                </template>
+                <template is='dom-if' if='[[!item.attributes.icon]]'>
+                  [[item.entityDisplay]]
+                </template>
+              </paper-tab>
+            </template>
+          </paper-tabs>
+        </div>
       </app-header>
 
-      <ha-cards
-        show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
-        states='[[states]]'
-        columns='[[columns]]'
-        hass='[[hass]]'
-        pane-visible='[[paneVisible]]'
-      ></ha-cards>
+      <iron-pages
+        attr-for-selected='data-view'
+        selected='[[currentView]]'
+        selected-attribute='view-visible'
+      >
+        <ha-cards
+          data-view=''
+          show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
+          states='[[states]]'
+          columns='[[_columns]]'
+          hass='[[hass]]'
+          panel-visible='[[panelVisible]]'
+        ></ha-cards>
+
+        <template is='dom-repeat' items='[[views]]'>
+          <ha-cards
+            data-view$='[[item.entityId]]'
+            show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
+            states='[[states]]'
+            columns='[[_columns]]'
+            hass='[[hass]]'
+            panel-visible='[[panelVisible]]'
+          ></ha-cards>
+        </template>
+
+      </iron-pages>
     </app-header-layout>
   </template>
 
@@ -80,9 +121,20 @@ Polymer({
       value: false,
     },
 
-    paneVisible: {
+    showMenu: {
       type: Boolean,
       value: false,
+      observer: 'handleWindowChange',
+    },
+
+    panelVisible: {
+      type: Boolean,
+      value: false,
+    },
+
+    _columns: {
+      type: Number,
+      value: 1,
     },
 
     isFetching: {
@@ -126,12 +178,6 @@ Polymer({
       },
     },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-      observer: 'windowChange',
-    },
-
     currentView: {
       type: String,
       bindNuclear: function (hass) {
@@ -142,12 +188,16 @@ Polymer({
       },
     },
 
-    hasViews: {
-      type: Boolean,
+    views: {
+      type: Array,
       bindNuclear: function (hass) {
         return [
           hass.viewGetters.views,
-          function (views) { return views.size > 0; },
+          function (views) {
+            return views.valueSeq()
+              .sortBy(function (view) { return view.attributes.order; })
+              .toArray();
+          },
         ];
       },
     },
@@ -158,37 +208,31 @@ Polymer({
         return hass.viewGetters.currentViewEntities;
       },
     },
-
-    columns: {
-      type: Number,
-      value: 1,
-    },
   },
 
   created: function () {
-    var sizes = [];
+    var sizes = [300, 600, 900, 1200];
     var col;
-    this.windowChange = this.windowChange.bind(this);
-    for (col = 0; col < 5; col++) {
-      sizes.push(300 + (col * 300));
-    }
+    this.handleWindowChange = this.handleWindowChange.bind(this);
     this.mqls = sizes.map(function (width) {
       var mql = window.matchMedia('(min-width: ' + width + 'px)');
-      mql.addListener(this.windowChange);
+      mql.addListener(this.handleWindowChange);
       return mql;
     }.bind(this));
   },
 
   detached: function () {
     this.mqls.forEach(function (mql) {
-      mql.removeListener(this.windowChange);
+      mql.removeListener(this.handleWindowChange);
     });
   },
 
-  windowChange: function () {
-    var matchColumns = this.mqls.reduce(function (cols, mql) { return cols + mql.matches; }, 0);
+  handleWindowChange: function () {
+    var matchColumns = this.mqls.reduce(function (cols, mql) {
+      return cols + mql.matches;
+    }, 0);
     // Do -1 column if the menu is docked and open
-    this.columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
+    this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   },
 
   /**
@@ -238,24 +282,31 @@ Polymer({
     this.hass.voiceActions.listen();
   },
 
-  computeMenuButtonClass: function (narrow, showMenu) {
-    return !narrow && showMenu ? 'menu-icon invisible' : 'menu-icon';
+  handleViewSelected: function (ev) {
+    var view = ev.detail.item.getAttribute('data-entity') || null;
+    var current = this.currentView || null;
+    if (view !== current) {
+      this.async(function () {
+        console.warn('changing view')
+        this.hass.viewActions.selectView(view);
+      }.bind(this), 0);
+    }
+  },
+
+  handleViewTapped: function (ev) {
+    this.scrollToTop();
   },
 
   computeRefreshButtonClass: function (isFetching) {
     return isFetching ? 'ha-spin' : '';
   },
 
-  computeTitle: function (hasViews, locationName) {
-    return hasViews ? 'Home Assistant' : locationName;
+  computeTitle: function (views, locationName) {
+    return views.length > 0 ? 'Home Assistant' : locationName;
   },
 
   computeShowIntroduction: function (currentView, introductionLoaded, states) {
     return currentView === '' && (introductionLoaded || states.size === 0);
-  },
-
-  computeHasViews: function (views) {
-    return views.length > 0;
   },
 });
 </script>
