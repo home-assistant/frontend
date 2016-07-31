@@ -4,64 +4,93 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
-<link rel="import" href="../../src/layouts/partial-base.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<link rel="import" href="./entity-list.html">
+<link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel="import" href="../../src/util/hass-behavior.html">
+<link rel="import" href="../../src/resources/home-assistant-style.html">
 
 <dom-module id="ha-panel-dev-state">
   <template>
-    <style is="custom-style" include="iron-flex iron-positioning"></style>
-    <style>
-      .content {
-        @apply(--paper-font-body1);
-        margin-top: 64px;
-        padding: 24px;
+    <style include="ha-style">
+      :host {
         background-color: white;
         -ms-user-select: initial;
         -webkit-user-select: initial;
         -moz-user-select: initial;
       }
 
-      .ha-form {
-        margin-right: 16px;
+      .content {
+        padding: 24px;
       }
 
-      .header {
-        @apply(--paper-font-title);
+      .entities th {
+        text-align: left;
+      }
+
+      .entities td:nth-child(3) {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .entities a {
+        color: var(--primary-color);
       }
     </style>
 
-    <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
-      <span header-title>States</span>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>States</div>
+        </app-toolbar>
+      </app-header>
 
-      <div class$='[[computeFormClasses(narrow)]]'>
-        <div class='flex'>
-          <p>
-            Set the representation of a device within Home Assistant.<br />
-            This will not communicate with the actual device.
-          </p>
-
-          <div class='ha-form'>
-            <paper-input label="Entity ID" autofocus required value='{{entityId}}'></paper-input>
-            <paper-input label="State" required value='{{state}}'></paper-input>
-            <paper-textarea label="State attributes (JSON, optional)" value='{{stateAttributes}}'></paper-textarea>
-            <paper-button on-tap='handleSetState' raised>Set State</paper-button>
-          </div>
-        </div>
-
+      <div class='content'>
         <div>
-          <div class='header'>Current entities</div>
-          <entity-list on-entity-selected='entitySelected' hass='[[hass]]'></entity-list>
+          Set the representation of a device within Home Assistant.<br />
+          This will not communicate with the actual device.
+
+          <paper-input label="Entity ID" autofocus required value='{{_entityId}}'></paper-input>
+          <paper-input label="State" required value='{{_state}}'></paper-input>
+          <paper-textarea label="State attributes (JSON, optional)" value='{{_stateAttributes}}'></paper-textarea>
+          <paper-button on-tap='handleSetState' raised>Set State</paper-button>
         </div>
+
+        <h1>Current entities</h1>
+        <table class='entities'>
+          <tr>
+            <th>Entity</th>
+            <th>State</th>
+            <th hidden$='[[narrow]]'>
+              Attributes
+              <paper-checkbox checked='{{_showAttributes}}'></paper-checkbox>
+            </th>
+          </tr>
+          <template is='dom-repeat' items='[[_entities]]' as='entity'>
+            <tr>
+              <td><a href='#' on-tap='entitySelected'>[[entity.entityId]]</a></td>
+              <td>[[entity.state]]</td>
+              <template is='dom-if' if='[[computeShowAttributes(narrow, _showAttributes)]]'>
+                <td>[[attributeString(entity)]]</td>
+              </template>
+            </tr>
+          </template>
+        </table>
       </div>
-    </partial-base>
+    </app-header-layout>
   </template>
 </dom-module>
 
 <script>
 Polymer({
   is: 'ha-panel-dev-state',
+
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
@@ -78,43 +107,51 @@ Polymer({
       value: false,
     },
 
-    entityId: {
+    _entityId: {
       type: String,
       value: '',
     },
 
-    state: {
+    _state: {
       type: String,
       value: '',
     },
 
-    stateAttributes: {
+    _stateAttributes: {
       type: String,
       value: '',
     },
-  },
 
-  setStateData: function (stateData) {
-    var value = stateData ? JSON.stringify(stateData, null, '  ') : '';
+    _showAttributes: {
+      type: Boolean,
+      value: true,
+    },
 
-    this.$.inputData.value = value;
-
-    // not according to the spec but it works...
-    this.$.inputDataWrapper.update(this.$.inputData);
+    _entities: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return [
+          hass.entityGetters.entityMap,
+          function (map) {
+            return map.valueSeq().sortBy(function (entity) { return entity.entityId; }).toArray();
+          },
+        ];
+      },
+    },
   },
 
   entitySelected: function (ev) {
-    var state = this.hass.reactor.evaluate(this.hass.entityGetters.byId(ev.detail.entityId));
-
-    this.entityId = state.entityId;
-    this.state = state.state;
-    this.stateAttributes = JSON.stringify(state.attributes, null, '  ');
+    var state = ev.model.entity;
+    this._entityId = state.entityId;
+    this._state = state.state;
+    this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
+    ev.preventDefault();
   },
 
   handleSetState: function () {
     var attr;
     try {
-      attr = this.stateAttributes ? JSON.parse(this.stateAttributes) : {};
+      attr = this.stateAttributes ? JSON.parse(this._stateAttributes) : {};
     } catch (err) {
       /* eslint-disable no-alert */
       alert('Error parsing JSON: ' + err);
@@ -123,15 +160,28 @@ Polymer({
     }
 
     this.hass.entityActions.save({
-      entityId: this.entityId,
-      state: this.state,
+      entityId: this._entityId,
+      state: this._state,
       attributes: attr,
     });
   },
 
-  computeFormClasses: function (narrow) {
-    return narrow ?
-      'content fit' : 'content fit layout horizontal';
+  computeShowAttributes: function (narrow, _showAttributes) {
+    return !narrow && _showAttributes;
+  },
+
+  attributeString: function (entity) {
+    var output = '';
+    var i;
+    var keys;
+    var key;
+
+    for (i = 0, keys = Object.keys(entity.attributes); i < keys.length; i++) {
+      key = keys[i];
+      output += key + ': ' + entity.attributes[key] + '\n';
+    }
+
+    return output;
   },
 });
 </script>

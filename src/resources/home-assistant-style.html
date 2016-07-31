@@ -49,3 +49,27 @@
     animation: ha-spin 2s infinite linear;
   }
 </style>
+
+<dom-module id='ha-style'>
+  <template>
+    <style>
+      :host {
+        @apply(--paper-font-body1);
+      }
+
+      app-toolbar {
+        background-color: var(--primary-color);
+        font-weight: 400;
+        color: white;
+      }
+
+      app-toolbar ha-menu-button + [main-title] {
+        margin-left: 24px;
+      }
+
+      h1 {
+        @apply(--paper-font-title);
+      }
+    </style>
+  </template>
+</dom-module>
