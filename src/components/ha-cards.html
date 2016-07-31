@@ -128,20 +128,27 @@
         type: Object,
       },
 
+      paneVisible: {
+        type: Boolean,
+      },
+
       cards: {
         type: Object,
       },
     },
 
     observers: [
-      'updateCards(columns, states, showIntroduction)',
+      'updateCards(columns, states, showIntroduction, paneVisible)',
     ],
 
-    updateCards: function (columns, states, showIntroduction) {
+    updateCards: function (columns, states, showIntroduction, paneVisible) {
+      if (!paneVisible) {
+        return;
+      }
       this.debounce(
         'updateCards',
-        function () { this.cards = this.computeCards(columns, states, showIntroduction); },
-        0
+        function () { this.cards = this.computeCards(columns, states,
+                                                     showIntroduction); }
       );
     },
 

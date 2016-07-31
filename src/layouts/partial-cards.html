@@ -54,7 +54,10 @@
 
       <ha-cards
         show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
-        states='[[states]]' columns='[[columns]]' hass='[[hass]]'
+        states='[[states]]'
+        columns='[[columns]]'
+        hass='[[hass]]'
+        pane-visible='[[paneVisible]]'
       ></ha-cards>
     </app-header-layout>
   </template>
@@ -73,6 +76,11 @@ Polymer({
     },
 
     narrow: {
+      type: Boolean,
+      value: false,
+    },
+
+    paneVisible: {
       type: Boolean,
       value: false,
     },
