@@ -2,20 +2,26 @@
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="../../src/layouts/partial-base.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/util/hass-behavior.html">
+<link rel="import" href="../../src/resources/home-assistant-style.html">
 
 <dom-module id="ha-panel-dev-info">
   <template>
-    <style is="custom-style" include="iron-positioning"></style>
-    <style>
-      .content {
-        margin-top: 64px;
-        padding: 24px;
+    <style include="iron-positioning ha-style">
+      :host {
         background-color: white;
         -ms-user-select: initial;
         -webkit-user-select: initial;
         -moz-user-select: initial;
+      }
+
+      .content {
+        padding: 24px;
       }
 
       .about {
@@ -52,8 +58,13 @@
       }
     </style>
 
-    <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
-      <span header-title>About</span>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>About</div>
+        </app-toolbar>
+      </app-header>
 
       <div class='content fit'>
         <div class='about'>
@@ -88,8 +99,8 @@
         </p>
         <div class='error-log'>[[errorLog]]</div>
       </div>
-    </partial-base>
-  </template>
+    </app-header-layout>
+    </template>
 </dom-module>
 
 <script>

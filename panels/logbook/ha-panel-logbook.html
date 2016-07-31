@@ -3,16 +3,21 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
-<link rel="import" href="../../src/layouts/partial-base.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/components/loading-box.html">
 <link rel="import" href="../../src/resources/pikaday-js.html">
 <link rel="import" href="../../src/util/hass-behavior.html">
+<link rel="import" href="../../src/resources/home-assistant-style.html">
 
 <link rel="import" href="./ha-logbook.html">
 
 <dom-module id="ha-panel-logbook">
   <template>
-    <style>
+    <style include="ha-style">
     .selected-date-container {
       padding: 0 16px;
     }
@@ -26,11 +31,17 @@
     }
     </style>
 
-    <partial-base narrow="[[narrow]]" show-menu='[[showMenu]]'>
-      <span header-title>Logbook</span>
-
-      <paper-icon-button icon="mdi:refresh" header-buttons
-        on-tap="handleRefresh"></paper-icon-button>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Logbook</div>
+          <paper-icon-button
+            icon="mdi:refresh"
+            on-tap="handleRefresh"
+          ></paper-icon-button>
+        </app-toolbar>
+      </app-header>
 
       <div>
         <div class='selected-date-container'>
@@ -45,7 +56,7 @@
         </div>
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
       </div>
-    </partial-base>
+    </app-header-layout>
   </template>
 </dom-module>
 

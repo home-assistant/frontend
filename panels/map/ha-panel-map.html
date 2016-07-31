@@ -4,11 +4,14 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
 <link rel="import" href="../../bower_components/leaflet-map/leaflet-map.html">
 
 <!-- temp work around -->
 <link rel="stylesheet" href="../../bower_components/leaflet/dist/leaflet.css" />
 
+<link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/util/hass-behavior.html">
 
 <link rel="import" href="./ha-entity-marker.html">
@@ -22,68 +25,60 @@
 
 <dom-module id="ha-panel-map">
   <template>
-    <style is="custom-style" include="iron-flex iron-positioning"></style>
-    <style>
-      .map {
-        position: relative;
-      }
-
-      .menu-icon {
-        margin-right: 24px;
+    <style include="ha-style">
+      leaflet-map {
+        height: calc(100% - 64px);
+        width: 100%;
       }
     </style>
 
-    <div class='layout vertical fit'>
-      <paper-toolbar>
-          <paper-icon-button icon='mdi:menu' class$='[[computeMenuButtonClass(narrow, showMenu)]]' on-tap='toggleMenu'></paper-icon-button>
-        <div class='title'>Map</div>
-      </paper-toolbar>
+    <app-toolbar>
+      <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+      <div main-title>Map</div>
+    </app-toolbar>
 
-      <div class="flex map">
-        <leaflet-map class="fit" fit-to-markers id="map" max-zoom="17">
-          <leaflet-tilelayer max-zoom="18"
-            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png">
-            &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>
-          </leaflet-tilelayer>
+    <leaflet-map fit-to-markers id="map" max-zoom="17">
+      <leaflet-tilelayer max-zoom="18"
+        url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png">
+        &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>
+      </leaflet-tilelayer>
 
-          <template is='dom-repeat' items='[[zoneEntities]]'>
-            <leaflet-divicon id="[[item.entityId]]" icon-width="24" icon-height="24">
-              <template is='dom-if' if='[[item.attributes.icon]]'>
-                <iron-icon icon$='[[item.attributes.icon]]'></iron-icon>
-              </template>
-              <template is='dom-if' if='[[!item.attributes.icon]]'>[[item.entityDisplay]]</template>
-            </leaflet-divicon>
-
-            <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
-              longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
-              no-clickable></leaflet-marker>
-
-            <leaflet-circle latitude="[[item.attributes.latitude]]"
-              longitude="[[item.attributes.longitude]]" no-clickable
-              radius="[[item.attributes.radius]]" fill color="#FF9800">
-            </leaflet-circle>
+      <template is='dom-repeat' items='[[zoneEntities]]'>
+        <leaflet-divicon id="[[item.entityId]]" icon-width="24" icon-height="24">
+          <template is='dom-if' if='[[item.attributes.icon]]'>
+            <iron-icon icon$='[[item.attributes.icon]]'></iron-icon>
           </template>
+          <template is='dom-if' if='[[!item.attributes.icon]]'>[[item.entityDisplay]]</template>
+        </leaflet-divicon>
 
-          <template is='dom-repeat' items='[[locationEntities]]'>
-            <leaflet-divicon id="[[item.entityId]]" icon-height="45" icon-width="45">
-              <ha-entity-marker hass='[[hass]]'
-                entity-id="[[item.entityId]]"></ha-entity-marker>
-            </leaflet-divicon>
+        <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
+          longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
+          no-clickable></leaflet-marker>
 
-            <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
-              longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
-              ></leaflet-marker>
+        <leaflet-circle latitude="[[item.attributes.latitude]]"
+          longitude="[[item.attributes.longitude]]" no-clickable
+          radius="[[item.attributes.radius]]" fill color="#FF9800">
+        </leaflet-circle>
+      </template>
 
-            <template is='dom-if' if='[[item.attributes.gps_accuracy]]'>
-              <leaflet-circle latitude="[[item.attributes.latitude]]"
-                longitude="[[item.attributes.longitude]]" no-clickable
-                radius="[[item.attributes.gps_accuracy]]" fill color="#0288D1">
-              </leaflet-circle>
-            </template>
-          </template>
-        </leaflet-map>
-      </div>
-    </div>
+      <template is='dom-repeat' items='[[locationEntities]]'>
+        <leaflet-divicon id="[[item.entityId]]" icon-height="45" icon-width="45">
+          <ha-entity-marker hass='[[hass]]'
+            entity-id="[[item.entityId]]"></ha-entity-marker>
+        </leaflet-divicon>
+
+        <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
+          longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
+          ></leaflet-marker>
+
+        <template is='dom-if' if='[[item.attributes.gps_accuracy]]'>
+          <leaflet-circle latitude="[[item.attributes.latitude]]"
+            longitude="[[item.attributes.longitude]]" no-clickable
+            radius="[[item.attributes.gps_accuracy]]" fill color="#0288D1">
+          </leaflet-circle>
+        </template>
+      </template>
+    </leaflet-map>
   </template>
 </dom-module>
 
