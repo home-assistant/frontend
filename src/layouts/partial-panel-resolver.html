@@ -77,7 +77,7 @@ Polymer({
     panel: {
       type: Object,
       bindNuclear: function (hass) {
-        return hass.panelGetters.activePanel;
+        return hass.navigationGetters.activePanel;
       },
       observer: 'panelChanged',
     },
