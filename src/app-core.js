@@ -32,7 +32,7 @@ hass.reactor.batch(function () {
 setTimeout(hass.startLocalStoragePreferencesSync, 5000);
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
+  window.addEventListener('load', function () {
     navigator.serviceWorker.register('/service_worker.js');
   });
 }

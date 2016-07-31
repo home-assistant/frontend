@@ -1,12 +1,14 @@
-<link rel='import' href='../../bower_components/paper-toolbar/paper-toolbar.html'>
 <link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
+
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel='import' href='../components/ha-menu-button.html'>
 <link rel='import' href='../util/hass-behavior.html'>
+<link rel="import" href="../resources/home-assistant-style.html">
 
 <dom-module id='partial-panel-resolver'>
   <template>
-    <style include='iron-flex'>
+    <style include='iron-flex ha-style'>
       [hidden] {
         display: none !important;
       }
@@ -21,9 +23,9 @@
     </style>
 
     <div hidden$='[[resolved]]' class='placeholder'>
-      <paper-toolbar>
+      <app-toolbar>
         <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-      </paper-toolbar>
+      </app-toolbar>
       <div class='layout horizontal center-center'>
         <template is='dom-if' if='[[!errorLoading]]'>
           <paper-spinner active></paper-spinner>

@@ -10,15 +10,12 @@
     <style>
       :host {
         display: block;
+        background-color: #E5E5E5;
+        padding-top: 8px;
         padding-right: 8px;
       }
 
-      .no-badges {
-        height: 8px;
-      }
-
       .badges {
-        margin-top: 16px;
         font-size: 85%;
         text-align: center;
       }
@@ -60,9 +57,6 @@
 
           <ha-badges-card states='[[cards.badges]]' hass='[[hass]]'></ha-badges-card>
         </div>
-      </template>
-      <template is='dom-if' if='[[!cards.badges]]'>
-        <div class='no-badges'> </div>
       </template>
 
       <div class='horizontal layout center-justified'>
