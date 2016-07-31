@@ -175,7 +175,7 @@ Polymer({
     selected: {
       type: String,
       bindNuclear: function (hass) {
-        return hass.navigationGetters.activePane;
+        return hass.navigationGetters.activePanelName;
       },
     },
 
@@ -197,7 +197,7 @@ Polymer({
       type: Array,
       bindNuclear: function (hass) {
         return [
-          hass.panelGetters.panels,
+          hass.navigationGetters.panels,
           function (res) { return res.toJS(); },
         ];
       },

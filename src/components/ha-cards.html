@@ -147,27 +147,20 @@
 
     updateCards: function (columns, states, showIntroduction,
                            panelVisible, viewVisible) {
+      /* eslint-disable no-console */
       if (!panelVisible || !viewVisible) {
-        console.log('cancelling update cards',
-                    this.getAttribute('data-view') || 'default-view',
-                    panelVisible, viewVisible);
         return;
       }
-      console.log('updateCards', this.getAttribute('data-view') || 'default-view',
-                  panelVisible, viewVisible);
       this.debounce(
-        'updateCards',
-        function () { this.cards = this.computeCards(columns, states,
-                                                     showIntroduction); }
-      );
+        'updateCards', function () {
+          // Things might have changed since it got scheduled.
+          if (this.panelVisible && this.viewVisible) {
+            this.cards = this.computeCards(columns, states, showIntroduction);
+          }
+        }.bind(this));
     },
 
     computeCards: function (columns, states, showIntroduction) {
-      // Things might have changed since it got scheduled.
-      if (!this.panelVisible || !this.viewVisible) {
-        return;
-      }
-      console.error('computeCards', this.getAttribute('data-view') || 'default-view', states.size, this.viewVisible)
       var hass = this.hass;
       var byDomain = states.groupBy(function (entity) { return entity.domain; });
       var hasGroup = {};

@@ -18,7 +18,6 @@
     "font-roboto-local": "^1.0.1",
     "iron-flex-layout": "^1.3.1",
     "paper-scroll-header-panel": "1.0.16",
-    "app-elements": "^0.9.0",
     "app-layout": "^0.10.1"
   },
   "_comment": "added to get min version for iron-flex-layout, paper-scroll-header-panel"
