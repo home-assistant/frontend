@@ -2,6 +2,8 @@
 
 <style is="custom-style">
   :root {
+    font-size: 14px;
+
     --dark-primary-color: #0288D1;
     --default-primary-color: #03A9F4;
     --primary-color: #03A9F4;
@@ -18,14 +20,27 @@
     --paper-toggle-button-checked-button-color: #039be5;
     --paper-toggle-button-checked-bar-color: #039be5;
 
+    /* Taken from paper-styles/color.html */
     /* for paper-spinner */
     --google-red-500: #db4437;
     --google-blue-500: #4285f4;
     --google-green-500: #0f9d58;
     --google-yellow-500: #f4b400;
 
+    /* for paper-toggle-button */
+    --paper-grey-50: #fafafa;
 
-    font-size: 14px;
+    /* opacity for dark text on a light background */
+    --dark-divider-opacity: 0.12;
+    --dark-disabled-opacity: 0.38; /* or hint text or icon */
+    --dark-secondary-opacity: 0.54;
+    --dark-primary-opacity: 0.87;
+
+    /* opacity for light text on a dark background */
+    --light-divider-opacity: 0.12;
+    --light-disabled-opacity: 0.3; /* or hint text or icon */
+    --light-secondary-opacity: 0.7;
+    --light-primary-opacity: 1.0;
   }
 
   @-webkit-keyframes ha-spin {
