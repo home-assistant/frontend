@@ -1,41 +1,33 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-<link rel='import' href='../../bower_components/paper-header-panel/paper-header-panel.html'>
-<link rel='import' href='../../bower_components/paper-toolbar/paper-toolbar.html'>
 <link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-icon-item.html'>
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
 <link rel='import' href='../components/stream-status.html'>
 <link rel='import' href='../util/hass-behavior.html'>
 
 <dom-module id='ha-sidebar'>
   <template>
-    <style is="custom-style" include="iron-flex iron-flex-alignment iron-positioning"></style>
-    <style>
+    <style include="iron-flex iron-flex-alignment iron-positioning">
       :host {
         --sidebar-text: {
           opacity: var(--dark-primary-opacity);
           font-weight: 500;
           font-size: 14px;
-        }
-      }
-
-      .sidenav {
+        };
+        display: block;
+        overflow: scroll;
         -ms-user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
       }
 
-      paper-toolbar {
-        --paper-toolbar-title: {
-          text-align: left;
-          margin-left: 0px !important;
-        };
-
-        --paper-toolbar-background: #fff;
-        --paper-toolbar-color: #000;
+      app-toolbar {
+        font-weight: 400;
         opacity: var(--dark-primary-opacity);
         border-bottom: 1px solid #e0e0e0;
       }
@@ -100,63 +92,60 @@
       }
     </style>
 
-    <paper-header-panel mode='scroll' class='sidenav fit'>
-      <paper-toolbar>
-        <div class="title">Home Assistant</div>
-        <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
-      </paper-toolbar>
+    <app-toolbar>
+      <div main-title>Home Assistant</div>
+      <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
+    </app-toolbar>
 
-      <paper-menu attr-for-selected='data-panel' selected='[[selected]]' on-iron-select='menuSelect'>
-        <paper-icon-item on-tap='menuClicked' data-panel='states'>
-          <iron-icon item-icon icon='mdi:apps'></iron-icon>
-          <span class='item-text'>States</span>
+    <paper-menu attr-for-selected='data-panel' selected='[[selected]]' on-iron-select='menuSelect'>
+      <paper-icon-item on-tap='menuClicked' data-panel='states'>
+        <iron-icon item-icon icon='mdi:apps'></iron-icon>
+        <span class='item-text'>States</span>
+      </paper-icon-item>
+
+      <template is='dom-repeat' items='[[computePanels(panels)]]'>
+        <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_name]]'>
+          <iron-icon item-icon icon='[[item.icon]]'></iron-icon>
+          <span class='item-text'>[[item.title]]</span>
         </paper-icon-item>
+      </template>
 
-        <template is='dom-repeat' items='[[computePanels(panels)]]'>
-          <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_name]]'>
-            <iron-icon item-icon icon='[[item.icon]]'></iron-icon>
-            <span class='item-text'>[[item.title]]</span>
-          </paper-icon-item>
-        </template>
+      <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
+        <iron-icon item-icon icon='mdi:exit-to-app'></iron-icon>
+        <span class='item-text'>Log Out</span>
+      </paper-icon-item>
+    </paper-menu>
 
-        <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
-          <iron-icon item-icon icon='mdi:exit-to-app'></iron-icon>
-          <span class='item-text'>Log Out</span>
-        </paper-icon-item>
-      </paper-menu>
+    <div>
+      <div class='divider'></div>
 
-      <div>
-        <div class='divider'></div>
+      <paper-item class='horizontal layout justified'>
+        <div class='streaming'>Streaming updates</div>
+        <stream-status hass='[[hass]]'></stream-status>
+      </paper-item>
 
-        <paper-item class='horizontal layout justified'>
-          <div class='streaming'>Streaming updates</div>
-          <stream-status hass='[[hass]]'></stream-status>
-        </paper-item>
+      <div class='divider'></div>
 
-        <div class='divider'></div>
+      <div class='subheader'>Developer Tools</div>
 
-        <div class='subheader'>Developer Tools</div>
-
-        <div class='dev-tools layout horizontal justified'>
-          <paper-icon-button
-            icon='mdi:remote' data-panel='dev-service'
-            on-tap='menuClicked'></paper-icon-button>
-          <paper-icon-button
-            icon='mdi:code-tags' data-panel='dev-state'
-            on-tap='menuClicked'></paper-icon-button>
-          <paper-icon-button
-            icon='mdi:radio-tower' data-panel='dev-event'
-            on-tap='menuClicked'></paper-icon-button>
-          <paper-icon-button
-            icon='mdi:file-xml' data-panel='dev-template'
-            on-tap='menuClicked'></paper-icon-button>
-          <paper-icon-button
-            icon='mdi:information-outline' data-panel='dev-info'
-            on-tap='menuClicked'></paper-icon-button>
-        </div>
+      <div class='dev-tools layout horizontal justified'>
+        <paper-icon-button
+          icon='mdi:remote' data-panel='dev-service'
+          on-tap='menuClicked'></paper-icon-button>
+        <paper-icon-button
+          icon='mdi:code-tags' data-panel='dev-state'
+          on-tap='menuClicked'></paper-icon-button>
+        <paper-icon-button
+          icon='mdi:radio-tower' data-panel='dev-event'
+          on-tap='menuClicked'></paper-icon-button>
+        <paper-icon-button
+          icon='mdi:file-xml' data-panel='dev-template'
+          on-tap='menuClicked'></paper-icon-button>
+        <paper-icon-button
+          icon='mdi:information-outline' data-panel='dev-info'
+          on-tap='menuClicked'></paper-icon-button>
       </div>
-    </paper-header-panel>
-
+    </div>
   </template>
 </dom-module>
 
