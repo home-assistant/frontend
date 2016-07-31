@@ -1,8 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../../bower_components/google-apis/google-legacy-loader.html">
 
-<link rel="import" href="./loading-box.html">
 <link rel="import" href="./state-history-chart-timeline.html">
 <link rel="import" href="./state-history-chart-line.html">
 
@@ -27,7 +27,7 @@
     <google-legacy-loader on-api-load="googleApiLoaded"></google-legacy-loader>
 
     <div hidden$="[[!isLoading]]" class='loading-container'>
-      <loading-box>Updating history data</loading-box>
+      <paper-spinner active alt='Updating history data'></paper-spinner>
     </div>
 
     <div class$='[[computeContentClasses(isLoading)]]'>

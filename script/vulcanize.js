@@ -41,14 +41,17 @@ const panelVulcan = new Vulcanize({
   stripExcludes: undefined,
 });
 
+const baseExcludes = [
+  'bower_components/font-roboto/roboto.html',
+  'bower_components/paper-styles/color.html',
+];
+
 const toProcess = [
   {
     source: './src/home-assistant.html',
     output: './build/frontend.html',
     vulcan: new Vulcanize(Object.assign({}, baseVulcanOptions, {
-      stripExcludes: [
-        'bower_components/font-roboto/roboto.html',
-      ],
+      stripExcludes: baseExcludes,
     })),
   },
 ];
