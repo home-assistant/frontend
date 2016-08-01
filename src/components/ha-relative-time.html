@@ -2,7 +2,7 @@
 
 <script>
 Polymer({
-  is: 'relative-ha-datetime',
+  is: 'ha-relative-time',
 
   properties: {
     datetime: {
@@ -48,7 +48,7 @@ Polymer({
   updateRelative: function () {
     var root = Polymer.dom(this);
     root.innerHTML = this.parsedDateTime ?
-      window.moment(this.parsedDateTime).fromNow() : '';
+      window.hassUtil.relativeTime(this.parsedDateTime) : '';
   },
 });
 </script>

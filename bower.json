@@ -11,14 +11,14 @@
     "polymer": "Polymer/polymer#~1.6",
     "pikaday": "1.4",
     "leaflet-map": "1.2.0",
-    "moment": "^2.14.1",
     "iron-elements": "PolymerElements/iron-elements#~1.0.10",
     "paper-elements": "PolymerElements/paper-elements#~1.0.7",
     "google-apis": "GoogleWebComponents/google-apis#~1.1.6",
     "font-roboto-local": "^1.0.1",
     "iron-flex-layout": "^1.3.1",
     "paper-scroll-header-panel": "1.0.16",
-    "app-layout": "^0.10.1"
+    "app-layout": "^0.10.1",
+    "fecha": "^2.2.0"
   },
-  "_comment": "added to get min version for iron-flex-layout, paper-scroll-header-panel"
+  "_comment": "specify iron-flex-layout for higher version than iron elements"
 }

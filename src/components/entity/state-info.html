@@ -1,7 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="./state-badge.html">
-<link rel="import" href="../relative-ha-datetime.html">
+<link rel="import" href="../ha-relative-time.html">
 
 <dom-module id="state-info">
   <template>
@@ -44,7 +44,7 @@
 
         <template is='dom-if' if='[[inDialog]]'>
           <div class='time-ago'>
-            <relative-ha-datetime datetime-obj='[[stateObj.lastChangedAsDate]]'></relative-ha-datetime>
+            <ha-relative-time datetime-obj='[[stateObj.lastChangedAsDate]]'></ha-relative-time>
           </div>
         </template>
 
