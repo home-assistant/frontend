@@ -1,8 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../src/components/domain-icon.html">
-<link rel="import" href="../../src/components/display-time.html">
-<link rel="import" href="../../src/components/relative-ha-datetime.html">
 
 
 <dom-module id="ha-logbook">
@@ -21,8 +19,8 @@
         line-height: 2em;
       }
 
-      display-time {
-        width: 55px;
+      .time {
+        width: 23px;
         font-size: .8em;
         color: var(--secondary-text-color);
       }
@@ -51,7 +49,7 @@
 
     <template is='dom-repeat' items="[[entries]]">
       <div class='horizontal layout entry'>
-        <display-time date-obj="[[item.when]]"></display-time>
+        <div class='time'>[[formatTime(item.when)]]</div>
         <domain-icon domain="[[item.domain]]" class='icon'></domain-icon>
         <div class='message' flex>
           <template is='dom-if' if="[[!item.entityId]]">
@@ -81,6 +79,10 @@ Polymer({
       type: Array,
       value: [],
     },
+  },
+
+  formatTime: function (dateObj) {
+    return window.hassUtil.formatTime(dateObj);
   },
 
   entityClicked: function (ev) {

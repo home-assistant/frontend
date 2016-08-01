@@ -1,3 +1,5 @@
+<script src='../../bower_components/fecha/fecha.min.js'></script>
+
 <!--
 collection of utility functions.
 -->
@@ -68,17 +70,46 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
   }
 };
 
+window.fecha.masks.haDateTime = (window.fecha.masks.shortTime + ' ' +
+                                 window.fecha.masks.mediumDate);
+
 window.hassUtil.formatDateTime = function (dateObj) {
-  return window.moment(dateObj).format('lll');
+  return window.fecha.format(dateObj, 'haDateTime');
 };
 
 window.hassUtil.formatDate = function (dateObj) {
-  return window.moment(dateObj).format('ll');
+  return window.fecha.format(dateObj, 'mediumDate');
 };
 
 window.hassUtil.formatTime = function (dateObj) {
-  return window.moment(dateObj).format('LT');
+  return window.fecha.format(dateObj, 'shortTime');
 };
+
+window.hassUtil.relativeTime = function (dateObj) {
+  var delta = (new Date() - dateObj) / 1000;
+  var tests = window.hassUtil.relativeTime.tests;
+  var i;
+
+  for (i = 0; i < tests.length; i += 2) {
+    if (delta < tests[i]) {
+      delta = Math.floor(delta);
+      return delta === 1 ? '1 ' + tests[i + 1] : delta + ' ' + tests[i + 1] + 's';
+    }
+
+    delta /= tests[i];
+  }
+
+  delta = Math.floor(delta);
+  return delta === 1 ? '1 week' : delta + ' weeks';
+};
+
+window.hassUtil.relativeTime.tests = [
+  60, 'second',
+  60, 'minute',
+  24, 'hour',
+  7, 'day',
+];
+
 
 window.hassUtil.stateCardType = function (hass, state) {
   if (state.state === 'unavailable') {
