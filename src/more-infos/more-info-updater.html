@@ -2,17 +2,14 @@
 
 <dom-module id="more-info-updater">
   <template>
-    <style is="custom-style" include="iron-flex"></style>
     <style>
       .link {
         color: #03A9F4;
       }
     </style>
 
-    <div class='layout vertical'>
-
+    <div>
       <a class='link' href='https://home-assistant.io/getting-started/updating/' target='_blank'>Update Instructions</a>
-
     </div>
   </template>
 </dom-module>
@@ -22,6 +19,14 @@ Polymer({
   is: 'more-info-updater',
 
   properties: {
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  computeReleaseNotes: function (stateObj) {
+    return (stateObj.attributes.release_notes ||
+            'https://home-assistant.io/getting-started/updating/');
   },
 });
 </script>
