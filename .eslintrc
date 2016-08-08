@@ -15,7 +15,8 @@
     "prefer-arrow-callback": 0,
     "no-underscore-dangle": 0,
     "no-var": 0,
-    "strict": 0
+    "strict": 0,
+    "prefer-spread": 0
   },
   plugins: [
     "html"
