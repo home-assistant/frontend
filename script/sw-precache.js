@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 /*
 Generate a caching service worker for HA
 
