@@ -70,37 +70,91 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
   }
 };
 
+// Check for support of native locale string options
+function toLocaleStringSupportsOptions() {
+  try {
+    new Date().toLocaleString('i');
+  } catch (e) {
+    return e.name === 'RangeError';
+  }
+  return false;
+}
+function toLocaleDateStringSupportsOptions() {
+  try {
+    new Date().toLocaleDateString('i');
+  } catch (e) {
+    return e.name === 'RangeError';
+  }
+  return false;
+}
+function toLocaleTimeStringSupportsOptions() {
+  try {
+    new Date().toLocaleTimeString('i');
+  } catch (e) {
+    return e.name === 'RangeError';
+  }
+  return false;
+}
+
 window.fecha.masks.haDateTime = (window.fecha.masks.shortTime + ' ' +
                                  window.fecha.masks.mediumDate);
 
-window.hassUtil.formatDateTime = function (dateObj) {
-  return window.fecha.format(dateObj, 'haDateTime');
-};
+if (toLocaleStringSupportsOptions()) {
+  window.hassUtil.formatDateTime = function (dateObj) {
+    return dateObj.toLocaleString(navigator.language, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
+} else {
+  window.hassUtil.formatDateTime = function (dateObj) {
+    return window.fecha.format(dateObj, 'haDateTime');
+  };
+}
 
-window.hassUtil.formatDate = function (dateObj) {
-  return window.fecha.format(dateObj, 'mediumDate');
-};
+if (toLocaleDateStringSupportsOptions()) {
+  window.hassUtil.formatDate = function (dateObj) {
+    return dateObj.toLocaleDateString(navigator.language,
+      { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+} else {
+  window.hassUtil.formatDate = function (dateObj) {
+    return window.fecha.format(dateObj, 'mediumDate');
+  };
+}
 
-window.hassUtil.formatTime = function (dateObj) {
-  return window.fecha.format(dateObj, 'shortTime');
-};
+if (toLocaleTimeStringSupportsOptions()) {
+  window.hassUtil.formatTime = function (dateObj) {
+    return dateObj.toLocaleTimeString(navigator.language,
+      { hour: 'numeric', minute: '2-digit' });
+  };
+} else {
+  window.hassUtil.formatTime = function (dateObj) {
+    return window.fecha.format(dateObj, 'shortTime');
+  };
+}
 
 window.hassUtil.relativeTime = function (dateObj) {
-  var delta = (new Date() - dateObj) / 1000;
+  var delta = Math.abs(new Date() - dateObj) / 1000;
+  var format = new Date() > dateObj ? '%s ago' : 'in %s';
   var tests = window.hassUtil.relativeTime.tests;
   var i;
 
   for (i = 0; i < tests.length; i += 2) {
     if (delta < tests[i]) {
       delta = Math.floor(delta);
-      return delta === 1 ? '1 ' + tests[i + 1] : delta + ' ' + tests[i + 1] + 's';
+      return format.replace('%s',
+        delta === 1 ? '1 ' + tests[i + 1] : delta + ' ' + tests[i + 1] + 's');
     }
 
     delta /= tests[i];
   }
 
   delta = Math.floor(delta);
-  return delta === 1 ? '1 week' : delta + ' weeks';
+  return format.replace('%s', delta === 1 ? '1 week' : delta + ' weeks');
 };
 
 window.hassUtil.relativeTime.tests = [
