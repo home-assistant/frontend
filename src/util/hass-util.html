@@ -164,6 +164,11 @@ window.hassUtil.relativeTime.tests = [
   7, 'day',
 ];
 
+window.hassUtil.computeIconImage = function (state) {
+  return state.attributes.entity_picture &&
+    state.attributes.entity_picture.substring(0, 4) === 'mdi:' ?
+    state.attributes.entity_picture : null;
+};
 
 window.hassUtil.stateCardType = function (hass, state) {
   if (state.state === 'unavailable') {
@@ -318,6 +323,8 @@ window.hassUtil.stateIcon = function (state) {
 
   if (!state) {
     return window.hassUtil.DEFAULT_ICON;
+  } else if (window.hassUtil.computeIconImage(state)) {
+    return window.hassUtil.computeIconImage(state);
   } else if (state.attributes.icon) {
     return state.attributes.icon;
   }

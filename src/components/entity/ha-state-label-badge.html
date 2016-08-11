@@ -82,6 +82,9 @@ Polymer({
         return null;
       case 'sensor':
       default:
+        if (window.hassUtil.computeIconImage(state)) {
+          return null;
+        }
         return state.state === 'unknown' ? '-' : state.state;
     }
   },
@@ -109,12 +112,12 @@ Polymer({
         return state.state === 'above_horizon' ?
         window.hassUtil.domainIcon(state.domain) : 'mdi:brightness-3';
       default:
-        return null;
+        return window.hassUtil.computeIconImage(state) || null;
     }
   },
 
   computeImage: function (state) {
-    return state.attributes.entity_picture || null;
+    return (!window.hassUtil.computeIconImage(state) && state.attributes.entity_picture) || null;
   },
 
   computeLabel: function (state) {

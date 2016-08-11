@@ -60,7 +60,7 @@ Polymer({
    */
   updateIconColor: function (newVal) {
     // hide icon if we have entity picture
-    if (newVal.attributes.entity_picture) {
+    if (newVal.attributes.entity_picture && !window.hassUtil.computeIconImage(newVal)) {
       this.style.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
       this.$.icon.style.display = 'none';
       return;
