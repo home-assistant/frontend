@@ -11,7 +11,7 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 
 [View demo of the Polymer frontend](https://home-assistant.io/demo/)  
 [More information about Home Assistant](https://home-assistant.io)  
-[Frontend development instructions](https://home-assistant.io/developers/frontend.html)
+[Frontend development instructions](https://home-assistant.io/developers/frontend/)
 
 ## License
 Home Assistant is open-source and MIT licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
