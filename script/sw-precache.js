@@ -74,7 +74,49 @@ var options = {
   verbose: true,
 };
 
+const notify = `
+self.addEventListener("push", function(event) {
+  var data;
+  if (event.data) {
+    data = event.data.json();
+    event.waitUntil(self.registration.showNotification(data.title, data));
+  }
+});
+self.addEventListener('notificationclick', function(event) {
+  var url;
+
+  if (!event.notification.data || !event.notification.data.url) {
+    return;
+  }
+
+  event.notification.close();
+  url = event.notification.data.url;
+
+  event.waitUntil(
+    clients.matchAll({
+      type: 'window',
+    })
+    .then(function (windowClients) {
+      var i;
+      var client;
+      for (i = 0; i < windowClients.length; i++) {
+        client = windowClients[i];
+        if (client.url === url && 'focus' in client) {
+            return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+      return undefined;
+    })
+  );
+});
+`;
+
 var genPromise = swPrecache.generate(options);
+
+genPromise = genPromise.then(swString => swString + '\n' + notify);
 
 if (true) {
   genPromise = genPromise.then(
