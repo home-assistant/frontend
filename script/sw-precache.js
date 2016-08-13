@@ -57,7 +57,7 @@ panelsFingerprinted.forEach(panel => {
 
 var options = {
   navigateFallback: '/',
-  navigateFallbackWhitelist: [/^((?!(static|api|local|service_worker.js)).)*$/],
+  navigateFallbackWhitelist: [/^((?!(static|api|local|service_worker.js|manifest.json)).)*$/],
   dynamicUrlToDependencies: dynamicUrlToDependencies,
   staticFileGlobs: [
     rootDir + '/icons/favicon.ico',
