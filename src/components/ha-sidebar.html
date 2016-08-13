@@ -310,20 +310,20 @@ Polymer({
     var subscribe = ev.target.checked;
 
     // MVP, will move later.
-    var reg = navigator.serviceWorker.getRegistration().then(function (reg) {
+    var promise = navigator.serviceWorker.getRegistration().then(function (reg) {
       return reg.pushManager.subscribe({
         userVisibleOnly: true,
       });
     });
 
     if (!subscribe) {
-      reg.then(function (sub) {
+      promise.then(function (sub) {
         sub.unsubscribe();
       });
       return;
     }
 
-    reg.then(function (sub) {
+    promise.then(function (sub) {
       var browserName;
       if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
         browserName = 'firefox';
@@ -331,11 +331,11 @@ Polymer({
         browserName = 'chrome';
       }
 
-      return hass.callApi('POST', 'notify.html5', {
+      return this.hass.callApi('POST', 'notify.html5', {
         subscription: sub,
         browser: browserName,
-      });
-    }).catch(function (err) {
+      }.bind(this));
+    }.bind(this)).catch(function (err) {
       var message;
 
       if (err.message && err.message.indexOf('gcm_sender_id') !== -1) {
@@ -344,8 +344,10 @@ Polymer({
         message = 'Notification registration failed.';
       }
 
+      /* eslint-disable no-console */
       console.error(err);
-      hass.notificationActions.createNotification(message);
+      /* eslint-enable no-console */
+      this.hass.notificationActions.createNotification(message);
       this.pushToggleChecked = false;
     }.bind(this));
   },
