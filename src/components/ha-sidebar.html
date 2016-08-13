@@ -334,7 +334,7 @@ Polymer({
       return this.hass.callApi('POST', 'notify.html5', {
         subscription: sub,
         browser: browserName,
-      }.bind(this));
+      });
     }.bind(this)).catch(function (err) {
       var message;
 
