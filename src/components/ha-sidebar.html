@@ -78,7 +78,7 @@
         opacity: var(--dark-divider-opacity)
       }
 
-      .streaming {
+      .setting {
         @apply(--sidebar-text);
       }
 
@@ -120,8 +120,18 @@
     <div>
       <div class='divider'></div>
 
+      <template is='dom-if' if='[[supportPush]]'>
+        <paper-item class='horizontal layout justified'>
+          <div class='setting'>Push Notifications</div>
+          <paper-toggle-button
+            on-change='handlePushChange'
+            checked='{{pushToggleChecked}}'
+          ></paper-toggle-button>
+        </paper-item>
+      </template>
+
       <paper-item class='horizontal layout justified'>
-        <div class='streaming'>Streaming updates</div>
+        <div class='setting'>Streaming updates</div>
         <stream-status hass='[[hass]]'></stream-status>
       </paper-item>
 
@@ -203,6 +213,25 @@ Polymer({
         ];
       },
     },
+
+    supportPush: {
+      type: Boolean,
+      value: 'serviceWorker' in navigator &&
+             (document.location.protocol === 'https:' ||
+              document.location.hostname === 'localhost'),
+    },
+
+    pushToggleChecked: {
+      type: Boolean,
+      value: 'Notification' in window &&
+             Notification.permission === 'granted',
+    },
+
+    pushEnabled: {
+      type: Boolean,
+      value: 'Notification' in window &&
+             Notification.permission === 'granted',
+    }
   },
 
   created: function () {
@@ -281,6 +310,50 @@ Polymer({
     }
     this.hass.navigationActions.navigate.apply(null, newChoice.split('/'));
     this.debounce('updateStyles', this._boundUpdateStyles, 1);
+  },
+
+  handlePushChange: function (ev) {
+    var subscribe = ev.target.checked;
+
+    // MVP, will move later.
+    var reg = navigator.serviceWorker.getRegistration().then(function (reg) {
+      return reg.pushManager.subscribe({
+        userVisibleOnly: true,
+      });
+    });
+
+    if (!subscribe) {
+      reg.then(function (sub) {
+        sub.unsubscribe();
+      });
+      return;
+    }
+
+    reg.then(function (sub) {
+      var browserName;
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        browserName = 'firefox';
+      } else {
+        browserName = 'chrome';
+      }
+
+      return hass.callApi('POST', 'notify.html5', {
+        subscription: sub,
+        browser: browserName,
+      });
+    }).catch(function (err) {
+      var message;
+
+      if (err.message && err.message.indexOf('gcm_sender_id') !== -1) {
+        message = 'Please setup the notify.html5 platform.';
+      } else {
+        message = 'Notification registration failed.';
+      }
+
+      console.error(err);
+      hass.notificationActions.createNotification(message);
+      this.pushToggleChecked = false;
+    }.bind(this));
   },
 
   handleLogOut: function () {
