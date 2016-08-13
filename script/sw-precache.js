@@ -92,6 +92,8 @@ self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   url = event.notification.data.url;
 
+  if (!url) return;
+
   event.waitUntil(
     clients.matchAll({
       type: 'window',
