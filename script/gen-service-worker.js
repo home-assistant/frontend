@@ -56,7 +56,7 @@ panelsFingerprinted.forEach(panel => {
   dynamicUrlToDependencies[url] = [fpath];
 });
 
-const options = {
+var options = {
   navigateFallback: '/',
   navigateFallbackWhitelist: [/^((?!(static|api|local|service_worker.js|manifest.json)).)*$/],
   dynamicUrlToDependencies: dynamicUrlToDependencies,
@@ -75,53 +75,13 @@ const options = {
   verbose: true,
 };
 
-const devBase = 'console.warn("Service worker caching disabled in development")';
+var devBase = 'console.warn("Service worker caching disabled in development")';
 
-const notify = `
-self.addEventListener("push", function(event) {
-  var data;
-  if (event.data) {
-    data = event.data.json();
-    event.waitUntil(self.registration.showNotification(data.title, data));
-  }
-});
-self.addEventListener('notificationclick', function(event) {
-  var url;
+var swHass = fs.readFileSync(path.resolve(__dirname, 'service-worker.js.tmpl'), 'UTF-8')
 
-  if (!event.notification.data || !event.notification.data.url) {
-    return;
-  }
+var genPromise = DEV ? Promise.resolve(devBase) : swPrecache.generate(options);
 
-  event.notification.close();
-  url = event.notification.data.url;
-
-  if (!url) return;
-
-  event.waitUntil(
-    clients.matchAll({
-      type: 'window',
-    })
-    .then(function (windowClients) {
-      var i;
-      var client;
-      for (i = 0; i < windowClients.length; i++) {
-        client = windowClients[i];
-        if (client.url === url && 'focus' in client) {
-            return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(url);
-      }
-      return undefined;
-    })
-  );
-});
-`;
-
-let genPromise = DEV ? Promise.resolve(devBase) : swPrecache.generate(options);
-
-genPromise = genPromise.then(swString => swString + '\n' + notify);
+genPromise = genPromise.then(swString => swString + '\n' + swHass);
 
 if (!DEV) {
   genPromise = genPromise.then(
@@ -130,5 +90,5 @@ if (!DEV) {
 
 genPromise.then(
   swString =>
-    fs.writeFileSync(path.join('build', 'service_worker.js'), swString)
+    fs.writeFileSync(path.resolve(__dirname, '../build/service_worker.js'), swString)
 ).catch(err => console.error(err));
