@@ -9,7 +9,7 @@
   "scripts": {
     "setup_js_dev": "git submodule init && git submodule update && cd home-assistant-js && npm install",
     "clean": "rm -rf build/* build-temp/*",
-    "js_dev": "script/sw-precache.js && npm run watch_ru_all",
+    "js_dev": "script/gen-service-worker.js && npm run watch_ru_all",
     "js_dev_demo": "BUILD_DEMO=1 npm run watch_ru_all",
     "js_prod": "BUILD_DEV=0 npm run ru_all",
     "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 npm run ru_all",
