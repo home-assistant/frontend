@@ -298,7 +298,7 @@ Polymer({
     // MVP, will move later.
     var promise = navigator.serviceWorker.getRegistration().then(function (reg) {
       if (!reg) {
-        throw new Error('No service worker registered')
+        throw new Error('No service worker registered');
       }
 
       return reg.pushManager.subscribe({
