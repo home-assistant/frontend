@@ -295,19 +295,10 @@ Polymer({
   handlePushChange: function (ev) {
     var subscribe = ev.target.checked;
 
-    showError = function (message, ex) {
-      /* eslint-disable no-console */
-      console.error(ex || message);
-      /* eslint-enable no-console */
-      this.hass.notificationActions.createNotification(message);
-      this.pushToggleChecked = false;
-    }.bind(this);
-
     // MVP, will move later.
     var promise = navigator.serviceWorker.getRegistration().then(function (reg) {
       if (!reg) {
-        showError('No service worker registered');
-        return;
+        throw new Error('No service worker registered')
       }
 
       return reg.pushManager.subscribe({
@@ -343,8 +334,12 @@ Polymer({
         message = 'Notification registration failed.';
       }
 
-      showError(message, err);
-    });
+      /* eslint-disable no-console */
+      console.error(err);
+      /* eslint-enable no-console */
+      this.hass.notificationActions.createNotification(message);
+      this.pushToggleChecked = false;
+    }.bind(this));
   },
 
   handleLogOut: function () {

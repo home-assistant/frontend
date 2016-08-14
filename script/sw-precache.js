@@ -15,9 +15,10 @@ var path = require('path');
 var swPrecache = require('sw-precache');
 var uglifyJS = require('uglify-js');
 
+const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
+
 var rootDir = '..';
 var panelDir = rootDir + '/panels';
-// var panels = fs.readdirSync(panelDir);
 
 var dynamicUrlToDependencies = {
   '/': [rootDir + '/frontend.html', rootDir + '/core.js'],
@@ -55,7 +56,7 @@ panelsFingerprinted.forEach(panel => {
   dynamicUrlToDependencies[url] = [fpath];
 });
 
-var options = {
+const options = {
   navigateFallback: '/',
   navigateFallbackWhitelist: [/^((?!(static|api|local|service_worker.js|manifest.json)).)*$/],
   dynamicUrlToDependencies: dynamicUrlToDependencies,
@@ -73,6 +74,8 @@ var options = {
   replacePrefix: 'static',
   verbose: true,
 };
+
+const devBase = 'console.warn("Service worker caching disabled in development")';
 
 const notify = `
 self.addEventListener("push", function(event) {
@@ -116,11 +119,11 @@ self.addEventListener('notificationclick', function(event) {
 });
 `;
 
-var genPromise = swPrecache.generate(options);
+let genPromise = DEV ? Promise.resolve(devBase) : swPrecache.generate(options);
 
 genPromise = genPromise.then(swString => swString + '\n' + notify);
 
-if (true) {
+if (!DEV) {
   genPromise = genPromise.then(
     swString => uglifyJS.minify(swString, { fromString: true }).code);
 }
