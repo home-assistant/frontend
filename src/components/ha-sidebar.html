@@ -190,20 +190,6 @@ Polymer({
       },
     },
 
-    hasHistoryComponent: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.configGetters.isComponentLoaded('history');
-      },
-    },
-
-    hasLogbookComponent: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.configGetters.isComponentLoaded('logbook');
-      },
-    },
-
     panels: {
       type: Array,
       bindNuclear: function (hass) {
@@ -216,7 +202,7 @@ Polymer({
 
     supportPush: {
       type: Boolean,
-      value: 'serviceWorker' in navigator &&
+      value: 'PushManager' in window &&
              (document.location.protocol === 'https:' ||
               document.location.hostname === 'localhost'),
     },
