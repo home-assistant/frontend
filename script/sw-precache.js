@@ -15,9 +15,10 @@ var path = require('path');
 var swPrecache = require('sw-precache');
 var uglifyJS = require('uglify-js');
 
+const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
+
 var rootDir = '..';
 var panelDir = rootDir + '/panels';
-// var panels = fs.readdirSync(panelDir);
 
 var dynamicUrlToDependencies = {
   '/': [rootDir + '/frontend.html', rootDir + '/core.js'],
@@ -55,9 +56,9 @@ panelsFingerprinted.forEach(panel => {
   dynamicUrlToDependencies[url] = [fpath];
 });
 
-var options = {
+const options = {
   navigateFallback: '/',
-  navigateFallbackWhitelist: [/^((?!(static|api|local|service_worker.js)).)*$/],
+  navigateFallbackWhitelist: [/^((?!(static|api|local|service_worker.js|manifest.json)).)*$/],
   dynamicUrlToDependencies: dynamicUrlToDependencies,
   staticFileGlobs: [
     rootDir + '/icons/favicon.ico',
@@ -74,9 +75,55 @@ var options = {
   verbose: true,
 };
 
-var genPromise = swPrecache.generate(options);
+const devBase = 'console.warn("Service worker caching disabled in development")';
 
-if (true) {
+const notify = `
+self.addEventListener("push", function(event) {
+  var data;
+  if (event.data) {
+    data = event.data.json();
+    event.waitUntil(self.registration.showNotification(data.title, data));
+  }
+});
+self.addEventListener('notificationclick', function(event) {
+  var url;
+
+  if (!event.notification.data || !event.notification.data.url) {
+    return;
+  }
+
+  event.notification.close();
+  url = event.notification.data.url;
+
+  if (!url) return;
+
+  event.waitUntil(
+    clients.matchAll({
+      type: 'window',
+    })
+    .then(function (windowClients) {
+      var i;
+      var client;
+      for (i = 0; i < windowClients.length; i++) {
+        client = windowClients[i];
+        if (client.url === url && 'focus' in client) {
+            return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(url);
+      }
+      return undefined;
+    })
+  );
+});
+`;
+
+let genPromise = DEV ? Promise.resolve(devBase) : swPrecache.generate(options);
+
+genPromise = genPromise.then(swString => swString + '\n' + notify);
+
+if (!DEV) {
   genPromise = genPromise.then(
     swString => uglifyJS.minify(swString, { fromString: true }).code);
 }
