@@ -4,8 +4,8 @@ self.addEventListener("push", function(event) {
     data = event.data.json();
     event.waitUntil(
       self.registration.showNotification(data.title, data)
-      .then(function(notificationevent){
-        firePushCallback('shown', data.tag);
+      .then(function(notification){
+        firePushCallback({type: "push", tag: data.tag});
       })
     );
   }
@@ -13,7 +13,7 @@ self.addEventListener("push", function(event) {
 self.addEventListener('notificationclick', function(event) {
   var url;
 
-  firePushCallback('click', event.notification.tag);
+  notificationEventCallback(event);
 
   event.notification.close();
 
@@ -46,12 +46,16 @@ self.addEventListener('notificationclick', function(event) {
   );
 });
 self.addEventListener('notificationclose', function(event) {
-  firePushCallback('close', event.notification.tag);
+  notificationEventCallback(event);
 });
-function firePushCallback(event_type, tag){
+
+function notificationEventCallback(event){
+  firePushCallback({type: event.type, tag: event.notification.tag, action: event.action})
+}
+function firePushCallback(data){
   fetch('/api/notify.html5/callback', {
     method: 'POST',
     headers: new Headers({'Content-Type': 'application/json'}),
-    body: JSON.stringify({event: event_type, tag: tag})
+    body: JSON.stringify(data)
   });
 }
