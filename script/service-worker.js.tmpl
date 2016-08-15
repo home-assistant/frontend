@@ -2,17 +2,25 @@ self.addEventListener("push", function(event) {
   var data;
   if (event.data) {
     data = event.data.json();
-    event.waitUntil(self.registration.showNotification(data.title, data));
+    event.waitUntil(
+      self.registration.showNotification(data.title, data)
+      .then(function(notificationevent){
+        firePushCallback('shown', data.tag);
+      });
+    );
   }
 });
 self.addEventListener('notificationclick', function(event) {
   var url;
 
+  firePushCallback('click', event.notification.tag);
+
+  event.notification.close();
+
   if (!event.notification.data || !event.notification.data.url) {
     return;
   }
 
-  event.notification.close();
   url = event.notification.data.url;
 
   if (!url) return;
@@ -37,3 +45,13 @@ self.addEventListener('notificationclick', function(event) {
     })
   );
 });
+self.addEventListener('notificationclose', function(event) {
+  firePushCallback('close', event.notification.tag);
+});
+function firePushCallback(event_type, tag){
+  fetch('/api/notify.html5/callback', {
+    method: 'POST',
+    headers: new Headers({'Content-Type': 'application/json'}),
+    body: JSON.stringify({event: event_type, tag: tag})
+  });
+}
