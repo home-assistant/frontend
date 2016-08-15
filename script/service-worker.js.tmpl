@@ -6,7 +6,7 @@ self.addEventListener("push", function(event) {
       self.registration.showNotification(data.title, data)
       .then(function(notificationevent){
         firePushCallback('shown', data.tag);
-      });
+      })
     );
   }
 });
