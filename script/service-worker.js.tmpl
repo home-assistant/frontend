@@ -5,7 +5,7 @@ self.addEventListener("push", function(event) {
     event.waitUntil(
       self.registration.showNotification(data.title, data)
       .then(function(notification){
-        firePushCallback({type: "push", tag: data.tag});
+        firePushCallback({type: "push", tag: data.tag}, data.data.jwt);
       })
     );
   }
@@ -50,12 +50,17 @@ self.addEventListener('notificationclose', function(event) {
 });
 
 function notificationEventCallback(event){
-  firePushCallback({type: event.type, tag: event.notification.tag, action: event.action})
+  firePushCallback({
+    type: event.type,
+    tag: event.notification.tag,
+    action: event.action
+  }, event.data.jwt);
 }
-function firePushCallback(data){
+function firePushCallback(data, jwt){
   fetch('/api/notify.html5/callback', {
     method: 'POST',
-    headers: new Headers({'Content-Type': 'application/json'}),
+    headers: new Headers({'Content-Type': 'application/json',
+                          'Authorization': 'Bearer '+jwt}),
     body: JSON.stringify(data)
   });
 }
