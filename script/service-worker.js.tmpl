@@ -2,17 +2,25 @@ self.addEventListener("push", function(event) {
   var data;
   if (event.data) {
     data = event.data.json();
-    event.waitUntil(self.registration.showNotification(data.title, data));
+    event.waitUntil(
+      self.registration.showNotification(data.title, data)
+      .then(function(notification){
+        firePushCallback({type: "push", tag: data.tag}, data.data.jwt);
+      })
+    );
   }
 });
 self.addEventListener('notificationclick', function(event) {
   var url;
 
+  notificationEventCallback(event);
+
+  event.notification.close();
+
   if (!event.notification.data || !event.notification.data.url) {
     return;
   }
 
-  event.notification.close();
   url = event.notification.data.url;
 
   if (!url) return;
@@ -37,3 +45,22 @@ self.addEventListener('notificationclick', function(event) {
     })
   );
 });
+self.addEventListener('notificationclose', function(event) {
+  notificationEventCallback(event);
+});
+
+function notificationEventCallback(event){
+  firePushCallback({
+    type: event.type,
+    tag: event.notification.tag,
+    action: event.action
+  }, event.notification.data.jwt);
+}
+function firePushCallback(data, jwt){
+  fetch('/api/notify.html5/callback', {
+    method: 'POST',
+    headers: new Headers({'Content-Type': 'application/json',
+                          'Authorization': 'Bearer '+jwt}),
+    body: JSON.stringify(data)
+  });
+}
