@@ -5,7 +5,11 @@ self.addEventListener("push", function(event) {
     event.waitUntil(
       self.registration.showNotification(data.title, data)
       .then(function(notification){
-        firePushCallback({type: "push", tag: data.tag}, data.data.jwt);
+        firePushCallback({
+          type: "push",
+          tag: data.tag,
+          data: data.data
+        }, data.data.jwt);
       })
     );
   }
@@ -51,16 +55,23 @@ self.addEventListener('notificationclose', function(event) {
 
 function notificationEventCallback(event){
   firePushCallback({
-    type: event.type,
+    action: event.action,
+    data: event.notification.data,
     tag: event.notification.tag,
-    action: event.action
+    type: event.type.replace("notification", "")
   }, event.notification.data.jwt);
 }
-function firePushCallback(data, jwt){
+function firePushCallback(payload, jwt){
+  // Don't send the JWT in the payload.data
+  delete payload.data.jwt;
+  // If payload.data is empty then just remove the entire payload.data object.
+  if (Object.keys(payload.data).length === 0 && payload.data.constructor === Object) {
+    delete payload.data;
+  }
   fetch('/api/notify.html5/callback', {
     method: 'POST',
     headers: new Headers({'Content-Type': 'application/json',
                           'Authorization': 'Bearer '+jwt}),
-    body: JSON.stringify(data)
+    body: JSON.stringify(payload)
   });
 }
