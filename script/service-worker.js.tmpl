@@ -54,7 +54,7 @@ function notificationEventCallback(event){
     type: event.type,
     tag: event.notification.tag,
     action: event.action
-  }, event.data.jwt);
+  }, event.notification.data.jwt);
 }
 function firePushCallback(data, jwt){
   fetch('/api/notify.html5/callback', {
