@@ -6,7 +6,7 @@ self.addEventListener("push", function(event) {
       self.registration.showNotification(data.title, data)
       .then(function(notification){
         firePushCallback({
-          type: "push",
+          type: "received",
           tag: data.tag,
           data: data.data
         }, data.data.jwt);
@@ -17,7 +17,7 @@ self.addEventListener("push", function(event) {
 self.addEventListener('notificationclick', function(event) {
   var url;
 
-  notificationEventCallback(event);
+  notificationEventCallback('clicked', event);
 
   event.notification.close();
 
@@ -50,15 +50,15 @@ self.addEventListener('notificationclick', function(event) {
   );
 });
 self.addEventListener('notificationclose', function(event) {
-  notificationEventCallback(event);
+  notificationEventCallback('closed', event);
 });
 
-function notificationEventCallback(event){
+function notificationEventCallback(event_type, event){
   firePushCallback({
     action: event.action,
     data: event.notification.data,
     tag: event.notification.tag,
-    type: event.type.replace("notification", "")
+    type: event_type
   }, event.notification.data.jwt);
 }
 function firePushCallback(payload, jwt){
