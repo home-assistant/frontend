@@ -183,6 +183,41 @@
           }
 
           states.forEach(processState);
+        } else if (domain === 'climate') {
+          // We differentiate between thermostats that have a target temperature
+          // range versus ones that have just a target temperature
+          hasTargetRange = states.reduce(
+            function (cum, cur) {
+              return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
+            }, false);
+
+          dataTable.addColumn('number', name + ' current temperature');
+
+          if (hasTargetRange) {
+            dataTable.addColumn('number', name + ' target temperature high');
+            dataTable.addColumn('number', name + ' target temperature low');
+
+            noInterpolations = [false, true, true];
+
+            processState = function (state) {
+              var curTemp = saveParseFloat(state.attributes.current_temperature);
+              var targetHigh = saveParseFloat(state.attributes.target_temp_high);
+              var targetLow = saveParseFloat(state.attributes.target_temp_low);
+              pushData([state.lastUpdatedAsDate, curTemp, targetHigh, targetLow], noInterpolations);
+            };
+          } else {
+            dataTable.addColumn('number', name + ' target temperature');
+
+            noInterpolations = [false, true];
+
+            processState = function (state) {
+              var curTemp = saveParseFloat(state.attributes.current_temperature);
+              var target = saveParseFloat(state.attributes.temperature);
+              pushData([state.lastUpdatedAsDate, curTemp, target], noInterpolations);
+            };
+          }
+
+          states.forEach(processState);
         } else {
           dataTable.addColumn('number', name);
 
