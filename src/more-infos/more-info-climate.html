@@ -178,6 +178,7 @@ Polymer({
   },
 
   stateObjChanged: function (newVal) {
+    this.targetTemperatureSliderValue = newVal.attributes.temperature;
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
     this.auxheatToggleChecked = newVal.attributes.aux_heat === 'on';
 
