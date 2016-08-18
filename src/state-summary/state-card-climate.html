@@ -8,20 +8,37 @@
   <template>
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
-      .state {
+      :host {
         @apply(--paper-font-body1);
-        color: var(--primary-text-color);
+        line-height: 1.5;
+      }
 
+      .state {
         margin-left: 16px;
-        text-transform: capitalize;
         text-align: right;
-        line-height: 40px;
+      }
+
+      .target {
+        color: var(--primary-text-color);
+      }
+
+      .current {
+        color: var(--secondary-text-color);
       }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>[[stateObj.state]]</div>
+      <div class='state'>
+        <div class='target'>[[computeTargetTemperature(stateObj)]]</div>
+
+        <div class='current'>
+          <span>Currently: </span>
+          <span>[[stateObj.attributes.current_temperature]]</span>
+          <span> </span>
+          <span>[[stateObj.attributes.unit_of_measurement]]</span>
+        </div>
+      </div>
     </div>
   </template>
 </dom-module>
@@ -39,6 +56,10 @@ Polymer({
     stateObj: {
       type: Object,
     },
+  },
+
+  computeTargetTemperature: function (stateObj) {
+    return stateObj.attributes.temperature + ' ' + stateObj.attributes.unit_of_measurement;
   },
 });
 </script>
