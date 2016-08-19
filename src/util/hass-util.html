@@ -11,6 +11,7 @@ window.hassUtil.DEFAULT_ICON = 'mdi:bookmark';
 window.hassUtil.OFF_STATES = ['off', 'closed', 'unlocked'];
 
 window.hassUtil.DOMAINS_WITH_CARD = [
+  'climate',
   'configurator',
   'hvac',
   'input_select',
@@ -24,7 +25,7 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 ];
 
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
-  'light', 'group', 'sun', 'configurator', 'thermostat', 'script',
+  'light', 'group', 'sun', 'climate', 'configurator', 'thermostat', 'script',
   'media_player', 'camera', 'updater', 'alarm_control_panel', 'lock',
   'hvac',
 ];
@@ -199,6 +200,9 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'camera':
       return 'mdi:video';
+
+    case 'climate':
+      return 'mdi:nest-thermostat';
 
     case 'configurator':
       return 'mdi:settings';
