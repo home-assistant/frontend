@@ -202,16 +202,17 @@ Polymer({
 
     supportPush: {
       type: Boolean,
-      value: 'PushManager' in window &&
-             (document.location.protocol === 'https:' ||
-              document.location.hostname === 'localhost' ||
-              document.location.hostname === '127.0.0.1'),
+      value: false,
+      bindNuclear: function (hass) {
+        return hass.pushNotificationGetters.isSupported;
+      }
     },
 
     pushToggleChecked: {
       type: Boolean,
-      value: 'Notification' in window &&
-             Notification.permission === 'granted',
+      bindNuclear: function (hass) {
+        return hass.pushNotificationGetters.isActive;
+      }
     },
   },
 
@@ -294,53 +295,18 @@ Polymer({
   },
 
   handlePushChange: function (ev) {
-    var subscribe = ev.target.checked;
+    if (ev.target.checked) {
+      this.hass.pushNotificationActions.subscribePushNotifications()
+        .then(function (success) {
+          this.pushToggleChecked = success;
+        }.bind(this));
 
-    // MVP, will move later.
-    var promise = navigator.serviceWorker.getRegistration().then(function (reg) {
-      if (!reg) {
-        throw new Error('No service worker registered');
-      }
-
-      return reg.pushManager.subscribe({
-        userVisibleOnly: true,
-      });
-    });
-
-    if (!subscribe) {
-      promise.then(function (sub) {
-        sub.unsubscribe();
-      });
-      return;
+    } else {
+      this.hass.pushNotificationActions.unsubscribePushNotifications()
+        .then(function (success) {
+          this.pushToggleChecked = !success;
+        }.bind(this));
     }
-
-    promise.then(function (sub) {
-      var browserName;
-      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-        browserName = 'firefox';
-      } else {
-        browserName = 'chrome';
-      }
-
-      return this.hass.callApi('POST', 'notify.html5', {
-        subscription: sub,
-        browser: browserName,
-      });
-    }.bind(this)).catch(function (err) {
-      var message;
-
-      if (err.message && err.message.indexOf('gcm_sender_id') !== -1) {
-        message = 'Please setup the notify.html5 platform.';
-      } else {
-        message = 'Notification registration failed.';
-      }
-
-      /* eslint-disable no-console */
-      console.error(err);
-      /* eslint-enable no-console */
-      this.hass.notificationActions.createNotification(message);
-      this.pushToggleChecked = false;
-    }.bind(this));
   },
 
   handleLogOut: function () {
