@@ -294,7 +294,7 @@ Polymer({
     this.hass.serviceActions.callService('climate', service, data)
       .then(function () {
         this.stateObjChanged(this.stateObj);
-      });
+      }.bind(this));
   },
 });
 </script>
