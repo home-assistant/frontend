@@ -20,7 +20,4 @@
     "fecha": "~2.2.0"
   },
   "_comment": "specify iron-flex-layout for higher version than iron elements",
-  "resolutions": {
-    "app-layout": "~0.10.2"
-  }
 }
