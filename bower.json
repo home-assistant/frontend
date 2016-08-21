@@ -18,6 +18,5 @@
     "paper-scroll-header-panel": "~1.0.16",
     "app-layout": "~0.10.2",
     "fecha": "~2.2.0"
-  },
-  "_comment": "specify iron-flex-layout for higher version than iron elements",
+  }
 }
