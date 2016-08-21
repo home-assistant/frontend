@@ -205,14 +205,14 @@ Polymer({
       value: false,
       bindNuclear: function (hass) {
         return hass.pushNotificationGetters.isSupported;
-      }
+      },
     },
 
     pushToggleChecked: {
       type: Boolean,
       bindNuclear: function (hass) {
         return hass.pushNotificationGetters.isActive;
-      }
+      },
     },
   },
 
@@ -300,7 +300,6 @@ Polymer({
         .then(function (success) {
           this.pushToggleChecked = success;
         }.bind(this));
-
     } else {
       this.hass.pushNotificationActions.unsubscribePushNotifications()
         .then(function (success) {
