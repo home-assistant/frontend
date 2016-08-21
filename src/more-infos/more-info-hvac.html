@@ -293,7 +293,7 @@ Polymer({
     this.hass.serviceActions.callService('hvac', service, data)
       .then(function () {
         this.stateObjChanged(this.stateObj);
-      });
+      }.bind(this));
   },
 });
 </script>
