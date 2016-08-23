@@ -12,6 +12,7 @@ window.hassUtil.OFF_STATES = ['off', 'closed', 'unlocked'];
 
 window.hassUtil.DOMAINS_WITH_CARD = [
   'climate',
+  'cover',
   'configurator',
   'hvac',
   'input_select',
@@ -25,9 +26,9 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 ];
 
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
-  'light', 'group', 'sun', 'climate', 'configurator', 'thermostat', 'script',
-  'media_player', 'camera', 'updater', 'alarm_control_panel', 'lock',
-  'hvac',
+  'light', 'group', 'sun', 'climate', 'configurator', 'cover', 'thermostat',
+  'script', 'media_player', 'camera', 'updater', 'alarm_control_panel',
+  'lock', 'hvac',
 ];
 
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
@@ -209,6 +210,9 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'conversation':
       return 'mdi:text-to-speech';
+
+    case 'cover':
+      return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
 
     case 'device_tracker':
       return 'mdi:account';
