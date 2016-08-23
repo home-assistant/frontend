@@ -28,7 +28,7 @@
         font-size: 14px;
       }
 
-      @media all and (max-width: 450px) {
+      @media all and (max-width: 450px), all and (max-height: 500px) {
         paper-dialog {
           margin: 0;
           width: 100%;
@@ -50,11 +50,11 @@
           state-obj="[[stateObj]]"
           hass='[[hass]]' in-dialog></state-card-content>
       </h2>
+      <template is='dom-if' if="[[showHistoryComponent]]">
+        <state-history-charts state-history="[[stateHistory]]"
+          is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
+      </template>
       <paper-dialog-scrollable id='scrollable'>
-        <template is='dom-if' if="[[showHistoryComponent]]">
-          <state-history-charts state-history="[[stateHistory]]"
-            is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
-        </template>
         <more-info-content
           state-obj="[[stateObj]]" hass='[[hass]]'></more-info-content>
       </paper-dialog-scrollable>
