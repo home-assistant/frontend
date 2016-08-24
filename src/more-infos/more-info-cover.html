@@ -1,0 +1,123 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel='import' href='../../bower_components/paper-slider/paper-slider.html'>
+
+<dom-module id='more-info-cover'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .current_position, .current_tilt_position {
+        max-height: 0px;
+        overflow: hidden;
+      }
+      .has-current_position .current_position,
+      .has-current_tilt_position .current_tilt_position {
+        max-height: 90px;
+      }
+    </style>
+
+    <div class$='[[computeClassNames(stateObj)]]'>
+
+      <div class='current_position'>
+        <div>Position</div>
+        <paper-slider
+          min='0' max='100'
+          value='{{coverPositionSliderValue}}'
+          step='1' pin
+          on-change='coverPositionSliderChanged'></paper-slider>
+      </div>
+
+      <div class='current_tilt_position'>
+        <div>Tilt position</div>
+        <paper-icon-button icon="mdi:arrow-top-right" 
+          on-tap='onOpenTiltTap' title='Open tilt'
+          disabled='[[computeIsFullyOpenTilt(stateObj)]]'></paper-icon-button>
+        <paper-icon-button icon="mdi:stop" on-tap='onStopTiltTap'
+           title='Stop tilt'></paper-icon-button>
+        <paper-icon-button icon="mdi:arrow-bottom-left"
+          on-tap='onCloseTiltTap' title='Close tilt'
+          disabled='[[computeIsFullyClosedTilt(stateObj)]]'></paper-icon-button>
+        <paper-slider
+          min='0' max='100'
+          value='{{coverTiltPositionSliderValue}}'
+          step='1' pin
+          on-change='coverTiltPositionSliderChanged'></paper-slider>
+      </div>
+
+    </div>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'more-info-cover',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    stateObj: {
+      type: Object,
+      observer: 'stateObjChanged',
+    },
+
+    coverPositionSliderValue: {
+      type: Number,
+    },
+
+    coverTiltPositionSliderValue: {
+      type: Number,
+    },
+  },
+
+  stateObjChanged: function (newVal) {
+    this.coverPositionSliderValue = newVal.attributes.current_position;
+    this.coverTiltPositionSliderValue = newVal.attributes.current_tilt_position;
+  },
+
+  computeClassNames: function (stateObj) {
+    return window.hassUtil.attributeClassNames(
+      stateObj, ['current_position', 'current_tilt_position']);
+  },
+
+  coverPositionSliderChanged: function (ev) {
+    this.hass.serviceActions.callService('cover', 'set_cover_position', {
+      entity_id: this.stateObj.entityId,
+      position: ev.target.value,
+    });
+  },
+
+  coverTiltPositionSliderChanged: function (ev) {
+    this.hass.serviceActions.callService('cover', 'set_cover_tilt_position', {
+      entity_id: this.stateObj.entityId,
+      tilt_position: ev.target.value,
+    });
+  },
+
+  computeIsFullyOpenTilt: function (stateObj) {
+    return stateObj.attributes.current_tilt_position === 100;
+  },
+
+  computeIsFullyClosedTilt: function (stateObj) {
+    return stateObj.attributes.current_tilt_position === 0;
+  },
+
+  onOpenTiltTap: function () {
+    this.hass.serviceActions.callService('cover', 'open_cover_tilt',
+                                         { entity_id: this.stateObj.entityId });
+  },
+
+  onCloseTiltTap: function () {
+    this.hass.serviceActions.callService('cover', 'close_cover_tilt',
+                                         { entity_id: this.stateObj.entityId });
+  },
+
+  onStopTiltTap: function () {
+    this.hass.serviceActions.callService('cover', 'stop_cover',
+                                         { entity_id: this.stateObj.entityId });
+  },
+});
+</script>
