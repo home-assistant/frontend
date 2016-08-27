@@ -39,26 +39,27 @@
 
     <div class$='[[computeClassNames(stateObj)]]'>
 
-      <div class='container-fan_list'>
-        <paper-dropdown-menu label-float label='Fan Mode'>
-          <paper-menu class="dropdown-content" selected="{{fanIndex}}">
+      <div class='container-speed_list'
+           hidden$='[[!supportsSetSpeed]]'>
+        <paper-dropdown-menu label-float label='Fan Speed'>
+          <paper-menu class="dropdown-content" selected="{{speedIndex}}">
             <template is='dom-repeat'
-                      items='[[stateObj.attributes.fan_list]]'>
+                      items='[[stateObj.attributes.speed_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
           </paper-menu>
         </paper-dropdown-menu>
       </div>
 
-      <div class='container-swing_list'>
-        <paper-dropdown-menu label-float label='Swing Mode'>
-          <paper-menu class="dropdown-content" selected="{{swingIndex}}">
-            <template is='dom-repeat'
-                      items='[[stateObj.attributes.swing_list]]'>
-              <paper-item>[[item]]</paper-item>
-            </template>
-          </paper-menu>
-        </paper-dropdown-menu>
+      <div class='container-oscillating'
+           hidden$='[[!supportsOscillation]]'>
+        <div class='center horizontal layout single-row'>
+          <div class='flex'>Oscillating</div>
+          <paper-toggle-button
+            checked='[[oscillateToggleChecked]]'
+            on-change='oscillateToggleChanged'>
+          </paper-toggle-button>
+        </div>
       </div>
 
     </div>
@@ -79,57 +80,40 @@ Polymer({
       observer: 'stateObjChanged',
     },
 
-    operationIndex: {
+    speedIndex: {
       type: Number,
       value: -1,
-      observer: 'handleOperationmodeChanged',
+      observer: 'handleSpeedChanged',
     },
 
-    fanIndex: {
-      type: Number,
-      value: -1,
-      observer: 'handleFanmodeChanged',
-    },
-
-    swingIndex: {
-      type: Number,
-      value: -1,
-      observer: 'handleSwingmodeChanged',
-    },
-
-    awayToggleChecked: {
+    oscillateToggleChecked: {
       type: Boolean,
     },
 
-    auxToggleChecked: {
+    supportsSetSpeed: {
       type: Boolean,
+      value: false
     },
+
+    supportsOscillation: {
+      type: Boolean,
+      value: false
+    }
+
   },
 
   stateObjChanged: function (newVal) {
-    this.awayToggleChecked = newVal.attributes.away_mode === 'on';
-    this.auxheatToggleChecked = newVal.attributes.aux_heat === 'on';
+    this.oscillateToggleChecked = newVal.attributes.oscillating;
 
-    if (newVal.attributes.fan_list) {
-      this.fanIndex = newVal.attributes.fan_list.indexOf(
-        newVal.attributes.fan_mode);
+    if (newVal.attributes.speed_list) {
+      this.speedIndex = newVal.attributes.speed_list.indexOf(
+        newVal.attributes.speed);
     } else {
-      this.fanIndex = -1;
+      this.speedIndex = -1;
     }
 
-    if (newVal.attributes.operation_list) {
-      this.operationIndex = newVal.attributes.operation_list.indexOf(
-        newVal.attributes.operation_mode);
-    } else {
-      this.operationIndex = -1;
-    }
-
-    if (newVal.attributes.swing_list) {
-      this.swingIndex = newVal.attributes.swing_list.indexOf(
-        newVal.attributes.swing_mode);
-    } else {
-      this.swingIndex = -1;
-    }
+    this.supportsSetSpeed = (newVal.attributes.supported_features & 1) !== 0
+    this.supportsOscillation = (newVal.attributes.supported_features & 2) !== 0
 
     this.async(function () {
       this.fire('iron-resize');
@@ -139,76 +123,28 @@ Polymer({
   computeClassNames: function (stateObj) {
     return 'more-info-fan' + window.hassUtil.attributeClassNames(
       stateObj,
-      ['away_mode', 'aux_heat', 'temperature', 'humidity', 'operation_list',
-       'fan_list', 'swing_list']
+      ['oscillate', 'speed_list']
     );
   },
 
-  targetTemperatureSliderChanged: function (ev) {
-    var temperature = ev.target.value;
-
-    if (temperature === this.stateObj.attributes.temperature) return;
-
-    this.callServiceHelper('set_temperature', { temperature: temperature });
-  },
-
-  targetHumiditySliderChanged: function (ev) {
-    var humidity = ev.target.value;
-
-    if (humidity === this.stateObj.attributes.humidity) return;
-
-    this.callServiceHelper('set_humidity', { humidity: humidity });
-  },
-
-  awayToggleChanged: function (ev) {
-    var oldVal = this.stateObj.attributes.away_mode === 'on';
+  oscillateToggleChanged: function (ev) {
+    var oldVal = this.stateObj.attributes.oscillating;
     var newVal = ev.target.checked;
 
     if (oldVal === newVal) return;
 
-    this.callServiceHelper('set_away_mode', { away_mode: newVal });
+    this.callServiceHelper('oscillate', { oscillating: newVal });
   },
 
-  auxToggleChanged: function (ev) {
-    var oldVal = this.stateObj.attributes.aux_heat === 'on';
-    var newVal = ev.target.checked;
-
-    if (oldVal === newVal) return;
-
-    this.callServiceHelper('set_aux_heat', { aux_heat: newVal });
-  },
-
-  handleFanmodeChanged: function (fanIndex) {
-    var fanInput;
+  handleSpeedChanged: function (speedIndex) {
+    var speed;
     // Selected Option will transition to '' before transitioning to new value
-    if (fanIndex === '' || fanIndex === -1) return;
+    if (speedIndex === '' || speedIndex === -1) return;
 
-    fanInput = this.stateObj.attributes.fan_list[fanIndex];
-    if (fanInput === this.stateObj.attributes.fan_mode) return;
+    speed = this.stateObj.attributes.speed_list[speedIndex];
+    if (speed === this.stateObj.attributes.fan_mode) return;
 
-    this.callServiceHelper('set_fan_mode', { fan_mode: fanInput });
-  },
-
-  handleOperationmodeChanged: function (operationIndex) {
-    var operationInput;
-    // Selected Option will transition to '' before transitioning to new value
-    if (operationIndex === '' || operationIndex === -1) return;
-
-    operationInput = this.stateObj.attributes.operation_list[operationIndex];
-    if (operationInput === this.stateObj.attributes.operation_mode) return;
-
-    this.callServiceHelper('set_operation_mode', { operation_mode: operationInput });
-  },
-
-  handleSwingmodeChanged: function (swingIndex) {
-    var swingInput;
-    // Selected Option will transition to '' before transitioning to new value
-    if (swingIndex === '' || swingIndex === -1) return;
-
-    swingInput = this.stateObj.attributes.swing_list[swingIndex];
-    if (swingInput === this.stateObj.attributes.swing_mode) return;
-
-    this.callServiceHelper('set_swing_mode', { swing_mode: swingInput });
+    this.callServiceHelper('set_speed', { speed: speed });
   },
 
   callServiceHelper: function (service, data) {
