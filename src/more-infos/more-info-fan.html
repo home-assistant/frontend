@@ -92,13 +92,13 @@ Polymer({
 
     supportsSetSpeed: {
       type: Boolean,
-      value: false
+      value: false,
     },
 
     supportsOscillation: {
       type: Boolean,
-      value: false
-    }
+      value: false,
+    },
 
   },
 
@@ -112,8 +112,8 @@ Polymer({
       this.speedIndex = -1;
     }
 
-    this.supportsSetSpeed = (newVal.attributes.supported_features & 1) !== 0
-    this.supportsOscillation = (newVal.attributes.supported_features & 2) !== 0
+    this.supportsSetSpeed = (newVal.attributes.supported_features & 1) !== 0;
+    this.supportsOscillation = (newVal.attributes.supported_features & 2) !== 0;
 
     this.async(function () {
       this.fire('iron-resize');
