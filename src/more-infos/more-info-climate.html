@@ -243,7 +243,7 @@ Polymer({
     var mintemperature = eva.target.value;
     var maxtemperature = evb.target.value;
 
-    if (mintemperature === this.stateObj.attributes.target_temperature_low) ||
+    if (mintemperature === this.stateObj.attributes.target_temperature_low) return;
     if (maxtemperature === this.stateObj.attributes.target_temperature_high) return;
 
     this.callServiceHelper(
