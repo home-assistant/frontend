@@ -247,7 +247,7 @@ Polymer({
     if (maxtemperature === this.stateObj.attributes.target_temperature_high) return;
 
     this.callServiceHelper(
-        'set_temperature', {low_temp: mintemperature, high_temp: maxtemperature});
+        'set_temperature', { low_temp: mintemperature, high_temp: maxtemperature });
   },
 
   targetHumiditySliderChanged: function (ev) {
@@ -295,13 +295,13 @@ Polymer({
     operationInput = this.stateObj.attributes.operation_list[operationIndex];
     if (operationInput === this.stateObj.attributes.operation_mode) return;
 
-    if (this.stateObj.attributes.operation_mode == 'auto') {
+    if (this.stateObj.attributes.operation_mode === 'auto') {
       this.tempslider.classList.add('hide');
       this.tempintslider.classList.remove('hide');
     } else {
       this.tempslider.classList.remove('hide');
       this.tempintslider.classList.add('hide');
-    };
+    }
 
     this.callServiceHelper('set_operation_mode', { operation_mode: operationInput });
   },
