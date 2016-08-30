@@ -239,9 +239,15 @@ Polymer({
     this.callServiceHelper('set_temperature', { temperature: temperature });
   },
 
-  // TODO: Finish the observer.
   targetTemperatureIntSliderChanged: function (eva, evb) {
+    var mintemperature = eva.target.value;
+    var maxtemperature = evb.target.value;
 
+    if (mintemperature === this.stateObj.attributes.target_temperature_low) ||
+    if (maxtemperature === this.stateObj.attributes.target_temperature_high) return;
+
+    this.callServiceHelper(
+        'set_temperature', {low_temp: mintemperature, high_temp: maxtemperature});
   },
 
   targetHumiditySliderChanged: function (ev) {
