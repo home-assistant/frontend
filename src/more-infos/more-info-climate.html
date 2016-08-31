@@ -69,7 +69,7 @@
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
           <paper-range-slider
-            id='tempintslider'
+            id='temprangeslider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             step='1'
@@ -297,7 +297,7 @@ Polymer({
 
     if (this.stateObj.attributes.operation_mode === 'auto') {
       this.tempslider.classList.add('hide');
-      this.tempintslider.classList.remove('hide');
+      this.temprangeslider.classList.remove('hide');
     } else {
       this.tempslider.classList.remove('hide');
       this.tempintslider.classList.add('hide');
