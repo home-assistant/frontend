@@ -240,14 +240,14 @@ Polymer({
   },
 
   targetTemperatureRangeSliderChanged: function (eva, evb) {
-    var low_temp = eva.target.value;
-    var high_temp = evb.target.value;
+    var lowtemp = eva.target.value;
+    var hightemp = evb.target.value;
 
-    if (low_temp === this.stateObj.attributes.target_temperature_low) return;
-    if (high_temp === this.stateObj.attributes.target_temperature_high) return;
+    if (lowtemp === this.stateObj.attributes.target_temperature_low) return;
+    if (hightemp === this.stateObj.attributes.target_temperature_high) return;
 
     this.callServiceHelper(
-        'set_temperature', { low_temp: low_temp, high_temp: high_temp });
+        'set_temperature', { low_temp: lowtemp, high_temp: hightemp });
   },
 
   targetHumiditySliderChanged: function (ev) {
