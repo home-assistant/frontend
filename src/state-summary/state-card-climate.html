@@ -64,12 +64,12 @@ Polymer({
     },
     operation_mode: {
       type: String,
-      value: function() {stateObj.attributes.operation_mode},
+      value: function () { this.stateObj.attributes.operation_mode };,
       observer: '_operationChanged'
     },
   },
 
-  _operationChanged: function() {
+  _operationChanged: function () {
     if (this.stateObj.attributes.operation_mode === 'auto') {
       this.target.classList.add('hide');
       this.autotarget.classList.remove('hide');
