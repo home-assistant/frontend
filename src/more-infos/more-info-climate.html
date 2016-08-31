@@ -7,7 +7,7 @@
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
-<link rel="import" href="../../bower_components/paper-interval-slider/paper-interval-slider.html">
+<link rel="import" href="../../bower_components/paper-range-slider/paper-range-slider.html">
 
 <dom-module id='more-info-climate'>
   <template>
@@ -68,15 +68,15 @@
             value='[[stateObj.attributes.temperature]]'
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
-          <paper-interval-slider
+          <paper-range-slider
             id='tempintslider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             step='1'
-            valueA='[[stateObj.attributes.target_temperature_low]]'
-            valueB='[[stateObj.attributes.target_temperature_high]]'
-            on-change='targetTemperatureIntSliderChanged'>
-          </paper-interval-slider>
+            value-min='[[stateObj.attributes.target_temperature_low]]'
+            value-max='[[stateObj.attributes.target_temperature_high]]'
+            on-change='targetTemperatureRangeSliderChanged'>
+          </paper-range-slider>
         </div>
       </div>
 
@@ -239,15 +239,15 @@ Polymer({
     this.callServiceHelper('set_temperature', { temperature: temperature });
   },
 
-  targetTemperatureIntSliderChanged: function (eva, evb) {
-    var mintemperature = eva.target.value;
-    var maxtemperature = evb.target.value;
+  targetTemperatureRangeSliderChanged: function (eva, evb) {
+    var low_temp = eva.target.value;
+    var high_temp = evb.target.value;
 
-    if (mintemperature === this.stateObj.attributes.target_temperature_low) return;
-    if (maxtemperature === this.stateObj.attributes.target_temperature_high) return;
+    if (low_temp === this.stateObj.attributes.target_temperature_low) return;
+    if (high_temp === this.stateObj.attributes.target_temperature_high) return;
 
     this.callServiceHelper(
-        'set_temperature', { low_temp: mintemperature, high_temp: maxtemperature });
+        'set_temperature', { low_temp: low_temp, high_temp: high_temp });
   },
 
   targetHumiditySliderChanged: function (ev) {
