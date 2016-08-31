@@ -64,10 +64,12 @@ Polymer({
     },
     operation_mode: {
       type: String,
-      value: function () { this.stateObj.attributes.operation_mode },
+      value: "[[stateObj.attributes.operation_mode]]",
       observer: '_operationChanged'
     },
   },
+
+
 
   _operationChanged: function () {
     if (this.stateObj.attributes.operation_mode === 'auto') {
