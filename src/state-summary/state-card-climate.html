@@ -59,10 +59,24 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
     stateObj: {
       type: Object,
     },
+    operation_mode: {
+      type: String,
+      value: function() {stateObj.attributes.operation_mode},
+      observer: '_operationChanged'
+    },
+  },
+
+  _operationChanged: function() {
+    if (this.stateObj.attributes.operation_mode === 'auto') {
+      this.target.classList.add('hide');
+      this.autotarget.classList.remove('hide');
+    } else {
+      this.target.classList.remove('hide');
+      this.autotarget.classList.add('hide');
+    }
   },
 
   computeTargetTemperature: function (stateObj) {
