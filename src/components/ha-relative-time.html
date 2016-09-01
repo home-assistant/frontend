@@ -48,7 +48,7 @@ Polymer({
   updateRelative: function () {
     var root = Polymer.dom(this);
     root.innerHTML = this.parsedDateTime ?
-      window.hassUtil.relativeTime(this.parsedDateTime) : '';
+      window.hassUtil.relativeTime(this.parsedDateTime) : 'never';
   },
 });
 </script>
