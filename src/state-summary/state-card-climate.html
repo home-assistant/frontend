@@ -25,12 +25,19 @@
       .current {
         color: var(--secondary-text-color);
       }
+
+      .hide {
+        display: none;
+      }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
-        <div class='target'>[[computeTargetTemperature(stateObj)]]</div>
+        <div id='target' class='target'>[[computeTargetTemperature(stateObj)]]</div>
+        <div id='autotarget' class='target' hide>
+          Auto: [[stateObj.attributes.target_temperature_low]]-[[stateObj.attributes.target_temperature_high]]
+        </div>
 
         <div class='current'>
           <span>Currently: </span>
@@ -52,10 +59,24 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
     stateObj: {
       type: Object,
     },
+    operation_mode: {
+      type: String,
+      value: '[[stateObj.attributes.operation_mode]]',
+      observer: '_operationChanged',
+    },
+  },
+
+  _operationChanged: function () {
+    if (this.stateObj.attributes.operation_mode === 'auto') {
+      this.target.classList.add('hide');
+      this.autotarget.classList.remove('hide');
+    } else {
+      this.target.classList.remove('hide');
+      this.autotarget.classList.add('hide');
+    }
   },
 
   computeTargetTemperature: function (stateObj) {
