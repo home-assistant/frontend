@@ -208,7 +208,7 @@ Polymer({
   },
 
   computeClassNames: function (stateObj) {
-    return 'more-info-hvac' + window.hassUtil.attributeClassNames(
+    return 'more-info-hvac ' + window.hassUtil.attributeClassNames(
       stateObj,
       ['away_mode', 'aux_heat', 'temperature', 'humidity', 'operation_list',
        'fan_list', 'swing_list']
