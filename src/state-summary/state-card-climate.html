@@ -25,6 +25,10 @@
       .current {
         color: var(--secondary-text-color);
       }
+
+      .hide {
+        display: none;
+      }
     </style>
 
     <div class='horizontal justified layout'>
@@ -52,14 +56,21 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
     stateObj: {
       type: Object,
     },
   },
 
+  // observers: [
+  //   'computeTargetTemperature(stateObj.attributes.operation_mode, filter)'
+  // ],
+
   computeTargetTemperature: function (stateObj) {
-    return stateObj.attributes.temperature + ' ' + stateObj.attributes.unit_of_measurement;
+    if (stateObj.attributes.operation_mode != 'Auto Changeover') {
+      return stateObj.attributes.temperature + ' ' + stateObj.attributes.unit_of_measurement;
+    } else {
+      return 'Auto: ' + stateObj.attributes.temp_low + '-' + stateObj.attributes.temp_high + ' ' + stateObj.attributes.unit_of_measurement;
+    }
   },
 });
 </script>

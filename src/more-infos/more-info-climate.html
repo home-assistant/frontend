@@ -7,6 +7,7 @@
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
+<link rel="import" href="../../bower_components/paper-range-slider/paper-range-slider.html">
 
 <dom-module id='more-info-climate'>
   <template>
@@ -49,6 +50,10 @@
       .single-row {
         padding: 8px 0;
       }
+
+      .hide {
+        display: none;
+      }
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
@@ -56,12 +61,23 @@
         <div class='single-row'>
           <div>Target Temperature</div>
           <paper-slider
+            id='tempslider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             step='0.5' pin
             value='[[stateObj.attributes.temperature]]'
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
+          <paper-range-slider
+            id='temprangeslider'
+            min='[[stateObj.attributes.min_temp]]'
+            max='[[stateObj.attributes.max_temp]]'
+            always-show-pin
+            step='1'
+            value-min='[[stateObj.attributes.temp_low]]'
+            value-max='[[stateObj.attributes.temp_high]]'
+            on-change='targetTemperatureRangeSliderChanged'>
+          </paper-range-slider>
         </div>
       </div>
 
@@ -222,6 +238,17 @@ Polymer({
     if (temperature === this.stateObj.attributes.temperature) return;
 
     this.callServiceHelper('set_temperature', { temperature: temperature });
+  },
+
+  targetTemperatureRangeSliderChanged: function (eva, evb) {
+    var lowtemp = eva.target.value;
+    var hightemp = evb.target.value;
+
+    if (lowtemp === this.stateObj.attributes.target_temperature_low) return;
+    if (hightemp === this.stateObj.attributes.target_temperature_high) return;
+
+    this.callServiceHelper(
+        'set_temperature', { low_temp: lowtemp, high_temp: hightemp });
   },
 
   targetHumiditySliderChanged: function (ev) {
