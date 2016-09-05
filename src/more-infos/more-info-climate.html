@@ -224,16 +224,18 @@ Polymer({
     }.bind(this), 500);
   },
 
-  computeTargetTempHidden: function(stateObj) {
+  computeTargetTempHidden: function (stateObj) {
     return (stateObj.attributes.operation_mode.includes('Off'));
   },
 
-  computeHideTempRangeSlider: function(stateObj) {
+  computeHideTempRangeSlider: function (stateObj) {
     return (stateObj.attributes.operation_mode.includes('Auto'));
   },
 
-  computeHideTempSlider: function(stateObj) {
-    return (stateObj.attributes.operation_mode.includes('Auto') || stateObj.attributes.operation_mode.includes('Off'));
+  computeHideTempSlider: function (stateObj) {
+    return (
+      stateObj.attributes.operation_mode.includes('Auto') ||
+      stateObj.attributes.operation_mode.includes('Off'));
   },
 
   computeClassNames: function (stateObj) {
@@ -253,15 +255,15 @@ Polymer({
   },
 
   targetTemperatureRangeSliderChanged: function (eva, evb) {
-    var target_temp_low = eva.target.value;
-    var target_temp_high = evb.target.value;
+    var targetTempLow = eva.target.value;
+    var targetTempHigh = evb.target.value;
 
-    if (target_temp_low === this.stateObj.attributes.target_temp_low) return;
-    if (target_temp_high === this.stateObj.attributes.target_temp_high) return;
+    if (targetTempLow === this.stateObj.attributes.target_temp_low) return;
+    if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
 
     this.callServiceHelper(
-        'set_target_temp_low', { target_temp_low: target_temp_low },
-        'set_target_temp_high', { target_temp_high: target_temp_high});
+        'set_target_temp_low', { target_temp_low: targetTempLow },
+        'set_target_temp_high', { target_temp_high: targetTempHigh });
   },
 
   targetHumiditySliderChanged: function (ev) {
