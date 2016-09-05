@@ -69,7 +69,7 @@ Polymer({
         stateObj.attributes.unit_of_measurement;
     } else if (stateObj.attributes.operation_mode.includes('Off')) {
       return 'Off';
-    };
+    }
 
     return stateObj.attributes.temperature + ' ' +
       stateObj.attributes.unit_of_measurement;
