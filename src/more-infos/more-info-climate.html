@@ -51,31 +51,31 @@
         padding: 8px 0;
       }
 
-      .hide {
-        display: none;
-      }
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
         <div class='single-row'>
-          <div>Target Temperature</div>
+          <div hidden="[[computeTargetTempHidden(stateObj)]]">Target Temperature</div>
           <paper-slider
-            id='tempslider'
+            id="temp-slider"
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
-            step='0.5' pin
+            pin
+            step='0.5'
             value='[[stateObj.attributes.temperature]]'
+            hidden="[[computeHideTempSlider(stateObj)]]"
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
           <paper-range-slider
-            id='temprangeslider'
+            id="temp-range-slider"
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
-            always-show-pin
-            step='1'
-            value-min='[[stateObj.attributes.temp_low]]'
-            value-max='[[stateObj.attributes.temp_high]]'
+            pin
+            step='0.5'
+            value-min='[[stateObj.attributes.target_temp_low]]'
+            value-max='[[stateObj.attributes.target_temp_high]]'
+            hidden='[[computeHideTempRangeSlider(stateObj)]]'
             on-change='targetTemperatureRangeSliderChanged'>
           </paper-range-slider>
         </div>
@@ -224,6 +224,30 @@ Polymer({
     }.bind(this), 500);
   },
 
+  computeTargetTempHidden: function(stateObj) {
+    if (stateObj.attributes.operation_mode.includes('Off')) {
+      return true;
+    } else {
+      return false;
+    };
+  },
+
+  computeHideTempRangeSlider: function(stateObj) {
+    if (stateObj.attributes.operation_mode.includes('Auto')) {
+      return false;
+    } else {
+      return true;
+    };
+  },
+
+  computeHideTempSlider: function(stateObj) {
+    if (stateObj.attributes.operation_mode.includes('Auto') || stateObj.attributes.operation_mode.includes('Off')) {
+      return true;
+    } else {
+      return false;
+    };
+  },
+
   computeClassNames: function (stateObj) {
     return 'more-info-climate ' + window.hassUtil.attributeClassNames(
       stateObj,
@@ -241,14 +265,15 @@ Polymer({
   },
 
   targetTemperatureRangeSliderChanged: function (eva, evb) {
-    var lowtemp = eva.target.value;
-    var hightemp = evb.target.value;
+    var target_temp_low = eva.target.value;
+    var target_temp_high = evb.target.value;
 
-    if (lowtemp === this.stateObj.attributes.target_temperature_low) return;
-    if (hightemp === this.stateObj.attributes.target_temperature_high) return;
+    if (target_temp_low === this.stateObj.attributes.target_temp_low) return;
+    if (target_temp_high === this.stateObj.attributes.target_temp_high) return;
 
     this.callServiceHelper(
-        'set_temperature', { low_temp: lowtemp, high_temp: hightemp });
+        'set_target_temp_low', { target_temp_low: target_temp_low },
+        'set_target_temp_high', { target_temp_high: target_temp_high});
   },
 
   targetHumiditySliderChanged: function (ev) {
