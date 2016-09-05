@@ -56,7 +56,7 @@
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
         <div class='single-row'>
-          <div hidden="[[computeTargetTempHidden(stateObj)]]">Target Temperature</div>
+          <div hidden='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
           <paper-slider
             id="temp-slider"
             min='[[stateObj.attributes.min_temp]]'
@@ -64,7 +64,7 @@
             pin
             step='0.5'
             value='[[stateObj.attributes.temperature]]'
-            hidden="[[computeHideTempSlider(stateObj)]]"
+            hidden='[[computeHideTempSlider(stateObj)]]'
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
           <paper-range-slider
@@ -75,6 +75,7 @@
             step='0.5'
             value-min='[[stateObj.attributes.target_temp_low]]'
             value-max='[[stateObj.attributes.target_temp_high]]'
+            value-diff-min='2'
             hidden='[[computeHideTempRangeSlider(stateObj)]]'
             on-change='targetTemperatureRangeSliderChanged'>
           </paper-range-slider>
@@ -229,7 +230,7 @@ Polymer({
   },
 
   computeHideTempRangeSlider: function (stateObj) {
-    return (stateObj.attributes.operation_mode.includes('Auto'));
+    return !(stateObj.attributes.operation_mode.includes('Auto'));
   },
 
   computeHideTempSlider: function (stateObj) {
@@ -255,8 +256,8 @@ Polymer({
   },
 
   targetTemperatureRangeSliderChanged: function (eva, evb) {
-    var targetTempLow = eva.target.value;
-    var targetTempHigh = evb.target.value;
+    var targetTempLow = eva;
+    var targetTempHigh = evb;
 
     if (targetTempLow === this.stateObj.attributes.target_temp_low) return;
     if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
