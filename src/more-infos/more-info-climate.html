@@ -225,27 +225,15 @@ Polymer({
   },
 
   computeTargetTempHidden: function(stateObj) {
-    if (stateObj.attributes.operation_mode.includes('Off')) {
-      return true;
-    } else {
-      return false;
-    };
+    return (stateObj.attributes.operation_mode.includes('Off'));
   },
 
   computeHideTempRangeSlider: function(stateObj) {
-    if (stateObj.attributes.operation_mode.includes('Auto')) {
-      return false;
-    } else {
-      return true;
-    };
+    return (stateObj.attributes.operation_mode.includes('Auto'));
   },
 
   computeHideTempSlider: function(stateObj) {
-    if (stateObj.attributes.operation_mode.includes('Auto') || stateObj.attributes.operation_mode.includes('Off')) {
-      return true;
-    } else {
-      return false;
-    };
+    return (stateObj.attributes.operation_mode.includes('Auto') || stateObj.attributes.operation_mode.includes('Off'));
   },
 
   computeClassNames: function (stateObj) {
