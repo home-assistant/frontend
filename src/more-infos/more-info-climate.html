@@ -47,6 +47,15 @@
         width: 100%;
       }
 
+      paper-range-slider {
+        width: 198px;
+        height: 2px;
+        margin-bottom: 15px;
+        --paper-range-slider-active-color: var(--primary-color);
+        --paper-range-slider-knob-color: var(--primary-color);
+        --paper-range-slider-pin-color: var(--primary-color);
+      }
+
       .single-row {
         padding: 8px 0;
       }
@@ -263,12 +272,19 @@ Polymer({
     var targetTempLow = eva;
     var targetTempHigh = evb;
 
-    if (targetTempLow === this.stateObj.attributes.target_temp_low) return;
-    if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+    if (targetTempLow === this.stateObj.attributes.target_temp_low) {
+      return;
+    } else {
+      this.callServiceHelper(
+        'set_target_temp_low', { target_temp_low: targetTempLow });
+    };
 
-    this.callServiceHelper(
-        'set_target_temp_low', { target_temp_low: targetTempLow },
+    if (targetTempHigh === this.stateObj.attributes.target_temp_high) {
+      return;
+    } else {
+      this.callServiceHelper(
         'set_target_temp_high', { target_temp_high: targetTempHigh });
+    };
   },
 
   targetHumiditySliderChanged: function (ev) {
