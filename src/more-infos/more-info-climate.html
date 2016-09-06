@@ -268,17 +268,22 @@ Polymer({
     this.callServiceHelper('set_temperature', { temperature: temperature });
   },
 
-  targetTemperatureRangeSliderChanged: function (eva, evb) {
-    var targetTempLow = eva;
-    var targetTempHigh = evb;
+  targetTemperatureRangeSliderChanged: function (ev) {
+    var targetTempLow = ev.currentTarget.valueMin;
+    var targetTempHigh = ev.currentTarget.valueMax;
 
-    if (targetTempLow === this.stateObj.attributes.target_temp_low) return;
-    this.callServiceHelper(
-      'set_target_temp_low', { target_temp_low: targetTempLow });
+    debugger;
+    console.log('event target: ' + ev.target);
 
-    if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+
+    if (targetTempLow === this.stateObj.attributes.target_temp_low &&
+        targetTempHigh === this.stateObj.attributes.target_temp_high) return;
     this.callServiceHelper(
-        'set_target_temp_high', { target_temp_high: targetTempHigh });
+      'set_temperature', {
+        target_temp_low: targetTempLow,
+        target_temp_high: targetTempHigh
+      }
+    );
   },
 
   targetHumiditySliderChanged: function (ev) {
