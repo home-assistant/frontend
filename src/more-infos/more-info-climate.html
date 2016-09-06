@@ -272,19 +272,13 @@ Polymer({
     var targetTempLow = eva;
     var targetTempHigh = evb;
 
-    if (targetTempLow === this.stateObj.attributes.target_temp_low) {
-      return;
-    } else {
-      this.callServiceHelper(
-        'set_target_temp_low', { target_temp_low: targetTempLow });
-    };
+    if (targetTempLow === this.stateObj.attributes.target_temp_low) return;
+    this.callServiceHelper(
+      'set_target_temp_low', { target_temp_low: targetTempLow });
 
-    if (targetTempHigh === this.stateObj.attributes.target_temp_high) {
-      return;
-    } else {
-      this.callServiceHelper(
+    if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+    this.callServiceHelper(
         'set_target_temp_high', { target_temp_high: targetTempHigh });
-    };
   },
 
   targetHumiditySliderChanged: function (ev) {
