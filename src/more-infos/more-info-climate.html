@@ -272,10 +272,6 @@ Polymer({
     var targetTempLow = ev.currentTarget.valueMin;
     var targetTempHigh = ev.currentTarget.valueMax;
 
-    debugger;
-    console.log('event target: ' + ev.target);
-
-
     if (targetTempLow === this.stateObj.attributes.target_temp_low &&
         targetTempHigh === this.stateObj.attributes.target_temp_high) return;
     this.callServiceHelper(
