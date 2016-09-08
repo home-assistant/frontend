@@ -25,6 +25,10 @@
       .current {
         color: var(--secondary-text-color);
       }
+
+      .operation-mode {
+        font-weight: bold;
+      }
     </style>
 
     <div class='horizontal justified layout'>
@@ -58,21 +62,19 @@ Polymer({
   },
 
   computeTargetTemperature: function (stateObj) {
-    String.prototype.capitalizeFirstLetter = function() {
-      return this.charAt(0).toUpperCase() + this.slice(1);
-    }
-    
-    if (stateObj.attributes.operation_mode.capitalizeFirstLetter.indexOf('Auto') !== -1) {
-      return 'Auto: ' +
-        stateObj.attributes.target_temp_low + '-' +
-        stateObj.attributes.target_temp_high + ' ' +
+    return '<span class="operation-mode">' +
+      stateObj.attributes.operation_mode + '</span>' + ' ' +
+      if (stateObj.attributes.operation_mode !== 'off') {
+        if (stateObj.attributes.operation_mode == 'auto') {
+          stateObj.attributes.target_temp_low + '-' +
+          stateObj.attributes.target_temp_high + ' ' +
+        } else {
+          stateObj.attributes.temperature + ' ' +
+        }
         stateObj.attributes.unit_of_measurement;
-    } else if (stateObj.attributes.operation_mode.capitalizeFirstLetter.indexOf('Off') !== -1) {
-      return 'Off';
+      }
     }
 
-    return stateObj.attributes.temperature + ' ' +
-      stateObj.attributes.unit_of_measurement;
   },
 });
 </script>
