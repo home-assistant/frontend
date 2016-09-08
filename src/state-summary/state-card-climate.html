@@ -76,10 +76,13 @@ Polymer({
       return (stateObj.attributes.target_temp_low + ' - ' +
         stateObj.attributes.target_temp_high + ' ' +
         stateObj.attributes.unit_of_measurement);
-    };
+    }
 
-    return (stateObj.attributes.temperature + ' ' +
+    if (stateObj.attributes.operation_mode !== 'auto' &&
+        stateObj.attributes.operation_mode !== 'off') {
+          return (stateObj.attributes.temperature + ' ' +
       stateObj.attributes.unit_of_measurement);
+    }
   },
 
 });
