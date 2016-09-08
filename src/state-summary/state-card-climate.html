@@ -70,19 +70,20 @@ Polymer({
   },
 
   computeTargetTemperature: function (stateObj) {
-    if (stateObj.attributes.operation_mode === 'off') return;
+    var stateTemp = '';
 
-    if (stateObj.attributes.operation_mode === 'auto') {
-      return function(stateObj.attributes.target_temp_low + ' - ' +
+    if (stateObj.attributes.operation_mode === 'off') {
+      stateTemp = '';
+    } else if (stateObj.attributes.operation_mode === 'auto') {
+      stateTemp = stateObj.attributes.target_temp_low + ' - ' +
         stateObj.attributes.target_temp_high + ' ' +
-        stateObj.attributes.unit_of_measurement);
+        stateObj.attributes.unit_of_measurement;
+    } else {
+      stateTemp = stateObj.attributes.temperature + ' ' +
+      stateObj.attributes.unit_of_measurement;
     }
 
-    if (stateObj.attributes.operation_mode !== 'auto' &&
-        stateObj.attributes.operation_mode !== 'off') {
-        return function(stateObj.attributes.temperature + ' ' +
-      stateObj.attributes.unit_of_measurement);
-    }
+    return stateTemp;
   },
 
 });
