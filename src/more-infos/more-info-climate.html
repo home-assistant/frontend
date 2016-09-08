@@ -235,7 +235,7 @@ Polymer({
   },
 
   computeTargetTempHidden: function (stateObj) {
-    return stateObj.attributes.operation_mode == 'off';
+    return stateObj.attributes.operation_mode === 'off';
   },
 
   computeHideTempRangeSlider: function (stateObj) {
@@ -243,7 +243,7 @@ Polymer({
   },
 
   computeHideTempSlider: function (stateObj) {
-    return  stateObj.attributes.operation_mode == 'auto' || 'off';
+    return stateObj.attributes.operation_mode === 'auto' || 'off';
   },
 
   computeClassNames: function (stateObj) {
