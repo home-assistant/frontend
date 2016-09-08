@@ -73,15 +73,17 @@ Polymer({
   },
 
   computeTargetTemperature: function (stateObj) {
-    if (stateObj.attributes.operation_mode !== 'off') {
-      if (stateObj.attributes.operation_mode === 'auto') {
-        return stateObj.attributes.target_temp_low + '-' +
-        stateObj.attributes.target_temp_high + ' ';
-      } else {
-        return stateObj.attributes.temperature + ' ';
-      }
-      return stateObj.attributes.unit_of_measurement;
+    if (stateObj.attributes.operation_mode !== 'off') return;
+
+    var tempDisplay = '';
+
+    if (stateObj.attributes.operation_mode === 'auto') {
+      tempDisplay = stateObj.attributes.target_temp_low + '-' +
+      stateObj.attributes.target_temp_high + ' ';
+    } else {
+      tempDisplay stateObj.attributes.temperature + ' ';
     }
+    return tempDisplay + stateObj.attributes.unit_of_measurement;
   },
 
 });
