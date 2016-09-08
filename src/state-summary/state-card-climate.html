@@ -63,15 +63,15 @@ Polymer({
 
   computeTargetTemperature: function (stateObj) {
     return '<span class="operation-mode">' +
-      stateObj.attributes.operation_mode + '</span>' + ' ' +
+      stateObj.attributes.operation_mode + '</span>' + ' ';
       if (stateObj.attributes.operation_mode !== 'off') {
         if (stateObj.attributes.operation_mode == 'auto') {
-          stateObj.attributes.target_temp_low + '-' +
-          stateObj.attributes.target_temp_high + ' ' +
+          return stateObj.attributes.target_temp_low + '-' +
+          stateObj.attributes.target_temp_high + ' '
         } else {
-          stateObj.attributes.temperature + ' ' +
+          return stateObj.attributes.temperature + ' '
         }
-        stateObj.attributes.unit_of_measurement;
+        return stateObj.attributes.unit_of_measurement;
       }
     }
 
