@@ -235,17 +235,15 @@ Polymer({
   },
 
   computeTargetTempHidden: function (stateObj) {
-    return stateObj.attributes.operation_mode.indexOf('Off') !== -1;
+    return stateObj.attributes.operation_mode == 'off';
   },
 
   computeHideTempRangeSlider: function (stateObj) {
-    return !stateObj.attributes.operation_mode.indexOf('Auto') !== -1;
+    return stateObj.attributes.operation_mode !== 'auto';
   },
 
   computeHideTempSlider: function (stateObj) {
-    return (
-      stateObj.attributes.operation_mode.indexOf('Auto') !== -1 ||
-      stateObj.attributes.operation_mode.indexOf('Off') !== -1);
+    return  stateObj.attributes.operation_mode == 'auto' || 'off';
   },
 
   computeClassNames: function (stateObj) {
