@@ -72,10 +72,11 @@ Polymer({
   computeTargetTemperature: function (stateObj) {
     if (stateObj.attributes.operation_mode === 'off') return;
 
-    if (stateObj.attributes.operation_mode === 'auto') return
-        stateObj.attributes.target_temp_low + ' - ' +
-        stateObj.attributes.target_temp_high + ' ' +
-        stateObj.attributes.unit_of_measurement;
+    if (stateObj.attributes.operation_mode === 'auto') {
+      return stateObj.attributes.target_temp_low + ' - ' +
+          stateObj.attributes.target_temp_high + ' ' +
+          stateObj.attributes.unit_of_measurement;
+    };
 
     return stateObj.attributes.temperature + ' ' +
       stateObj.attributes.unit_of_measurement;
