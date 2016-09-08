@@ -28,9 +28,6 @@
 
       .operation-mode {
         font-weight: bold;
-      }
-
-      .operation-mode:first-letter{
         text-transform: capitalize;
       }
     </style>
@@ -73,17 +70,16 @@ Polymer({
   },
 
   computeTargetTemperature: function (stateObj) {
-    if (stateObj.attributes.operation_mode !== 'off') return;
-
-    var tempDisplay = '';
+    if (stateObj.attributes.operation_mode === 'off') return;
 
     if (stateObj.attributes.operation_mode === 'auto') {
-      tempDisplay = stateObj.attributes.target_temp_low + '-' +
-      stateObj.attributes.target_temp_high + ' ';
+      return stateObj.attributes.target_temp_low + '-' +
+      stateObj.attributes.target_temp_high + ' ' +
+      stateObj.attributes.unit_of_measurement;
     } else {
-      tempDisplay = stateObj.attributes.temperature + ' ';
+      return stateObj.attributes.temperature + ' ' +
+      stateObj.attributes.unit_of_measurement;
     }
-    return tempDisplay + stateObj.attributes.unit_of_measurement;
   },
 
 });

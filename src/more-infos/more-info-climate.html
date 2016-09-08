@@ -60,6 +60,9 @@
         padding: 8px 0;
       }
 
+      .capitalize {
+        text-transform: capitalize;
+      }
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
@@ -110,7 +113,7 @@
             <paper-menu class="dropdown-content" selected="{{operationIndex}}">
               <template is='dom-repeat'
                         items='[[stateObj.attributes.operation_list]]'>
-                <paper-item>[[item]]</paper-item>
+                <paper-item class="capitalize">[[item]]</paper-item>
               </template>
             </paper-menu>
           </paper-dropdown-menu>
