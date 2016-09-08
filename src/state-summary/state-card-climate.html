@@ -34,7 +34,14 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
-        <div class='target'>[[computeTargetTemperature(stateObj)]]</div>
+        <div class='target'>
+          <span class="operation-mode">
+            [[stateObj.attributes.operation_mode]]
+          </span>
+          <span>
+            [[computeTargetTemperature(stateObj)]]
+          </span>
+        </div>
 
         <div class='current'>
           <span>Currently: </span>
@@ -62,17 +69,17 @@ Polymer({
   },
 
   computeTargetTemperature: function (stateObj) {
-    return '<span class="operation-mode">' +
-      stateObj.attributes.operation_mode + '</span>' + ' ';
-      if (stateObj.attributes.operation_mode !== 'off') {
-        if (stateObj.attributes.operation_mode == 'auto') {
-          return stateObj.attributes.target_temp_low + '-' +
-          stateObj.attributes.target_temp_high + ' '
-        } else {
-          return stateObj.attributes.temperature + ' '
-        }
-        return stateObj.attributes.unit_of_measurement;
+    if (stateObj.attributes.operation_mode !== 'off') {
+      if (stateObj.attributes.operation_mode == 'auto') {
+        return stateObj.attributes.target_temp_low + '-' +
+        stateObj.attributes.target_temp_high + ' '
+      } else {
+        return stateObj.attributes.temperature + ' '
       }
+      return stateObj.attributes.unit_of_measurement;
+    } else {
+      return;
+    }
   },
 
 });
