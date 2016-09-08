@@ -25,10 +25,6 @@
       .current {
         color: var(--secondary-text-color);
       }
-
-      .hide {
-        display: none;
-      }
     </style>
 
     <div class='horizontal justified layout'>
@@ -62,12 +58,12 @@ Polymer({
   },
 
   computeTargetTemperature: function (stateObj) {
-    if (stateObj.attributes.operation_mode.includes('Auto')) {
+    if (stateObj.attributes.operation_mode.indexOf('Auto') !== -1) {
       return 'Auto: ' +
         stateObj.attributes.target_temp_low + '-' +
         stateObj.attributes.target_temp_high + ' ' +
         stateObj.attributes.unit_of_measurement;
-    } else if (stateObj.attributes.operation_mode.includes('Off')) {
+    } else if (stateObj.attributes.operation_mode.indexOf('Off') !== -1) {
       return 'Off';
     }
 
