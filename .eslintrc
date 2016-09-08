@@ -16,7 +16,9 @@
     "no-underscore-dangle": 0,
     "no-var": 0,
     "strict": 0,
-    "prefer-spread": 0
+    "prefer-spread": 0,
+    "no-plusplus": 0,
+    "no-bitwise": 0
   },
   plugins: [
     "html"
