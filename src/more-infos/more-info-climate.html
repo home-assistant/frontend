@@ -7,6 +7,7 @@
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
+<link rel="import" href="../../bower_components/paper-range-slider/paper-range-slider.html">
 
 <dom-module id='more-info-climate'>
   <template>
@@ -14,6 +15,9 @@
     <style>
       :host {
         color: var(--primary-text-color);
+        --paper-input-container-input: {
+          text-transform: capitalize;
+        }
       }
 
       .container-away_mode,
@@ -46,22 +50,50 @@
         width: 100%;
       }
 
+      paper-range-slider {
+        width: 198px;
+        height: 2px;
+        margin-bottom: 16px;
+        --paper-range-slider-active-color: var(--primary-color);
+        --paper-range-slider-knob-color: var(--primary-color);
+        --paper-range-slider-pin-color: var(--primary-color);
+      }
+
       .single-row {
         padding: 8px 0;
+      }
+
+      .capitalize {
+        text-transform: capitalize;
       }
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
         <div class='single-row'>
-          <div>Target Temperature</div>
+          <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
           <paper-slider
+            id="temp-slider"
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
-            step='0.5' pin
+            pin
+            step='0.5'
             value='[[stateObj.attributes.temperature]]'
+            hidden$='[[computeHideTempSlider(stateObj)]]'
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
+          <paper-range-slider
+            id="temp-range-slider"
+            min='[[stateObj.attributes.min_temp]]'
+            max='[[stateObj.attributes.max_temp]]'
+            pin
+            step='0.5'
+            value-min='[[stateObj.attributes.target_temp_low]]'
+            value-max='[[stateObj.attributes.target_temp_high]]'
+            value-diff-min='2'
+            hidden$='[[computeHideTempRangeSlider(stateObj)]]'
+            on-change='targetTemperatureRangeSliderChanged'>
+          </paper-range-slider>
         </div>
       </div>
 
@@ -84,7 +116,7 @@
             <paper-menu class="dropdown-content" selected="{{operationIndex}}">
               <template is='dom-repeat'
                         items='[[stateObj.attributes.operation_list]]'>
-                <paper-item>[[item]]</paper-item>
+                <paper-item class="capitalize">[[item]]</paper-item>
               </template>
             </paper-menu>
           </paper-dropdown-menu>
@@ -208,6 +240,19 @@ Polymer({
     }.bind(this), 500);
   },
 
+  computeTargetTempHidden: function (stateObj) {
+    return stateObj.attributes.operation_mode === 'off';
+  },
+
+  computeHideTempRangeSlider: function (stateObj) {
+    return stateObj.attributes.operation_mode !== 'auto';
+  },
+
+  computeHideTempSlider: function (stateObj) {
+    return stateObj.attributes.operation_mode === 'auto' ||
+        stateObj.attributes.operation_mode === 'off';
+  },
+
   computeClassNames: function (stateObj) {
     return 'more-info-climate ' + window.hassUtil.attributeClassNames(
       stateObj,
@@ -222,6 +267,20 @@ Polymer({
     if (temperature === this.stateObj.attributes.temperature) return;
 
     this.callServiceHelper('set_temperature', { temperature: temperature });
+  },
+
+  targetTemperatureRangeSliderChanged: function (ev) {
+    var targetTempLow = ev.currentTarget.valueMin;
+    var targetTempHigh = ev.currentTarget.valueMax;
+
+    if (targetTempLow === this.stateObj.attributes.target_temp_low &&
+        targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+    this.callServiceHelper(
+      'set_temperature', {
+        target_temp_low: targetTempLow,
+        target_temp_high: targetTempHigh,
+      }
+    );
   },
 
   targetHumiditySliderChanged: function (ev) {

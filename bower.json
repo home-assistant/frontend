@@ -17,6 +17,7 @@
     "font-roboto-local": "~1.0.1",
     "paper-scroll-header-panel": "~1.0.16",
     "app-layout": "~0.10.2",
-    "fecha": "~2.2.0"
+    "fecha": "~2.2.0",
+    "paper-range-slider": "IftachSadeh/paper-range-slider#~0.1.1"
   }
 }
