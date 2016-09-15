@@ -241,16 +241,18 @@ Polymer({
   },
 
   computeTargetTempHidden: function (stateObj) {
-    return stateObj.attributes.operation_mode === 'off';
+    return !stateObj.attributes.temperature &&
+        !stateObj.attributes.target_temp_low &&
+        !stateObj.attributes.target_temp_high;
   },
 
   computeHideTempRangeSlider: function (stateObj) {
-    return stateObj.attributes.operation_mode !== 'auto';
+    return !stateObj.attributes.target_temp_low &&
+        !stateObj.attributes.target_temp_high;
   },
 
   computeHideTempSlider: function (stateObj) {
-    return stateObj.attributes.operation_mode === 'auto' ||
-        stateObj.attributes.operation_mode === 'off';
+    return !stateObj.attributes.temperature;
   },
 
   computeClassNames: function (stateObj) {
