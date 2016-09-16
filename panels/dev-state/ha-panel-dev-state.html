@@ -150,7 +150,7 @@ Polymer({
   handleSetState: function () {
     var attr;
     try {
-      attr = this.stateAttributes ? JSON.parse(this._stateAttributes) : {};
+      attr = this._stateAttributes ? JSON.parse(this._stateAttributes) : {};
     } catch (err) {
       /* eslint-disable no-alert */
       alert('Error parsing JSON: ' + err);
