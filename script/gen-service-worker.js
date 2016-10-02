@@ -30,14 +30,11 @@ var staticFingerprinted = [
   'core.js',
 ];
 
-function getDirectories(srcpath) {
-  return fs.readdirSync(srcpath).filter(function(file) {
-    return fs.statSync(path.join(srcpath, file)).isDirectory();
-  });
-}
-
-// The panels that will always be loaded
-var panelsFingerprinted = getDirectories('./panels');
+// These panels will always be registered inside HA and thus can
+// be safely assumed to be able to preload.
+var panelsFingerprinted = [
+  'map', 'dev-event', 'dev-info', 'dev-service', 'dev-state', 'dev-template',
+];
 
 function md5(filename) {
   return crypto.createHash('md5')
