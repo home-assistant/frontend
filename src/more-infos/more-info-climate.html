@@ -82,8 +82,7 @@
         <div class='single-row'>
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
           <paper-slider
-            id="temp-slider"
-            class$='[[stateObj.attributes.operation_mode]]'
+            id='temp-slider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             secondary-progress='[[stateObj.attributes.max_temp]]'
@@ -94,7 +93,7 @@
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
           <paper-range-slider
-            id="temp-range-slider"
+            id='temp-range-slider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             pin
