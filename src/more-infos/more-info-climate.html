@@ -50,11 +50,20 @@
         width: 100%;
       }
 
-      paper-range-slider {
-        width: 198px;
-        height: 2px;
-        margin-bottom: 16px;
-        --paper-range-slider-active-color: var(--primary-color);
+      .heat {
+        --paper-slider-active-color: var(--paper-orange-400);
+        --paper-slider-secondary-color: var(--paper-green-400);
+      }
+
+      .cool {
+        --paper-slider-active-color: var(--paper-green-400);
+        --paper-slider-secondary-color: var(--paper-blue-400);
+      }
+
+      #temp-range-slider {
+        --paper-range-slider-lower-color: var(--paper-orange-400);
+        --paper-range-slider-active-color: var(--paper-green-400);
+        --paper-range-slider-higher-color: var(--paper-blue-400);
         --paper-range-slider-knob-color: var(--primary-color);
         --paper-range-slider-pin-color: var(--primary-color);
       }
@@ -74,8 +83,10 @@
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
           <paper-slider
             id="temp-slider"
+            class$='[[stateObj.attributes.operation_mode]]'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
+            secondary-progress='[[stateObj.attributes.max_temp]]'
             pin
             step='0.5'
             value='[[stateObj.attributes.temperature]]'
