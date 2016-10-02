@@ -79,7 +79,7 @@
 
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
-        <div class='single-row'>
+        <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
           <paper-slider
             id='temp-slider'
