@@ -50,11 +50,20 @@
         width: 100%;
       }
 
-      paper-range-slider {
-        width: 198px;
-        height: 2px;
-        margin-bottom: 16px;
-        --paper-range-slider-active-color: var(--primary-color);
+      .heat {
+        --paper-slider-active-color: var(--paper-orange-400);
+        --paper-slider-secondary-color: var(--paper-green-400);
+      }
+
+      .cool {
+        --paper-slider-active-color: var(--paper-green-400);
+        --paper-slider-secondary-color: var(--paper-blue-400);
+      }
+
+      #temp-range-slider {
+        --paper-range-slider-lower-color: var(--paper-orange-400);
+        --paper-range-slider-active-color: var(--paper-green-400);
+        --paper-range-slider-higher-color: var(--paper-blue-400);
         --paper-range-slider-knob-color: var(--primary-color);
         --paper-range-slider-pin-color: var(--primary-color);
       }
@@ -70,12 +79,13 @@
 
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
-        <div class='single-row'>
+        <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
           <paper-slider
-            id="temp-slider"
+            id='temp-slider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
+            secondary-progress='[[stateObj.attributes.max_temp]]'
             pin
             step='0.5'
             value='[[stateObj.attributes.temperature]]'
@@ -83,7 +93,7 @@
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
           <paper-range-slider
-            id="temp-range-slider"
+            id='temp-range-slider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             pin
