@@ -73,6 +73,9 @@
             Home Assistant<br />
             [[hassVersion]]
           </p>
+          <p>
+            Path to configuration.yaml: [[hassConfigDir]]
+          </p>
           <p class='develop'>
             <a href='https://home-assistant.io/developers/credits/' target='_blank'>
               Developed by a bunch of awesome people.
@@ -128,6 +131,13 @@ Polymer({
       type: String,
       bindNuclear: function (hass) {
         return hass.configGetters.serverVersion;
+      },
+    },
+
+    hassConfigDir: {
+      type: String,
+      bindNuclear: function (hass) {
+        return hass.configGetters.configDir;
       },
     },
 
