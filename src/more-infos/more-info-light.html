@@ -9,7 +9,7 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      .brightness, .color_temp {
+      .brightness, .color_temp, .white_value {
         max-height: 0px;
         overflow: hidden;
         transition: max-height .5s ease-in;
@@ -25,7 +25,8 @@
       }
 
       .has-brightness .brightness,
-      .has-color_temp .color_temp {
+      .has-color_temp .color_temp,
+      .has-white_value .white_value {
         max-height: 84px;
       }
 
@@ -49,6 +50,13 @@
           min='154' max='500'
           value='{{ctSliderValue}}'
           on-change='ctSliderChanged'></ha-labeled-slider>
+      </div>
+
+      <div class='white_value'>
+        <ha-labeled-slider
+          caption='White Value' icon='mdi:file-word-box' max='255'
+          value='{{wvSliderValue}}'
+          on-change='wvSliderChanged'></ha-labeled-slider>
       </div>
 
       <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>
@@ -80,12 +88,18 @@ Polymer({
       type: Number,
       value: 0,
     },
+
+    wvSliderValue: {
+      type: Number,
+      value: 0,
+    },
   },
 
   stateObjChanged: function (newVal) {
     if (newVal && newVal.state === 'on') {
       this.brightnessSliderValue = newVal.attributes.brightness;
       this.ctSliderValue = newVal.attributes.color_temp;
+      this.wvSliderValue = newVal.attributes.white_value;
     }
 
     this.async(function () {
@@ -95,7 +109,7 @@ Polymer({
 
   computeClassNames: function (stateObj) {
     return window.hassUtil.attributeClassNames(
-      stateObj, ['brightness', 'rgb_color', 'color_temp']);
+      stateObj, ['brightness', 'rgb_color', 'color_temp', 'white_value']);
   },
 
   brightnessSliderChanged: function (ev) {
@@ -121,6 +135,17 @@ Polymer({
     this.hass.serviceActions.callService('light', 'turn_on', {
       entity_id: this.stateObj.entityId,
       color_temp: ct,
+    });
+  },
+
+  wvSliderChanged: function (ev) {
+    var wv = parseInt(ev.target.value, 10);
+
+    if (isNaN(wv)) return;
+
+    this.hass.serviceActions.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entityId,
+      white_value: wv,
     });
   },
 
