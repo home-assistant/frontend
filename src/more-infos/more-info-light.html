@@ -1,9 +1,13 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
+
+<link rel='import' href='../../bower_components/paper-color-picker/paper-color-input.html'>
+
+<link rel='import' href='../../bower_components/neon-animation/neon-animation.html'>
 
 <link rel='import' href='../components/ha-labeled-slider.html'>
-<link rel='import' href='../components/ha-color-picker.html'>
+
 
 <dom-module id='more-info-light'>
   <template>
@@ -59,9 +63,17 @@
           on-change='wvSliderChanged'></ha-labeled-slider>
       </div>
 
-      <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>
-      </ha-color-picker>
+      <div class='color-input'>
+        <paper-color-input
+          label='Color'
+          value='{{colorValue}}'
+          color-name></paper-color-input>
+      </div>
+      {{colorValue.red}}
+      {{colorValue.green}}
+      {{colorValue.blue}}
     </div>
+
   </template>
 </dom-module>
 
@@ -93,6 +105,13 @@ Polymer({
       type: Number,
       value: 0,
     },
+
+    colorValue: {
+      type: Object,
+      value: {red: 255, green: 255, blue:255},
+      notify: true,
+      observer: 'colorInputChanged',
+    },
   },
 
   stateObjChanged: function (newVal) {
@@ -100,6 +119,10 @@ Polymer({
       this.brightnessSliderValue = newVal.attributes.brightness;
       this.ctSliderValue = newVal.attributes.color_temp;
       this.wvSliderValue = newVal.attributes.white_value;
+      this.colorValue.red = newVal.attributes.rgb_color[0];
+      this.colorValue.green = newVal.attributes.rgb_color[1];
+      this.colorValue.blue = newVal.attributes.rgb_color[2];
+      console.log(this.colorValue);
     }
 
     this.async(function () {
@@ -149,36 +172,18 @@ Polymer({
     });
   },
 
-  serviceChangeColor: function (hass, entityId, color) {
-    hass.serviceActions.callService('light', 'turn_on', {
-      entity_id: entityId,
-      rgb_color: [color.r, color.g, color.b],
+  colorInputChanged: function (ev) {
+    var cv = this.colorValue;
+    debugger;
+    console.log(cv);
+
+    if (isNaN(cv)) return;
+
+    this.hass.serviceActions.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entityId,
+      rgb_color: [cv.red, cv.green, cv.blue],
     });
   },
 
-  /**
-   * Called when a new color has been picked. We will not respond to every
-   * color pick event but have a pause between requests.
-   */
-  colorPicked: function (ev) {
-    if (this.skipColorPicked) {
-      this.colorChanged = true;
-      return;
-    }
-
-    this.color = ev.detail.rgb;
-
-    this.serviceChangeColor(this.hass, this.stateObj.entityId, this.color);
-
-    this.colorChanged = false;
-    this.skipColorPicked = true;
-
-    this.colorDebounce = setTimeout(function () {
-      if (this.colorChanged) {
-        this.serviceChangeColor(this.hass, this.stateObj.entityId, this.color);
-      }
-      this.skipColorPicked = false;
-    }.bind(this), 500);
-  },
 });
 </script>
