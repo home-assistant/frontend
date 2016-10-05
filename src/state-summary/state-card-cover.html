@@ -54,11 +54,19 @@ Polymer({
   },
 
   computeIsFullyOpen: function (stateObj) {
-    return stateObj.attributes.current_position === 100;
+    if (stateObj.attributes.current_position !== undefined) {
+      return stateObj.attributes.current_position === 100;
+    } else {
+      return stateObj.state === "open";
+    }
   },
 
   computeIsFullyClosed: function (stateObj) {
-    return stateObj.attributes.current_position === 0;
+    if (stateObj.attributes.current_position !== undefined) {
+      return stateObj.attributes.current_position === 0;
+    } else {
+      return stateObj.state === "closed";
+    }
   },
 
   onOpenTap: function () {
