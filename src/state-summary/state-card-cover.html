@@ -56,17 +56,15 @@ Polymer({
   computeIsFullyOpen: function (stateObj) {
     if (stateObj.attributes.current_position !== undefined) {
       return stateObj.attributes.current_position === 100;
-    } else {
-      return stateObj.state === "open";
     }
+    return stateObj.state === 'open';
   },
 
   computeIsFullyClosed: function (stateObj) {
     if (stateObj.attributes.current_position !== undefined) {
       return stateObj.attributes.current_position === 0;
-    } else {
-      return stateObj.state === "closed";
     }
+    return stateObj.state === 'closed';
   },
 
   onOpenTap: function () {
