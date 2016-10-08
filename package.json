@@ -4,7 +4,7 @@
   "description": "A frontend for Home Assistant using the Polymer framework",
   "repository": {
     "type": "git",
-    "url": "https://github.com/balloob/home-assistant-polymer"
+    "url": "https://github.com/home-assistant/home-assistant-polymer"
   },
   "scripts": {
     "setup_js_dev": "git submodule init && git submodule update && cd home-assistant-js && npm install",
