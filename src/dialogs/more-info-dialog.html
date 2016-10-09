@@ -18,8 +18,11 @@
         font-size: 14px;
       }
 
+      paper-dialog[data-domain=climate] {
+        width: 450px;
+      }
+
       state-history-charts {
-        width: 100%;
         position: relative;
         z-index: 1;
       }
@@ -42,10 +45,11 @@
           overflow: scroll;
         }
       }
+
     </style>
 
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
-    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
+    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}' data-domain$='[[stateObj.domain]]'>
       <h2>
         <state-card-content
           state-obj="[[stateObj]]"
