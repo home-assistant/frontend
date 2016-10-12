@@ -16,6 +16,11 @@
     <style>
       paper-dialog {
         font-size: 14px;
+        width: 450px;
+      }
+
+      paper-dialog[data-domain=camera] {
+        min-width: 450px;
       }
 
       state-history-charts {
@@ -26,25 +31,6 @@
       state-card-content {
         margin-bottom: 24px;
         font-size: 14px;
-      }
-
-      @@media all and (min-width: 451px){
-        paper-dialog[data-domain=alarm_control_panel],
-        paper-dialog[data-domain=automation],
-        paper-dialog[data-domain=climate],
-        paper-dialog[data-domain=configurator],
-        paper-dialog[data-domain=cover],
-        paper-dialog[data-domain=group],
-        paper-dialog[data-domain=hvac],
-        paper-dialog[data-domain=light],
-        paper-dialog[data-domain=lock],
-        paper-dialog[data-domain=media_player],
-        paper-dialog[data-domain=script],
-        paper-dialog[data-domain=sun],
-        paper-dialog[data-domain=thermostat],
-        paper-dialog[data-domain=updater], {
-          width: 450px;
-        }
       }
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
