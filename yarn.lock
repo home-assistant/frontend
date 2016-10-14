@@ -4752,9 +4752,9 @@ rollup-watch@^2.5.0:
   dependencies:
     semver "^5.1.0"
 
-rollup@^0.35.12:
-  version "0.35.15"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.35.15.tgz#f1df97205ea7c7ce79afbf113c7b1a61ec8300fd"
+rollup@^0.36.3:
+  version "0.36.3"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.36.3.tgz#c89ac479828924ff8f69c1d44541cb4ea2fc11fc"
   dependencies:
     source-map-support "^0.4.0"
 
@@ -5411,9 +5411,9 @@ ternary-stream@^2.0.0:
     merge-stream "^1.0.0"
     through2 "^2.0.0"
 
-"test-fixture@github:polymerelements/test-fixture":
+test-fixture@PolymerElements/test-fixture:
   version "1.1.1"
-  resolved "https://codeload.github.com/polymerelements/test-fixture/tar.gz/05514d6f32ade6fe54de5b242bbb43ea9dcff3c0"
+  resolved "https://codeload.github.com/PolymerElements/test-fixture/tar.gz/05514d6f32ade6fe54de5b242bbb43ea9dcff3c0"
 
 test-value@^1.1.0:
   version "1.1.0"
