@@ -16,11 +16,17 @@
     <style>
       paper-dialog {
         font-size: 14px;
+        width: 365px;
+      }
+
+      paper-dialog[data-domain=camera] {
+        width: auto;
       }
 
       state-history-charts {
         position: relative;
         z-index: 1;
+        max-width: 365px;
       }
 
       state-card-content {
@@ -41,10 +47,11 @@
           overflow: scroll;
         }
       }
+
     </style>
 
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
-    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
+    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}' data-domain$='[[stateObj.domain]]'>
       <h2>
         <state-card-content
           state-obj="[[stateObj]]"
