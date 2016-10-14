@@ -18,8 +18,8 @@
       }
     </style>
 
-    <ha-card header="[[computeTitle(stateObj)]]">
-      <div class='content'>[[stateObj.state]]</div>
+    <ha-card header='[[computeTitle(stateObj)]]'>
+      <div id='content' class='content'>[[computeContent(stateObj)]]</div>
       <paper-button on-tap='dismissTap'>DISMISS</paper-button>
     </ha-card>
   </template>
@@ -41,6 +41,10 @@ Polymer({
 
   computeTitle: function (stateObj) {
     return stateObj.attributes.title || stateObj.entityDisplay;
+  },
+
+  computeContent: function (stateObj) {
+    return stateObj.state.parse(stateObj.state);
   },
 
   dismissTap: function (ev) {
