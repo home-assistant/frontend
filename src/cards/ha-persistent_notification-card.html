@@ -19,7 +19,7 @@
     </style>
 
     <ha-card header='[[computeTitle(stateObj)]]'>
-      <div id='content' class='content'>[[computeContent(stateObj.state)]]</div>
+      <div id='content' class='content'>[[computeContent(stateObj)]]</div>
       <paper-button on-tap='dismissTap'>DISMISS</paper-button>
     </ha-card>
   </template>
@@ -43,7 +43,7 @@ Polymer({
     return stateObj.attributes.title || stateObj.entityDisplay;
   },
 
-  computeContent: function (stateObj.state) {
+  computeContent: function (stateObj) {
     this.importHref('../../script/micromarkdown.js');
     return this.parse(stateObj.state);
   },
