@@ -44,7 +44,7 @@ Polymer({
   },
 
   computeContent: function (stateObj) {
-    this.importHref('../../script/micromarkdown.js');
+    Polymer.Base.importHref('../../bower_components/micromarkdown.js/dist/micromarkdown.min.js', onLoad, onError, false);
     return this.parse(stateObj.state);
   },
 
