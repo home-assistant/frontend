@@ -40,10 +40,12 @@ Polymer({
 
     onLoad: {
       type: String,
+      value: '',
     },
 
-    onErrro: {
+    onError: {
       type: String,
+      value: '',
     },
   },
 
@@ -53,6 +55,8 @@ Polymer({
 
   computeContent: function (stateObj) {
     Polymer.Base.importHref('../../bower_components/micromarkdown.js/dist/micromarkdown.min.js', onLoad, onError, false);
+    if (onLoad) { console.log(onLoad); }
+    if (onError) { console.error(onError); }
     return this.parse(stateObj.state);
   },
 
