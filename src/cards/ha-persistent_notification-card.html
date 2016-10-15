@@ -45,11 +45,11 @@ Polymer({
 
   computeContent: function (stateObj) {
     Polymer.Base.importHref('../../bower_components/micromarkdown.js/dist/micromarkdown.min.js',
-      function() {
+      function () {
         return this.parse(stateObj.state);
       },
       function () {
-        console.error("micromarkdown.min.js did not load");
+        console.error('micromarkdown.min.js did not load');
       }
     );
   },
