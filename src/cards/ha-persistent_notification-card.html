@@ -37,16 +37,6 @@ Polymer({
     stateObj: {
       type: Object,
     },
-
-    onLoad: {
-      type: String,
-      value: '',
-    },
-
-    onError: {
-      type: String,
-      value: '',
-    },
   },
 
   computeTitle: function (stateObj) {
@@ -54,10 +44,14 @@ Polymer({
   },
 
   computeContent: function (stateObj) {
-    Polymer.Base.importHref('../../bower_components/micromarkdown.js/dist/micromarkdown.min.js', onLoad, onError, false);
-    if (onLoad) { console.log(onLoad); }
-    if (onError) { console.error(onError); }
-    return this.parse(stateObj.state);
+    Polymer.Base.importHref('../../bower_components/micromarkdown.js/dist/micromarkdown.min.js',
+      function() {
+        return this.parse(stateObj.state);
+      },
+      function () {
+        console.error("micromarkdown.min.js did not load");
+      }
+    );
   },
 
   dismissTap: function (ev) {
