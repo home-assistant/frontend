@@ -45,7 +45,7 @@ Polymer({
 
     loaded: {
       type: Boolean,
-      computed: 'computeLoaded(scriptLoaded, stateObj)',
+      computed: 'computeLoaded(scriptLoaded)',
     },
   },
 
@@ -57,7 +57,7 @@ Polymer({
     return stateObj.attributes.title || stateObj.entityDisplay;
   },
 
-  computeLoaded: function (scriptLoaded, stateObj) {
+  computeLoaded: function (scriptLoaded) {
     return scriptLoaded;
   },
 
@@ -77,9 +77,11 @@ Polymer({
   },
 
   computeContent: function (stateObj, loaded) {
+    var el = '';
+    var message = '';
     if (loaded) {
-      var el = document.getElementById('pnContent');
-      var message = micromarkdown.parse(stateObj.state);
+      el = document.getElementById('pnContent');
+      message = micromarkdown.parse(stateObj.state);
       el.innerHTML = message;
     }
     return;
