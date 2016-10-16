@@ -18,12 +18,10 @@
       }
     </style>
 
-    <template is='dom-if' if='[[loaded]]'>
-      <ha-card header='[[computeTitle(stateObj)]]'>
-        <div id='content' class='content'>[[computeContent(stateObj)]]</div>
-        <paper-button on-tap='dismissTap'>DISMISS</paper-button>
-      </ha-card>
-    </template>
+    <ha-card header='[[computeTitle(stateObj)]]'>
+      <div id='pnContent' class='content'></div>
+      <paper-button on-tap='dismissTap'>DISMISS</paper-button>
+    </ha-card>
   </template>
 </dom-module>
 
@@ -51,6 +49,10 @@ Polymer({
     },
   },
 
+  observers: [
+    'computeContent(stateObj, loaded)',
+  ],
+
   computeTitle: function (stateObj) {
     return stateObj.attributes.title || stateObj.entityDisplay;
   },
@@ -62,7 +64,6 @@ Polymer({
   loadScript: function () {
     var success = function () {
       this.scriptLoaded = true;
-      console.log('Micromarkdown was loaded.');
     }.bind(this);
 
     var error = function () {
@@ -75,8 +76,13 @@ Polymer({
     );
   },
 
-  computeContent: function (stateObj) {
-    return micromarkdown.parse(stateObj.state);
+  computeContent: function (stateObj, loaded) {
+    if (loaded) {
+      var el = document.getElementById('pnContent');
+      var message = micromarkdown.parse(stateObj.state);
+      el.innerHTML = message;
+    }
+    return;
   },
 
   ready: function () {
