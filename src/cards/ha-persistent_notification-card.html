@@ -18,10 +18,12 @@
       }
     </style>
 
-    <ha-card header='[[computeTitle(stateObj)]]'>
-      <div id='content' class='content'>[[computeContent(stateObj)]]</div>
-      <paper-button on-tap='dismissTap'>DISMISS</paper-button>
-    </ha-card>
+    <template is='dom-if' if='[[loaded]]'>
+      <ha-card header='[[computeTitle(stateObj)]]'>
+        <div id='content' class='content'>[[computeContent(stateObj)]]</div>
+        <paper-button on-tap='dismissTap'>DISMISS</paper-button>
+      </ha-card>
+    </template>
   </template>
 </dom-module>
 
@@ -37,23 +39,48 @@ Polymer({
     stateObj: {
       type: Object,
     },
+
+    scriptLoaded: {
+      type: Boolean,
+      value: false,
+    },
+
+    loaded: {
+      type: Boolean,
+      computed: 'computeLoaded(scriptLoaded, stateObj)',
+    },
   },
 
   computeTitle: function (stateObj) {
     return stateObj.attributes.title || stateObj.entityDisplay;
   },
 
-  computeContent: function (stateObj) {
+  computeLoaded: function (scriptLoaded, stateObj) {
+    return scriptLoaded;
+  },
+
+  loadScript: function () {
+    var success = function () {
+      this.scriptLoaded = true;
+      console.log('Micromarkdown was loaded.');
+    }.bind(this);
+
+    var error = function () {
+      console.error('Micromarkdown was not loaded.');
+    };
+
     this.importHref(
-      'static/home-assistant-polymer/bower_components/micromarkdown.js/dist/micromarkdown.min.js',
-      function () {
-        console.log('Loaded micromarkdown.min.js');
-      },
-      function () {
-        console.error('Error loading micromarkdown.min.js');
-      }
+      '/static/home-assistant-polymer/src/resources/micromarkdown-js.html',
+      success, error
     );
-    return this.micromarkdown.parse(stateObj.state);
+  },
+
+  computeContent: function (stateObj) {
+    return micromarkdown.parse(stateObj.state);
+  },
+
+  ready: function () {
+    this.loadScript();
   },
 
   dismissTap: function (ev) {
