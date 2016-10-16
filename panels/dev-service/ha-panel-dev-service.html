@@ -3,6 +3,11 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
@@ -56,6 +61,15 @@
           </p>
 
           <div class='ha-form'>
+            <paper-dropdown-menu label='Available Services'>
+              <paper-listbox class="dropdown-content">
+                <template is='dom-repeat' items="[[computeDomains(serviceDomains)]]" as="domain">
+                  <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='service'>
+                    <paper-item on-tap='serviceSelected'>[[domain]]/[[service]]</paper-item>
+                  </template>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
             <paper-input label="Domain" autofocus value='{{domain}}'></paper-input>
             <paper-input label="Service" value='{{service}}'></paper-input>
             <paper-textarea label="Service Data (JSON, optional)" value='{{serviceData}}'></paper-textarea>
@@ -64,10 +78,10 @@
           <div class='description'>[[description]]</div>
         </div>
 
-        <div>
+        <!-- <div>
           <div class='header'>Available services</div>
           <services-list on-service-selected='serviceSelected' hass='[[hass]]'></services-list>
-        </div>
+        </div> -->
       </div>
     </app-header-layout>
   </template>
@@ -111,6 +125,13 @@ Polymer({
       type: String,
       computed: 'computeDescription(hass, domain, service)',
     },
+
+    serviceDomains: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return hass.serviceGetters.entityMap;
+      },
+    },
   },
 
   computeDescription: function (hass, domain, service) {
@@ -129,6 +150,22 @@ Polymer({
         return 'No description available';
       },
     ]);
+  },
+
+  computeDomains: function (serviceDomains) {
+    return serviceDomains
+      .valueSeq()
+      .map(function (domain) { return domain.domain; })
+      .sort()
+      .toJS();
+  },
+
+  computeServices: function (serviceDomains, domain) {
+    return serviceDomains
+      .get(domain)
+      .get('services')
+      .keySeq()
+      .toArray();
   },
 
   serviceSelected: function (ev) {
