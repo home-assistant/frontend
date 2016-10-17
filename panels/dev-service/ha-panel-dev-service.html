@@ -63,9 +63,9 @@
           <div class='ha-form'>
             <paper-dropdown-menu label='Available Services'>
               <paper-listbox class="dropdown-content">
-                <template is='dom-repeat' items="[[computeDomains(serviceDomains)]]" as="domain">
-                  <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='service'>
-                    <paper-item on-tap='serviceSelected'>[[domain]]/[[service]]</paper-item>
+                <template is='dom-repeat' items="[[computeDomains(serviceDomains)]]" as="selectedDomain">
+                  <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='selectedService'>
+                    <paper-item on-tap='serviceSelected'>[[selectedDomain]]/[[selectedService]]</paper-item>
                   </template>
                 </template>
               </paper-listbox>
@@ -169,8 +169,9 @@ Polymer({
   },
 
   serviceSelected: function (ev) {
-    this.domain = ev.detail.domain;
-    this.service = ev.detail.service;
+    console.log(ev);
+    this.domain = ev.detail.selectedDomain;
+    this.service = ev.detail.selectedService;
   },
 
   callService: function () {
