@@ -1,26 +1,25 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
 
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+<link rel='import' href='../../bower_components/paper-input/paper-input.html'>
+<link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
+<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
-<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel='import' href='../../bower_components/neon-animation/neon-animation.html'>
 
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
+<link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
+<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/resources/ha-style.html">
+<link rel='import' href='../../src/components/ha-menu-button.html'>
+<link rel='import' href='../../src/resources/ha-style.html'>
+<link rel='import' href='../../src/util/hass-behavior.html'>
 
-<link rel="import" href="./services-list.html">
-
-<dom-module id="ha-panel-dev-service">
+<dom-module id='ha-panel-dev-service'>
   <template>
-    <style include="iron-flex iron-positioning ha-style">
+    <style include='iron-flex iron-positioning ha-style'>
       :host {
         background-color: white;
         -ms-user-select: initial;
@@ -58,30 +57,27 @@
         <div class='flex'>
           <p>
             Call a service from a component.
-          </p>
 
-          <div class='ha-form'>
+          </p>
+          <div class='ha-dropdown'>
             <paper-dropdown-menu label='Available Services'>
-              <paper-listbox class="dropdown-content">
-                <template is='dom-repeat' items="[[computeDomains(serviceDomains)]]" as="selectedDomain">
-                  <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='selectedService'>
-                    <paper-item on-tap='serviceSelected'>[[selectedDomain]]/[[selectedService]]</paper-item>
+              <paper-listbox class='dropdown-content'>
+                <template is='dom-repeat' items='[[computeDomains(serviceDomains)]]' as='domain'>
+                  <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='service'>
+                    <paper-item on-tap="serviceSelected">{{domain}}/{{service}}</paper-item>
                   </template>
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
-            <paper-input label="Domain" autofocus value='{{domain}}'></paper-input>
-            <paper-input label="Service" value='{{service}}'></paper-input>
-            <paper-textarea label="Service Data (JSON, optional)" value='{{serviceData}}'></paper-textarea>
+          </div>
+          <div class='ha-form'>
+            <paper-input label='Domain' value='{{domain}}'></paper-input>
+            <paper-input label='Service' value='{{service}}'></paper-input>
+            <paper-textarea label='Service Data (JSON, optional)' value='{{serviceData}}'></paper-textarea>
             <paper-button on-tap='callService' raised>Call Service</paper-button>
           </div>
           <div class='description'>[[description]]</div>
         </div>
-
-        <!-- <div>
-          <div class='header'>Available services</div>
-          <services-list on-service-selected='serviceSelected' hass='[[hass]]'></services-list>
-        </div> -->
       </div>
     </app-header-layout>
   </template>
@@ -90,6 +86,8 @@
 <script>
 Polymer({
   is: 'ha-panel-dev-service',
+
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
@@ -170,8 +168,9 @@ Polymer({
 
   serviceSelected: function (ev) {
     console.log(ev);
-    this.domain = ev.detail.selectedDomain;
-    this.service = ev.detail.selectedService;
+    ev.preventDefault();
+    this.domain = ev.model.domain;
+    this.service = ev.model.service;
   },
 
   callService: function () {
