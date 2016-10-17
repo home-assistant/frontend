@@ -27,6 +27,11 @@
         -moz-user-select: initial;
       }
 
+      .dropdown-menu {
+        display: block;
+        margin-right: 16px;
+      }
+
       .content {
         padding: 24px;
       }
@@ -60,7 +65,7 @@
 
           </p>
           <div class='ha-dropdown'>
-            <paper-dropdown-menu label='Available Services'>
+            <paper-dropdown-menu class='dropdown-menu' label='Available Services'>
               <paper-listbox class='dropdown-content'>
                 <template is='dom-repeat' items='[[computeDomains(serviceDomains)]]' as='domain'>
                   <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='service'>
