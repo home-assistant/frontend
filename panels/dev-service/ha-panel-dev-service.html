@@ -8,14 +8,11 @@
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
 <link rel='import' href='../../bower_components/neon-animation/neon-animation.html'>
-<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 
 <link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
 <link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
 <link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 <link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
-
 
 <link rel='import' href='../../src/components/ha-menu-button.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
@@ -193,6 +190,7 @@ Polymer({
     ev.preventDefault();
     this.domain = ev.model.domain;
     this.service = ev.model.service;
+    this.serviceData = '';
   },
 
   callService: function () {
