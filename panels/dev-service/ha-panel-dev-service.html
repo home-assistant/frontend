@@ -8,10 +8,14 @@
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
 <link rel='import' href='../../bower_components/neon-animation/neon-animation.html'>
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-in-animation.html">
 
 <link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
 <link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
 <link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+
 
 <link rel='import' href='../../src/components/ha-menu-button.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
@@ -58,6 +62,19 @@
         </app-toolbar>
       </app-header>
 
+      <app-localstorage-document
+        key='panel-dev-service-state-domain'
+        data='{{domain}}'>
+        <app-localstorage-document
+          key='panel-dev-service-state-service'
+          data='{{service}}'>
+          <app-localstorage-document
+            key='panel-dev-service-state-servicedata'
+            data='{{serviceData}}'>
+          </app-localstorage-document>
+        </app-localstorage-document>
+      </app-localstorage-document>
+
       <div class$='[[computeFormClasses(narrow)]]'>
         <div class='flex'>
           <p>
@@ -65,7 +82,7 @@
 
           </p>
           <div class='ha-dropdown'>
-            <paper-dropdown-menu class='dropdown-menu' label='Available Services'>
+            <paper-dropdown-menu class='dropdown-menu' label='Available Services' focused>
               <paper-listbox class='dropdown-content'>
                 <template is='dom-repeat' items='[[computeDomains(serviceDomains)]]' as='domain'>
                   <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='service'>

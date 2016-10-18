@@ -19,5 +19,9 @@
     "app-layout": "~0.10.2",
     "fecha": "~2.2.0",
     "paper-range-slider": "IftachSadeh/paper-range-slider#~0.1.2"
+  },
+  "dependencies": {
+    "app-storage": "PolymerElements/app-storage#^0.9.7",
+    "neon-animation": "PolymerElements/neon-animation#^1.2.4"
   }
 }
