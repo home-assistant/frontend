@@ -1,11 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
-<link rel='import' href='../../bower_components/paper-input/paper-input.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
-<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
-<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
-<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
 <link rel='import' href='../../bower_components/neon-animation/neon-animation.html'>
 
@@ -13,6 +9,8 @@
 <link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
 <link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 <link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 
 <link rel='import' href='../../src/components/ha-menu-button.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
@@ -26,11 +24,6 @@
         -ms-user-select: initial;
         -webkit-user-select: initial;
         -moz-user-select: initial;
-      }
-
-      .dropdown-menu {
-        display: block;
-        margin-right: 16px;
       }
 
       .content {
@@ -62,14 +55,14 @@
       <app-localstorage-document
         key='panel-dev-service-state-domain'
         data='{{domain}}'>
-        <app-localstorage-document
-          key='panel-dev-service-state-service'
-          data='{{service}}'>
-          <app-localstorage-document
-            key='panel-dev-service-state-servicedata'
-            data='{{serviceData}}'>
-          </app-localstorage-document>
-        </app-localstorage-document>
+      </app-localstorage-document>
+      <app-localstorage-document
+        key='panel-dev-service-state-service'
+        data='{{service}}'>
+      </app-localstorage-document>
+      <app-localstorage-document
+        key='panel-dev-service-state-servicedata'
+        data='{{serviceData}}'>
       </app-localstorage-document>
 
       <div class$='[[computeFormClasses(narrow)]]'>
@@ -78,20 +71,10 @@
             Call a service from a component.
 
           </p>
-          <div class='ha-dropdown'>
-            <paper-dropdown-menu class='dropdown-menu' label='Available Services' focused>
-              <paper-listbox class='dropdown-content'>
-                <template is='dom-repeat' items='[[computeDomains(serviceDomains)]]' as='domain'>
-                  <template is='dom-repeat' items='[[computeServices(serviceDomains, domain)]]' as='service'>
-                    <paper-item on-tap="serviceSelected">{{domain}}/{{service}}</paper-item>
-                  </template>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </div>
+
           <div class='ha-form'>
-            <paper-input label='Domain' value='{{domain}}'></paper-input>
-            <paper-input label='Service' value='{{service}}'></paper-input>
+            <vaadin-combo-box label='Domain' items='[[computeDomains(serviceDomains)]]' value='{{domain}}'></vaadin-combo-box>
+            <vaadin-combo-box label='Service' items='[[computeServices(serviceDomains, domain)]]' value='{{service}}'></vaadin-combo-box>
             <paper-textarea label='Service Data (JSON, optional)' value='{{serviceData}}'></paper-textarea>
             <paper-button on-tap='callService' raised>Call Service</paper-button>
           </div>
@@ -126,11 +109,13 @@ Polymer({
     domain: {
       type: String,
       value: '',
+      observer: 'domainChanged',
     },
 
     service: {
       type: String,
       value: '',
+      observer: 'serviceChanged',
     },
 
     serviceData: {
@@ -178,18 +163,22 @@ Polymer({
   },
 
   computeServices: function (serviceDomains, domain) {
-    return serviceDomains
-      .get(domain)
-      .get('services')
-      .keySeq()
-      .toArray();
+    if (domain) {
+      return serviceDomains
+        .get(domain)
+        .get('services')
+        .keySeq()
+        .toArray();
+    }
+    return;
   },
 
-  serviceSelected: function (ev) {
-    console.log(ev);
-    ev.preventDefault();
-    this.domain = ev.model.domain;
-    this.service = ev.model.service;
+  domainChanged: function () {
+    this.service = '';
+    this.serviceData = '';
+  },
+
+  serviceChanged: function () {
     this.serviceData = '';
   },
 
