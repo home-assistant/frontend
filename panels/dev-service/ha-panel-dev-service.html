@@ -63,22 +63,22 @@
         data='{{serviceData}}'>
       </app-localstorage-document>
 
-      <div class$='[[computeFormClasses(narrow)]]'>
-        <div class='flex'>
-          <p>
-            Call a service from a component.
+      <div class='content'>
+        <p>
+          Call a service from a component.
 
-          </p>
+        </p>
 
-          <div class='ha-form'>
-            <vaadin-combo-box label='Domain' items='[[computeDomains(serviceDomains)]]' value='{{domain}}'></vaadin-combo-box>
-            <vaadin-combo-box label='Service' items='[[computeServices(serviceDomains, domain)]]' value='{{service}}'></vaadin-combo-box>
-            <paper-textarea label='Service Data (JSON, optional)' value='{{serviceData}}'></paper-textarea>
-            <paper-button on-tap='callService' raised>Call Service</paper-button>
-          </div>
-          <div class='description'>[[description]]</div>
+        <div class='ha-form'>
+          <vaadin-combo-box label='Domain' items='[[computeDomains(serviceDomains)]]' value='{{domain}}'></vaadin-combo-box>
+          <vaadin-combo-box label='Service' items='[[computeServices(serviceDomains, domain)]]' value='{{service}}'></vaadin-combo-box>
+          <paper-textarea label='Service Data (JSON, optional)' value='{{serviceData}}'></paper-textarea>
+          <paper-button on-tap='callService' raised>Call Service</paper-button>
         </div>
+
+        <div class='description'>[[description]]</div>
       </div>
+
     </app-header-layout>
   </template>
 </dom-module>
@@ -192,11 +192,6 @@ Polymer({
     }
 
     this.hass.serviceActions.callService(this.domain, this.service, serviceData);
-  },
-
-  computeFormClasses: function (narrow) {
-    return narrow ?
-      'content fit' : 'content fit layout horizontal';
   },
 });
 </script>
