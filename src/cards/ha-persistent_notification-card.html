@@ -72,7 +72,7 @@ Polymer({
     var message = '';
     if (scriptLoaded) {
       el = this.$.pnContent;
-      message = micromarkdown.parse(stateObj.state);
+      message = window.micromarkdown.parse(stateObj.state);
       el.innerHTML = message;
     }
     return;
