@@ -54,6 +54,7 @@
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^2.5.0",
     "sw-precache": "^4.0.0",
+    "uglify-js": "^2.7.3",
     "vulcanize": "^1.14.8"
   }
 }
