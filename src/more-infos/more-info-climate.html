@@ -50,17 +50,28 @@
         width: 100%;
       }
 
-      #temp-slider {
+      #temp-slider,
+      #humidity-slider {
         width: 100%;
       }
 
-      .heat {
+      .auto #temp-slider {
+        --paper-slider-active-color: var(--paper-orange-400);
+        --paper-slider-secondary-color: var(--paper-blue-400);
+      }
+
+      .heat #temp-slider {
         --paper-slider-active-color: var(--paper-orange-400);
         --paper-slider-secondary-color: var(--paper-green-400);
       }
 
-      .cool {
+      .cool #temp-slider {
         --paper-slider-active-color: var(--paper-green-400);
+        --paper-slider-secondary-color: var(--paper-blue-400);
+      }
+
+      #humidity-slider {
+        --paper-slider-active-color: var(--paper-blue-400);
         --paper-slider-secondary-color: var(--paper-blue-400);
       }
 
@@ -116,8 +127,10 @@
         <div class='single-row'>
           <div>Target Humidity</div>
           <paper-slider
+            id='humidity-slider'
             min='[[stateObj.attributes.min_humidity]]'
             max='[[stateObj.attributes.max_humidity]]'
+            secondary-progress='[[stateObj.attributes.max_humidity]]'
             step='1' pin
             value='[[stateObj.attributes.humidity]]'
             on-change='targetHumiditySliderChanged'>
