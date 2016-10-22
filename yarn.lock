@@ -5570,7 +5570,7 @@ typical@^2.3.0, typical@^2.4.2, typical@^2.5.0, typical@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/typical/-/typical-2.6.0.tgz#89d51554ab139848a65bcc2c8772f8fb450c40ed"
 
-uglify-js@^2.6.1, uglify-js@^2.7.0, uglify-js@2.7.x:
+uglify-js@^2.6.1, uglify-js@^2.7.0, uglify-js@^2.7.3, uglify-js@2.7.x:
   version "2.7.3"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.7.3.tgz#39b3a7329b89f5ec507e344c6e22568698ef4868"
   dependencies:
