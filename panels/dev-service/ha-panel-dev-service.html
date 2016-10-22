@@ -1,21 +1,22 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
 
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+<link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
 
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
+<link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
+<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
 
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/resources/ha-style.html">
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 
-<link rel="import" href="./services-list.html">
+<link rel='import' href='../../src/components/ha-menu-button.html'>
+<link rel='import' href='../../src/resources/ha-style.html'>
+<link rel='import' href='../../src/util/hass-behavior.html'>
 
-<dom-module id="ha-panel-dev-service">
+<dom-module id='ha-panel-dev-service'>
   <template>
-    <style include="iron-flex iron-positioning ha-style">
+    <style include='ha-style'>
       :host {
         background-color: white;
         -ms-user-select: initial;
@@ -29,6 +30,7 @@
 
       .ha-form {
         margin-right: 16px;
+        max-width: 500px;
       }
 
       .description {
@@ -49,26 +51,35 @@
         </app-toolbar>
       </app-header>
 
-      <div class$='[[computeFormClasses(narrow)]]'>
-        <div class='flex'>
-          <p>
-            Call a service from a component.
-          </p>
+      <app-localstorage-document
+        key='panel-dev-service-state-domain'
+        data='{{domain}}'>
+      </app-localstorage-document>
+      <app-localstorage-document
+        key='panel-dev-service-state-service'
+        data='{{service}}'>
+      </app-localstorage-document>
+      <app-localstorage-document
+        key='panel-dev-service-state-servicedata'
+        data='{{serviceData}}'>
+      </app-localstorage-document>
 
-          <div class='ha-form'>
-            <paper-input label="Domain" autofocus value='{{domain}}'></paper-input>
-            <paper-input label="Service" value='{{service}}'></paper-input>
-            <paper-textarea label="Service Data (JSON, optional)" value='{{serviceData}}'></paper-textarea>
-            <paper-button on-tap='callService' raised>Call Service</paper-button>
-          </div>
-          <div class='description'>[[description]]</div>
+      <div class='content'>
+        <p>
+          Call a service from a component.
+
+        </p>
+
+        <div class='ha-form'>
+          <vaadin-combo-box label='Domain' items='[[computeDomains(serviceDomains)]]' value='{{domain}}'></vaadin-combo-box>
+          <vaadin-combo-box label='Service' items='[[computeServices(serviceDomains, domain)]]' value='{{service}}'></vaadin-combo-box>
+          <paper-textarea label='Service Data (JSON, optional)' value='{{serviceData}}'></paper-textarea>
+          <paper-button on-tap='callService' raised>Call Service</paper-button>
         </div>
 
-        <div>
-          <div class='header'>Available services</div>
-          <services-list on-service-selected='serviceSelected' hass='[[hass]]'></services-list>
-        </div>
+        <div class='description'>[[description]]</div>
       </div>
+
     </app-header-layout>
   </template>
 </dom-module>
@@ -76,6 +87,8 @@
 <script>
 Polymer({
   is: 'ha-panel-dev-service',
+
+  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
@@ -95,11 +108,13 @@ Polymer({
     domain: {
       type: String,
       value: '',
+      observer: 'domainChanged',
     },
 
     service: {
       type: String,
       value: '',
+      observer: 'serviceChanged',
     },
 
     serviceData: {
@@ -110,6 +125,13 @@ Polymer({
     description: {
       type: String,
       computed: 'computeDescription(hass, domain, service)',
+    },
+
+    serviceDomains: {
+      type: Array,
+      bindNuclear: function (hass) {
+        return hass.serviceGetters.entityMap;
+      },
     },
   },
 
@@ -131,9 +153,32 @@ Polymer({
     ]);
   },
 
-  serviceSelected: function (ev) {
-    this.domain = ev.detail.domain;
-    this.service = ev.detail.service;
+  computeDomains: function (serviceDomains) {
+    return serviceDomains
+      .valueSeq()
+      .map(function (domain) { return domain.domain; })
+      .sort()
+      .toJS();
+  },
+
+  computeServices: function (serviceDomains, domain) {
+    if (domain) {
+      return serviceDomains
+        .get(domain)
+        .get('services')
+        .keySeq()
+        .toArray();
+    }
+    return '';
+  },
+
+  domainChanged: function () {
+    this.service = '';
+    this.serviceData = '';
+  },
+
+  serviceChanged: function () {
+    this.serviceData = '';
   },
 
   callService: function () {
@@ -148,11 +193,6 @@ Polymer({
     }
 
     this.hass.serviceActions.callService(this.domain, this.service, serviceData);
-  },
-
-  computeFormClasses: function (narrow) {
-    return narrow ?
-      'content fit' : 'content fit layout horizontal';
   },
 });
 </script>
