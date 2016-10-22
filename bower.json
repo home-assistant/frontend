@@ -16,10 +16,14 @@
     "iron-elements": "PolymerElements/iron-elements#~1.0.10",
     "leaflet-map": "~1.2.0",
     "paper-elements": "PolymerElements/paper-elements#~1.0.7",
-    "paper-range-slider": "IftachSadeh/paper-range-slider#~0.1.2",
+    "paper-range-slider": "IftachSadeh/paper-range-slider#~0.2.3",
     "paper-scroll-header-panel": "~1.0.16",
     "pikaday": "~1.4.0",
     "polymer": "Polymer/polymer#~1.7.0",
-    "vaadin-combo-box": "vaadin/vaadin-combo-box#~1.1.5"
+    "vaadin-combo-box": "vaadin/vaadin-combo-box#~1.1.5",
+    "paper-slider": "1.0.11"
+  },
+  "resolutions": {
+    "paper-slider": "1.0.11"
   }
 }
