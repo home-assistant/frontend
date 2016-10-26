@@ -14,21 +14,18 @@ window.hassUtil.DOMAINS_WITH_CARD = [
   'climate',
   'cover',
   'configurator',
-  'hvac',
   'input_select',
   'input_slider',
   'media_player',
-  'rollershutter',
   'scene',
   'script',
-  'thermostat',
   'weblink',
 ];
 
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
-  'light', 'group', 'sun', 'climate', 'configurator', 'cover', 'thermostat',
+  'light', 'group', 'sun', 'climate', 'configurator', 'cover',
   'script', 'media_player', 'camera', 'updater', 'alarm_control_panel',
-  'lock', 'hvac', 'automation',
+  'lock', 'automation',
 ];
 
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
@@ -220,17 +217,11 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'fan':
       return 'mdi:fan';
 
-    case 'garage_door':
-      return 'mdi:glassdoor';
-
     case 'group':
       return 'mdi:google-circles-communities';
 
     case 'homeassistant':
       return 'mdi:home';
-
-    case 'hvac':
-      return 'mdi:air-conditioner';
 
     case 'input_boolean':
       return 'mdi:drawing';
@@ -257,9 +248,6 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'proximity':
       return 'mdi:apple-safari';
 
-    case 'rollershutter':
-      return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
-
     case 'scene':
       return 'mdi:google-pages';
 
@@ -277,9 +265,6 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'switch':
       return 'mdi:flash';
-
-    case 'thermostat':
-      return 'mdi:nest-thermostat';
 
     case 'updater':
       return 'mdi:cloud-upload';
