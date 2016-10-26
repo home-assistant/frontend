@@ -38,6 +38,10 @@
         transition: padding-top .8s;
       }
 
+      .banner.content-type-music:before {
+        padding-top: 100%;
+      }
+
       .banner.no-cover:before {
         padding-top: 91px;
       }
@@ -233,6 +237,10 @@ Polymer({
 
     if (!playerObj.stateObj.attributes.entity_picture) {
       cls += ' no-cover';
+    }
+
+    if (playerObj.stateObj.attributes.media_content_type === 'music') {
+      cls += ' content-type-music';
     }
 
     return cls;
