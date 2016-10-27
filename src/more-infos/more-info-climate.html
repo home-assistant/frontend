@@ -50,22 +50,37 @@
         width: 100%;
       }
 
-      .heat {
+      paper-slider {
+        width: 100%;
+      }
+
+      .auto paper-slider {
+        --paper-slider-active-color: var(--paper-orange-400);
+        --paper-slider-secondary-color: var(--paper-blue-400);
+      }
+
+      .heat paper-slider {
         --paper-slider-active-color: var(--paper-orange-400);
         --paper-slider-secondary-color: var(--paper-green-400);
       }
 
-      .cool {
+      .cool paper-slider {
         --paper-slider-active-color: var(--paper-green-400);
         --paper-slider-secondary-color: var(--paper-blue-400);
       }
 
-      #temp-range-slider {
+      .humidity {
+        --paper-slider-active-color: var(--paper-blue-400);
+        --paper-slider-secondary-color: var(--paper-blue-400);
+      }
+
+      paper-range-slider {
         --paper-range-slider-lower-color: var(--paper-orange-400);
         --paper-range-slider-active-color: var(--paper-green-400);
         --paper-range-slider-higher-color: var(--paper-blue-400);
         --paper-range-slider-knob-color: var(--primary-color);
         --paper-range-slider-pin-color: var(--primary-color);
+        --paper-range-slider-width: 100%;
       }
 
       .single-row {
@@ -82,7 +97,6 @@
         <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
           <paper-slider
-            id='temp-slider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             secondary-progress='[[stateObj.attributes.max_temp]]'
@@ -93,7 +107,6 @@
             on-change='targetTemperatureSliderChanged'>
           </paper-slider>
           <paper-range-slider
-            id='temp-range-slider'
             min='[[stateObj.attributes.min_temp]]'
             max='[[stateObj.attributes.max_temp]]'
             pin
@@ -111,8 +124,10 @@
         <div class='single-row'>
           <div>Target Humidity</div>
           <paper-slider
+            class='humidity'
             min='[[stateObj.attributes.min_humidity]]'
             max='[[stateObj.attributes.max_humidity]]'
+            secondary-progress='[[stateObj.attributes.max_humidity]]'
             step='1' pin
             value='[[stateObj.attributes.humidity]]'
             on-change='targetHumiditySliderChanged'>
