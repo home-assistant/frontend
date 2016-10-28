@@ -151,7 +151,7 @@
       <paper-icon-button
         icon='mdi:power'
         on-tap='handleTogglePower'
-        invisible$='[[!playerObj.supportsTurnOff]]'
+        invisible$='[[computeHidePowerButton(playerObj)]]'
         class='self-center secondary'
       ></paper-icon-button>
 
@@ -246,8 +246,8 @@ Polymer({
     return cls;
   },
 
-  computeHidePowerOnButton: function (playerObj) {
-    return !playerObj.isOff || !playerObj.supportsTurnOn;
+  computeHidePowerButton: function (playerObj) {
+    return playerObj.isOff ? !playerObj.supportsTurnOn : !playerObj.supportsTurnOff;
   },
 
   computePlayerObj: function (stateObj) {
