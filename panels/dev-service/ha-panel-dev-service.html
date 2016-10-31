@@ -58,6 +58,10 @@
         white-space: pre-wrap;
         word-break: break-word;
       }
+
+      pre {
+        margin: 0;
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -94,21 +98,40 @@
           <paper-button on-tap='callService' raised>Call Service</paper-button>
         </div>
 
-        <h1>Valid Parameters</h1>
-        <table class='attributes'>
-          <tr>
-            <th>Parameter</th>
-            <th>Description</th>
-            <th>Example</th>
-          </tr>
-          <template is='dom-repeat' items='[[_attributes]]' as='attribute'>
-            <tr>
-              <td><pre>[[attribute.key]]</pre></td>
-              <td>[[attribute.description]]</td>
-              <td>[[attribute.example]]</td>
-            </tr>
+        <template is='dom-if' if='[[!domain]]'>
+          <h1>Select a domain and service to see the description</h1>
+        </template>
+
+        <template is='dom-if' if='[[domain]]'>
+          <template is='dom-if' if='[[!service]]'>
+            <h1>Select a service to see the description</h1>
           </template>
-        </table>
+        </template>
+
+        <template is='dom-if' if='[[domain]]'>
+          <template is='dom-if' if='[[service]]'>
+            <template is='dom-if' if='[[!_attributes.length]]'>
+              <h1>No description is available</h1>
+            </template>
+            <template is='dom-if' if='[[_attributes.length]]'>
+              <h1>Valid Parameters</h1>
+              <table class='attributes'>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Description</th>
+                  <th>Example</th>
+                </tr>
+                <template is='dom-repeat' items='[[_attributes]]' as='attribute'>
+                  <tr>
+                    <td><pre>[[attribute.key]]</pre></td>
+                    <td>[[attribute.description]]</td>
+                    <td>[[attribute.example]]</td>
+                  </tr>
+                </template>
+              </table>
+            </template>
+          </template>
+        </template>
       </div>
 
     </app-header-layout>
