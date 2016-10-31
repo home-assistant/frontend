@@ -171,7 +171,7 @@ Polymer({
       hass.serviceGetters.entityMap,
       function (map) {
         if (map.has(domain) && map.get(domain).get('services').has(service)) {
-          mapped = map
+          return map
             .get(domain)
             .get('services')
             .get(service)
@@ -182,8 +182,8 @@ Polymer({
               return fieldCopy;
             })
             .toArray();
-          return mapped;
         }
+        return [];
       },
     ]);
   },
