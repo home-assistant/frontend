@@ -98,6 +98,7 @@
       }
 
       .controls {
+        position: relative;
         @apply(--paper-font-body1);
         padding: 8px;
         border-bottom-left-radius: 2px;
@@ -108,6 +109,14 @@
       .controls paper-icon-button {
         width: 44px;
         height: 44px;
+      }
+
+      .controls .progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        --paper-progress-active-color: red;
       }
 
       paper-icon-button {
@@ -148,6 +157,13 @@
     </div>
 
     <div class='controls layout horizontal justified'>
+      <paper-progress
+        max=[[playbackDuration]]
+        value=[[playbackPosition]]
+        invisible$='[[!playbackVisible]]'
+        class='progress'
+      ></paper-progress>
+
       <paper-icon-button
         icon='mdi:power'
         on-tap='handleTogglePower'
@@ -219,12 +235,65 @@ Polymer({
       value: 1,
       reflectToAttribute: true,
     },
+
+    playbackDuration: {
+      type: Number,
+    },
+
+    playbackPosition: {
+      type: Number,
+    },
+
+    playbackVisible: {
+      type: Boolean,
+      value: false
+    },
+
+    _internal: {
+      type: Object,
+      value: {
+        position: null,  // last value of media_position
+        time: null,      // when that value was updated
+        interval: null,  // interval timer to update playbackPosition property
+      }
+    }
   },
 
   playerObjChanged: function (playerObj) {
     if (!playerObj.isOff && !playerObj.isIdle) {
       this.$.cover.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
         'url(' + playerObj.stateObj.attributes.entity_picture + ')' : '';
+    }
+
+    // clear previous interval timer
+    if (this._internal.interval) {
+      clearInterval(this._internal.interval);
+      this._internal.interval = null;
+    }
+
+    // update playback state from object
+    this._internal.position = playerObj.stateObj.attributes.media_position;
+    this.playbackDuration = playerObj.stateObj.attributes.media_duration;
+    this._internal.time = Date.now();
+
+    if (playerObj.isPlaying && this._internal.position && this.playbackDuration) {
+      // playback is in progress, update the playback status on an interval timer
+      this._internal.interval = setInterval(this.updateProgress.bind(this), 500);
+    }
+    else {
+      // no playback in progress (or no playback info), update playback status
+      this.updateProgress();
+    }
+  },
+
+  updateProgress: function() {
+    if (this._internal.position != null && this.playbackDuration) {
+      this.playbackPosition = this._internal.position + (Date.now() - this._internal.time) / 1000;
+      this.playbackVisible = true;
+    }
+    else {
+      this.playbackPosition = null;
+      this.playbackVisible = false;
     }
   },
 
