@@ -276,7 +276,7 @@ Polymer({
     this.playbackDuration = playerObj.stateObj.attributes.media_duration;
     this._internal.time = Date.now();
 
-    if (playerObj.isPlaying && this._internal.position && this.playbackDuration) {
+    if (playerObj.isPlaying && this._internal.position != null && this.playbackDuration) {
       // playback is in progress, update the playback status on an interval timer
       this._internal.interval = setInterval(this.updateProgress.bind(this), 500);
     }
