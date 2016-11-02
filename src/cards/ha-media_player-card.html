@@ -19,12 +19,7 @@
 
       .banner {
         position: relative;
-
-        background-position: center center;
-        background-image: url(/static/images/card_media_player_bg.png);
-        background-repeat: no-repeat;
-        background-color: var(--primary-color);
-
+        background-color: white;
         border-top-left-radius: 2px;
         border-top-right-radius: 2px;
       }
@@ -36,6 +31,13 @@
         /* removed .25% from 16:9 ratio to fix YT black bars */
         padding-top: 56%;
         transition: padding-top .8s;
+      }
+
+      .banner.no-cover {
+        background-position: center center;
+        background-image: url(/static/images/card_media_player_bg.png);
+        background-repeat: no-repeat;
+        background-color: var(--primary-color);
       }
 
       .banner.content-type-music:before {
