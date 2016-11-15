@@ -271,8 +271,11 @@ Polymer({
       this._internal.interval = null;
     }
 
+    console.log('playerObj', playerObj);
+
     // update playback state from object
-    this._internal.position = playerObj.stateObj.attributes.media_position;
+    var timeSincePositionValid = (Date.now() / 1000) - playerObj.stateObj.attributes.media_position_updated_at;
+    this._internal.position = playerObj.stateObj.attributes.media_position + timeSincePositionValid;
     this.playbackDuration = playerObj.stateObj.attributes.media_duration;
     this._internal.time = Date.now();
 
