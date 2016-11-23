@@ -58,7 +58,9 @@ Polymer({
     }.bind(this);
 
     var error = function () {
+      /* eslint-disable no-console */
       console.error('Micromarkdown was not loaded.');
+      /* eslint-enable no-console */
     };
 
     this.importHref(
