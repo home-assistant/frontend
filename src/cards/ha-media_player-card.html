@@ -158,9 +158,9 @@
 
     <div class='controls layout horizontal justified'>
       <paper-progress
-        max=[[playbackDuration]]
-        value=[[playbackPosition]]
-        invisible$='[[!playbackVisible]]'
+        max='[[playbackDuration]]'
+        value='[[playbackPosition]]'
+        hidden$='[[!playbackVisible]]'
         class='progress'
       ></paper-progress>
 
@@ -246,61 +246,72 @@ Polymer({
 
     playbackVisible: {
       type: Boolean,
-      value: false
+      value: false,
     },
-
-    _internal: {
-      type: Object,
-      value: {
-        position: null,  // last value of media_position
-        time: null,      // when that value was updated
-        interval: null,  // interval timer to update playbackPosition property
-      }
-    }
   },
 
   playerObjChanged: function (playerObj) {
+    var timeSincePositionValid;
+
     if (!playerObj.isOff && !playerObj.isIdle) {
       this.$.cover.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
         'url(' + playerObj.stateObj.attributes.entity_picture + ')' : '';
     }
 
+    if (typeof this._positionTracking === 'undefined') {
+      this._positionTracking = {
+        position: null,  // last value of media_position
+        time: null,      // when that value was updated
+        interval: null,  // interval timer to update playbackPosition property
+      }
+    }
+
     // clear previous interval timer
-    if (this._internal.interval) {
-      clearInterval(this._internal.interval);
-      this._internal.interval = null;
+    if (this._positionTracking.interval) {
+      clearInterval(this._positionTracking.interval);
+      this._positionTracking.interval = null;
     }
 
     // update playback state from object
     if (playerObj.stateObj.attributes.media_position_updated_at) {
-      var dateObj = Date.parse(playerObj.stateObj.attributes.media_position_updated_at);
-      var timeSincePositionValid = Math.abs(new Date() - dateObj) / 1000;
-      this._internal.position = playerObj.stateObj.attributes.media_position + timeSincePositionValid;
-      this.playbackDuration = playerObj.stateObj.attributes.media_duration;
-      this._internal.time = Date.now();
-    }
-    else {
-      this._internal.position = null;
+      // when was the position valid?
+      timeSincePositionValid = Math.abs(
+        new Date() - Date.parse(playerObj.stateObj.attributes.media_position_updated_at)
+      );
+
+      // update "current" position (in ms) to reflect that
+      this._positionTracking.position = 1000 * playerObj.stateObj.attributes.media_position +
+        timeSincePositionValid;
+
+      // base playbackPosition calculations on calculate position now
+      this._positionTracking.time = Date.now();
+
+      // playbackDuration is expressed in ms (rounded to the next second)
+      this.playbackDuration = 1000 * playerObj.stateObj.attributes.media_duration;
+    } else {
+      // no playback position
+      this._positionTracking.position = null;
+      this._positionTracking.time = null;
       this.playbackDuration = null;
-      this._internal.time = null;
     }
 
-    if (playerObj.isPlaying && this._internal.position != null && this.playbackDuration) {
+    if (playerObj.isPlaying && this._positionTracking.position != null && this.playbackDuration) {
       // playback is in progress, update the playback status on an interval timer
-      this._internal.interval = setInterval(this.updateProgress.bind(this), 500);
-    }
-    else {
+      // we choose 200ms here in order to get the playback paper-progress control movement smooth
+      this._positionTracking.interval = setInterval(this.updatePlaybackPosition.bind(this), 200);
+    } else {
       // no playback in progress (or no playback info), update playback status
-      this.updateProgress();
+      this.updatePlaybackPosition();
     }
   },
 
-  updateProgress: function() {
-    if (this._internal.position != null && this.playbackDuration) {
-      this.playbackPosition = this._internal.position + (Date.now() - this._internal.time) / 1000;
+  updatePlaybackPosition: function() {
+    if (this._positionTracking.position != null && this.playbackDuration) {
+      // calculate playback position in ms
+      this.playbackPosition = this._positionTracking.position +
+        (Date.now() - this._positionTracking.time);
       this.playbackVisible = true;
-    }
-    else {
+    } else {
       this.playbackPosition = null;
       this.playbackVisible = false;
     }
