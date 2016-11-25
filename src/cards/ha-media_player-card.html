@@ -263,7 +263,7 @@ Polymer({
         position: null,  // last value of media_position
         time: null,      // when that value was updated
         interval: null,  // interval timer to update playbackPosition property
-      }
+      };
     }
 
     // clear previous interval timer
@@ -280,7 +280,7 @@ Polymer({
       );
 
       // update "current" position (in ms) to reflect that
-      this._positionTracking.position = 1000 * playerObj.stateObj.attributes.media_position +
+      this._positionTracking.position = (1000 * playerObj.stateObj.attributes.media_position) +
         timeSincePositionValid;
 
       // base playbackPosition calculations on calculate position now
@@ -305,7 +305,7 @@ Polymer({
     }
   },
 
-  updatePlaybackPosition: function() {
+  updatePlaybackPosition: function () {
     if (this._positionTracking.position != null && this.playbackDuration) {
       // calculate playback position in ms
       this.playbackPosition = this._positionTracking.position +
