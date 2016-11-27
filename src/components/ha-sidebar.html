@@ -8,7 +8,6 @@
 
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<link rel='import' href='../components/stream-status.html'>
 <link rel='import' href='../util/hass-behavior.html'>
 
 <dom-module id='ha-sidebar'>
@@ -129,11 +128,6 @@
           ></paper-toggle-button>
         </paper-item>
       </template>
-
-      <paper-item class='horizontal layout justified'>
-        <div class='setting'>Streaming updates</div>
-        <stream-status hass='[[hass]]'></stream-status>
-      </paper-item>
 
       <div class='divider'></div>
 
