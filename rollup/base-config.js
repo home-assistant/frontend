@@ -8,10 +8,7 @@ const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
 
 const plugins = [
-  nodeResolve({
-    // Because es output for ha-js-ws breaks buble
-    module: false,
-  }),
+  nodeResolve({}),
 
   commonjs(),
 
