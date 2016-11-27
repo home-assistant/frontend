@@ -79,6 +79,7 @@
 <script>
 (function () {
   'use strict';
+
   // mapping domain to size of the card.
   var DOMAINS_WITH_CARD = {
     camera: 4,
@@ -147,8 +148,7 @@
       'updateCards(columns, states, showIntroduction, panelVisible, viewVisible)',
     ],
 
-    updateCards: function (columns, states, showIntroduction,
-                           panelVisible, viewVisible) {
+    updateCards: function (columns, states, showIntroduction, panelVisible, viewVisible) {
       /* eslint-disable no-console */
       if (!panelVisible || !viewVisible) {
         return;
