@@ -41,6 +41,27 @@
       .header {
         @apply(--paper-font-title);
       }
+
+      .attributes th {
+        text-align: left;
+      }
+
+      .attributes tr {
+        vertical-align: top;
+      }
+
+      .attributes tr:nth-child(even) {
+        background-color: #eee;
+      }
+
+      .attributes td:nth-child(3) {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      pre {
+        margin: 0;
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -77,7 +98,40 @@
           <paper-button on-tap='callService' raised>Call Service</paper-button>
         </div>
 
-        <div class='description'>[[description]]</div>
+        <template is='dom-if' if='[[!domain]]'>
+          <h1>Select a domain and service to see the description</h1>
+        </template>
+
+        <template is='dom-if' if='[[domain]]'>
+          <template is='dom-if' if='[[!service]]'>
+            <h1>Select a service to see the description</h1>
+          </template>
+        </template>
+
+        <template is='dom-if' if='[[domain]]'>
+          <template is='dom-if' if='[[service]]'>
+            <template is='dom-if' if='[[!_attributes.length]]'>
+              <h1>No description is available</h1>
+            </template>
+            <template is='dom-if' if='[[_attributes.length]]'>
+              <h1>Valid Parameters</h1>
+              <table class='attributes'>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Description</th>
+                  <th>Example</th>
+                </tr>
+                <template is='dom-repeat' items='[[_attributes]]' as='attribute'>
+                  <tr>
+                    <td><pre>[[attribute.key]]</pre></td>
+                    <td>[[attribute.description]]</td>
+                    <td>[[attribute.example]]</td>
+                  </tr>
+                </template>
+              </table>
+            </template>
+          </template>
+        </template>
       </div>
 
     </app-header-layout>
@@ -122,9 +176,9 @@ Polymer({
       value: '',
     },
 
-    description: {
-      type: String,
-      computed: 'computeDescription(hass, domain, service)',
+    _attributes: {
+      type: Array,
+      computed: 'computeAttributesArray(hass, domain, service)',
     },
 
     serviceDomains: {
@@ -135,20 +189,24 @@ Polymer({
     },
   },
 
-  computeDescription: function (hass, domain, service) {
+  computeAttributesArray: function (hass, domain, service) {
     return hass.reactor.evaluate([
       hass.serviceGetters.entityMap,
       function (map) {
         if (map.has(domain) && map.get(domain).get('services').has(service)) {
-          return JSON.stringify(
-            map
-              .get(domain)
-              .get('services')
-              .get(service)
-              .toJS(),
-            null, 2);
+          return map
+            .get(domain)
+            .get('services')
+            .get(service)
+            .get('fields')
+            .map(function (field, key) {
+              var fieldCopy = field.toJS();
+              fieldCopy.key = key;
+              return fieldCopy;
+            })
+            .toArray();
         }
-        return 'No description available';
+        return [];
       },
     ]);
   },
