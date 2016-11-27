@@ -13,6 +13,11 @@
     </style>
 
     <paper-toast id="toast" text='{{text}}' no-cancel-on-outside-click='[[neg]]'></paper-toast>
+    <paper-toast
+      duration='0'
+      text='Connection lost. Reconnecting…'
+      opened='[[!isStreaming]]'
+    ></paper-toast>
   </template>
 </dom-module>
 
@@ -25,6 +30,11 @@ Polymer({
   properties: {
     hass: {
       type: Object,
+    },
+
+    isStreaming: {
+      type: Boolean,
+      bindNuclear: function (hass) { return hass.streamGetters.isStreamingEvents; },
     },
 
     // Otherwise we cannot close a modal when a notification is being shown.

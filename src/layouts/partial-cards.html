@@ -43,11 +43,6 @@
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[computeTitle(views, locationName)]]</div>
           <paper-icon-button
-            icon="mdi:refresh"
-            class$="[[computeRefreshButtonClass(isFetching)]]"
-            on-tap="handleRefresh" hidden$="[[isStreaming]]"
-          ></paper-icon-button>
-          <paper-icon-button
             icon="mdi:microphone" hidden$='[[!canListen]]'
             on-tap="handleListenClick"></paper-icon-button>
         </app-toolbar>
@@ -141,20 +136,6 @@ Polymer({
     _columns: {
       type: Number,
       value: 1,
-    },
-
-    isFetching: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.syncGetters.isFetching;
-      },
-    },
-
-    isStreaming: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.streamGetters.isStreamingEvents;
-      },
     },
 
     canListen: {
@@ -278,10 +259,6 @@ Polymer({
     }).call(this);
   },
 
-  handleRefresh: function () {
-    this.hass.syncActions.fetchAll();
-  },
-
   handleListenClick: function () {
     this.hass.voiceActions.listen();
   },
@@ -294,10 +271,6 @@ Polymer({
         this.hass.viewActions.selectView(view);
       }.bind(this), 0);
     }
-  },
-
-  computeRefreshButtonClass: function (isFetching) {
-    return isFetching ? 'ha-spin' : '';
   },
 
   computeTitle: function (views, locationName) {
