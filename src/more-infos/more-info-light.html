@@ -9,7 +9,11 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      .brightness, .color_temp, .white_value {
+      .effect_list {
+        padding-bottom: 16px;
+      }
+
+      .effect_list, .brightness, .color_temp, .white_value {
         max-height: 0px;
         overflow: hidden;
         transition: max-height .5s ease-in;
@@ -24,6 +28,7 @@
         transition: max-height .2s ease-in;
       }
 
+      .has-effect_list .effect_list,
       .has-brightness .brightness,
       .has-color_temp .color_temp,
       .has-white_value .white_value {
@@ -36,6 +41,17 @@
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
+
+      <div class='effect_list'>
+        <paper-dropdown-menu label-float label='Effect'>
+          <paper-menu class="dropdown-content" selected="{{effectIndex}}">
+            <template is='dom-repeat'
+                      items='[[stateObj.attributes.effect_list]]'>
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-menu>
+        </paper-dropdown-menu>
+      </div>
 
       <div class='brightness'>
         <ha-labeled-slider
@@ -79,6 +95,12 @@ Polymer({
       observer: 'stateObjChanged',
     },
 
+    effectIndex: {
+      type: Number,
+      value: -1,
+      observer: 'effectChanged',
+    },
+
     brightnessSliderValue: {
       type: Number,
       value: 0,
@@ -100,6 +122,13 @@ Polymer({
       this.brightnessSliderValue = newVal.attributes.brightness;
       this.ctSliderValue = newVal.attributes.color_temp;
       this.wvSliderValue = newVal.attributes.white_value;
+
+      if (newVal.attributes.effect_list) {
+        this.effectIndex = newVal.attributes.effect_list.indexOf(
+          newVal.attributes.effect);
+      } else {
+        this.effectIndex = -1;
+      }
     }
 
     this.async(function () {
@@ -109,7 +138,22 @@ Polymer({
 
   computeClassNames: function (stateObj) {
     return window.hassUtil.attributeClassNames(
-      stateObj, ['brightness', 'rgb_color', 'color_temp', 'white_value']);
+      stateObj, ['brightness', 'rgb_color', 'color_temp', 'white_value',
+        'effect_list']);
+  },
+
+  effectChanged: function (effectIndex) {
+    var effectInput;
+    // Selected Option will transition to '' before transitioning to new value
+    if (effectIndex === '' || effectIndex === -1) return;
+
+    effectInput = this.stateObj.attributes.effect_list[effectIndex];
+    if (effectInput === this.stateObj.attributes.effect) return;
+
+    this.hass.serviceActions.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entityId,
+      effect: effectInput,
+    });
   },
 
   brightnessSliderChanged: function (ev) {
