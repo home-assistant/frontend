@@ -46,7 +46,7 @@
       }
 
       .banner.no-cover:before {
-        padding-top: 91px;
+        padding-top: 88px;
       }
 
       .banner > .cover {
@@ -100,6 +100,12 @@
         margin: 8px 0 4px;
       }
 
+      .progress {
+        width: 100%;
+        --paper-progress-active-color: var(--accent-color);
+        --paper-progress-container-color: #FFF;
+      }
+
       .controls {
         position: relative;
         @apply(--paper-font-body1);
@@ -112,14 +118,6 @@
       .controls paper-icon-button {
         width: 44px;
         height: 44px;
-      }
-
-      .controls .progress {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        --paper-progress-active-color: red;
       }
 
       paper-icon-button {
@@ -159,14 +157,14 @@
       </div>
     </div>
 
-    <div class='controls layout horizontal justified'>
-      <paper-progress
-        max='[[playbackDuration]]'
-        value='[[playbackPosition]]'
-        hidden$='[[!playbackVisible]]'
-        class='progress'
-      ></paper-progress>
+    <paper-progress
+      max='[[stateObj.attributes.media_duration]]'
+      value='[[playbackPosition]]'
+      hidden$='[[computeHideProgress(playerObj)]]'
+      class='progress'
+    ></paper-progress>
 
+    <div class='controls layout horizontal justified'>
       <paper-icon-button
         icon='mdi:power'
         on-tap='handleTogglePower'
@@ -230,6 +228,10 @@ Polymer({
       computed: 'computePlaybackControlIcon(playerObj)',
     },
 
+    playbackPosition: {
+      type: Number,
+    },
+
     /**
      * The z-depth of the card, from 0-5.
      */
@@ -238,86 +240,34 @@ Polymer({
       value: 1,
       reflectToAttribute: true,
     },
-
-    playbackDuration: {
-      type: Number,
-    },
-
-    playbackPosition: {
-      type: Number,
-    },
-
-    playbackVisible: {
-      type: Boolean,
-      value: false,
-    },
   },
 
-  playerObjChanged: function (playerObj) {
-    var timeSincePositionValid;
+  created: function () {
+    this.updatePlaybackPosition = this.updatePlaybackPosition.bind(this);
+  },
 
-    if (!playerObj.isOff && !playerObj.isIdle) {
-      this.$.cover.style.backgroundImage = playerObj.stateObj.attributes.entity_picture ?
-        'url(' + playerObj.stateObj.attributes.entity_picture + ')' : '';
-    }
-
-    if (typeof this._positionTracking === 'undefined') {
-      this._positionTracking = {
-        position: null,  // last value of media_position
-        time: null,      // when that value was updated
-        interval: null,  // interval timer to update playbackPosition property
-      };
-    }
-
-    // clear previous interval timer
-    if (this._positionTracking.interval) {
-      clearInterval(this._positionTracking.interval);
-      this._positionTracking.interval = null;
-    }
-
-    // update playback state from object
-    if (playerObj.stateObj.attributes.media_position_updated_at) {
-      // when was the position valid?
-      timeSincePositionValid = Math.abs(
-        new Date() - Date.parse(playerObj.stateObj.attributes.media_position_updated_at)
-      );
-
-      // update "current" position (in ms) to reflect that
-      this._positionTracking.position = (1000 * playerObj.stateObj.attributes.media_position) +
-        timeSincePositionValid;
-
-      // base playbackPosition calculations on calculate position now
-      this._positionTracking.time = Date.now();
-
-      // playbackDuration is expressed in ms (rounded to the next second)
-      this.playbackDuration = 1000 * playerObj.stateObj.attributes.media_duration;
+  playerObjChanged: function (playerObj, oldPlayerObj) {
+    var picture = playerObj.stateObj.attributes.entity_picture;
+    if (picture) {
+      this.$.cover.style.backgroundImage = 'url(' + picture + ')';
     } else {
-      // no playback position
-      this._positionTracking.position = null;
-      this._positionTracking.time = null;
-      this.playbackDuration = null;
+      this.$.cover.style.backgroundImage = '';
     }
 
-    if (playerObj.isPlaying && this._positionTracking.position != null && this.playbackDuration) {
-      // playback is in progress, update the playback status on an interval timer
-      // we choose 200ms here in order to get the playback paper-progress control movement smooth
-      this._positionTracking.interval = setInterval(this.updatePlaybackPosition.bind(this), 200);
-    } else {
-      // no playback in progress (or no playback info), update playback status
+    if (playerObj.isPlaying) {
+      if (!this._positionTracking) {
+        this._positionTracking = setInterval(this.updatePlaybackPosition, 1000);
+      }
       this.updatePlaybackPosition();
+    } else if (this._positionTracking) {
+      clearInterval(this._positionTracking);
+      this._positionTracking = null;
+      this.playbackPosition = 0;
     }
   },
 
-  updatePlaybackPosition: function () {
-    if (this._positionTracking.position != null && this.playbackDuration) {
-      // calculate playback position in ms
-      this.playbackPosition = this._positionTracking.position +
-        (Date.now() - this._positionTracking.time);
-      this.playbackVisible = true;
-    } else {
-      this.playbackPosition = null;
-      this.playbackVisible = false;
-    }
+  updatePlaybackPosition: function (playerObj) {
+    this.playbackPosition = this.playerObj.currentProgress;
   },
 
   computeBannerClasses: function (playerObj) {
@@ -332,6 +282,10 @@ Polymer({
     }
 
     return cls;
+  },
+
+  computeHideProgress: function (playerObj) {
+    return !playerObj.showProgress;
   },
 
   computeHidePowerButton: function (playerObj) {
