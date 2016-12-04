@@ -163,13 +163,12 @@ window.hassUtil.relativeTime.tests = [
   7, 'day',
 ];
 
-
 window.hassUtil.stateCardType = function (hass, state) {
   if (state.state === 'unavailable') {
     return 'display';
   } else if (window.hassUtil.DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {
     return state.domain;
-  } else if (window.hassUtil.canToggle(hass, state.entityId)) {
+  } else if (window.hassUtil.canToggle(hass, state.entityId) && state.attributes.control !== 'hidden') {
     return 'toggle';
   }
   return 'display';
