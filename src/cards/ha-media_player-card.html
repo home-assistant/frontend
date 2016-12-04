@@ -246,7 +246,7 @@ Polymer({
     this.updatePlaybackPosition = this.updatePlaybackPosition.bind(this);
   },
 
-  playerObjChanged: function (playerObj, oldPlayerObj) {
+  playerObjChanged: function (playerObj) {
     var picture = playerObj.stateObj.attributes.entity_picture;
     if (picture) {
       this.$.cover.style.backgroundImage = 'url(' + picture + ')';
@@ -266,7 +266,7 @@ Polymer({
     }
   },
 
-  updatePlaybackPosition: function (playerObj) {
+  updatePlaybackPosition: function () {
     this.playbackPosition = this.playerObj.currentProgress;
   },
 
