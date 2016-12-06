@@ -12,8 +12,13 @@
       }
     </style>
 
-    <paper-toast id="toast" text='{{text}}' no-cancel-on-outside-click='[[neg]]'></paper-toast>
     <paper-toast
+      id="toast"
+      text='{{text}}'
+      no-cancel-on-outside-click='[[neg]]'
+    ></paper-toast>
+    <paper-toast
+      id='connToast'
       duration='0'
       text='Connection lost. Reconnecting…'
       opened='[[!isStreaming]]'
@@ -50,6 +55,30 @@ Polymer({
       },
       observer: 'showNotification',
     },
+
+    toastClass: {
+      type: String,
+      value: '',
+    },
+  },
+
+  created: function () {
+    this.handleWindowChange = this.handleWindowChange.bind(this);
+    this._mediaq = window.matchMedia('(max-width: 599px)');
+    this._mediaq.addListener(this.handleWindowChange);
+  },
+
+  attached: function () {
+    this.handleWindowChange(this._mediaq);
+  },
+
+  detached: function () {
+    this._mediaq.removeListener(this.handleWindowChange);
+  },
+
+  handleWindowChange: function (ev) {
+    this.$.toast.classList.toggle('fit-bottom', ev.matches);
+    this.$.connToast.classList.toggle('fit-bottom', ev.matches);
   },
 
   showNotification: function (newText) {
