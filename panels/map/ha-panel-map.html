@@ -4,9 +4,7 @@
 
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<link rel="import" href="../../bower_components/leaflet-map/leaflet-map.html">
-
-<!-- temp work around -->
+<script src="../../bower_components/leaflet/dist/leaflet.js"></script>
 <link rel="stylesheet" href="../../bower_components/leaflet/dist/leaflet.css" />
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
@@ -14,19 +12,13 @@
 
 <link rel="import" href="./ha-entity-marker.html">
 
-<style>
-  /* Otherwise they go through overlays. */
-  .leaflet-top, .leaflet-bottom {
-    z-index: 0;
-  }
-</style>
-
 <dom-module id="ha-panel-map">
   <template>
     <style include="ha-style">
-      leaflet-map {
+      #map {
         height: calc(100% - 64px);
         width: 100%;
+        z-index: 0;
       }
     </style>
 
@@ -35,48 +27,7 @@
       <div main-title>Map</div>
     </app-toolbar>
 
-    <leaflet-map fit-to-markers id="map" max-zoom="17">
-      <leaflet-tilelayer max-zoom="18"
-        url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png">
-        &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>
-      </leaflet-tilelayer>
-
-      <template is='dom-repeat' items='[[zoneEntities]]'>
-        <leaflet-divicon id="[[item.entityId]]" icon-width="24" icon-height="24">
-          <template is='dom-if' if='[[item.attributes.icon]]'>
-            <iron-icon icon$='[[item.attributes.icon]]'></iron-icon>
-          </template>
-          <template is='dom-if' if='[[!item.attributes.icon]]'>[[item.entityDisplay]]</template>
-        </leaflet-divicon>
-
-        <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
-          longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
-          no-clickable></leaflet-marker>
-
-        <leaflet-circle latitude="[[item.attributes.latitude]]"
-          longitude="[[item.attributes.longitude]]" no-clickable
-          radius="[[item.attributes.radius]]" fill color="#FF9800">
-        </leaflet-circle>
-      </template>
-
-      <template is='dom-repeat' items='[[locationEntities]]'>
-        <leaflet-divicon id="[[item.entityId]]" icon-height="45" icon-width="45">
-          <ha-entity-marker hass='[[hass]]'
-            entity-id="[[item.entityId]]"></ha-entity-marker>
-        </leaflet-divicon>
-
-        <leaflet-marker latitude="[[item.attributes.latitude]]" icon="[[item.entityId]]"
-          longitude="[[item.attributes.longitude]]" title="[[item.entityDisplay]]"
-          ></leaflet-marker>
-
-        <template is='dom-if' if='[[item.attributes.gps_accuracy]]'>
-          <leaflet-circle latitude="[[item.attributes.latitude]]"
-            longitude="[[item.attributes.longitude]]" no-clickable
-            radius="[[item.attributes.gps_accuracy]]" fill color="#0288D1">
-          </leaflet-circle>
-        </template>
-      </template>
-    </leaflet-map>
+    <div id='map'></div>
   </template>
 </dom-module>
 
@@ -111,31 +62,17 @@ Polymer({
       type: Array,
       bindNuclear: function (hass) {
         return [
-          hass.entityGetters.visibleEntityMap,
+          hass.entityGetters.entityMap,
           function (entities) {
             return entities.valueSeq().filter(
               function (entity) {
-                return entity.attributes.latitude && entity.state !== 'home';
+                return 'latitude' in entity.attributes;
               }
-            ).toArray();
+            );
           },
         ];
       },
-    },
-
-    zoneEntities: {
-      type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.entityGetters.entityMap,
-          function (entities) {
-            return entities.valueSeq()
-              .filter(function (entity) {
-                return entity.domain === 'zone' && !entity.attributes.passive;
-              }).toArray();
-          },
-        ];
-      },
+      observer: 'drawEntities',
     },
 
     narrow: {
@@ -149,16 +86,118 @@ Polymer({
   },
 
   attached: function () {
-    // On Safari, iPhone 5, 5s and some 6 I have observed that the user would be
-    // unable to pan on initial load. This fixes it.
-    if (window.L.Browser.mobileWebkit || window.L.Browser.webkit) {
-      this.async(function () {
-        var map = this.$.map;
-        var prev = map.style.display;
-        map.style.display = 'none';
-        this.async(function () { map.style.display = prev; }, 1);
-      }.bind(this), 1);
+    var map = this._map = window.L.map(this.$.map);
+    map.setView([51.505, -0.09], 13);
+    window.L.tileLayer(
+      'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+      {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+        maxZoom: 18,
+      }
+    ).addTo(map);
+
+    this.drawEntities(this.locationEntities);
+
+    this.async(function () {
+      map.invalidateSize();
+      this.fitMap();
+    }.bind(this), 1);
+  },
+
+  fitMap: function () {
+    var bounds = new window.L.latLngBounds(
+      this._mapItems.map(function (item) { return item.getLatLng(); }));
+
+    this._map.fitBounds(bounds.pad(0.5));
+  },
+
+  drawEntities: function (entities) {
+    /* eslint-disable vars-on-top */
+    var map = this._map;
+    if (!map) return;
+
+    if (this._mapItems) {
+      this._mapItems.forEach(function (marker) { marker.remove(); });
     }
+    var mapItems = this._mapItems = [];
+
+    entities.forEach(function (entity) {
+      var icon;
+
+      if (entity.domain === 'zone') {
+        // DRAW ZONE
+        if (entity.attributes.passive) return;
+
+        // create icon
+        var iconHTML = '';
+        if (entity.attributes.icon) {
+          iconHTML = (
+            "<iron-icon icon='" + entity.attributes.icon + "'></iron-icon>");
+        } else {
+          iconHTML = entity.entityDisplay;
+        }
+
+        icon = window.L.divIcon({
+          html: iconHTML,
+          iconSize: [24, 24],
+          className: '',
+        });
+
+        // create market with the icon
+        mapItems.push(window.L.marker(
+          [entity.attributes.latitude, entity.attributes.longitude],
+          {
+            icon,
+            interactive: false,
+            title: entity.entityDisplay,
+          }
+        ).addTo(map));
+
+        // create circle around it
+        mapItems.push(window.L.circle(
+          [entity.attributes.latitude, entity.attributes.longitude],
+          {
+            interactive: false,
+            color: '#FF9800',
+            radius: entity.attributes.radius,
+          }
+        ).addTo(map));
+
+        return;
+      }
+
+      // Filter out entities at home
+      if (entity.state === 'home' || entity.attributes.hidden) return;
+
+      // DRAW ENTITY
+      // create icon
+      icon = window.L.divIcon({
+        html: "<ha-entity-marker entity-id='" + entity.entityId + "'></ha-entity-marker>",
+        iconSize: [45, 45],
+        className: '',
+      });
+
+      // create market with the icon
+      mapItems.push(window.L.marker(
+        [entity.attributes.latitude, entity.attributes.longitude],
+        {
+          icon,
+          title: entity.entityDisplay,
+        }
+      ).addTo(map));
+
+      // create circle around if entity has accuracy
+      if (entity.attributes.gps_accuracy) {
+        mapItems.push(window.L.circle(
+          [entity.attributes.latitude, entity.attributes.longitude],
+          {
+            interactive: false,
+            color: '#0288D1',
+            radius: entity.attributes.gps_accuracy,
+          }
+        ).addTo(map));
+      }
+    });
   },
 
   computeMenuButtonClass: function (narrow, showMenu) {
