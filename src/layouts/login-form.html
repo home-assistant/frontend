@@ -50,7 +50,7 @@
       <img src="/static/icons/favicon-192x192.png" height="192" />
       <a href="#" id="hideKeyboardOnFocus"></a>
       <div class='interact'>
-        <form id='loginform' hidden$="[[showLoading]]">
+        <div id='loginform' hidden$="[[showLoading]]">
           <paper-input-container id="passwordDecorator" invalid="[[isInvalid]]">
             <label>Password</label>
             <input is="iron-input" type="password" id="passwordInput" />
@@ -60,7 +60,7 @@
             <paper-checkbox for id='rememberLogin'>Remember</paper-checkbox>
             <paper-button id='loginButton'>Log In</paper-button>
           </div>
-        </form>
+        </div>
         <div id="validatebox" hidden$="[[!showLoading]]">
           <paper-spinner active="true"></paper-spinner><br />
           <div class="validatemessage">Loading data</div>
