@@ -12,7 +12,7 @@
 
 <dom-module id='more-info-media_player'>
   <template>
-    <style is="custom-style" include="iron-flex"></style>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
       .media-state {
         text-transform: capitalize;
@@ -66,6 +66,7 @@
           </template>
         </div>
       </div>
+      <!-- VOLUME -->
       <div class='volume_buttons center horizontal layout'
           hidden$='[[computeHideVolumeButtons(isOff, supportsVolumeButtons)]]'>
         <paper-icon-button on-tap="handleVolumeTap"
@@ -86,16 +87,23 @@
           on-change='volumeSliderChanged' class='flex'>
         </paper-slider>
       </div>
-      <div class='controls layout horizontal justified' hidden$='[[!computeHideSelectSource(isOff, supportsSelectSource)]]'>
-          <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
-          <paper-dropdown-menu class="source-input" label-float label='Source'>
-            <paper-menu class="dropdown-content" selected="{{sourceIndex}}">
-              <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
-                <paper-item>[[item]]</paper-item>
-              </template>
-            </paper-menu>
-          </paper-dropdown-menu>
-        </div>
+      <!-- SOURCE PICKER -->
+      <div class='controls layout horizontal justified'
+           hidden$='[[computeHideSelectSource(isOff, supportsSelectSource)]]'>
+        <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
+        <paper-dropdown-menu class="source-input" label-float label='Source'>
+          <paper-menu class="dropdown-content" selected="{{sourceIndex}}">
+            <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-menu>
+        </paper-dropdown-menu>
+      </div>
+      <!-- TTS -->
+      <div hidden$='[[computeHideTTS(ttsLoaded, supportsPlayMedia)]]' class='layout horizontal end'>
+        <paper-input label='Text to speak' class='flex' value='{{ttsMessage}}'></paper-input>
+        <paper-icon-button icon='mdi:send' on-tap='sendTTS'></paper-icon-button>
+      </div>
     </div>
   </template>
 </dom-module>
@@ -104,7 +112,16 @@
 Polymer({
   is: 'more-info-media_player',
 
+  behaviors: [window.hassBehavior],
+
   properties: {
+    ttsLoaded: {
+      type: Boolean,
+      bindNuclear: function (hass) {
+        return hass.configGetters.isComponentLoaded('tts');
+      },
+    },
+
     hass: {
       type: Object,
     },
@@ -145,6 +162,11 @@ Polymer({
       value: 0,
     },
 
+    ttsMessage: {
+      type: String,
+      value: '',
+    },
+
     supportsPause: {
       type: Boolean,
       value: false,
@@ -176,6 +198,11 @@ Polymer({
     },
 
     supportsTurnOff: {
+      type: Boolean,
+      value: false,
+    },
+
+    supportsPlayMedia: {
       type: Boolean,
       value: false,
     },
@@ -214,6 +241,7 @@ Polymer({
       this.supportsNextTrack = (newVal.attributes.supported_media_commands & 32) !== 0;
       this.supportsTurnOn = (newVal.attributes.supported_media_commands & 128) !== 0;
       this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
+      this.supportsPlayMedia = (newVal.attributes.supported_media_commands & 512) !== 0;
       this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
       this.supportsSelectSource = (newVal.attributes.supported_media_commands & 2048) !== 0;
 
@@ -259,11 +287,15 @@ Polymer({
   },
 
   computeHideSelectSource: function (isOff, supportsSelectSource) {
-    return !isOff && supportsSelectSource;
+    return isOff || !supportsSelectSource;
   },
 
   computeSelectedSource: function (stateObj) {
     return stateObj.attributes.source_list.indexOf(stateObj.attributes.source);
+  },
+
+  computeHideTTS: function (ttsLoaded, supportsPlayMedia) {
+    return !ttsLoaded || !supportsPlayMedia;
   },
 
   handleTogglePower: function () {
@@ -332,6 +364,31 @@ Polymer({
     var volPercentage = parseFloat(ev.target.value);
     var vol = volPercentage > 0 ? volPercentage / 100 : 0;
     this.callService('volume_set', { volume_level: vol });
+  },
+
+  sendTTS: function (ev) {
+    var services = hass.reactor.evaluate(
+      hass.serviceGetters.entityMap).get('tts').get('services').keySeq().toArray();
+    var service;
+
+    for (var i = 0; i < services.length; i++) {
+      if (services[i].indexOf('_say') !== -1) {
+        service = services[i];
+        break;
+      }
+    }
+
+    if (!service) {
+      alert('Unable to find TTS say service');
+      return;
+    }
+
+    this.hass.serviceActions.callService('tts', service, {
+      entity_id: this.stateObj.entityId,
+      message: this.ttsMessage,
+    });
+    this.ttsMessage = '';
+    document.activeElement.blur();
   },
 
   callService: function (service, data) {
