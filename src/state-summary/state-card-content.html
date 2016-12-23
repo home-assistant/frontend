@@ -11,43 +11,42 @@
 <link rel="import" href="state-card-script.html">
 <link rel="import" href="state-card-toggle.html">
 <link rel="import" href="state-card-weblink.html">
-<link rel="import" href="state-card-weather.html">
 
 <script>
-Polymer({
-  is: 'state-card-content',
+  Polymer({
+    is: 'state-card-content',
 
-  properties: {
-    hass: {
-      type: Object,
+    properties: {
+      hass: {
+        type: Object,
+      },
+
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+
+      stateObj: {
+        type: Object,
+      },
     },
 
-    inDialog: {
-      type: Boolean,
-      value: false,
+    observers: [
+      'inputChanged(hass, inDialog, stateObj)',
+    ],
+
+    inputChanged: function (hass, inDialog, stateObj) {
+      if (!stateObj) return;
+
+      window.hassUtil.dynamicContentUpdater(
+        this,
+        ('STATE-CARD-' +
+          window.hassUtil.stateCardType(this.hass, stateObj).toUpperCase()),
+        {
+          hass: hass,
+          stateObj: stateObj,
+          inDialog: inDialog,
+        });
     },
-
-    stateObj: {
-      type: Object,
-    },
-  },
-
-  observers: [
-    'inputChanged(hass, inDialog, stateObj)',
-  ],
-
-  inputChanged: function (hass, inDialog, stateObj) {
-    if (!stateObj) return;
-
-    window.hassUtil.dynamicContentUpdater(
-      this,
-      ('STATE-CARD-' +
-       window.hassUtil.stateCardType(this.hass, stateObj).toUpperCase()),
-      {
-        hass: hass,
-        stateObj: stateObj,
-        inDialog: inDialog,
-      });
-  },
-});
+  });
 </script>
