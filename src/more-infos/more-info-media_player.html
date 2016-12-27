@@ -366,12 +366,14 @@ Polymer({
     this.callService('volume_set', { volume_level: vol });
   },
 
-  sendTTS: function (ev) {
-    var services = hass.reactor.evaluate(
-      hass.serviceGetters.entityMap).get('tts').get('services').keySeq().toArray();
+  sendTTS: function () {
+    var services = this.hass.reactor.evaluate(
+        this.hass.serviceGetters.entityMap).get('tts').get('services').keySeq()
+            .toArray();
     var service;
+    var i;
 
-    for (var i = 0; i < services.length; i++) {
+    for (i = 0; i < services.length; i++) {
       if (services[i].indexOf('_say') !== -1) {
         service = services[i];
         break;
@@ -379,7 +381,6 @@ Polymer({
     }
 
     if (!service) {
-      alert('Unable to find TTS say service');
       return;
     }
 
