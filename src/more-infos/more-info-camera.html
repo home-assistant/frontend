@@ -12,7 +12,7 @@
       }
     </style>
 
-    <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj, cleanup)]]"
+    <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]"
          on-load='imageLoaded' alt='[[stateObj.entityDisplay]]' />
   </template>
 </dom-module>
@@ -30,9 +30,9 @@ Polymer({
       type: Object,
     },
 
-    cleanup: {
+    isVisible: {
       type: Boolean,
-      value: false,
+      value: true,
     },
   },
 
@@ -40,10 +40,10 @@ Polymer({
     this.fire('iron-resize');
   },
 
-  computeCameraImageUrl: function (hass, stateObj, cleanup) {
+  computeCameraImageUrl: function (hass, stateObj, isVisible) {
     if (hass.demo) {
       return '/demo/webcam.jpg';
-    } else if (stateObj && !cleanup) {
+    } else if (stateObj && isVisible) {
       return '/api/camera_proxy_stream/' + stateObj.entityId +
              '?token=' + stateObj.attributes.access_token;
     }
