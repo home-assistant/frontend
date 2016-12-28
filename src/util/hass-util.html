@@ -49,28 +49,37 @@ window.hassUtil.canToggle = function (hass, entityId) {
 
 // Update root's child element to be newElementTag replacing another existing child if any.
 // Copy attributes into the child element.
-// If newElementTag is null just update the existing child element if any.
 window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attributes) {
   var rootEl = Polymer.dom(root);
   var customEl;
 
-  if (rootEl.lastChild && (rootEl.lastChild.tagName === newElementTag || !newElementTag)) {
+  if (rootEl.lastChild && rootEl.lastChild.tagName === newElementTag) {
     customEl = rootEl.lastChild;
   } else {
     if (rootEl.lastChild) {
       rootEl.removeChild(rootEl.lastChild);
     }
-    if (!newElementTag) return;
     customEl = document.createElement(newElementTag);
   }
 
   Object.keys(attributes).forEach(function (key) {
     customEl[key] = attributes[key];
   });
+  customEl['isVisible'] = true;
 
   if (customEl.parentNode === null) {
     rootEl.appendChild(customEl);
   }
+};
+
+// If root has lastChild, set 'isVisible' attribute of that child to false.
+window.hassUtil.resetDynamicContent = function (root) {
+  var rootEl = Polymer.dom(root);
+
+  if (!rootEl.lastChild) {
+    return;
+  }
+  rootEl.lastChild['isVisible'] = false;
 };
 
 // Check for support of native locale string options
