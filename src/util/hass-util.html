@@ -65,7 +65,7 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
   Object.keys(attributes).forEach(function (key) {
     customEl[key] = attributes[key];
   });
-  customEl['isVisible'] = true;
+  customEl.isVisible = true;
 
   if (customEl.parentNode === null) {
     rootEl.appendChild(customEl);
@@ -79,7 +79,7 @@ window.hassUtil.resetDynamicContent = function (root) {
   if (!rootEl.lastChild) {
     return;
   }
-  rootEl.lastChild['isVisible'] = false;
+  rootEl.lastChild.isVisible = false;
 };
 
 // Check for support of native locale string options
