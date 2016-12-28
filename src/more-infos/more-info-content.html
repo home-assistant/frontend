@@ -36,12 +36,11 @@ Polymer({
 
   stateObjChanged: function (stateObj) {
     if (!stateObj) {
-      window.hassUtil.dynamicContentUpdater(
-        this, null, { isVisible: false });
+      window.hassUtil.resetDynamicContent(this);
     } else {
       window.hassUtil.dynamicContentUpdater(
         this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
-        { hass: this.hass, stateObj: stateObj, isVisible: true });
+        { hass: this.hass, stateObj: stateObj});
     }
   },
 });
