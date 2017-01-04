@@ -60,7 +60,8 @@
             <paper-icon-button icon='mdi:skip-previous' on-tap='handlePrevious'
               hidden$='[[!supportsPreviousTrack]]'></paper-icon-button>
             <paper-icon-button icon='[[computePlaybackControlIcon(stateObj)]]'
-              on-tap='handlePlaybackControl' highlight></paper-icon-button>
+              on-tap='handlePlaybackControl'
+              hidden$='[[!computePlaybackControlIcon(stateObj)]]' highlight></paper-icon-button>
             <paper-icon-button icon='mdi:skip-next' on-tap='handleNext'
               hidden$='[[!supportsNextTrack]]'></paper-icon-button>
           </template>
@@ -217,6 +218,11 @@ Polymer({
       value: false,
     },
 
+    supportsPlay: {
+      type: Boolean,
+      value: false,
+    },
+
     hasMediaControl: {
       type: Boolean,
       value: false,
@@ -244,6 +250,7 @@ Polymer({
       this.supportsPlayMedia = (newVal.attributes.supported_media_commands & 512) !== 0;
       this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
       this.supportsSelectSource = (newVal.attributes.supported_media_commands & 2048) !== 0;
+      this.supportsPlay = (newVal.attributes.supported_media_commands & 16384) !== 0;
 
       if (newVal.attributes.source_list !== undefined) {
         this.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
@@ -279,7 +286,7 @@ Polymer({
     if (this.isPlaying) {
       return this.supportsPause ? 'mdi:pause' : 'mdi:stop';
     }
-    return 'mdi:play';
+    return this.supportsPlay ? 'mdi:play' : null;
   },
 
   computeHidePowerButton: function (isOff, supportsTurnOn, supportsTurnOff) {
