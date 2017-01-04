@@ -146,7 +146,7 @@ Polymer({
     // If brightness is supported - show the slider even if the attribute is
     // missing (because the light is off).
     if (stateObj && (stateObj.attributes.supported_features & 1)) {
-      classes = classes + ' has-brightness';
+      classes += ' has-brightness';
     }
     return classes;
   },
