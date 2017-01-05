@@ -127,7 +127,8 @@ if (toLocaleDateStringSupportsOptions()) {
 
 if (toLocaleTimeStringSupportsOptions()) {
   window.hassUtil.formatTime = function (dateObj) {
-    return dateObj.toLocaleTimeString(navigator.language,
+    language = navigator.languages ? navigator.languages[0] : navigator.language || navigator.userLanguage;
+    return dateObj.toLocaleTimeString(language,
       { hour: 'numeric', minute: '2-digit' });
   };
 } else {
