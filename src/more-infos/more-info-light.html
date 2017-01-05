@@ -132,6 +132,8 @@ Polymer({
       } else {
         this.effectIndex = -1;
       }
+    } else {
+      this.brightnessSliderValue = 0;
     }
 
     this.async(function () {
@@ -140,9 +142,16 @@ Polymer({
   },
 
   computeClassNames: function (stateObj) {
-    return window.hassUtil.attributeClassNames(
-      stateObj, ['brightness', 'rgb_color', 'color_temp', 'white_value',
+    var classes = window.hassUtil.attributeClassNames(
+      stateObj, ['rgb_color', 'color_temp', 'white_value',
         'effect_list']);
+    var BRIGHTNESS_SUPPORTED = 1;
+    // If brightness is supported - show the slider even if the attribute is
+    // missing (because the light is off).
+    if (stateObj && (stateObj.attributes.supported_features & BRIGHTNESS_SUPPORTED)) {
+      classes += ' has-brightness';
+    }
+    return classes;
   },
 
   effectChanged: function (effectIndex) {
