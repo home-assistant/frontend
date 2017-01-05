@@ -34,6 +34,9 @@ window.hassUtil.HIDE_MORE_INFO = [
   'input_select', 'scene', 'script', 'input_slider',
 ];
 
+window.hassUtil.LANGUAGE = navigator.languages ?
+  navigator.languages[0] : navigator.language || navigator.userLanguage;
+
 window.hassUtil.attributeClassNames = function (stateObj, attributes) {
   if (!stateObj) return '';
   return attributes.map(
@@ -100,7 +103,7 @@ window.fecha.masks.haDateTime = (window.fecha.masks.shortTime + ' ' +
 
 if (toLocaleStringSupportsOptions()) {
   window.hassUtil.formatDateTime = function (dateObj) {
-    return dateObj.toLocaleString(navigator.language, {
+    return dateObj.toLocaleString(window.hassUtil.LANGUAGE, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -116,7 +119,7 @@ if (toLocaleStringSupportsOptions()) {
 
 if (toLocaleDateStringSupportsOptions()) {
   window.hassUtil.formatDate = function (dateObj) {
-    return dateObj.toLocaleDateString(navigator.language,
+    return dateObj.toLocaleDateString(window.hassUtil.LANGUAGE,
       { year: 'numeric', month: 'long', day: 'numeric' });
   };
 } else {
@@ -127,7 +130,7 @@ if (toLocaleDateStringSupportsOptions()) {
 
 if (toLocaleTimeStringSupportsOptions()) {
   window.hassUtil.formatTime = function (dateObj) {
-    return dateObj.toLocaleTimeString(navigator.language,
+    return dateObj.toLocaleTimeString(window.hassUtil.LANGUAGE,
       { hour: 'numeric', minute: '2-digit' });
   };
 } else {
