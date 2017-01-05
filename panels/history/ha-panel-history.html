@@ -117,7 +117,7 @@ Polymer({
           hass.entityHistoryGetters.currentDate,
           function (currentDate) {
             var dateObj = new Date(currentDate);
-            return dateObj.toLocaleDateString();
+            return window.hassUtil.formatDate(dateObj);
           },
         ];
       },
