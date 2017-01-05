@@ -100,7 +100,7 @@ Polymer({
           hass.logbookGetters.currentDate,
           function (currentDate) {
             var dateObj = new Date(currentDate);
-            return dateObj.toLocaleDateString();
+            return window.hassUtil.formatDate(dateObj);
           },
         ];
       },
