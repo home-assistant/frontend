@@ -38,14 +38,9 @@ Polymer({
     if (!stateObj) {
       window.hassUtil.resetDynamicContent(this);
     } else {
-      var stateCopy = {}
-      Object.keys(stateObj).forEach(function (key) {
-        stateCopy[key] = stateObj[key];
-      });
-      stateCopy.isVisible = true;
       window.hassUtil.dynamicContentUpdater(
         this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
-        { hass: this.hass, stateObj: stateCopy });
+        { hass: this.hass, stateObj: stateObj, isVisible: true });
     }
   },
 });
