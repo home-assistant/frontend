@@ -65,7 +65,6 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
   Object.keys(attributes).forEach(function (key) {
     customEl[key] = attributes[key];
   });
-  customEl.isVisible = true;
 
   if (customEl.parentNode === null) {
     rootEl.appendChild(customEl);
