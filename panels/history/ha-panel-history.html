@@ -16,19 +16,11 @@
   <template>
     <style include="iron-flex ha-style">
       .content {
-        background-color: white;
-      }
-
-      .content.wide {
-        padding: 8px;
+        padding: 16px;
       }
 
       paper-input {
         max-width: 200px;
-      }
-
-      .narrow paper-input {
-        margin-left: 8px;
       }
     </style>
 
@@ -44,7 +36,7 @@
         </app-toolbar>
       </app-header>
 
-      <div class$="[[computeContentClasses(narrow)]]">
+      <div class="flex content">
         <paper-input
           label='Showing entries for'
           id='datePicker'
@@ -156,8 +148,5 @@ Polymer({
     this.datePicker.destroy();
   },
 
-  computeContentClasses: function (narrow) {
-    return narrow ? 'flex content narrow' : 'flex content wide';
-  },
 });
 </script>
