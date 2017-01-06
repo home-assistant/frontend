@@ -24,7 +24,7 @@
       }
 
       .content {
-        padding: 24px;
+        padding: 16px;
       }
 
       .entities th {
@@ -59,8 +59,10 @@
 
       <div class='content'>
         <div>
-          Set the representation of a device within Home Assistant.<br />
-          This will not communicate with the actual device.
+          <p>
+            Set the representation of a device within Home Assistant.<br />
+            This will not communicate with the actual device.
+          </p>
 
           <paper-input label="Entity ID" autofocus required value='{{_entityId}}'></paper-input>
           <paper-input label="State" required value='{{_state}}'></paper-input>

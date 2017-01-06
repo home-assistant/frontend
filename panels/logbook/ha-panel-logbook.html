@@ -18,8 +18,8 @@
 <dom-module id="ha-panel-logbook">
   <template>
     <style include="ha-style">
-    .selected-date-container {
-      padding: 0 16px;
+    .content {
+      padding: 16px;
     }
 
     paper-input {
@@ -43,7 +43,7 @@
         </app-toolbar>
       </app-header>
 
-      <div>
+      <div class="flex content">
         <div class='selected-date-container'>
           <paper-input
             label='Showing entries for'
@@ -167,5 +167,6 @@ Polymer({
   detached: function () {
     this.datePicker.destroy();
   },
+
 });
 </script>
