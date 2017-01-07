@@ -71,16 +71,6 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
   }
 };
 
-// If root has lastChild, set 'isVisible' attribute of that child to false.
-window.hassUtil.resetDynamicContent = function (root) {
-  var rootEl = Polymer.dom(root);
-
-  if (!rootEl.lastChild) {
-    return;
-  }
-  rootEl.lastChild.isVisible = false;
-};
-
 // Check for support of native locale string options
 function toLocaleStringSupportsOptions() {
   try {
