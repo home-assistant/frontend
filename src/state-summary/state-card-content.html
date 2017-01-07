@@ -13,40 +13,40 @@
 <link rel="import" href="state-card-weblink.html">
 
 <script>
-  Polymer({
-    is: 'state-card-content',
+Polymer({
+  is: 'state-card-content',
 
-    properties: {
-      hass: {
-        type: Object,
-      },
-
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
-
-      stateObj: {
-        type: Object,
-      },
+  properties: {
+    hass: {
+      type: Object,
     },
 
-    observers: [
-      'inputChanged(hass, inDialog, stateObj)',
-    ],
-
-    inputChanged: function (hass, inDialog, stateObj) {
-      if (!stateObj) return;
-
-      window.hassUtil.dynamicContentUpdater(
-        this,
-        ('STATE-CARD-' +
-          window.hassUtil.stateCardType(this.hass, stateObj).toUpperCase()),
-        {
-          hass: hass,
-          stateObj: stateObj,
-          inDialog: inDialog,
-        });
+    inDialog: {
+      type: Boolean,
+      value: false,
     },
-  });
+
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  observers: [
+    'inputChanged(hass, inDialog, stateObj)',
+  ],
+
+  inputChanged: function (hass, inDialog, stateObj) {
+    if (!stateObj) return;
+
+    window.hassUtil.dynamicContentUpdater(
+      this,
+      ('STATE-CARD-' +
+        window.hassUtil.stateCardType(this.hass, stateObj).toUpperCase()),
+      {
+        hass: hass,
+        stateObj: stateObj,
+        inDialog: inDialog,
+      });
+  },
+});
 </script>
