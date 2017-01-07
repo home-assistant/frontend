@@ -35,9 +35,10 @@ Polymer({
   },
 
   stateObjChanged: function (stateObj) {
+    var rootEl;
     if (!stateObj) {
       // If root has lastChild, set 'isVisible' attribute of that child to false.
-      var rootEl = Polymer.dom(root);
+      rootEl = Polymer.dom(this);
       if (rootEl.lastChild) {
         rootEl.lastChild.isVisible = false;
       }
