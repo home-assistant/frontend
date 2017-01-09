@@ -180,7 +180,7 @@
         <paper-icon-button
           class='primary'
           icon='[[computePlaybackControlIcon(playerObj)]]'
-          invisible='[[!computePlaybackControlIcon(playerObj)]]'
+          invisible$='[[!computePlaybackControlIcon(playerObj)]]'
           disabled='[[playerObj.isOff]]'
           on-tap='handlePlaybackControl'
         ></paper-icon-button>
@@ -298,7 +298,7 @@ Polymer({
     if (playerObj.isPlaying) {
       return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
     } else if (playerObj.isPaused || playerObj.isOff || playerObj.isIdle) {
-      return 'mdi:play';
+      return playerObj.supportsPlay ? 'mdi:play' : null;
     }
     return '';
   },
