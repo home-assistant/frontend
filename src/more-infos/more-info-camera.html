@@ -12,7 +12,7 @@
       }
     </style>
 
-    <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj)]]"
+    <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]"
          on-load='imageLoaded' alt='[[stateObj.entityDisplay]]' />
   </template>
 </dom-module>
@@ -29,20 +29,25 @@ Polymer({
     stateObj: {
       type: Object,
     },
+
+    isVisible: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   imageLoaded: function () {
     this.fire('iron-resize');
   },
 
-  computeCameraImageUrl: function (hass, stateObj) {
+  computeCameraImageUrl: function (hass, stateObj, isVisible) {
     if (hass.demo) {
       return '/demo/webcam.jpg';
-    } else if (stateObj) {
+    } else if (stateObj && isVisible) {
       return '/api/camera_proxy_stream/' + stateObj.entityId +
              '?token=' + stateObj.attributes.access_token;
     }
-    // Return an empty image if no stateObj (= dialog not open)
+    // Return an empty image if no stateObj (= dialog not open) or in cleanup mode.
     return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
   },
 });
