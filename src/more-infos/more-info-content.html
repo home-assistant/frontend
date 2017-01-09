@@ -35,11 +35,18 @@ Polymer({
   },
 
   stateObjChanged: function (stateObj) {
-    if (!stateObj) return;
-
-    window.hassUtil.dynamicContentUpdater(
-      this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
-      { hass: this.hass, stateObj: stateObj });
+    var rootEl;
+    if (!stateObj) {
+      // If root has lastChild, set 'isVisible' attribute of that child to false.
+      rootEl = Polymer.dom(this);
+      if (rootEl.lastChild) {
+        rootEl.lastChild.isVisible = false;
+      }
+    } else {
+      window.hassUtil.dynamicContentUpdater(
+        this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
+        { hass: this.hass, stateObj: stateObj, isVisible: true });
+    }
   },
 });
 </script>

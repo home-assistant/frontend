@@ -50,6 +50,8 @@ window.hassUtil.canToggle = function (hass, entityId) {
   return hass.reactor.evaluate(hass.serviceGetters.canToggleEntity(entityId));
 };
 
+// Update root's child element to be newElementTag replacing another existing child if any.
+// Copy attributes into the child element.
 window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attributes) {
   var rootEl = Polymer.dom(root);
   var customEl;
