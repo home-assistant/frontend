@@ -28,6 +28,10 @@
       .header .name {
         @apply(--paper-font-common-nowrap);
       }
+      .header.domain .name {
+        /* Capitalize cards titles for default domain groups. */
+        text-transform: capitalize;
+      }
       ha-entity-toggle {
         margin-left: 16px;
       }
@@ -85,6 +89,8 @@ Polymer({
     var classes = 'header horizontal layout center ';
     if (groupEntity) {
       classes += 'header-more-info';
+    } else {
+      classes += 'domain';
     }
     return classes;
   },
