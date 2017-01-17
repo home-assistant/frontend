@@ -36,12 +36,20 @@ Polymer({
   ],
 
   inputChanged: function (hass, inDialog, stateObj) {
+    var stateType;
+    var link;
     if (!stateObj) return;
-
+    stateType = window.hassUtil.stateCardType(this.hass, stateObj);
+    if (stateType.indexOf('custom') !== -1) {
+      // Load custom type
+      link = document.createElement('link');
+      link.rel = 'import';
+      link.href = '/local/' + stateType + '.html';
+      Polymer.dom(this).parentNode.appendChild(link);
+    }
     window.hassUtil.dynamicContentUpdater(
       this,
-      ('STATE-CARD-' +
-       window.hassUtil.stateCardType(this.hass, stateObj).toUpperCase()),
+      ('STATE-CARD-' + stateType.toUpperCase()),
       {
         hass: hass,
         stateObj: stateObj,
