@@ -4,7 +4,45 @@
 
 <dom-module id="ha-state-icon">
   <template>
-    <iron-icon icon="[[computeIcon(stateObj)]]"></iron-icon>
+    <style>
+    .spin-low {
+      -webkit-animation: spin .9s infinite linear;
+      animation: spin .9s infinite linear;
+    }
+
+    .spin-medium {
+      -webkit-animation: spin .7s infinite linear;
+      animation: spin .7s infinite linear;
+    }
+
+    .spin-high {
+      -webkit-animation: spin .5s infinite linear;
+      animation: spin .5s infinite linear;
+    }
+
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+      }
+      100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+      }
+    }
+    </style>
+    <iron-icon icon="[[computeIcon(stateObj)]]" class$="[[computeClassNames(stateObj)]]"></iron-icon>
   </template>
 </dom-module>
 
@@ -20,6 +58,16 @@ Polymer({
 
   computeIcon: function (stateObj) {
     return window.hassUtil.stateIcon(stateObj);
+  },
+
+  computeClassNames: function (stateObj) {
+    if (stateObj.domain === 'fan' && stateObj.state === 'on') {
+      var spinSpeed = stateObj.attributes.speed;
+      if (['low', 'medium', 'high'].indexOf(spinSpeed) === -1) spinSpeed = 'low';
+      return 'spin-'+spinSpeed;
+    } else {
+      return ''
+    }
   },
 });
 </script>
