@@ -61,13 +61,13 @@ Polymer({
   },
 
   computeClassNames: function (stateObj) {
+    var spinSpeed = 'low';
     if (stateObj.domain === 'fan' && stateObj.state === 'on') {
-      var spinSpeed = stateObj.attributes.speed;
+      spinSpeed = stateObj.attributes.speed;
       if (['low', 'medium', 'high'].indexOf(spinSpeed) === -1) spinSpeed = 'low';
-      return 'spin-'+spinSpeed;
-    } else {
-      return ''
+      return 'spin-' + spinSpeed;
     }
+    return '';
   },
 });
 </script>
