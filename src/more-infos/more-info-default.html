@@ -51,9 +51,17 @@
       return window.hassUtil.computeDisplayAttributes(stateObj, FILTER_KEYS);
     },
 
-    formatAttribute: window.hassUtil.formatAttribute,
-    formatAttributeValue: window.hassUtil.formatAttributeValue,
-    computeAttribution: window.hassUtil.computeAttribution,
+    formatAttribute: function (attribute) {
+      return window.hassUtil.formatAttribute(attribute);
+    },
+
+    formatAttributeValue: function (stateObj, attribute) {
+      return window.hassUtil.formatAttributeValue(stateObj, attribute);
+    },
+
+    computeAttribution: function (stateObj) {
+      return window.hassUtil.computeAttribution(stateObj);
+    },
   });
 }());
 </script>
