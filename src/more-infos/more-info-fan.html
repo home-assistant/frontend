@@ -133,15 +133,17 @@ Polymer({
   },
 
   onDirectionLeft: function () {
-    this.hass.serviceActions.callService('fan', 'set_direction',
-                                         { entity_id: this.stateObj.entityId,
-                                           direction: 'left' });
+    this.hass.serviceActions.callService('fan', 'set_direction', {
+      entity_id: this.stateObj.entityId,
+      direction: 'left'
+    });
   },
 
   onDirectionRight: function () {
-    this.hass.serviceActions.callService('fan', 'set_direction',
-                                         { entity_id: this.stateObj.entityId,
-                                           direction: 'right' });
+    this.hass.serviceActions.callService('fan', 'set_direction', {
+      entity_id: this.stateObj.entityId,
+      direction: 'right'
+    });
   },
 
   computeIsRotatingLeft: function (stateObj) {
