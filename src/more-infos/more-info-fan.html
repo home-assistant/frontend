@@ -5,30 +5,26 @@
 <link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <dom-module id='more-info-fan'>
   <template>
     <style is='custom-style' include='iron-flex'></style>
     <style>
-      .speed_list {
-        padding-bottom: 16px;
+      .container-speed_list,
+      .container-direction {
+        display: none;
       }
 
-      .speed_list {
-        max-height: 0px;
-        overflow: hidden;
-        transition: max-height .5s ease-in;
+      .has-speed_list .container-speed_list,
+      .has-direction .container-direction {
+        display: block;
       }
-
-      .has-speed_list .speed_list {
-        max-height: 84px;
-      }
-
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
 
-      <div class='speed_list'>
+      <div class="container-speed_list">
         <paper-dropdown-menu label-float label='Speed'>
           <paper-menu class='dropdown-content' selected='{{speedIndex}}'>
             <template is='dom-repeat'
@@ -39,13 +35,25 @@
         </paper-dropdown-menu>
       </div>
 
-      <div class='container-oscillating'>
+      <div class='container-oscillating' hidden$='[[computeHideOscillation(stateObj)]]'>
         <div class='center horizontal layout single-row'>
-          <div class='flex'>Oscillation</div>
+          <div class='flex'>Oscillate</div>
           <paper-toggle-button
             checked='[[oscillationToggleChecked]]'
             on-change='oscillationToggleChanged'>
           </paper-toggle-button>
+        </div>
+      </div>
+
+      <div class='container-direction'>
+        <div class='direction'>
+          <div>Direction</div>
+          <paper-icon-button icon='mdi:rotate-left'
+            on-tap='onDirectionLeft' title='Left'
+            disabled='[[computeIsRotatingLeft(stateObj)]]'></paper-icon-button>
+          <paper-icon-button icon='mdi:rotate-right'
+            on-tap='onDirectionRight' title='Right'
+            disabled='[[computeIsRotatingRight(stateObj)]]'></paper-icon-button>
         </div>
       </div>
     </div>
@@ -94,7 +102,7 @@ Polymer({
 
   computeClassNames: function (stateObj) {
     return 'more-info-fan ' + window.hassUtil.attributeClassNames(
-      stateObj, ['oscillating', 'speed_list']
+      stateObj, ['oscillating', 'speed_list', 'direction']
     );
   },
 
@@ -122,6 +130,30 @@ Polymer({
       entity_id: this.stateObj.entityId,
       oscillating: newVal,
     });
+  },
+
+  onDirectionLeft: function () {
+    this.hass.serviceActions.callService('fan', 'set_direction',
+                                         { entity_id: this.stateObj.entityId,
+                                           direction: 'left' });
+  },
+
+  onDirectionRight: function () {
+    this.hass.serviceActions.callService('fan', 'set_direction',
+                                         { entity_id: this.stateObj.entityId,
+                                           direction: 'right' });
+  },
+
+  computeIsRotatingLeft: function (stateObj) {
+    return stateObj.attributes.direction === 'left';
+  },
+
+  computeIsRotatingRight: function (stateObj) {
+    return stateObj.attributes.direction === 'right';
+  },
+
+  computeHideOscillation: function (stateObj) {
+    return stateObj.attributes.direction;
   },
 
 });
