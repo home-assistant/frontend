@@ -20,7 +20,7 @@
       <template is='dom-repeat' items="[[computeDisplayAttributes(stateObj)]]" as="attribute">
         <div class='data-entry layout justified horizontal'>
           <div class='key'>[[formatAttribute(attribute)]]</div>
-          <div class='value'>[[getAttributeValue(stateObj, attribute)]]</div>
+          <div class='value'>[[formatAttributeValue(stateObj, attribute)]]</div>
         </div>
       </template>
       <div class='attribution' hidden$='[[!computeAttribution(stateObj)]]'>[[computeAttribution(stateObj)]]</div>
@@ -52,7 +52,7 @@
     },
 
     formatAttribute: window.hassUtil.formatAttribute,
-    getAttributeValue: window.hassUtil.getAttributeValue,
+    formatAttributeValue: window.hassUtil.formatAttributeValue,
     computeAttribution: window.hassUtil.computeAttribution,
   });
 }());

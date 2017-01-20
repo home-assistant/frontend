@@ -354,7 +354,7 @@ window.hassUtil.formatAttribute = function (attribute) {
   return attribute.replace(/_/g, ' ');
 };
 
-window.hassUtil.getAttributeValue = function (stateObj, attribute) {
+window.hassUtil.formatAttributeValue = function (stateObj, attribute) {
   var value = stateObj.attributes[attribute];
 
   return Array.isArray(value) ? value.join(', ') : value;

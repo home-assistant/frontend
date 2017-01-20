@@ -22,7 +22,7 @@
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
         <template is='dom-repeat' items='[[computeDisplayAttributes(stateObj)]]' as="attribute">
-          <div>[[formatAttribute(attribute)]]: [[getAttributeValue(stateObj, attribute)]]</div>
+          <div>[[formatAttribute(attribute)]]: [[formatAttributeValue(stateObj, attribute)]]</div>
         </template>
         <div id='chart_area'></div>
         <div class='attribution' hidden$='[[!computeAttribution(stateObj)]]'>[[computeAttribution(stateObj)]]</div>
@@ -60,7 +60,7 @@
     },
 
     formatAttribute: window.hassUtil.formatAttribute,
-    getAttributeValue: window.hassUtil.getAttributeValue,
+    formatAttributeValue: window.hassUtil.formatAttributeValue,
     computeAttribution: window.hassUtil.computeAttribution,
 
     getDataArray: function () {
