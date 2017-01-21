@@ -116,7 +116,7 @@ Polymer({
   },
 
   onStopTiltTap: function () {
-    this.hass.serviceActions.callService('cover', 'stop_cover',
+    this.hass.serviceActions.callService('cover', 'stop_cover_tilt',
                                          { entity_id: this.stateObj.entityId });
   },
 });
