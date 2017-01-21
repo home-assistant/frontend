@@ -8,22 +8,22 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "app-layout": "~0.10.2",
-    "app-storage": "PolymerElements/app-storage#~0.9.7",
-    "fecha": "~2.2.0",
+    "app-layout": "~0.10.6",
+    "app-storage": "PolymerElements/app-storage#~0.9.8",
+    "fecha": "~2.3.0",
     "font-roboto-local": "~1.0.1",
     "google-apis": "GoogleWebComponents/google-apis#~1.1.6",
     "iron-elements": "PolymerElements/iron-elements#~1.0.10",
     "paper-elements": "PolymerElements/paper-elements#~1.0.7",
-    "paper-range-slider": "IftachSadeh/paper-range-slider#~0.2.3",
+    "paper-range-slider": "IftachSadeh/paper-range-slider#~0.2.4",
     "paper-scroll-header-panel": "~1.0.16",
-    "pikaday": "~1.4.0",
+    "pikaday": "~1.5.1",
     "polymer": "Polymer/polymer#~1.7.1",
     "vaadin-combo-box": "vaadin/vaadin-combo-box#~1.1.5",
-    "paper-slider": "1.0.11",
+    "paper-slider": "1.0.13",
     "leaflet": "^1.0.2"
   },
   "resolutions": {
-    "paper-slider": "1.0.11"
+    "paper-slider": "1.0.13"
   }
 }
