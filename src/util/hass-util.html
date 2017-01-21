@@ -357,7 +357,10 @@ window.hassUtil.formatAttribute = function (attribute) {
 window.hassUtil.formatAttributeValue = function (stateObj, attribute) {
   var value = stateObj.attributes[attribute];
 
-  return Array.isArray(value) ? value.join(', ') : value;
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+  return (value instanceof Object) ? JSON.stringify(value, null, 2) : value;
 };
 
 window.hassUtil.computeAttribution = function (stateObj) {

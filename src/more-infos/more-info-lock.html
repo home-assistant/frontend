@@ -2,6 +2,7 @@
 
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
+<link rel='import' href='../components/ha-attributes.html'>
 
 <dom-module id='more-info-lock'>
   <template>
@@ -16,6 +17,7 @@
       <paper-button on-tap='handleUnlockTap' hidden$='[[!isLocked]]'>Unlock</paper-button>
       <paper-button on-tap='handleLockTap' hidden$=[[isLocked]]>Lock</paper-button>
     </div>
+    <ha-attributes state-obj='[[stateObj]]' extra-filters='code_format'></ha-attributes>
   </template>
 </dom-module>
 
