@@ -341,4 +341,27 @@ window.hassUtil.stateIcon = function (state) {
   return window.hassUtil.domainIcon(state.domain, state.state);
 };
 
+window.hassUtil.computeDisplayAttributes = function (stateObj, filterKeys) {
+  if (!stateObj) {
+    return [];
+  }
+
+  return Object.keys(stateObj.attributes).filter(
+    function (key) { return filterKeys.indexOf(key) === -1; });
+};
+
+window.hassUtil.formatAttribute = function (attribute) {
+  return attribute.replace(/_/g, ' ');
+};
+
+window.hassUtil.formatAttributeValue = function (stateObj, attribute) {
+  var value = stateObj.attributes[attribute];
+
+  return Array.isArray(value) ? value.join(', ') : value;
+};
+
+window.hassUtil.computeAttribution = function (stateObj) {
+  return stateObj.attributes.attribution;
+};
+
 </script>
