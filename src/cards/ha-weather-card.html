@@ -14,23 +14,29 @@
         }
 
         .attribution {
-          color:grey;
+          color: var(--secondary-text-color);
+          text-align: right;
         }
     </style>
     <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <template is='dom-repeat' items='[[computeCurrentWeather(stateObj)]]'>
-          <div>[[item.key]]: [[item.value]]</div>
+        <template is='dom-repeat' items='[[computeDisplayAttributes(stateObj)]]' as="attribute">
+          <div>[[formatAttribute(attribute)]]: [[formatAttributeValue(stateObj, attribute)]]</div>
         </template>
         <div id='chart_area'></div>
-        <div class='attribution'>[[computeAttribution(stateObj)]]</div>
+        <div class='attribution' hidden$='[[!computeAttribution(stateObj)]]'>[[computeAttribution(stateObj)]]</div>
       </div>
     </ha-card>
   </template>
 </dom-module>
 
 <script>
+(function () {
+  'use strict';
+
+  var FILTER_KEYS = ['attribution', 'forecast', 'friendly_name'];
+
   Polymer({
     is: 'ha-weather-card',
 
@@ -49,19 +55,20 @@
       return stateObj.attributes.friendly_name;
     },
 
-    computeAttribution: function (stateObj) {
-      return stateObj.attributes.attribution;
+    computeDisplayAttributes: function (stateObj) {
+      return window.hassUtil.computeDisplayAttributes(stateObj, FILTER_KEYS);
     },
 
-    computeCurrentWeather: function (stateObj) {
-      return Object.keys(stateObj.attributes).filter(function (key) {
-        return ['attribution', 'forecast', 'friendly_name'].indexOf(key) === -1;
-      }).map(function (key) {
-        return {
-          key: key,
-          value: stateObj.attributes[key]
-        };
-      });
+    formatAttribute: function (attribute) {
+      return window.hassUtil.formatAttribute(attribute);
+    },
+
+    formatAttributeValue: function (stateObj, attribute) {
+      return window.hassUtil.formatAttributeValue(stateObj, attribute);
+    },
+
+    computeAttribution: function (stateObj) {
+      return window.hassUtil.computeAttribution(stateObj);
     },
 
     getDataArray: function () {
@@ -134,4 +141,5 @@
       });
     },
   });
+}());
 </script>
