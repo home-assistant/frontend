@@ -19,6 +19,7 @@
         on-hass-more-info='handleMoreInfo'
         on-hass-current-view='handleCurrentView'
         on-hass-current-panel='handleCurrentPanel'
+        on-hass-dock-sidebar='handleDockSidebar'
         hass='[[hass]]'
       ></home-assistant-main>
     </template>
@@ -109,6 +110,7 @@ Polymer({
       connected: true,
       states: null,
       config: null,
+      dockedSidebar: false,
       currentPanel: 'states',
       currentView: '',
       moreInfoEntityId: null,
@@ -169,6 +171,13 @@ Polymer({
     this.hass = Object.assign(
       {}, this.hass,
       { currentPanel: ev.detail.panel });
+  },
+
+  handleDockSidebar: function (ev) {
+    ev.stopPropagation();
+    this.hass = Object.assign(
+      {}, this.hass,
+      { dockedSidebar: ev.detail.dock });
   },
 
   ready: function () {

@@ -23,7 +23,7 @@
     </iron-media-query>
 
     <paper-drawer-panel id='drawer'
-      force-narrow='[[computeForceNarrow(narrow, showSidebar)]]'
+      force-narrow='[[computeForceNarrow(narrow, dockSidebar)]]'
       responsive-width='0' disable-swipe='[[isSelectedMap]]'
       disable-edge-swipe='[[isSelectedMap]]'>
       <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
@@ -40,14 +40,14 @@
           narrow='[[narrow]]'
           actions='[[actions]]'
           hass='[[hass]]'
-          show-menu='[[showSidebar]]'
+          show-menu='[[dockSidebar]]'
         ></partial-cards>
 
         <partial-panel-resolver
           id='panel-resolver'
           narrow='[[narrow]]'
           hass='[[hass]]'
-          show-menu='[[showSidebar]]'
+          show-menu='[[dockSidebar]]'
         ></partial-panel-resolver>
 
       </iron-pages>
@@ -77,12 +77,9 @@ Polymer({
       observer: 'currentPanelChanged',
     },
 
-    showSidebar: {
+    dockSidebar: {
       type: Boolean,
-      value: false,
-      bindNuclear: function (hass) {
-        return hass.navigationGetters.showSidebar;
-      },
+      computed: 'computeDockSidebar(hass)',
     },
   },
 
@@ -101,14 +98,14 @@ Polymer({
     if (this.narrow) {
       this.$.drawer.openDrawer();
     } else {
-      // this.hass.navigationActions.showSidebar(true);
+      this.fire('hass-dock-sidebar', { dock: true });
     }
   },
 
   handleCloseMenu: function () {
     this.$.drawer.closeDrawer();
-    if (this.showSidebar) {
-      // this.hass.navigationActions.showSidebar(false);
+    if (this.dockSidebar) {
+      this.fire('hass-dock-sidebar', { dock: false });
     }
   },
 
@@ -123,12 +120,16 @@ Polymer({
     // this.hass.startUrlSync();
   },
 
-  computeForceNarrow: function (narrow, showSidebar) {
-    return narrow || !showSidebar;
+  computeForceNarrow: function (narrow, dockSidebar) {
+    return narrow || !dockSidebar;
   },
 
   computeCurrentPanel: function (hass) {
     return hass.currentPanel;
+  },
+
+  computeDockSidebar: function (hass) {
+    return hass.dockedSidebar;
   },
 
   detached: function () {
