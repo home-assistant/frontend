@@ -259,9 +259,20 @@ Polymer({
   },
 
   computeViewStates: function (currentView, hass) {
-    return currentView ?
-      HAWS.getViewEntities(hass.states, hass.states[currentView]) :
-      hass.states;
+    if(currentView) {
+      return HAWS.getViewEntities(hass.states, hass.states[currentView]);
+    }
+
+    var states = {};
+    Object.keys(hass.states).forEach(function (entityId) {
+      var state = hass.states[entityId];
+
+      if (!state.attributes.hidden) {
+        states[entityId] = state;
+      }
+    });
+
+    return states;
   },
 
   computeCurrentView: function (hass) {
