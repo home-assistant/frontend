@@ -120,7 +120,8 @@ Polymer({
         return conn.callService(domain, service, serviceData || {});
       },
       callApi: function () {
-        alert('Not implemented yet');
+        alert('Call API not implemented yet');
+        return new Promise((resolve, reject) => resolve("callApi not implemented!"));
       },
     }, this.$.storage.getStoredState());
 

@@ -170,14 +170,15 @@ Polymer({
   renderTemplate: function () {
     this.rendering = true;
 
-    this.hass.templateActions.render(this.template).then(function (processed) {
-      this.processed = processed;
-      this.rendering = false;
-    }.bind(this), function (error) {
-      this.processed = error.message;
-      this.error = true;
-      this.rendering = false;
-    }.bind(this));
+    this.hass.callApi('POST', 'template', { template: this.template })
+      .then(function (processed) {
+        this.processed = processed;
+        this.rendering = false;
+      }.bind(this), function (error) {
+        this.processed = error.message;
+        this.error = true;
+        this.rendering = false;
+      }.bind(this));
   },
 });
 </script>
