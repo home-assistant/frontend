@@ -106,9 +106,10 @@
 
 <script>
 Polymer({
-  is: 'partial-cards',
+  DEFAULT_VIEW_ENTITY_ID: 'group.default_view',
+  ALWAYS_SHOW_DOMAIN: ['persistent_notification', 'configurator'],
 
-  // behaviors: [window.hassBehavior],
+  is: 'partial-cards',
 
   properties: {
     hass: {
@@ -258,19 +259,45 @@ Polymer({
     return HAWS.extractViews(hass.states);
   },
 
+  /*
+    Compute the states to show for current view.
+
+    Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
+  */
   computeViewStates: function (currentView, hass) {
-    if(currentView) {
-      return HAWS.getViewEntities(hass.states, hass.states[currentView]);
+    var states;
+    var entityIds = Object.keys(hass.states);
+
+    if (!currentView && !(this.DEFAULT_VIEW_ENTITY_ID in hass.states)) {
+      states = {};
+      for (var i = 0; i < entityIds.length; i++) {
+        var entityId = entityIds[i];
+        var state = hass.states[entityId];
+
+        // We can filter out hidden and domain at the same time.
+        if (!state.attributes.hidden ||
+            this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
+          states[entityId] = state;
+        }
+      }
+      return states;
     }
 
-    var states = {};
-    Object.keys(hass.states).forEach(function (entityId) {
+    if(currentView) {
+      states = HAWS.getViewEntities(hass.states, hass.states[currentView]);
+    } else if (this.DEFAULT_VIEW_ENTITY_ID in hass.states) {
+      states = HAWS.getViewEntities(hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
+    } else {
+    }
+
+    for (var i = 0; i < entityIds.length; i++) {
+      var entityId = entityIds[i];
       var state = hass.states[entityId];
 
-      if (!state.attributes.hidden) {
+      if (this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
         states[entityId] = state;
       }
-    });
+    };
 
     return states;
   },
