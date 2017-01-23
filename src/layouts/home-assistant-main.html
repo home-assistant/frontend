@@ -32,7 +32,7 @@
         main
         attr-for-selected='id'
         fallback-selection='panel-resolver'
-        selected='[[activePanel]]'
+        selected='[[currentPanel]]'
         selected-attribute='panel-visible'
       >
         <partial-cards
@@ -71,13 +71,10 @@ Polymer({
       value: true,
     },
 
-    activePanel: {
+    currentPanel: {
       type: String,
-      value: 'states',
-      bindNuclear: function (hass) {
-        return hass.navigationGetters.activePanelName;
-      },
-      observer: 'activePanelChanged',
+      computed: 'computeCurrentPanel(hass)',
+      observer: 'currentPanelChanged',
     },
 
     showSidebar: {
@@ -90,8 +87,8 @@ Polymer({
   },
 
   listeners: {
-    'open-menu': 'handleOpenMenu',
-    'close-menu': 'handleCloseMenu',
+    'hass-open-menu': 'handleOpenMenu',
+    'hass-close-menu': 'handleCloseMenu',
     'hass-start-voice': 'handleStartVoice',
   },
 
@@ -115,7 +112,7 @@ Polymer({
     }
   },
 
-  activePanelChanged: function () {
+  currentPanelChanged: function () {
     if (this.narrow) {
       this.$.drawer.closeDrawer();
     }
@@ -128,6 +125,10 @@ Polymer({
 
   computeForceNarrow: function (narrow, showSidebar) {
     return narrow || !showSidebar;
+  },
+
+  computeCurrentPanel: function (hass) {
+    return hass.currentPanel;
   },
 
   detached: function () {
