@@ -14,8 +14,11 @@
 <dom-module id='home-assistant-main'>
   <template>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
-<!--     <notification-manager hass='[[hass]]'></notification-manager>
-    <ha-voice-command-dialog hass='[[hass]]'></ha-voice-command-dialog> -->
+    <ha-voice-command-dialog
+      hass='[[hass]]'
+      id='voiceDialog'
+    ></ha-voice-command-dialog>
+<!--     <notification-manager hass='[[hass]]'></notification-manager> -->
     <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
     </iron-media-query>
 
@@ -87,11 +90,17 @@ Polymer({
   },
 
   listeners: {
-    'open-menu': 'openMenu',
-    'close-menu': 'closeMenu',
+    'open-menu': 'handleOpenMenu',
+    'close-menu': 'handleCloseMenu',
+    'hass-start-voice': 'handleStartVoice',
   },
 
-  openMenu: function () {
+  handleStartVoice: function (ev) {
+    ev.stopPropagation();
+    this.$.voiceDialog.startListening();
+  },
+
+  handleOpenMenu: function () {
     if (this.narrow) {
       this.$.drawer.openDrawer();
     } else {
@@ -99,7 +108,7 @@ Polymer({
     }
   },
 
-  closeMenu: function () {
+  handleCloseMenu: function () {
     this.$.drawer.closeDrawer();
     if (this.showSidebar) {
       // this.hass.navigationActions.showSidebar(false);

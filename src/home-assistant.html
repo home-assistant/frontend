@@ -17,6 +17,7 @@
     <template is='dom-if' if='[[showMain]]'>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
+        on-hass-current-view='handleCurrentView'
         hass='[[hass]]'
       ></home-assistant-main>
     </template>
@@ -107,6 +108,7 @@ Polymer({
       connected: true,
       states: null,
       config: null,
+      currentView: '',
       moreInfoEntityId: null,
       callService: function (domain, service, serviceData) {
         return conn.callService(domain, service, serviceData || {});
@@ -147,16 +149,18 @@ Polymer({
   },
 
   handleMoreInfo: function (ev) {
+    ev.stopPropagation();
     this.hass = Object.assign(
       {}, this.hass,
       { moreInfoEntityId: ev.detail.entityId });
   },
 
   handleCurrentView: function (ev) {
+    ev.stopPropagation();
     this.hass = Object.assign(
       {}, this.hass,
       { currentView: ev.detail.view });
-  }
+  },
 
   ready: function () {
     this.loadIcons();
