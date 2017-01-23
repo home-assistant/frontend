@@ -73,15 +73,18 @@ Polymer({
     if (states && states.length > 0) {
       baseStateObj = states[0];
 
-      groupDomainStateObj = baseStateObj.set('entityId', stateObj.entityId).set(
-          'attributes', Object.assign({}, baseStateObj.attributes));
+      groupDomainStateObj = Object.assign(baseStateObj, {
+        entity_id: stateObj.entity_id,
+        attributes: Object.assign({}, baseStateObj.attributes)
+      });
+      var groupDomain = window.hassUtil.computeDomain(groupDomainStateObj);
 
       for (i = 0; i < states.length; i++) {
         state = states[i];
-        if (state && state.domain) {
-          if (groupDomainStateObj.domain !== state.domain) {
-            groupDomainStateObj = false;
-          }
+
+        if (groupDomain !== window.hassUtil.computeDomain(state)) {
+          groupDomainStateObj = false;
+          break;
         }
       }
     }

@@ -18,11 +18,10 @@ const plugins = [
       __DEMO__: JSON.stringify(DEMO),
     },
   }),
-
-  buble(),
 ];
 
 if (!DEV) {
+  plugins.push(buble());
   plugins.push(uglify());
 }
 

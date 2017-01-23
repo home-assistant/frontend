@@ -36,12 +36,12 @@ Polymer({
   ],
 
   inputChanged: function (hass, inDialog, stateObj) {
-    if (!stateObj) return;
+    if (!stateObj || !hass) return;
 
     window.hassUtil.dynamicContentUpdater(
       this,
       ('STATE-CARD-' +
-       window.hassUtil.stateCardType(this.hass, stateObj).toUpperCase()),
+       window.hassUtil.stateCardType(hass, stateObj).toUpperCase()),
       {
         hass: hass,
         stateObj: stateObj,

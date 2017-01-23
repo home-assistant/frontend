@@ -106,13 +106,6 @@ Polymer({
       value: 'display',
     },
 
-    isStreaming: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.streamGetters.isStreamingEvents;
-      },
-    },
-
     isConfigurable: {
       type: Boolean,
       computed: 'computeIsConfigurable(stateObj)',
@@ -154,13 +147,9 @@ Polymer({
 
     this.isConfiguring = true;
 
-    this.hass.serviceActions.callService('configurator', 'configure', data).then(
+    this.hass.callService('configurator', 'configure', data).then(
       function () {
         this.isConfiguring = false;
-
-        if (!this.isStreaming) {
-          this.hass.syncActions.fetchAll();
-        }
       }.bind(this),
       function () {
         this.isConfiguring = false;

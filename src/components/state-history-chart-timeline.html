@@ -93,7 +93,7 @@ Polymer({
 
       if (stateInfo.length === 0) return;
 
-      entityDisplay = stateInfo[0].entityDisplay;
+      entityDisplay = window.hassUtil.computeStateName(stateInfo[0].entityDisplay);
 
       stateInfo.forEach(function (state) {
         if (prevState !== null && state.state !== prevState) {

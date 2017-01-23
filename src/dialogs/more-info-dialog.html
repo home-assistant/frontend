@@ -51,7 +51,7 @@
     </style>
 
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
-    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}' data-domain$='[[stateObj.domain]]'>
+    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}' data-domain$='[[computeDomain(stateObj)]]'>
       <h2>
         <state-card-content
           state-obj="[[stateObj]]"
@@ -73,7 +73,7 @@
 Polymer({
   is: 'more-info-dialog',
 
-  behaviors: [window.hassBehavior],
+  // behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
@@ -82,9 +82,7 @@ Polymer({
 
     stateObj: {
       type: Object,
-      bindNuclear: function (hass) {
-        return hass.moreInfoGetters.currentEntity;
-      },
+      computed: 'computeStateObj(hass)',
       observer: 'stateObjChanged',
     },
 
@@ -112,6 +110,7 @@ Polymer({
 
     hasHistoryComponent: {
       type: Boolean,
+      value: false,
       bindNuclear: function (hass) {
         return hass.configGetters.isComponentLoaded('history');
       },
@@ -148,6 +147,14 @@ Polymer({
     this.$.scrollable.dialogElement = this.$.dialog;
   },
 
+  computeDomain: function (stateObj) {
+    return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
+  },
+
+  computeStateObj: function (hass) {
+    return hass.states[hass.moreInfoEntityId] || null;
+  },
+
   /**
    * We depend on a delayed dialogOpen value to tell the chart component
    * that the data is there. Otherwise the chart component will render
@@ -160,13 +167,13 @@ Polymer({
 
   computeShowHistoryComponent: function (hasHistoryComponent, stateObj) {
     return this.hasHistoryComponent && stateObj &&
-      window.hassUtil.DOMAINS_WITH_NO_HISTORY.indexOf(stateObj.domain) === -1;
+      window.hassUtil.DOMAINS_WITH_NO_HISTORY.indexOf(window.hassUtil.computeDomain(stateObj)) === -1;
   },
 
   fetchHistoryData: function () {
     if (this.stateObj && this.hasHistoryComponent &&
         this.shouldFetchHistory) {
-      this.hass.entityHistoryActions.fetchRecent(this.stateObj.entityId);
+      this.hass.entityHistoryActions.fetchRecent(this.stateObj.entity_id);
     }
   },
 
@@ -189,7 +196,7 @@ Polymer({
     if (newVal) {
       this.async(function () { this.delayedDialogOpen = true; }.bind(this), 10);
     } else if (!newVal && this.stateObj) {
-      this.async(function () { this.hass.moreInfoActions.deselectEntity(); }.bind(this), 10);
+      this.fire('hass-more-info', { entityId: null });
       this.delayedDialogOpen = false;
     }
   },

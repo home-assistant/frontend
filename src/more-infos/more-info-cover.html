@@ -84,15 +84,15 @@ Polymer({
   },
 
   coverPositionSliderChanged: function (ev) {
-    this.hass.serviceActions.callService('cover', 'set_cover_position', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('cover', 'set_cover_position', {
+      entity_id: this.stateObj.entity_id,
       position: ev.target.value,
     });
   },
 
   coverTiltPositionSliderChanged: function (ev) {
-    this.hass.serviceActions.callService('cover', 'set_cover_tilt_position', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('cover', 'set_cover_tilt_position', {
+      entity_id: this.stateObj.entity_id,
       tilt_position: ev.target.value,
     });
   },
@@ -106,18 +106,18 @@ Polymer({
   },
 
   onOpenTiltTap: function () {
-    this.hass.serviceActions.callService('cover', 'open_cover_tilt',
-                                         { entity_id: this.stateObj.entityId });
+    this.hass.callService('cover', 'open_cover_tilt',
+                                         { entity_id: this.stateObj.entity_id });
   },
 
   onCloseTiltTap: function () {
-    this.hass.serviceActions.callService('cover', 'close_cover_tilt',
-                                         { entity_id: this.stateObj.entityId });
+    this.hass.callService('cover', 'close_cover_tilt',
+                                         { entity_id: this.stateObj.entity_id });
   },
 
   onStopTiltTap: function () {
-    this.hass.serviceActions.callService('cover', 'stop_cover_tilt',
-                                         { entity_id: this.stateObj.entityId });
+    this.hass.callService('cover', 'stop_cover_tilt',
+                                         { entity_id: this.stateObj.entity_id });
   },
 });
 </script>

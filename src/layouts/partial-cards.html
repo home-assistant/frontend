@@ -60,14 +60,14 @@
             >[[locationName]]</paper-tab>
             <template is='dom-repeat' items='[[views]]'>
               <paper-tab
-                data-entity$='[[item.entityId]]'
+                data-entity$='[[item.entity_id]]'
                 on-tap='scrollToTop'
               >
                 <template is='dom-if' if='[[item.attributes.icon]]'>
                   <iron-icon icon='[[item.attributes.icon]]'></iron-icon>
                 </template>
                 <template is='dom-if' if='[[!item.attributes.icon]]'>
-                  [[item.entityDisplay]]
+                  [[computeStateName(item)]]
                 </template>
               </paper-tab>
             </template>
@@ -82,8 +82,8 @@
       >
         <ha-cards
           data-view=''
-          show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
-          states='[[states]]'
+          show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]'
+          states='[[viewStates]]'
           columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
@@ -91,9 +91,9 @@
 
         <template is='dom-repeat' items='[[views]]'>
           <ha-cards
-            data-view$='[[item.entityId]]'
-            show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
-            states='[[states]]'
+            data-view$='[[item.entity_id]]'
+            show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]'
+            states='[[viewStates]]'
             columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
@@ -110,11 +110,12 @@
 Polymer({
   is: 'partial-cards',
 
-  behaviors: [window.hassBehavior],
+  // behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
       type: Object,
+      value: null,
     },
 
     narrow: {
@@ -153,47 +154,28 @@ Polymer({
 
     introductionLoaded: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.configGetters.isComponentLoaded('introduction');
-      },
+      computed: 'computeIntroductionLoaded(hass)',
     },
 
     locationName: {
       type: String,
-      bindNuclear: function (hass) {
-        return hass.configGetters.locationName;
-      },
+      value: '',
+      computed: 'computeLocationName(hass)',
     },
 
     currentView: {
       type: String,
-      bindNuclear: function (hass) {
-        return [
-          hass.viewGetters.currentView,
-          function (view) { return view || ''; },
-        ];
-      },
+      computed: 'computeCurrentView(hass)',
     },
 
     views: {
       type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.viewGetters.views,
-          function (views) {
-            return views.valueSeq()
-              .sortBy(function (view) { return view.attributes.order; })
-              .toArray();
-          },
-        ];
-      },
+      computed: 'computeViews(hass)',
     },
 
-    states: {
+    viewStates: {
       type: Object,
-      bindNuclear: function (hass) {
-        return hass.viewGetters.currentViewEntities;
-      },
+      computed: 'computeViewStates(currentView, hass)',
     },
   },
 
@@ -279,6 +261,32 @@ Polymer({
 
   computeShowIntroduction: function (currentView, introductionLoaded, states) {
     return currentView === '' && (introductionLoaded || states.size === 0);
+  },
+
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
+  },
+
+  computeLocationName: function (hass) {
+    return window.hassUtil.computeLocationName(hass);
+  },
+
+  computeIntroductionLoaded: function (hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'introduction');
+  },
+
+  computeViews: function (hass) {
+    return HAWS.extractViews(hass.states);
+  },
+
+  computeViewStates: function (currentView, hass) {
+    return currentView ?
+      HAWS.getViewEntities(states, hass.states[currentView]) :
+      hass.states;
+  },
+
+  computeCurrentView: function (hass) {
+    return hass.currentView;
   },
 });
 </script>

@@ -123,8 +123,8 @@
 
       dataTables = deviceStates.map(function (states) {
         var last = states[states.length - 1];
-        var domain = last.domain;
-        var name = last.entityDisplay;
+        var domain = window.hassUtil.computeDomain(last);
+        var name = window.hassUtil.computeStateName(last);
         var data = [];
         var dataTable = new window.google.visualization.DataTable();
         // array containing [time, value1, value2, etc]

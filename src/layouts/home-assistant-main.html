@@ -13,9 +13,9 @@
 
 <dom-module id='home-assistant-main'>
   <template>
-    <notification-manager hass='[[hass]]'></notification-manager>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
-    <ha-voice-command-dialog hass='[[hass]]'></ha-voice-command-dialog>
+<!--     <notification-manager hass='[[hass]]'></notification-manager>
+    <ha-voice-command-dialog hass='[[hass]]'></ha-voice-command-dialog> -->
     <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
     </iron-media-query>
 
@@ -35,6 +35,7 @@
         <partial-cards
           id='states'
           narrow='[[narrow]]'
+          actions='[[actions]]'
           hass='[[hass]]'
           show-menu='[[showSidebar]]'
         ></partial-cards>
@@ -56,11 +57,10 @@
 Polymer({
   is: 'home-assistant-main',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
+      value: null,
     },
 
     narrow: {
@@ -70,6 +70,7 @@ Polymer({
 
     activePanel: {
       type: String,
+      value: 'states',
       bindNuclear: function (hass) {
         return hass.navigationGetters.activePanelName;
       },
@@ -94,14 +95,14 @@ Polymer({
     if (this.narrow) {
       this.$.drawer.openDrawer();
     } else {
-      this.hass.navigationActions.showSidebar(true);
+      // this.hass.navigationActions.showSidebar(true);
     }
   },
 
   closeMenu: function () {
     this.$.drawer.closeDrawer();
     if (this.showSidebar) {
-      this.hass.navigationActions.showSidebar(false);
+      // this.hass.navigationActions.showSidebar(false);
     }
   },
 
@@ -113,7 +114,7 @@ Polymer({
 
   attached: function () {
     window.removeInitMsg();
-    this.hass.startUrlSync();
+    // this.hass.startUrlSync();
   },
 
   computeForceNarrow: function (narrow, showSidebar) {
@@ -121,7 +122,7 @@ Polymer({
   },
 
   detached: function () {
-    this.hass.stopUrlSync();
+    // this.hass.stopUrlSync();
   },
 });
 </script>

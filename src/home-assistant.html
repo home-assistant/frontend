@@ -14,14 +14,17 @@
 
 <dom-module id='home-assistant'>
   <template>
-    <template is='dom-if' if='[[loaded]]'>
-      <home-assistant-main hass='[[hass]]'></home-assistant-main>
+    <template is='dom-if' if='[[showMain]]'>
+      <home-assistant-main
+        on-hass-more-info='handleMoreInfo'
+        hass='[[hass]]'
+      ></home-assistant-main>
     </template>
 
-    <template is='dom-if' if='[[!loaded]]'>
+    <template is='dom-if' if='[[showForm]]'>
       <login-form
         hass='[[hass]]'
-        force-show-loading='[[computeForceShowLoading(dataLoaded, iconsLoaded)]]'>
+        show-loading='[[computeShowLoading(connectionPromise, iconsLoaded)]]'>
       </login-form>
     </template>
   </template>
@@ -35,36 +38,48 @@ Polymer({
     icons: null,
   },
 
-  behaviors: [window.hassBehavior],
-
   properties: {
+    connectionPromise: {
+      type: Object,
+      value: window.hassConnection,
+    },
+    connection: {
+      type: Object,
+      value: null,
+      observer: 'connectionChanged',
+    },
     hass: {
       type: Object,
-      value: window.hass,
+      value: null,
     },
     icons: {
       type: String,
-    },
-    dataLoaded: {
-      type: Boolean,
-      bindNuclear: function (hass) { return hass.syncGetters.isDataLoaded; },
     },
     iconsLoaded: {
       type: Boolean,
       value: false,
     },
-    loaded: {
+    showMain: {
       type: Boolean,
-      computed: 'computeLoaded(dataLoaded, iconsLoaded)',
+      computed: 'computeShowMain(hass, iconsLoaded)',
+    },
+    showForm: {
+      type: Boolean,
+      computed: 'computeShowForm(hass, iconsLoaded)',
     },
   },
 
-  computeLoaded: function (dataLoaded, iconsLoaded) {
+  computeShowMain: function (hass, iconsLoaded) {
+    return hass && hass.states && hass.config && iconsLoaded;
+  },
+
+  computeShowForm: function (hass, iconsLoaded) {
+    return false;
     return dataLoaded && iconsLoaded;
   },
 
-  computeForceShowLoading: function (dataLoaded, iconsLoaded) {
-    return dataLoaded && !iconsLoaded;
+  computeShowLoading: function (connectionPromise) {
+    return connectionPromise != null;
   },
 
   loadIcons: function () {
@@ -81,8 +96,74 @@ Polymer({
                     });
   },
 
+  connectionChanged: function (conn) {
+    console.log("CONN CHANGED", conn);
+    if (!conn) {
+      this.hass = null;
+      return;
+    }
+    this.hass = {
+      connection: conn,
+      connected: true,
+      states: null,
+      config: null,
+      moreInfoEntityId: null,
+      callService: function (domain, service, serviceData) {
+        return conn.callService(domain, service, serviceData || {});
+      },
+      callApi: function () {
+        alert('Not implemented yet');
+      },
+    };
+
+    conn.addEventListener('ready', function () {
+      this.hass = Object.assign({}, this.hass, {connected: true});
+    }.bind(this));
+
+    conn.addEventListener('disconnected', function () {
+      this.hass = Object.assign({}, this.hass, {connected: false});
+    }.bind(this));
+
+    HAWS.subscribeEntities(conn, function (states) {
+      this.hass = Object.assign({}, this.hass, {states: states});
+    }.bind(this));
+
+    HAWS.subscribeConfig(conn, function (config) {
+      this.hass = Object.assign({}, this.hass, {config: config});
+    }.bind(this));
+  },
+
+  handleConnectionPromise: function (prom) {
+    prom.then(
+      function (conn) {
+        this.connection = conn;
+      }.bind(this),
+      function (err) {
+        console.log("SNAP ERROR: " + err);
+        // HAWS.ERR_CANNOT_CONNECT
+        // HAWS.ERR_INVALID_AUTH
+      }.bind(this)
+    );
+  },
+
+  handleMoreInfo: function (ev) {
+    this.hass = Object.assign(
+      {}, this.hass,
+      { moreInfoEntityId: ev.detail.entityId });
+  },
+
+  handleCurrentView: function (ev) {
+    this.hass = Object.assign(
+      {}, this.hass,
+      { currentView: ev.detail.view });
+  }
+
   ready: function () {
     this.loadIcons();
+
+    if (this.connectionPromise !== null) {
+      this.handleConnectionPromise(this.connectionPromise);
+    }
   },
 });
 </script>

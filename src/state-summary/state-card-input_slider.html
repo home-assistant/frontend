@@ -68,9 +68,9 @@ Polymer({
     if (this.value === Number(this.stateObj.state)) {
       return;
     }
-    this.hass.serviceActions.callService('input_slider', 'select_value', {
+    this.hass.callService('input_slider', 'select_value', {
       value: this.value,
-      entity_id: this.stateObj.entityId,
+      entity_id: this.stateObj.entity_id,
     });
   },
 

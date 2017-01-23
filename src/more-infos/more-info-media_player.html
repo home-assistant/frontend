@@ -393,8 +393,8 @@ Polymer({
       return;
     }
 
-    this.hass.serviceActions.callService('tts', service, {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('tts', service, {
+      entity_id: this.stateObj.entity_id,
       message: this.ttsMessage,
     });
     this.ttsMessage = '';
@@ -403,8 +403,8 @@ Polymer({
 
   callService: function (service, data) {
     var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entityId;
-    this.hass.serviceActions.callService('media_player', service, serviceData);
+    serviceData.entity_id = this.stateObj.entity_id;
+    this.hass.callService('media_player', service, serviceData);
   },
 });
 </script>
