@@ -87,7 +87,7 @@ Polymer({
   dismissTap: function (ev) {
     ev.preventDefault();
 
-    this.hass.entityActions.delete(this.stateObj);
+    this.hass.callApi('DELETE', 'states/' + this.stateObj.entity_id);
   },
 });
 </script>
