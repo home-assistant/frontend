@@ -36,7 +36,8 @@ Polymer({
     return !narrow && showMenu ? 'invisible' : '';
   },
 
-  toggleMenu: function () {
+  toggleMenu: function (ev) {
+    ev.stopPropagation();
     this.fire('hass-open-menu');
   },
 });
