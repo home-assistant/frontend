@@ -8,6 +8,7 @@
 <link rel='import' href='./util/hass-util.html'>
 <link rel='import' href='./util/hass-behavior.html'>
 <link rel='import' href='./util/ha-pref-storage.html'>
+<link rel='import' href='./util/hass-call-api.html'>
 <link rel='import' href='./layouts/login-form.html'>
 <link rel='import' href='./layouts/home-assistant-main.html'>
 <link rel='import' href='./resources/ha-style.html'>
@@ -119,9 +120,9 @@ Polymer({
       callService: function (domain, service, serviceData) {
         return conn.callService(domain, service, serviceData || {});
       },
-      callApi: function () {
-        alert('Call API not implemented yet');
-        return new Promise((resolve, reject) => resolve("callApi not implemented!"));
+      callApi: function (method, path, parameters) {
+        var host = window.location.protocol + "//" + window.location.host;
+        return window.hassCallApi(host, {}, method, path, parameters);
       },
     }, this.$.storage.getStoredState());
 
