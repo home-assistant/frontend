@@ -1,0 +1,63 @@
+<script>
+(function() {
+  var INTERVAL = 5000;
+  var STORED_STATE = [
+    'dockedSidebar',
+  ];
+
+  function getLocalStorage() {
+    if (!('localStorage' in window)) {
+      return {};
+    }
+
+    const storage = window.localStorage;
+    const testKey = '___test';
+
+    try {
+      // Safari throws exception in private mode
+      storage.setItem(testKey, testKey);
+      storage.removeItem(testKey);
+      return storage;
+    } catch (err) {
+      return {};
+    }
+  }
+
+  Polymer({
+    is: 'ha-pref-storage',
+
+    properties: {
+      hass: {
+        type: Object,
+      },
+
+      storage: {
+        type: Object,
+        value: getLocalStorage(),
+      },
+    },
+
+    storeState: function () {
+      if (!this.hass) return;
+
+      for (var i = 0; i < STORED_STATE.length; i++) {
+        var key = STORED_STATE[i];
+        this.storage[key] = JSON.stringify(this.hass[key]);
+      };
+    },
+
+    getStoredState: function () {
+      var state = {};
+
+      for (var i = 0; i < STORED_STATE.length; i++) {
+        var key = STORED_STATE[i];
+        if (key in this.storage) {
+          state[key] = JSON.parse(this.storage[key]);
+        }
+      };
+
+      return state;
+    }
+  });
+})();
+</script>
