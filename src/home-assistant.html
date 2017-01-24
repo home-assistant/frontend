@@ -20,8 +20,7 @@
     <template is='dom-if' if='[[showMain]]'>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
-        on-hass-current-view='handleCurrentView'
-        on-hass-current-panel='handleCurrentPanel'
+        on-hass-navigate='handleNavigate'
         on-hass-dock-sidebar='handleDockSidebar'
         hass='[[hass]]'
       ></home-assistant-main>
@@ -114,7 +113,7 @@ Polymer({
       config: null,
       dockedSidebar: false,
       currentPanel: 'states',
-      currentView: '',
+      currentView: null,
       moreInfoEntityId: null,
       callService: function (domain, service, serviceData) {
         return conn.callService(domain, service, serviceData || {});
@@ -157,23 +156,26 @@ Polymer({
 
   handleMoreInfo: function (ev) {
     ev.stopPropagation();
+
     this.hass = Object.assign(
       {}, this.hass,
       { moreInfoEntityId: ev.detail.entityId });
   },
 
-  handleCurrentView: function (ev) {
+  handleNavigate: function (ev) {
     ev.stopPropagation();
-    this.hass = Object.assign(
-      {}, this.hass,
-      { currentView: ev.detail.view });
-  },
 
-  handleCurrentPanel: function (ev) {
-    ev.stopPropagation();
-    this.hass = Object.assign(
-      {}, this.hass,
-      { currentPanel: ev.detail.panel });
+    var hass = Object.assign({}, this.hass);
+
+    if ('panel' in ev.detail) {
+      hass.currentPanel = ev.detail.panel;
+    }
+
+    if ('view' in ev.detail) {
+      hass.currentView = ev.detail.view;
+    }
+
+    this.hass = hass;
   },
 
   handleDockSidebar: function (ev) {

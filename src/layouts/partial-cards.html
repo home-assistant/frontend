@@ -228,10 +228,10 @@ Polymer({
   },
 
   handleViewSelected: function (ev) {
-    var view = ev.detail.item.getAttribute('data-entity') || '';
+    var view = ev.detail.item.getAttribute('data-entity') || null;
     var current = this.currentView || null;
     if (view !== current) {
-      this.fire('hass-current-view', { view: view });
+      this.fire('hass-navigate', { view: view });
     }
   },
 
@@ -303,7 +303,7 @@ Polymer({
   },
 
   computeCurrentView: function (hass) {
-    return hass.currentView;
+    return hass.currentView || '';
   },
 });
 </script>

@@ -279,7 +279,7 @@ Polymer({
       this.handleLogOut();
       return;
     }
-    this.fire('hass-current-panel', { panel: newChoice });
+    this.fire('hass-navigate', { panel: newChoice });
     this.debounce('updateStyles', this._boundUpdateStyles, 1);
   },
 

@@ -5,24 +5,6 @@
     'dockedSidebar',
   ];
 
-  function getLocalStorage() {
-    if (!('localStorage' in window)) {
-      return {};
-    }
-
-    const storage = window.localStorage;
-    const testKey = '___test';
-
-    try {
-      // Safari throws exception in private mode
-      storage.setItem(testKey, testKey);
-      storage.removeItem(testKey);
-      return storage;
-    } catch (err) {
-      return {};
-    }
-  }
-
   Polymer({
     is: 'ha-pref-storage',
 
@@ -33,17 +15,21 @@
 
       storage: {
         type: Object,
-        value: getLocalStorage(),
+        value: window.localStorage || {},
       },
     },
 
     storeState: function () {
       if (!this.hass) return;
 
-      for (var i = 0; i < STORED_STATE.length; i++) {
-        var key = STORED_STATE[i];
-        this.storage[key] = JSON.stringify(this.hass[key]);
-      };
+      try {
+        for (var i = 0; i < STORED_STATE.length; i++) {
+          var key = STORED_STATE[i];
+          this.storage[key] = JSON.stringify(this.hass[key]);
+        };
+      } catch (err) {
+        // Safari throws exception in private mode
+      }
     },
 
     getStoredState: function () {
