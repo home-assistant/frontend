@@ -2806,9 +2806,9 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
-home-assistant-js-websocket@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-0.5.0.tgz#f78b31d160d7bdd083cf53ae01328483e7046ef5"
+home-assistant-js-websocket@0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-0.6.0.tgz#d72b4e03033129a709128285be37f3e95644c942"
 
 homedir-polyfill@^1.0.0:
   version "1.0.1"
@@ -5535,9 +5535,9 @@ ternary-stream@^2.0.1:
     merge-stream "^1.0.0"
     through2 "^2.0.1"
 
-"test-fixture@github:polymerelements/test-fixture":
+test-fixture@PolymerElements/test-fixture:
   version "2.0.1"
-  resolved "https://codeload.github.com/polymerelements/test-fixture/tar.gz/f72f0ff4e83b83b0157afed664f560da91d20f31"
+  resolved "https://codeload.github.com/PolymerElements/test-fixture/tar.gz/f72f0ff4e83b83b0157afed664f560da91d20f31"
 
 test-value@^1.1.0:
   version "1.1.0"
