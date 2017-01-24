@@ -115,14 +115,10 @@
 Polymer({
   is: 'more-info-media_player',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     ttsLoaded: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.configGetters.isComponentLoaded('tts');
-      },
+      computed: 'computeTTSLoaded(hass)',
     },
 
     hass: {
@@ -305,6 +301,10 @@ Polymer({
 
   computeHideTTS: function (ttsLoaded, supportsPlayMedia) {
     return !ttsLoaded || !supportsPlayMedia;
+  },
+
+  computeTTSLoaded: function (hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'tts');
   },
 
   handleTogglePower: function () {

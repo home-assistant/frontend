@@ -29,8 +29,6 @@
 Polymer({
   is: 'more-info-group',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
@@ -42,26 +40,28 @@ Polymer({
 
     states: {
       type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.moreInfoGetters.currentEntity,
-          hass.entityGetters.entityMap,
-          function (currentEntity, entities) {
-            // weird bug??
-            if (!currentEntity) {
-              return [];
-            }
-            return currentEntity.attributes.entity_id.map(
-              entities.get.bind(entities));
-          },
-        ];
-      },
+      computed: 'computeStates(stateObj, hass)',
     },
   },
 
   observers: [
     'statesChanged(stateObj, states)',
   ],
+
+  computeStates: function (stateObj, hass) {
+    var states = [];
+    var entIds = stateObj.attributes.entity_id;
+
+    for (var i = 0; i < entIds.length; i++) {
+      var state = hass.states[entIds[i]];
+
+      if (state) {
+        states.push(state);
+      }
+    }
+
+    return states;
+  },
 
   statesChanged: function (stateObj, states) {
     var groupDomainStateObj = false;

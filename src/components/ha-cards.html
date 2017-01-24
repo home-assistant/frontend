@@ -194,13 +194,11 @@
           if (this.panelVisible && this.viewVisible) {
             this.cards = this.computeCards(columns, states, showIntroduction);
           }
-        }.bind(this));
+        }.bind(this), 10);
     },
 
     computeCards: function (columns, states, showIntroduction) {
       var hass = this.hass;
-      // var byDomain = states.groupBy(function (entity) { return entity.domain; });
-      // var hasGroup = {};
 
       var cards = {
         demo: false,
@@ -214,10 +212,6 @@
         cards.columns.push([]);
         entityCount.push(0);
       }
-
-      // function filterGrouped(entities) {
-      //   return entities.filter(function (entity) { return !(entity.entity_id in hasGroup); });
-      // }
 
       // Find column with < 5 entities, else column with lowest count
       function getIndex(size) {
@@ -350,38 +344,6 @@
       iterateDomainSorted(afterGroupedColl, function (domain) {
         addEntitiesCard(domain.domain, domain.states);
       });
-
-      // expandGroup = this.hass.util.expandGroup;
-
-      // byDomain.keySeq().sortBy(function (domain) { return getPriority(domain); })
-      //   .forEach(function (domain) {
-      //     var priority;
-
-      //     if (domain === 'a') {
-      //       cards.demo = true;
-      //       return;
-      //     }
-
-      //     priority = getPriority(domain);
-
-      //     if (priority >= 0 && priority < 10) {
-      //       cards.badges.push.apply(
-      //         cards.badges, filterGrouped(byDomain.get(domain)).sortBy(
-      //           entitySortBy).toArray());
-      //     } else if (domain === 'group') {
-      //       byDomain.get(domain).sortBy(entitySortBy)
-      //         .forEach(function (groupState) {
-      //           var entities = expandGroup(groupState, states);
-      //           entities.forEach(function (entity) { hasGroup[entity.entity_id] = true; });
-      //           addEntitiesCard(groupState.entity_id, entities.toArray(), groupState);
-      //         }
-      //       );
-      //     } else {
-      //       addEntitiesCard(
-      //         domain, filterGrouped(byDomain.get(domain)).sortBy(entitySortBy).toArray());
-      //     }
-      //   }
-      // );
 
       // Remove empty columns
       cards.columns = cards.columns.filter(function (val) {
