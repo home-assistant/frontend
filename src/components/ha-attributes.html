@@ -17,7 +17,7 @@
     </style>
 
     <div class='layout vertical'>
-      <template is='dom-repeat' items="[[computeDisplayAttributes(stateObj, extraFilters)]]" as="attribute">
+      <template is='dom-repeat' items="[[computeDisplayAttributes(stateObj, filtersArray)]]" as="attribute">
         <div class='data-entry layout justified horizontal'>
           <div class='key'>[[formatAttribute(attribute)]]</div>
           <div class='value'>[[formatAttributeValue(stateObj, attribute)]]</div>
@@ -47,19 +47,30 @@
         type: String,
         value: '',
       },
+      filtersArray: {
+        type: Array,
+        computed: 'computeFiltersArray(extraFilters)',
+      },
     },
-    computeDisplayAttributes: function (stateObj, extraFilters) {
+
+    computeFiltersArray: function (extraFilters) {
+      return FILTER_KEYS + (extraFilters ? extraFilters.split(',') : []);
+    },
+
+    computeDisplayAttributes: function (stateObj, filtersArray) {
       if (!stateObj) {
         return [];
       }
       return Object.keys(stateObj.attributes).filter(
         function (key) {
-          return (FILTER_KEYS + extraFilters.split(',')).indexOf(key) === -1;
+          return filtersArray.indexOf(key) === -1;
         });
     },
+
     formatAttribute: function (attribute) {
       return attribute.replace(/_/g, ' ');
     },
+
     formatAttributeValue: function (stateObj, attribute) {
       var value = stateObj.attributes[attribute];
       if (Array.isArray(value)) {
@@ -67,6 +78,7 @@
       }
       return (value instanceof Object) ? JSON.stringify(value, null, 2) : value;
     },
+
     computeAttribution: function (stateObj) {
       return stateObj.attributes.attribution;
     },
