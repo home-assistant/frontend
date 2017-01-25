@@ -83,7 +83,7 @@
       }
 
       if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(document.getElementById('chart_area' + this.stateObj.id));
+        this.chartEngine = new window.google.visualization.LineChart(document.getElementById(this.computeChartId(this.stateObj)));
       }
 
       this.drawChart();
