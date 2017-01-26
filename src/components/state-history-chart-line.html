@@ -112,7 +112,7 @@
       }
 
       startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
-        return states[0].lastChangedAsDate;
+        return new Date(states[0].last_changed);
       })));
 
       endTime = new Date(startTime);
@@ -168,7 +168,7 @@
               var curTemp = saveParseFloat(state.attributes.current_temperature);
               var targetHigh = saveParseFloat(state.attributes.target_temp_high);
               var targetLow = saveParseFloat(state.attributes.target_temp_low);
-              pushData([state.lastUpdatedAsDate, curTemp, targetHigh, targetLow], noInterpolations);
+              pushData([new Date(state.last_updated), curTemp, targetHigh, targetLow], noInterpolations);
             };
           } else {
             dataTable.addColumn('number', name + ' target temperature');
@@ -178,7 +178,7 @@
             processState = function (state) {
               var curTemp = saveParseFloat(state.attributes.current_temperature);
               var target = saveParseFloat(state.attributes.temperature);
-              pushData([state.lastUpdatedAsDate, curTemp, target], noInterpolations);
+              pushData([new Date(state.last_updated), curTemp, target], noInterpolations);
             };
           }
 
@@ -203,7 +203,7 @@
               var curTemp = saveParseFloat(state.attributes.current_temperature);
               var targetHigh = saveParseFloat(state.attributes.target_temp_high);
               var targetLow = saveParseFloat(state.attributes.target_temp_low);
-              pushData([state.lastUpdatedAsDate, curTemp, targetHigh, targetLow], noInterpolations);
+              pushData([new Date(state.last_updated), curTemp, targetHigh, targetLow], noInterpolations);
             };
           } else {
             dataTable.addColumn('number', name + ' target temperature');
@@ -213,7 +213,7 @@
             processState = function (state) {
               var curTemp = saveParseFloat(state.attributes.current_temperature);
               var target = saveParseFloat(state.attributes.temperature);
-              pushData([state.lastUpdatedAsDate, curTemp, target], noInterpolations);
+              pushData([new Date(state.last_updated), curTemp, target], noInterpolations);
             };
           }
 
@@ -226,7 +226,7 @@
 
           states.forEach(function (state) {
             var value = saveParseFloat(state.state);
-            pushData([state.lastChangedAsDate, value], noInterpolations);
+            pushData([new Date(state.last_changed), value], noInterpolations);
           });
         }
 
