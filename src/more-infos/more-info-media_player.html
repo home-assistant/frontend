@@ -376,15 +376,14 @@ Polymer({
   },
 
   sendTTS: function () {
-    var services = this.hass.reactor.evaluate(
-        this.hass.serviceGetters.entityMap).get('tts').get('services').keySeq()
-            .toArray();
+    var services = $0.hass.config.services.tts;
+    var serviceKeys = Object.keys(services).sort();
     var service;
     var i;
 
-    for (i = 0; i < services.length; i++) {
-      if (services[i].indexOf('_say') !== -1) {
-        service = services[i];
+    for (i = 0; i < serviceKeys.length; i++) {
+      if (services[serviceKeys[i]].indexOf('_say') !== -1) {
+        service = services[serviceKeys[i]];
         break;
       }
     }
