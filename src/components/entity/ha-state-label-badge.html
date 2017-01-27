@@ -57,7 +57,7 @@ Polymer({
 
   badgeTap: function (ev) {
     ev.stopPropagation();
-    this.fire('hass-more-info', {entityId: this.state.entity_id});
+    this.fire('hass-more-info', { entityId: this.state.entity_id });
   },
 
   computeClasses: function (state) {

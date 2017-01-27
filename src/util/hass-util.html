@@ -68,7 +68,7 @@ window.hassUtil.canToggleDomain = function (hass, domain) {
   }
 
   return services && turnOnService in services;
-}
+};
 
 // Update root's child element to be newElementTag replacing another existing child if any.
 // Copy attributes into the child element.
@@ -369,22 +369,22 @@ window.hassUtil.stateIcon = function (state) {
 
 window.hassUtil.computeDomain = function (stateObj) {
   if (!stateObj._domain) {
-    stateObj._domain = HAWS.extractDomain(stateObj.entity_id);
+    stateObj._domain = window.HAWS.extractDomain(stateObj.entity_id);
   }
 
   return stateObj._domain;
-}
+};
 
 window.hassUtil.computeStateName = function (stateObj) {
   if (!stateObj._entityDisplay) {
     stateObj._entityDisplay = (
       stateObj.attributes.friendly_name ||
-      HAWS.extractObjectId(stateObj.entity_id)
+      window.HAWS.extractObjectId(stateObj.entity_id)
           .replace(/_/g, ' '));
   }
 
   return stateObj._entityDisplay;
-}
+};
 
 window.hassUtil.computeStateState = function (stateObj) {
   if (!stateObj._stateDisplay) {
@@ -396,14 +396,14 @@ window.hassUtil.computeStateState = function (stateObj) {
   }
 
   return stateObj._stateDisplay;
-}
+};
 
 window.hassUtil.isComponentLoaded = function (hass, component) {
   return hass.config.core.components.indexOf(component) !== -1;
-}
+};
 
 window.hassUtil.computeLocationName = function (hass) {
   return hass.config.core.location_name;
-}
+};
 
 </script>

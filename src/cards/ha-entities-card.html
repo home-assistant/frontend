@@ -111,12 +111,10 @@ Polymer({
     } else {
       entityId = this.groupEntity.entity_id;
     }
-    this.fire('hass-more-info', {entityId: entityId});
+    this.fire('hass-more-info', { entityId: entityId });
   },
 
   showGroupToggle: function (groupEntity, states) {
-    var canToggleCount;
-
     if (!groupEntity || !states || groupEntity.attributes.control === 'hidden' ||
         (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;

@@ -68,7 +68,6 @@ Polymer({
     function addRow(entityDisplay, stateStr, start, end) {
       var stateDisplay = stateStr.replace(/_/g, ' ');
       dataTable.addRow([entityDisplay, stateDisplay, start, end]);
-      console.log([entityDisplay, stateDisplay, start, end]);
     }
 
     startTime = new Date(

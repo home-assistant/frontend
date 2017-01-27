@@ -1,6 +1,6 @@
 <script>
 window.hassCallApi = function (host, auth, method, path, parameters) {
-  var url = host + "/api/" + path;
+  var url = host + '/api/' + path;
 
   if (window.HASS_DEMO) {
     var component = path.split('/', 1)[0];
@@ -68,7 +68,7 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
         status_code: req.status,
         body: req.responseText,
       });
-    }
+    };
 
     if (parameters) {
       req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
@@ -77,5 +77,5 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
       req.send();
     }
   });
-}
+};
 </script>

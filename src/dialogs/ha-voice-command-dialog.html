@@ -106,15 +106,15 @@ Polymer({
     this.recognition = new webkitSpeechRecognition();
     /* eslint-enable new-cap */
 
-    this.recognition.onstart = function() {
+    this.recognition.onstart = function () {
       this.isListening = true;
       this.results = {
         final: '',
         interim: '',
-      }
+      };
     }.bind(this);
     this.recognition.onerror = function () {
-      console.error('error'); // now what?
+      console.error('error'); // now what? TODO
     }.bind(this);
     this.recognition.onend = function () {
       this.isListening = false;

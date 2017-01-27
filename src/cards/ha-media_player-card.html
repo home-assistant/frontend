@@ -293,7 +293,7 @@ Polymer({
   },
 
   computePlayerObj: function (hass, stateObj) {
-    return new MediaPlayerEntity(hass, stateObj);
+    return new window.MediaPlayerEntity(hass, stateObj);
   },
 
   computePlaybackControlIcon: function (playerObj) {
@@ -316,7 +316,7 @@ Polymer({
 
   handleOpenMoreInfo: function (ev) {
     ev.stopPropagation();
-    this.fire('hass-more-info', {entityId: this.stateObj.entity_id});
+    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   },
 
   handlePlaybackControl: function (ev) {

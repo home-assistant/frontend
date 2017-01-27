@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <script>
-(function() {
+(function () {
   var RECENT_THRESHOLD = 60000; // 1 minute
   var DATE_CACHE = {};
   var RECENT_CACHE = {};
@@ -100,7 +100,7 @@
       } else if (filterType === 'recent-entity') {
         data = this.getRecent(filterValue);
       } else {
-        console.error('Invalid filter type: ' + filterType, this);
+        return;
       }
 
       this._setIsLoading(true);

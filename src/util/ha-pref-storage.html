@@ -1,6 +1,5 @@
 <script>
-(function() {
-  var INTERVAL = 5000;
+(function () {
   var STORED_STATE = [
     'dockedSidebar',
   ];
@@ -26,7 +25,7 @@
         for (var i = 0; i < STORED_STATE.length; i++) {
           var key = STORED_STATE[i];
           this.storage[key] = JSON.stringify(this.hass[key]);
-        };
+        }
       } catch (err) {
         // Safari throws exception in private mode
       }
@@ -40,10 +39,10 @@
         if (key in this.storage) {
           state[key] = JSON.parse(this.storage[key]);
         }
-      };
+      }
 
       return state;
     }
   });
-})();
+}());
 </script>

@@ -119,25 +119,25 @@ Polymer({
         return conn.callService(domain, service, serviceData || {});
       },
       callApi: function (method, path, parameters) {
-        var host = window.location.protocol + "//" + window.location.host;
+        var host = window.location.protocol + '//' + window.location.host;
         return window.hassCallApi(host, {}, method, path, parameters);
       },
     }, this.$.storage.getStoredState());
 
     conn.addEventListener('ready', function () {
-      this.hass = Object.assign({}, this.hass, {connected: true});
+      this.hass = Object.assign({}, this.hass, { connected: true });
     }.bind(this));
 
     conn.addEventListener('disconnected', function () {
-      this.hass = Object.assign({}, this.hass, {connected: false});
+      this.hass = Object.assign({}, this.hass, { connected: false });
     }.bind(this));
 
-    HAWS.subscribeEntities(conn, function (states) {
-      this.hass = Object.assign({}, this.hass, {states: states});
+    window.HAWS.subscribeEntities(conn, function (states) {
+      this.hass = Object.assign({}, this.hass, { states: states });
     }.bind(this));
 
-    HAWS.subscribeConfig(conn, function (config) {
-      this.hass = Object.assign({}, this.hass, {config: config});
+    window.HAWS.subscribeConfig(conn, function (config) {
+      this.hass = Object.assign({}, this.hass, { config: config });
     }.bind(this));
   },
 
@@ -147,9 +147,9 @@ Polymer({
         this.connection = conn;
       }.bind(this),
       function (err) {
-        console.log("SNAP ERROR: " + err);
-        // HAWS.ERR_CANNOT_CONNECT
-        // HAWS.ERR_INVALID_AUTH
+        console.log('SNAP ERROR: ' + err);
+        // window.HAWS.ERR_CANNOT_CONNECT
+        // window.HAWS.ERR_INVALID_AUTH
       }.bind(this)
     );
   },

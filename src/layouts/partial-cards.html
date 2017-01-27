@@ -256,7 +256,7 @@ Polymer({
   },
 
   computeViews: function (hass) {
-    return HAWS.extractViews(hass.states);
+    return window.HAWS.extractViews(hass.states);
   },
 
   /*
@@ -276,7 +276,8 @@ Polymer({
 
         // We can filter out hidden and domain at the same time.
         if (!state.attributes.hidden ||
-            this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
+            this.ALWAYS_SHOW_DOMAIN.indexOf(
+              window.hassUtil.computeDomain(state)) !== -1) {
           states[entityId] = state;
         }
       }
@@ -284,14 +285,14 @@ Polymer({
     }
 
     if(currentView) {
-      states = HAWS.getViewEntities(hass.states, hass.states[currentView]);
-    } else if (this.DEFAULT_VIEW_ENTITY_ID in hass.states) {
-      states = HAWS.getViewEntities(hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
+      states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
     } else {
+      states = window.HAWS.getViewEntities(
+        hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
     }
 
-    for (var i = 0; i < entityIds.length; i++) {
-      var entityId = entityIds[i];
+    for (var j = 0; j < entityIds.length; j++) {
+      var entityId = entityIds[j];
       var state = hass.states[entityId];
 
       if (this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {

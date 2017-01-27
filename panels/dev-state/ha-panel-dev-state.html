@@ -169,14 +169,14 @@ Polymer({
   computeEntities: function (hass) {
     return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
       .sort(function (entityA, entityB) {
-      if (entityA.entity_id < entityB.entity_id) {
-        return -1;
-      }
-      if (entityB.entity_id > entityA.entity_id) {
-        return 1;
-      }
-      return 0;
-    });
+        if (entityA.entity_id < entityB.entity_id) {
+          return -1;
+        }
+        if (entityB.entity_id > entityA.entity_id) {
+          return 1;
+        }
+        return 0;
+      });
   },
 
   computeShowAttributes: function (narrow, _showAttributes) {

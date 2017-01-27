@@ -376,7 +376,7 @@ Polymer({
   },
 
   sendTTS: function () {
-    var services = $0.hass.config.services.tts;
+    var services = this.hass.config.services.tts;
     var serviceKeys = Object.keys(services).sort();
     var service;
     var i;

@@ -168,7 +168,9 @@
               var curTemp = saveParseFloat(state.attributes.current_temperature);
               var targetHigh = saveParseFloat(state.attributes.target_temp_high);
               var targetLow = saveParseFloat(state.attributes.target_temp_low);
-              pushData([new Date(state.last_updated), curTemp, targetHigh, targetLow], noInterpolations);
+              pushData(
+                [new Date(state.last_updated), curTemp, targetHigh, targetLow],
+                noInterpolations);
             };
           } else {
             dataTable.addColumn('number', name + ' target temperature');
@@ -203,7 +205,9 @@
               var curTemp = saveParseFloat(state.attributes.current_temperature);
               var targetHigh = saveParseFloat(state.attributes.target_temp_high);
               var targetLow = saveParseFloat(state.attributes.target_temp_low);
-              pushData([new Date(state.last_updated), curTemp, targetHigh, targetLow], noInterpolations);
+              pushData(
+                [new Date(state.last_updated), curTemp, targetHigh, targetLow],
+                noInterpolations);
             };
           } else {
             dataTable.addColumn('number', name + ' target temperature');

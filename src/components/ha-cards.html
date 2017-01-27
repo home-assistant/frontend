@@ -134,7 +134,7 @@
   function iterateDomainSorted(collection, func) {
     Object.keys(collection)
       .map(function (key) { return collection[key]; })
-      .sort(getPriority)
+      .sort(sortPriority)
       .forEach(function (domain) {
         domain.states.sort(entitySortBy);
         func(domain);
@@ -206,7 +206,6 @@
         columns: [],
       };
       var entityCount = [];
-      var expandGroup;
       var i;
       for (i = 0; i < columns; i++) {
         cards.columns.push([]);
@@ -285,7 +284,7 @@
         });
       }
 
-      var sorted = HAWS.splitByGroups(states);
+      var sorted = window.HAWS.splitByGroups(states);
 
       var badgesColl = {};
       var beforeGroupColl = {};
@@ -306,7 +305,7 @@
         if (priority < 0) {
           coll = beforeGroupColl;
         } else if (priority < 10) {
-          coll = badgesColl
+          coll = badgesColl;
         } else {
           coll = afterGroupedColl;
         }
@@ -331,7 +330,7 @@
       });
 
       sorted.groups.forEach(function (groupState) {
-        var entities = HAWS.getGroupEntities(states, groupState);
+        var entities = window.HAWS.getGroupEntities(states, groupState);
         addEntitiesCard(
           groupState.entity_id,
           Object.keys(entities).map(function (key) {
