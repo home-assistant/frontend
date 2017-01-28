@@ -11,7 +11,6 @@
 <link rel="import" href="state-card-script.html">
 <link rel="import" href="state-card-toggle.html">
 <link rel="import" href="state-card-weblink.html">
-<link rel="import" href="../util/hass-behavior.html">
 
 <script>
 Polymer({
@@ -32,17 +31,10 @@ Polymer({
     stateObj: {
       type: Object,
     },
-
-    customUis: {
-      type: Object,
-      bindNuclear: function (hass) {
-        return hass.customUiGetters.customUi;
-      },
-    },
   },
 
   observers: [
-    'inputChanged(hass, inDialog, stateObj, customUis)',
+    'inputChanged(hass, inDialog, stateObj)',
   ],
 
   _isLoaded: function (name) {
@@ -51,39 +43,29 @@ Polymer({
     return (elem.constructor !== HTMLElement);
   },
 
-  _loadCustomUi: function (customUis, stateType) {
-    var customUi = customUis.get(stateType);
+  _maybeLoadCustomUi: function (customUis, stateType) {
     var isLoaded = this._isLoaded('STATE-CARD-' + stateType.toUpperCase());
-    if (!isLoaded && !customUi) {
-      /* eslint-disable no-console */
-      console.error('Custom ui for %s is unknown.');
-      /* eslint-enable no-console */
-      return undefined;
-    }
     // If Polymer component for the required element is not loaded try to load it.
     // Don't try to load unconditionally because it cause onflict between vulcanized
     // and non-vulacanized versions.
     if (!isLoaded) {
       this.importHref(
-          customUi.get('url'),
+          '/local/custom_ui/state-card-' + stateType + '.html',
           function () {},
           /* eslint-disable no-console */
-          function () { console.error('Error loading %s from %s', stateType, customUi.get('url')); },
+          function () { console.error('Error loading %s from /local/custom_ui/state-card-%s.html', stateType, stateType); },
           /* eslint-enable no-console */
-
           true);
     }
-
-    return customUi ? customUi.get('config') : undefined;
   },
 
-  inputChanged: function (hass, inDialog, stateObj, customUis) {
+  inputChanged: function (hass, inDialog, stateObj) {
     var stateType;
     var config;
     if (!stateObj) return;
     if (stateObj.state !== 'unavailable' && 'custom_ui_card' in stateObj.attributes) {
       stateType = stateObj.attributes.custom_ui_card;
-      config = this._loadCustomUi(customUis, stateType);
+      this._maybeLoadCustomUi(customUis, stateType);
     } else {
       stateType = window.hassUtil.stateCardType(hass, stateObj);
     }
@@ -94,7 +76,6 @@ Polymer({
         hass: hass,
         stateObj: stateObj,
         inDialog: inDialog,
-        config: config || new Map(),
       });
   },
 });
