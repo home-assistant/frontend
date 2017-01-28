@@ -27,7 +27,7 @@
     "test": "npm run lint_js && npm run lint_html"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "_depComment": "keymirror, nuclear-js, object-assign, ha-js-ws are for ha-js",
   "dependencies": {
     "classnames": "^2.2.5",
