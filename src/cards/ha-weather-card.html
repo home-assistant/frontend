@@ -5,7 +5,7 @@
 <link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
 
 <link rel='import' href='../components/ha-card.html'>
-
+<link rel='import' href='../components/ha-attributes.html'>
 <dom-module id='ha-weather-card'>
   <template>
     <style>
@@ -14,23 +14,24 @@
         }
 
         .attribution {
-          color:grey;
+          color: var(--secondary-text-color);
+          text-align: right;
         }
     </style>
     <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <template is='dom-repeat' items='[[computeCurrentWeather(stateObj)]]'>
-          <div>[[item.key]]: [[item.value]]</div>
-        </template>
         <div id='chart_area'></div>
-        <div class='attribution'>[[computeAttribution(stateObj)]]</div>
+        <ha-attributes state-obj='[[stateObj]]' extra-filters='forecast'></ha-attributes>
       </div>
     </ha-card>
   </template>
 </dom-module>
 
 <script>
+(function () {
+  'use strict';
+
   Polymer({
     is: 'ha-weather-card',
 
@@ -47,21 +48,6 @@
 
     computeTitle: function (stateObj) {
       return stateObj.attributes.friendly_name;
-    },
-
-    computeAttribution: function (stateObj) {
-      return stateObj.attributes.attribution;
-    },
-
-    computeCurrentWeather: function (stateObj) {
-      return Object.keys(stateObj.attributes).filter(function (key) {
-        return ['attribution', 'forecast', 'friendly_name'].indexOf(key) === -1;
-      }).map(function (key) {
-        return {
-          key: key,
-          value: stateObj.attributes[key]
-        };
-      });
     },
 
     getDataArray: function () {
@@ -134,4 +120,5 @@
       });
     },
   });
+}());
 </script>

@@ -34,28 +34,28 @@
     "home-assistant-js-websocket": "0.5.0",
     "keymirror": "^0.1.1",
     "nuclear-js": "^1.4.0",
-    "object-assign": "^4.1.0"
+    "object-assign": "^4.1.1"
   },
   "devDependencies": {
     "bower": "^1.8.0",
-    "eslint": "^3.11.1",
-    "eslint-config-airbnb-base": "^10.0.1",
+    "eslint": "^3.14.0",
+    "eslint-config-airbnb-base": "^11.0.1",
     "eslint-plugin-html": "^1.7.0",
     "eslint-plugin-import": "^2.2.0",
     "html-minifier": "^3.2.3",
     "hydrolysis": "^1.24.1",
-    "optimize-js": "^1.0.2",
+    "optimize-js": "^1.0.3",
     "polymer-cli": "^0.17.0",
     "polymer-lint": "^0.8.3",
-    "rollup": "^0.36.4",
-    "rollup-plugin-buble": "^0.14.0",
-    "rollup-plugin-commonjs": "^5.0.5",
+    "rollup": "^0.41.4",
+    "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
-    "rollup-watch": "^2.5.0",
-    "sw-precache": "^4.2.3",
+    "rollup-watch": "^3.2.2",
+    "sw-precache": "^4.3.0",
     "uglify-js": "^2.7.5",
-    "vulcanize": "^1.14.12"
+    "vulcanize": "^1.15.3"
   }
 }

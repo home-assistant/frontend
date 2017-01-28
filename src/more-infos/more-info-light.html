@@ -7,6 +7,7 @@
 
 <link rel='import' href='../components/ha-labeled-slider.html'>
 <link rel='import' href='../components/ha-color-picker.html'>
+<link rel='import' href='../components/ha-attributes.html'>
 
 <dom-module id='more-info-light'>
   <template>
@@ -80,6 +81,8 @@
 
       <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>
       </ha-color-picker>
+
+      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color"></ha-attributes>
     </div>
   </template>
 </dom-module>
