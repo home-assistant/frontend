@@ -43,7 +43,7 @@ Polymer({
     return (elem.constructor !== HTMLElement);
   },
 
-  _maybeLoadCustomUi: function (customUis, stateType) {
+  _maybeLoadCustomUi: function (stateType) {
     var isLoaded = this._isLoaded('STATE-CARD-' + stateType.toUpperCase());
     // If Polymer component for the required element is not loaded try to load it.
     // Don't try to load unconditionally because it cause onflict between vulcanized
@@ -61,11 +61,10 @@ Polymer({
 
   inputChanged: function (hass, inDialog, stateObj) {
     var stateType;
-    var config;
     if (!stateObj) return;
     if (stateObj.state !== 'unavailable' && 'custom_ui_card' in stateObj.attributes) {
       stateType = stateObj.attributes.custom_ui_card;
-      this._maybeLoadCustomUi(customUis, stateType);
+      this._maybeLoadCustomUi(stateType);
     } else {
       stateType = window.hassUtil.stateCardType(hass, stateObj);
     }
