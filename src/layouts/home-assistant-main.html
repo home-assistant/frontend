@@ -25,7 +25,7 @@
     </iron-media-query>
 
     <paper-drawer-panel id='drawer'
-      force-narrow='[[computeForceNarrow(narrow, dockSidebar)]]'
+      force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
       responsive-width='0' disable-swipe='[[isSelectedMap]]'
       disable-edge-swipe='[[isSelectedMap]]'>
       <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
@@ -42,14 +42,14 @@
           narrow='[[narrow]]'
           actions='[[actions]]'
           hass='[[hass]]'
-          show-menu='[[dockSidebar]]'
+          show-menu='[[dockedSidebar]]'
         ></partial-cards>
 
         <partial-panel-resolver
           id='panel-resolver'
           narrow='[[narrow]]'
           hass='[[hass]]'
-          show-menu='[[dockSidebar]]'
+          show-menu='[[dockedSidebar]]'
         ></partial-panel-resolver>
 
       </iron-pages>
@@ -70,7 +70,6 @@ Polymer({
 
     narrow: {
       type: Boolean,
-      value: true,
     },
 
     currentPanel: {
@@ -79,9 +78,9 @@ Polymer({
       observer: 'currentPanelChanged',
     },
 
-    dockSidebar: {
+    dockedSidebar: {
       type: Boolean,
-      computed: 'computeDockSidebar(hass)',
+      computed: 'computeDockedSidebar(hass)',
     },
   },
 
@@ -106,7 +105,7 @@ Polymer({
 
   handleCloseMenu: function () {
     this.$.drawer.closeDrawer();
-    if (this.dockSidebar) {
+    if (this.dockedSidebar) {
       this.fire('hass-dock-sidebar', { dock: false });
     }
   },
@@ -119,23 +118,18 @@ Polymer({
 
   attached: function () {
     window.removeInitMsg();
-    // this.hass.startUrlSync();
   },
 
-  computeForceNarrow: function (narrow, dockSidebar) {
-    return narrow || !dockSidebar;
+  computeForceNarrow: function (narrow, dockedSidebar) {
+    return narrow || !dockedSidebar;
   },
 
   computeCurrentPanel: function (hass) {
     return hass.currentPanel;
   },
 
-  computeDockSidebar: function (hass) {
+  computeDockedSidebar: function (hass) {
     return hass.dockedSidebar;
-  },
-
-  detached: function () {
-    // this.hass.stopUrlSync();
   },
 });
 </script>
