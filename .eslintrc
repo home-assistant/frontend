@@ -2,6 +2,7 @@
   "extends": "airbnb-base",
   "globals": {
     "__DEV__": false,
+    "__DEMO__": false,
     "Polymer": true,
     "webkitSpeechRecognition": false,
   },
