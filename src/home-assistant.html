@@ -6,7 +6,6 @@
 <link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 
 <link rel='import' href='./util/hass-util.html'>
-<link rel='import' href='./util/hass-behavior.html'>
 <link rel='import' href='./util/ha-pref-storage.html'>
 <link rel='import' href='./util/hass-call-api.html'>
 <link rel='import' href='./layouts/login-form.html'>
@@ -25,13 +24,15 @@
         on-hass-navigate='handleNavigate'
         on-hass-dock-sidebar='handleDockSidebar'
         on-hass-notification='handleNotification'
+        on-hass-logout='handleLogout'
         hass='[[hass]]'
       ></home-assistant-main>
     </template>
 
-    <template is='dom-if' if='[[showForm]]'>
+    <template is='dom-if' if='[[!showMain]]'>
       <login-form
         hass='[[hass]]'
+        connection-promise='{{connectionPromise}}'
         show-loading='[[computeShowLoading(connectionPromise, iconsLoaded)]]'>
       </login-form>
     </template>
@@ -39,6 +40,14 @@
 </dom-module>
 
 <script>
+window.removeInitMsg = function removeInitMessage() {
+  // remove the HTML init message
+  const initMsg = document.getElementById('ha-init-skeleton');
+  if (initMsg) {
+    initMsg.parentElement.removeChild(initMsg);
+  }
+};
+
 Polymer({
   is: 'home-assistant',
 
@@ -49,7 +58,8 @@ Polymer({
   properties: {
     connectionPromise: {
       type: Object,
-      value: window.hassConnection,
+      value: window.hassConnection || null,
+      observer: 'handleConnectionPromise',
     },
     connection: {
       type: Object,
@@ -71,19 +81,10 @@ Polymer({
       type: Boolean,
       computed: 'computeShowMain(hass, iconsLoaded)',
     },
-    showForm: {
-      type: Boolean,
-      computed: 'computeShowForm(hass, iconsLoaded)',
-    },
   },
 
   computeShowMain: function (hass, iconsLoaded) {
     return hass && hass.states && hass.config && iconsLoaded;
-  },
-
-  computeShowForm: function (hass, iconsLoaded) {
-    return false;
-    return dataLoaded && iconsLoaded;
   },
 
   computeShowLoading: function (connectionPromise) {
@@ -162,16 +163,9 @@ Polymer({
   },
 
   handleConnectionPromise: function (prom) {
-    prom.then(
-      function (conn) {
-        this.connection = conn;
-      }.bind(this),
-      function (err) {
-        console.log('SNAP ERROR: ' + err);
-        // window.HAWS.ERR_CANNOT_CONNECT
-        // window.HAWS.ERR_INVALID_AUTH
-      }.bind(this)
-    );
+    prom.then(function (conn) {
+      this.connection = conn;
+    }.bind(this));
   },
 
   handleMoreInfo: function (ev) {
@@ -208,6 +202,13 @@ Polymer({
 
   handleNotification: function (ev) {
     this.$.notifications.showNotification(ev.detail.message);
+  },
+
+  handleLogout: function () {
+    this.connection.close();
+    this.connection = null;
+    this.connectionPromise = null;
+    this.hass = null;
   },
 
   ready: function () {
