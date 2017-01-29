@@ -13,15 +13,18 @@
 <link rel='import' href='./layouts/home-assistant-main.html'>
 <link rel='import' href='./resources/ha-style.html'>
 <link rel="import" href="./resources/panel-imports.html">
+<link rel='import' href='./managers/notification-manager.html'>
 
 <dom-module id='home-assistant'>
   <template>
     <ha-pref-storage hass='[[hass]]' id='storage'></ha-pref-storage>
+    <notification-manager id='notifications' hass='[[hass]]'></notification-manager>
     <template is='dom-if' if='[[showMain]]'>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
         on-hass-navigate='handleNavigate'
         on-hass-dock-sidebar='handleDockSidebar'
+        on-hass-notification='handleNotification'
         hass='[[hass]]'
       ></home-assistant-main>
     </template>
@@ -106,6 +109,7 @@ Polymer({
       this.hass = null;
       return;
     }
+    var notifications = this.$.notifications;
     this.hass = Object.assign({
       connection: conn,
       connected: true,
@@ -116,7 +120,23 @@ Polymer({
       currentView: null,
       moreInfoEntityId: null,
       callService: function (domain, service, serviceData) {
-        return conn.callService(domain, service, serviceData || {});
+        return conn.callService(domain, service, serviceData || {})
+          .then(function () {
+            var message;
+            if (service === 'turn_on' && serviceData.entity_id) {
+              message = 'Turned on ' + serviceData.entity_id + '.';
+            } else if (service === 'turn_off' && serviceData.entity_id) {
+              message = 'Turned off ' + serviceData.entity_id + '.';
+            } else {
+              message = 'Service ' + domain + '/' + service + ' called.';
+            }
+            notifications.showNotification(message);
+          },
+          function () {
+            notifications.showNotification(
+              'Failed to call service ' + domain + '/' + service);
+            return Promise.reject();
+          });
       },
       callApi: function (method, path, parameters) {
         var host = window.location.protocol + '//' + window.location.host;
@@ -184,6 +204,10 @@ Polymer({
       {}, this.hass,
       { dockedSidebar: ev.detail.dock });
     this.$.storage.storeState();
+  },
+
+  handleNotification: function (ev) {
+    this.$.notifications.showNotification(ev.detail.message);
   },
 
   ready: function () {

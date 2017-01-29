@@ -116,7 +116,12 @@ Polymer({
       return;
     }
 
-    this.hass.eventActions.fireEvent(this.eventType, eventData);
+    this.hass.callApi('POST', 'events/' + this.eventType, eventData)
+      .then(function () {
+        this.fire('hass-notification', {
+          message: 'Event ' + this.eventType + ' successful fired!',
+        });
+      }.bind(this));
   },
 
   computeFormClasses: function (narrow) {
