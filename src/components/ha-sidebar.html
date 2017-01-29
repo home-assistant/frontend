@@ -271,7 +271,7 @@ Polymer({
   },
 
   handleLogOut: function () {
-    this.hass.authActions.logOut();
+    this.fire('hass-logout');
   },
 });
 </script>

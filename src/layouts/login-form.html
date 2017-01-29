@@ -9,8 +9,6 @@
 <link rel="import" href="../../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
-<link rel='import' href='../util/hass-behavior.html'>
-
 <dom-module id="login-form">
   <template>
     <style is="custom-style" include="iron-flex iron-positioning"></style>
@@ -74,31 +72,29 @@
 Polymer({
   is: 'login-form',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
     },
 
+    connectionPromise: {
+      type: Object,
+      notify: true,
+    },
+
     errorMessage: {
       type: String,
-      bindNuclear: function (hass) { return hass.authGetters.attemptErrorMessage; },
+      value: '',
     },
 
     isInvalid: {
       type: Boolean,
-      bindNuclear: function (hass) { return hass.authGetters.isInvalidAttempt; },
+      value: false,
     },
 
     isValidating: {
       type: Boolean,
       observer: 'isValidatingChanged',
-      bindNuclear: function (hass) { return hass.authGetters.isValidating; },
-    },
-
-    loadingResources: {
-      type: Boolean,
       value: false,
     },
 
