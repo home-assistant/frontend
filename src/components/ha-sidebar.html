@@ -98,7 +98,7 @@
       <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
     </app-toolbar>
 
-    <paper-menu attr-for-selected='data-panel' selected='[[selected]]' on-iron-select='menuSelect'>
+    <paper-menu attr-for-selected='data-panel' selected='[[hass.currentPanel]]' on-iron-select='menuSelect'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon item-icon icon='mdi:apps'></iron-icon>
         <span class='item-text'>States</span>
