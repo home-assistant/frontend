@@ -14,7 +14,7 @@
 
 <script>
 Polymer({
-  is: "ha-push-notifications-toggle",
+  is: 'ha-push-notifications-toggle',
   properties: {
     hass: { type: Object, value: null },
     pushSupported: {
@@ -22,22 +22,22 @@ Polymer({
       readOnly: true,
       notify: true,
       value: (
-        "PushManager" in window &&
-          (document.location.protocol === "https:" ||
-            document.location.hostname === "localhost" ||
-            document.location.hostname === "127.0.0.1")
+        'PushManager' in window &&
+          (document.location.protocol === 'https:' ||
+            document.location.hostname === 'localhost' ||
+            document.location.hostname === '127.0.0.1')
       )
     },
     pushActive: {
       type: Boolean,
-      value: "Notification" in window && Notification.permission === "granted"
+      value: 'Notification' in window && Notification.permission === 'granted'
     },
     loading: {
       type: Boolean,
       value: true,
     }
   },
-  attached: function (ev) {
+  attached: function () {
     if (!this.pushSupported) return;
 
     var el = this;
@@ -54,81 +54,79 @@ Polymer({
         el._setPushSupported(false);
       });
   },
-  handlePushChange: function(ev) {
-    var el = this;
-
+  handlePushChange: function (ev) {
     if (ev.target.checked) {
       this.subscribePushNotifications();
     } else {
       this.unsubscribePushNotifications();
     }
   },
-  subscribePushNotifications: function() {
+  subscribePushNotifications: function () {
     var el = this;
 
     navigator.serviceWorker.ready
-      .then(function(reg) {
+      .then(function (reg) {
         return reg.pushManager.subscribe({ userVisibleOnly: true });
       })
       .then(
-        function(sub) {
+        function (sub) {
           var browserName;
-          if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
-            browserName = "firefox";
+          if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+            browserName = 'firefox';
           } else {
-            browserName = "chrome";
+            browserName = 'chrome';
           }
 
-          return el.hass.callApi("POST", "notify.html5", {
+          return el.hass.callApi('POST', 'notify.html5', {
             subscription: sub,
             browser: browserName
           }).then(function () {
             el.pushActive = true;
           });
         },
-        function(err) {
+        function (err) {
           var message;
-          if (err.message && err.message.indexOf("gcm_sender_id") !== -1) {
-            message = "Please setup the notify.html5 platform.";
+          if (err.message && err.message.indexOf('gcm_sender_id') !== -1) {
+            message = 'Please setup the notify.html5 platform.';
           } else {
-            message = "Notification registration failed.";
+            message = 'Notification registration failed.';
           }
 
           /* eslint-disable no-console */
           console.error(err);
           /* eslint-enable no-console */
 
-          el.fire("hass-notification", { message: message });
+          el.fire('hass-notification', { message: message });
           el.pushActive = false;
         }
       );
   },
-  unsubscribePushNotifications: function() {
+  unsubscribePushNotifications: function () {
     var el = this;
 
     navigator.serviceWorker.ready
-      .then(function(reg) {
+      .then(function (reg) {
         return reg.pushManager.getSubscription();
       })
-      .then(function(sub) {
-        if (!sub) return;
+      .then(function (sub) {
+        if (!sub) return Promise.resolve();
 
         return el.hass
-          .callApi("DELETE", "notify.html5", { subscription: sub })
-          .then(function() {
+          .callApi('DELETE', 'notify.html5', { subscription: sub })
+          .then(function () {
             sub.unsubscribe();
           });
       })
-      .then(function() {
+      .then(function () {
         el.pushActive = false;
       })
-      .catch(function(err) {
+      .catch(function (err) {
         /* eslint-disable no-console */
-        console.error("Error in unsub push", err);
+        console.error('Error in unsub push', err);
         /* eslint-enable no-console */
 
-        el.fire("hass-notification", {
-          message: "Failed unsubscribing for push notifications."
+        el.fire('hass-notification', {
+          message: 'Failed unsubscribing for push notifications.'
         });
       });
   }

@@ -32,7 +32,7 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
     req.open(method, url, true);
 
     if (auth.authToken) {
-      req.setRequestHeader('X-HA-access', authInfo.authToken);
+      req.setRequestHeader('X-HA-access', auth.authToken);
     }
 
     req.onload = function () {

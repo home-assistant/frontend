@@ -263,40 +263,43 @@ Polymer({
     Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
   */
   computeViewStates: function (currentView, hass) {
+    var i;
+    var entityId;
+    var state;
     var states;
     var entityIds = Object.keys(hass.states);
 
+    // If we base off all entities, only have to filter out hidden
     if (!currentView && !(this.DEFAULT_VIEW_ENTITY_ID in hass.states)) {
       states = {};
-      for (var i = 0; i < entityIds.length; i++) {
-        var entityId = entityIds[i];
-        var state = hass.states[entityId];
+      for (i = 0; i < entityIds.length; i++) {
+        entityId = entityIds[i];
+        state = hass.states[entityId];
 
         // We can filter out hidden and domain at the same time.
-        if (!state.attributes.hidden ||
-            this.ALWAYS_SHOW_DOMAIN.indexOf(
-              window.hassUtil.computeDomain(state)) !== -1) {
+        if (!state.attributes.hidden) {
           states[entityId] = state;
         }
       }
       return states;
     }
 
-    if(currentView) {
+    if (currentView) {
       states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
     } else {
       states = window.HAWS.getViewEntities(
         hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
     }
 
-    for (var j = 0; j < entityIds.length; j++) {
-      var entityId = entityIds[j];
-      var state = hass.states[entityId];
+    // Make sure certain domains are always shown.
+    for (i = 0; i < entityIds.length; i++) {
+      entityId = entityIds[i];
+      state = hass.states[entityId];
 
       if (this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
         states[entityId] = state;
       }
-    };
+    }
 
     return states;
   },
