@@ -29,6 +29,10 @@
         margin-right: 24px;
       }
 
+      .error {
+        color: red;
+      }
+
       .interimTranscript {
         color: darkgrey;
       }
@@ -54,10 +58,13 @@
           <iron-icon icon="mdi:text-to-speech" hidden$="[[isTransmitting]]"></iron-icon>
           <paper-spinner active$="[[isTransmitting]]" hidden$="[[!isTransmitting]]"></paper-spinner>
         </div>
-        <div class='text'>
+        <div class='text' hidden$='[[hasError]]'>
           <span>{{results.final}}</span>
           <span class='interimTranscript'>[[results.interim]]</span>
           …
+        </div>
+        <div class='text red' hidden$='[[!hasError]]'>
+          An error occurred. Unable to fulfill request.
         </div>
       </div>
     </paper-dialog>
@@ -94,6 +101,11 @@ Polymer({
       value: false,
     },
 
+    hasError: {
+      type: Boolean,
+      value: false,
+    },
+
     showListenInterface: {
       type: Boolean,
       computed: 'computeShowListenInterface(isListening, isTransmitting)',
@@ -108,13 +120,16 @@ Polymer({
 
     this.recognition.onstart = function () {
       this.isListening = true;
+      this.isTransmitting = false;
+      this.hasError = false;
       this.results = {
         final: '',
         interim: '',
       };
     }.bind(this);
     this.recognition.onerror = function () {
-      console.error('error'); // now what? TODO
+      this.recognition.abort();
+      this.hasError = true;
     }.bind(this);
     this.recognition.onend = function () {
       this.isListening = false;
