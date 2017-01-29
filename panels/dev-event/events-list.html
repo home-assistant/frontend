@@ -24,7 +24,7 @@
       <template is='dom-repeat' items='[[events]]' as='event'>
         <li>
           <a href='#' on-click='eventSelected'>{{event.event}}</a>
-          <span> (</span><span>{{event.listenerCount}}</span><span> listeners)</span>
+          <span> (</span><span>{{event.listener_count}}</span><span> listeners)</span>
         </li>
       </template>
     </ul>
@@ -35,8 +35,6 @@
   Polymer({
     is: 'events-list',
 
-    behaviors: [window.hassBehavior],
-
     properties: {
       hass: {
         type: Object,
@@ -44,15 +42,13 @@
 
       events: {
         type: Array,
-        bindNuclear: function (hass) {
-          return [
-            hass.eventGetters.entityMap,
-            function (map) {
-              return map.valueSeq().sortBy(function (event) { return event.event; }).toArray();
-            },
-          ];
-        },
       },
+    },
+
+    attached: function () {
+      this.hass.callApi('GET', 'events').then(function (events) {
+        this.events = events;
+      }.bind(this));
     },
 
     eventSelected: function (ev) {
