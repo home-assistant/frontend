@@ -48,7 +48,7 @@
       <img src="/static/icons/favicon-192x192.png" height="192" />
       <a href="#" id="hideKeyboardOnFocus"></a>
       <div class='interact'>
-        <div id='loginform' hidden$="[[showLoading]]">
+        <div id='loginform' hidden$="[[showSpinner]]">
           <paper-input-container
             id="passwordDecorator"
             invalid="[[errorMessage]]"
@@ -67,7 +67,7 @@
             <paper-button id='loginButton'>Log In</paper-button>
           </div>
         </div>
-        <div id="validatebox" hidden$="[[!showLoading]]">
+        <div id="validatebox" hidden$="[[!showSpinner]]">
           <paper-spinner active="true"></paper-spinner><br />
           <div class="validatemessage">Loading data</div>
         </div>
@@ -102,14 +102,14 @@ Polymer({
       value: false,
     },
 
-    forceShowLoading: {
+    showLoading: {
       type: Boolean,
       value: false,
     },
 
-    showLoading: {
+    showSpinner: {
       type: Boolean,
-      computed: 'computeShowSpinner(forceShowLoading, isValidating)',
+      computed: 'computeShowSpinner(showLoading, isValidating)',
     },
 
     password: {

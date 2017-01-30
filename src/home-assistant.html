@@ -29,11 +29,11 @@
       ></home-assistant-main>
     </template>
 
-    <template is='dom-if' if='[[!showMain]]'>
+    <template is='dom-if' if='[[!showMain]]' restamp>
       <login-form
         hass='[[hass]]'
         connection-promise='{{connectionPromise}}'
-        show-loading='[[computeShowLoading(connectionPromise, iconsLoaded)]]'>
+        show-loading='[[computeShowLoading(connectionPromise, hass, iconsLoaded)]]'>
       </login-form>
     </template>
   </template>
@@ -86,8 +86,10 @@ Polymer({
     return hass && hass.states && hass.config && iconsLoaded;
   },
 
-  computeShowLoading: function (connectionPromise) {
-    return connectionPromise != null;
+  computeShowLoading: function (connectionPromise, hass, iconsLoaded) {
+    // Show loading when connecting or when connected but not all pieces loaded yet
+    return (connectionPromise != null ||
+            (hass && (!hass.states || !hass.config || !iconsLoaded)));
   },
 
   loadIcons: function () {
@@ -104,7 +106,11 @@ Polymer({
                     });
   },
 
-  connectionChanged: function (conn) {
+  connectionChanged: function (conn, oldConn) {
+    if (oldConn) {
+      this.unsubConnection();
+      this.unsubConnection = null;
+    }
     if (!conn) {
       this.hass = null;
       return;
@@ -144,21 +150,40 @@ Polymer({
       },
     }, this.$.storage.getStoredState());
 
-    conn.addEventListener('ready', function () {
+    var reconnected = function () {
       this.hass = Object.assign({}, this.hass, { connected: true });
-    }.bind(this));
+    }.bind(this);
 
-    conn.addEventListener('disconnected', function () {
+    conn.addEventListener('ready', reconnected);
+
+    var disconnected = function () {
       this.hass = Object.assign({}, this.hass, { connected: false });
-    }.bind(this));
+    }.bind(this)
+
+    conn.addEventListener('disconnected', disconnected);
+
+    var unsubEntities;
 
     window.HAWS.subscribeEntities(conn, function (states) {
       this.hass = Object.assign({}, this.hass, { states: states });
-    }.bind(this));
+    }.bind(this)).then(function (unsub) {
+      unsubEntities = unsub;
+    });
+
+    var unsubConfig;
 
     window.HAWS.subscribeConfig(conn, function (config) {
       this.hass = Object.assign({}, this.hass, { config: config });
-    }.bind(this));
+    }.bind(this)).then(function (unsub) {
+      unsubConfig = unsub;
+    });
+
+    this.unsubConnection = function () {
+      conn.removeEventListener('ready', reconnected);
+      conn.removeEventListener('disconnected', disconnected);
+      unsubEntities();
+      unsubConfig();
+    }
   },
 
   handleConnectionPromise: function (prom) {
@@ -210,11 +235,16 @@ Polymer({
   },
 
   handleLogout: function () {
-    this.connection.close();
     delete localStorage.authToken;
-    this.connection = null;
+    var conn = this.connection;
     this.connectionPromise = null;
-    this.hass = null;
+    try {
+      this.connection = null;
+    } catch (err) {
+      // home-assistant-main crashes when hass is set to null.
+      // However, after it is done, home-assistant-main is removed from the DOM by this element.
+    }
+    conn.close();
   },
 
   ready: function () {
