@@ -149,7 +149,7 @@ Polymer({
 
   handleSetState: function () {
     var attr;
-    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, '')
+    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, '');
     try {
       attr = attrRaw ?
         JSON.parse(attrRaw) : {};
