@@ -85,7 +85,7 @@ Polymer({
     },
   },
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     this.oscillationToggleChecked = newVal.attributes.oscillating;
 
     if (newVal.attributes.speed_list) {
@@ -95,9 +95,11 @@ Polymer({
       this.speedIndex = -1;
     }
 
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    if (oldVal) {
+      this.async(function () {
+        this.fire('iron-resize');
+      }.bind(this), 500);
+    }
   },
 
   computeClassNames: function (stateObj) {

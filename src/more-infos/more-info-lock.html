@@ -47,13 +47,10 @@ Polymer({
     this.callService('lock', { code: this.enteredCode });
   },
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     if (newVal) {
       this.isLocked = newVal.state === 'locked';
     }
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
   },
 
   callService: function (service, data) {
