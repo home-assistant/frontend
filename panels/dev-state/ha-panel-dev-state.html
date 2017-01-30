@@ -149,8 +149,10 @@ Polymer({
 
   handleSetState: function () {
     var attr;
+    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, '')
     try {
-      attr = this._stateAttributes ? JSON.parse(this._stateAttributes) : {};
+      attr = attrRaw ?
+        JSON.parse(attrRaw) : {};
     } catch (err) {
       /* eslint-disable no-alert */
       alert('Error parsing JSON: ' + err);
