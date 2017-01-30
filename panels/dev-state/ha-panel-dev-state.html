@@ -141,7 +141,7 @@ Polymer({
 
   entitySelected: function (ev) {
     var state = ev.model.entity;
-    this._entityId = state.entityId;
+    this._entityId = state.entity_id;
     this._state = state.state;
     this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
     ev.preventDefault();
@@ -158,8 +158,7 @@ Polymer({
       return;
     }
 
-    this.hass.entityActions.save({
-      entityId: this._entityId,
+    this.hass.callApi('POST', 'states/' + this._entityId, {
       state: this._state,
       attributes: attr,
     });
