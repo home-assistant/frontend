@@ -905,10 +905,6 @@ class-extend@^0.1.0, class-extend@^0.1.1:
   dependencies:
     object-assign "^2.0.0"
 
-classnames@^2.2.5:
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
-
 clean-css@3.4.x:
   version "3.4.24"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-3.4.24.tgz#89f5a5e9da37ae02394fe049a41388abbe72c3b5"
@@ -2806,9 +2802,9 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
-home-assistant-js-websocket@0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-0.5.0.tgz#f78b31d160d7bdd083cf53ae01328483e7046ef5"
+home-assistant-js-websocket@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-0.7.3.tgz#e65ac99b59a0b2c623048457c259808d67030c7f"
 
 homedir-polyfill@^1.0.0:
   version "1.0.1"
@@ -2933,10 +2929,6 @@ iconv-lite@0.4.15:
 ignore@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.2.0.tgz#8d88f03c3002a0ac52114db25d2c673b0bf1e435"
-
-immutable@^3.8.1:
-  version "3.8.1"
-  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
 
 imurmurhash@^0.1.4:
   version "0.1.4"
@@ -3335,10 +3327,6 @@ jsprim@^1.2.2:
 keep-alive-agent@^0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/keep-alive-agent/-/keep-alive-agent-0.0.1.tgz#44847ca394ce8d6b521ae85816bd64509942b385"
-
-keymirror@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/keymirror/-/keymirror-0.1.1.tgz#918889ea13f8d0a42e7c557250eee713adc95c35"
 
 kind-of@^3.0.2:
   version "3.1.0"
@@ -3997,12 +3985,6 @@ nth-check@~1.0.0:
   dependencies:
     boolbase "~1.0.0"
 
-nuclear-js@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/nuclear-js/-/nuclear-js-1.4.0.tgz#6c9c001b0673f0ae9d8f8b188c4da04ed693a7be"
-  dependencies:
-    immutable "^3.8.1"
-
 number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
@@ -4027,7 +4009,7 @@ object-assign@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-3.0.0.tgz#9bedd5ca0897949bca47e7ff408062d549f587f2"
 
-object-assign@^4.0.0, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4.0.0, object-assign@^4.0.1, object-assign@^4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
@@ -5535,9 +5517,9 @@ ternary-stream@^2.0.1:
     merge-stream "^1.0.0"
     through2 "^2.0.1"
 
-"test-fixture@github:polymerelements/test-fixture":
+test-fixture@PolymerElements/test-fixture:
   version "2.0.1"
-  resolved "https://codeload.github.com/polymerelements/test-fixture/tar.gz/f72f0ff4e83b83b0157afed664f560da91d20f31"
+  resolved "https://codeload.github.com/PolymerElements/test-fixture/tar.gz/f72f0ff4e83b83b0157afed664f560da91d20f31"
 
 test-value@^1.1.0:
   version "1.1.0"

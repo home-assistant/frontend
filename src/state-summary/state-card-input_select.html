@@ -27,7 +27,7 @@
     <paper-dropdown-menu
       on-tap='stopPropagation'
       selected-item-label='{{selectedOption}}'
-      label='[[stateObj.entityDisplay]]'>
+      label='[[computeStateName(stateObj)]]'>
       <paper-menu class="dropdown-content" selected="[[computeSelected(stateObj)]]">
         <template is='dom-repeat' items='[[stateObj.attributes.options]]'>
           <paper-item>[[item]]</paper-item>
@@ -61,6 +61,10 @@ Polymer({
     },
   },
 
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
+  },
+
   computeSelected: function (stateObj) {
     return stateObj.attributes.options.indexOf(stateObj.state);
   },
@@ -70,9 +74,9 @@ Polymer({
     if (option === '' || option === this.stateObj.state) {
       return;
     }
-    this.hass.serviceActions.callService('input_select', 'select_option', {
+    this.hass.callService('input_select', 'select_option', {
       option: option,
-      entity_id: this.stateObj.entityId,
+      entity_id: this.stateObj.entity_id,
     });
   },
 

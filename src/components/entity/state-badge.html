@@ -38,7 +38,7 @@
     <ha-state-icon
       id='icon'
       state-obj='[[stateObj]]'
-      data-domain$='[[stateObj.domain]]'
+      data-domain$='[[computeDomain(stateObj)]]'
       data-state$='[[stateObj.state]]'
     ></ha-state-icon>
   </template>
@@ -53,6 +53,10 @@ Polymer({
       type: Object,
       observer: 'updateIconColor',
     },
+  },
+
+  computeDomain: function (stateObj) {
+    return window.hassUtil.computeDomain(stateObj);
   },
 
   /**
@@ -71,9 +75,10 @@ Polymer({
 
     // for domain light, set color of icon to light color if available and it is
     // not very white (sum rgb colors < 730)
-    if (newVal.domain === 'light' && newVal.state === 'on' &&
-       newVal.attributes.rgb_color &&
-       newVal.attributes.rgb_color.reduce(function (cur, tot) { return cur + tot; }, 0) < 730) {
+    if (window.hassUtil.computeDomain(newVal) === 'light' &&
+        newVal.state === 'on' &&
+        newVal.attributes.rgb_color &&
+        newVal.attributes.rgb_color.reduce(function (cur, tot) { return cur + tot; }, 0) < 730) {
       this.$.icon.style.color = 'rgb(' + newVal.attributes.rgb_color.join(',') + ')';
     } else {
       this.$.icon.style.color = null;

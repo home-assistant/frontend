@@ -30,11 +30,7 @@
   "license": "Apache-2.0",
   "_depComment": "keymirror, nuclear-js, object-assign, ha-js-ws are for ha-js",
   "dependencies": {
-    "classnames": "^2.2.5",
-    "home-assistant-js-websocket": "0.5.0",
-    "keymirror": "^0.1.1",
-    "nuclear-js": "^1.4.0",
-    "object-assign": "^4.1.1"
+    "home-assistant-js-websocket": "^0.7.3"
   },
   "devDependencies": {
     "bower": "^1.8.0",

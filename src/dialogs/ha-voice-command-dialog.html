@@ -5,8 +5,6 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
-<link rel='import' href='../util/hass-behavior.html'>
-
 <dom-module id="ha-voice-command-dialog">
   <template>
     <style>
@@ -27,6 +25,10 @@
       .text {
         margin-left: 48px;
         margin-right: 24px;
+      }
+
+      .error {
+        color: red;
       }
 
       .interimTranscript {
@@ -54,10 +56,13 @@
           <iron-icon icon="mdi:text-to-speech" hidden$="[[isTransmitting]]"></iron-icon>
           <paper-spinner active$="[[isTransmitting]]" hidden$="[[!isTransmitting]]"></paper-spinner>
         </div>
-        <div class='text'>
-          <span>{{finalTranscript}}</span>
-          <span class='interimTranscript'>[[interimTranscript]]</span>
+        <div class='text' hidden$='[[hasError]]'>
+          <span>{{results.final}}</span>
+          <span class='interimTranscript'>[[results.interim]]</span>
           …
+        </div>
+        <div class='text red' hidden$='[[!hasError]]'>
+          An error occurred. Unable to fulfill request.
         </div>
       </div>
     </paper-dialog>
@@ -68,8 +73,6 @@
 <script>
 Polymer({
   is: 'ha-voice-command-dialog',
-
-  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
@@ -82,32 +85,23 @@ Polymer({
       observer: 'dialogOpenChanged',
     },
 
-    finalTranscript: {
-      type: String,
-      bindNuclear: function (hass) {
-        return hass.voiceGetters.finalTranscript;
-      },
-    },
-
-    interimTranscript: {
-      type: String,
-      bindNuclear: function (hass) {
-        return hass.voiceGetters.extraInterimTranscript;
-      },
+    results: {
+      type: Object,
     },
 
     isTransmitting: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.voiceGetters.isTransmitting;
-      },
+      value: false,
     },
 
     isListening: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.voiceGetters.isListening;
-      },
+      value: false,
+    },
+
+    hasError: {
+      type: Boolean,
+      value: false,
     },
 
     showListenInterface: {
@@ -117,13 +111,72 @@ Polymer({
     },
   },
 
+  initRecognition: function () {
+    /* eslint-disable new-cap */
+    this.recognition = new webkitSpeechRecognition();
+    /* eslint-enable new-cap */
+
+    this.recognition.onstart = function () {
+      this.isListening = true;
+      this.isTransmitting = false;
+      this.hasError = false;
+      this.results = {
+        final: '',
+        interim: '',
+      };
+    }.bind(this);
+    this.recognition.onerror = function () {
+      this.recognition.abort();
+      this.hasError = true;
+    }.bind(this);
+    this.recognition.onend = function () {
+      this.isListening = false;
+      this.isTransmitting = true;
+      var text = this.results.final || this.results.interim;
+
+      var listeningDone = function () {
+        this.isTransmitting = false;
+      }.bind(this);
+
+      this.hass.callService('conversation', 'process', { text: text })
+        .then(listeningDone, listeningDone);
+    }.bind(this);
+
+    this.recognition.onresult = function (event) {
+      var oldResults = this.results;
+      var finalTranscript = '';
+      var interimTranscript = '';
+
+      for (var ind = event.resultIndex; ind < event.results.length; ind++) {
+        if (event.results[ind].isFinal) {
+          finalTranscript += event.results[ind][0].transcript;
+        } else {
+          interimTranscript += event.results[ind][0].transcript;
+        }
+      }
+
+      this.results = {
+        interim: interimTranscript,
+        final: oldResults.final + finalTranscript,
+      };
+    }.bind(this);
+  },
+
+  startListening: function () {
+    if (!this.recognition) {
+      this.initRecognition();
+    }
+
+    this.recognition.start();
+  },
+
   computeShowListenInterface: function (isListening, isTransmitting) {
     return isListening || isTransmitting;
   },
 
   dialogOpenChanged: function (newVal) {
     if (!newVal && this.isListening) {
-      this.hass.voiceActions.stop();
+      this.recognition.abort();
     }
   },
 

@@ -2,7 +2,9 @@
   "extends": "airbnb-base",
   "globals": {
     "__DEV__": false,
-    "Polymer": true
+    "__DEMO__": false,
+    "Polymer": true,
+    "webkitSpeechRecognition": false,
   },
   "env": {
     "browser": true
@@ -19,7 +21,10 @@
     "prefer-spread": 0,
     "no-plusplus": 0,
     "no-bitwise": 0,
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "vars-on-top": 0,
+    "no-continue": 0,
+    "no-param-reassign": 0
   },
   plugins: [
     "html"

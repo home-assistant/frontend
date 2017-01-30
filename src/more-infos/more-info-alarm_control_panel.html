@@ -129,8 +129,8 @@ Polymer({
 
   callService: function (service, data) {
     var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entityId;
-    this.hass.serviceActions.callService('alarm_control_panel', service, serviceData)
+    serviceData.entity_id = this.stateObj.entity_id;
+    this.hass.callService('alarm_control_panel', service, serviceData)
       .then(function () {
         this.enteredCode = '';
       }.bind(this));

@@ -42,8 +42,8 @@ Polymer({
   },
 
   handleTriggerTapped: function () {
-    this.hass.serviceActions.callService('automation', 'trigger', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('automation', 'trigger', {
+      entity_id: this.stateObj.entity_id,
     });
   },
 });

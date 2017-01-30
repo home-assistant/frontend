@@ -57,13 +57,11 @@ Polymer({
 
   badgeTap: function (ev) {
     ev.stopPropagation();
-    this.async(function () {
-      this.hass.moreInfoActions.selectEntity(this.state.entityId);
-    }, 1);
+    this.fire('hass-more-info', { entityId: this.state.entity_id });
   },
 
   computeClasses: function (state) {
-    switch (state.domain) {
+    switch (window.hassUtil.computeDomain(state)) {
       case 'binary_sensor':
       case 'updater':
         return 'blue';
@@ -73,7 +71,7 @@ Polymer({
   },
 
   computeValue: function (state) {
-    switch (state.domain) {
+    switch (window.hassUtil.computeDomain(state)) {
       case 'binary_sensor':
       case 'device_tracker':
       case 'updater':
@@ -90,7 +88,7 @@ Polymer({
     if (state.state === 'unavailable') {
       return null;
     }
-    switch (state.domain) {
+    switch (window.hassUtil.computeDomain(state)) {
       case 'alarm_control_panel':
         if (state.state === 'pending') {
           return 'mdi:clock-fast';
@@ -123,7 +121,7 @@ Polymer({
     if (state.state === 'unavailable') {
       return 'unavai';
     }
-    switch (state.domain) {
+    switch (window.hassUtil.computeDomain(state)) {
       case 'device_tracker':
         return state.state === 'not_home' ? 'Away' : state.state;
       case 'alarm_control_panel':
@@ -142,7 +140,7 @@ Polymer({
   },
 
   computeDescription: function (state) {
-    return state.entityDisplay;
+    return window.hassUtil.computeStateName(state);
   },
 
   stateChanged: function () {

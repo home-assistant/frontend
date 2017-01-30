@@ -24,30 +24,31 @@
     }
     </style>
 
-    <google-legacy-loader on-api-load="googleApiLoaded"></google-legacy-loader>
+    <google-legacy-loader on-api-load="_googleApiLoaded"></google-legacy-loader>
 
-    <div hidden$="[[!isLoading]]" class='loading-container'>
-      <paper-spinner active alt='Updating history data'></paper-spinner>
-    </div>
+    <template is='dom-if' if='[[_isLoading]]'>
+      <div class='loading-container'>
+        <paper-spinner active alt='Updating history data'></paper-spinner>
+      </div>
+    </template>
 
-    <div class$='[[computeContentClasses(isLoading)]]'>
-      <template is='dom-if' if='[[computeIsEmpty(stateHistory)]]'>
+    <template is='dom-if' if='[[!_isLoading]]'>
+      <template is='dom-if' if='[[_computeIsEmpty(historyData)]]'>
         No state history found.
       </template>
 
       <state-history-chart-timeline
-        data='[[groupedStateHistory.timeline]]'
-        is-single-device='[[isSingleDevice]]'>
+        data='[[historyData.timeline]]'>
       </state-history-chart-timeline>
 
-      <template is='dom-repeat' items='[[groupedStateHistory.line]]'>
+      <template is='dom-repeat' items='[[historyData.line]]'>
         <state-history-chart-line
           unit='[[item.unit]]'
           data='[[item.data]]'
-          is-single-device='[[isSingleDevice]]'>
+          is-single-device='[[_computeIsSingleLineChart(historyData)]]'>
         </state-history-chart-line>
       </template>
-    </div>
+    </template>
   </template>
 </dom-module>
 
@@ -56,101 +57,48 @@ Polymer({
   is: 'state-history-charts',
 
   properties: {
-    stateHistory: {
+    historyData: {
       type: Object,
+      value: null,
     },
 
     isLoadingData: {
       type: Boolean,
-      value: false,
+      value: true,
     },
 
-    apiLoaded: {
+    _apiLoaded: {
       type: Boolean,
       value: false,
     },
 
-    isLoading: {
+    _isLoading: {
       type: Boolean,
-      computed: 'computeIsLoading(isLoadingData, apiLoaded)',
-    },
-
-    groupedStateHistory: {
-      type: Object,
-      computed: 'computeGroupedStateHistory(isLoading, stateHistory)',
-    },
-
-    isSingleDevice: {
-      type: Boolean,
-      computed: 'computeIsSingleDevice(stateHistory)',
+      computed: '_computeIsLoading(isLoadingData, _apiLoaded)',
     },
   },
 
-  computeIsSingleDevice: function (stateHistory) {
-    return stateHistory && stateHistory.size === 1;
+  _computeIsSingleLineChart: function (historyData) {
+    return historyData && historyData.line.length === 1;
   },
 
-  computeGroupedStateHistory: function (isLoading, stateHistory) {
-    var lineChartDevices = {};
-    var timelineDevices = [];
-    var unitStates;
-
-    if (isLoading || !stateHistory) {
-      return { line: [], timeline: [] };
-    }
-
-    stateHistory.forEach(function (stateInfo) {
-      var stateWithUnit;
-      var unit;
-
-      if (!stateInfo || stateInfo.size === 0) {
-        return;
-      }
-
-      stateWithUnit = stateInfo.find(
-        function (state) { return 'unit_of_measurement' in state.attributes; });
-
-      unit = stateWithUnit ?
-        stateWithUnit.attributes.unit_of_measurement : false;
-
-      if (!unit) {
-        timelineDevices.push(stateInfo.toArray());
-      } else if (unit in lineChartDevices) {
-        lineChartDevices[unit].push(stateInfo.toArray());
-      } else {
-        lineChartDevices[unit] = [stateInfo.toArray()];
-      }
-    });
-
-    timelineDevices = timelineDevices.length > 0 && timelineDevices;
-
-    unitStates = Object.keys(lineChartDevices).map(
-      function (unit) {
-        return { unit: unit, data: lineChartDevices[unit] };
-      });
-
-    return { line: unitStates, timeline: timelineDevices };
-  },
-
-  googleApiLoaded: function () {
+  _googleApiLoaded: function () {
     window.google.load('visualization', '1', {
       packages: ['timeline', 'corechart'],
       callback: function () {
-        this.apiLoaded = true;
+        this._apiLoaded = true;
       }.bind(this),
     });
   },
 
-  computeContentClasses: function (isLoading) {
-    return isLoading ? 'loading' : '';
+  _computeIsLoading: function (_isLoadingData, _apiLoaded) {
+    return _isLoadingData || !_apiLoaded;
   },
 
-  computeIsLoading: function (isLoadingData, apiLoaded) {
-    return isLoadingData || !apiLoaded;
-  },
-
-  computeIsEmpty: function (stateHistory) {
-    return stateHistory && stateHistory.size === 0;
+  _computeIsEmpty: function (historyData) {
+    return (historyData &&
+            historyData.timeline.length === 0 &&
+            historyData.line.length === 0);
   },
 });
 </script>

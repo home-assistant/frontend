@@ -49,7 +49,8 @@ Polymer({
   ],
 
   computeTitle: function (stateObj) {
-    return stateObj.attributes.title || stateObj.entityDisplay;
+    return (stateObj.attributes.title ||
+            window.hassUtil.computeStateName(stateObj));
   },
 
   loadScript: function () {
@@ -86,7 +87,7 @@ Polymer({
   dismissTap: function (ev) {
     ev.preventDefault();
 
-    this.hass.entityActions.delete(this.stateObj);
+    this.hass.callApi('DELETE', 'states/' + this.stateObj.entity_id);
   },
 });
 </script>

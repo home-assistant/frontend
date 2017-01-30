@@ -53,7 +53,9 @@ Polymer({
 
   fireScript: function (ev) {
     ev.stopPropagation();
-    this.hass.serviceActions.callTurnOn(this.stateObj.entityId);
+    this.hass.callService(
+      'script', 'turn_on',
+      { entity_id: this.stateObj.entity_id });
   },
 });
 </script>

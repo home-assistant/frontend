@@ -8,8 +8,7 @@
 <link rel="import" href="../state-summary/state-card-content.html">
 <link rel="import" href="../components/state-history-charts.html">
 <link rel="import" href="../more-infos/more-info-content.html">
-
-<link rel='import' href='../util/hass-behavior.html'>
+<link rel="import" href="../data/ha-state-history-data.html">
 
 <dom-module id="more-info-dialog">
   <template>
@@ -51,15 +50,24 @@
     </style>
 
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
-    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}' data-domain$='[[stateObj.domain]]'>
+    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}' data-domain$='[[computeDomain(stateObj)]]'>
       <h2>
         <state-card-content
           state-obj="[[stateObj]]"
           hass='[[hass]]' in-dialog></state-card-content>
       </h2>
       <template is='dom-if' if="[[showHistoryComponent]]">
-        <state-history-charts state-history="[[stateHistory]]"
-          is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
+        <div>
+          <ha-state-history-data
+            hass='[[hass]]'
+            filter-type='[[_filterType]]'
+            filter-value='[[stateObj.entity_id]]'
+            data='{{stateHistory}}'
+            is-loading='{{stateHistoryLoading}}'
+          ></ha-state-history-data>
+          <state-history-charts history-data="[[stateHistory]]"
+            is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
+        </div>
       </template>
       <paper-dialog-scrollable id='scrollable'>
         <more-info-content
@@ -73,8 +81,6 @@
 Polymer({
   is: 'more-info-dialog',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
@@ -82,48 +88,26 @@ Polymer({
 
     stateObj: {
       type: Object,
-      bindNuclear: function (hass) {
-        return hass.moreInfoGetters.currentEntity;
-      },
+      computed: 'computeStateObj(hass)',
       observer: 'stateObjChanged',
     },
 
     stateHistory: {
       type: Object,
-      bindNuclear: function (hass) {
-        return [
-          hass.moreInfoGetters.currentEntityHistory,
-          function (history) { return history ? [history] : false; },
-        ];
-      },
+    },
+
+    stateHistoryLoading: {
+      type: Boolean,
     },
 
     isLoadingHistoryData: {
       type: Boolean,
-      computed: 'computeIsLoadingHistoryData(delayedDialogOpen, isLoadingEntityHistoryData)',
-    },
-
-    isLoadingEntityHistoryData: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.entityHistoryGetters.isLoadingEntityHistory;
-      },
+      computed: 'computeIsLoadingHistoryData(delayedDialogOpen, stateHistoryLoading)',
     },
 
     hasHistoryComponent: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.configGetters.isComponentLoaded('history');
-      },
-      observer: 'fetchHistoryData',
-    },
-
-    shouldFetchHistory: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.moreInfoGetters.isCurrentEntityHistoryStale;
-      },
-      observer: 'fetchHistoryData',
+      computed: 'computeHasHistoryComponent(hass)',
     },
 
     showHistoryComponent: {
@@ -142,10 +126,23 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    _filterType: {
+      type: String,
+      value: 'recent-entity',
+    },
   },
 
   ready: function () {
     this.$.scrollable.dialogElement = this.$.dialog;
+  },
+
+  computeDomain: function (stateObj) {
+    return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
+  },
+
+  computeStateObj: function (hass) {
+    return hass.states[hass.moreInfoEntityId] || null;
   },
 
   /**
@@ -154,20 +151,18 @@ Polymer({
    * before the dialog is attached to the screen and is unable to determine
    * graph size resulting in scroll bars.
    */
-  computeIsLoadingHistoryData: function (delayedDialogOpen, isLoadingEntityHistoryData) {
-    return !delayedDialogOpen || isLoadingEntityHistoryData;
+  computeIsLoadingHistoryData: function (delayedDialogOpen, stateHistoryLoading) {
+    return !delayedDialogOpen || stateHistoryLoading;
+  },
+
+  computeHasHistoryComponent: function (hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'history');
   },
 
   computeShowHistoryComponent: function (hasHistoryComponent, stateObj) {
     return this.hasHistoryComponent && stateObj &&
-      window.hassUtil.DOMAINS_WITH_NO_HISTORY.indexOf(stateObj.domain) === -1;
-  },
-
-  fetchHistoryData: function () {
-    if (this.stateObj && this.hasHistoryComponent &&
-        this.shouldFetchHistory) {
-      this.hass.entityHistoryActions.fetchRecent(this.stateObj.entityId);
-    }
+      window.hassUtil.DOMAINS_WITH_NO_HISTORY.indexOf(
+        window.hassUtil.computeDomain(stateObj)) === -1;
   },
 
   stateObjChanged: function (newVal) {
@@ -177,8 +172,6 @@ Polymer({
     }
 
     this.async(function () {
-      // Firing action while other action is happening confuses nuclear
-      this.fetchHistoryData();
       // allow dialog to render content before showing it so it is
       // positioned correctly.
       this.dialogOpen = true;
@@ -189,7 +182,7 @@ Polymer({
     if (newVal) {
       this.async(function () { this.delayedDialogOpen = true; }.bind(this), 10);
     } else if (!newVal && this.stateObj) {
-      this.async(function () { this.hass.moreInfoActions.deselectEntity(); }.bind(this), 10);
+      this.fire('hass-more-info', { entityId: null });
       this.delayedDialogOpen = false;
     }
   },

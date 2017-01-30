@@ -1,0 +1,162 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script>
+(function () {
+  var RECENT_THRESHOLD = 60000; // 1 minute
+  var DATE_CACHE = {};
+  var RECENT_CACHE = {};
+
+  function computeHistory(stateHistory) {
+    var lineChartDevices = {};
+    var timelineDevices = [];
+    var unitStates;
+
+    if (!stateHistory) {
+      return { line: [], timeline: [] };
+    }
+
+    stateHistory.forEach(function (stateInfo) {
+      var stateWithUnit;
+      var unit;
+
+      if (stateInfo.size === 0) {
+        return;
+      }
+
+      stateWithUnit = stateInfo.find(
+        function (state) { return 'unit_of_measurement' in state.attributes; });
+
+      unit = stateWithUnit ?
+        stateWithUnit.attributes.unit_of_measurement : false;
+
+      if (!unit) {
+        timelineDevices.push(stateInfo);
+      } else if (unit in lineChartDevices) {
+        lineChartDevices[unit].push(stateInfo);
+      } else {
+        lineChartDevices[unit] = [stateInfo];
+      }
+    });
+
+    timelineDevices = timelineDevices.length > 0 && timelineDevices;
+
+    unitStates = Object.keys(lineChartDevices).map(
+      function (unit) {
+        return { unit: unit, data: lineChartDevices[unit] };
+      });
+
+    return { line: unitStates, timeline: timelineDevices };
+  }
+
+  Polymer({
+    is: 'ha-state-history-data',
+
+    properties: {
+      hass: {
+        type: Object,
+        observer: 'hassChanged',
+      },
+
+      filterType: {
+        type: String,
+      },
+
+      filterValue: {
+        type: String,
+      },
+
+      isLoading: {
+        type: Boolean,
+        value: true,
+        readOnly: true,
+        notify: true,
+      },
+
+      data: {
+        type: Object,
+        value: null,
+        readOnly: true,
+        notify: true,
+      },
+    },
+
+    observers: [
+      'filterChanged(filterType, filterValue)',
+    ],
+
+    hassChanged: function (newHass, oldHass) {
+      if (!oldHass && this.filterType && this.filterValue) {
+        this.filterChanged(this.filterType, this.filterValue);
+      }
+    },
+
+    filterChanged: function (filterType, filterValue) {
+      if (!this.hass) return;
+
+      var data;
+
+      if (filterType === 'date') {
+        data = this.getDate(filterValue);
+      } else if (filterType === 'recent-entity') {
+        data = this.getRecent(filterValue);
+      } else {
+        return;
+      }
+
+      this._setIsLoading(true);
+
+      data.then(function (stateHistory) {
+        this._setData(stateHistory);
+        this._setIsLoading(false);
+      }.bind(this));
+    },
+
+    getRecent: function (entityId) {
+      var cache = RECENT_CACHE[entityId];
+
+      if (cache && Date.now() - cache.created < RECENT_THRESHOLD) {
+        return cache.data;
+      }
+
+      var url = 'history/period';
+
+      if (entityId) {
+        url += '?filter_entity_id=' + entityId;
+      }
+
+      var prom = this.hass.callApi('GET', url).then(
+        function (stateHistory) {
+          return computeHistory(stateHistory);
+        },
+        function () {
+          RECENT_CACHE[entityId] = false;
+          return null;
+        }
+      );
+
+      RECENT_CACHE[entityId] = {
+        created: Date.now(),
+        data: prom,
+      };
+
+      return prom;
+    },
+
+    getDate: function (date) {
+      if (!DATE_CACHE[date]) {
+        DATE_CACHE[date] = this.hass.callApi('GET', 'history/period/' + date).then(
+          function (stateHistory) {
+            return computeHistory(stateHistory);
+          },
+          function () {
+            DATE_CACHE[date] = false;
+            return null;
+          }
+        );
+      }
+
+      return DATE_CACHE[date];
+    },
+  });
+}());
+</script>

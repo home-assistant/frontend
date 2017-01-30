@@ -75,14 +75,16 @@ Polymer({
     states: {
       type: Array,
     },
+
     groupEntity: {
       type: Object,
     },
   },
 
   computeTitle: function (states, groupEntity) {
-    return groupEntity ? groupEntity.entityDisplay :
-                         states[0].domain.replace(/_/g, ' ');
+    return groupEntity ?
+      window.hassUtil.computeStateName(groupEntity) :
+      window.hassUtil.computeDomain(states[0]).replace(/_/g, ' ');
   },
 
   computeTitleClass: function (groupEntity) {
@@ -105,26 +107,32 @@ Polymer({
     ev.stopPropagation();
 
     if (ev.model) {
-      entityId = ev.model.item.entityId;
+      entityId = ev.model.item.entity_id;
     } else {
-      entityId = this.groupEntity.entityId;
+      entityId = this.groupEntity.entity_id;
     }
-    this.async(function () { this.hass.moreInfoActions.selectEntity(entityId); }.bind(this), 1);
+    this.fire('hass-more-info', { entityId: entityId });
   },
 
   showGroupToggle: function (groupEntity, states) {
-    var canToggleCount;
-
     if (!groupEntity || !states || groupEntity.attributes.control === 'hidden' ||
         (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;
     }
 
     // only show if we can toggle 2+ entities in group
-    canToggleCount = states.reduce(
-      function (sum, state) {
-        return sum + window.hassUtil.canToggle(this.hass, state.entityId);
-      }, 0);
+    var canToggleCount = 0;
+    for (var i = 0; i < states.length; i++) {
+      if (!window.hassUtil.canToggleState(this.hass, states[i])) {
+        continue;
+      }
+
+      canToggleCount++;
+
+      if (canToggleCount > 1) {
+        break;
+      }
+    }
 
     return canToggleCount > 1;
   },

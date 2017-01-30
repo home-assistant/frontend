@@ -4,7 +4,6 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 
@@ -14,8 +13,8 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="../components/ha-menu-button.html">
+<link rel="import" href="../components/ha-start-voice-button.html">
 <link rel="import" href="../components/ha-cards.html">
-<link rel="import" href="../util/hass-behavior.html">
 
 <dom-module id="partial-cards">
   <template>
@@ -42,9 +41,7 @@
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[computeTitle(views, locationName)]]</div>
-          <paper-icon-button
-            icon="mdi:microphone" hidden$='[[!canListen]]'
-            on-tap="handleListenClick"></paper-icon-button>
+          <ha-start-voice-button hass='[[hass]]'></ha-start-voice-button>
         </app-toolbar>
 
         <div sticky hidden$='[[!views.length]]'>
@@ -60,14 +57,14 @@
             >[[locationName]]</paper-tab>
             <template is='dom-repeat' items='[[views]]'>
               <paper-tab
-                data-entity$='[[item.entityId]]'
+                data-entity$='[[item.entity_id]]'
                 on-tap='scrollToTop'
               >
                 <template is='dom-if' if='[[item.attributes.icon]]'>
                   <iron-icon icon='[[item.attributes.icon]]'></iron-icon>
                 </template>
                 <template is='dom-if' if='[[!item.attributes.icon]]'>
-                  [[item.entityDisplay]]
+                  [[computeStateName(item)]]
                 </template>
               </paper-tab>
             </template>
@@ -82,8 +79,8 @@
       >
         <ha-cards
           data-view=''
-          show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
-          states='[[states]]'
+          show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]'
+          states='[[viewStates]]'
           columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
@@ -91,9 +88,9 @@
 
         <template is='dom-repeat' items='[[views]]'>
           <ha-cards
-            data-view$='[[item.entityId]]'
-            show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, states)]]'
-            states='[[states]]'
+            data-view$='[[item.entity_id]]'
+            show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]'
+            states='[[viewStates]]'
             columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
@@ -108,13 +105,15 @@
 
 <script>
 Polymer({
-  is: 'partial-cards',
+  DEFAULT_VIEW_ENTITY_ID: 'group.default_view',
+  ALWAYS_SHOW_DOMAIN: ['persistent_notification', 'configurator'],
 
-  behaviors: [window.hassBehavior],
+  is: 'partial-cards',
 
   properties: {
     hass: {
       type: Object,
+      value: null,
     },
 
     narrow: {
@@ -124,7 +123,6 @@ Polymer({
 
     showMenu: {
       type: Boolean,
-      value: false,
       observer: 'handleWindowChange',
     },
 
@@ -138,62 +136,30 @@ Polymer({
       value: 1,
     },
 
-    canListen: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return [
-          hass.voiceGetters.isVoiceSupported,
-          hass.configGetters.isComponentLoaded('conversation'),
-          function (isVoiceSupported, componentLoaded) {
-            return isVoiceSupported && componentLoaded;
-          },
-        ];
-      },
-    },
-
     introductionLoaded: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.configGetters.isComponentLoaded('introduction');
-      },
+      computed: 'computeIntroductionLoaded(hass)',
     },
 
     locationName: {
       type: String,
-      bindNuclear: function (hass) {
-        return hass.configGetters.locationName;
-      },
+      value: '',
+      computed: 'computeLocationName(hass)',
     },
 
     currentView: {
       type: String,
-      bindNuclear: function (hass) {
-        return [
-          hass.viewGetters.currentView,
-          function (view) { return view || ''; },
-        ];
-      },
+      computed: 'computeCurrentView(hass)',
     },
 
     views: {
       type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.viewGetters.views,
-          function (views) {
-            return views.valueSeq()
-              .sortBy(function (view) { return view.attributes.order; })
-              .toArray();
-          },
-        ];
-      },
+      computed: 'computeViews(hass)',
     },
 
-    states: {
+    viewStates: {
       type: Object,
-      bindNuclear: function (hass) {
-        return hass.viewGetters.currentViewEntities;
-      },
+      computed: 'computeViewStates(currentView, hass)',
     },
   },
 
@@ -259,17 +225,11 @@ Polymer({
     }).call(this);
   },
 
-  handleListenClick: function () {
-    this.hass.voiceActions.listen();
-  },
-
   handleViewSelected: function (ev) {
     var view = ev.detail.item.getAttribute('data-entity') || null;
     var current = this.currentView || null;
     if (view !== current) {
-      this.async(function () {
-        this.hass.viewActions.selectView(view);
-      }.bind(this), 0);
+      this.fire('hass-navigate', { view: view });
     }
   },
 
@@ -279,6 +239,73 @@ Polymer({
 
   computeShowIntroduction: function (currentView, introductionLoaded, states) {
     return currentView === '' && (introductionLoaded || states.size === 0);
+  },
+
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
+  },
+
+  computeLocationName: function (hass) {
+    return window.hassUtil.computeLocationName(hass);
+  },
+
+  computeIntroductionLoaded: function (hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'introduction');
+  },
+
+  computeViews: function (hass) {
+    return window.HAWS.extractViews(hass.states);
+  },
+
+  /*
+    Compute the states to show for current view.
+
+    Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
+  */
+  computeViewStates: function (currentView, hass) {
+    var i;
+    var entityId;
+    var state;
+    var states;
+    var entityIds = Object.keys(hass.states);
+
+    // If we base off all entities, only have to filter out hidden
+    if (!currentView && !(this.DEFAULT_VIEW_ENTITY_ID in hass.states)) {
+      states = {};
+      for (i = 0; i < entityIds.length; i++) {
+        entityId = entityIds[i];
+        state = hass.states[entityId];
+
+        // We can filter out hidden and domain at the same time.
+        if (!state.attributes.hidden) {
+          states[entityId] = state;
+        }
+      }
+      return states;
+    }
+
+    if (currentView) {
+      states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
+    } else {
+      states = window.HAWS.getViewEntities(
+        hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
+    }
+
+    // Make sure certain domains are always shown.
+    for (i = 0; i < entityIds.length; i++) {
+      entityId = entityIds[i];
+      state = hass.states[entityId];
+
+      if (this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
+        states[entityId] = state;
+      }
+    }
+
+    return states;
+  },
+
+  computeCurrentView: function (hass) {
+    return hass.currentView || '';
   },
 });
 </script>

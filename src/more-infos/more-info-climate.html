@@ -376,9 +376,9 @@ Polymer({
     // result in the entity to be turned on. Since the state is not changing,
     // the resync is not called automatic.
     /* eslint-disable no-param-reassign */
-    data.entity_id = this.stateObj.entityId;
+    data.entity_id = this.stateObj.entity_id;
     /* eslint-enable no-param-reassign */
-    this.hass.serviceActions.callService('climate', service, data)
+    this.hass.callService('climate', service, data)
       .then(function () {
         this.stateObjChanged(this.stateObj);
       }.bind(this));
