@@ -5,7 +5,6 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel='import' href='../components/ha-menu-button.html'>
-<link rel='import' href='../util/hass-behavior.html'>
 <link rel="import" href="../resources/ha-style.html">
 
 <dom-module id='partial-panel-resolver'>
@@ -46,8 +45,6 @@
 Polymer({
   is: 'partial-panel-resolver',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
@@ -78,11 +75,13 @@ Polymer({
 
     panel: {
       type: Object,
-      bindNuclear: function (hass) {
-        return hass.navigationGetters.activePanel;
-      },
+      computed: 'computeCurrentPanel(hass)',
       observer: 'panelChanged',
     },
+  },
+
+  computeCurrentPanel: function (hass) {
+    return hass.config.panels[hass.currentPanel];
   },
 
   panelChanged: function (panel) {
@@ -97,15 +96,15 @@ Polymer({
     this.errorLoading = false;
 
     this.importHref(
-      panel.get('url'),
+      panel.url,
 
       function success() {
         window.hassUtil.dynamicContentUpdater(
-          this.$.panel, 'ha-panel-' + panel.get('component_name'), {
+          this.$.panel, 'ha-panel-' + panel.component_name, {
             hass: this.hass,
             narrow: this.narrow,
             showMenu: this.showMenu,
-            panel: panel.toJS(),
+            panel: panel,
           });
         this.resolved = true;
       }.bind(this),

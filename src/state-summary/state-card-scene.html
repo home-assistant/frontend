@@ -47,7 +47,9 @@ Polymer({
 
   activateScene: function (ev) {
     ev.stopPropagation();
-    this.hass.serviceActions.callTurnOn(this.stateObj.entityId);
+    this.hass.callService(
+      'scene', 'turn_on',
+      { entity_id: this.stateObj.entity_id });
   },
 });
 </script>

@@ -92,7 +92,7 @@ Polymer({
     return re.test(code);
   },
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     if (newVal) {
       this.codeFormat = newVal.attributes.code_format;
       this.codeInputVisible = this.codeFormat !== null;
@@ -110,9 +110,11 @@ Polymer({
       this.armHomeButtonVisible = newVal.state === 'disarmed';
       this.armAwayButtonVisible = newVal.state === 'disarmed';
     }
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    if (oldVal) {
+      this.async(function () {
+        this.fire('iron-resize');
+      }.bind(this), 500);
+    }
   },
 
   handleDisarmTap: function () {
@@ -129,8 +131,8 @@ Polymer({
 
   callService: function (service, data) {
     var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entityId;
-    this.hass.serviceActions.callService('alarm_control_panel', service, serviceData)
+    serviceData.entity_id = this.stateObj.entity_id;
+    this.hass.callService('alarm_control_panel', service, serviceData)
       .then(function () {
         this.enteredCode = '';
       }.bind(this));

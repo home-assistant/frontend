@@ -38,9 +38,9 @@
     </style>
 
     <img src='[[cameraFeedSrc]]' class='camera-feed' hidden$='[[!imageLoaded]]'
-      on-load='imageLoadSuccess' on-error='imageLoadFail' alt='[[stateObj.entityDisplay]]'>
+      on-load='imageLoadSuccess' on-error='imageLoadFail' alt='[[computeStateName(stateObj)]]'>
     <div class='caption'>
-      [[stateObj.entityDisplay]]
+      [[computeStateName(stateObj)]]
       <template is='dom-if' if='[[!imageLoaded]]'>
         (Error loading image)
       </template>
@@ -99,9 +99,7 @@ Polymer({
   },
 
   cardTapped: function () {
-    this.async(function () {
-      this.hass.moreInfoActions.selectEntity(this.stateObj.entityId);
-    }.bind(this), 1);
+    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   },
 
   updateCameraFeedSrc: function (stateObj) {
@@ -116,6 +114,10 @@ Polymer({
 
   imageLoadFail: function () {
     this.imageLoaded = false;
+  },
+
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
   },
 });
 </script>

@@ -16,8 +16,6 @@
 Polymer({
   is: 'state-card-content',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
@@ -60,17 +58,17 @@ Polymer({
   },
 
   inputChanged: function (hass, inDialog, stateObj) {
-    var stateType;
-    if (!stateObj) return;
-    if (stateObj.state !== 'unavailable' && 'custom_ui_card' in stateObj.attributes) {
-      stateType = stateObj.attributes.custom_ui_card;
-      this._maybeLoadCustomUi(stateType);
+    var stateCardType;
+    if (!stateObj || !hass) return;
+    if (stateObj.state !== 'unavailable' && 'custom_ui_state_card' in stateObj.attributes) {
+      stateCardType = stateObj.attributes.custom_ui_state_card;
+      this._maybeLoadCustomUi(stateCardType);
     } else {
-      stateType = window.hassUtil.stateCardType(hass, stateObj);
+      stateCardType = window.hassUtil.stateCardType(hass, stateObj);
     }
     window.hassUtil.dynamicContentUpdater(
       this,
-      ('STATE-CARD-' + stateType.toUpperCase()),
+      ('STATE-CARD-' + stateCardType.toUpperCase()),
       {
         hass: hass,
         stateObj: stateObj,

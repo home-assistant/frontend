@@ -234,7 +234,7 @@ Polymer({
     },
   },
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     this.targetTemperatureSliderValue = newVal.attributes.temperature;
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
     this.auxheatToggleChecked = newVal.attributes.aux_heat === 'on';
@@ -260,9 +260,11 @@ Polymer({
       this.swingIndex = -1;
     }
 
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    if (oldVal) {
+      this.async(function () {
+        this.fire('iron-resize');
+      }.bind(this), 500);
+    }
   },
 
   computeTargetTempHidden: function (stateObj) {
@@ -376,9 +378,9 @@ Polymer({
     // result in the entity to be turned on. Since the state is not changing,
     // the resync is not called automatic.
     /* eslint-disable no-param-reassign */
-    data.entity_id = this.stateObj.entityId;
+    data.entity_id = this.stateObj.entity_id;
     /* eslint-enable no-param-reassign */
-    this.hass.serviceActions.callService('climate', service, data)
+    this.hass.callService('climate', service, data)
       .then(function () {
         this.stateObjChanged(this.stateObj);
       }.bind(this));

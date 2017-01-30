@@ -123,7 +123,7 @@ Polymer({
     },
   },
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     if (newVal && newVal.state === 'on') {
       this.brightnessSliderValue = newVal.attributes.brightness;
       this.ctSliderValue = newVal.attributes.color_temp;
@@ -139,9 +139,11 @@ Polymer({
       this.brightnessSliderValue = 0;
     }
 
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    if (oldVal) {
+      this.async(function () {
+        this.fire('iron-resize');
+      }.bind(this), 500);
+    }
   },
 
   computeClassNames: function (stateObj) {
@@ -165,8 +167,8 @@ Polymer({
     effectInput = this.stateObj.attributes.effect_list[effectIndex];
     if (effectInput === this.stateObj.attributes.effect) return;
 
-    this.hass.serviceActions.callService('light', 'turn_on', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entity_id,
       effect: effectInput,
     });
   },
@@ -177,10 +179,12 @@ Polymer({
     if (isNaN(bri)) return;
 
     if (bri === 0) {
-      this.hass.serviceActions.callTurnOff(this.stateObj.entityId);
+      this.hass.callService('light', 'turn_off', {
+        entity_id: this.stateObj.entity_id,
+      });
     } else {
-      this.hass.serviceActions.callService('light', 'turn_on', {
-        entity_id: this.stateObj.entityId,
+      this.hass.callService('light', 'turn_on', {
+        entity_id: this.stateObj.entity_id,
         brightness: bri,
       });
     }
@@ -191,8 +195,8 @@ Polymer({
 
     if (isNaN(ct)) return;
 
-    this.hass.serviceActions.callService('light', 'turn_on', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entity_id,
       color_temp: ct,
     });
   },
@@ -202,14 +206,14 @@ Polymer({
 
     if (isNaN(wv)) return;
 
-    this.hass.serviceActions.callService('light', 'turn_on', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('light', 'turn_on', {
+      entity_id: this.stateObj.entity_id,
       white_value: wv,
     });
   },
 
   serviceChangeColor: function (hass, entityId, color) {
-    hass.serviceActions.callService('light', 'turn_on', {
+    hass.callService('light', 'turn_on', {
       entity_id: entityId,
       rgb_color: [color.r, color.g, color.b],
     });
@@ -227,14 +231,14 @@ Polymer({
 
     this.color = ev.detail.rgb;
 
-    this.serviceChangeColor(this.hass, this.stateObj.entityId, this.color);
+    this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
 
     this.colorChanged = false;
     this.skipColorPicked = true;
 
     this.colorDebounce = setTimeout(function () {
       if (this.colorChanged) {
-        this.serviceChangeColor(this.hass, this.stateObj.entityId, this.color);
+        this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
       }
       this.skipColorPicked = false;
     }.bind(this), 500);

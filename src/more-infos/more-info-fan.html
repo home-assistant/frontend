@@ -85,7 +85,7 @@ Polymer({
     },
   },
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     this.oscillationToggleChecked = newVal.attributes.oscillating;
 
     if (newVal.attributes.speed_list) {
@@ -95,9 +95,11 @@ Polymer({
       this.speedIndex = -1;
     }
 
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    if (oldVal) {
+      this.async(function () {
+        this.fire('iron-resize');
+      }.bind(this), 500);
+    }
   },
 
   computeClassNames: function (stateObj) {
@@ -114,8 +116,8 @@ Polymer({
     speedInput = this.stateObj.attributes.speed_list[speedIndex];
     if (speedInput === this.stateObj.attributes.speed) return;
 
-    this.hass.serviceActions.callService('fan', 'turn_on', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('fan', 'turn_on', {
+      entity_id: this.stateObj.entity_id,
       speed: speedInput,
     });
   },
@@ -126,22 +128,22 @@ Polymer({
 
     if (oldVal === newVal) return;
 
-    this.hass.serviceActions.callService('fan', 'oscillate', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('fan', 'oscillate', {
+      entity_id: this.stateObj.entity_id,
       oscillating: newVal,
     });
   },
 
   onDirectionLeft: function () {
-    this.hass.serviceActions.callService('fan', 'set_direction', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('fan', 'set_direction', {
+      entity_id: this.stateObj.entity_id,
       direction: 'left'
     });
   },
 
   onDirectionRight: function () {
-    this.hass.serviceActions.callService('fan', 'set_direction', {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('fan', 'set_direction', {
+      entity_id: this.stateObj.entity_id,
       direction: 'right'
     });
   },

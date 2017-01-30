@@ -20,7 +20,7 @@
     </style>
 
     <state-badge state-obj='[[stateObj]]' in-dialog='[[inDialog]]'></state-badge>
-    <a href$='[[stateObj.state]]' target='_blank' class='name' id='link'>[[stateObj.entityDisplay]]</a>
+    <a href$='[[stateObj.state]]' target='_blank' class='name' id='link'>[[computeStateName(stateObj)]]</a>
   </template>
 </dom-module>
 
@@ -41,6 +41,10 @@ Polymer({
 
   listeners: {
     tap: 'onTap',
+  },
+
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
   },
 
   onTap: function (ev) {

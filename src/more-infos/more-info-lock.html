@@ -51,15 +51,12 @@ Polymer({
     if (newVal) {
       this.isLocked = newVal.state === 'locked';
     }
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
   },
 
   callService: function (service, data) {
     var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entityId;
-    this.hass.serviceActions.callService('lock', service, serviceData);
+    serviceData.entity_id = this.stateObj.entity_id;
+    this.hass.callService('lock', service, serviceData);
   },
 });
 </script>

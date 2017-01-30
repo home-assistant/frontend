@@ -6,6 +6,8 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../../bower_components/paper-progress/paper-progress.html'>
 
+<link rel='import' href='../util/media-player-model.html'>
+
 <dom-module id='ha-media_player-card'>
   <template>
     <style include="paper-material iron-flex iron-flex-alignment iron-positioning">
@@ -149,7 +151,7 @@
       <div class='cover' id='cover'></div>
 
       <div class='caption'>
-        [[stateObj.entityDisplay]]
+        [[computeStateName(stateObj)]]
         <div class='title'>[[playerObj.primaryText]]</div>
         [[playerObj.secondaryText]]<br />
       </div>
@@ -217,7 +219,7 @@ Polymer({
 
     playerObj: {
       type: Object,
-      computed: 'computePlayerObj(stateObj)',
+      computed: 'computePlayerObj(hass, stateObj)',
       observer: 'playerObjChanged',
     },
 
@@ -290,8 +292,8 @@ Polymer({
     return playerObj.isOff ? !playerObj.supportsTurnOn : !playerObj.supportsTurnOff;
   },
 
-  computePlayerObj: function (stateObj) {
-    return stateObj.domainModel(this.hass);
+  computePlayerObj: function (hass, stateObj) {
+    return new window.MediaPlayerEntity(hass, stateObj);
   },
 
   computePlaybackControlIcon: function (playerObj) {
@@ -303,6 +305,10 @@ Polymer({
     return '';
   },
 
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
+  },
+
   handleNext: function (ev) {
     ev.stopPropagation();
     this.playerObj.nextTrack();
@@ -310,9 +316,7 @@ Polymer({
 
   handleOpenMoreInfo: function (ev) {
     ev.stopPropagation();
-    this.async(function () {
-      this.hass.moreInfoActions.selectEntity(this.stateObj.entityId);
-    }, 1);
+    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   },
 
   handlePlaybackControl: function (ev) {

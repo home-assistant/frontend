@@ -7,7 +7,6 @@
     "url": "https://github.com/home-assistant/home-assistant-polymer"
   },
   "scripts": {
-    "setup_js_dev": "git submodule init && git submodule update && cd home-assistant-js && npm install",
     "clean": "rm -rf build/* build-temp/*",
     "js_dev": "script/gen-service-worker.js && npm run watch_ru_all",
     "js_dev_demo": "BUILD_DEMO=1 npm run watch_ru_all",
@@ -27,14 +26,9 @@
     "test": "npm run lint_js && npm run lint_html"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
-  "license": "MIT",
-  "_depComment": "keymirror, nuclear-js, object-assign, ha-js-ws are for ha-js",
+  "license": "Apache-2.0",
   "dependencies": {
-    "classnames": "^2.2.5",
-    "home-assistant-js-websocket": "0.5.0",
-    "keymirror": "^0.1.1",
-    "nuclear-js": "^1.4.0",
-    "object-assign": "^4.1.1"
+    "home-assistant-js-websocket": "^0.7.3"
   },
   "devDependencies": {
     "bower": "^1.8.0",

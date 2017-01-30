@@ -27,26 +27,23 @@
     </style>
 
     <div class='marker'>
-      <template is='dom-if' if='[[icon]]'>
-        <iron-icon icon='[[icon]]'></iron-icon>
-      </template>
-      <template is='dom-if' if='[[value]]'>[[value]]</template>
-      <template is='dom-if' if='[[image]]'>
-        <iron-image sizing='cover' class='fit' src='[[image]]'></iron-image>
+      <template is='dom-if' if='[[entityName]]'>[[entityName]]</template>
+      <template is='dom-if' if='[[entityPicture]]'>
+        <iron-image sizing='cover' class='fit' src='[[entityPicture]]'></iron-image>
       </template>
     </div>
   </template>
 </dom-module>
 
 <script>
-/*
-Leaflet clones this element before adding it to the map. This messes up
-our Poylmer object and we lose the reference to the `hass` object.
-
-That's why we refer here to window.hass instead of the hass property.
-*/
 Polymer({
   is: 'ha-entity-marker',
+
+  hostAttributes: {
+    entityId: null,
+    entityName: null,
+    entityPicture: null,
+  },
 
   properties: {
     hass: {
@@ -56,28 +53,17 @@ Polymer({
     entityId: {
       type: String,
       value: '',
-      reflectToAttribute: true,
     },
 
-    state: {
-      type: Object,
-      computed: 'computeState(entityId)',
-    },
-
-    icon: {
-      type: Object,
-      computed: 'computeIcon(state)',
-    },
-
-    image: {
-      type: Object,
-      computed: 'computeImage(state)',
-    },
-
-    value: {
+    entityName: {
       type: String,
-      computed: 'computeValue(state)',
+      value: null,
     },
+
+    entityPicture: {
+      type: String,
+      value: null,
+    }
   },
 
   listeners: {
@@ -87,29 +73,8 @@ Polymer({
   badgeTap: function (ev) {
     ev.stopPropagation();
     if (this.entityId) {
-      this.async(function () {
-        window.hass.moreInfoActions.selectEntity(this.entityId);
-      }, 1);
+      this.fire('hass-more-info', { entityId: this.entityId });
     }
-  },
-
-  computeState: function (entityId) {
-    return entityId && window.hass.reactor.evaluate(window.hass.entityGetters.byId(entityId));
-  },
-
-  computeIcon: function (state) {
-    return !state && 'home';
-  },
-
-  computeImage: function (state) {
-    return state && state.attributes.entity_picture;
-  },
-
-  computeValue: function (state) {
-    return state &&
-      state.entityDisplay.split(' ').map(function (part) {
-        return part.substr(0, 1);
-      }).join('');
   },
 });
 </script>
