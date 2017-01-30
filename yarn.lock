@@ -2806,9 +2806,9 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
-home-assistant-js-websocket@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-0.7.1.tgz#b59d2343ec0eca491b90f2dd4d7c612f2d1f77d8"
+home-assistant-js-websocket@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-0.7.2.tgz#7d96870a0a0581838edcea9cdce725395d389996"
 
 homedir-polyfill@^1.0.0:
   version "1.0.1"
