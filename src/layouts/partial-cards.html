@@ -254,7 +254,14 @@ Polymer({
   },
 
   computeViews: function (hass) {
-    return window.HAWS.extractViews(hass.states);
+    var views = window.HAWS.extractViews(hass.states);
+
+    // If default view present, it's in first index.
+    if (views.length > 0 && views[0].entity_id === 'group.default_view') {
+      views.shift();
+    }
+
+    return views;
   },
 
   /*
