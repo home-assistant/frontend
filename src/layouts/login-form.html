@@ -176,15 +176,15 @@ Polymer({
       function (errCode) {
         el.isValidating = false;
 
-        if (errCode === HAWS.ERR_CANNOT_CONNECT) {
+        if (errCode === window.HAWS.ERR_CANNOT_CONNECT) {
           el.errorMessage = 'Unable to connect';
-        } else if (errCode === HAWS.ERR_INVALID_AUTH) {
+        } else if (errCode === window.HAWS.ERR_INVALID_AUTH) {
           el.errorMessage = 'Invalid password';
         } else {
           el.errorMessage = 'Unknown error: ' + errCode;
         }
       }
-    ).catch(function (err) { console.error('error', err); });
+    );
   }
 });
 </script>
