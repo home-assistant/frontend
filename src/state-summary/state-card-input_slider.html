@@ -62,10 +62,12 @@ Polymer({
     this.value = Number(newVal.state);
     // min must always be below max, so if min is > 100 we must take extra care.
     if (min >= this.max || (this.max === undefined && min >= 100)) {
-      this.max = min + 1;
+      this.max = Number(newVal.attributes.max);
+      this.min = min;
+    } else {
+      this.min = min;
+      this.max = Number(newVal.attributes.max);
     }
-    this.min = min;
-    this.max = Number(newVal.attributes.max);
     this.step = Number(newVal.attributes.step);
   },
 
