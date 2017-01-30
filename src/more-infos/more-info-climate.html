@@ -234,7 +234,7 @@ Polymer({
     },
   },
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     this.targetTemperatureSliderValue = newVal.attributes.temperature;
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
     this.auxheatToggleChecked = newVal.attributes.aux_heat === 'on';
@@ -260,9 +260,11 @@ Polymer({
       this.swingIndex = -1;
     }
 
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    if (oldVal) {
+      this.async(function () {
+        this.fire('iron-resize');
+      }.bind(this), 500);
+    }
   },
 
   computeTargetTempHidden: function (stateObj) {

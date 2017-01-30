@@ -228,7 +228,7 @@ Polymer({
 
   HAS_MEDIA_STATES: ['playing', 'paused', 'unknown'],
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged: function (newVal, oldVal) {
     if (newVal) {
       this.isOff = newVal.state === 'off';
       this.isPlaying = newVal.state === 'playing';
@@ -253,9 +253,11 @@ Polymer({
       }
     }
 
-    this.async(function () {
-      this.fire('iron-resize');
-    }.bind(this), 500);
+    if (oldVal) {
+      this.async(function () {
+        this.fire('iron-resize');
+      }.bind(this), 500);
+    }
   },
 
   computeClassNames: function (stateObj) {
