@@ -86,7 +86,9 @@ Polymer({
     _selectedDate: {
       type: Date,
       value: function () {
-        return new Date();
+        var begin = new Date();
+        begin.setHours(0, 0, 0, 0);
+        return begin;
       },
     },
 
@@ -107,12 +109,6 @@ Polymer({
       field: document.createElement('input'),
       trigger: this.$.datePicker.inputElement,
       onSelect: function (newDate) {
-        newDate.setDate(newDate.getDate() + 1);
-
-        if (newDate > new Date()) {
-          newDate = new Date();
-        }
-
         this._selectedDate = newDate;
       }.bind(this),
     });
