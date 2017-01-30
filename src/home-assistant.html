@@ -40,9 +40,8 @@
 </dom-module>
 
 <script>
-window.removeInitMsg = function removeInitMessage() {
-  // remove the HTML init message
-  const initMsg = document.getElementById('ha-init-skeleton');
+window.removeInitMsg = function () {
+  var initMsg = document.getElementById('ha-init-skeleton');
   if (initMsg) {
     initMsg.parentElement.removeChild(initMsg);
   }
