@@ -18,7 +18,7 @@
   <template>
     <ha-pref-storage hass='[[hass]]' id='storage'></ha-pref-storage>
     <notification-manager id='notifications' hass='[[hass]]'></notification-manager>
-    <template is='dom-if' if='[[showMain]]'>
+    <template is='dom-if' if='[[showMain]]' restamp>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
         on-hass-navigate='handleNavigate'
@@ -163,9 +163,15 @@ Polymer({
   },
 
   handleConnectionPromise: function (prom) {
+    if (!prom) return;
+
+    var el = this;
+
     prom.then(function (conn) {
-      this.connection = conn;
-    }.bind(this));
+      el.connection = conn;
+    }, function () {
+      el.connectionPromise = null;
+    });
   },
 
   handleMoreInfo: function (ev) {
@@ -206,6 +212,7 @@ Polymer({
 
   handleLogout: function () {
     this.connection.close();
+    delete localStorage.authToken;
     this.connection = null;
     this.connectionPromise = null;
     this.hass = null;

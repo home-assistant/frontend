@@ -49,10 +49,18 @@
       <a href="#" id="hideKeyboardOnFocus"></a>
       <div class='interact'>
         <div id='loginform' hidden$="[[showLoading]]">
-          <paper-input-container id="passwordDecorator" invalid="[[isInvalid]]">
+          <paper-input-container
+            id="passwordDecorator"
+            invalid="[[errorMessage]]"
+          >
             <label>Password</label>
-            <input is="iron-input" type="password" id="passwordInput" />
-            <paper-input-error invalid="[[isInvalid]]">[[errorMessage]]</paper-input-error>
+            <input
+              is="iron-input"
+              type="password"
+              id="passwordInput"
+              bind-value="{{password}}"
+            />
+            <paper-input-error invalid="[[errorMessage]]">[[errorMessage]]</paper-input-error>
           </paper-input-container>
           <div class="layout horizontal center">
             <paper-checkbox for id='rememberLogin'>Remember</paper-checkbox>
@@ -80,16 +88,12 @@ Polymer({
     connectionPromise: {
       type: Object,
       notify: true,
+      observer: 'handleConnectionPromiseChanged',
     },
 
     errorMessage: {
       type: String,
       value: '',
-    },
-
-    isInvalid: {
-      type: Boolean,
-      value: false,
     },
 
     isValidating: {
@@ -107,16 +111,17 @@ Polymer({
       type: Boolean,
       computed: 'computeShowSpinner(forceShowLoading, isValidating)',
     },
+
+    password: {
+      type: String,
+      value: '',
+    },
   },
 
   listeners: {
     keydown: 'passwordKeyDown',
     'loginButton.tap': 'validatePassword',
   },
-
-  observers: [
-    'validatingChanged(isValidating, isInvalid)',
-  ],
 
   attached: function () {
     window.removeInitMsg();
@@ -126,15 +131,11 @@ Polymer({
     return forceShowLoading || isValidating;
   },
 
-  validatingChanged: function (isValidating, isInvalid) {
-    if (!isValidating && !isInvalid) {
-      this.$.passwordInput.value = '';
-    }
-  },
-
   isValidatingChanged: function (newVal) {
     if (!newVal) {
-      this.async(function () { this.$.passwordInput.focus(); }.bind(this), 10);
+      this.async(function () {
+        this.$.passwordInput.focus();
+      }.bind(this), 10);
     }
   },
 
@@ -144,16 +145,46 @@ Polymer({
       this.validatePassword();
       ev.preventDefault();
     // clear error after we start typing again
-    } else if (this.isInvalid) {
-      this.isInvalid = false;
+    } else if (this.errorMessage) {
+      this.errorMessage = '';
     }
   },
 
   validatePassword: function () {
+    var auth = this.password;
     this.$.hideKeyboardOnFocus.focus();
+    this.connectionPromise = window.createHassConnection(auth);
 
-    window.validateAuth(this.$.passwordInput.value,
-                        this.$.rememberLogin.checked);
+    if (this.$.rememberLogin.checked) {
+      this.connectionPromise.then(function () {
+        localStorage.authToken = auth;
+      });
+    }
   },
+
+  handleConnectionPromiseChanged: function (newVal) {
+    if (!newVal) return;
+
+    var el = this;
+    this.isValidating = true;
+
+    this.connectionPromise.then(
+      function () {
+        el.isValidating = false;
+        el.password = '';
+      },
+      function (errCode) {
+        el.isValidating = false;
+
+        if (errCode === HAWS.ERR_CANNOT_CONNECT) {
+          el.errorMessage = 'Unable to connect';
+        } else if (errCode === HAWS.ERR_INVALID_AUTH) {
+          el.errorMessage = 'Invalid password';
+        } else {
+          el.errorMessage = 'Unknown error: ' + errCode;
+        }
+      }
+    ).catch(function (err) { console.error('error', err); });
+  }
 });
 </script>
