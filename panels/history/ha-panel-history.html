@@ -9,7 +9,7 @@
 <link rel="import" href="../../src/components/state-history-charts.html">
 <link rel="import" href="../../src/resources/pikaday-js.html">
 <link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/util/hass-behavior.html">
+<link rel="import" href="../../src/data/ha-state-history-data.html">
 <link rel="import" href="../../src/resources/ha-style.html">
 
 <dom-module id="ha-panel-history">
@@ -24,15 +24,19 @@
       }
     </style>
 
+    <ha-state-history-data
+      hass='[[hass]]'
+      filter-type='[[_filterType]]'
+      filter-value='[[_computeFilterDate(_selectedDate)]]'
+      data='{{stateHistory}}'
+      isLoading='{{isLoadingData}}'
+    ></ha-state-history-data>
+
     <app-header-layout has-scrolling-region>
       <app-header fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>History</div>
-          <paper-icon-button
-            icon="mdi:refresh"
-            on-tap="handleRefreshClick"
-          ></paper-icon-button>
         </app-toolbar>
       </app-header>
 
@@ -40,11 +44,11 @@
         <paper-input
           label='Showing entries for'
           id='datePicker'
-          value='[[selectedDateStr]]'
+          value='[[_computeDateDisplay(_selectedDate)]]'
           on-focus='datepickerFocus'
         ></paper-input>
 
-        <state-history-charts state-history="[[stateHistory]]"
+        <state-history-charts history-data="[[stateHistory]]"
           is-loading-data="[[isLoadingData]]"></state-history-charts>
       </div>
     </app-header-layout>
@@ -54,8 +58,6 @@
 <script>
 Polymer({
   is: 'ha-panel-history',
-
-  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
@@ -71,61 +73,27 @@ Polymer({
       value: false,
     },
 
-    isDataLoaded: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.entityHistoryGetters.hasDataForCurrentDate;
-      },
-      observer: 'isDataLoadedChanged',
-    },
-
     stateHistory: {
       type: Object,
-      bindNuclear: function (hass) {
-        return hass.entityHistoryGetters.entityHistoryForCurrentDate;
-      },
+      value: null,
     },
 
     isLoadingData: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.entityHistoryGetters.isLoadingEntityHistory;
+      value: false,
+    },
+
+    _selectedDate: {
+      type: Date,
+      value: function () {
+        return new Date();
       },
     },
 
-    selectedDate: {
+    _filterType: {
       type: String,
-      value: null,
-      bindNuclear: function (hass) {
-        return hass.entityHistoryGetters.currentDate;
-      },
+      value: 'date',
     },
-
-    selectedDateStr: {
-      type: String,
-      value: null,
-      bindNuclear: function (hass) {
-        return [
-          hass.entityHistoryGetters.currentDate,
-          function (currentDate) {
-            var dateObj = new Date(currentDate);
-            return window.hassUtil.formatDate(dateObj);
-          },
-        ];
-      },
-    },
-  },
-
-  isDataLoadedChanged: function (newVal) {
-    if (!newVal) {
-      this.async(function () {
-        this.hass.entityHistoryActions.fetchSelectedDate();
-      }.bind(this), 1);
-    }
-  },
-
-  handleRefreshClick: function () {
-    this.hass.entityHistoryActions.fetchSelectedDate();
   },
 
   datepickerFocus: function () {
@@ -138,15 +106,30 @@ Polymer({
       // field value with its internal formatting.
       field: document.createElement('input'),
       trigger: this.$.datePicker.inputElement,
-      onSelect: this.hass.entityHistoryActions.changeCurrentDate,
+      onSelect: function (newDate) {
+        newDate.setDate(newDate.getDate() + 1);
+
+        if (newDate > new Date()) {
+          newDate = new Date();
+        }
+
+        this._selectedDate = newDate;
+      }.bind(this),
     });
     // Set the initial datePicker date, without triggering onSelect handler.
-    this.datePicker.setDate(this.selectedDate, true);
+    this.datePicker.setDate(this._selectedDate, true);
   },
 
   detached: function () {
     this.datePicker.destroy();
   },
 
+  _computeDateDisplay: function (date) {
+    return window.hassUtil.formatDate(new Date(date));
+  },
+
+  _computeFilterDate: function (_selectedDate) {
+    return _selectedDate.toISOString();
+  },
 });
 </script>

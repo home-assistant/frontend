@@ -7,8 +7,6 @@
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input-container.html'>
 
-<link rel='import' href='../util/hass-behavior.html'>
-
 <dom-module id='more-info-configurator'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
@@ -94,8 +92,6 @@
 Polymer({
   is: 'more-info-configurator',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     stateObj: {
       type: Object,
@@ -104,13 +100,6 @@ Polymer({
     action: {
       type: String,
       value: 'display',
-    },
-
-    isStreaming: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.streamGetters.isStreamingEvents;
-      },
     },
 
     isConfigurable: {
@@ -154,13 +143,9 @@ Polymer({
 
     this.isConfiguring = true;
 
-    this.hass.serviceActions.callService('configurator', 'configure', data).then(
+    this.hass.callService('configurator', 'configure', data).then(
       function () {
         this.isConfiguring = false;
-
-        if (!this.isStreaming) {
-          this.hass.syncActions.fetchAll();
-        }
       }.bind(this),
       function () {
         this.isConfiguring = false;

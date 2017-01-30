@@ -2,8 +2,6 @@
 
 <link rel="import" href="../state-summary/state-card-content.html">
 
-<link rel='import' href='../util/hass-behavior.html'>
-
 <dom-module id="more-info-group">
   <template>
     <style>
@@ -29,8 +27,6 @@
 Polymer({
   is: 'more-info-group',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
@@ -42,26 +38,28 @@ Polymer({
 
     states: {
       type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.moreInfoGetters.currentEntity,
-          hass.entityGetters.entityMap,
-          function (currentEntity, entities) {
-            // weird bug??
-            if (!currentEntity) {
-              return [];
-            }
-            return currentEntity.attributes.entity_id.map(
-              entities.get.bind(entities));
-          },
-        ];
-      },
+      computed: 'computeStates(stateObj, hass)',
     },
   },
 
   observers: [
     'statesChanged(stateObj, states)',
   ],
+
+  computeStates: function (stateObj, hass) {
+    var states = [];
+    var entIds = stateObj.attributes.entity_id;
+
+    for (var i = 0; i < entIds.length; i++) {
+      var state = hass.states[entIds[i]];
+
+      if (state) {
+        states.push(state);
+      }
+    }
+
+    return states;
+  },
 
   statesChanged: function (stateObj, states) {
     var groupDomainStateObj = false;
@@ -73,15 +71,18 @@ Polymer({
     if (states && states.length > 0) {
       baseStateObj = states[0];
 
-      groupDomainStateObj = baseStateObj.set('entityId', stateObj.entityId).set(
-          'attributes', Object.assign({}, baseStateObj.attributes));
+      groupDomainStateObj = Object.assign(baseStateObj, {
+        entity_id: stateObj.entity_id,
+        attributes: Object.assign({}, baseStateObj.attributes)
+      });
+      var groupDomain = window.hassUtil.computeDomain(groupDomainStateObj);
 
       for (i = 0; i < states.length; i++) {
         state = states[i];
-        if (state && state.domain) {
-          if (groupDomainStateObj.domain !== state.domain) {
-            groupDomainStateObj = false;
-          }
+
+        if (groupDomain !== window.hassUtil.computeDomain(state)) {
+          groupDomainStateObj = false;
+          break;
         }
       }
     }

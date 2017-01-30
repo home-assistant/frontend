@@ -1,41 +1,28 @@
-import HomeAssistant from '../home-assistant-js/src/index';
+import * as HAWS from 'home-assistant-js-websocket';
 
-const hass = new HomeAssistant();
+window.HAWS = HAWS;
+window.HASS_DEMO = __DEMO__;
 
-window.validateAuth = function validateAuth(authToken, rememberAuth) {
-  hass.authActions.validate(authToken, {
-    rememberAuth,
-    useStreaming: hass.localStoragePreferences.useStreaming,
-  });
+const init = window.createHassConnection = function (password) {
+  const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const url = `${proto}://${window.location.host}/api/websocket`;
+  const options = {};
+  if (password !== undefined) {
+    options.authToken = password;
+  }
+
+  return HAWS.createConnection(url, options)
+    .then(function (conn) {
+      HAWS.subscribeEntities(conn);
+      HAWS.subscribeConfig(conn);
+      return conn;
+    });
 };
 
-window.removeInitMsg = function removeInitMessage() {
-  // remove the HTML init message
-  const initMsg = document.getElementById('ha-init-skeleton');
-  if (initMsg) {
-    initMsg.parentElement.removeChild(initMsg);
-  }
-};
-
-hass.reactor.batch(function () {
-  hass.navigationActions.showSidebar(
-    hass.localStoragePreferences.showSidebar);
-
-  // if auth was given, tell the backend
-  if (window.noAuth) {
-    window.validateAuth('', false);
-  } else if (hass.localStoragePreferences.authToken) {
-    window.validateAuth(hass.localStoragePreferences.authToken, true);
-  }
-});
-
-setTimeout(hass.startLocalStoragePreferencesSync, 5000);
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/service_worker.js');
-  });
+if (window.noAuth) {
+  window.hassConnection = init();
+} else if (window.localStorage.authToken) {
+  window.hassConnection = init(window.localStorage.authToken);
+} else {
+  window.hassConnection = null;
 }
-
-// While we figure out how ha-entity-marker can keep it's references
-window.hass = hass;

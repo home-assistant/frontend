@@ -2,8 +2,6 @@
 
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
-<link rel='import' href='../util/hass-behavior.html'>
-
 <dom-module id="notification-manager">
   <template>
     <style>
@@ -14,8 +12,8 @@
 
     <paper-toast
       id="toast"
-      text='{{text}}'
-      no-cancel-on-outside-click='[[neg]]'
+      text='[[_text]]'
+      no-cancel-on-outside-click='[[_cancelOnOutsideClick]]'
     ></paper-toast>
     <paper-toast
       id='connToast'
@@ -30,8 +28,6 @@
 Polymer({
   is: 'notification-manager',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
@@ -39,27 +35,27 @@ Polymer({
 
     isStreaming: {
       type: Boolean,
-      bindNuclear: function (hass) { return hass.streamGetters.isStreamingEvents; },
+      computed: 'computeIsStreaming(hass)',
     },
 
-    // Otherwise we cannot close a modal when a notification is being shown.
-    neg: {
+    _cancelOnOutsideClick: {
       type: Boolean,
       value: false,
     },
 
-    text: {
+    _text: {
       type: String,
-      bindNuclear: function (hass) {
-        return hass.notificationGetters.lastNotificationMessage;
-      },
-      observer: 'showNotification',
+      readOnly: true,
     },
 
     toastClass: {
       type: String,
       value: '',
     },
+  },
+
+  computeIsStreaming: function (hass) {
+    return !hass || hass.connected;
   },
 
   created: function () {
@@ -81,10 +77,9 @@ Polymer({
     this.$.connToast.classList.toggle('fit-bottom', ev.matches);
   },
 
-  showNotification: function (newText) {
-    if (newText) {
-      this.$.toast.show();
-    }
+  showNotification: function (message) {
+    this._set_text(message);
+    this.$.toast.show();
   },
 });
 </script>

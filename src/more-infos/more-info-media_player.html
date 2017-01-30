@@ -10,8 +10,6 @@
 <link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
-<link rel='import' href='../util/hass-behavior.html'>
-
 <dom-module id='more-info-media_player'>
   <template>
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -115,14 +113,10 @@
 Polymer({
   is: 'more-info-media_player',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     ttsLoaded: {
       type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.configGetters.isComponentLoaded('tts');
-      },
+      computed: 'computeTTSLoaded(hass)',
     },
 
     hass: {
@@ -307,6 +301,10 @@ Polymer({
     return !ttsLoaded || !supportsPlayMedia;
   },
 
+  computeTTSLoaded: function (hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'tts');
+  },
+
   handleTogglePower: function () {
     this.callService(this.isOff ? 'turn_on' : 'turn_off');
   },
@@ -376,15 +374,14 @@ Polymer({
   },
 
   sendTTS: function () {
-    var services = this.hass.reactor.evaluate(
-        this.hass.serviceGetters.entityMap).get('tts').get('services').keySeq()
-            .toArray();
+    var services = this.hass.config.services.tts;
+    var serviceKeys = Object.keys(services).sort();
     var service;
     var i;
 
-    for (i = 0; i < services.length; i++) {
-      if (services[i].indexOf('_say') !== -1) {
-        service = services[i];
+    for (i = 0; i < serviceKeys.length; i++) {
+      if (services[serviceKeys[i]].indexOf('_say') !== -1) {
+        service = services[serviceKeys[i]];
         break;
       }
     }
@@ -393,8 +390,8 @@ Polymer({
       return;
     }
 
-    this.hass.serviceActions.callService('tts', service, {
-      entity_id: this.stateObj.entityId,
+    this.hass.callService('tts', service, {
+      entity_id: this.stateObj.entity_id,
       message: this.ttsMessage,
     });
     this.ttsMessage = '';
@@ -403,8 +400,8 @@ Polymer({
 
   callService: function (service, data) {
     var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entityId;
-    this.hass.serviceActions.callService('media_player', service, serviceData);
+    serviceData.entity_id = this.stateObj.entity_id;
+    this.hass.callService('media_player', service, serviceData);
   },
 });
 </script>

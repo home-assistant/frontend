@@ -73,7 +73,7 @@ Polymer({
     startTime = new Date(
       stateHistory.reduce(
         function (minTime, stateInfo) {
-          return Math.min(minTime, stateInfo[0].lastChangedAsDate);
+          return Math.min(minTime, new Date(stateInfo[0].last_changed));
         }, new Date()));
 
     // end time is Math.min(curTime, start time + 1 day)
@@ -93,11 +93,11 @@ Polymer({
 
       if (stateInfo.length === 0) return;
 
-      entityDisplay = stateInfo[0].entityDisplay;
+      entityDisplay = window.hassUtil.computeStateName(stateInfo[0]);
 
       stateInfo.forEach(function (state) {
         if (prevState !== null && state.state !== prevState) {
-          newLastChanged = state.lastChangedAsDate;
+          newLastChanged = new Date(state.last_changed);
 
           addRow(entityDisplay, prevState, prevLastChanged, newLastChanged);
 
@@ -105,7 +105,7 @@ Polymer({
           prevLastChanged = newLastChanged;
         } else if (prevState === null) {
           prevState = state.state;
-          prevLastChanged = state.lastChangedAsDate;
+          prevLastChanged = new Date(state.last_changed);
         }
       });
 

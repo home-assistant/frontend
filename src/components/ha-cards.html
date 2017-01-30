@@ -88,11 +88,18 @@
     weather: 4,
   };
 
+  // 4 types:
+  // badges: 0 .. 10
+  // before groups < 0
+  // groups: X
+  // rest: 100
+
   var PRIORITY = {
+    // before groups < 0
     configurator: -20,
     persistent_notification: -15,
-    group: -10,
-    a: -1,
+
+    // badges have priority >= 0
     updater: 0,
     sun: 1,
     device_tracker: 2,
@@ -102,13 +109,39 @@
   };
 
   function getPriority(domain) {
-    return (domain in PRIORITY) ? PRIORITY[domain] : 30;
+    return (domain in PRIORITY) ? PRIORITY[domain] : 100;
   }
 
-  function entitySortBy(entity) {
-    return entity.domain === 'group' ? entity.attributes.order :
-                                       entity.entityDisplay.toLowerCase();
+  function sortPriority(domainA, domainB) {
+    return domainA.priority - domainB.priority;
   }
+
+  function entitySortBy(entityA, entityB) {
+    var nameA = (entityA.attributes.friendly_name ||
+                 entityA.entity_id).toLowerCase();
+    var nameB = (entityB.attributes.friendly_name ||
+                 entityB.entity_id).toLowerCase();
+
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameB > nameA) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function iterateDomainSorted(collection, func) {
+    Object.keys(collection)
+      .map(function (key) { return collection[key]; })
+      .sort(sortPriority)
+      .forEach(function (domain) {
+        domain.states.sort(entitySortBy);
+        func(domain);
+      });
+  }
+
+  var computeDomain = window.hassUtil.computeDomain;
 
   Polymer({
     is: 'ha-cards',
@@ -138,6 +171,7 @@
 
       viewVisible: {
         type: Boolean,
+        value: false,
       },
 
       cards: {
@@ -160,13 +194,11 @@
           if (this.panelVisible && this.viewVisible) {
             this.cards = this.computeCards(columns, states, showIntroduction);
           }
-        }.bind(this));
+        }.bind(this), 10);
     },
 
     computeCards: function (columns, states, showIntroduction) {
       var hass = this.hass;
-      var byDomain = states.groupBy(function (entity) { return entity.domain; });
-      var hasGroup = {};
 
       var cards = {
         demo: false,
@@ -174,15 +206,10 @@
         columns: [],
       };
       var entityCount = [];
-      var expandGroup;
       var i;
       for (i = 0; i < columns; i++) {
         cards.columns.push([]);
         entityCount.push(0);
-      }
-
-      function filterGrouped(entities) {
-        return entities.filter(function (entity) { return !(entity.entityId in hasGroup); });
       }
 
       // Find column with < 5 entities, else column with lowest count
@@ -206,7 +233,7 @@
         cards.columns[getIndex(5)].push({
           hass: hass,
           cardType: 'introduction',
-          showHideInstruction: states.size > 0 && !hass.demo,
+          showHideInstruction: states.size > 0 && !window.HASS_DEMO,
         });
       }
 
@@ -223,9 +250,11 @@
         size = 0;
 
         entities.forEach(function (entity) {
-          if (entity.domain in DOMAINS_WITH_CARD) {
+          var domain = computeDomain(entity);
+
+          if (domain in DOMAINS_WITH_CARD) {
             owncard.push(entity);
-            size += DOMAINS_WITH_CARD[entity.domain];
+            size += DOMAINS_WITH_CARD[domain];
           } else {
             other.push(entity);
             size++;
@@ -249,43 +278,71 @@
         owncard.forEach(function (entity) {
           cards.columns[curIndex].push({
             hass: hass,
-            cardType: entity.domain,
+            cardType: computeDomain(entity),
             stateObj: entity,
           });
         });
       }
 
-      expandGroup = this.hass.util.expandGroup;
+      var sorted = window.HAWS.splitByGroups(states);
 
-      byDomain.keySeq().sortBy(function (domain) { return getPriority(domain); })
-        .forEach(function (domain) {
-          var priority;
+      var badgesColl = {};
+      var beforeGroupColl = {};
+      var afterGroupedColl = {};
 
-          if (domain === 'a') {
-            cards.demo = true;
-            return;
-          }
+      Object.keys(sorted.ungrouped).forEach(function (key) {
+        var state = sorted.ungrouped[key];
+        var domain = computeDomain(state);
 
-          priority = getPriority(domain);
-
-          if (priority >= 0 && priority < 10) {
-            cards.badges.push.apply(
-              cards.badges, filterGrouped(byDomain.get(domain)).sortBy(
-                entitySortBy).toArray());
-          } else if (domain === 'group') {
-            byDomain.get(domain).sortBy(entitySortBy)
-              .forEach(function (groupState) {
-                var entities = expandGroup(groupState, states);
-                entities.forEach(function (entity) { hasGroup[entity.entityId] = true; });
-                addEntitiesCard(groupState.entityId, entities.toArray(), groupState);
-              }
-            );
-          } else {
-            addEntitiesCard(
-              domain, filterGrouped(byDomain.get(domain)).sortBy(entitySortBy).toArray());
-          }
+        if (domain === 'a') {
+          cards.demo = true;
+          return;
         }
-      );
+
+        var priority = getPriority(domain);
+        var coll;
+
+        if (priority < 0) {
+          coll = beforeGroupColl;
+        } else if (priority < 10) {
+          coll = badgesColl;
+        } else {
+          coll = afterGroupedColl;
+        }
+
+        if (!(domain in coll)) {
+          coll[domain] = {
+            domain: domain,
+            priority: priority,
+            states: [],
+          };
+        }
+
+        coll[domain].states.push(state);
+      });
+
+      iterateDomainSorted(badgesColl, function (domain) {
+        cards.badges.push.apply(cards.badges, domain.states);
+      });
+
+      iterateDomainSorted(beforeGroupColl, function (domain) {
+        addEntitiesCard(domain.domain, domain.states);
+      });
+
+      sorted.groups.forEach(function (groupState) {
+        var entities = window.HAWS.getGroupEntities(states, groupState);
+        addEntitiesCard(
+          groupState.entity_id,
+          Object.keys(entities).map(function (key) {
+            return entities[key];
+          }),
+          groupState
+        );
+      });
+
+      iterateDomainSorted(afterGroupedColl, function (domain) {
+        addEntitiesCard(domain.domain, domain.states);
+      });
 
       // Remove empty columns
       cards.columns = cards.columns.filter(function (val) {

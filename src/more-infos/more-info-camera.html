@@ -13,7 +13,7 @@
     </style>
 
     <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]"
-         on-load='imageLoaded' alt='[[stateObj.entityDisplay]]' />
+         on-load='imageLoaded' alt='[[computeStateName(stateObj)]]' />
   </template>
 </dom-module>
 
@@ -40,11 +40,15 @@ Polymer({
     this.fire('iron-resize');
   },
 
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
+  },
+
   computeCameraImageUrl: function (hass, stateObj, isVisible) {
     if (hass.demo) {
       return '/demo/webcam.jpg';
     } else if (stateObj && isVisible) {
-      return '/api/camera_proxy_stream/' + stateObj.entityId +
+      return '/api/camera_proxy_stream/' + stateObj.entity_id +
              '?token=' + stateObj.attributes.access_token;
     }
     // Return an empty image if no stateObj (= dialog not open) or in cleanup mode.

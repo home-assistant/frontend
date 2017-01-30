@@ -68,18 +68,18 @@ Polymer({
   },
 
   onOpenTap: function () {
-    this.hass.serviceActions.callService('cover', 'open_cover',
-                                         { entity_id: this.stateObj.entityId });
+    this.hass.callService('cover', 'open_cover',
+                                         { entity_id: this.stateObj.entity_id });
   },
 
   onCloseTap: function () {
-    this.hass.serviceActions.callService('cover', 'close_cover',
-                                         { entity_id: this.stateObj.entityId });
+    this.hass.callService('cover', 'close_cover',
+                                         { entity_id: this.stateObj.entity_id });
   },
 
   onStopTap: function () {
-    this.hass.serviceActions.callService('cover', 'stop_cover',
-                                         { entity_id: this.stateObj.entityId });
+    this.hass.callService('cover', 'stop_cover',
+                                         { entity_id: this.stateObj.entity_id });
   },
 });
 </script>

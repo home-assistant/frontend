@@ -20,7 +20,7 @@
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>[[stateObj.stateDisplay]]</div>
+      <div class='state'>[[computeStateDisplay(stateObj)]]</div>
     </div>
   </template>
 </dom-module>
@@ -38,6 +38,10 @@ Polymer({
     stateObj: {
       type: Object,
     },
+  },
+
+  computeStateDisplay: function (stateObj) {
+    return window.hassUtil.computeStateState(stateObj);
   },
 });
 </script>

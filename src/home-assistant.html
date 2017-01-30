@@ -6,28 +6,47 @@
 <link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 
 <link rel='import' href='./util/hass-util.html'>
-<link rel='import' href='./util/hass-behavior.html'>
+<link rel='import' href='./util/ha-pref-storage.html'>
+<link rel='import' href='./util/hass-call-api.html'>
 <link rel='import' href='./layouts/login-form.html'>
 <link rel='import' href='./layouts/home-assistant-main.html'>
 <link rel='import' href='./resources/ha-style.html'>
 <link rel="import" href="./resources/panel-imports.html">
+<link rel='import' href='./managers/notification-manager.html'>
 
 <dom-module id='home-assistant'>
   <template>
-    <template is='dom-if' if='[[loaded]]'>
-      <home-assistant-main hass='[[hass]]'></home-assistant-main>
+    <ha-pref-storage hass='[[hass]]' id='storage'></ha-pref-storage>
+    <notification-manager id='notifications' hass='[[hass]]'></notification-manager>
+    <template is='dom-if' if='[[showMain]]' restamp>
+      <home-assistant-main
+        on-hass-more-info='handleMoreInfo'
+        on-hass-navigate='handleNavigate'
+        on-hass-dock-sidebar='handleDockSidebar'
+        on-hass-notification='handleNotification'
+        on-hass-logout='handleLogout'
+        hass='[[hass]]'
+      ></home-assistant-main>
     </template>
 
-    <template is='dom-if' if='[[!loaded]]'>
+    <template is='dom-if' if='[[!showMain]]'>
       <login-form
         hass='[[hass]]'
-        force-show-loading='[[computeForceShowLoading(dataLoaded, iconsLoaded)]]'>
+        connection-promise='{{connectionPromise}}'
+        show-loading='[[computeShowLoading(connectionPromise, iconsLoaded)]]'>
       </login-form>
     </template>
   </template>
 </dom-module>
 
 <script>
+window.removeInitMsg = function () {
+  var initMsg = document.getElementById('ha-init-skeleton');
+  if (initMsg) {
+    initMsg.parentElement.removeChild(initMsg);
+  }
+};
+
 Polymer({
   is: 'home-assistant',
 
@@ -35,36 +54,40 @@ Polymer({
     icons: null,
   },
 
-  behaviors: [window.hassBehavior],
-
   properties: {
+    connectionPromise: {
+      type: Object,
+      value: window.hassConnection || null,
+      observer: 'handleConnectionPromise',
+    },
+    connection: {
+      type: Object,
+      value: null,
+      observer: 'connectionChanged',
+    },
     hass: {
       type: Object,
-      value: window.hass,
+      value: null,
     },
     icons: {
       type: String,
-    },
-    dataLoaded: {
-      type: Boolean,
-      bindNuclear: function (hass) { return hass.syncGetters.isDataLoaded; },
     },
     iconsLoaded: {
       type: Boolean,
       value: false,
     },
-    loaded: {
+    showMain: {
       type: Boolean,
-      computed: 'computeLoaded(dataLoaded, iconsLoaded)',
+      computed: 'computeShowMain(hass, iconsLoaded)',
     },
   },
 
-  computeLoaded: function (dataLoaded, iconsLoaded) {
-    return dataLoaded && iconsLoaded;
+  computeShowMain: function (hass, iconsLoaded) {
+    return hass && hass.states && hass.config && iconsLoaded;
   },
 
-  computeForceShowLoading: function (dataLoaded, iconsLoaded) {
-    return dataLoaded && !iconsLoaded;
+  computeShowLoading: function (connectionPromise) {
+    return connectionPromise != null;
   },
 
   loadIcons: function () {
@@ -81,8 +104,125 @@ Polymer({
                     });
   },
 
+  connectionChanged: function (conn) {
+    if (!conn) {
+      this.hass = null;
+      return;
+    }
+    var notifications = this.$.notifications;
+    this.hass = Object.assign({
+      connection: conn,
+      connected: true,
+      states: null,
+      config: null,
+      dockedSidebar: false,
+      currentPanel: 'states',
+      currentView: null,
+      moreInfoEntityId: null,
+      callService: function (domain, service, serviceData) {
+        return conn.callService(domain, service, serviceData || {})
+          .then(function () {
+            var message;
+            if (service === 'turn_on' && serviceData.entity_id) {
+              message = 'Turned on ' + serviceData.entity_id + '.';
+            } else if (service === 'turn_off' && serviceData.entity_id) {
+              message = 'Turned off ' + serviceData.entity_id + '.';
+            } else {
+              message = 'Service ' + domain + '/' + service + ' called.';
+            }
+            notifications.showNotification(message);
+          },
+          function () {
+            notifications.showNotification(
+              'Failed to call service ' + domain + '/' + service);
+            return Promise.reject();
+          });
+      },
+      callApi: function (method, path, parameters) {
+        var host = window.location.protocol + '//' + window.location.host;
+        return window.hassCallApi(host, {}, method, path, parameters);
+      },
+    }, this.$.storage.getStoredState());
+
+    conn.addEventListener('ready', function () {
+      this.hass = Object.assign({}, this.hass, { connected: true });
+    }.bind(this));
+
+    conn.addEventListener('disconnected', function () {
+      this.hass = Object.assign({}, this.hass, { connected: false });
+    }.bind(this));
+
+    window.HAWS.subscribeEntities(conn, function (states) {
+      this.hass = Object.assign({}, this.hass, { states: states });
+    }.bind(this));
+
+    window.HAWS.subscribeConfig(conn, function (config) {
+      this.hass = Object.assign({}, this.hass, { config: config });
+    }.bind(this));
+  },
+
+  handleConnectionPromise: function (prom) {
+    if (!prom) return;
+
+    var el = this;
+
+    prom.then(function (conn) {
+      el.connection = conn;
+    }, function () {
+      el.connectionPromise = null;
+    });
+  },
+
+  handleMoreInfo: function (ev) {
+    ev.stopPropagation();
+
+    this.hass = Object.assign(
+      {}, this.hass,
+      { moreInfoEntityId: ev.detail.entityId });
+  },
+
+  handleNavigate: function (ev) {
+    ev.stopPropagation();
+
+    var hass = Object.assign({}, this.hass);
+
+    if ('panel' in ev.detail) {
+      hass.currentPanel = ev.detail.panel;
+    }
+
+    if ('view' in ev.detail) {
+      hass.currentView = ev.detail.view;
+    }
+
+    this.hass = hass;
+  },
+
+  handleDockSidebar: function (ev) {
+    ev.stopPropagation();
+    this.hass = Object.assign(
+      {}, this.hass,
+      { dockedSidebar: ev.detail.dock });
+    this.$.storage.storeState();
+  },
+
+  handleNotification: function (ev) {
+    this.$.notifications.showNotification(ev.detail.message);
+  },
+
+  handleLogout: function () {
+    this.connection.close();
+    delete localStorage.authToken;
+    this.connection = null;
+    this.connectionPromise = null;
+    this.hass = null;
+  },
+
   ready: function () {
     this.loadIcons();
+
+    if (this.connectionPromise !== null) {
+      this.handleConnectionPromise(this.connectionPromise);
+    }
   },
 });
 </script>

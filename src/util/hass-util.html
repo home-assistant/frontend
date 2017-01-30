@@ -46,8 +46,28 @@ window.hassUtil.attributeClassNames = function (stateObj, attributes) {
   ).join(' ');
 };
 
-window.hassUtil.canToggle = function (hass, entityId) {
-  return hass.reactor.evaluate(hass.serviceGetters.canToggleEntity(entityId));
+window.hassUtil.canToggleState = function (hass, stateObj) {
+  var domain = window.hassUtil.computeDomain(stateObj);
+  if (domain === 'group') {
+    return stateObj.state === 'on' || stateObj.state === 'off';
+  }
+
+  return window.hassUtil.canToggleDomain(hass, domain);
+};
+
+window.hassUtil.canToggleDomain = function (hass, domain) {
+  var turnOnService;
+  var services = hass.config.services[domain];
+
+  if (domain === 'lock') {
+    turnOnService = 'lock';
+  } else if (domain === 'cover') {
+    turnOnService = 'open_cover';
+  } else {
+    turnOnService = 'turn_on';
+  }
+
+  return services && turnOnService in services;
 };
 
 // Update root's child element to be newElementTag replacing another existing child if any.
@@ -168,22 +188,29 @@ window.hassUtil.relativeTime.tests = [
   7, 'day',
 ];
 
-window.hassUtil.stateCardType = function (hass, state) {
-  if (state.state === 'unavailable') {
+window.hassUtil.stateCardType = function (hass, stateObj) {
+  if (stateObj.state === 'unavailable') {
     return 'display';
-  } else if (window.hassUtil.DOMAINS_WITH_CARD.indexOf(state.domain) !== -1) {
-    return state.domain;
-  } else if (window.hassUtil.canToggle(hass, state.entityId) && state.attributes.control !== 'hidden') {
+  }
+
+  var domain = window.hassUtil.computeDomain(stateObj);
+
+  if (window.hassUtil.DOMAINS_WITH_CARD.indexOf(domain) !== -1) {
+    return domain;
+  } else if (window.hassUtil.canToggleState(hass, stateObj) &&
+             stateObj.attributes.control !== 'hidden') {
     return 'toggle';
   }
   return 'display';
 };
 
-window.hassUtil.stateMoreInfoType = function (state) {
-  if (window.hassUtil.DOMAINS_WITH_MORE_INFO.indexOf(state.domain) !== -1) {
-    return state.domain;
+window.hassUtil.stateMoreInfoType = function (stateObj) {
+  var domain = window.hassUtil.computeDomain(stateObj);
+
+  if (window.hassUtil.DOMAINS_WITH_MORE_INFO.indexOf(domain) !== -1) {
+    return domain;
   }
-  if (window.hassUtil.HIDE_MORE_INFO.indexOf(state.domain) !== -1) {
+  if (window.hassUtil.HIDE_MORE_INFO.indexOf(domain) !== -1) {
     return 'hidden';
   }
   return 'default';
@@ -318,27 +345,65 @@ window.hassUtil.binarySensorIcon = function (state) {
 };
 
 window.hassUtil.stateIcon = function (state) {
-  var unit;
-
   if (!state) {
     return window.hassUtil.DEFAULT_ICON;
   } else if (state.attributes.icon) {
     return state.attributes.icon;
   }
 
-  unit = state.attributes.unit_of_measurement;
+  var unit = state.attributes.unit_of_measurement;
+  var domain = window.hassUtil.computeDomain(state);
 
-  if (unit && state.domain === 'sensor') {
+  if (unit && domain === 'sensor') {
     if (unit === '°C' || unit === '°F') {
       return 'mdi:thermometer';
     } else if (unit === 'Mice') {
       return 'mdi:mouse-variant';
     }
-  } else if (state.domain === 'binary_sensor') {
+  } else if (domain === 'binary_sensor') {
     return window.hassUtil.binarySensorIcon(state);
   }
 
-  return window.hassUtil.domainIcon(state.domain, state.state);
+  return window.hassUtil.domainIcon(domain, state.state);
+};
+
+window.hassUtil.computeDomain = function (stateObj) {
+  if (!stateObj._domain) {
+    stateObj._domain = window.HAWS.extractDomain(stateObj.entity_id);
+  }
+
+  return stateObj._domain;
+};
+
+window.hassUtil.computeStateName = function (stateObj) {
+  if (!stateObj._entityDisplay) {
+    stateObj._entityDisplay = (
+      stateObj.attributes.friendly_name ||
+      window.HAWS.extractObjectId(stateObj.entity_id)
+          .replace(/_/g, ' '));
+  }
+
+  return stateObj._entityDisplay;
+};
+
+window.hassUtil.computeStateState = function (stateObj) {
+  if (!stateObj._stateDisplay) {
+    stateObj._stateDisplay = stateObj.state.replace(/_/g, ' ');
+
+    if (stateObj.attributes.unit_of_measurement) {
+      stateObj._stateDisplay += ` ${stateObj.attributes.unit_of_measurement}`;
+    }
+  }
+
+  return stateObj._stateDisplay;
+};
+
+window.hassUtil.isComponentLoaded = function (hass, component) {
+  return hass.config.core.components.indexOf(component) !== -1;
+};
+
+window.hassUtil.computeLocationName = function (hass) {
+  return hass.config.core.location_name;
 };
 
 </script>

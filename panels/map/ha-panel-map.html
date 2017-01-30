@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="../../bower_components/leaflet/dist/leaflet.css" />
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/util/hass-behavior.html">
 
 <link rel="import" href="./ha-entity-marker.html">
 
@@ -37,41 +36,9 @@ window.L.Icon.Default.imagePath = '/static/images/leaflet';
 Polymer({
   is: 'ha-panel-map',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
-    },
-
-    locationGPS: {
-      type: Number,
-      bindNuclear: function (hass) {
-        return hass.configGetters.locationGPS;
-      },
-    },
-
-    locationName: {
-      type: String,
-      bindNuclear: function (hass) {
-        return hass.configGetters.locationName;
-      },
-    },
-
-    locationEntities: {
-      type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.entityGetters.entityMap,
-          function (entities) {
-            return entities.valueSeq().filter(
-              function (entity) {
-                return 'latitude' in entity.attributes;
-              }
-            );
-          },
-        ];
-      },
       observer: 'drawEntities',
     },
 
@@ -96,7 +63,7 @@ Polymer({
       }
     ).addTo(map);
 
-    this.drawEntities(this.locationEntities);
+    this.drawEntities(this.hass);
 
     this.async(function () {
       map.invalidateSize();
@@ -118,7 +85,7 @@ Polymer({
     this._map.fitBounds(bounds.pad(0.5));
   },
 
-  drawEntities: function (entities) {
+  drawEntities: function (hass) {
     /* eslint-disable vars-on-top */
     var map = this._map;
     if (!map) return;
@@ -128,10 +95,21 @@ Polymer({
     }
     var mapItems = this._mapItems = [];
 
-    entities.forEach(function (entity) {
+    Object.keys(hass.states).forEach(function (entityId) {
+      var entity = hass.states[entityId];
+      var title = window.hassUtil.computeStateName(entity);
+
+      if ((entity.attributes.hidden &&
+           window.hassUtil.computeDomain(entity) !== 'zone') ||
+          entity.state === 'home' ||
+          !('latitude' in entity.attributes) ||
+          !('longitude' in entity.attributes)) {
+        return;
+      }
+
       var icon;
 
-      if (entity.domain === 'zone') {
+      if (window.hassUtil.computeDomain(entity) === 'zone') {
         // DRAW ZONE
         if (entity.attributes.passive) return;
 
@@ -141,7 +119,7 @@ Polymer({
           iconHTML = (
             "<iron-icon icon='" + entity.attributes.icon + "'></iron-icon>");
         } else {
-          iconHTML = entity.entityDisplay;
+          iconHTML = title;
         }
 
         icon = window.L.divIcon({
@@ -156,7 +134,7 @@ Polymer({
           {
             icon,
             interactive: false,
-            title: entity.entityDisplay,
+            title: title,
           }
         ).addTo(map));
 
@@ -173,13 +151,14 @@ Polymer({
         return;
       }
 
-      // Filter out entities at home
-      if (entity.state === 'home' || entity.attributes.hidden) return;
-
       // DRAW ENTITY
       // create icon
+      var entityPicture = entity.attributes.entity_picture || '';
+      var entityName = title.split(' ').map(function (part) { return part.substr(0, 1); }).join('');
+      /* Leaflet clones this element before adding it to the map. This messes up
+         our Poylmer object and we can't pass data through. Thus we hack like this. */
       icon = window.L.divIcon({
-        html: "<ha-entity-marker entity-id='" + entity.entityId + "'></ha-entity-marker>",
+        html: "<ha-entity-marker entity-id='" + entity.entity_id + "' entity-name='" + entityName + "' entity-picture='" + entityPicture + "'></ha-entity-marker>",
         iconSize: [45, 45],
         className: '',
       });
@@ -189,7 +168,7 @@ Polymer({
         [entity.attributes.latitude, entity.attributes.longitude],
         {
           icon,
-          title: entity.entityDisplay,
+          title: window.hassUtil.computeStateName(entity),
         }
       ).addTo(map));
 
@@ -212,7 +191,7 @@ Polymer({
   },
 
   toggleMenu: function () {
-    this.fire('open-menu');
+    this.fire('hass-open-menu');
   },
 });
 </script>

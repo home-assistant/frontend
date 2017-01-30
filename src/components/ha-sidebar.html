@@ -3,13 +3,12 @@
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 <link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
-<link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-icon-item.html'>
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<link rel='import' href='../util/hass-behavior.html'>
+<link rel='import' href='./ha-push-notifications-toggle.html'>
 
 <dom-module id='ha-sidebar'>
   <template>
@@ -98,13 +97,13 @@
       <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
     </app-toolbar>
 
-    <paper-menu attr-for-selected='data-panel' selected='[[selected]]' on-iron-select='menuSelect'>
+    <paper-menu attr-for-selected='data-panel' selected='[[hass.currentPanel]]' on-iron-select='menuSelect'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon item-icon icon='mdi:apps'></iron-icon>
         <span class='item-text'>States</span>
       </paper-icon-item>
 
-      <template is='dom-repeat' items='[[computePanels(panels)]]'>
+      <template is='dom-repeat' items='[[panels]]'>
         <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_path]]'>
           <iron-icon item-icon icon='[[item.icon]]'></iron-icon>
           <span class='item-text'>[[item.title]]</span>
@@ -118,15 +117,15 @@
     </paper-menu>
 
     <div>
-      <template is='dom-if' if='[[supportPush]]'>
+      <template is='dom-if' if='[[pushSupported]]'>
         <div class='divider'></div>
 
         <paper-item class='horizontal layout justified'>
           <div class='setting'>Push Notifications</div>
-          <paper-toggle-button
-            on-change='handlePushChange'
-            checked='{{pushToggleChecked}}'
-          ></paper-toggle-button>
+          <ha-push-notifications-toggle
+            hass='[[hass]]'
+            push-supported='{{pushSupported}}'
+          ></ha-push-notifications-toggle>
         </paper-item>
       </template>
 
@@ -164,8 +163,6 @@
 Polymer({
   is: 'ha-sidebar',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
@@ -183,36 +180,14 @@ Polymer({
       type: Boolean,
     },
 
-    selected: {
-      type: String,
-      bindNuclear: function (hass) {
-        return hass.navigationGetters.activePanelName;
-      },
-    },
-
     panels: {
       type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.navigationGetters.panels,
-          function (res) { return res.toJS(); },
-        ];
-      },
+      computed: 'computePanels(hass)',
     },
 
-    supportPush: {
+    pushSupported: {
       type: Boolean,
-      value: false,
-      bindNuclear: function (hass) {
-        return hass.pushNotificationGetters.isSupported;
-      },
-    },
-
-    pushToggleChecked: {
-      type: Boolean,
-      bindNuclear: function (hass) {
-        return hass.pushNotificationGetters.isActive;
-      },
+      value: true,
     },
   },
 
@@ -220,7 +195,8 @@ Polymer({
     this._boundUpdateStyles = this.updateStyles.bind(this);
   },
 
-  computePanels: function (panels) {
+  computePanels: function (hass) {
+    var panels = hass.config.panels;
     var sortValue = {
       map: 1,
       logbook: 2,
@@ -280,36 +256,22 @@ Polymer({
   },
 
   toggleMenu: function () {
-    this.fire('close-menu');
+    this.fire('hass-close-menu');
   },
 
   selectPanel: function (newChoice) {
-    if (newChoice === this.selected) {
+    if (newChoice === this.hass.currentPanel) {
       return;
     } else if (newChoice === 'logout') {
       this.handleLogOut();
       return;
     }
-    this.hass.navigationActions.navigate.apply(null, newChoice.split('/'));
+    this.fire('hass-navigate', { panel: newChoice });
     this.debounce('updateStyles', this._boundUpdateStyles, 1);
   },
 
-  handlePushChange: function (ev) {
-    if (ev.target.checked) {
-      this.hass.pushNotificationActions.subscribePushNotifications()
-        .then(function (success) {
-          this.pushToggleChecked = success;
-        }.bind(this));
-    } else {
-      this.hass.pushNotificationActions.unsubscribePushNotifications()
-        .then(function (success) {
-          this.pushToggleChecked = !success;
-        }.bind(this));
-    }
-  },
-
   handleLogOut: function () {
-    this.hass.authActions.logOut();
+    this.fire('hass-logout');
   },
 });
 </script>

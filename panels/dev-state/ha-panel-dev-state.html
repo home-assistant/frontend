@@ -10,7 +10,6 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/util/hass-behavior.html">
 <link rel="import" href="../../src/resources/ha-style.html">
 
 <dom-module id="ha-panel-dev-state">
@@ -82,7 +81,7 @@
           </tr>
           <template is='dom-repeat' items='[[_entities]]' as='entity'>
             <tr>
-              <td><a href='#' on-tap='entitySelected'>[[entity.entityId]]</a></td>
+              <td><a href='#' on-tap='entitySelected'>[[entity.entity_id]]</a></td>
               <td>[[entity.state]]</td>
               <template is='dom-if' if='[[computeShowAttributes(narrow, _showAttributes)]]'>
                 <td>[[attributeString(entity)]]</td>
@@ -98,8 +97,6 @@
 <script>
 Polymer({
   is: 'ha-panel-dev-state',
-
-  behaviors: [window.hassBehavior],
 
   properties: {
     hass: {
@@ -138,20 +135,13 @@ Polymer({
 
     _entities: {
       type: Array,
-      bindNuclear: function (hass) {
-        return [
-          hass.entityGetters.entityMap,
-          function (map) {
-            return map.valueSeq().sortBy(function (entity) { return entity.entityId; }).toArray();
-          },
-        ];
-      },
+      computed: 'computeEntities(hass)',
     },
   },
 
   entitySelected: function (ev) {
     var state = ev.model.entity;
-    this._entityId = state.entityId;
+    this._entityId = state.entity_id;
     this._state = state.state;
     this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
     ev.preventDefault();
@@ -168,11 +158,23 @@ Polymer({
       return;
     }
 
-    this.hass.entityActions.save({
-      entityId: this._entityId,
+    this.hass.callApi('POST', 'states/' + this._entityId, {
       state: this._state,
       attributes: attr,
     });
+  },
+
+  computeEntities: function (hass) {
+    return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
+      .sort(function (entityA, entityB) {
+        if (entityA.entity_id < entityB.entity_id) {
+          return -1;
+        }
+        if (entityB.entity_id > entityA.entity_id) {
+          return 1;
+        }
+        return 0;
+      });
   },
 
   computeShowAttributes: function (narrow, _showAttributes) {

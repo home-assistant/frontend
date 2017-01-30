@@ -5,22 +5,25 @@
 
 <link rel='import' href='../layouts/partial-cards.html'>
 <link rel='import' href='../layouts/partial-panel-resolver.html'>
-<link rel='import' href='../managers/notification-manager.html'>
 <link rel="import" href="../dialogs/more-info-dialog.html">
 <link rel="import" href="../dialogs/ha-voice-command-dialog.html">
+<link rel='import' href='../util/ha-url-sync.html'>
 
 <link rel='import' href='../components/ha-sidebar.html'>
 
 <dom-module id='home-assistant-main'>
   <template>
-    <notification-manager hass='[[hass]]'></notification-manager>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
-    <ha-voice-command-dialog hass='[[hass]]'></ha-voice-command-dialog>
+    <ha-url-sync hass='[[hass]]'></ha-url-sync>
+    <ha-voice-command-dialog
+      hass='[[hass]]'
+      id='voiceDialog'
+    ></ha-voice-command-dialog>
     <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
     </iron-media-query>
 
     <paper-drawer-panel id='drawer'
-      force-narrow='[[computeForceNarrow(narrow, showSidebar)]]'
+      force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
       responsive-width='0' disable-swipe='[[isSelectedMap]]'
       disable-edge-swipe='[[isSelectedMap]]'>
       <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
@@ -29,21 +32,21 @@
         main
         attr-for-selected='id'
         fallback-selection='panel-resolver'
-        selected='[[activePanel]]'
+        selected='[[currentPanel]]'
         selected-attribute='panel-visible'
       >
         <partial-cards
           id='states'
           narrow='[[narrow]]'
           hass='[[hass]]'
-          show-menu='[[showSidebar]]'
+          show-menu='[[dockedSidebar]]'
         ></partial-cards>
 
         <partial-panel-resolver
           id='panel-resolver'
           narrow='[[narrow]]'
           hass='[[hass]]'
-          show-menu='[[showSidebar]]'
+          show-menu='[[dockedSidebar]]'
         ></partial-panel-resolver>
 
       </iron-pages>
@@ -56,56 +59,55 @@
 Polymer({
   is: 'home-assistant-main',
 
-  behaviors: [window.hassBehavior],
-
   properties: {
     hass: {
       type: Object,
+      value: null,
     },
 
     narrow: {
       type: Boolean,
-      value: true,
     },
 
-    activePanel: {
+    currentPanel: {
       type: String,
-      bindNuclear: function (hass) {
-        return hass.navigationGetters.activePanelName;
-      },
-      observer: 'activePanelChanged',
+      computed: 'computeCurrentPanel(hass)',
+      observer: 'currentPanelChanged',
     },
 
-    showSidebar: {
+    dockedSidebar: {
       type: Boolean,
-      value: false,
-      bindNuclear: function (hass) {
-        return hass.navigationGetters.showSidebar;
-      },
+      computed: 'computeDockedSidebar(hass)',
     },
   },
 
   listeners: {
-    'open-menu': 'openMenu',
-    'close-menu': 'closeMenu',
+    'hass-open-menu': 'handleOpenMenu',
+    'hass-close-menu': 'handleCloseMenu',
+    'hass-start-voice': 'handleStartVoice',
   },
 
-  openMenu: function () {
+  handleStartVoice: function (ev) {
+    ev.stopPropagation();
+    this.$.voiceDialog.startListening();
+  },
+
+  handleOpenMenu: function () {
     if (this.narrow) {
       this.$.drawer.openDrawer();
     } else {
-      this.hass.navigationActions.showSidebar(true);
+      this.fire('hass-dock-sidebar', { dock: true });
     }
   },
 
-  closeMenu: function () {
+  handleCloseMenu: function () {
     this.$.drawer.closeDrawer();
-    if (this.showSidebar) {
-      this.hass.navigationActions.showSidebar(false);
+    if (this.dockedSidebar) {
+      this.fire('hass-dock-sidebar', { dock: false });
     }
   },
 
-  activePanelChanged: function () {
+  currentPanelChanged: function () {
     if (this.narrow) {
       this.$.drawer.closeDrawer();
     }
@@ -113,15 +115,18 @@ Polymer({
 
   attached: function () {
     window.removeInitMsg();
-    this.hass.startUrlSync();
   },
 
-  computeForceNarrow: function (narrow, showSidebar) {
-    return narrow || !showSidebar;
+  computeForceNarrow: function (narrow, dockedSidebar) {
+    return narrow || !dockedSidebar;
   },
 
-  detached: function () {
-    this.hass.stopUrlSync();
+  computeCurrentPanel: function (hass) {
+    return hass.currentPanel;
+  },
+
+  computeDockedSidebar: function (hass) {
+    return hass.dockedSidebar;
   },
 });
 </script>
