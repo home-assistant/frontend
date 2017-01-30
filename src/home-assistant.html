@@ -146,7 +146,8 @@ Polymer({
       },
       callApi: function (method, path, parameters) {
         var host = window.location.protocol + '//' + window.location.host;
-        return window.hassCallApi(host, {}, method, path, parameters);
+        var auth = conn.options.authToken ? conn.options : {};
+        return window.hassCallApi(host, auth, method, path, parameters);
       },
     }, this.$.storage.getStoredState());
 
