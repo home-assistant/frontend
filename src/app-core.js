@@ -26,3 +26,9 @@ if (window.noAuth) {
 } else {
   window.hassConnection = null;
 }
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/service_worker.js');
+  });
+}
