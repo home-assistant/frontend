@@ -159,7 +159,7 @@ Polymer({
 
     var disconnected = function () {
       this.hass = Object.assign({}, this.hass, { connected: false });
-    }.bind(this)
+    }.bind(this);
 
     conn.addEventListener('disconnected', disconnected);
 
@@ -184,7 +184,7 @@ Polymer({
       conn.removeEventListener('disconnected', disconnected);
       unsubEntities();
       unsubConfig();
-    }
+    };
   },
 
   handleConnectionPromise: function (prom) {
