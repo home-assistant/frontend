@@ -99,7 +99,9 @@ Polymer({
       var entity = hass.states[entityId];
       var title = window.hassUtil.computeStateName(entity);
 
-      if (entity.attributes.hidden || entity.state === 'home' ||
+      if ((entity.attributes.hidden &&
+           window.hassUtil.computeDomain(entity) !== 'zone') ||
+          entity.state === 'home' ||
           !('latitude' in entity.attributes) ||
           !('longitude' in entity.attributes)) {
         return;
