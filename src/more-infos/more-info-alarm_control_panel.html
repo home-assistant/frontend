@@ -110,7 +110,7 @@ Polymer({
       this.armHomeButtonVisible = newVal.state === 'disarmed';
       this.armAwayButtonVisible = newVal.state === 'disarmed';
     }
-    if (oldval) {
+    if (oldVal) {
       this.async(function () {
         this.fire('iron-resize');
       }.bind(this), 500);

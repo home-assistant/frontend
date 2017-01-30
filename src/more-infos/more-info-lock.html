@@ -47,7 +47,7 @@ Polymer({
     this.callService('lock', { code: this.enteredCode });
   },
 
-  stateObjChanged: function (newVal, oldVal) {
+  stateObjChanged: function (newVal) {
     if (newVal) {
       this.isLocked = newVal.state === 'locked';
     }
