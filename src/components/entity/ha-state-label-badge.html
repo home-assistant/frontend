@@ -88,7 +88,8 @@ Polymer({
     if (state.state === 'unavailable') {
       return null;
     }
-    switch (window.hassUtil.computeDomain(state)) {
+    var domain = window.hassUtil.computeDomain(state);
+    switch (domain) {
       case 'alarm_control_panel':
         if (state.state === 'pending') {
           return 'mdi:clock-fast';
@@ -100,14 +101,14 @@ Polymer({
           return 'mdi:alert-circle';
         }
         // state == 'disarmed'
-        return window.hassUtil.domainIcon(state.domain, state.state);
+        return window.hassUtil.domainIcon(domain, state.state);
       case 'binary_sensor':
       case 'device_tracker':
       case 'updater':
         return window.hassUtil.stateIcon(state);
       case 'sun':
         return state.state === 'above_horizon' ?
-        window.hassUtil.domainIcon(state.domain) : 'mdi:brightness-3';
+        window.hassUtil.domainIcon(domain) : 'mdi:brightness-3';
       default:
         return null;
     }
