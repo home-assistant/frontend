@@ -102,7 +102,13 @@
       </div>
       <!-- TTS -->
       <div hidden$='[[computeHideTTS(ttsLoaded, supportsPlayMedia)]]' class='layout horizontal end'>
-        <paper-input label='Text to speak' class='flex' value='{{ttsMessage}}'></paper-input>
+        <paper-input
+          id='ttsInput'
+          label='Text to speak'
+          class='flex'
+          value='{{ttsMessage}}'
+          on-keydown="ttsCheckForEnter"
+        ></paper-input>
         <paper-icon-button icon='mdi:send' on-tap='sendTTS'></paper-icon-button>
       </div>
     </div>
@@ -375,6 +381,10 @@ Polymer({
     this.callService('volume_set', { volume_level: vol });
   },
 
+  ttsCheckForEnter: function (ev) {
+    if (ev.keyCode === 13) this.sendTTS();
+  },
+
   sendTTS: function () {
     var services = this.hass.config.services.tts;
     var serviceKeys = Object.keys(services).sort();
@@ -382,8 +392,8 @@ Polymer({
     var i;
 
     for (i = 0; i < serviceKeys.length; i++) {
-      if (services[serviceKeys[i]].indexOf('_say') !== -1) {
-        service = services[serviceKeys[i]];
+      if (serviceKeys[i].indexOf('_say') !== -1) {
+        service = serviceKeys[i];
         break;
       }
     }
@@ -397,7 +407,7 @@ Polymer({
       message: this.ttsMessage,
     });
     this.ttsMessage = '';
-    document.activeElement.blur();
+    this.$.ttsInput.focus();
   },
 
   callService: function (service, data) {
