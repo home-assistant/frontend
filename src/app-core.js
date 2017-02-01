@@ -6,7 +6,9 @@ window.HASS_DEMO = __DEMO__;
 const init = window.createHassConnection = function (password) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
   const url = `${proto}://${window.location.host}/api/websocket`;
-  const options = {};
+  const options = {
+    setupRetry: 10,
+  };
   if (password !== undefined) {
     options.authToken = password;
   }

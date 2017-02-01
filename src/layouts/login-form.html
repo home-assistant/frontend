@@ -69,7 +69,7 @@
         </div>
         <div id="validatebox" hidden$="[[!showSpinner]]">
           <paper-spinner active="true"></paper-spinner><br />
-          <div class="validatemessage">Loading data</div>
+          <div class="validatemessage">[[computeLoadingMsg(isValidating)]]</div>
         </div>
       </div>
     </div>
@@ -125,6 +125,10 @@ Polymer({
 
   attached: function () {
     window.removeInitMsg();
+  },
+
+  computeLoadingMsg: function (isValidating) {
+    return isValidating ? 'Connecting' : 'Loading data';
   },
 
   computeShowSpinner: function (forceShowLoading, isValidating) {

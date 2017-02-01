@@ -28,7 +28,7 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
-    "home-assistant-js-websocket": "^0.7.3"
+    "home-assistant-js-websocket": "^1.0.0"
   },
   "devDependencies": {
     "bower": "^1.8.0",
