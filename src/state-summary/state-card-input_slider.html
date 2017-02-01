@@ -58,7 +58,6 @@ Polymer({
   },
 
   stateObjectChanged: function (newVal) {
-    var min = Number(newVal.attributes.min);
     this.value = Number(newVal.state);
     this.max = Number(newVal.attributes.max);
     this.min = Number(newVal.attributes.min);
