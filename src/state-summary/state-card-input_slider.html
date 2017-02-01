@@ -45,9 +45,11 @@ Polymer({
     },
     min: {
       type: Number,
+      value: 0,
     },
     max: {
       type: Number,
+      value: 100,
     },
     step: {
       type: Number,
@@ -59,8 +61,20 @@ Polymer({
 
   stateObjectChanged: function (newVal) {
     this.value = Number(newVal.state);
-    this.max = Number(newVal.attributes.max);
-    this.min = Number(newVal.attributes.min);
+    var min = Number(newVal.attributes.min);
+    var max = Number(newVal.attributes.max);
+
+    // Polymer doesn't batch attribute updates
+    // And input_slider blows up when min > max.
+
+    if (max <= this.min) {
+      this.min = min;
+      this.max = max;
+    } else {
+      this.max = max;
+      this.min = min;
+    }
+
     this.step = Number(newVal.attributes.step);
   },
 
