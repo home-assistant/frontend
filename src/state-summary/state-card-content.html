@@ -35,13 +35,40 @@ Polymer({
     'inputChanged(hass, inDialog, stateObj)',
   ],
 
-  inputChanged: function (hass, inDialog, stateObj) {
-    if (!stateObj || !hass) return;
+  _isLoaded: function (name) {
+    var elem = document.createElement(name);
+    // If Polymer was already loaded for <name> - it replaced the constructor.
+    return (elem.constructor !== HTMLElement);
+  },
 
+  _maybeLoadCustomUi: function (stateType) {
+    var isLoaded = this._isLoaded('STATE-CARD-' + stateType.toUpperCase());
+    // If Polymer component for the required element is not loaded try to load it.
+    // Don't try to load unconditionally because it cause onflict between vulcanized
+    // and non-vulacanized versions.
+    if (!isLoaded) {
+      this.importHref(
+          '/local/custom_ui/state-card-' + stateType + '.html',
+          function () {},
+          /* eslint-disable no-console */
+          function () { console.error('Error loading %s from /local/custom_ui/state-card-%s.html', stateType, stateType); },
+          /* eslint-enable no-console */
+          true);
+    }
+  },
+
+  inputChanged: function (hass, inDialog, stateObj) {
+    var stateCardType;
+    if (!stateObj || !hass) return;
+    if (stateObj.state !== 'unavailable' && 'custom_ui_state_card' in stateObj.attributes) {
+      stateCardType = stateObj.attributes.custom_ui_state_card;
+      this._maybeLoadCustomUi(stateCardType);
+    } else {
+      stateCardType = window.hassUtil.stateCardType(hass, stateObj);
+    }
     window.hassUtil.dynamicContentUpdater(
       this,
-      ('STATE-CARD-' +
-       window.hassUtil.stateCardType(hass, stateObj).toUpperCase()),
+      ('STATE-CARD-' + stateCardType.toUpperCase()),
       {
         hass: hass,
         stateObj: stateObj,
