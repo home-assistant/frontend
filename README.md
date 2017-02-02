@@ -14,4 +14,4 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 [Frontend development instructions](https://home-assistant.io/developers/frontend/)
 
 ## License
-Home Assistant is open-source and MIT licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
+Home Assistant is open-source and Apache 2 licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
