@@ -188,10 +188,15 @@ Polymer({
     var i;
     var keys;
     var key;
+    var value;
 
     for (i = 0, keys = Object.keys(entity.attributes); i < keys.length; i++) {
       key = keys[i];
-      output += key + ': ' + entity.attributes[key] + '\n';
+      value = entity.attributes[key];
+      if (!Array.isArray(value) && (value instanceof Object)) {
+        value = JSON.stringify(value, null, '  ');
+      }
+      output += key + ': ' + value + '\n';
     }
 
     return output;
