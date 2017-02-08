@@ -64,43 +64,43 @@
   /* eslint-disable no-bitwise */
 
   addGetter('supportsPause', function () {
-    return (this.stateObj.attributes.supported_media_commands & 1) !== 0;
+    return (this.stateObj.attributes.supported_features & 1) !== 0;
   });
 
   addGetter('supportsVolumeSet', function () {
-    return (this.stateObj.attributes.supported_media_commands & 4) !== 0;
+    return (this.stateObj.attributes.supported_features & 4) !== 0;
   });
 
   addGetter('supportsVolumeMute', function () {
-    return (this.stateObj.attributes.supported_media_commands & 8) !== 0;
+    return (this.stateObj.attributes.supported_features & 8) !== 0;
   });
 
   addGetter('supportsPreviousTrack', function () {
-    return (this.stateObj.attributes.supported_media_commands & 16) !== 0;
+    return (this.stateObj.attributes.supported_features & 16) !== 0;
   });
 
   addGetter('supportsNextTrack', function () {
-    return (this.stateObj.attributes.supported_media_commands & 32) !== 0;
+    return (this.stateObj.attributes.supported_features & 32) !== 0;
   });
 
   addGetter('supportsTurnOn', function () {
-    return (this.stateObj.attributes.supported_media_commands & 128) !== 0;
+    return (this.stateObj.attributes.supported_features & 128) !== 0;
   });
 
   addGetter('supportsTurnOff', function () {
-    return (this.stateObj.attributes.supported_media_commands & 256) !== 0;
+    return (this.stateObj.attributes.supported_features & 256) !== 0;
   });
 
   addGetter('supportsPlayMedia', function () {
-    return (this.stateObj.attributes.supported_media_commands & 512) !== 0;
+    return (this.stateObj.attributes.supported_features & 512) !== 0;
   });
 
   addGetter('supportsVolumeButtons', function () {
-    return (this.stateObj.attributes.supported_media_commands & 1024) !== 0;
+    return (this.stateObj.attributes.supported_features & 1024) !== 0;
   });
 
   addGetter('supportsPlay', function () {
-    return (this.stateObj.attributes.supported_media_commands & 16384) !== 0;
+    return (this.stateObj.attributes.supported_features & 16384) !== 0;
   });
 
   /* eslint-enable no-bitwise */

@@ -242,17 +242,17 @@ Polymer({
       this.volumeSliderValue = newVal.attributes.volume_level * 100;
       this.isMuted = newVal.attributes.is_volume_muted;
       this.source = newVal.attributes.source;
-      this.supportsPause = (newVal.attributes.supported_media_commands & 1) !== 0;
-      this.supportsVolumeSet = (newVal.attributes.supported_media_commands & 4) !== 0;
-      this.supportsVolumeMute = (newVal.attributes.supported_media_commands & 8) !== 0;
-      this.supportsPreviousTrack = (newVal.attributes.supported_media_commands & 16) !== 0;
-      this.supportsNextTrack = (newVal.attributes.supported_media_commands & 32) !== 0;
-      this.supportsTurnOn = (newVal.attributes.supported_media_commands & 128) !== 0;
-      this.supportsTurnOff = (newVal.attributes.supported_media_commands & 256) !== 0;
-      this.supportsPlayMedia = (newVal.attributes.supported_media_commands & 512) !== 0;
-      this.supportsVolumeButtons = (newVal.attributes.supported_media_commands & 1024) !== 0;
-      this.supportsSelectSource = (newVal.attributes.supported_media_commands & 2048) !== 0;
-      this.supportsPlay = (newVal.attributes.supported_media_commands & 16384) !== 0;
+      this.supportsPause = (newVal.attributes.supported_features & 1) !== 0;
+      this.supportsVolumeSet = (newVal.attributes.supported_features & 4) !== 0;
+      this.supportsVolumeMute = (newVal.attributes.supported_features & 8) !== 0;
+      this.supportsPreviousTrack = (newVal.attributes.supported_features & 16) !== 0;
+      this.supportsNextTrack = (newVal.attributes.supported_features & 32) !== 0;
+      this.supportsTurnOn = (newVal.attributes.supported_features & 128) !== 0;
+      this.supportsTurnOff = (newVal.attributes.supported_features & 256) !== 0;
+      this.supportsPlayMedia = (newVal.attributes.supported_features & 512) !== 0;
+      this.supportsVolumeButtons = (newVal.attributes.supported_features & 1024) !== 0;
+      this.supportsSelectSource = (newVal.attributes.supported_features & 2048) !== 0;
+      this.supportsPlay = (newVal.attributes.supported_features & 16384) !== 0;
 
       if (newVal.attributes.source_list !== undefined) {
         this.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
