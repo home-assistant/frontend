@@ -203,7 +203,7 @@ addEntity('switch.ac', 'on', {
 addEntity('media_player.living_room', 'playing', {
   entity_picture: '/demo/images/thrones.jpg',
   friendly_name: 'Chromecast',
-  supported_media_commands: 509,
+  supported_features: 509,
   media_content_type: 'tvshow',
   media_title: 'The Dance of Dragons',
   media_series_title: 'Game of Thrones',
