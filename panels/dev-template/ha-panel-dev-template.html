@@ -172,7 +172,7 @@ Polymer({
         this.processed = processed;
         this.rendering = false;
       }.bind(this), function (error) {
-        this.processed = error.message;
+        this.processed = error.body.message;
         this.error = true;
         this.rendering = false;
       }.bind(this));
