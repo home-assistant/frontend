@@ -71,7 +71,7 @@ Polymer({
     if (states && states.length > 0) {
       baseStateObj = states[0];
 
-      groupDomainStateObj = Object.assign(baseStateObj, {
+      groupDomainStateObj = Object.assign({}, baseStateObj, {
         entity_id: stateObj.entity_id,
         attributes: Object.assign({}, baseStateObj.attributes)
       });
