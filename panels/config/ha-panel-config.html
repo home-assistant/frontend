@@ -1,0 +1,52 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../src/components/ha-menu-button.html">
+
+<link rel="import" href="./ha-config-section-hassbian.html">
+
+<dom-module id="ha-panel-config">
+  <template>
+    <style include="iron-flex ha-style">
+      app-header-layout {
+        background-color: #fafafa;
+      }
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Configuration</div>
+        </app-toolbar>
+      </app-header>
+
+      <ha-config-section-hassbian
+        narrow='[[narrow]]'
+        show-menu='[[showMenu]]'
+        hass='[[hass]]'
+      ></ha-config-section-hassbian>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-panel-config',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+  },
+});
+</script>
