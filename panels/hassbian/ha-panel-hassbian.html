@@ -207,7 +207,7 @@ Polymer({
   computeContentClasses: function (isWide) {
     var classes = 'content ';
 
-    return isWide ? classes : classes + 'narrow'
+    return isWide ? classes : classes + 'narrow';
   },
 
   computeClasses: function (isWide) {
@@ -262,7 +262,8 @@ Polymer({
     return suiteStatus[suiteKey].state === 'installing';
   },
 
-  suiteActionTapped: function (ev) {
+  suiteActionTapped: function () {
+    // TODO install tapped suite
     this.hass.callApi('POST', 'hassbian/suites/openzwave/install').then(this.updateStatus);
   },
 });
