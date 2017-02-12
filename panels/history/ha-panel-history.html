@@ -58,9 +58,8 @@
           <paper-dropdown-menu label-float label='Period'>
             <paper-menu class="dropdown-content" selected="{{_periodIndex}}">
               <paper-item>1 day</paper-item>
+              <paper-item>3 days</paper-item>
               <paper-item>1 week</paper-item>
-              <paper-item>30 days</paper-item>
-              <paper-item>All</paper-item>
             </paper-menu>
           </paper-dropdown-menu>
         </div>
@@ -152,11 +151,9 @@ Polymer({
   _computeFilterDays: function (_periodIndex) {
     switch (_periodIndex) {
       case 1:
-        return 7;
+        return 3;
       case 2:
-        return 30;
-      case 3:
-        return 9999;
+        return 7;
       default: return 1;
     }
   },
