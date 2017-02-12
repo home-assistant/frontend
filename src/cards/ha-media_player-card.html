@@ -248,8 +248,20 @@ Polymer({
 
   playerObjChanged: function (playerObj) {
     var picture = playerObj.stateObj.attributes.entity_picture;
+    var dummy;
     if (picture) {
-      this.$.cover.style.backgroundImage = 'url(' + picture + ')';
+      dummy = document.createElement('IMG');
+      dummy.onload = function () {
+        this.$.cover.style.backgroundImage = 'url(' + picture + ')';
+        dummy.onerror = null;
+        dummy.src = '';
+        dummy = null;
+      }.bind(this);
+      dummy.onerror = function () {
+        this.$.cover.style.backgroundImage = '';
+        this.toggleClass('no-cover', true, this.$.cover.parentElement);
+      }.bind(this);
+      dummy.src = picture;
     } else {
       this.$.cover.style.backgroundImage = '';
     }
