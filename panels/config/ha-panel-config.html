@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../src/components/ha-menu-button.html">
 
+<link rel="import" href="./ha-config-section-core.html">
 <link rel="import" href="./ha-config-section-hassbian.html">
 
 <dom-module id="ha-panel-config">
@@ -20,6 +21,12 @@
           <div main-title>Configuration</div>
         </app-toolbar>
       </app-header>
+
+      <ha-config-section-core
+        narrow='[[narrow]]'
+        show-menu='[[showMenu]]'
+        hass='[[hass]]'
+      ></ha-config-section-core>
 
       <template is='dom-if' if='[[computeIsHassbianLoaded(hass)]]'>
         <ha-config-section-hassbian
