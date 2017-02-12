@@ -54,6 +54,7 @@
       if (!DATE_CACHE[date]) {
         DATE_CACHE[date] = this.hass.callApi('GET', 'logbook/' + date).then(
           function (logbookEntries) {
+            logbookEntries.reverse();
             return logbookEntries;
           },
           function () {
