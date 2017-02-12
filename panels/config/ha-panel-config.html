@@ -13,6 +13,9 @@
       app-header-layout {
         background-color: #fafafa;
       }
+      .spacer {
+        height: 32px;
+      }
     </style>
     <app-header-layout has-scrolling-region>
       <app-header fixed>
@@ -35,6 +38,7 @@
           hass='[[hass]]'
         ></ha-config-section-hassbian>
       </template>
+      <div class='spacer'></div>
     </app-header-layout>
   </template>
 </dom-module>
