@@ -21,11 +21,13 @@
         </app-toolbar>
       </app-header>
 
-      <ha-config-section-hassbian
-        narrow='[[narrow]]'
-        show-menu='[[showMenu]]'
-        hass='[[hass]]'
-      ></ha-config-section-hassbian>
+      <template is='dom-if' if='[[computeIsHassbianLoaded(hass)]]'>
+        <ha-config-section-hassbian
+          narrow='[[narrow]]'
+          show-menu='[[showMenu]]'
+          hass='[[hass]]'
+        ></ha-config-section-hassbian>
+      </template>
     </app-header-layout>
   </template>
 </dom-module>
@@ -47,6 +49,10 @@ Polymer({
       type: Boolean,
       value: false,
     },
+  },
+
+  computeIsHassbianLoaded(hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'config.hassbian');
   },
 });
 </script>
