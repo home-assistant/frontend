@@ -18,14 +18,33 @@
 <dom-module id="ha-config-section-core">
   <template>
     <style include="iron-flex ha-style">
-      .header {
-        font-size: 16px;
+      .validate-container {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+        height: 140px;
+      }
+
+      .validate-result {
+        color: var(--google-green-500);
+        font-weight: 500;
         margin-bottom: 1em;
       }
 
-      .header .status {
-        font-size: 14px;
+      .config-invalid {
+        margin: 1em 0;
+      }
+
+      .config-invalid .text {
+        color: var(--google-red-500);
+        font-weight: 500;
+      }
+
+      .config-invalid paper-button {
         float: right;
+      }
+
+      .validate-log {
+        white-space: pre-wrap;
       }
 
       .card-actions.warning ha-call-service-button {
@@ -40,6 +59,30 @@
       <span slot='introduction'>
         Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.
       </span>
+
+      <paper-card heading='Configuration Validation'>
+        <div class='card-content'>
+          Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.
+          <template is='dom-if' if='[[!validateLog]]'>
+            <div class='validate-container'>
+              <template is='dom-if' if='[[!validating]]'>
+                <div class='validate-result' id='result'>[[validateResult]]</div>
+                <paper-button raised on-tap='validateConfig'>check config</paper-button>
+              </template>
+              <template is='dom-if' if='[[validating]]'>
+                <paper-spinner active></paper-spinner>
+              </template>
+            </div>
+          </template>
+          <template is='dom-if' if='[[validateLog]]'>
+            <div class='config-invalid'>
+              <span class='text'>Configuration invalid.</span>
+              <paper-button raised on-tap='validateConfig'>check config</paper-button>
+            </div>
+            <div id='configLog' class='validate-log'>[[validateLog]]</div>
+          </template>
+        </div>
+      </paper-card>
 
       <paper-card heading='Configuration Reloading'>
         <div class='card-content'>
@@ -105,6 +148,21 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    validating: {
+      type: Boolean,
+      value: false,
+    },
+
+    validateResult: {
+      type: String,
+      value: '',
+    },
+
+    validateLog: {
+      type: String,
+      value: '',
+    },
   },
 
   groupLoaded: function (hass) {
@@ -114,5 +172,25 @@ Polymer({
   automationLoaded: function (hass) {
     return window.hassUtil.isComponentLoaded(hass, 'automation');
   },
+
+  validateConfig: function () {
+    this.validating = true;
+    this.validateLog = '';
+    this.validateResult = '';
+
+    var el = this;
+
+    this.hass.callApi('POST', 'config/core/check_config')
+      .then(function (result) {
+        el.validating = false;
+        var isValid = el.configValid = result.result === 'valid';
+
+        if (isValid) {
+          el.validateResult = 'Valid!';
+        } else {
+          el.validateLog = result.errors;
+        }
+      });
+  }
 });
 </script>
