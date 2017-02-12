@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import' href='../../bower_components/paper-menu/paper-menu.html">
+<link rel="import' href='../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -21,15 +23,20 @@
 
       paper-input {
         max-width: 200px;
+        margin-right: 16px;
+      }
+      paper-dropdown-menu {
+        max-width: 100px;
       }
     </style>
 
     <ha-state-history-data
       hass='[[hass]]'
       filter-type='[[_filterType]]'
+      filter-days='[[_computeFilterDays(_periodIndex)]]'
       filter-value='[[_computeFilterDate(_selectedDate)]]'
       data='{{stateHistory}}'
-      isLoading='{{isLoadingData}}'
+      is-loading='{{isLoadingData}}'
     ></ha-state-history-data>
 
     <app-header-layout has-scrolling-region>
@@ -41,13 +48,22 @@
       </app-header>
 
       <div class="flex content">
-        <paper-input
-          label='Showing entries for'
-          id='datePicker'
-          value='[[_computeDateDisplay(_selectedDate)]]'
-          on-focus='datepickerFocus'
-        ></paper-input>
-
+        <div class="flex layout horizontal wrap">
+          <paper-input
+            label='Start date'
+            id='datePicker'
+            value='[[_computeDateDisplay(_selectedDate)]]'
+            on-focus='datepickerFocus'
+          ></paper-input>
+          <paper-dropdown-menu label-float label='Period'>
+            <paper-menu class="dropdown-content" selected="{{_periodIndex}}">
+              <paper-item>1 day</paper-item>
+              <paper-item>1 week</paper-item>
+              <paper-item>30 days</paper-item>
+              <paper-item>All</paper-item>
+            </paper-menu>
+          </paper-dropdown-menu>
+        </div>
         <state-history-charts history-data="[[stateHistory]]"
           is-loading-data="[[isLoadingData]]"></state-history-charts>
       </div>
@@ -76,6 +92,11 @@ Polymer({
     stateHistory: {
       type: Object,
       value: null,
+    },
+
+    _periodIndex: {
+      type: Number,
+      value: 0,
     },
 
     isLoadingData: {
@@ -126,6 +147,18 @@ Polymer({
 
   _computeFilterDate: function (_selectedDate) {
     return _selectedDate.toISOString();
+  },
+
+  _computeFilterDays: function (_periodIndex) {
+    switch (_periodIndex) {
+      case 1:
+        return 7;
+      case 2:
+        return 30;
+      case 3:
+        return 9999;
+      default: return 1;
+    }
   },
 });
 </script>

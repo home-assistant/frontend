@@ -44,6 +44,8 @@ Polymer({
     var startTime;
     var endTime;
     var numTimelines;
+    var format;
+    var daysDelta;
 
     if (!this.isAttached) {
       return;
@@ -76,11 +78,24 @@ Polymer({
           return Math.min(minTime, new Date(stateInfo[0].last_changed));
         }, new Date()));
 
-    // end time is Math.min(curTime, start time + 1 day)
-    endTime = new Date(startTime);
-    endTime.setDate(endTime.getDate() + 1);
+    // end time is Math.max(startTime, last_event)
+    endTime = new Date(
+      stateHistory.reduce(
+        function (maxTime, stateInfo) {
+          return Math.max(maxTime, new Date(stateInfo[stateInfo.length - 1].last_changed));
+        }, startTime));
+
     if (endTime > new Date()) {
       endTime = new Date();
+    }
+    format = 'H:mm';
+    daysDelta = (endTime - startTime) / (24 * 3600 * 1000);
+    if (daysDelta > 30) {
+      format = 'MMM d';
+    } else if (daysDelta > 3) {
+      format = 'EEE, MMM d';
+    } else if (daysDelta > 1) {
+      format = 'EEE, MMM d, H:mm';
     }
 
     numTimelines = 0;
@@ -121,7 +136,7 @@ Polymer({
       },
 
       hAxis: {
-        format: 'H:mm',
+        format: format
       },
     });
   },

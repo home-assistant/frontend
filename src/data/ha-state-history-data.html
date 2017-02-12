@@ -55,6 +55,11 @@
         observer: 'hassChanged',
       },
 
+      filterDays: {
+        type: Number,
+        value: 1,
+      },
+
       filterType: {
         type: String,
       },
@@ -79,22 +84,22 @@
     },
 
     observers: [
-      'filterChanged(filterType, filterValue)',
+      'filterChanged(filterType, filterValue, filterDays)',
     ],
 
     hassChanged: function (newHass, oldHass) {
       if (!oldHass && this.filterType && this.filterValue) {
-        this.filterChanged(this.filterType, this.filterValue);
+        this.filterChanged(this.filterType, this.filterValue, this.filterDays);
       }
     },
 
-    filterChanged: function (filterType, filterValue) {
+    filterChanged: function (filterType, filterValue, filterDays) {
       if (!this.hass) return;
 
       var data;
 
       if (filterType === 'date') {
-        data = this.getDate(filterValue);
+        data = this.getDate(filterValue, filterDays);
       } else if (filterType === 'recent-entity') {
         data = this.getRecent(filterValue);
       } else {
@@ -104,7 +109,9 @@
       this._setIsLoading(true);
 
       data.then(function (stateHistory) {
-        this._setData(stateHistory);
+        // Dom restoration is async and if graph is drown before dom is
+        // restored it sets the timline width to 400px.
+        this.async(this._setData.bind(this, stateHistory), 1);
         this._setIsLoading(false);
       }.bind(this));
     },
@@ -140,20 +147,25 @@
       return prom;
     },
 
-    getDate: function (date) {
-      if (!DATE_CACHE[date]) {
-        DATE_CACHE[date] = this.hass.callApi('GET', 'history/period/' + date).then(
+    getDate: function (date, filterDays) {
+      if (!DATE_CACHE[date] || !DATE_CACHE[date][filterDays]) {
+        var url = 'history/period/' + date + '?days=' + filterDays;
+
+        if (!DATE_CACHE[date]) {
+          DATE_CACHE[date] = {};
+        }
+        DATE_CACHE[date][filterDays] = this.hass.callApi('GET', url).then(
           function (stateHistory) {
             return computeHistory(stateHistory);
           },
           function () {
-            DATE_CACHE[date] = false;
+            DATE_CACHE[date][filterDays] = false;
             return null;
           }
         );
       }
 
-      return DATE_CACHE[date];
+      return DATE_CACHE[date][filterDays];
     },
   });
 }());
