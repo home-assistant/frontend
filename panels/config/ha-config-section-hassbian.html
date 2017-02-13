@@ -32,10 +32,7 @@
         font-weight: 500;
       }
     </style>
-    <ha-config-section
-      narrow='[[narrow]]'
-      show-menu='[[showMenu]]'
-    >
+    <ha-config-section is-wide='[[isWide]]'>
       <span slot='header'>Bring Hassbian to the next level</span>
       <span slot='introduction'>
         Discover exciting add-ons to enhance your Home Assistant installation. Add an MQTT server or control a connected TV via HDMI-CEC.
@@ -76,13 +73,8 @@ Polymer({
       type: Object,
     },
 
-    narrow: {
+    isWide: {
       type: Boolean,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
     },
 
     suiteStatus: {
@@ -94,7 +86,7 @@ Polymer({
   updateStatus: function () {
     // TODO tapping install while something is installing triggers a second
     //      update loop to start.
-    this.hass.callApi('GET', 'hassbian/suites').then(function (suites) {
+    this.hass.callApi('GET', 'config/hassbian/suites').then(function (suites) {
       this.suiteStatus = suites;
 
       var isInstalling = false;
@@ -169,7 +161,7 @@ Polymer({
 
   suiteActionTapped: function () {
     // TODO install tapped suite
-    this.hass.callApi('POST', 'hassbian/suites/openzwave/install').then(this.updateStatus);
+    this.hass.callApi('POST', 'config/hassbian/suites/openzwave/install').then(this.updateStatus);
   },
 });
 </script>

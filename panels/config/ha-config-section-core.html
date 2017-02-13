@@ -52,8 +52,7 @@
       }
     </style>
     <ha-config-section
-      narrow='[[narrow]]'
-      show-menu='[[showMenu]]'
+      is-wide='[[isWide]]'
     >
       <span slot='header'>Server Management</span>
       <span slot='introduction'>
@@ -140,11 +139,7 @@ Polymer({
       type: Object,
     },
 
-    narrow: {
-      type: Boolean,
-    },
-
-    showMenu: {
+    isWide: {
       type: Boolean,
       value: false,
     },
