@@ -350,6 +350,16 @@ window.hassUtil.binarySensorIcon = function (state) {
   }
 };
 
+window.hassUtil.coverIcon = function (state) {
+  var open = state.state && state.state === 'open';
+  switch (state.attributes.device_class) {
+    case 'garage':
+      return open ? 'mdi:garage-open' : 'mdi:garage';
+    default:
+      return open ? 'mdi:window-open' : 'mdi:window-closed';
+  }
+};
+
 window.hassUtil.stateIcon = function (state) {
   if (!state) {
     return window.hassUtil.DEFAULT_ICON;
@@ -368,6 +378,8 @@ window.hassUtil.stateIcon = function (state) {
     }
   } else if (domain === 'binary_sensor') {
     return window.hassUtil.binarySensorIcon(state);
+  } else if (domain === 'cover') {
+    return window.hassUtil.coverIcon(state);
   }
 
   return window.hassUtil.domainIcon(domain, state.state);

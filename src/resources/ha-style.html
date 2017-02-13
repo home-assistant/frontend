@@ -77,8 +77,8 @@
         @apply(--paper-font-title);
       }
 
-      .card-actions > paper-button,
-      .card-actions > ha-call-service-button {
+      .card-actions > paper-button:not([disabled]),
+      .card-actions > ha-call-service-button:not([disabled]) {
         color: var(--default-primary-color);
         font-weight: 500;
       }
