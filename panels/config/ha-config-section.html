@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel="import" href="../../src/resources/ha-style.html">
 
 <dom-module id="ha-config-section">
@@ -53,11 +52,6 @@
         max-width: 500px;
       }
     </style>
-    <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
-    </iron-media-query>
-    <iron-media-query query="(min-width: 1296px)" query-matches="{{wideSidebar}}">
-    </iron-media-query>
-
     <div class$='[[computeContentClasses(isWide)]]'>
       <div class='header'><slot name="header"></slot></div>
       <div class$='[[computeClasses(isWide)]]'>
@@ -90,22 +84,10 @@ Polymer({
       value: false,
     },
 
-    wide: {
-      type: Boolean,
-    },
-
-    wideSidebar: {
-      type: Boolean,
-    },
-
     isWide: {
       type: Boolean,
-      computed: 'computeIsWide(showMenu, wideSidebar, wide)'
-    }
-  },
-
-  computeIsWide: function (showMenu, wideSidebar, wide) {
-    return showMenu ? wideSidebar : wide;
+      value: false,
+    },
   },
 
   computeContentClasses: function (isWide) {
