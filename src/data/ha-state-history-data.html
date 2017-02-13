@@ -45,7 +45,6 @@
 
     return { line: unitStates, timeline: timelineDevices };
   }
-
   Polymer({
     is: 'ha-state-history-data',
 
@@ -53,11 +52,6 @@
       hass: {
         type: Object,
         observer: 'hassChanged',
-      },
-
-      filterDays: {
-        type: Number,
-        value: 1,
       },
 
       filterType: {
@@ -84,22 +78,22 @@
     },
 
     observers: [
-      'filterChanged(filterType, filterValue, filterDays)',
+      'filterChanged(filterType, filterValue)',
     ],
 
     hassChanged: function (newHass, oldHass) {
       if (!oldHass && this.filterType && this.filterValue) {
-        this.filterChanged(this.filterType, this.filterValue, this.filterDays);
+        this.filterChanged(this.filterType, this.filterValue);
       }
     },
 
-    filterChanged: function (filterType, filterValue, filterDays) {
+    filterChanged: function (filterType, filterValue) {
       if (!this.hass) return;
 
       var data;
 
       if (filterType === 'date') {
-        data = this.getDate(filterValue, filterDays);
+        data = this.getDate(filterValue);
       } else if (filterType === 'recent-entity') {
         data = this.getRecent(filterValue);
       } else {
@@ -147,25 +141,20 @@
       return prom;
     },
 
-    getDate: function (date, filterDays) {
-      if (!DATE_CACHE[date] || !DATE_CACHE[date][filterDays]) {
-        var url = 'history/period/' + date + '?days=' + filterDays;
-
-        if (!DATE_CACHE[date]) {
-          DATE_CACHE[date] = {};
-        }
-        DATE_CACHE[date][filterDays] = this.hass.callApi('GET', url).then(
+    getDate: function (date) {
+      if (!DATE_CACHE[date]) {
+        DATE_CACHE[date] = this.hass.callApi('GET', 'history/period/' + date).then(
           function (stateHistory) {
             return computeHistory(stateHistory);
           },
           function () {
-            DATE_CACHE[date][filterDays] = false;
+            DATE_CACHE[date] = false;
             return null;
           }
         );
       }
 
-      return DATE_CACHE[date][filterDays];
+      return DATE_CACHE[date];
     },
   });
 }());

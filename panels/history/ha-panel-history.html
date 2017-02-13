@@ -33,12 +33,10 @@
     <ha-state-history-data
       hass='[[hass]]'
       filter-type='[[_filterType]]'
-      filter-days='[[_computeFilterDays(_periodIndex)]]'
-      filter-value='[[_computeFilterDate(_selectedDate)]]'
+      filter-value='[[_computeFilterDate(_selectedDate, _periodIndex)]]'
       data='{{stateHistory}}'
       is-loading='{{isLoadingData}}'
     ></ha-state-history-data>
-
     <app-header-layout has-scrolling-region>
       <app-header fixed>
         <app-toolbar>
@@ -144,12 +142,15 @@ Polymer({
     return window.hassUtil.formatDate(new Date(date));
   },
 
-  _computeFilterDate: function (_selectedDate) {
-    return _selectedDate.toISOString();
+  _computeFilterDate: function (selectedDate, periodIndex) {
+    var endTime = new Date(selectedDate);
+    endTime.setDate(
+      selectedDate.getDate() + this._computeFilterDays(periodIndex));
+    return selectedDate.toISOString() + '?end_time=' + endTime.toISOString();
   },
 
-  _computeFilterDays: function (_periodIndex) {
-    switch (_periodIndex) {
+  _computeFilterDays: function (periodIndex) {
+    switch (periodIndex) {
       case 1:
         return 3;
       case 2:
