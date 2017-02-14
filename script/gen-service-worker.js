@@ -21,13 +21,18 @@ var rootDir = '..';
 var panelDir = rootDir + '/panels';
 
 var dynamicUrlToDependencies = {
-  '/': [rootDir + '/frontend.html', rootDir + '/core.js'],
+  '/': [
+    rootDir + '/frontend.html',
+    rootDir + '/core.js',
+    rootDir + '/compatibility.js',
+  ],
 };
 
 var staticFingerprinted = [
   'frontend.html',
   'mdi.html',
   'core.js',
+  'compatibility.js',
 ];
 
 // These panels will always be registered inside HA and thus can
