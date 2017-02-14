@@ -1,2 +1,2 @@
-require('es6-object-assign').polyfill();
-module.exports = Object;
+import objAssign from 'es6-object-assign';
+objAssign.polyfill();
