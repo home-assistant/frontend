@@ -22,7 +22,7 @@
     "watch_ru_core": "rollup --config rollup/core.js --watch --sourcemap inline",
     "watch_ru_demo": "rollup --config rollup/demo.js --watch --sourcemap inline",
     "lint_js": "eslint src panels --ext html",
-    "lint_html": "ls -1 src/**/*.html panels/**/*.html | xargs polymer lint --input",
+    "lint_html": "ls -1 src/home-assistant.html panels/**/ha-panel-*.html | xargs polymer lint --input",
     "test": "npm run lint_js && npm run lint_html"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
