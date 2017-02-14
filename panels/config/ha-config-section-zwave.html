@@ -164,8 +164,7 @@ Polymer({
     return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
       .filter(function (el) {
         return (!el.attributes.hidden &&
-                true);
-                // 'node_id' in el.attributes);
+                'node_id' in el.attributes);
       })
       .sort(function (entityA, entityB) {
         if (entityA.entity_id < entityB.entity_id) {
