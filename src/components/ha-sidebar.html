@@ -15,7 +15,7 @@
     <style include="iron-flex iron-flex-alignment iron-positioning">
       :host {
         --sidebar-text: {
-          opacity: var(--dark-primary-opacity);
+          color: var(--primary-text-color);
           font-weight: 500;
           font-size: 14px;
         };
@@ -24,12 +24,14 @@
         -ms-user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
+        border-right: 1px solid var(--divider-color);
       }
 
       app-toolbar {
         font-weight: 400;
-        opacity: var(--dark-primary-opacity);
-        border-bottom: 1px solid #e0e0e0;
+        color: var(--primary-text-color);
+        border-bottom: 1px solid var(--divider-color);
+        background-color: var(--primary-background-color);
       }
 
       paper-menu {
@@ -48,7 +50,7 @@
 
         --paper-item-selected: {
           color: var(--default-primary-color);
-          background-color: #e8e8e8;
+          background-color: var(--paper-grey-200);
           opacity: 1;
         };
       }

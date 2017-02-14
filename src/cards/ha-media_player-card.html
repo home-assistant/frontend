@@ -248,8 +248,33 @@ Polymer({
 
   playerObjChanged: function (playerObj) {
     var picture = playerObj.stateObj.attributes.entity_picture;
+    var dummy;
     if (picture) {
-      this.$.cover.style.backgroundImage = 'url(' + picture + ')';
+      dummy = document.createElement('IMG');
+      dummy.onload = function () {
+        this.$.cover.style.backgroundImage = 'url(' + picture + ')';
+        dummy.onerror = dummy.onload = null;
+        dummy.src = '';
+        dummy = null;
+      }.bind(this);
+      dummy.onerror = function () {
+        this.$.cover.style.backgroundImage = '';
+        this.toggleClass('no-cover', true, this.$.cover.parentElement);
+        dummy.onerror = dummy.onload = null;
+        dummy.src = '';
+        dummy = null;
+      }.bind(this);
+      if (this._timeout_id) {
+        clearTimeout(this._timeout_id);
+      }
+      this._timeout_id = setTimeout(function () {
+        if (dummy) {
+          // Background load still inflight. Clear real image.
+          this.$.cover.style.backgroundImage = '';
+        }
+        this._timeout_id = null;
+      }, 5000);
+      dummy.src = picture;
     } else {
       this.$.cover.style.backgroundImage = '';
     }
