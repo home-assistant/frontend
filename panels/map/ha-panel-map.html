@@ -75,14 +75,14 @@ Polymer({
     var bounds;
 
     if (this._mapItems.length === 0) {
-      this._map.setView(new L.LatLng(this.hass.config.core.latitude,
-                                     this.hass.config.core.longitude), 14);
+      this._map.setView(
+        new window.L.LatLng(this.hass.config.core.latitude, this.hass.config.core.longitude),
+        14);
     } else {
       bounds = new window.L.latLngBounds(
         this._mapItems.map(function (item) { return item.getLatLng(); }));
       this._map.fitBounds(bounds.pad(0.5));
     }
-
   },
 
   drawEntities: function (hass) {
