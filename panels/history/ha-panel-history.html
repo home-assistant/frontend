@@ -34,7 +34,7 @@
       hass='[[hass]]'
       filter-type='[[_filterType]]'
       filter-value='[[_computeFilterDate(_selectedDate, _periodIndex)]]'
-      data='{{stateHistory}}'
+      data='{{stateHistoryInput}}'
       is-loading='{{isLoadingData}}'
     ></ha-state-history-data>
     <app-header-layout has-scrolling-region>
@@ -61,7 +61,7 @@
             </paper-menu>
           </paper-dropdown-menu>
         </div>
-        <state-history-charts history-data="[[stateHistory]]"
+        <state-history-charts history-data="[[stateHistoryOutput]]"
           is-loading-data="[[isLoadingData]]"></state-history-charts>
       </div>
     </app-header-layout>
@@ -86,7 +86,13 @@ Polymer({
       value: false,
     },
 
-    stateHistory: {
+    stateHistoryInput: {
+      type: Object,
+      value: null,
+      observer: 'stateHistoryObserver'
+    },
+
+    stateHistoryOutput: {
       type: Object,
       value: null,
     },
@@ -157,6 +163,15 @@ Polymer({
         return 7;
       default: return 1;
     }
+  },
+
+  stateHistoryObserver: function (newVal) {
+    this.async(function () {
+      if (newVal === this.stateHistoryInput) {
+        // Input didn't change
+        this.stateHistoryOutput = newVal;
+      }
+    }.bind(this), 1);
   },
 });
 </script>

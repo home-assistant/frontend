@@ -45,6 +45,7 @@
 
     return { line: unitStates, timeline: timelineDevices };
   }
+
   Polymer({
     is: 'ha-state-history-data',
 
@@ -103,9 +104,7 @@
       this._setIsLoading(true);
 
       data.then(function (stateHistory) {
-        // Dom restoration is async and if graph is drown before dom is
-        // restored it sets the timline width to 400px.
-        this.async(this._setData.bind(this, stateHistory), 1);
+        this._setData(stateHistory);
         this._setIsLoading(false);
       }.bind(this));
     },
