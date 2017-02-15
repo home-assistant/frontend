@@ -69,6 +69,7 @@
       var endTime;
       var dataTables;
       var finalDataTable;
+      var daysDelta;
 
       if (!this.isAttached) {
         return;
@@ -115,10 +116,20 @@
         return new Date(states[0].last_changed);
       })));
 
-      endTime = new Date(startTime);
-      endTime.setDate(endTime.getDate() + 1);
+      endTime = new Date(Math.max.apply(null, deviceStates.map(function (states) {
+        return new Date(states[states.length - 1].last_changed);
+      })));
       if (endTime > new Date()) {
         endTime = new Date();
+      }
+
+      daysDelta = (endTime - startTime) / (24 * 3600 * 1000);
+      if (daysDelta > 30) {
+        options.hAxis.format = 'MMM d';
+      } else if (daysDelta > 3) {
+        options.hAxis.format = 'EEE, MMM d';
+      } else if (daysDelta > 1) {
+        options.hAxis.format = 'EEE, MMM d, H:mm';
       }
 
       dataTables = deviceStates.map(function (states) {
