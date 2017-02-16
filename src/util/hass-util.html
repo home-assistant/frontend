@@ -76,7 +76,7 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
   var rootEl = Polymer.dom(root);
   var customEl;
 
-  if (rootEl.lastChild && rootEl.lastChild.tagName === newElementTag) {
+  if (rootEl.lastChild && rootEl.lastChild.tagName.toLowerCase() === newElementTag) {
     customEl = rootEl.lastChild;
   } else {
     if (rootEl.lastChild) {
