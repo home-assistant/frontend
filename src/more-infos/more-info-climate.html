@@ -9,6 +9,8 @@
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
 <link rel="import" href="../../bower_components/paper-range-slider/paper-range-slider.html">
 
+<link rel="import" href='../components/ha-climate-control.html'>
+
 <dom-module id='more-info-climate'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
@@ -95,28 +97,17 @@
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
         <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
-          <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target Temperature</div>
-          <paper-slider
-            min='[[stateObj.attributes.min_temp]]'
-            max='[[stateObj.attributes.max_temp]]'
-            secondary-progress='[[stateObj.attributes.max_temp]]'
-            pin
-            step='0.5'
-            value='[[stateObj.attributes.temperature]]'
-            hidden$='[[computeHideTempSlider(stateObj)]]'
-            on-change='targetTemperatureSliderChanged'>
-          </paper-slider>
-          <paper-range-slider
-            min='[[stateObj.attributes.min_temp]]'
-            max='[[stateObj.attributes.max_temp]]'
-            pin
-            step='0.5'
-            value-min='[[stateObj.attributes.target_temp_low]]'
-            value-max='[[stateObj.attributes.target_temp_high]]'
-            value-diff-min='2'
-            hidden$='[[computeHideTempRangeSlider(stateObj)]]'
-            on-change='targetTemperatureRangeSliderChanged'>
-          </paper-range-slider>
+          <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target
+            Temperature</div>
+          <ha-climate-control
+             value='[[stateObj.attributes.temperature]]'
+             units='[[stateObj.attributes.unit_of_measurement]]'
+             step='[[computeTemperatureStepSize(stateObj.attributes.unit_of_measurement)]]'
+             min='[[stateObj.attributes.min_temp]]'
+             max='[[stateObj.attributes.max_temp]]'
+             on-change='targetTemperatureChanged'
+             >
+          </ha-climate-control>
         </div>
       </div>
 
@@ -267,6 +258,13 @@ Polymer({
     }
   },
 
+  computeTemperatureStepSize: function (units) {
+    if (units.indexOf('F') !== -1) {
+      return 1;
+    }
+    return 0.5;
+  },
+
   computeTargetTempHidden: function (stateObj) {
     return !stateObj.attributes.temperature &&
         !stateObj.attributes.target_temp_low &&
@@ -291,7 +289,7 @@ Polymer({
     );
   },
 
-  targetTemperatureSliderChanged: function (ev) {
+  targetTemperatureChanged: function (ev) {
     var temperature = ev.target.value;
 
     if (temperature === this.stateObj.attributes.temperature) return;
