@@ -30,16 +30,16 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
-    "home-assistant-js-websocket": "^1.0.0"
+    "home-assistant-js-websocket": "^1.0.1"
   },
   "devDependencies": {
     "bower": "^1.8.0",
     "es6-object-assign": "^1.0.3",
-    "eslint": "^3.14.0",
-    "eslint-config-airbnb-base": "^11.0.1",
-    "eslint-plugin-html": "^1.7.0",
+    "eslint": "^3.15.0",
+    "eslint-config-airbnb-base": "^11.1.0",
+    "eslint-plugin-html": "^2.0.0",
     "eslint-plugin-import": "^2.2.0",
-    "html-minifier": "^3.2.3",
+    "html-minifier": "^3.3.1",
     "hydrolysis": "^1.24.1",
     "optimize-js": "^1.0.3",
     "polymer-cli": "^0.17.0",
