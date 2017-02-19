@@ -6,6 +6,8 @@
 
 <link rel="import" href="../components/entity/state-info.html">
 
+<link rel='import' href='../util/cover-model.html'>
+
 <dom-module id="state-card-cover">
   <template>
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -19,16 +21,23 @@
         white-space: nowrap;
         width: 127px;
       }
+
+      [invisible] {
+        visibility: hidden !important;
+      }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
         <paper-icon-button icon="mdi:arrow-up" on-tap='onOpenTap'
-          disabled='[[computeIsFullyOpen(stateObj)]]'></paper-icon-button>
-        <paper-icon-button icon="mdi:stop" on-tap='onStopTap'></paper-icon-button>
+          invisible$='[[!entityObj.supportsOpen]]'
+          disabled='[[entityObj.isFullyOpen]]'></paper-icon-button>
+        <paper-icon-button icon="mdi:stop" on-tap='onStopTap'
+          invisible$='[[!entityObj.supportsStop]]'></paper-icon-button>
         <paper-icon-button icon="mdi:arrow-down" on-tap='onCloseTap'
-          disabled='[[computeIsFullyClosed(stateObj)]]'></paper-icon-button>
+          invisible$='[[!entityObj.supportsClose]]'
+          disabled='[[entityObj.isFullyClosed]]'></paper-icon-button>
       </div>
     </div>
   </template>
@@ -51,35 +60,27 @@ Polymer({
     stateObj: {
       type: Object,
     },
+
+    entityObj: {
+      type: Object,
+      computed: 'computeEntityObj(hass, stateObj)',
+    },
   },
 
-  computeIsFullyOpen: function (stateObj) {
-    if (stateObj.attributes.current_position !== undefined) {
-      return stateObj.attributes.current_position === 100;
-    }
-    return stateObj.state === 'open';
-  },
-
-  computeIsFullyClosed: function (stateObj) {
-    if (stateObj.attributes.current_position !== undefined) {
-      return stateObj.attributes.current_position === 0;
-    }
-    return stateObj.state === 'closed';
+  computeEntityObj: function (hass, stateObj) {
+    return new window.CoverEntity(hass, stateObj);
   },
 
   onOpenTap: function () {
-    this.hass.callService('cover', 'open_cover',
-                                         { entity_id: this.stateObj.entity_id });
+    this.entityObj.openCover();
   },
 
   onCloseTap: function () {
-    this.hass.callService('cover', 'close_cover',
-                                         { entity_id: this.stateObj.entity_id });
+    this.entityObj.closeCover();
   },
 
   onStopTap: function () {
-    this.hass.callService('cover', 'stop_cover',
-                                         { entity_id: this.stateObj.entity_id });
+    this.entityObj.stopCover();
   },
 });
 </script>
