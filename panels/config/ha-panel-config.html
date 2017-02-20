@@ -4,9 +4,9 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
-<link rel="import" href="./ha-config-section-core.html">
-<link rel="import" href="./ha-config-section-hassbian.html">
-<link rel="import" href="./ha-config-section-zwave.html">
+<link rel="import" href="./core/ha-config-section-core.html">
+<link rel="import" href="./hassbian/ha-config-section-hassbian.html">
+<link rel="import" href="./z-wave/ha-config-section-zwave.html">
 
 <dom-module id="ha-panel-config">
   <template>
@@ -108,7 +108,7 @@ Polymer({
   },
 
   computeIsZwaveLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'config.zwave');
+    return true || window.hassUtil.isComponentLoaded(hass, 'config.zwave');
   },
 });
 </script>
