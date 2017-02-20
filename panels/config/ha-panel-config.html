@@ -108,7 +108,7 @@ Polymer({
   },
 
   computeIsZwaveLoaded(hass) {
-    return true || window.hassUtil.isComponentLoaded(hass, 'config.zwave');
+    return window.hassUtil.isComponentLoaded(hass, 'config.zwave');
   },
 });
 </script>
