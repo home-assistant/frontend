@@ -7,7 +7,7 @@
 
       .device-picker {
         @apply(--layout-horizontal);
-        padding-bottom: 32px;
+        padding-bottom: 24px;
       }
 
       .form-placeholder {
@@ -19,12 +19,17 @@
       [hidden]: {
         display: none;
       }
+
+      .card-actions {
+        @apply(--layout-horizontal);
+        @apply(--layout-justified);
+      }
     </style>
     <paper-card>
       <div class='card-content'>
         <div class='device-picker'>
           <paper-dropdown-menu
-            label='Device'
+            label='[[label]]'
             class='flex'
             disabled='[[!entities.length]]'
           >
@@ -61,6 +66,13 @@
           on-tap='saveEntity'
           disabled='[[computeShowPlaceholder(formState)]]'
         >SAVE</paper-button>
+        <template is='dom-if' if='[[allowDelete]]'>
+          <paper-button
+            class='warning'
+            on-tap='deleteEntity'
+            disabled='[[computeShowPlaceholder(formState)]]'
+          >DELETE</paper-button>
+        </template>
       </div>
     </paper-card>
 
@@ -77,9 +89,19 @@ Polymer({
       observer: 'hassChanged',
     },
 
+    label: {
+      type: String,
+      value: 'Device',
+    },
+
     entities: {
       type: Array,
       observer: 'entitiesChanged',
+    },
+
+    allowDelete: {
+      type: Boolean,
+      value: false,
     },
 
     selectedEntity: {
