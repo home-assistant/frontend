@@ -45,7 +45,7 @@ Polymer({
       }
     } else {
       window.hassUtil.dynamicContentUpdater(
-        this, 'more-info-' + window.hassUtil.stateMoreInfoType(stateObj),
+        this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
         { hass: this.hass, stateObj: stateObj, isVisible: true });
     }
   },
