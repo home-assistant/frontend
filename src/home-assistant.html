@@ -129,21 +129,27 @@ Polymer({
         return conn.callService(domain, service, serviceData || {})
           .then(function () {
             var message;
+            var name;
+            if (serviceData.entity_id && this.hass.states &&
+                this.hass.states[serviceData.entity_id] &&
+                this.hass.states[serviceData.entity_id].attributes) {
+              name = this.hass.states[serviceData.entity_id].attributes.friendly_name;
+            }
             if (service === 'turn_on' && serviceData.entity_id) {
-              message = 'Turned on ' + serviceData.entity_id + '.';
+              message = 'Turned on ' + (name || serviceData.entity_id) + '.';
             } else if (service === 'turn_off' && serviceData.entity_id) {
-              message = 'Turned off ' + serviceData.entity_id + '.';
+              message = 'Turned off ' + (name || serviceData.entity_id) + '.';
             } else {
               message = 'Service ' + domain + '/' + service + ' called.';
             }
             notifications.showNotification(message);
-          },
+          }.bind(this),
           function () {
             notifications.showNotification(
               'Failed to call service ' + domain + '/' + service);
             return Promise.reject();
           });
-      },
+      }.bind(this),
       callApi: function (method, path, parameters) {
         var host = window.location.protocol + '//' + window.location.host;
         var auth = conn.options.authToken ? conn.options : {};
