@@ -1,7 +1,9 @@
 import * as HAWS from 'home-assistant-js-websocket';
+import getPolyglot from './translation';
 
 window.HAWS = HAWS;
-window.HASS_DEMO = __DEMO__;
+window.HASS_DEMO = ___DEMO___;
+window.getPolyglot = getPolyglot;
 
 const init = window.createHassConnection = function (password) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';

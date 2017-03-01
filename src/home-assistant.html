@@ -26,6 +26,7 @@
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
         hass='[[hass]]'
+        pg='[[pg]]'
       ></home-assistant-main>
     </template>
 
@@ -80,6 +81,15 @@ Polymer({
       type: Boolean,
       computed: 'computeShowMain(hass, iconsLoaded)',
     },
+    pg: {
+      type: Object,
+    },
+  },
+
+  created: function () {
+    window.getPolyglot().then((result) => {
+      this.pg = result;
+    });
   },
 
   computeShowMain: function (hass, iconsLoaded) {

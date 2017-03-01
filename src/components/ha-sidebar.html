@@ -102,19 +102,19 @@
     <paper-menu attr-for-selected='data-panel' selected='[[hass.currentPanel]]' on-iron-select='menuSelect'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon item-icon icon='mdi:apps'></iron-icon>
-        <span class='item-text'>States</span>
+        <span class='item-text'>[[tr(pg, "panel.states")]]</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
         <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_path]]'>
           <iron-icon item-icon icon='[[item.icon]]'></iron-icon>
-          <span class='item-text'>[[item.title]]</span>
+          <span class='item-text'>[[tr(pg, item.title)]]</span>
         </paper-icon-item>
       </template>
 
       <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
         <iron-icon item-icon icon='mdi:exit-to-app'></iron-icon>
-        <span class='item-text'>Log Out</span>
+        <span class='item-text'>[[tr(pg, "panel.log_out")]]</span>
       </paper-icon-item>
     </paper-menu>
 
@@ -170,6 +170,10 @@ Polymer({
       type: Object,
     },
 
+    pg: {
+      type: Object,
+    },
+
     menuShown: {
       type: Boolean,
     },
@@ -195,6 +199,10 @@ Polymer({
 
   created: function () {
     this._boundUpdateStyles = this.updateStyles.bind(this);
+  },
+
+  tr: function (pg, text, options) {
+    return pg.t(text, options);
   },
 
   computePanels: function (hass) {
