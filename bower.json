@@ -9,6 +9,7 @@
   "private": true,
   "devDependencies": {
     "app-layout": "~0.10.6",
+    "app-localize-behavior": "PolymerElements/app-localize-behavior#~0.10.1",
     "app-storage": "PolymerElements/app-storage#~0.9.8",
     "fecha": "~2.3.0",
     "font-roboto-local": "~1.0.1",

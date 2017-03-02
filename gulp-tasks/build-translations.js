@@ -6,11 +6,28 @@ var insert = require('gulp-insert');
 var merge = require('gulp-merge-json');
 var minify = require('gulp-jsonminify');
 var rename = require('gulp-rename');
+var transform = require('gulp-json-transform');
 
 var tasks = [];
 
 var inDir = 'translations'
 var outDir = 'build/translations';
+
+function recursive_flatten (prefix, data) {
+  var output = {};
+  Object.keys(data).forEach(function (key) {
+    if (typeof(data[key]) === 'object') {
+      output = Object.assign({}, output, recursive_flatten(key + '.', data[key]));
+    } else {
+      output[prefix + key] = data[key];
+    }
+  });
+  return output
+}
+
+function flatten (data) {
+  return recursive_flatten('', data);
+}
 
 var taskName = 'build-merged-translations';
 gulp.task(taskName, function () {
@@ -30,6 +47,10 @@ gulp.task(taskName, function () {
         .pipe(merge({
           fileName: tr + '.json',
         }))
+        .pipe(transform(function(data, file) {
+          // Polymer.AppLocalizeBehavior requires flattened json
+          return flatten(data);
+        }))
         .pipe(minify())
         .pipe(gulp.dest(outDir));
     }));
@@ -37,8 +58,8 @@ gulp.task(taskName, function () {
 tasks.push(taskName);
 
 var taskName = 'build-fallback-translation';
-gulp.task(taskName, function() {
-  return gulp.src(inDir + '/en.json')
+gulp.task(taskName, ['build-merged-translations'], function() {
+  return gulp.src(outDir + '/en.json')
     .pipe(insert.wrap('<script>\nvar fallbackTranslation = ', ';\n</script>'))
     .pipe(rename('fallbackTranslation.html'))
     .pipe(gulp.dest('build-temp'));

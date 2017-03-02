@@ -1,4 +1,3 @@
-<script src='../../node_modules/node-polyglot/build/polyglot.min.js'></script>
 <link rel='import' href='../../build-temp/translationFingerprints.html' />
 <link rel='import' href='../../build-temp/fallbackTranslation.html' />
 
@@ -7,7 +6,8 @@ function getActiveTranslation() {
   // Perform case-insenstive comparison since browser isn't required to
   // report languages with specific cases.
   var lookup = {};
-  Object.keys(translationFingerprints).forEach(function(tr) {
+  /* eslint-disable no-undef */
+  Object.keys(translationFingerprints).forEach(function (tr) {
     lookup[tr.toLowerCase()] = tr;
   });
 
@@ -20,10 +20,10 @@ function getActiveTranslation() {
 
       if (lookup[lang]) {
         return lookup[lang];
-      };
+      }
     }
     return null;
-  };
+  }
 
   var translation = null;
   if (window.localStorage.language) {
@@ -53,44 +53,48 @@ function getActiveTranslation() {
 // when DOM is created in Polymer. Even a cache lookup creates noticable latency.
 var translations = {};
 
-window.getPolyglot = function () {
+window.getTranslation = function () {
   var translation = getActiveTranslation();
+  /* eslint-disable no-undef */
   var translationHash = translation + '-' + translationFingerprints[translation];
 
   // If translation is available in memory, load it immediately
   if (translations[translationHash]) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       resolve(translations[translationHash]);
     });
   }
 
   // Otherwise fetch translation from server
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     var translationUrl = '/static/translations/' + translationHash + '.json';
     var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-      if (request.readyState == 4) {
-        if (request.status == 200) {
-          translations[translationHash] = new Polyglot({
-            phrases: JSON.parse(request.responseText),
-            locale: translation,
-          });
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          var resources = {};
+          resources[translation] = JSON.parse(request.responseText);
+          translations[translationHash] = {
+            language: translation,
+            resources: resources,
+          };
           resolve(translations[translationHash]);
         } else {
+          /* eslint-disable no-console */
           console.error('Unable to load translation ' + translation + '. Falling back to en.');
-          resolve(new Polyglot({
-            phrases: window.fallbackTranslation,
-            locale: 'en',
-          }));
+          resolve({
+            language: 'en',
+            resources: { en: window.fallbackTranslation },
+          });
         }
       }
     };
     request.open('GET', translationUrl);
     request.send();
   });
-}
+};
 
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.
-window.getPolyglot();
+window.getTranslation();
 </script>

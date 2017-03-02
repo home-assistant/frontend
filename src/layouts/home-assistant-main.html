@@ -26,7 +26,7 @@
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
       responsive-width='0' disable-swipe='[[isSelectedMap]]'
       disable-edge-swipe='[[isSelectedMap]]'>
-      <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]' pg='[[pg]]'></ha-sidebar>
+      <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]' language='[[language]]' resources='[[resources]]'></ha-sidebar>
 
       <iron-pages
         main
@@ -59,14 +59,14 @@
 Polymer({
   is: 'home-assistant-main',
 
+  behaviors: [
+    Polymer.AppLocalizeBehavior,
+  ],
+
   properties: {
     hass: {
       type: Object,
       value: null,
-    },
-
-    pg: {
-      type: Object,
     },
 
     narrow: {
@@ -82,6 +82,14 @@ Polymer({
     dockedSidebar: {
       type: Boolean,
       computed: 'computeDockedSidebar(hass)',
+    },
+
+    language: {
+      type: String,
+    },
+
+    resources: {
+      type: Object,
     },
   },
 

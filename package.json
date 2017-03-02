@@ -25,7 +25,7 @@
     "watch_ru_demo": "rollup --config rollup/demo.js --watch --sourcemap inline",
     "lint_js": "eslint src panels --ext html",
     "lint_html": "ls -1 src/home-assistant.html panels/**/ha-panel-*.html | xargs polymer lint --input",
-    "test": "npm run lint_js && npm run lint_html"
+    "test": "node_modules/gulp/bin/gulp.js && npm run lint_js && npm run lint_html"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
@@ -45,11 +45,11 @@
     "gulp-hash": "^4.0.1",
     "gulp-insert": "^0.5.0",
     "gulp-jsonminify": "^1.0.0",
+    "gulp-json-transform": "^0.4.2",
     "gulp-merge-json": "^1.0.0",
     "gulp-rename": "^1.2.2",
     "html-minifier": "^3.3.1",
     "hydrolysis": "^1.24.1",
-    "node-polyglot": "^2.2.2",
     "optimize-js": "^1.0.3",
     "polymer-cli": "^0.17.0",
     "polymer-lint": "^0.8.3",

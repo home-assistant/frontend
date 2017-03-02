@@ -4,6 +4,7 @@
 <link rel='import' href='./util/roboto.html'>
 <link rel='import' href='../bower_components/paper-styles/typography.html'>
 <link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
+<link rel='import' href='../bower_components/app-localize-behavior/app-localize-behavior.html'>
 
 <link rel='import' href='./util/hass-translation.html'>
 <link rel='import' href='./util/hass-util.html'>
@@ -27,7 +28,8 @@
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
         hass='[[hass]]'
-        pg='[[pg]]'
+        language='[[language]]'
+        resources='[[resources]]'
       ></home-assistant-main>
     </template>
 
@@ -56,6 +58,10 @@ Polymer({
     icons: null,
   },
 
+  behaviors: [
+    Polymer.AppLocalizeBehavior,
+  ],
+
   properties: {
     connectionPromise: {
       type: Object,
@@ -82,14 +88,18 @@ Polymer({
       type: Boolean,
       computed: 'computeShowMain(hass, iconsLoaded)',
     },
-    pg: {
+    language: {
+      type: String,
+    },
+    resources: {
       type: Object,
     },
   },
 
   created: function () {
-    window.getPolyglot().then(function (result) {
-      this.pg = result;
+    window.getTranslation().then(function (result) {
+      this.language = result.language;
+      this.resources = result.resources;
     }.bind(this));
   },
 
