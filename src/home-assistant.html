@@ -88,9 +88,9 @@ Polymer({
   },
 
   created: function () {
-    window.getPolyglot().then((result) => {
+    window.getPolyglot().then(function (result) {
       this.pg = result;
-    });
+    }.bind(this));
   },
 
   computeShowMain: function (hass, iconsLoaded) {

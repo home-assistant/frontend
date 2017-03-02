@@ -59,31 +59,34 @@ window.getPolyglot = function () {
 
   // If translation is available in memory, load it immediately
   if (translations[translationHash]) {
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
       resolve(translations[translationHash]);
     });
   }
 
   // Otherwise fetch translation from server
-  return new Promise((resolve, reject) => {
+  return new Promise(function (resolve, reject) {
     var translationUrl = '/static/translations/' + translationHash + '.json';
-    fetch(translationUrl, {
-    }).then(result => {
-      return result.json();
-    }).then(json => {
-      translations[translationHash] = new Polyglot({
-        phrases: json,
-        locale: translation,
-      });
-      resolve(translations[translationHash]);
-    }).catch(error => {
-      // In the event of an error, return the embedded fallback translation
-      console.error('Unable to load translation ' + translation + '. Falling back to en.');
-      resolve(new Polyglot({
-        phrases: window.fallbackTranslation,
-        locale: 'en',
-      }));
-    });
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+      if (request.readyState == 4) {
+        if (request.status == 200) {
+          translations[translationHash] = new Polyglot({
+            phrases: JSON.parse(request.responseText),
+            locale: translation,
+          });
+          resolve(translations[translationHash]);
+        } else {
+          console.error('Unable to load translation ' + translation + '. Falling back to en.');
+          resolve(new Polyglot({
+            phrases: window.fallbackTranslation,
+            locale: 'en',
+          }));
+        }
+      }
+    };
+    request.open('GET', translationUrl);
+    request.send();
   });
 }
 
