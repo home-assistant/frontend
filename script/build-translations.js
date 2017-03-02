@@ -26,7 +26,7 @@ var en_base = JSON.parse(fs.readFileSync(inDir + '/en.json'));
 
 translations.forEach(function(tr) {
   var subtags = tr.split('-');
-  var tr_out = en_base; // Start with en as a fallback if for missing translations
+  var tr_out = en_base; // Start with en as a fallback for missing translations
   for (i = 1; i <= subtags.length; i++) {
     var lang = subtags.slice(0, i).join('-');
     var path = inDir + '/' + lang + '.json';
@@ -42,15 +42,15 @@ translations.forEach(function(tr) {
   fs.writeFileSync(path, JSON.stringify(tr_out));
   translationFingerprints[tr] = util.md5(path);
 
-  // en translation is embedded in translation.js as a fallback in case of
+  // en translation is embedded in hass-translation.html as a fallback in case of
   // translation fetch errors
   if (tr == 'en') {
-    var path = 'build-temp/fallbackTranslation.js';
+    var path = 'build-temp/fallbackTranslation.html';
     console.log('Writing', path);
-    fs.writeFileSync(path, 'export default ' + JSON.stringify(tr_out));
+    fs.writeFileSync(path, '<script>var fallbackTranslation = ' + JSON.stringify(tr_out) + ';</script>');
   }
 });
 
-var path = 'build-temp/translationFingerprints.js';
+var path = 'build-temp/translationFingerprints.html';
 console.log('Writing', path);
-fs.writeFileSync(path, 'export default ' + JSON.stringify(translationFingerprints));
+fs.writeFileSync(path, '<script>var translationFingerprints = ' + JSON.stringify(translationFingerprints) + ';</script>');

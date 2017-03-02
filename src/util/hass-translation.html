@@ -1,7 +1,8 @@
-import Polyglot from 'node-polyglot';
-import translationFingerprints from '../build-temp/translationFingerprints.js';
-import fallbackTranslation from '../build-temp/fallbackTranslation.js';
+<script src='../../node_modules/node-polyglot/build/polyglot.min.js'></script>
+<link rel='import' href='../../build-temp/translationFingerprints.html' />
+<link rel='import' href='../../build-temp/fallbackTranslation.html' />
 
+<script>
 function getActiveTranslation() {
   // Perform case-insenstive comparison since browser isn't required to
   // report languages with specific cases.
@@ -52,7 +53,7 @@ function getActiveTranslation() {
 // when DOM is created in Polymer. Even a cache lookup creates noticable latency.
 var translations = {};
 
-export default function getPolyglot() {
+window.getPolyglot = function () {
   var translation = getActiveTranslation();
   var translationHash = translation + '-' + translationFingerprints[translation];
 
@@ -65,11 +66,7 @@ export default function getPolyglot() {
 
   // Otherwise fetch translation from server
   return new Promise((resolve, reject) => {
-    if (___DEV___) {
-      var translationUrl = '/static/translations/' + translation + '.json';
-    } else {
-      var translationUrl = '/static/translations/' + translationHash + '.json';
-    }
+    var translationUrl = '/static/translations/' + translationHash + '.json';
     fetch(translationUrl, {
     }).then(result => {
       return result.json();
@@ -83,7 +80,7 @@ export default function getPolyglot() {
       // In the event of an error, return the embedded fallback translation
       console.error('Unable to load translation ' + translation + '. Falling back to en.');
       resolve(new Polyglot({
-        phrases: fallbackTranslation,
+        phrases: window.fallbackTranslation,
         locale: 'en',
       }));
     });
@@ -92,4 +89,5 @@ export default function getPolyglot() {
 
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.
-getPolyglot();
+window.getPolyglot();
+</script>

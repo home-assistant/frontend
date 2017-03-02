@@ -6,7 +6,6 @@ import uglify from 'rollup-plugin-uglify';
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
-const NODE_ENV = DEV ? 'development' : 'production'
 
 const plugins = [
   nodeResolve({}),
@@ -15,9 +14,8 @@ const plugins = [
 
   replace({
     values: {
-      ___DEV___: JSON.stringify(DEV),
-      ___DEMO___: JSON.stringify(DEMO),
-      'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
+      __DEV__: JSON.stringify(DEV),
+      __DEMO__: JSON.stringify(DEMO),
     },
   }),
 ];

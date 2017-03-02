@@ -241,7 +241,7 @@ addEntity(
   }, ['off', 'on']
 );
 
-if (___DEV___) {
+if (__DEV__) {
   for (let i = 0; i < stateData.length; i++) {
     const entity = stateData[i];
     if (!(entity.entity_id in seen)) {
