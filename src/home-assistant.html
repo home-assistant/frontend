@@ -116,6 +116,7 @@ Polymer({
       return;
     }
     var notifications = this.$.notifications;
+    var el = this;
     this.hass = Object.assign({
       connection: conn,
       connected: true,
@@ -130,10 +131,10 @@ Polymer({
           .then(function () {
             var message;
             var name;
-            if (serviceData.entity_id && this.hass.states &&
-                this.hass.states[serviceData.entity_id] &&
-                this.hass.states[serviceData.entity_id].attributes) {
-              name = this.hass.states[serviceData.entity_id].attributes.friendly_name;
+            if (serviceData.entity_id && el.hass.states &&
+                el.hass.states[serviceData.entity_id] &&
+                el.hass.states[serviceData.entity_id].attributes) {
+              name = el.hass.states[serviceData.entity_id].attributes.friendly_name;
             }
             if (service === 'turn_on' && serviceData.entity_id) {
               message = 'Turned on ' + (name || serviceData.entity_id) + '.';
@@ -143,13 +144,13 @@ Polymer({
               message = 'Service ' + domain + '/' + service + ' called.';
             }
             notifications.showNotification(message);
-          }.bind(this),
+          },
           function () {
             notifications.showNotification(
               'Failed to call service ' + domain + '/' + service);
             return Promise.reject();
           });
-      }.bind(this),
+      },
       callApi: function (method, path, parameters) {
         var host = window.location.protocol + '//' + window.location.host;
         var auth = conn.options.authToken ? conn.options : {};
