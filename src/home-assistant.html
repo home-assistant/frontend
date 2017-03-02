@@ -132,9 +132,8 @@ Polymer({
             var message;
             var name;
             if (serviceData.entity_id && el.hass.states &&
-                el.hass.states[serviceData.entity_id] &&
-                el.hass.states[serviceData.entity_id].attributes) {
-              name = el.hass.states[serviceData.entity_id].attributes.friendly_name;
+                el.hass.states[serviceData.entity_id]) {
+              name = window.hassUtil.computeStateName(el.hass.states[serviceData.entity_id]);
             }
             if (service === 'turn_on' && serviceData.entity_id) {
               message = 'Turned on ' + (name || serviceData.entity_id) + '.';
