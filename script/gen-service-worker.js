@@ -9,11 +9,11 @@ Expects home-assistant-polymer repo as submodule of HA repo.
 Creates a caching service worker based on the CURRENT content of HA repo.
 Output service worker to build/service_worker.js
 */
+var crypto = require('crypto');
 var fs = require('fs');
 var path = require('path');
 var swPrecache = require('sw-precache');
 var uglifyJS = require('uglify-js');
-var util = require('./util.js');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 
@@ -41,10 +41,15 @@ var panelsFingerprinted = [
   'map', 'dev-event', 'dev-info', 'dev-service', 'dev-state', 'dev-template',
 ];
 
+function md5(filename) {
+  return crypto.createHash('md5')
+    .update(fs.readFileSync(filename)).digest('hex');
+}
+
 // Create fingerprinted versions of our dependencies.
 staticFingerprinted.forEach(fn => {
   var parts = path.parse(fn);
-  var hash = util.md5(rootDir + '/' + parts.name + parts.ext);
+  var hash = md5(rootDir + '/' + parts.name + parts.ext);
   var url = '/static/' + parts.name + '-' + hash + parts.ext;
   var fpath = rootDir + '/' + parts.name + parts.ext;
   dynamicUrlToDependencies[url] = [fpath];
@@ -52,7 +57,7 @@ staticFingerprinted.forEach(fn => {
 
 panelsFingerprinted.forEach(panel => {
   var fpath = panelDir + '/ha-panel-' + panel + '.html';
-  var hash = util.md5(fpath);
+  var hash = md5(fpath);
   var url = '/frontend/panels/' + panel + '-' + hash + '.html';
   dynamicUrlToDependencies[url] = [fpath];
 });
