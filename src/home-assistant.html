@@ -116,6 +116,7 @@ Polymer({
       return;
     }
     var notifications = this.$.notifications;
+    var el = this;
     this.hass = Object.assign({
       connection: conn,
       connected: true,
@@ -129,10 +130,15 @@ Polymer({
         return conn.callService(domain, service, serviceData || {})
           .then(function () {
             var message;
+            var name;
+            if (serviceData.entity_id && el.hass.states &&
+                el.hass.states[serviceData.entity_id]) {
+              name = window.hassUtil.computeStateName(el.hass.states[serviceData.entity_id]);
+            }
             if (service === 'turn_on' && serviceData.entity_id) {
-              message = 'Turned on ' + serviceData.entity_id + '.';
+              message = 'Turned on ' + (name || serviceData.entity_id) + '.';
             } else if (service === 'turn_off' && serviceData.entity_id) {
-              message = 'Turned off ' + serviceData.entity_id + '.';
+              message = 'Turned off ' + (name || serviceData.entity_id) + '.';
             } else {
               message = 'Service ' + domain + '/' + service + ' called.';
             }
