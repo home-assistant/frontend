@@ -76,6 +76,10 @@ var options = {
     rootDir + '/fonts/roboto/Roboto-Bold.ttf',
     rootDir + '/images/card_media_player_bg.png',
   ],
+  runtimeCaching: [{
+    urlPattern: /\/static\/translations\//,
+    handler: 'cacheFirst',
+  }],
   stripPrefix: '..',
   replacePrefix: 'static',
   verbose: true,
