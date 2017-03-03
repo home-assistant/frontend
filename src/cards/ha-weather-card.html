@@ -21,7 +21,7 @@
     <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <div id$='[[computeChartId(stateObj)]]'></div>
+        <div id='chart_id'></div>
         <ha-attributes state-obj='[[stateObj]]' extra-filters='forecast'></ha-attributes>
       </div>
     </ha-card>
@@ -48,10 +48,6 @@
 
     computeTitle: function (stateObj) {
       return stateObj.attributes.friendly_name;
-    },
-
-    computeChartId: function (stateObj) {
-      return 'chart_area_' + stateObj.id;
     },
 
     getDataArray: function () {
@@ -84,7 +80,7 @@
 
       if (!this.chartEngine) {
         this.chartEngine = new window.google.visualization.LineChart(
-          document.getElementById(this.computeChartId(this.stateObj)));
+          this.$.chart_id);
       }
 
       this.drawChart();
