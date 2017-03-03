@@ -1,5 +1,4 @@
 <link rel='import' href='../../build-temp/translationFingerprints.html' />
-<link rel='import' href='../../build-temp/fallbackTranslation.html' />
 
 <script>
 function getActiveTranslation() {
@@ -53,8 +52,8 @@ function getActiveTranslation() {
 // when DOM is created in Polymer. Even a cache lookup creates noticable latency.
 var translations = {};
 
-window.getTranslation = function () {
-  var translation = getActiveTranslation();
+window.getTranslation = function (translationInput) {
+  var translation = translationInput || getActiveTranslation();
   /* eslint-disable no-undef */
   var translationFingerprint = translationFingerprints[translation];
 
@@ -75,11 +74,19 @@ window.getTranslation = function () {
           } else {
             /* eslint-disable no-console */
             console.error('Unable to load translation ' + translation + '. Falling back to en.');
-            delete translations[translationFingerprint];
-            resolve({
-              language: 'en',
-              resources: { en: window.fallbackTranslation },
-            });
+            fallbackFetch = function () {
+              delete translations[translationFingerprint];
+              getTranslation('en').then(function (result) {
+                resolve(result);
+              });
+            };
+            if (translationInput !== 'en') {
+              // Initial fetch failed. Try fallback to en
+              fallbackFetch();
+            } else {
+              // Fallback fetch failed. Retry after 5 seconds
+              setTimeout(fallbackFetch, 5000);
+            }
           }
         }
       };

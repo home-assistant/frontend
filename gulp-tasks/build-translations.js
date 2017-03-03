@@ -57,15 +57,6 @@ gulp.task(taskName, function () {
 });
 tasks.push(taskName);
 
-var taskName = 'build-fallback-translation';
-gulp.task(taskName, ['build-merged-translations'], function() {
-  return gulp.src(outDir + '/en.json')
-    .pipe(insert.wrap('<script>\nvar fallbackTranslation = ', ';\n</script>'))
-    .pipe(rename('fallbackTranslation.html'))
-    .pipe(gulp.dest('build-temp'));
-});
-tasks.push(taskName);
-
 var taskName = 'build-translation-fingerprints';
 gulp.task(taskName, ['build-merged-translations'], function() {
   return gulp.src(outDir + '/*.json')
