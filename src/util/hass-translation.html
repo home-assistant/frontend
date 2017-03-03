@@ -58,40 +58,36 @@ window.getTranslation = function () {
   /* eslint-disable no-undef */
   var translationHash = translation + '-' + translationFingerprints[translation];
 
-  // If translation is available in memory, load it immediately
-  if (translations[translationHash]) {
-    return new Promise(function (resolve) {
-      resolve(translations[translationHash]);
+  // Create a promise to fetch translation from the server
+  if (!translations[translationHash]) {
+    translations[translationHash] = new Promise(function (resolve) {
+      var translationUrl = '/static/translations/' + translationHash + '.json';
+      var request = new XMLHttpRequest();
+      request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+          if (request.status === 200) {
+            var resources = {};
+            resources[translation] = JSON.parse(request.responseText);
+            resolve({
+              language: translation,
+              resources: resources,
+            });
+          } else {
+            /* eslint-disable no-console */
+            console.error('Unable to load translation ' + translation + '. Falling back to en.');
+            delete translations[translationHash];
+            resolve({
+              language: 'en',
+              resources: { en: window.fallbackTranslation },
+            });
+          }
+        }
+      };
+      request.open('GET', translationUrl);
+      request.send();
     });
   }
-
-  // Otherwise fetch translation from server
-  return new Promise(function (resolve) {
-    var translationUrl = '/static/translations/' + translationHash + '.json';
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-      if (request.readyState === 4) {
-        if (request.status === 200) {
-          var resources = {};
-          resources[translation] = JSON.parse(request.responseText);
-          translations[translationHash] = {
-            language: translation,
-            resources: resources,
-          };
-          resolve(translations[translationHash]);
-        } else {
-          /* eslint-disable no-console */
-          console.error('Unable to load translation ' + translation + '. Falling back to en.');
-          resolve({
-            language: 'en',
-            resources: { en: window.fallbackTranslation },
-          });
-        }
-      }
-    };
-    request.open('GET', translationUrl);
-    request.send();
-  });
+  return translations[translationHash];
 };
 
 // Load selected translation into memory immediately so it is ready when Polymer
