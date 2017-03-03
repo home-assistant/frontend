@@ -56,12 +56,12 @@ var translations = {};
 window.getTranslation = function () {
   var translation = getActiveTranslation();
   /* eslint-disable no-undef */
-  var translationHash = translation + '-' + translationFingerprints[translation];
+  var translationFingerprint = translationFingerprints[translation];
 
   // Create a promise to fetch translation from the server
-  if (!translations[translationHash]) {
-    translations[translationHash] = new Promise(function (resolve) {
-      var translationUrl = '/static/translations/' + translationHash + '.json';
+  if (!translations[translationFingerprint]) {
+    translations[translationFingerprint] = new Promise(function (resolve) {
+      var translationUrl = '/static/translations/' + translationFingerprint;
       var request = new XMLHttpRequest();
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
@@ -75,7 +75,7 @@ window.getTranslation = function () {
           } else {
             /* eslint-disable no-console */
             console.error('Unable to load translation ' + translation + '. Falling back to en.');
-            delete translations[translationHash];
+            delete translations[translationFingerprint];
             resolve({
               language: 'en',
               resources: { en: window.fallbackTranslation },
@@ -87,7 +87,7 @@ window.getTranslation = function () {
       request.send();
     });
   }
-  return translations[translationHash];
+  return translations[translationFingerprint];
 };
 
 // Load selected translation into memory immediately so it is ready when Polymer

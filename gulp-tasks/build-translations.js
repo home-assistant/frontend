@@ -75,7 +75,6 @@ gulp.task(taskName, ['build-merged-translations'], function() {
     .pipe(hash({
       algorithm: 'md5',
       hashLength: 32,
-      template: '<%= hash %>'
     }))
     .pipe(hash.manifest('translationFingerprints.json'))
     .pipe(gulp.dest('build-temp'));
@@ -85,6 +84,13 @@ tasks.push(taskName);
 var taskName = 'wrap-translation-fingerprints';
 gulp.task(taskName, ['build-translation-fingerprints'], function() {
   return gulp.src('build-temp/translationFingerprints.json')
+    .pipe(transform(function(data, file) {
+      Object.keys(data).forEach(function (key) {
+        data[key] += '.json';
+      });
+      return (data);
+    }))
+    .pipe(gulp.dest('build-temp'))
     .pipe(insert.wrap('<script>\nvar translationFingerprints = ', ';\n</script>'))
     .pipe(rename('translationFingerprints.html'))
     .pipe(gulp.dest('build-temp'));
