@@ -203,6 +203,13 @@ Polymer({
     resources: {
       type: Object,
     },
+
+    // If a custom panel gave a name instead of a translation key,
+    // display the name instead of the missing key
+    useKeyIfMissing: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   created: function () {
