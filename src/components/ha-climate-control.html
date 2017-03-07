@@ -64,6 +64,7 @@
       },
       incrementValue: function () {
         var newval = this.value + this.step;
+        this.last_changed = Date.now();
         if (newval <= this.max) {
           this.value = newval;
         } else {
@@ -72,6 +73,7 @@
       },
       decrementValue: function () {
         var newval = this.value - this.step;
+        this.last_changed = Date.now();
         if (newval >= this.min) {
           this.value = newval;
         } else {
@@ -79,7 +81,23 @@
         }
       },
       valueChanged: function () {
-        this.fire('change');
+        // when the value is changed, trigger a potential even fire in
+        // the future, as long as last changed is far enough in the
+        // past.
+        //
+        // from a UX perspective it would probably be worth changing
+        // font color on the temperature when it's in the flux state
+        // (like set to red), then animate back to black when the
+        // change event is fired, and the signal sent to home-assistant.
+        if (this.last_changed) {
+          window.setTimeout(function (val) {
+            var now = Date.now();
+            if (now - val.last_changed >= 2000) {
+              val.fire('change');
+              val.last_changed = null;
+            }
+          }, 2010, this);
+        }
       },
     }
  );
