@@ -2,11 +2,9 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-
 <link rel="import" href="../components/entity/state-info.html">
 
-<link rel='import' href='../util/cover-model.html'>
+<link rel="import" href="../components/ha-cover-controls.html">
 
 <dom-module id="state-card-cover">
   <template>
@@ -15,30 +13,11 @@
       :host {
         line-height: 1.5;
       }
-
-      .state {
-        text-align: right;
-        white-space: nowrap;
-        width: 127px;
-      }
-
-      [invisible] {
-        visibility: hidden !important;
-      }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>
-        <paper-icon-button icon="mdi:arrow-up" on-tap='onOpenTap'
-          invisible$='[[!entityObj.supportsOpen]]'
-          disabled='[[entityObj.isFullyOpen]]'></paper-icon-button>
-        <paper-icon-button icon="mdi:stop" on-tap='onStopTap'
-          invisible$='[[!entityObj.supportsStop]]'></paper-icon-button>
-        <paper-icon-button icon="mdi:arrow-down" on-tap='onCloseTap'
-          invisible$='[[!entityObj.supportsClose]]'
-          disabled='[[entityObj.isFullyClosed]]'></paper-icon-button>
-      </div>
+      <ha-cover-controls hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
     </div>
   </template>
 </dom-module>
@@ -60,27 +39,6 @@ Polymer({
     stateObj: {
       type: Object,
     },
-
-    entityObj: {
-      type: Object,
-      computed: 'computeEntityObj(hass, stateObj)',
-    },
-  },
-
-  computeEntityObj: function (hass, stateObj) {
-    return new window.CoverEntity(hass, stateObj);
-  },
-
-  onOpenTap: function () {
-    this.entityObj.openCover();
-  },
-
-  onCloseTap: function () {
-    this.entityObj.closeCover();
-  },
-
-  onStopTap: function () {
-    this.entityObj.stopCover();
   },
 });
 </script>
