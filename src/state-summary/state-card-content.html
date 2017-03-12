@@ -46,7 +46,7 @@ Polymer({
     // If Polymer component for the required element is not loaded try to load it.
     // Don't try to load unconditionally because it cause onflict between vulcanized
     // and non-vulacanized versions.
-    if (!isLoaded) {
+    if (!isLoaded || /Version\/1.*Safari/.test(navigator.userAgent)) {
       this.importHref(
           '/local/custom_ui/state-card-' + stateType + '.html',
           function () {},
