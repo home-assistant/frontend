@@ -2,13 +2,18 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
+<link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
+
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
 
 <dom-module id='more-info-alarm_control_panel'>
   <template>
-    <style is="custom-style" include="iron-flex"></style>
-
+    <style is="custom-style" include="iron-flex">
+      paper-input {
+        margin-left: 5px;
+      }
+    </style>
     <div class='layout horizontal'>
       <paper-input
         label='code'
@@ -18,6 +23,27 @@
         hidden$='[[!codeInputVisible]]'
         disabled='[[!codeInputEnabled]]'
       ></paper-input>
+    </div>
+    <div hidden$='[[!keypadVisible]]'>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handle1Tap'>1</paper-button>
+        <paper-button on-tap='handle2Tap'>2</paper-button>
+        <paper-button on-tap='handle3Tap'>3</paper-button>
+      </div>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handle4Tap'>4</paper-button>
+        <paper-button on-tap='handle5Tap'>5</paper-button>
+        <paper-button on-tap='handle6Tap'>6</paper-button>
+      </div>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handle7Tap'>7</paper-button>
+        <paper-button on-tap='handle8Tap'>8</paper-button>
+        <paper-button on-tap='handle9Tap'>9</paper-button>
+      </div>
+      <div class='layout horizontal'>
+        <paper-button on-tap='handleBackspaceTap'><iron-icon icon='mdi:backspace'></iron-icon></paper-button>
+        <paper-button on-tap='handle0Tap'>0</paper-button>
+      </div>
     </div>
     <div class='layout horizontal'>
       <paper-button
@@ -45,7 +71,6 @@ Polymer({
     hass: {
       type: Object,
     },
-
     stateObj: {
       type: Object,
       observer: 'stateObjChanged',
@@ -96,6 +121,7 @@ Polymer({
     if (newVal) {
       this.codeFormat = newVal.attributes.code_format;
       this.codeInputVisible = this.codeFormat !== null;
+      this.keypadVisible = this.codeFormat === '\\d+';
       this.codeInputEnabled = (
         newVal.state === 'armed_home' ||
         newVal.state === 'armed_away' ||
@@ -115,6 +141,50 @@ Polymer({
         this.fire('iron-resize');
       }.bind(this), 500);
     }
+  },
+
+  handle0Tap() {
+    this.enteredCode += '0';
+  },
+
+  handle1Tap() {
+    this.enteredCode += '1';
+  },
+
+  handle2Tap() {
+    this.enteredCode += '2';
+  },
+
+  handle3Tap() {
+    this.enteredCode += '3';
+  },
+
+  handle4Tap() {
+    this.enteredCode += '4';
+  },
+
+  handle5Tap() {
+    this.enteredCode += '5';
+  },
+
+  handle6Tap() {
+    this.enteredCode += '6';
+  },
+
+  handle7Tap() {
+    this.enteredCode += '7';
+  },
+
+  handle8Tap() {
+    this.enteredCode += '8';
+  },
+
+  handle9Tap() {
+    this.enteredCode += '9';
+  },
+
+  handleBackspaceTap() {
+    this.enteredCode = this.enteredCode.slice(0, -1);
   },
 
   handleDisarmTap: function () {
