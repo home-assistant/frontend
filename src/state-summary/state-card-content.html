@@ -42,11 +42,15 @@ Polymer({
   },
 
   _maybeLoadCustomUi: function (stateType) {
-    var isLoaded = this._isLoaded('STATE-CARD-' + stateType.toUpperCase());
+    // Constructor check doesn't work on Safari 10.
+    // Bypassing this check mean that in order to user a built-in
+    // i.e. state-card-toggle a dummy empty html file must be created.
+    var isLoaded = !/Version\/1.*Safari/.test(navigator.userAgent) &&
+        this._isLoaded('STATE-CARD-' + stateType.toUpperCase());
     // If Polymer component for the required element is not loaded try to load it.
     // Don't try to load unconditionally because it cause onflict between vulcanized
     // and non-vulacanized versions.
-    if (!isLoaded || /Version\/1.*Safari/.test(navigator.userAgent)) {
+    if (!isLoaded) {
       this.importHref(
           '/local/custom_ui/state-card-' + stateType + '.html',
           function () {},
