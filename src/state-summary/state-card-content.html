@@ -35,30 +35,16 @@ Polymer({
     'inputChanged(hass, inDialog, stateObj)',
   ],
 
-  _isLoaded: function (name) {
-    var elem = document.createElement(name);
-    // If Polymer was already loaded for <name> - it replaced the constructor.
-    return (elem.constructor !== HTMLElement);
-  },
-
   _maybeLoadCustomUi: function (stateType) {
-    // Constructor check doesn't work on Safari 10.
-    // Bypassing this check mean that in order to user a built-in
-    // i.e. state-card-toggle a dummy empty html file must be created.
-    var isLoaded = !/Version\/1.*Safari/.test(navigator.userAgent) &&
-        this._isLoaded('STATE-CARD-' + stateType.toUpperCase());
-    // If Polymer component for the required element is not loaded try to load it.
-    // Don't try to load unconditionally because it cause onflict between vulcanized
-    // and non-vulacanized versions.
-    if (!isLoaded) {
-      this.importHref(
-          '/local/custom_ui/state-card-' + stateType + '.html',
-          function () {},
-          /* eslint-disable no-console */
-          function () { console.error('Error loading %s from /local/custom_ui/state-card-%s.html', stateType, stateType); },
-          /* eslint-enable no-console */
-          true);
-    }
+    // Checking if element is already loaded by comparing constructor to
+    // HTMLElement doesn't work on Safari 10.
+    this.importHref(
+        '/local/custom_ui/state-card-' + stateType + '.html',
+        function () {},
+        /* eslint-disable no-console */
+        function () { console.error('Error loading %s from /local/custom_ui/state-card-%s.html', stateType, stateType); },
+        /* eslint-enable no-console */
+        true);
   },
 
   inputChanged: function (hass, inDialog, stateObj) {
