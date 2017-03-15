@@ -1853,9 +1853,9 @@ escope@^3.6.0:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint-config-airbnb-base@^11.1.0:
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-airbnb-base/-/eslint-config-airbnb-base-11.1.0.tgz#dc9b3ec70b8c74dcbe6d6257c9da3992c39ca2ca"
+eslint-config-airbnb-base@^11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-airbnb-base/-/eslint-config-airbnb-base-11.1.1.tgz#61e9e89e4eb89f474f6913ac817be9fbb59063e0"
 
 eslint-import-resolver-node@^0.2.0:
   version "0.2.3"
@@ -1872,9 +1872,9 @@ eslint-module-utils@^2.0.0:
     debug "2.2.0"
     pkg-dir "^1.0.0"
 
-eslint-plugin-html@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-html/-/eslint-plugin-html-2.0.0.tgz#2db1bba19c1973b39bbf21278a55fe0dea4ca07f"
+eslint-plugin-html@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-html/-/eslint-plugin-html-2.0.1.tgz#3a829510e82522f1e2e44d55d7661a176121fce1"
   dependencies:
     htmlparser2 "^3.8.2"
 
@@ -1893,9 +1893,9 @@ eslint-plugin-import@^2.2.0:
     minimatch "^3.0.3"
     pkg-up "^1.0.0"
 
-eslint@^3.15.0:
-  version "3.15.0"
-  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.15.0.tgz#bdcc6a6c5ffe08160e7b93c066695362a91e30f2"
+eslint@^3.17.1:
+  version "3.17.1"
+  resolved "https://registry.yarnpkg.com/eslint/-/eslint-3.17.1.tgz#b80ae12d9c406d858406fccda627afce33ea10ea"
   dependencies:
     babel-code-frame "^6.16.0"
     chalk "^1.1.3"
@@ -2815,9 +2815,9 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
-home-assistant-js-websocket@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-1.0.1.tgz#a4a81b8e570882dcc9f87105721893f61ddceb40"
+home-assistant-js-websocket@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-1.1.0.tgz#bf546d45238b0b84b4de7e062c82058a2e550ed2"
 
 homedir-polyfill@^1.0.0:
   version "1.0.1"
@@ -2851,9 +2851,9 @@ html-minifier@^3.0.1:
     relateurl "0.2.x"
     uglify-js "2.7.x"
 
-html-minifier@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-3.3.1.tgz#dd38e60571537bf34a8171889c64fce73c45edad"
+html-minifier@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/html-minifier/-/html-minifier-3.4.1.tgz#0bf3c54d7f116d500b78c51fc4246039922dc250"
   dependencies:
     camel-case "3.0.x"
     clean-css "4.0.x"
@@ -2862,7 +2862,7 @@ html-minifier@^3.3.1:
     ncname "1.0.x"
     param-case "2.1.x"
     relateurl "0.2.x"
-    uglify-js "2.7.x"
+    uglify-js "2.8.x"
 
 html-wiring@^1.0.0:
   version "1.2.0"
@@ -3733,7 +3733,7 @@ methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
 
-micromatch@^2.3.7:
+micromatch@^2.3.11, micromatch@^2.3.7:
   version "2.3.11"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-2.3.11.tgz#86677c97d1720b363431d04d0d15293bd38c1565"
   dependencies:
@@ -4489,6 +4489,10 @@ pretty-bytes@^3.0.1:
   dependencies:
     number-is-nan "^1.0.0"
 
+pretty-bytes@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-4.0.2.tgz#b2bf82e7350d65c6c33aa95aaa5a4f6327f61cd9"
+
 pretty-hrtime@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/pretty-hrtime/-/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
@@ -4864,15 +4868,15 @@ rollup-plugin-buble@^0.15.0:
     buble "^0.15.0"
     rollup-pluginutils "^1.5.0"
 
-rollup-plugin-commonjs@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-7.0.0.tgz#510762d5c423c761cd16d8e8451715b39f0ceb08"
+rollup-plugin-commonjs@^8.0.2:
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-8.0.2.tgz#98b1589bfe32a6c0f67790b60c0b499972afed89"
   dependencies:
     acorn "^4.0.1"
     estree-walker "^0.3.0"
     magic-string "^0.19.0"
     resolve "^1.1.7"
-    rollup-pluginutils "^1.5.1"
+    rollup-pluginutils "^2.0.1"
 
 rollup-plugin-node-resolve@^2.0.0:
   version "2.0.0"
@@ -4896,12 +4900,19 @@ rollup-plugin-uglify@^1.0.1:
   dependencies:
     uglify-js "^2.6.1"
 
-rollup-pluginutils@^1.5.0, rollup-pluginutils@^1.5.1:
+rollup-pluginutils@^1.5.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-1.5.2.tgz#1e156e778f94b7255bfa1b3d0178be8f5c552408"
   dependencies:
     estree-walker "^0.2.1"
     minimatch "^3.0.2"
+
+rollup-pluginutils@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.0.1.tgz#7ec95b3573f6543a46a6461bd9a7c544525d0fc0"
+  dependencies:
+    estree-walker "^0.3.0"
+    micromatch "^2.3.11"
 
 rollup-watch@^3.2.2:
   version "3.2.2"
@@ -4909,9 +4920,9 @@ rollup-watch@^3.2.2:
   dependencies:
     require-relative "0.8.7"
 
-rollup@^0.41.4:
-  version "0.41.4"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.41.4.tgz#a970580176329f9ead86854d7fd4c46de752aef8"
+rollup@^0.41.5:
+  version "0.41.5"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.41.5.tgz#cdfaade5cd1c2c7314351566a50ef74df6e66e3d"
   dependencies:
     source-map-support "^0.4.0"
 
@@ -5447,9 +5458,9 @@ sw-precache@^3.1.1:
     pretty-bytes "^3.0.1"
     sw-toolbox "^3.1.1"
 
-sw-precache@^4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/sw-precache/-/sw-precache-4.3.0.tgz#576c6c1c23b61c44ef5d84d33870641060d8c2de"
+sw-precache@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/sw-precache/-/sw-precache-5.1.0.tgz#0d79a0574fc85dc425340dc457dc45d4c5c2c9d5"
   dependencies:
     dom-urls "^1.1.0"
     es6-promise "^4.0.5"
@@ -5458,8 +5469,9 @@ sw-precache@^4.3.0:
     lodash.template "^4.4.0"
     meow "^3.7.0"
     mkdirp "^0.5.1"
-    pretty-bytes "^3.0.1"
+    pretty-bytes "^4.0.2"
     sw-toolbox "^3.4.0"
+    update-notifier "^1.0.3"
 
 sw-toolbox@^3.1.1, sw-toolbox@^3.4.0:
   version "3.4.0"
@@ -5688,11 +5700,19 @@ typical@^2.3.0, typical@^2.4.2, typical@^2.5.0, typical@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/typical/-/typical-2.6.0.tgz#89d51554ab139848a65bcc2c8772f8fb450c40ed"
 
-uglify-js@2.7.x, uglify-js@^2.6.1, uglify-js@^2.7.0, uglify-js@^2.7.5:
+uglify-js@2.7.x, uglify-js@^2.6.1, uglify-js@^2.7.0:
   version "2.7.5"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.7.5.tgz#4612c0c7baaee2ba7c487de4904ae122079f2ca8"
   dependencies:
     async "~0.2.6"
+    source-map "~0.5.1"
+    uglify-to-browserify "~1.0.0"
+    yargs "~3.10.0"
+
+uglify-js@2.8.x, uglify-js@^2.8.12:
+  version "2.8.12"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.8.12.tgz#8a50f5d482243650b7108f6080aa3a6afe2a6c55"
+  dependencies:
     source-map "~0.5.1"
     uglify-to-browserify "~1.0.0"
     yargs "~3.10.0"
@@ -5764,7 +5784,7 @@ update-notifier@^0.6.0:
     latest-version "^2.0.0"
     semver-diff "^2.0.0"
 
-update-notifier@^1.0.0:
+update-notifier@^1.0.0, update-notifier@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/update-notifier/-/update-notifier-1.0.3.tgz#8f92c515482bd6831b7c93013e70f87552c7cf5a"
   dependencies:

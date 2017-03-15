@@ -30,29 +30,29 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
-    "home-assistant-js-websocket": "^1.0.1"
+    "home-assistant-js-websocket": "^1.1.0"
   },
   "devDependencies": {
     "bower": "^1.8.0",
     "es6-object-assign": "^1.0.3",
-    "eslint": "^3.15.0",
-    "eslint-config-airbnb-base": "^11.1.0",
-    "eslint-plugin-html": "^2.0.0",
+    "eslint": "^3.17.1",
+    "eslint-config-airbnb-base": "^11.1.1",
+    "eslint-plugin-html": "^2.0.1",
     "eslint-plugin-import": "^2.2.0",
-    "html-minifier": "^3.3.1",
+    "html-minifier": "^3.4.1",
     "hydrolysis": "^1.24.1",
     "optimize-js": "^1.0.3",
     "polymer-cli": "^0.17.0",
     "polymer-lint": "^0.8.3",
-    "rollup": "^0.41.4",
+    "rollup": "^0.41.5",
     "rollup-plugin-buble": "^0.15.0",
-    "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^3.2.2",
-    "sw-precache": "^4.3.0",
-    "uglify-js": "^2.7.5",
+    "sw-precache": "^5.1.0",
+    "uglify-js": "^2.8.12",
     "vulcanize": "^1.15.3"
   }
 }
