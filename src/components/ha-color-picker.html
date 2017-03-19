@@ -8,7 +8,7 @@
       }
     </style>
 
-    <canvas width='[[width]]' height='[[height]]'></canvas>
+    <canvas width='[[width]]' height='[[height]]' id='canvas'></canvas>
   </template>
 </dom-module>
 
@@ -107,7 +107,7 @@ Polymer({
   ready: function () {
     this.setColor = this.setColor.bind(this);
     this.mouseMoveIsThrottled = true;
-    this.canvas = this.children[0];
+    this.canvas = this.$.canvas;
     this.context = this.canvas.getContext('2d');
     this.drawGradient();
   },
