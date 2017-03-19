@@ -21,7 +21,7 @@
     <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <div id='chart_id' hidden$="{{!stateObj.attributes.forecast}}"></div>
+        <div id='chart_id' hidden$="[[!stateObj.attributes.forecast]]"></div>
         <ha-attributes state-obj='[[stateObj]]' extra-filters='forecast'></ha-attributes>
       </div>
     </ha-card>
