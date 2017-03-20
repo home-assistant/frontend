@@ -54,10 +54,14 @@
             id='picker'
             value='{{_currentDate}}'
             label='Showing entries for'
-            disabled='[[isLoading]]'
+            disabled='[[isLoadingData]]'
           ></vaadin-date-picker>
 
-          <paper-dropdown-menu label-float label='Period'>
+          <paper-dropdown-menu
+            label-float
+            label='Period'
+            disabled='[[isLoadingData]]'
+          >
             <paper-menu class="dropdown-content" selected="{{_periodIndex}}">
               <paper-item>1 day</paper-item>
               <paper-item>3 days</paper-item>
