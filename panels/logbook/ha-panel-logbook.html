@@ -130,6 +130,7 @@ Polymer({
   },
 
   _computeFilterDate: function (_currentDate) {
+    if (!_currentDate) return undefined;
     var parts = _currentDate.split("-");
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]).toISOString();
