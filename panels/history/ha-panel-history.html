@@ -8,8 +8,9 @@
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
 <link rel="import" href="../../src/components/state-history-charts.html">
-<link rel="import" href="../../src/resources/pikaday-js.html">
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/data/ha-state-history-data.html">
 <link rel="import" href="../../src/resources/ha-style.html">
@@ -18,13 +19,15 @@
   <template>
     <style include="iron-flex ha-style">
       .content {
-        padding: 16px;
+        padding: 0 16px 16px;
       }
 
-      paper-input {
-        max-width: 200px;
+      vaadin-date-picker {
+        margin-bottom: 24px;
         margin-right: 16px;
+        max-width: 200px;
       }
+
       paper-dropdown-menu {
         max-width: 100px;
       }
@@ -33,7 +36,7 @@
     <ha-state-history-data
       hass='[[hass]]'
       filter-type='[[_filterType]]'
-      filter-value='[[_computeFilterDate(_selectedDate, _periodIndex)]]'
+      filter-value='[[_computeFilterDate(_currentDate, _periodIndex)]]'
       data='{{stateHistoryInput}}'
       is-loading='{{isLoadingData}}'
     ></ha-state-history-data>
@@ -47,13 +50,18 @@
 
       <div class="flex content">
         <div class="flex layout horizontal wrap">
-          <paper-input
-            label='Start date'
-            id='datePicker'
-            value='[[_computeDateDisplay(_selectedDate)]]'
-            on-focus='datepickerFocus'
-          ></paper-input>
-          <paper-dropdown-menu label-float label='Period'>
+          <vaadin-date-picker
+            id='picker'
+            value='{{_currentDate}}'
+            label='Showing entries for'
+            disabled='[[isLoadingData]]'
+          ></vaadin-date-picker>
+
+          <paper-dropdown-menu
+            label-float
+            label='Period'
+            disabled='[[isLoadingData]]'
+          >
             <paper-menu class="dropdown-content" selected="{{_periodIndex}}">
               <paper-item>1 day</paper-item>
               <paper-item>3 days</paper-item>
@@ -107,12 +115,13 @@ Polymer({
       value: false,
     },
 
-    _selectedDate: {
-      type: Date,
+    // ISO8601 formatted date string
+    _currentDate: {
+      type: String,
       value: function () {
-        var begin = new Date();
-        begin.setHours(0, 0, 0, 0);
-        return begin;
+        var value = new Date();
+        value.setHours(0, 0, 0);
+        return value.toISOString().split('T')[0];
       },
     },
 
@@ -127,32 +136,28 @@ Polymer({
   },
 
   attached: function () {
-    this.datePicker = new window.Pikaday({
-      // Bind field to dummy input to prevent pikaday from overwriting
-      // field value with its internal formatting.
-      field: document.createElement('input'),
-      trigger: this.$.datePicker.inputElement,
-      onSelect: function (newDate) {
-        this._selectedDate = newDate;
-      }.bind(this),
+    // We are unable to parse date because we use intl api to render date
+    // So we just return last known date.
+    var lastFormatDate = new Date();
+    this.$.picker.set('i18n.parseDate', function () {
+      return lastFormatDate;
     });
-    // Set the initial datePicker date, without triggering onSelect handler.
-    this.datePicker.setDate(this._selectedDate, true);
+    this.$.picker.set('i18n.formatDate', function (date) {
+      lastFormatDate = date;
+      return window.hassUtil.formatDate(date);
+    });
   },
 
-  detached: function () {
-    this.datePicker.destroy();
-  },
-
-  _computeDateDisplay: function (date) {
-    return window.hassUtil.formatDate(new Date(date));
-  },
-
-  _computeFilterDate: function (selectedDate, periodIndex) {
-    var endTime = new Date(selectedDate);
+  _computeFilterDate: function (_currentDate, periodIndex) {
+    if (!_currentDate) return undefined;
+    var parts = _currentDate.split('-');
+    parts[1] = parseInt(parts[1]) - 1;
+    var startTime = new Date(parts[0], parts[1], parts[2]);
+    var endTime = new Date(startTime);
     endTime.setDate(
-      selectedDate.getDate() + this._computeFilterDays(periodIndex));
-    return selectedDate.toISOString() + '?end_time=' + endTime.toISOString();
+      startTime.getDate() + this._computeFilterDays(periodIndex));
+
+    return startTime.toISOString() + '?end_time=' + endTime.toISOString();
   },
 
   _computeFilterDays: function (periodIndex) {
