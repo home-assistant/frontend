@@ -394,7 +394,7 @@ window.hassUtil.computeDomain = function (stateObj) {
 };
 
 window.hassUtil.computeStateName = function (stateObj) {
-  if (!stateObj._entityDisplay) {
+  if (stateObj._entityDisplay === undefined) {
     stateObj._entityDisplay = (
       stateObj.attributes.friendly_name ||
       window.HAWS.extractObjectId(stateObj.entity_id)
