@@ -14,11 +14,11 @@
       position: relative;
       display: block;
       margin: 0 auto;
-      width: 2.5em;
+      width: var(--ha-label-badge-size, 2.5em);
       text-align: center;
-      height: 2.5em;
-      line-height: 2.5em;
-      font-size: 1.5em;
+      height: var(--ha-label-badge-size, 2.5em);
+      line-height: var(--ha-label-badge-size, 2.5em);
+      font-size: var(--ha-label-badge-font-size, 1.5em);
       border-radius: 50%;
       border: 0.1em solid var(--ha-label-badge-color, --default-primary-color);
       color: rgb(76, 76, 76);
@@ -85,7 +85,7 @@
         </div>
         <div class='label' hidden$='[[!label]]'><span>[[label]]</span></div>
       </div>
-      <div class='title'>[[description]]</div>
+      <div class='title' hidden$='[[!description]]'>[[description]]</div>
     </div>
   </template>
 </dom-module>
