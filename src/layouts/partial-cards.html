@@ -54,14 +54,26 @@
             <paper-tab
               data-entity=''
               on-tap='scrollToTop'
-            >[[locationName]]</paper-tab>
+            >
+	      <template is='dom-if' if='[[!defaultView]]'>
+	        [[locationName]]
+	      </template>
+	      <template is='dom-if' if='[[defaultView]]'>
+	        <template is='dom-if' if='[[defaultView.attributes.icon]]'>
+		  <iron-icon title=$='[[computeStateName(defaultView)]]' icon='[[defaultView.attributes.icon]]'></iron-icon>
+		</template>
+		<template is='dom-if' if='[[!defaultView.attributes.icon]]'>
+		  [[computeStateName(defaultView)]]
+		</template>
+              </template>
+	    </paper-tab>
             <template is='dom-repeat' items='[[views]]'>
               <paper-tab
                 data-entity$='[[item.entity_id]]'
                 on-tap='scrollToTop'
               >
                 <template is='dom-if' if='[[item.attributes.icon]]'>
-                  <iron-icon icon='[[item.attributes.icon]]'></iron-icon>
+                  <iron-icon title$='[[computeStateName(item)]]' icon='[[item.attributes.icon]]'></iron-icon>
                 </template>
                 <template is='dom-if' if='[[!item.attributes.icon]]'>
                   [[computeStateName(item)]]
@@ -114,6 +126,7 @@ Polymer({
     hass: {
       type: Object,
       value: null,
+      observer: 'computeAllViews'
     },
 
     narrow: {
@@ -154,7 +167,10 @@ Polymer({
 
     views: {
       type: Array,
-      computed: 'computeViews(hass)',
+    },
+
+    defaultView: {
+      type: Object,
     },
 
     viewStates: {
@@ -242,6 +258,13 @@ Polymer({
   },
 
   computeStateName: function (stateObj) {
+    if (stateObj.entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
+      if (stateObj.attributes.friendly_name &&
+          stateObj.attributes.friendly_name !== 'default_view') {
+        return stateObj.attributes.friendly_name;
+      }
+      return this.computeLocationName(this.hass);
+    }
     return window.hassUtil.computeStateName(stateObj);
   },
 
@@ -253,15 +276,16 @@ Polymer({
     return window.hassUtil.isComponentLoaded(hass, 'introduction');
   },
 
-  computeViews: function (hass) {
+  computeAllViews: function (hass) {
     var views = window.HAWS.extractViews(hass.states);
-
     // If default view present, it's in first index.
-    if (views.length > 0 && views[0].entity_id === 'group.default_view') {
-      views.shift();
+    if (views.length > 0 && views[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
+      this.defaultView = views.shift();
+    } else {
+      this.defaultView = null;
     }
 
-    return views;
+    this.views = views;
   },
 
   /*
