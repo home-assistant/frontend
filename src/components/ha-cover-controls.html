@@ -45,13 +45,16 @@ Polymer({
   computeEntityObj: function (hass, stateObj) {
     return new window.CoverEntity(hass, stateObj);
   },
-  onOpenTap: function () {
+  onOpenTap: function (ev) {
+    ev.stopPropagation();
     this.entityObj.openCover();
   },
-  onCloseTap: function () {
+  onCloseTap: function (ev) {
+    ev.stopPropagation();
     this.entityObj.closeCover();
   },
-  onStopTap: function () {
+  onStopTap: function (ev) {
+    ev.stopPropagation();
     this.entityObj.stopCover();
   },
 });
