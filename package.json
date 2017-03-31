@@ -8,11 +8,11 @@
   },
   "scripts": {
     "clean": "rm -rf build/* build-temp/*",
-    "js_dev": "script/gen-service-worker.js && npm run watch_ru_all",
+    "js_dev": "node script/gen-service-worker.js && npm run watch_ru_all",
     "js_dev_demo": "BUILD_DEMO=1 npm run watch_ru_all",
     "js_prod": "BUILD_DEV=0 npm run ru_all && script/optimize-js.js",
     "js_demo": "BUILD_DEV=0 BUILD_DEMO=1 npm run ru_all",
-    "frontend_html": "script/vulcanize.js",
+    "frontend_html": "node script/vulcanize.js",
     "frontend_prod": "npm run js_prod && npm run frontend_html",
     "frontend_demo": "npm run js_demo && npm run frontend_html",
     "ru_all": "npm run ru_core && npm run ru_compatibility && npm run ru_demo",
