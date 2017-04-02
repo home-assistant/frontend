@@ -26,11 +26,11 @@
       line-height: 40px;
     }
 
-    .name[in-dialog] {
+    .name[in-dialog], :host([secondary-line]) .name {
       line-height: 20px;
     }
 
-    .time-ago {
+    .time-ago, ::slotted(*) {
       @apply(--paper-font-common-nowrap);
       color: var(--secondary-text-color);
     }
@@ -47,7 +47,9 @@
             <ha-relative-time datetime='[[stateObj.last_changed]]'></ha-relative-time>
           </div>
         </template>
-
+        <template is='dom-if' if='[[!inDialog]]'>
+          <slot>
+        </template>
       </div>
     </div>
   </template>
