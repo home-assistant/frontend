@@ -1,6 +1,7 @@
 {
   "plugins": {
     "sauce": {
+      "disabled": true,
       "browsers": [{
           "browserName": "chrome",
           "platform": "Linux",
