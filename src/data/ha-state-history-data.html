@@ -26,10 +26,10 @@
       // Duplicate the last state to the selected endTime so the chart expands
       // to the end of the selected time. (If no additional state changes were
       // found, the state was still the last state as of the end time.
-      last_state = Object.assign({}, stateInfo[stateInfo.length - 1]);
-      last_state.last_changed = endTime;
-      last_state.last_updated = endTime;
-      stateInfo.push(last_state);
+      var lastState = Object.assign({}, stateInfo[stateInfo.length - 1]);
+      lastState.last_changed = endTime;
+      lastState.last_updated = endTime;
+      stateInfo.push(lastState);
 
       stateWithUnit = stateInfo.find(
         function (state) { return 'unit_of_measurement' in state.attributes; });
@@ -110,12 +110,10 @@
       var data;
 
       if (filterType === 'date') {
-        if (startTime === undefined || endTime === undefined)
-          return;
+        if (startTime === undefined || endTime === undefined) return;
         data = this.getDate(startTime, endTime);
       } else if (filterType === 'recent-entity') {
-        if (entityId === undefined)
-          return;
+        if (entityId === undefined) return;
         data = this.getRecent(entityId);
       } else {
         return;
