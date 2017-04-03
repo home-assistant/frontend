@@ -9,7 +9,6 @@ install:
   - bower install
 addons:
   firefox: latest
-  sauce_connect: true
   apt:
     sources:
     - google-chrome
