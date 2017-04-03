@@ -1,8 +1,5 @@
 {
   "plugins": {
-    "local": {
-      "browsers": ["chrome", "firefox"]
-    },
     "sauce": {
       "browsers": [{
           "browserName": "chrome",
@@ -12,10 +9,6 @@
           "browserName": "safari",
           "platform": "macOS 10.12",
           "version": "10.0"
-        }, {
-	  "browserName": "Safari",
-          "platformName": "iOS",
-	  "deviceName": "iPhone 7 Simulator"
 	}
       ]
     }

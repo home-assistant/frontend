@@ -18,7 +18,7 @@ addons:
 script:
   - npm run test
   - xvfb-run wct --skip_plugin sauce -l all
-  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --skip_plugin local; fi
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct; fi
 dist: trusty
 env:
   global:
