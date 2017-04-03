@@ -175,7 +175,7 @@ Polymer({
 
     viewStates: {
       type: Object,
-      computed: 'computeViewStates(currentView, hass)',
+      computed: 'computeViewStates(currentView, hass, defaultView)',
     },
   },
 
@@ -293,7 +293,7 @@ Polymer({
 
     Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
   */
-  computeViewStates: function (currentView, hass) {
+  computeViewStates: function (currentView, hass, defaultView) {
     var i;
     var entityId;
     var state;
@@ -301,7 +301,7 @@ Polymer({
     var entityIds = Object.keys(hass.states);
 
     // If we base off all entities, only have to filter out hidden
-    if (!currentView && !(this.DEFAULT_VIEW_ENTITY_ID in hass.states)) {
+    if (!currentView && !defaultView) {
       states = {};
       for (i = 0; i < entityIds.length; i++) {
         entityId = entityIds[i];
