@@ -53,6 +53,7 @@
     "rollup-watch": "^3.2.2",
     "sw-precache": "^5.1.0",
     "uglify-js": "^2.8.12",
-    "vulcanize": "^1.15.3"
+    "vulcanize": "^1.15.3",
+    "web-component-tester": "^5.0.1"
   }
 }

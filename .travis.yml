@@ -5,9 +5,6 @@ cache:
   
 language: node_js
 sudo: required
-before_script:
-  - npm install -g bower polylint web-component-tester
-  - polylint
 env:
   global:
     - secure: >-
