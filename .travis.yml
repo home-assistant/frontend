@@ -9,6 +9,7 @@ install:
   - bower install
 addons:
   firefox: latest
+  sauce_connect: true
   apt:
     sources:
     - google-chrome
@@ -16,7 +17,7 @@ addons:
     - google-chrome-stable
 script:
   - npm run test
-  - xvfb-run wct --skip_plugin sauce
+  - xvfb-run wct --skip_plugin sauce -l all
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --skip_plugin local; fi
 dist: trusty
 env:
