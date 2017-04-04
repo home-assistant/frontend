@@ -6,7 +6,7 @@
   var DATE_CACHE = {};
   var RECENT_CACHE = {};
 
-  function computeHistory(stateHistory) {
+  function computeHistory(stateHistory, endTime) {
     var lineChartDevices = {};
     var timelineDevices = [];
     var unitStates;
@@ -22,6 +22,14 @@
       if (stateInfo.size === 0) {
         return;
       }
+
+      // Duplicate the last state to the selected endTime so the chart expands
+      // to the end of the selected time. (If no additional state changes were
+      // found, the state was still the last state as of the end time.
+      var lastState = Object.assign({}, stateInfo[stateInfo.length - 1]);
+      lastState.last_changed = endTime;
+      lastState.last_updated = endTime;
+      stateInfo.push(lastState);
 
       stateWithUnit = stateInfo.find(
         function (state) { return 'unit_of_measurement' in state.attributes; });
@@ -59,7 +67,15 @@
         type: String,
       },
 
-      filterValue: {
+      startTime: {
+        type: Date,
+      },
+
+      endTime: {
+        type: Date,
+      },
+
+      entityId: {
         type: String,
       },
 
@@ -79,24 +95,26 @@
     },
 
     observers: [
-      'filterChanged(filterType, filterValue)',
+      'filterChanged(filterType, entityId, startTime, endTime)',
     ],
 
     hassChanged: function (newHass, oldHass) {
-      if (!oldHass && this.filterType && this.filterValue) {
-        this.filterChanged(this.filterType, this.filterValue);
+      if (!oldHass) {
+        this.filterChanged(this.filterType, this.entityId, this.startTime, this.endTime);
       }
     },
 
-    filterChanged: function (filterType, filterValue) {
+    filterChanged: function (filterType, entityId, startTime, endTime) {
       if (!this.hass) return;
 
       var data;
 
       if (filterType === 'date') {
-        data = this.getDate(filterValue);
+        if (startTime === undefined || endTime === undefined) return;
+        data = this.getDate(startTime, endTime);
       } else if (filterType === 'recent-entity') {
-        data = this.getRecent(filterValue);
+        if (entityId === undefined) return;
+        data = this.getRecent(entityId);
       } else {
         return;
       }
@@ -124,7 +142,7 @@
 
       var prom = this.hass.callApi('GET', url).then(
         function (stateHistory) {
-          return computeHistory(stateHistory);
+          return computeHistory(stateHistory, Date.now());
         },
         function () {
           RECENT_CACHE[entityId] = false;
@@ -140,20 +158,21 @@
       return prom;
     },
 
-    getDate: function (date) {
-      if (!DATE_CACHE[date]) {
-        DATE_CACHE[date] = this.hass.callApi('GET', 'history/period/' + date).then(
+    getDate: function (startTime, endTime) {
+      var filter = startTime.toISOString() + '?end_time=' + endTime.toISOString();
+      if (!DATE_CACHE[filter]) {
+        DATE_CACHE[filter] = this.hass.callApi('GET', 'history/period/' + filter).then(
           function (stateHistory) {
-            return computeHistory(stateHistory);
+            return computeHistory(stateHistory, endTime);
           },
           function () {
-            DATE_CACHE[date] = false;
+            DATE_CACHE[filter] = false;
             return null;
           }
         );
       }
 
-      return DATE_CACHE[date];
+      return DATE_CACHE[filter];
     },
   });
 }());
