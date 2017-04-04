@@ -15,6 +15,12 @@
   <script>
     suite('state-info', function() {
       var si;
+
+      function lightOrShadow(elem, selector) {
+        return elem.shadowRoot ?
+            elem.shadowRoot.querySelector(selector) :
+            elem.querySelector(selector);
+      }
       
       setup(function() {
         si = fixture('state-info');
@@ -26,7 +32,7 @@
       });
 
       test('inner selector', function() {
-        var name = si.querySelector('.name');
+        var name = lightOrShadow(si, '.name');
         assert.isOk(name);
       });
     });
