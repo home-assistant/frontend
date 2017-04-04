@@ -20,8 +20,14 @@
         si = fixture('state-info');
       });
       
-      test('default stateObj', function() {
-        assert.equal(si.stateObj, undefined);
+      test('default values', function() {
+        assert.isUndefined(si.stateObj);
+        assert.isUndefined(si.inDialog);
+      });
+
+      test('inner selector', function() {
+        var name = si.querySelector('.name');
+        assert.isDefined(name);
       });
     });
   </script>
