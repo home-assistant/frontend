@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../src/components/entity/state-info.html">
+</head>
+<body>
+  <test-fixture id="state-info">
+    <template>
+      <state-info></state-info>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('state-info', function() {
+      var si;
+      
+      setup(function() {
+        si = fixture('state-info');
+      });
+      
+      test('default stateObj', function() {
+        assert.equal(si.stateObj, undefined);
+      });
+    });
+  </script>
+</body>
+</html>
