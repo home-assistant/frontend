@@ -6,6 +6,11 @@
   <link rel="import" href="../src/components/entity/state-info.html">
 </head>
 <body>
+  <test-fixture id="state-info-secondary-line">
+    <template>
+      <state-info secondary-line><my-elem>text</my-elem></state-info>
+    </template>
+  </test-fixture>
   <test-fixture id="state-info">
     <template>
       <state-info></state-info>
@@ -49,6 +54,7 @@
           var name = lightOrShadow(si, '.name');
           assert.isOk(name, '.name missing');
           assert.equal(name.textContent, 'Name');
+          assert.equal(getComputedStyle(name).lineHeight, '40px');
 
           assert.isNotOk(lightOrShadow(si, 'ha-relative-time'));
           done();
@@ -60,15 +66,35 @@
         si.inDialog = true;
         flush(function() {
           var relativeTime = lightOrShadow(si, 'ha-relative-time');
+          var name = lightOrShadow(si, '.name');
+
           assert.isOk(relativeTime);
           assert.notEqual(relativeTime.textContent, 'never');
           assert.notEqual(relativeTime.textContent, '');
+
+          assert.isOk(name);
+          assert.equal(getComputedStyle(name).lineHeight, '20px');
 
           si.stateObj = {entity_id: 'light.demo', state: 'off', attributes: {friendly_name: 'Name'}};
           flush(function() {
             assert.equal(relativeTime.textContent, 'never');
             done();
           });
+        });
+      });
+
+      test('secondary line', function(done) {
+        si = fixture('state-info-secondary-line');
+        si.stateObj = {entity_id: 'light.demo', last_changed: '2017-01-01T00:00:00+00:00', state: 'off', attributes: {friendly_name: 'Name'}};
+        si.inDialog = false;
+        flush(function() {
+          var name = lightOrShadow(si, '.name');
+          assert.isOk(name);
+          assert.equal(getComputedStyle(name).lineHeight, '20px');
+          var content = si.queryEffectiveChildren('my-elem');
+          assert.isOk(content);
+          assert.equal(content.textContent, 'text');
+          done();
         });
       });
     });
