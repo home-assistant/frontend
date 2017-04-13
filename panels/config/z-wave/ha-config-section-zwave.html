@@ -15,6 +15,13 @@
 
 <dom-module id="ha-config-section-zwave">
   <template>
+   <style include="iron-flex ha-style">
+
+      .card-actions.warning ha-call-service-button {
+        color: var(--google-red-500);
+      }
+    </style>
+
     <ha-config-section is-wide='[[isWide]]'>
       <span slot='header'>Z-Wave</span>
       <span slot='introduction'>
@@ -26,6 +33,62 @@
         entities='[[entities]]'
         config='[[entityConfig]]'>
       </ha-entity-config>
+
+      <paper-card heading='Z-Wave Network Management'>
+        <div class='card-content'>
+          Control your Z-Wave Network… from Home Assistant.
+        </div>
+        <div class='card-actions warning'>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='add_node_secure'
+          >Add Node</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='cancel_command'
+          >Cancel Command</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='remove_failed_node'
+          >Remove Failed Node</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='remove_node'
+          >Remove Node</ha-call-service-button>
+        </div>
+        <div class='card-actions'>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='heal_network'
+          >Heal Network</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='start_network'
+          >Start Network</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='stop_network'
+          >Stop Network</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='soft_reset'
+          >Soft Reset</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='test_network'
+          >Test Network</ha-call-service-button>
+        </div>
+      </paper-card>
+
     </ha-config-section>
   </template>
 </dom-module>
