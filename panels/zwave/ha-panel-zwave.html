@@ -1,0 +1,122 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<script src="../../bower_components/leaflet/dist/leaflet.js"></script>
+<!-- otherwise the shadow dom polyfill breaks the CSS when vulcanized -->
+<link rel="stylesheet" href="../../bower_components/leaflet/dist/leaflet.css" />
+<link rel="import" href="../config/ha-call-service-button.html">
+<link rel="import" href="../../src/resources/ha-style.html">
+
+<dom-module id="ha-panel-zwave">
+  <template>
+    <style include="iron-flex ha-style">
+      .content {
+        padding-bottom: 32px;
+      }
+
+      .border {
+        margin: 32px auto 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        max-width: 1040px;
+      }
+
+      .narrow .border {
+        max-width: 640px;
+      }
+
+      .card-actions.warning ha-call-service-button {
+        color: var(--google-red-500);
+      }
+    </style>
+
+    <app-toolbar>
+      <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+      <div main-title>Z-Wave Manager</div>
+    </app-toolbar>
+
+    <div id='zwave'></div>
+      <paper-card heading='Z-Wave Network Management'>
+        <div class='card-content'>
+          Z-Wave Network controls.
+        </div>
+        <div class='card-actions'>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='add_node_secure'
+          >Add Node</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='remove_failed_node'
+          >Remove Failed Node</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='remove_node'
+          >Remove Node</ha-call-service-button>
+        </div>
+        <div class='card-actions warning'>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='cancel_command'
+          >Cancel Command</ha-call-service-button>
+        </div>
+        <div class='card-actions'>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='heal_network'
+          >Heal Network</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='start_network'
+          >Start Network</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='stop_network'
+          >Stop Network</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='soft_reset'
+          >Soft Reset</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='test_network'
+          >Test Network</ha-call-service-button>
+        </div>
+      </paper-card>
+      <paper-card heading='Z-Wave Node Management'>
+        <div class='card-content'>
+          Z-Wave Nodes control.
+        </div>
+        <div class='card-actions'>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='zwave'
+            service='refresh_node'
+          >Refresh Node</ha-call-service-button>
+        </div>
+      </paper-card>
+  </template>
+</dom-module>
+
+<script>
+
+Polymer({
+  is: 'ha-panel-zwave',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+  }
+});
+</script>
