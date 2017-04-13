@@ -33,9 +33,6 @@
       .card-actions.warning ha-call-service-button {
         color: var(--google-red-500);
       }
-
-      paper-dropdown-menu {
-        width: 100%;
     </style>
     <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
     </iron-media-query>
@@ -107,19 +104,6 @@
           >Test Network</ha-call-service-button>
         </div>
       </paper-card>
-      <div class='border'></div>
-      <paper-card heading='Z-Wave Node Management'>
-        <div class='card-content'>
-          Z-Wave Nodes control.
-        </div>
-        <div class='card-actions'>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='refresh_node'
-          >Refresh Node</ha-call-service-button>
-        </div>
-      </paper-card>
   </template>
 </dom-module>
 
@@ -154,6 +138,7 @@ Polymer({
       type: Boolean,
       computed: 'computeIsWide(showMenu, wideSidebar, wide)'
     },
+
   },
 
   computeIsWide: function (showMenu, wideSidebar, wide) {
