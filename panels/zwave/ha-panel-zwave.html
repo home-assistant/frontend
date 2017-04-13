@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <script src="../../bower_components/leaflet/dist/leaflet.js"></script>
@@ -25,18 +26,27 @@
       .narrow .border {
         max-width: 640px;
       }
-
       .card-actions.warning ha-call-service-button {
         color: var(--google-red-500);
       }
-    </style>
 
+      paper-dropdown-menu {
+        width: 100%;
+    </style>
+    <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
+    </iron-media-query>
+    <iron-media-query query="(min-width: 1296px)" query-matches="{{wideSidebar}}">
+    </iron-media-query>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed>
     <app-toolbar>
       <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
       <div main-title>Z-Wave Manager</div>
     </app-toolbar>
+    </app-header>
 
     <div id='zwave'></div>
+      <div class='border'></div>
       <paper-card heading='Z-Wave Network Management'>
         <div class='card-content'>
           Z-Wave Network controls.
@@ -93,6 +103,7 @@
           >Test Network</ha-call-service-button>
         </div>
       </paper-card>
+      <div class='border'></div>
       <paper-card heading='Z-Wave Node Management'>
         <div class='card-content'>
           Z-Wave Nodes control.
@@ -117,6 +128,36 @@ Polymer({
     hass: {
       type: Object,
     },
-  }
+
+    narrow: {
+      type: Boolean,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
+    wide: {
+      type: Boolean,
+    },
+
+    wideSidebar: {
+      type: Boolean,
+    },
+
+    isWide: {
+      type: Boolean,
+      computed: 'computeIsWide(showMenu, wideSidebar, wide)'
+    },
+  },
+
+  computeIsWide: function (showMenu, wideSidebar, wide) {
+    return showMenu ? wideSidebar : wide;
+  },
+
+  computeClasses: function (isWide) {
+    return isWide ? 'content' : 'content narrow';
+  },
 });
 </script>
