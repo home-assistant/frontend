@@ -69,14 +69,17 @@
 
       startTime: {
         type: Date,
+        value: null,
       },
 
       endTime: {
         type: Date,
+        value: null,
       },
 
       entityId: {
         type: String,
+        value: null,
       },
 
       isLoading: {
@@ -110,10 +113,10 @@
       var data;
 
       if (filterType === 'date') {
-        if (startTime === undefined || endTime === undefined) return;
+        if (startTime === null || endTime === null) return;
         data = this.getDate(startTime, endTime);
       } else if (filterType === 'recent-entity') {
-        if (entityId === undefined) return;
+        if (entityId === null) return;
         data = this.getRecent(entityId);
       } else {
         return;
