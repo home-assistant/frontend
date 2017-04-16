@@ -1,0 +1,117 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../src/components/ha-call-service-button.html">
+<link rel="import" href="../../src/resources/ha-style.html">
+
+<dom-module id="ha-panel-zwave">
+  <template>
+    <style include="iron-flex ha-style">
+      .content {
+        margin-top: 24px;
+      }
+
+      paper-card {
+        display: block;
+        margin: 0 auto;
+        max-width: 600px;
+      }
+
+      .card-actions.warning ha-call-service-button {
+        color: var(--google-red-500);
+      }
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Z-Wave Manager</div>
+        </app-toolbar>
+      </app-header>
+
+      <div class='content'>
+        <paper-card heading='Z-Wave Network Management'>
+          <div class='card-content'>
+            Z-Wave Network controls.
+          </div>
+          <div class='card-actions'>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='add_node_secure'
+            >Add Node</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='remove_failed_node'
+            >Remove Failed Node</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='remove_node'
+            >Remove Node</ha-call-service-button>
+          </div>
+          <div class='card-actions warning'>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='cancel_command'
+            >Cancel Command</ha-call-service-button>
+          </div>
+          <div class='card-actions'>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='heal_network'
+            >Heal Network</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='start_network'
+            >Start Network</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='stop_network'
+            >Stop Network</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='soft_reset'
+            >Soft Reset</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='test_network'
+            >Test Network</ha-call-service-button>
+          </div>
+        </paper-card>
+      </div>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-panel-zwave',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+  },
+});
+</script>
