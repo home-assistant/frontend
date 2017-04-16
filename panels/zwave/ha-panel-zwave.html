@@ -56,11 +56,6 @@
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
-              service='remove_failed_node'
-            >Remove Failed Node</ha-call-service-button>
-            <ha-call-service-button
-              hass='[[hass]]'
-              domain='zwave'
               service='remove_node'
             >Remove Node</ha-call-service-button>
           </div>
@@ -126,6 +121,18 @@
                 service='refresh_node'
                 service-data=[[computeNodeServiceData(selectedNode)]]
               >Refresh Node</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='remove_failed_node'
+              service-data=[[computeNodeServiceData(selectedNode)]]
+            >Remove Failed Node</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='replace_failed_node'
+              service-data=[[computeNodeServiceData(selectedNode)]]
+            >Replace Failed Node</ha-call-service-button>
             </div>
           </template>
         </paper-card>
