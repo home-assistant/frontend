@@ -116,6 +116,18 @@
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
+
+          <div class='border'></div>
+          <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+            <div class='card-actions'>
+              <ha-call-service-button
+                hass='[[hass]]'
+                domain='zwave'
+                service='refresh_node'
+                service-data=[[computeNodeServiceData(selectedNode)]]
+              >Refresh Node</ha-call-service-button>
+            </div>
+          </template>
         </paper-card>
       </div>
     </app-header-layout>
@@ -148,6 +160,7 @@ Polymer({
     selectedNode: {
       type: Number,
       value: -1,
+      observer: 'computeIsNodeSelected'
     },
   },
 
@@ -171,7 +184,17 @@ Polymer({
 
   computeSelectCaption: function (stateObj) {
     return ' (Node ID: ' + stateObj.attributes.node_id + ') ' +
-      window.hassUtil.computeStateName(stateObj);
+      window.hassUtil.computeStateName(stateObj) + ' (' +
+      stateObj.attributes.query_stage + ')';
   },
+
+  computeIsNodeSelected: function () {
+    return (!this.nodes || this.selectedNode == -1);
+  },
+
+  computeNodeServiceData: function (selectedNode) {
+    console.log(JSON.stringify({node_id: this.nodes[selectedNode].attributes.node_id}));
+    return {node_id: this.nodes[selectedNode].attributes.node_id};
+  }
 });
 </script>
