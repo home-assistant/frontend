@@ -8,107 +8,97 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 
-<script src="../../bower_components/leaflet/dist/leaflet.js"></script>
-<!-- otherwise the shadow dom polyfill breaks the CSS when vulcanized -->
-<link rel="stylesheet" href="../../bower_components/leaflet/dist/leaflet.css" />
-<link rel="import" href="../config/ha-call-service-button.html">
+<link rel="import" href="../../src/components/ha-call-service-button.html">
 <link rel="import" href="../../src/resources/ha-style.html">
 
 <dom-module id="ha-panel-zwave">
   <template>
     <style include="iron-flex ha-style">
       .content {
-        padding-bottom: 32px;
+        margin-top: 24px;
       }
 
-      .border {
-        margin: 32px auto 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-        max-width: 1040px;
+      paper-card {
+        display: block;
+        margin: 0 auto;
+        max-width: 600px;
       }
 
-      .narrow .border {
-        max-width: 640px;
-      }
       .card-actions.warning ha-call-service-button {
         color: var(--google-red-500);
       }
     </style>
-    <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
-    </iron-media-query>
-    <iron-media-query query="(min-width: 1296px)" query-matches="{{wideSidebar}}">
-    </iron-media-query>
     <app-header-layout has-scrolling-region>
       <app-header fixed>
-    <app-toolbar>
-      <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-      <div main-title>Z-Wave Manager</div>
-    </app-toolbar>
-    </app-header>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Z-Wave Manager</div>
+        </app-toolbar>
+      </app-header>
 
-    <div id='zwave'></div>
-      <div class='border'></div>
-      <paper-card heading='Z-Wave Network Management'>
-        <div class='card-content'>
-          Z-Wave Network controls.
-        </div>
-        <div class='card-actions'>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='add_node_secure'
-          >Add Node</ha-call-service-button>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='remove_failed_node'
-          >Remove Failed Node</ha-call-service-button>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='remove_node'
-          >Remove Node</ha-call-service-button>
-        </div>
-        <div class='card-actions warning'>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='cancel_command'
-          >Cancel Command</ha-call-service-button>
-        </div>
-        <div class='card-actions'>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='heal_network'
-          >Heal Network</ha-call-service-button>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='start_network'
-          >Start Network</ha-call-service-button>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='stop_network'
-          >Stop Network</ha-call-service-button>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='soft_reset'
-          >Soft Reset</ha-call-service-button>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='test_network'
-          >Test Network</ha-call-service-button>
-        </div>
-      </paper-card>
+      <div class='content'>
+        <paper-card heading='Z-Wave Network Management'>
+          <div class='card-content'>
+            Z-Wave Network controls.
+          </div>
+          <div class='card-actions'>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='add_node_secure'
+            >Add Node</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='remove_failed_node'
+            >Remove Failed Node</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='remove_node'
+            >Remove Node</ha-call-service-button>
+          </div>
+          <div class='card-actions warning'>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='cancel_command'
+            >Cancel Command</ha-call-service-button>
+          </div>
+          <div class='card-actions'>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='heal_network'
+            >Heal Network</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='start_network'
+            >Start Network</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='stop_network'
+            >Stop Network</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='soft_reset'
+            >Soft Reset</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='test_network'
+            >Test Network</ha-call-service-button>
+          </div>
+        </paper-card>
+      </div>
+    </app-header-layout>
   </template>
 </dom-module>
 
 <script>
-
 Polymer({
   is: 'ha-panel-zwave',
 
@@ -125,28 +115,6 @@ Polymer({
       type: Boolean,
       value: false,
     },
-
-    wide: {
-      type: Boolean,
-    },
-
-    wideSidebar: {
-      type: Boolean,
-    },
-
-    isWide: {
-      type: Boolean,
-      computed: 'computeIsWide(showMenu, wideSidebar, wide)'
-    },
-
-  },
-
-  computeIsWide: function (showMenu, wideSidebar, wide) {
-    return showMenu ? wideSidebar : wide;
-  },
-
-  computeClasses: function (isWide) {
-    return isWide ? 'content' : 'content narrow';
   },
 });
 </script>
