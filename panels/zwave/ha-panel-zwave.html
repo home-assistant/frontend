@@ -4,6 +4,9 @@
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
+<link rel='import' href="../../bower_components/paper-listbox/paper-listbox.html">
 
 <link rel="import" href="../../src/components/buttons/ha-call-service-button.html">
 <link rel="import" href="../../src/resources/ha-style.html">
@@ -24,6 +27,12 @@
       .card-actions.warning ha-call-service-button {
         color: var(--google-red-500);
       }
+
+      .device-picker {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        padding-bottom: 24px;
+        }
     </style>
     <app-header-layout has-scrolling-region>
       <app-header fixed>
@@ -96,6 +105,17 @@
           <div class='card-content'>
             Z-Wave Node controls.
           </div>
+          <div class='device-picker'>
+            <paper-dropdown-menu label="Nodes" class='flex'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedNode}}'>
+                 <template is='dom-repeat' items='[[nodes]]' as='state'>
+                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
         </paper-card>
       </div>
     </app-header-layout>
@@ -119,6 +139,39 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    nodes: {
+      type: Array,
+      computed: 'computeNodes(hass)'
+    },
+
+    selectedNode: {
+      type: Number,
+      value: -1,
+    },
+  },
+
+  computeNodes: function (hass) {
+    return Object.keys(hass.states)
+      .map(function (key) { return hass.states[key]; })
+      .filter(function (ent) {
+        return (!ent.attributes.hidden &&
+                (ent.entity_id).match('zwave[.]'));
+      })
+      .sort(function (entityA, entityB) {
+        if (entityA.entity_id < entityB.entity_id) {
+          return -1;
+        }
+        if (entityA.entity_id > entityB.entity_id) {
+          return 1;
+        }
+        return 0;
+      });
+  },
+
+  computeSelectCaption: function (stateObj) {
+    return ' (Node ID: ' + stateObj.attributes.node_id + ') ' +
+      window.hassUtil.computeStateName(stateObj);
   },
 });
 </script>
