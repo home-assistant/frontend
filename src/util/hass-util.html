@@ -312,6 +312,13 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'weblink':
       return 'mdi:open-in-new';
 
+    case 'zwave':
+      if (state) {
+        if (state.indexOf('Dead') !== -1) return 'mdi:emoticon-dead';
+        if (state.indexOf('Sleeping') !== -1) return 'mdi:sleep';
+      }
+      return 'mdi:nfc';
+
     default:
       /* eslint-disable no-console */
       console.warn(
