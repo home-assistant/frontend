@@ -138,20 +138,74 @@
               service='replace_failed_node'
               service-data=[[computeNodeServiceData(selectedNode)]]
             >Replace Failed Node</ha-call-service-button>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='print_node'
+              service-data=[[computeNodeServiceData(selectedNode)]]
+            >Print Node</ha-call-service-button>
             </div>
         </paper-card>
         <div class='content'>
-          <paper-card heading='Z-Wave Node Information'>
-          <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
-          <div class='node-info'>
-            <span>[[state]]</span>
+        <paper-card heading='Node Information'>
+        <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
+        <div class='node-info'>
+          <span>[[state]]</span>
+        </div>
+        </template>
+        </paper-card>
+        <div class='content'>
+          <paper-card heading='Node group associations'>
+            <div class='device-picker'>
+            <paper-dropdown-menu label="Target nodes" class='flex'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedTargetNode}}'>
+                 <template is='dom-repeat' items='[[nodes]]' as='state'>
+                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
           </div>
-          </template>
-          </paper-card>
+          <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
+            <paper-dropdown-menu label="Group" class='flex'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedGroup}}'>
+                 <template is='dom-repeat' items='[[groups]]' as='state'>
+                  <paper-item>[[state]]</paper-item>
+                </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            <paper-dropdown-menu label="Instance" class='flex'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedInstance}}'>
+                 <template is='dom-repeat' items='[[instances]]' as='state'>
+                  <paper-item>[[state]]</paper-item>
+                </template>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <div class='card-actions'>
+              <ha-call-service-button
+                hass='[[hass]]'
+                domain='zwave'
+                service='change_association'
+                service-data=[[computeAssocServiceData('add')]]
+              >Set Association</ha-call-service-button>
+              <ha-call-service-button
+                hass='[[hass]]'
+                domain='zwave'
+                service='change_association'
+                service-data=[[computeAssocServiceData('remove')]]
+              >Remove Association</ha-call-service-button>
+              </template>
+            </div>
         </template>
       </div>
     </app-header-layout>
   </template>
+  <div class='border'></div>
 </dom-module>
 
 <script>
@@ -182,10 +236,36 @@ Polymer({
       computed: 'computeNodes(hass)'
     },
 
+    groups: {
+      type: Array,
+      value: [1, 2, 3, 4, 5, 6] // TODO Make API
+    },
+
+    instances: {
+      type: Array,
+      value: [0, 1, 2, 3, 4, 5, 6] // TODO Make API
+    },
+
     selectedNode: {
       type: Number,
       value: -1,
       observer: 'computeIsNodeSelected'
+    },
+
+    selectedTargetNode: {
+      type: Number,
+      value: -1,
+      observer: 'computeIsTargetNodeSelected'
+    },
+
+    selectedGroup: {
+      type: Number,
+      value: 0,
+    },
+
+    selectedInstance: {
+      type: Number,
+      value: 0,
     },
   },
 
@@ -209,9 +289,10 @@ Polymer({
 
   computeSelectedNodeAttrs: function (nodes) {
     if (this.selectedNode === -1) return;
-    var att = []
-    for(var i in (this.nodes[this.selectedNode].attributes)) {
-       att.push(i + ': ' + this.nodes[this.selectedNode].attributes[i]) };
+    var att = [];
+    for (var i in (nodes[this.selectedNode].attributes)) {
+      att.push(i + ': ' + nodes[this.selectedNode].attributes[i]);
+    }
     return att.sort();
   },
 
@@ -222,14 +303,29 @@ Polymer({
   },
 
   computeIsNodeSelected: function () {
-    this.computeSelectedNodeAttrs(this.nodes);
-    return (!this.nodes || this.selectedNode == -1);
+    return (!this.nodes || this.selectedNode === -1);
   },
 
+  computeIsTargetNodeSelected: function () {
+    return (!this.nodes || this.selectedTargetNode === -1);
+  },
   computeNodeServiceData: function (selectedNode) {
-    console.log(JSON.stringify({node_id: this.nodes[selectedNode].attributes.node_id}));
-    return {node_id: this.nodes[selectedNode].attributes.node_id};
-  }
+    return { node_id: this.nodes[selectedNode].attributes.node_id };
+  },
 
+  computeAssocServiceData: function (type) {
+    console.log(this.selectedTargetNode);
+    if (this.selectedTargetNode === -1) return;
+    console.log(JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+      association: type,
+      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
+      group: this.groups[this.selectedGroup],
+      instance: this.instances[this.selectedInstance] }));
+    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
+      association: type,
+      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
+      group: this.groups[this.selectedGroup],
+      instance: this.instances[this.selectedInstance] };
+  }
 });
 </script>
