@@ -29,6 +29,10 @@
         max-width: 600px;
       }
 
+      paper-button[toggles][active] {
+        background: gray;
+      }
+
       .card-actions.warning ha-call-service-button {
         color: var(--google-red-500);
       }
@@ -145,6 +149,20 @@
               service-data=[[computeNodeServiceData(selectedNode)]]
             >Print Node</ha-call-service-button>
             </div>
+           <div class='card-actions'>
+            <paper-input
+              float-label="New node name"
+              type=text
+              value={{newNodeNameInput}}
+              placeholder=[[computeGetNodeName(selectedNode)]]>
+            </paper-input>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='rename_node'
+              service-data=[[computeNodeNameServiceData(newNodeNameInput)]]
+            >Rename Node</ha-call-service-button>
+           </div>
            <template is='dom-if' if='[[computeIsNodeWakeup(selectedNode)]]'>
            <div class='card-actions'>
             <paper-input
@@ -167,10 +185,13 @@
  
         <div class='content'>
           <paper-card heading='Node Information'>
-          <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
-          <div class='node-info'>
-            <span>[[state]]</span>
-          </div>
+          <paper-button toggles raised noink active={{nodeInfoActive}}>Show</paper-button>
+          <template is='dom-if' if={{nodeInfoActive}}>
+            <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
+            <div class='node-info'>
+              <span>[[state]]</span>
+            </div>
+            </template>
           </template>
          </paper-card>
         </div>
@@ -257,6 +278,10 @@ Polymer({
       computed: 'computeNodes(hass)'
     },
 
+    nodeInfoActive: {
+      type: Boolean,
+    },
+
     groups: {
       type: Array,
       value: [1, 2, 3, 4, 5, 6] // TODO Make API to get groups and members
@@ -270,7 +295,8 @@ Polymer({
     selectedNode: {
       type: Number,
       value: -1,
-      observer: 'computeIsNodeSelected'
+      observers: ['computeIsNodeSelected',
+        'computeNodeNameServiceData']
     },
 
     selectedTargetNode: {
@@ -293,6 +319,10 @@ Polymer({
 
     wakeupInput: {
       type: Number,
+    },
+
+    newNodeNameInput: {
+      type: String,
     },
   },
 
@@ -354,6 +384,15 @@ Polymer({
     return (this.nodes[selectedNode].attributes.wake_up_interval);
   },
 
+  computeGetNodeName: function (selectedNode) {
+    if (this.selectedNode === -1 ||
+      !this.nodes[selectedNode].entity_id) return;
+    var str = (this.nodes[selectedNode].entity_id);
+    var name = str.replace('zwave.', '');
+    console.log(name);
+    return name;
+  },
+
   computeAssocServiceData: function (type) {
     console.log(this.selectedTargetNode);
     if (this.selectedTargetNode === -1) return;
@@ -374,6 +413,13 @@ Polymer({
       value: wakeupInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       value: wakeupInput };
+  },
+
+  computeNodeNameServiceData: function (newNodeNameInput) {
+    console.log(JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+      name: newNodeNameInput }));
+    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
+      name: newNodeNameInput };
   },
 });
 </script>
