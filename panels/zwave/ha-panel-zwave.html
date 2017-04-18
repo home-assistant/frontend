@@ -100,6 +100,7 @@
           </div>
         </paper-card>
       </div>
+
       <div class='content'>
         <paper-card heading='Z-Wave Node Management'>
           <div class='card-content'>
@@ -117,7 +118,6 @@
             </paper-dropdown-menu>
           </div>
 
-          <div class='border'></div>
           <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
             <div class='card-actions'>
               <ha-call-service-button
@@ -145,15 +145,36 @@
               service-data=[[computeNodeServiceData(selectedNode)]]
             >Print Node</ha-call-service-button>
             </div>
-        </paper-card>
-        <div class='content'>
-        <paper-card heading='Node Information'>
-        <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
-        <div class='node-info'>
-          <span>[[state]]</span>
+           <template is='dom-if' if='[[computeIsNodeWakeup(selectedNode)]]'>
+           <div class='card-actions'>
+            <paper-input
+              float-label="Wakeup Interval"
+              type=number
+              value={{wakeupInput}}
+              placeholder=[[computeGetWakeupValue(selectedNode)]]>
+               <div suffix>seconds</div>
+            </paper-input>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='set_wakeup'
+              service-data=[[computeWakeupServiceData(wakeupInput)]]
+            >Set Wakeup</ha-call-service-button>
+           </div>
+           </template>
+          </paper-card>
         </div>
-        </template>
-        </paper-card>
+ 
+        <div class='content'>
+          <paper-card heading='Node Information'>
+          <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
+          <div class='node-info'>
+            <span>[[state]]</span>
+          </div>
+          </template>
+         </paper-card>
+        </div>
+
         <div class='content'>
           <paper-card heading='Node group associations'>
             <div class='device-picker'>
@@ -168,6 +189,7 @@
             </paper-dropdown-menu>
           </div>
           <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
+            <!--TODO make api for getting groups and members-->
             <paper-dropdown-menu label="Group" class='flex'>
               <paper-listbox
                 class="dropdown-content"
@@ -181,12 +203,12 @@
               <paper-listbox
                 class="dropdown-content"
                 selected='{{selectedInstance}}'>
-                 <template is='dom-repeat' items='[[instances]]' as='state'>
+                <template is='dom-repeat' items='[[instances]]' as='state'>
                   <paper-item>[[state]]</paper-item>
                 </template>
-                </paper-listbox>
-              </paper-dropdown-menu>
-              <div class='card-actions'>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
                 domain='zwave'
@@ -199,13 +221,12 @@
                 service='change_association'
                 service-data=[[computeAssocServiceData('remove')]]
               >Remove Association</ha-call-service-button>
-              </template>
             </div>
+          </template>
+        </div>
         </template>
-      </div>
-    </app-header-layout>
+     </app-header-layout>
   </template>
-  <div class='border'></div>
 </dom-module>
 
 <script>
@@ -228,7 +249,7 @@ Polymer({
 
     selectedNodeAttrs: {
       type: Array,
-      computed: 'computeSelectedNodeAttrs(nodes)'
+      computed: 'computeSelectedNodeAttrs(selectedNode)'
     },
 
     nodes: {
@@ -238,12 +259,12 @@ Polymer({
 
     groups: {
       type: Array,
-      value: [1, 2, 3, 4, 5, 6] // TODO Make API
+      value: [1, 2, 3, 4, 5, 6] // TODO Make API to get groups and members
     },
 
     instances: {
       type: Array,
-      value: [0, 1, 2, 3, 4, 5, 6] // TODO Make API
+      value: [0, 1, 2, 3, 4, 5, 6] // TODO Make API to get available instances
     },
 
     selectedNode: {
@@ -255,17 +276,23 @@ Polymer({
     selectedTargetNode: {
       type: Number,
       value: -1,
-      observer: 'computeIsTargetNodeSelected'
+      observer: 'computeAssocServiceData'
     },
 
     selectedGroup: {
       type: Number,
       value: 0,
+      observer: 'computeAssocServiceData'
     },
 
     selectedInstance: {
       type: Number,
       value: 0,
+      observer: 'computeAssocServiceData'
+    },
+
+    wakeupInput: {
+      type: Number,
     },
   },
 
@@ -287,11 +314,11 @@ Polymer({
       });
   },
 
-  computeSelectedNodeAttrs: function (nodes) {
-    if (this.selectedNode === -1) return;
+  computeSelectedNodeAttrs: function (selectedNode) {
+    if (selectedNode === -1) return;
     var att = [];
-    for (var i in (nodes[this.selectedNode].attributes)) {
-      att.push(i + ': ' + nodes[this.selectedNode].attributes[i]);
+    for (var i in (this.nodes[selectedNode].attributes)) {
+      att.push(i + ': ' + this.nodes[selectedNode].attributes[i]);
     }
     return att.sort();
   },
@@ -306,11 +333,25 @@ Polymer({
     return (!this.nodes || this.selectedNode === -1);
   },
 
-  computeIsTargetNodeSelected: function () {
-    return (!this.nodes || this.selectedTargetNode === -1);
+  computeIsTargetNodeSelected: function (selectedTargetNode) {
+    return (!this.nodes || selectedTargetNode === -1);
   },
+
   computeNodeServiceData: function (selectedNode) {
     return { node_id: this.nodes[selectedNode].attributes.node_id };
+  },
+
+  computeIsNodeWakeup: function (selectedNode) {
+    return (!this.nodes || selectedNode === -1 ||
+      this.nodes[selectedNode].attributes.wake_up_interval === 0 ||
+      this.nodes[selectedNode].attributes.wake_up_interval);
+  },
+
+  computeGetWakeupValue: function (selectedNode) {
+    if (this.selectedNode === -1 ||
+      !this.nodes[selectedNode].attributes.wake_up_interval) return;
+    console.log(this.nodes[selectedNode].attributes.wake_up_interval);
+    return (this.nodes[selectedNode].attributes.wake_up_interval);
   },
 
   computeAssocServiceData: function (type) {
@@ -326,6 +367,13 @@ Polymer({
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
       group: this.groups[this.selectedGroup],
       instance: this.instances[this.selectedInstance] };
-  }
+  },
+
+  computeWakeupServiceData: function (wakeupInput) {
+    console.log(JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+      value: wakeupInput }));
+    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
+      value: wakeupInput };
+  },
 });
 </script>
