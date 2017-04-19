@@ -54,9 +54,9 @@ window.hassUtil.featureClassNames = function (stateObj, featureClassNames) {
 
   return Object.keys(featureClassNames).map(
     function (feature) {
-      return (features & feature) !== 0 ? featureClassNames[feature] : ''
+      return (features & feature) !== 0 ? featureClassNames[feature] : '';
     }
-  ).join(' ')
+  ).join(' ');
 };
 
 
