@@ -206,12 +206,14 @@
  
         <div class='content'>
           <paper-card heading='Node Information'>
-          <paper-button toggles raised noink active={{nodeInfoActive}}>Show</paper-button>
+          <div class='card-actions'>
+            <paper-button toggles raised noink active={{nodeInfoActive}}>Show</paper-button>
+          </div>
           <template is='dom-if' if={{nodeInfoActive}}>
             <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
-            <div class='node-info'>
-              <span>[[state]]</span>
-            </div>
+              <div class='node-info'>
+                <span>[[state]]</span>
+              </div>
             </template>
           </template>
          </paper-card>
@@ -378,7 +380,7 @@ Polymer({
 
   computeEntities: function (selectedNode) {
     console.log('computeEntities');
-    if (!this.nodes || selectedNode === -1) return;
+    if (!this.nodes || selectedNode === -1) return -1;
     var hass = this.hass;
     var nodeid = this.nodes[this.selectedNode].attributes.node_id;
     console.log(this.nodes, selectedNode, this.nodes[this.selectedNode].attributes.node_id);
@@ -386,7 +388,7 @@ Polymer({
       .map(function (key) { return hass.states[key]; })
       .filter(function (ent) {
         if (ent.attributes.node_id === undefined) {
-          return;
+          return false;
         }
         console.log(ent.attributes.node_id);
         return (!ent.attributes.hidden &&
@@ -406,11 +408,13 @@ Polymer({
   },
 
   computeSelectedNodeAttrs: function (selectedNode) {
-    if (selectedNode === -1) return;
+    if (selectedNode === -1) return 'No node selected';
+    var nodeAttrs = this.nodes[selectedNode].attributes;
     var att = [];
-    for (var i in (this.nodes[selectedNode].attributes)) {
-      att.push(i + ': ' + this.nodes[selectedNode].attributes[i]);
-    }
+    Object.entries(nodeAttrs).forEach(([key, value]) => {
+      att.push(key + ': ' + value);
+    });
+    console.log(att);
     return att.sort();
   },
 
@@ -444,14 +448,14 @@ Polymer({
 
   computeGetWakeupValue: function (selectedNode) {
     if (this.selectedNode === -1 ||
-      !this.nodes[selectedNode].attributes.wake_up_interval) return;
+      !this.nodes[selectedNode].attributes.wake_up_interval) return 'unknown';
     console.log(this.nodes[selectedNode].attributes.wake_up_interval);
     return (this.nodes[selectedNode].attributes.wake_up_interval);
   },
 
   computeGetNodeName: function (selectedNode) {
     if (this.selectedNode === -1 ||
-      !this.nodes[selectedNode].entity_id) return;
+      !this.nodes[selectedNode].entity_id) return -1;
     var str = (this.nodes[selectedNode].entity_id);
     var name = str.replace('zwave.', '');
     console.log(name);
@@ -460,7 +464,7 @@ Polymer({
 
   computeAssocServiceData: function (type) {
     console.log(this.selectedTargetNode);
-    if (this.selectedTargetNode === -1) return;
+    if (this.selectedTargetNode === -1) return -1;
     console.log(JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
@@ -489,7 +493,7 @@ Polymer({
 
   computeRefreshEntityServiceData: function (selectedEntity) {
     console.log(selectedEntity);
-    if (selectedEntity === -1) return;
+    if (selectedEntity === -1) return -1;
     console.log(JSON.stringify({ entity_id: this.entities[selectedEntity].entity_id }));
     return { entity_id: this.entities[selectedEntity].entity_id };
   },
