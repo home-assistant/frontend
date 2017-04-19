@@ -19,3 +19,5 @@ script:
   - xvfb-run wct
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --plugin sauce; fi
 dist: trusty
+addons:
+  sauce_connect: true
