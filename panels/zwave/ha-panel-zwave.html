@@ -40,6 +40,8 @@
       .device-picker {
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
+        padding-left: 24px;
+        padding-right: 24px;
         padding-bottom: 24px;
         }
     </style>
@@ -111,7 +113,7 @@
             Z-Wave Node controls.
           </div>
           <div class='device-picker'>
-            <paper-dropdown-menu label="Nodes" class='flex'>
+            <paper-dropdown-menu label="Nodes" class="flex">
               <paper-listbox
                 class="dropdown-content"
                 selected='{{selectedNode}}'>
@@ -180,7 +182,26 @@
             >Set Wakeup</ha-call-service-button>
            </div>
            </template>
-          </paper-card>
+           <div class='device-picker'>
+            <paper-dropdown-menu label="Entities of this node" class="flex">
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedEntity}}'>
+                 <template is='dom-repeat' items='[[entities]]' as='state'>
+                  <paper-item>[[computeSelectCaptionEnt(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+           </div>
+           <div class='card-actions'>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='refresh_entity'
+              service-data=[[computeRefreshEntityServiceData(selectedEntity)]]
+            >Refresh Entity</ha-call-service-button>
+           </div>
+         </paper-card>
         </div>
  
         <div class='content'>
@@ -278,6 +299,11 @@ Polymer({
       computed: 'computeNodes(hass)'
     },
 
+    entities: {
+      type: Array,
+      computed: 'computeEntities(selectedNode)',
+    },
+
     nodeInfoActive: {
       type: Boolean,
     },
@@ -317,6 +343,12 @@ Polymer({
       observer: 'computeAssocServiceData'
     },
 
+    selectedEntity: {
+      type: Number,
+      value: -1,
+      observer: 'computeRefreshEntityServiceData'
+    },
+
     wakeupInput: {
       type: Number,
     },
@@ -344,6 +376,35 @@ Polymer({
       });
   },
 
+  computeEntities: function (selectedNode) {
+    console.log('computeEntities');
+    if (!this.nodes || selectedNode === -1) return;
+    var hass = this.hass;
+    var nodeid = this.nodes[this.selectedNode].attributes.node_id;
+    console.log(this.nodes, selectedNode, this.nodes[this.selectedNode].attributes.node_id);
+    return Object.keys(hass.states)
+      .map(function (key) { return hass.states[key]; })
+      .filter(function (ent) {
+        if (ent.attributes.node_id === undefined) {
+          return;
+        }
+        console.log(ent.attributes.node_id);
+        return (!ent.attributes.hidden &&
+                'node_id' in ent.attributes &&
+                ent.attributes.node_id === nodeid &&
+                (!(ent.entity_id).match('zwave[.]')));
+      })
+      .sort(function (entityA, entityB) {
+        if (entityA.entity_id < entityB.entity_id) {
+          return -1;
+        }
+        if (entityA.entity_id > entityB.entity_id) {
+          return 1;
+        }
+        return 0;
+      });
+  },
+
   computeSelectedNodeAttrs: function (selectedNode) {
     if (selectedNode === -1) return;
     var att = [];
@@ -357,6 +418,10 @@ Polymer({
     return ' (Node ID: ' + stateObj.attributes.node_id + ') ' +
       window.hassUtil.computeStateName(stateObj) + ' (' +
       stateObj.attributes.query_stage + ')';
+  },
+
+  computeSelectCaptionEnt: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
   },
 
   computeIsNodeSelected: function () {
@@ -420,6 +485,13 @@ Polymer({
       name: newNodeNameInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       name: newNodeNameInput };
+  },
+
+  computeRefreshEntityServiceData: function (selectedEntity) {
+    console.log(selectedEntity);
+    if (selectedEntity === -1) return;
+    console.log(JSON.stringify({ entity_id: this.entities[selectedEntity].entity_id }));
+    return { entity_id: this.entities[selectedEntity].entity_id };
   },
 });
 </script>
