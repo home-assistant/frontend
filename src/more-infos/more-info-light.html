@@ -23,6 +23,10 @@
         transition: max-height .5s ease-in;
       }
 
+      .color_temp {
+        --ha-slider-background: -webkit-linear-gradient(right, rgb(255, 160, 0) 0%, white 50%, rgb(166, 209, 255) 100%);
+      }
+
       ha-color-picker {
         display: block;
         width: 250px;
@@ -146,17 +150,25 @@ Polymer({
     }
   },
 
+  featureClassNames: {
+    1: 'has-brightness',
+  },
+
   computeClassNames: function (stateObj) {
-    var classes = window.hassUtil.attributeClassNames(
-      stateObj, ['rgb_color', 'color_temp', 'white_value',
-        'effect_list']);
-    var BRIGHTNESS_SUPPORTED = 1;
-    // If brightness is supported - show the slider even if the attribute is
-    // missing (because the light is off).
-    if (stateObj && (stateObj.attributes.supported_features & BRIGHTNESS_SUPPORTED)) {
-      classes += ' has-brightness';
+    var classes = [
+      window.hassUtil.attributeClassNames(
+        stateObj, ['color_temp', 'white_value', 'effect_list']),
+      window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
+    ];
+
+    // Lights that do shades of white can still have an rgb color
+    // In that case we don't want the color picker to show.
+    if (stateObj.attributes.supported_features &&
+        (stateObj.attributes.supported_features & 16) !== 0 &&
+        stateObj.attributes.rgb_color) {
+      classes.push('has-rgb_color');
     }
-    return classes;
+    return classes.join(' ');
   },
 
   effectChanged: function (effectIndex) {
