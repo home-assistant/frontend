@@ -104,7 +104,13 @@
             domain='automation'
             service='reload'
             hidden$='[[!automationLoaded(hass)]]'
-          >Reload automation</ha-call-service-button>
+          >Reload Automation</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='script'
+            service='reload'
+            hidden$='[[!scriptLoaded(hass)]]'
+          >Reload Scripts</ha-call-service-button>
         </div>
       </paper-card>
 
@@ -166,6 +172,10 @@ Polymer({
 
   automationLoaded: function (hass) {
     return window.hassUtil.isComponentLoaded(hass, 'automation');
+  },
+
+  scriptLoaded: function (hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'script');
   },
 
   validateConfig: function () {
