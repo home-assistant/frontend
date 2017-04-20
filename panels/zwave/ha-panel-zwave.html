@@ -118,9 +118,9 @@
               <paper-listbox
                 class="dropdown-content"
                 selected='{{selectedNode}}'>
-                 <template is='dom-repeat' items='[[nodes]]' as='state'>
-                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
-                </template>
+              <template is='dom-repeat' items='[[nodes]]' as='state'>
+                <paper-item>[[computeSelectCaption(state)]]</paper-item>
+              </template>
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
