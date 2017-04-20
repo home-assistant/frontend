@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel='import' href="../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="../../src/components/buttons/ha-call-service-button.html">
 <link rel="import" href="../../src/resources/ha-style.html">
@@ -268,6 +269,42 @@
             </div>
           </template>
         </div>
+        <div class='content'>
+          <!--TODO make api to get all config parameters and its values.-->
+          <paper-card heading='Node config options'>
+            <paper-input
+              label="Config parameter"
+              type=number
+              value={{configParameterInput}}>
+            </paper-input>
+            <paper-input
+              label="Config value"
+              class='flex'
+              type=number
+              value={{configParameterValueInput}}>
+            </paper-input>
+            <paper-input
+              label="Config value size"
+              class='flex'
+              type=number
+              value={{configParameterSizeInput}}>
+            </paper-input>
+            <div class='card-actions'>
+              <ha-call-service-button
+                hass='[[hass]]'
+                domain='zwave'
+                service='set_config_parameter'
+                service-data=[[computeSetConfigParameterServiceData(configParameterInput)]]
+              >Set Config Parameter</ha-call-service-button>
+              <ha-call-service-button
+                hass='[[hass]]'
+                domain='zwave'
+                service='print_config_parameter'
+                service-data=[[computePrintConfigParameterServiceData(configParameterInput)]]
+              >Print Config Parameter</ha-call-service-button>
+            </div>
+          </paper-card>
+        </div>
         </template>
      </app-header-layout>
   </template>
@@ -355,6 +392,22 @@ Polymer({
       type: Number,
     },
 
+    configParameterInput: { // TODO make api to get all config parameters and its values
+      type: Number,
+      observer: 'computePrintConfigParameterServiceData'
+    },
+
+    configParameterValueInput: {
+      type: Number,
+      observer: 'computeSetConfigParameterServiceData'
+    },
+
+    configParameterSizeInput: {
+      type: Number,
+      value: 2,
+      observer: 'computeSetConfigParameterServiceData'
+    },
+
     newNodeNameInput: {
       type: String,
     },
@@ -379,7 +432,6 @@ Polymer({
   },
 
   computeEntities: function (selectedNode) {
-    console.log('computeEntities');
     if (!this.nodes || selectedNode === -1) return -1;
     var hass = this.hass;
     var nodeid = this.nodes[this.selectedNode].attributes.node_id;
@@ -414,7 +466,7 @@ Polymer({
     Object.entries(nodeAttrs).forEach(([key, value]) => {
       att.push(key + ': ' + value);
     });
-    console.log(att);
+    console.log('Node attributes: ', att);
     return att.sort();
   },
 
@@ -449,7 +501,7 @@ Polymer({
   computeGetWakeupValue: function (selectedNode) {
     if (this.selectedNode === -1 ||
       !this.nodes[selectedNode].attributes.wake_up_interval) return 'unknown';
-    console.log(this.nodes[selectedNode].attributes.wake_up_interval);
+    console.log('Fetched Wakeup: ', this.nodes[selectedNode].attributes.wake_up_interval);
     return (this.nodes[selectedNode].attributes.wake_up_interval);
   },
 
@@ -458,14 +510,13 @@ Polymer({
       !this.nodes[selectedNode].entity_id) return -1;
     var str = (this.nodes[selectedNode].entity_id);
     var name = str.replace('zwave.', '');
-    console.log(name);
+    console.log('Node name: ', name);
     return name;
   },
 
   computeAssocServiceData: function (type) {
-    console.log(this.selectedTargetNode);
     if (this.selectedTargetNode === -1) return -1;
-    console.log(JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
       group: this.groups[this.selectedGroup],
@@ -478,24 +529,44 @@ Polymer({
   },
 
   computeWakeupServiceData: function (wakeupInput) {
-    console.log(JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+    console.log('Set wakeup', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
       value: wakeupInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       value: wakeupInput };
   },
 
   computeNodeNameServiceData: function (newNodeNameInput) {
-    console.log(JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+    console.log('Rename node:', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
       name: newNodeNameInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       name: newNodeNameInput };
   },
 
   computeRefreshEntityServiceData: function (selectedEntity) {
-    console.log(selectedEntity);
     if (selectedEntity === -1) return -1;
-    console.log(JSON.stringify({ entity_id: this.entities[selectedEntity].entity_id }));
+    console.log('Refresh enity:', JSON.stringify({ entity_id: this.entities[selectedEntity].entity_id }));
     return { entity_id: this.entities[selectedEntity].entity_id };
+  },
+
+  computeSetConfigParameterServiceData: function (configParameterInput) {
+    if (this.selectedNode === -1) return -1;
+    console.log('Set config', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+      parameter: configParameterInput,
+      value: this.configParameterValueInput,
+      size: this.configParameterSizeInput }));
+    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
+      parameter: this.configParameterInput,
+      value: this.configParameterValueInput,
+      size: this.configParameterSizeInput };
+  },
+
+
+  computePrintConfigParameterServiceData: function (configParameterInput) {
+    if (this.selectedNode === -1) return -1;
+    console.log('PrintConfig', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+      parameter: configParameterInput }));
+    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
+      parameter: configParameterInput };
   },
 });
 </script>
