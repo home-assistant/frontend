@@ -205,7 +205,7 @@
           </template>
          </paper-card>
         </div>
-
+        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <paper-card heading='Node Information'>
           <div class='card-actions'>
@@ -220,7 +220,8 @@
           </template>
          </paper-card>
         </div>
-
+        </template>
+        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <paper-card heading='Node group associations'>
             <div class='device-picker'>
@@ -273,6 +274,8 @@
           </template>
         </paper-card>
         </div>
+        </template>
+        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <!--TODO make api to get all config parameters and its values.-->
           <paper-card heading='Node config options'>
@@ -311,6 +314,7 @@
             </div>
           </paper-card>
         </div>
+        </template>
      </app-header-layout>
   </template>
 </dom-module>
