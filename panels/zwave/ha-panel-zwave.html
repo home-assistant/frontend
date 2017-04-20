@@ -204,7 +204,7 @@
            </div>
          </paper-card>
         </div>
- 
+
         <div class='content'>
           <paper-card heading='Node Information'>
           <div class='card-actions'>
@@ -235,6 +235,7 @@
           </div>
           <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
             <!--TODO make api for getting groups and members-->
+            <div class='device-picker'>
             <paper-dropdown-menu label="Group" class='flex'>
               <paper-listbox
                 class="dropdown-content"
@@ -253,6 +254,7 @@
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
+            </div>
             <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
@@ -268,10 +270,12 @@
               >Remove Association</ha-call-service-button>
             </div>
           </template>
+        </paper-card>
         </div>
         <div class='content'>
           <!--TODO make api to get all config parameters and its values.-->
           <paper-card heading='Node config options'>
+            <div class='device-picker'>
             <paper-input
               label="Config parameter"
               type=number
@@ -289,6 +293,7 @@
               type=number
               value={{configParameterSizeInput}}>
             </paper-input>
+            </div>
             <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
