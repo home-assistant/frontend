@@ -202,6 +202,20 @@
               service-data=[[computeRefreshEntityServiceData(selectedEntity)]]
             >Refresh Entity</ha-call-service-button>
            </div>
+           <template is='dom-if' if='[[!computeIsEntitySelected(selectedEntity)]]'>
+           <div class='content'>
+             <div class='card-actions'>
+               <paper-button toggles raised noink active={{entityInfoActive}}>Entity Info</paper-button>
+             </div>
+             <template is='dom-if' if={{entityInfoActive}}>
+               <template is='dom-repeat' items='[[selectedEntityAttrs]]' as='state'>
+                 <div class='node-info'>
+                   <span>[[state]]</span>
+                 </div>
+               </template>
+             </template>
+             </div>
+           </template>
           </template>
          </paper-card>
         </div>
@@ -342,6 +356,11 @@ Polymer({
       computed: 'computeSelectedNodeAttrs(selectedNode)'
     },
 
+    selectedEntityAttrs: {
+      type: Array,
+      computed: 'computeSelectedEntityAttrs(selectedEntity)'
+    },
+
     nodes: {
       type: Array,
       computed: 'computeNodes(hass)'
@@ -353,6 +372,10 @@ Polymer({
     },
 
     nodeInfoActive: {
+      type: Boolean,
+    },
+
+    entityInfoActive: {
       type: Boolean,
     },
 
@@ -394,7 +417,8 @@ Polymer({
     selectedEntity: {
       type: Number,
       value: -1,
-      observer: 'computeRefreshEntityServiceData'
+      observers: ['computeIsEntitySelected',
+        'computeRefreshEntityServiceData']
     },
 
     wakeupInput: {
@@ -479,6 +503,17 @@ Polymer({
     return att.sort();
   },
 
+  computeSelectedEntityAttrs: function (selectedEntity) {
+    if (selectedEntity === -1) return 'No entity selected';
+    var entityAttrs = this.entities[selectedEntity].attributes;
+    var att = [];
+    Object.entries(entityAttrs).forEach(([key, value]) => {
+      att.push(key + ': ' + value);
+    });
+    console.log('Entity attributes: ', att);
+    return att.sort();
+  },
+
   computeSelectCaption: function (stateObj) {
     return ' (Node ID: ' + stateObj.attributes.node_id + ') ' +
       window.hassUtil.computeStateName(stateObj) + ' (' +
@@ -491,6 +526,11 @@ Polymer({
 
   computeIsNodeSelected: function () {
     return (!this.nodes || this.selectedNode === -1);
+  },
+
+  computeIsEntitySelected: function (selectedEntity) {
+    console.log('Entity selected: ', (selectedEntity === -1), selectedEntity);
+    return (selectedEntity === -1);
   },
 
   computeIsTargetNodeSelected: function (selectedTargetNode) {
