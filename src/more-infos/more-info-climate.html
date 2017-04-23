@@ -226,9 +226,8 @@ Polymer({
   },
 
   stateObjChanged: function (newVal, oldVal) {
-    this.targetTemperatureSliderValue = newVal.attributes.temperature;
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
-    this.auxheatToggleChecked = newVal.attributes.aux_heat === 'on';
+    this.auxToggleChecked = newVal.attributes.aux_heat === 'on';
 
     if (newVal.attributes.fan_list) {
       this.fanIndex = newVal.attributes.fan_list.indexOf(
