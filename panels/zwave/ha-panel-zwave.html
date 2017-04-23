@@ -126,8 +126,8 @@
           </div>
 
           <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
-            <div class='card-actions'>
-              <ha-call-service-button
+          <div class='card-actions'>
+            <ha-call-service-button
                 hass='[[hass]]'
                 domain='zwave'
                 service='refresh_node'
@@ -188,7 +188,7 @@
               <paper-listbox
                 class="dropdown-content"
                 selected='{{selectedEntity}}'>
-                 <template is='dom-repeat' items='[[entities]]' as='state'>
+                <template is='dom-repeat' items='[[entities]]' as='state'>
                   <paper-item>[[computeSelectCaptionEnt(state)]]</paper-item>
                 </template>
               </paper-listbox>
@@ -214,11 +214,11 @@
                  </div>
                </template>
              </template>
-             </div>
+           </div>
            </template>
           </template>
-         </paper-card>
-        </div>
+        </paper-card>
+      </div>
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <paper-card heading='Node Information'>
@@ -232,7 +232,7 @@
               </div>
             </template>
           </template>
-         </paper-card>
+          </paper-card>
         </div>
         </template>
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
@@ -248,7 +248,7 @@
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
-          </div>
+            </div>
           <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
             <!--TODO make api for getting groups and members-->
             <div class='device-picker'>
@@ -256,11 +256,11 @@
               <paper-listbox
                 class="dropdown-content"
                 selected='{{selectedGroup}}'>
-                 <template is='dom-repeat' items='[[groups]]' as='state'>
+                <template is='dom-repeat' items='[[groups]]' as='state'>
                   <paper-item>[[state]]</paper-item>
                 </template>
-                </paper-listbox>
-              </paper-dropdown-menu>
+              </paper-listbox>
+            </paper-dropdown-menu>
             <paper-dropdown-menu label="Instance" class='flex'>
               <paper-listbox
                 class="dropdown-content"
@@ -286,7 +286,7 @@
               >Remove Association</ha-call-service-button>
             </div>
           </template>
-        </paper-card>
+          </paper-card>
         </div>
         </template>
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
