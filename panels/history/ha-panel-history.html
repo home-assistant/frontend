@@ -121,12 +121,12 @@ Polymer({
       type: String,
       value: function () {
         var today = new Date();
-        y = today.getFullYear()
-        m = 1 + today.getMonth();
+        var y = today.getFullYear();
+        var m = 1 + today.getMonth();
         m = (m < 10 ? '0' + m : m);
-        d = today.getDate();
+        var d = today.getDate();
         d = (d < 10 ? '0' + d : d);
-        return [y,m,d].join('-');
+        return [y, m, d].join('-');
       },
     },
 
