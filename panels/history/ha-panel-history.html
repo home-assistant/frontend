@@ -120,9 +120,13 @@ Polymer({
     _currentDate: {
       type: String,
       value: function () {
-        var value = new Date();
-        value.setHours(0, 0, 0);
-        return value.toISOString().split('T')[0];
+        var today = new Date();
+        y = today.getFullYear()
+        m = 1 + today.getMonth();
+        m = (m < 10 ? '0' + m : m);
+        d = today.getDate();
+        d = (d < 10 ? '0' + d : d);
+        return [y,m,d].join('-');
       },
     },
 
