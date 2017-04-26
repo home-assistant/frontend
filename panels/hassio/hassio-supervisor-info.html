@@ -1,0 +1,66 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
+
+<dom-module id="hassio-supervisor-info">
+  <style include="iron-flex ha-style">
+    paper-card {
+      display: block;
+      height: 100%;
+    }
+  </style>
+  <template>
+    <paper-card heading="Supervisor">
+      <div class="card-content">
+        <table>
+          <tr>
+            <td>Version</td>
+            <td>[[data.version]]</td>
+          </tr>
+          <tr>
+            <td>Beta channel</td>
+            <td>[[data.beta]]</td>
+          </tr>
+          <tr>
+            <td>Latest available version</td>
+            <td>[[data.current]]</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card-actions">
+        <template is='dom-if' if='[[updateAvailable(data)]]'>
+          <paper-button>Update</paper-button>
+        </template>
+        <paper-button>Reload</paper-button>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+/*
+TODO:
+ - Add logs: http://localhost:8123/api/hassio/logs/supervisor
+*/
+
+Polymer({
+  is: 'hassio-supervisor-info',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    data: {
+      type: Object,
+      value: {},
+    },
+  },
+
+  updateAvailable: function(data) {
+    return data.current != data.version;
+  }
+});
+</script>
