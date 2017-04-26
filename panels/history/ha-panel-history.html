@@ -121,8 +121,8 @@ Polymer({
       type: String,
       value: function () {
         var value = new Date();
-        value.setHours(0, 0, 0);
-        return value.toISOString().split('T')[0];
+        var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
+        return today.toISOString().split('T')[0];
       },
     },
 
