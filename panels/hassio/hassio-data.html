@@ -1,0 +1,54 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<script>
+Polymer({
+  is: 'hassio-data',
+
+  properties: {
+    supervisor: {
+      type: Object,
+      value: {},
+      notify: true,
+    },
+
+    host: {
+      type: Object,
+      value: {},
+      notify: true,
+    },
+
+    homeassistant: {
+      type: Object,
+      value: {},
+      notify: true,
+    },
+  },
+
+  attached: function () {
+    this.fetchSupervisorInfo();
+    this.fetchHostInfo();
+    this.fetchHassInfo();
+  },
+
+  fetchSupervisorInfo: function () {
+    this.hass.callApi('get', 'hassio/supervisor/info')
+      .then(function (info) {
+        this.supervisor = info.data;
+      }.bind(this));
+  },
+
+  fetchHostInfo: function () {
+    this.hass.callApi('get', 'hassio/host/info')
+      .then(function (info) {
+        this.host = info.data;
+      }.bind(this));
+  },
+
+  fetchHassInfo: function () {
+    this.hass.callApi('get', 'hassio/homeassistant/info')
+      .then(function (info) {
+        this.homeassistant = info.data;
+      }.bind(this));
+  },
+});
+</script>

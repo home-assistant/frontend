@@ -1,0 +1,120 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="./hassio-dashboard.html">
+<link rel="import" href="./hassio-addon-view.html">
+<link rel="import" href="./hassio-loading.html">
+
+<dom-module id="ha-panel-hassio">
+  <style>
+    iron-pages {
+      height: 100%;
+    }
+  </style>
+  <template>
+    <hassio-data
+      hass='[[hass]]'
+      supervisor='{{supervisorInfo}}'
+      homeassistant='{{hassInfo}}'
+      host='{{hostInfo}}'
+    ></hassio-data>
+
+    <template is='dom-if' if='[[!loaded]]'>
+      <hassio-loading
+        narrow='[[narrow]]'
+        hass='[[hass]]'
+        show-menu='[[showMenu]]'
+      ></hassio-loading>
+    </template>
+    <template is='dom-if' if='[[loaded]]' restamp>
+      <template is='dom-if' if='[[addon]]'>
+        <hassio-addon-view
+          hass='[[hass]]'
+          supervisor-info='[[supervisorInfo]]'
+          host-info='[[hostInfo]]'
+          addon='[[addon]]'
+        ></hassio-addon-view>
+      </template>
+
+      <template is='dom-if' if='[[!addon]]'>
+        <hassio-dashboard
+          hass='[[hass]]'
+          narrow='[[narrow]]'
+          show-menu='[[showMenu]]'
+          supervisor-info='{{supervisorInfo}}'
+          host-info='{{hostInfo}}'
+          hass-info='[[hassInfo]]'
+        ></hassio-dashboard>
+      </template>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-panel-hassio',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
+    addon: {
+      type: String,
+      value: '',
+    },
+
+    supervisorInfo: {
+      type: Object,
+      value: null,
+    },
+
+    hostInfo: {
+      type: Object,
+      value: null,
+    },
+
+    hassInfo: {
+      type: Object,
+      value: null,
+    },
+
+    forceLoading: {
+      type: Boolean,
+      value: false,
+    },
+
+    loaded: {
+      type: Boolean,
+      computed: 'computeIsLoaded(supervisorInfo, hostInfo, hassInfo, forceLoading)',
+    }
+  },
+
+  listeners: {
+    'hassio-select-addon': 'addonSelected',
+  },
+
+  computeIsLoaded: function (supervisorInfo, hostInfo, hassInfo, forceLoading) {
+    return (supervisorInfo !== null &&
+            hostInfo !== null &&
+            hassInfo !== null &&
+            !forceLoading);
+  },
+
+  addonSelected: function (ev) {
+    this.forceLoading = true;
+    setTimeout(function () {
+      this.addon = ev.detail.addon;
+      this.forceLoading = false;
+    }.bind(this), 0);
+  },
+});
+</script>

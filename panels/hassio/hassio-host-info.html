@@ -1,0 +1,72 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
+
+<dom-module id="hassio-host-info">
+  <style include="iron-flex ha-style">
+    paper-card {
+      display: block;
+      height: 100%;
+    }
+    .info {
+      width: 100%;
+    }
+    .info td:nth-child(2) {
+      text-align: right;
+    }
+  </style>
+  <template>
+    <paper-card heading="Host OS">
+      <div class="card-content">
+        <table class='info'>
+          <tr>
+            <td>Hostname</td>
+            <td>[[data.hostname]]</td>
+          </tr>
+          <tr>
+            <td>Control version</td>
+            <td>[[data.version]]</td>
+          </tr>
+          <tr>
+            <td>Type</td>
+            <td>[[data.type]]</td>
+          </tr>
+          <tr>
+            <td>OS</td>
+            <td>[[data.os]]</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card-actions">
+        <ha-call-api-button
+          hass='[[hass]]'
+          path="hassio/host/update"
+        >Update</ha-call-api-button>
+        <ha-call-api-button
+          class='warning'
+          hass='[[hass]]'
+          path="hassio/host/reboot"
+        >Reboot</ha-call-api-button>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'hassio-host-info',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    data: {
+      type: Object,
+      value: {},
+    },
+  },
+});
+</script>

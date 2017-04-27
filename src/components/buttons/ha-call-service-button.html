@@ -1,0 +1,56 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="./ha-progress-button.html">
+
+<dom-module id='ha-call-service-button'>
+  <template>
+    <ha-progress-button
+      id='progress'
+      progress='[[progress]]'
+      on-tap='buttonTapped'
+    ><slot></slot></ha-progress-button>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-call-service-button',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    progress: {
+      type: Boolean,
+      value: false,
+    },
+
+    domain: {
+      type: String,
+    },
+
+    service: {
+      type: String,
+    },
+
+    serviceData: {
+      type: Object,
+      value: {},
+    },
+  },
+
+  buttonTapped: function () {
+    this.progress = true;
+    var el = this;
+
+    this.hass.callService(this.domain, this.service, this.serviceData)
+      .then(function () {
+        el.progress = false;
+        el.$.progress.actionSuccess();
+      }, function () {
+        el.progress = false;
+        el.$.progress.actionError();
+      });
+  }
+});
+</script>

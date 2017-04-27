@@ -1,0 +1,328 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
+
+<link rel="import" href="./hassio-data.html">
+<link rel="import" href="./hassio-host-info.html">
+<link rel="import" href="./hassio-supervisor-info.html">
+<link rel="import" href="./hassio-addons.html">
+
+<dom-module id="hassio-addon-view">
+  <template>
+    <style include="iron-flex ha-style">
+      paper-card {
+        display: block;
+      }
+      .controls paper-card {
+        margin-bottom: 24px;
+      }
+      iron-autogrow-textarea {
+        width: 100%;
+      }
+      .content {
+        padding: 24px 0 32px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .status {
+        @apply(--layout-horizontal);
+        margin-bottom: 24px;
+      }
+      .status > * {
+        @apply(--layout-flex);
+      }
+      .status > *:first-child {
+        margin-right: 24px;
+      }
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed>
+        <app-toolbar>
+          <paper-icon-button
+            icon='mdi:arrow-left'
+            on-tap='backTapped'
+          ></paper-icon-button>
+          <div main-title>[[addonInfo.name]]</div>
+        </app-toolbar>
+      </app-header>
+
+      <div class='content'>
+        <div class='status'>
+          <paper-card heading='Info'>
+            <div class="card-content">
+              <div>[[addonInfo.description]]</div>
+              <table class='info'>
+                <tr>
+                  <td>Installed</td>
+                  <td>[[computeInstallStatus(addonInfo)]]</td>
+                </tr>
+                <tr>
+                  <td>Version</td>
+                  <td>[[addonInfo.version]]</td>
+                </tr>
+                <tr>
+                  <td>Dedicated</td>
+                  <td>[[addonInfo.dedicated]]</td>
+                </tr>
+              </table>
+            </div>
+            <template is='dom-if' if='[[!addonState]]'>
+              <div class="card-actions">
+                <ha-call-api-button
+                  hass='[[hass]]'
+                  path="[[pathInstall(addon)]]"
+                >Install</ha-call-api-button>
+              </div>
+            </template>
+          </paper-card>
+
+          <paper-card heading='Installed'>
+            <template is='dom-if' if='[[!addonState]]'>
+              <div class="card-content">
+                <div>Add-on is not installed.</div>
+              </div>
+            </template>
+
+            <template is='dom-if' if='[[addonState]]'>
+              <div class="card-content">
+                <table class='info'>
+                  <tr>
+                    <td>Version</td>
+                    <td>[[addonState.version]]</td>
+                  </tr>
+                  <tr>
+                    <td>State</td>
+                    <td>[[addonState.state]]</td>
+                  </tr>
+                  <tr>
+                    <td>Boot</td>
+                    <td>[[addonState.boot]]</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="card-actions">
+                <template is='dom-if' if='[[!isRunning]]'>
+                  <ha-call-api-button
+                    hass='[[hass]]'
+                    path="[[pathStart(addon)]]"
+                  >Start</ha-call-api-button>
+                </template>
+                <template is='dom-if' if='[[computeUpdateAvailable(addonInfo)]]'>
+                  <ha-call-api-button
+                    hass='[[hass]]'
+                    path="[[pathUpdate(addon)]]"
+                  >Update</ha-call-api-button>
+                </template>
+                <template is='dom-if' if='[[isRunning]]'>
+                  <ha-call-api-button
+                    class='warning'
+                    hass='[[hass]]'
+                    path="[[pathStop(addon)]]"
+                  >Stop</ha-call-api-button>
+                </template>
+                <ha-call-api-button
+                  class='warning'
+                  hass='[[hass]]'
+                  path="[[pathUninstall(addon)]]"
+                >Uninstall</ha-call-api-button>
+              </div>
+            </template>
+          </paper-card>
+        </div>
+
+        <template is='dom-if' if='[[addonState]]'>
+          <div class='controls'>
+            <paper-card heading='Options'>
+              <div class="card-content">
+                <iron-autogrow-textarea value="{{options}}"></iron-autogrow-textarea>
+              </div>
+              <div class="card-actions">
+                <ha-call-api-button
+                  hass='[[hass]]'
+                  disabled='[[!optionsParsed]]'
+                  data='[[computeOptionsData(optionsParsed)]]'
+                  path="[[pathOptions(addon)]]"
+                >Save</ha-call-api-button>
+              </div>
+            </paper-card>
+
+            <paper-card heading='Logs'>
+              <div class="card-content">
+                <pre>[[addonLogs]]</pre>
+              </div>
+              <div class="card-actions">
+                <paper-button on-tap='refreshLogs'>Refresh</paper-button>
+              </div>
+            </paper-card>
+          </div>
+        </template>
+      </div>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'hassio-addon-view',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+
+    addon: {
+      type: String,
+      observer: 'addonChanged',
+    },
+
+    options: {
+      type: String,
+      value: '',
+    },
+
+    optionsParsed: {
+      type: Object,
+      computed: 'parseOptions(options)',
+    },
+
+    supervisorInfo: {
+      type: Object,
+    },
+
+    hostInfo: {
+      type: Object,
+    },
+
+    isRunning: {
+      type: Boolean,
+      computed: 'computeIsRunning(addonState)',
+    },
+
+    addonInfo: {
+      type: Object,
+      computed: 'computeAddonInfo(supervisorInfo, addon)',
+    },
+
+    addonState: {
+      type: Object,
+      value: null,
+      observer: 'addonStateChanged',
+    },
+
+    addonLogs: {
+      type: String,
+      value: '',
+    },
+  },
+
+  addonChanged: function (addon) {
+    if (!this.hass) {
+      setTimeout(function () { this.addonChanged(addon); }.bind(this), 0);
+      return;
+    }
+
+    this.hass.callApi('get', 'hassio/addons/' + addon + '/info')
+      .then(function (info) {
+        // Error if addon not installed.
+        if (info.result !== 'error') {
+          this.addonState = info.data;
+        }
+      }.bind(this));
+    this.refreshLogs();
+  },
+
+  refreshLogs: function () {
+    this.hass.callApi('get', 'hassio/addons/' + this.addon + '/logs')
+      .then(function (info) {
+        this.addonLogs = info;
+      }.bind(this));
+  },
+
+  addonStateChanged: function (addonState) {
+    this.options = addonState ? JSON.stringify(addonState.options, null, 2) : '';
+  },
+
+  computeAddonInfo: function (supervisorInfo, addon) {
+    if (!supervisorInfo) return null;
+
+    for (var i = 0; i < supervisorInfo.addons.length; i++) {
+      var addonInfo = supervisorInfo.addons[i];
+      if (addonInfo.slug === addon) return addonInfo;
+    }
+    return null;
+  },
+
+  computeIsRunning: function (addonState) {
+    return addonState && addonState.state === 'started';
+  },
+
+  computeInstallStatus(addon) {
+    return addon.installed || 'Not installed';
+  },
+
+  computeUpdateAvailable: function (data) {
+    return data.version !== data.last_version;
+  },
+
+  parseOptions: function (options) {
+    try {
+      return JSON.parse(options);
+    } catch (err) {
+      return null;
+    }
+  },
+
+  computeOptionsData: function (optionsParsed) {
+    return {
+      options: optionsParsed,
+    };
+  },
+
+  backTapped: function () {
+    this.fire('hassio-select-addon', { addon: null });
+  },
+
+  pathStart: function (addon) {
+    return 'hassio/addons/' + addon + '/start';
+  },
+
+  pathStop: function (addon) {
+    return 'hassio/addons/' + addon + '/stop';
+  },
+
+  pathInstall: function (addon) {
+    return 'hassio/addons/' + addon + '/install';
+  },
+
+  pathUninstall: function (addon) {
+    return 'hassio/addons/' + addon + '/uninstall';
+  },
+
+  pathUpdate: function (addon) {
+    return 'hassio/addons/' + addon + '/update';
+  },
+
+  pathOptions: function (addon) {
+    return 'hassio/addons/' + addon + '/options';
+  },
+});
+</script>
