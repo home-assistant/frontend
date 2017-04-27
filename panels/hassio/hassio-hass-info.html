@@ -1,0 +1,65 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
+
+<dom-module id="hassio-hass-info">
+  <style include="iron-flex ha-style">
+    paper-card {
+      display: block;
+      height: 100%;
+    }
+    .info {
+      width: 100%;
+    }
+    .info td:nth-child(2) {
+      text-align: right;
+    }
+  </style>
+  <template>
+    <paper-card heading="Home Assistant">
+      <div class="card-content">
+        <table class='info'>
+          <tr>
+            <td>Current version</td>
+            <td>[[data.version]]</td>
+          </tr>
+          <tr>
+            <td>Latest version</td>
+            <td>[[data.last_version]]</td>
+          </tr>
+        </table>
+      </div>
+      <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
+        <div class="card-actions">
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="hassio/homeassistant/update"
+          >Update</ha-call-api-button>
+        </div>
+      </template>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'hassio-hass-info',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    data: {
+      type: Object,
+      value: {},
+    },
+  },
+
+  computeUpdateAvailable: function (data) {
+    return data.version !== data.last_version;
+  },
+});
+</script>

@@ -10,7 +10,7 @@
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="../../../src/components/ha-menu-button.html">
-<link rel="import" href="../../../src/components/ha-call-service-button.html">
+<link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
 <link rel="import" href="../../../src/resources/ha-style.html">
 
 <link rel="import" href="../ha-config-section.html">
@@ -45,10 +45,6 @@
 
       .validate-log {
         white-space: pre-wrap;
-      }
-
-      .card-actions.warning ha-call-service-button {
-        color: var(--google-red-500);
       }
     </style>
     <ha-config-section
@@ -120,11 +116,13 @@
         </div>
         <div class='card-actions warning'>
           <ha-call-service-button
+            class='warning'
             hass='[[hass]]'
             domain='homeassistant'
             service='restart'
           >Restart</ha-call-service-button>
           <ha-call-service-button
+            class='warning'
             hass='[[hass]]'
             domain='homeassistant'
             service='stop'

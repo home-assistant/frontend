@@ -1,8 +1,8 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html">
 
-<dom-module id='ha-call-service-button'>
+<dom-module id='ha-progress-button'>
   <template>
     <style>
       .container {
@@ -43,7 +43,7 @@
     <div class='container' id='container'>
       <paper-button
         id='button'
-        disabled='[[progress]]'
+        disabled='[[computeDisabled(disabled, progress)]]'
         on-tap='buttonTapped'
       >
         <slot></slot>
@@ -59,7 +59,7 @@
 
 <script>
 Polymer({
-  is: 'ha-call-service-button',
+  is: 'ha-progress-button',
 
   properties: {
     hass: {
@@ -83,6 +83,11 @@ Polymer({
       type: Object,
       value: {},
     },
+
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   tempClass: function (className) {
@@ -93,18 +98,24 @@ Polymer({
     }, 1000);
   },
 
-  buttonTapped: function () {
-    this.progress = true;
-    var el = this;
+  listeners: {
+    tap: 'buttonTapped',
+  },
 
-    this.hass.callService(this.domain, this.service, this.serviceData)
-      .then(function () {
-        el.tempClass('success');
-        el.progress = false;
-      }, function () {
-        el.tempClass('error');
-        el.progress = false;
-      });
-  }
+  buttonTapped: function (ev) {
+    if (this.progress) ev.stopPropagation();
+  },
+
+  actionSuccess: function () {
+    this.tempClass('success');
+  },
+
+  actionError: function () {
+    this.tempClass('error');
+  },
+
+  computeDisabled: function (disabled, progress) {
+    return disabled || progress;
+  },
 });
 </script>
