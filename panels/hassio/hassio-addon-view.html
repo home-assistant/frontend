@@ -23,6 +23,9 @@
       paper-card {
         display: block;
       }
+      .controls paper-card {
+        margin-bottom: 24px;
+      }
       iron-autogrow-textarea {
         width: 100%;
       }
@@ -134,21 +137,31 @@
         </div>
 
         <template is='dom-if' if='[[addonState]]'>
-          <paper-card heading='Options'>
-            <div class="card-content">
-              <iron-autogrow-textarea value="{{options}}"></iron-autogrow-textarea>
-            </div>
-            <div class="card-actions">
-              <ha-call-api-button
-                hass='[[hass]]'
-                disabled='[[!optionsParsed]]'
-                data='[[computeOptionsData(optionsParsed)]]'
-                path="[[pathOptions(addon)]]"
-              >Save</ha-call-api-button>
-            </div>
-          </paper-card>
-        </template>
+          <div class='controls'>
+            <paper-card heading='Options'>
+              <div class="card-content">
+                <iron-autogrow-textarea value="{{options}}"></iron-autogrow-textarea>
+              </div>
+              <div class="card-actions">
+                <ha-call-api-button
+                  hass='[[hass]]'
+                  disabled='[[!optionsParsed]]'
+                  data='[[computeOptionsData(optionsParsed)]]'
+                  path="[[pathOptions(addon)]]"
+                >Save</ha-call-api-button>
+              </div>
+            </paper-card>
 
+            <paper-card heading='Logs'>
+              <div class="card-content">
+                <pre>[[addonLogs]]</pre>
+              </div>
+              <div class="card-actions">
+                <paper-button on-tap='refreshLogs'>Refresh</paper-button>
+              </div>
+            </paper-card>
+          </div>
+        </template>
       </div>
     </app-header-layout>
   </template>
@@ -205,6 +218,11 @@ Polymer({
       value: null,
       observer: 'addonStateChanged',
     },
+
+    addonLogs: {
+      type: String,
+      value: '',
+    },
   },
 
   addonChanged: function (addon) {
@@ -219,6 +237,14 @@ Polymer({
         if (info.result != 'error') {
           this.addonState = info.data;
         }
+      }.bind(this));
+    this.refreshLogs();
+  },
+
+  refreshLogs: function () {
+    this.hass.callApi('get', 'hassio/addons/' + this.addon + '/logs')
+      .then(function (info) {
+        this.addonLogs = info;
       }.bind(this));
   },
 
