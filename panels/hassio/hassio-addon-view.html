@@ -243,7 +243,7 @@ Polymer({
     this.hass.callApi('get', 'hassio/addons/' + addon + '/info')
       .then(function (info) {
         // Error if addon not installed.
-        if (info.result != 'error') {
+        if (info.result !== 'error') {
           this.addonState = info.data;
         }
       }.bind(this));
@@ -279,11 +279,11 @@ Polymer({
     return addon.installed || 'Not installed';
   },
 
-  computeUpdateAvailable: function(data) {
-    return data.version != data.last_version;
+  computeUpdateAvailable: function (data) {
+    return data.version !== data.last_version;
   },
 
-  parseOptions: function(options) {
+  parseOptions: function (options) {
     try {
       return JSON.parse(options);
     } catch (err) {
@@ -291,7 +291,7 @@ Polymer({
     }
   },
 
-  computeOptionsData: function(optionsParsed) {
+  computeOptionsData: function (optionsParsed) {
     return {
       options: optionsParsed,
     };

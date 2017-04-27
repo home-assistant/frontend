@@ -53,11 +53,6 @@
 </dom-module>
 
 <script>
-/*
-TODO:
- - Add logs: http://localhost:8123/api/hassio/logs/supervisor
-*/
-
 Polymer({
   is: 'hassio-supervisor-info',
 
@@ -72,8 +67,8 @@ Polymer({
     },
   },
 
-  computeUpdateAvailable: function(data) {
-    return data.version != data.last_version;
+  computeUpdateAvailable: function (data) {
+    return data.version !== data.last_version;
   },
 });
 </script>
