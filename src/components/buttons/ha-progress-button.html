@@ -43,7 +43,7 @@
     <div class='container' id='container'>
       <paper-button
         id='button'
-        disabled='[[progress]]'
+        disabled='[[computeDisabled(disabled, progress)]]'
         on-tap='buttonTapped'
       >
         <slot></slot>
@@ -83,6 +83,11 @@ Polymer({
       type: Object,
       value: {},
     },
+
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   tempClass: function (className) {
@@ -107,6 +112,10 @@ Polymer({
 
   actionError: function () {
     this.tempClass('error');
+  },
+
+  computeDisabled: function (disabled, progress) {
+    return disabled || progress;
   },
 });
 </script>

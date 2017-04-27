@@ -24,8 +24,8 @@
         show-menu='[[dockedSidebar]]'
       ></hassio-loading>
     </template>
-    <template is='dom-if' if='[[loaded]]'>
-      <template is='dom-if' if='[[addon]]' restamp>
+    <template is='dom-if' if='[[loaded]]' restamp>
+      <template is='dom-if' if='[[addon]]'>
         <hassio-addon-view
           narrow='[[narrow]]'
           hass='[[hass]]'
@@ -80,9 +80,14 @@ Polymer({
       value: null,
     },
 
+    forceLoading: {
+      type: Boolean,
+      value: false,
+    },
+
     loaded: {
       type: Boolean,
-      computed: 'computeIsLoaded(supervisorInfo, hostInfo)',
+      computed: 'computeIsLoaded(supervisorInfo, hostInfo, forceLoading)',
     }
   },
 
@@ -90,12 +95,16 @@ Polymer({
     'hassio-select-addon': 'addonSelected',
   },
 
-  computeIsLoaded: function (supervisorInfo, hostInfo) {
-    return supervisorInfo !== null && hostInfo !== null;
+  computeIsLoaded: function (supervisorInfo, hostInfo, forceLoading) {
+    return supervisorInfo !== null && hostInfo !== null && !forceLoading;
   },
 
   addonSelected: function (ev) {
-    this.addon = ev.detail.addon;
+    this.forceLoading = true;
+    setTimeout(function () {
+      this.addon = ev.detail.addon;
+      this.forceLoading = false;
+    }.bind(this), 0);
   },
 });
 </script>

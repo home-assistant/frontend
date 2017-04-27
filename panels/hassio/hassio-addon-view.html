@@ -8,6 +8,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
 
@@ -19,6 +20,12 @@
 <dom-module id="hassio-addon-view">
   <template>
     <style include="iron-flex ha-style">
+      paper-card {
+        display: block;
+      }
+      iron-autogrow-textarea {
+        width: 100%;
+      }
       .content {
         padding: 24px 0 32px;
         max-width: 600px;
@@ -98,13 +105,8 @@
                     <td>Boot</td>
                     <td>[[addonState.boot]]</td>
                   </tr>
-                  <tr>
-                    <td>Options</td>
-                    <td>
-                      <pre>[[computeOptions(addonState)]]</pre>
-                    </td>
-                  </tr>
                 </table>
+              </div>
               <div class="card-actions">
                 <ha-call-api-button
                   hass='[[hass]]'
@@ -130,6 +132,23 @@
             </template>
           </paper-card>
         </div>
+
+        <template is='dom-if' if='[[addonState]]'>
+          <paper-card heading='Options'>
+            <div class="card-content">
+              <iron-autogrow-textarea value="{{options}}"></iron-autogrow-textarea>
+            </div>
+            <div class="card-actions">
+              <ha-call-api-button
+                hass='[[hass]]'
+                disabled='[[!optionsParsed]]'
+                data='[[computeOptionsData(optionsParsed)]]'
+                path="[[pathOptions(addon)]]"
+              >Save</ha-call-api-button>
+            </div>
+          </paper-card>
+        </template>
+
       </div>
     </app-header-layout>
   </template>
@@ -158,6 +177,16 @@ Polymer({
       observer: 'addonChanged',
     },
 
+    options: {
+      type: String,
+      value: '',
+    },
+
+    optionsParsed: {
+      type: Object,
+      computed: 'parseOptions(options)',
+    },
+
     supervisorInfo: {
       type: Object,
     },
@@ -174,6 +203,7 @@ Polymer({
     addonState: {
       type: Object,
       value: null,
+      observer: 'addonStateChanged',
     },
   },
 
@@ -190,6 +220,10 @@ Polymer({
           this.addonState = info.data;
         }
       }.bind(this));
+  },
+
+  addonStateChanged: function (addonState) {
+    this.options = addonState ? JSON.stringify(addonState.options, null, 2) : '';
   },
 
   computeAddonInfo: function (supervisorInfo, addon) {
@@ -210,12 +244,22 @@ Polymer({
     return data.current != data.last_version;
   },
 
-  backTapped: function () {
-    this.fire('hassio-select-addon', { addon: null });
+  parseOptions: function(options) {
+    try {
+      return JSON.parse(options);
+    } catch (err) {
+      return null;
+    }
   },
 
-  computeOptions: function (addonState) {
-    return JSON.stringify(addonState.options, null, 2);
+  computeOptionsData: function(optionsParsed) {
+    return {
+      options: optionsParsed,
+    };
+  },
+
+  backTapped: function () {
+    this.fire('hassio-select-addon', { addon: null });
   },
 
   pathStart: function (addon) {
@@ -236,6 +280,10 @@ Polymer({
 
   pathUpdate: function (addon) {
     return 'hassio/addons/' + addon + '/update';
+  },
+
+  pathOptions: function (addon) {
+    return 'hassio/addons/' + addon + '/options';
   },
 });
 </script>
