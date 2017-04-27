@@ -12,6 +12,7 @@
 
 <link rel="import" href="./hassio-data.html">
 <link rel="import" href="./hassio-host-info.html">
+<link rel="import" href="./hassio-hass-info.html">
 <link rel="import" href="./hassio-supervisor-info.html">
 <link rel="import" href="./hassio-addons.html">
 
@@ -55,6 +56,13 @@
             data='[[hostInfo]]'
           ></hassio-host-info>
         </div>
+        <div class='status'>
+          <hassio-hass-info
+            hass='[[hass]]'
+            data='[[hassInfo]]'
+          ></hassio-hass-info>
+          <div></div>
+        </div>
         <hassio-addons
           hass='[[hass]]'
           data='[[supervisorInfo.addons]]'
@@ -88,6 +96,11 @@ Polymer({
     },
 
     hostInfo: {
+      type: Object,
+      value: {},
+    },
+
+    hassInfo: {
       type: Object,
       value: {},
     },

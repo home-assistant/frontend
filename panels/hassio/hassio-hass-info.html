@@ -4,7 +4,7 @@
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
 
-<dom-module id="hassio-supervisor-info">
+<dom-module id="hassio-hass-info">
   <style include="iron-flex ha-style">
     paper-card {
       display: block;
@@ -18,48 +18,34 @@
     }
   </style>
   <template>
-    <paper-card heading="Supervisor">
+    <paper-card heading="Home Assistant">
       <div class="card-content">
         <table class='info'>
           <tr>
-            <td>Version</td>
+            <td>Current version</td>
             <td>[[data.version]]</td>
           </tr>
           <tr>
-            <td>Beta channel</td>
-            <td>[[data.beta_channel]]</td>
-          </tr>
-          <tr>
-            <td>Latest available version</td>
+            <td>Latest version</td>
             <td>[[data.last_version]]</td>
           </tr>
         </table>
       </div>
-      <div class="card-actions">
-        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
+      <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
+        <div class="card-actions">
           <ha-call-api-button
             hass='[[hass]]'
-            path="hassio/supervisor/update"
+            path="hassio/homeassistant/update"
           >Update</ha-call-api-button>
-        </template>
-        <ha-call-api-button
-          class='warning'
-          hass='[[hass]]'
-          path="hassio/supervisor/reload"
-        >Restart</ha-call-api-button>
-      </div>
+        </div>
+      </template>
     </paper-card>
   </template>
 </dom-module>
 
 <script>
-/*
-TODO:
- - Add logs: http://localhost:8123/api/hassio/logs/supervisor
-*/
-
 Polymer({
-  is: 'hassio-supervisor-info',
+  is: 'hassio-hass-info',
 
   properties: {
     hass: {
