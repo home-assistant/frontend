@@ -36,7 +36,7 @@
         </table>
       </div>
       <div class="card-actions">
-        <template is='dom-if' if='[[updateAvailable(data)]]'>
+        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
           <ha-call-api-button
             hass='[[hass]]'
             path="hassio/supervisor/update"
@@ -72,8 +72,8 @@ Polymer({
     },
   },
 
-  updateAvailable: function(data) {
-    return data.current != data.version;
+  computeUpdateAvailable: function(data) {
+    return data.current != data.last_version;
   }
 });
 </script>

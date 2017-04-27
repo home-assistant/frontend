@@ -24,6 +24,16 @@
         max-width: 600px;
         margin: 0 auto;
       }
+      .status {
+        @apply(--layout-horizontal);
+        margin-bottom: 24px;
+      }
+      .status > * {
+        @apply(--layout-flex);
+      }
+      .status > *:first-child {
+        margin-right: 24px;
+      }
     </style>
     <app-header-layout has-scrolling-region>
       <app-header fixed>
@@ -37,7 +47,89 @@
       </app-header>
 
       <div class='content'>
-        [[addonInfo.description]]
+        <div class='status'>
+          <paper-card heading='Info'>
+            <div class="card-content">
+              <div>[[addonInfo.description]]</div>
+              <table class='info'>
+                <tr>
+                  <td>Installed</td>
+                  <td>[[computeInstallStatus(addonInfo)]]</td>
+                </tr>
+                <tr>
+                  <td>Version</td>
+                  <td>[[addonInfo.version]]</td>
+                </tr>
+                <tr>
+                  <td>Dedicated</td>
+                  <td>[[addonInfo.dedicated]]</td>
+                </tr>
+              </table>
+            </div>
+            <template is='dom-if' if='[[!addonState]]'>
+              <div class="card-actions">
+                <ha-call-api-button
+                  hass='[[hass]]'
+                  path="[[pathInstall(addon)]]"
+                >Install</ha-call-api-button>
+              </div>
+            </template>
+          </paper-card>
+
+          <paper-card heading='Installed'>
+            <template is='dom-if' if='[[!addonState]]'>
+              <div class="card-content">
+                <div>Add-on is not installed.</div>
+              </div>
+            </template>
+
+            <template is='dom-if' if='[[addonState]]'>
+              <div class="card-content">
+                <table class='info'>
+                  <tr>
+                    <td>Version</td>
+                    <td>[[addonState.version]]</td>
+                  </tr>
+                  <tr>
+                    <td>State</td>
+                    <td>[[addonState.state]]</td>
+                  </tr>
+                  <tr>
+                    <td>Boot</td>
+                    <td>[[addonState.boot]]</td>
+                  </tr>
+                  <tr>
+                    <td>Options</td>
+                    <td>
+                      <pre>[[computeOptions(addonState)]]</pre>
+                    </td>
+                  </tr>
+                </table>
+              <div class="card-actions">
+                <ha-call-api-button
+                  hass='[[hass]]'
+                  path="[[pathStart(addon)]]"
+                >Start</ha-call-api-button>
+                <template is='dom-if' if='[[computeUpdateAvailable(addonInfo)]]'>
+                  <ha-call-api-button
+                    hass='[[hass]]'
+                    path="[[pathUpdate(addon)]]"
+                  >Update</ha-call-api-button>
+                </template>
+                <ha-call-api-button
+                  class='warning'
+                  hass='[[hass]]'
+                  path="[[pathStop(addon)]]"
+                >Stop</ha-call-api-button>
+                <ha-call-api-button
+                  class='warning'
+                  hass='[[hass]]'
+                  path="[[pathUninstall(addon)]]"
+                >Uninstall</ha-call-api-button>
+              </div>
+            </template>
+          </paper-card>
+        </div>
       </div>
     </app-header-layout>
   </template>
@@ -63,6 +155,7 @@ Polymer({
 
     addon: {
       type: String,
+      observer: 'addonChanged',
     },
 
     supervisorInfo: {
@@ -76,7 +169,27 @@ Polymer({
     addonInfo: {
       type: Object,
       computed: 'computeAddonInfo(supervisorInfo, addon)',
+    },
+
+    addonState: {
+      type: Object,
+      value: null,
+    },
+  },
+
+  addonChanged: function (addon) {
+    if (!this.hass) {
+      setTimeout(function () { this.addonChanged(addon); }.bind(this), 0);
+      return;
     }
+
+    this.hass.callApi('get', 'hassio/addons/' + addon + '/info')
+      .then(function (info) {
+        // Error if addon not installed.
+        if (info.result != 'error') {
+          this.addonState = info.data;
+        }
+      }.bind(this));
   },
 
   computeAddonInfo: function (supervisorInfo, addon) {
@@ -89,8 +202,40 @@ Polymer({
     return null;
   },
 
+  computeInstallStatus(addon) {
+    return addon.installed || 'Not installed';
+  },
+
+  computeUpdateAvailable: function(data) {
+    return data.current != data.last_version;
+  },
+
   backTapped: function () {
     this.fire('hassio-select-addon', { addon: null });
-  }
+  },
+
+  computeOptions: function (addonState) {
+    return JSON.stringify(addonState.options, null, 2);
+  },
+
+  pathStart: function (addon) {
+    return 'hassio/addons/' + addon + '/start';
+  },
+
+  pathStop: function (addon) {
+    return 'hassio/addons/' + addon + '/stop';
+  },
+
+  pathInstall: function (addon) {
+    return 'hassio/addons/' + addon + '/install';
+  },
+
+  pathUninstall: function (addon) {
+    return 'hassio/addons/' + addon + '/uninstall';
+  },
+
+  pathUpdate: function (addon) {
+    return 'hassio/addons/' + addon + '/update';
+  },
 });
 </script>
