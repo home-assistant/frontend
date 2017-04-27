@@ -31,23 +31,23 @@ Polymer({
   },
 
   fetchSupervisorInfo: function () {
-    this.hass.callApi('get', 'hassio/supervisor')
+    this.hass.callApi('get', 'hassio/supervisor/info')
       .then(function (info) {
-        this.supervisor = JSON.parse(info);
+        this.supervisor = info.data;
       }.bind(this));
   },
 
   fetchHostInfo: function () {
-    this.hass.callApi('get', 'hassio/host')
+    this.hass.callApi('get', 'hassio/host/info')
       .then(function (info) {
-        this.host = JSON.parse(info);
+        this.host = info.data;
       }.bind(this));
   },
 
   fetchHassInfo: function () {
-    this.hass.callApi('get', 'hassio/homeassistant')
+    this.hass.callApi('get', 'hassio/homeassistant/info')
       .then(function (info) {
-        this.homeassistant = JSON.parse(info);
+        this.homeassistant = info.data;
       }.bind(this));
   },
 });
