@@ -22,15 +22,13 @@
       <hassio-loading
         narrow='[[narrow]]'
         hass='[[hass]]'
-        show-menu='[[dockedSidebar]]'
+        show-menu='[[showMenu]]'
       ></hassio-loading>
     </template>
     <template is='dom-if' if='[[loaded]]' restamp>
       <template is='dom-if' if='[[addon]]'>
         <hassio-addon-view
-          narrow='[[narrow]]'
           hass='[[hass]]'
-          show-menu='[[dockedSidebar]]'
           supervisor-info='[[supervisorInfo]]'
           host-info='[[hostInfo]]'
           addon='[[addon]]'
@@ -40,6 +38,8 @@
       <template is='dom-if' if='[[!addon]]'>
         <hassio-dashboard
           hass='[[hass]]'
+          narrow='[[narrow]]'
+          show-menu='[[showMenu]]'
           supervisor-info='{{supervisorInfo}}'
           host-info='{{hostInfo}}'
           hass-info='[[hassInfo]]'
