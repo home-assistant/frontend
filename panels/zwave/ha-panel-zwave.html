@@ -257,7 +257,7 @@
                 class="dropdown-content"
                 selected='{{selectedGroup}}'>
                 <template is='dom-repeat' items='[[groups]]' as='state'>
-                  <paper-item>[[state]]</paper-item>
+                  <paper-item>[[computeSelectCaptionGroup(state)]]</paper-item>
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
@@ -270,6 +270,14 @@
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
+            </div>
+            <div class='node-info'>
+              <template is='dom-if' if='[[!computeIsGroupSelected(selectedGroup)]]'>
+                <span>Other Nodes in this group:</span>
+                <template is='dom-repeat' items='[[otherGroupNodes]]' as='state'>
+                <span>[[state]]</span>
+                </template>
+              </template>
             </div>
             <div class='card-actions'>
               <ha-call-service-button
@@ -380,8 +388,19 @@ Polymer({
     },
 
     groups: {
+      type: Object,
+      computed: 'computeSelectedNodeGroups(selectedNode)'
+    },
+
+    otherGroupNodes: {
       type: Array,
-      value: [1, 2, 3, 4, 5, 6] // TODO Make API to get groups and members
+      value: -1,
+      computed: 'computeOtherGroupNodes(selectedGroup)'
+    },
+
+    groupsList: {
+      type: Array,
+      value: -1,
     },
 
     instances: {
@@ -404,7 +423,7 @@ Polymer({
 
     selectedGroup: {
       type: Number,
-      value: 0,
+      value: -1,
       observer: 'computeAssocServiceData'
     },
 
@@ -468,14 +487,14 @@ Polymer({
     if (!this.nodes || selectedNode === -1) return -1;
     var hass = this.hass;
     var nodeid = this.nodes[this.selectedNode].attributes.node_id;
-    console.log(this.nodes, selectedNode, this.nodes[this.selectedNode].attributes.node_id);
+//    console.log(this.nodes, selectedNode, this.nodes[this.selectedNode].attributes.node_id);
     return Object.keys(hass.states)
       .map(function (key) { return hass.states[key]; })
       .filter(function (ent) {
         if (ent.attributes.node_id === undefined) {
           return false;
         }
-        console.log(ent.attributes.node_id);
+//        console.log(ent.attributes.node_id);
         return (!ent.attributes.hidden &&
                 'node_id' in ent.attributes &&
                 ent.attributes.node_id === nodeid &&
@@ -499,8 +518,30 @@ Polymer({
     Object.entries(nodeAttrs).forEach(([key, value]) => {
       att.push(key + ': ' + value);
     });
-    console.log('Node attributes: ', att);
+//    console.log('Node attributes: ', att);
     return att.sort();
+  },
+
+  computeSelectedNodeGroups: function (selectedNode) {
+    if (selectedNode === -1 || !this.nodes) return -1;
+    var groupData = [];
+    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
+      Object.entries(groups).forEach(([key, value]) => {
+        groupData.push({ key, value });
+      });
+      this.groups = Object.entries(groups);
+      console.log(groupData);
+      console.log(this.nodes);
+    });
+    return groupData;
+  },
+
+  computeOtherGroupNodes: function (selectedGroup) {
+    if (selectedGroup === -1) return -1;
+    var associations = Object.values(this.groups[selectedGroup].value.associations);
+    console.log(associations);
+    if (0 in associations) return ['None'];
+    return Object.values(this.groups[selectedGroup].value.associations);
   },
 
   computeSelectedEntityAttrs: function (selectedEntity) {
@@ -510,7 +551,7 @@ Polymer({
     Object.entries(entityAttrs).forEach(([key, value]) => {
       att.push(key + ': ' + value);
     });
-    console.log('Entity attributes: ', att);
+//    console.log('Entity attributes: ', att);
     return att.sort();
   },
 
@@ -524,12 +565,21 @@ Polymer({
     return window.hassUtil.computeStateName(stateObj);
   },
 
+  computeSelectCaptionGroup: function (stateObj) {
+    return (stateObj.key + ': ' + stateObj.value.label);
+  },
+
   computeIsNodeSelected: function () {
     return (!this.nodes || this.selectedNode === -1);
   },
 
+  computeIsGroupSelected: function (selectedGroup) {
+    console.log(!selectedGroup === -1);
+    return (!this.nodes || this.selectedNode === -1 || selectedGroup === -1);
+  },
+
   computeIsEntitySelected: function (selectedEntity) {
-    console.log('Entity selected: ', (selectedEntity === -1), selectedEntity);
+//    console.log('Entity selected: ', (selectedEntity === -1), selectedEntity);
     return (selectedEntity === -1);
   },
 
@@ -550,7 +600,7 @@ Polymer({
   computeGetWakeupValue: function (selectedNode) {
     if (this.selectedNode === -1 ||
       !this.nodes[selectedNode].attributes.wake_up_interval) return 'unknown';
-    console.log('Fetched Wakeup: ', this.nodes[selectedNode].attributes.wake_up_interval);
+//    console.log('Fetched Wakeup: ', this.nodes[selectedNode].attributes.wake_up_interval);
     return (this.nodes[selectedNode].attributes.wake_up_interval);
   },
 
@@ -559,16 +609,16 @@ Polymer({
       !this.nodes[selectedNode].entity_id) return -1;
     var str = (this.nodes[selectedNode].entity_id);
     var name = str.replace('zwave.', '');
-    console.log('Node name: ', name);
+//    console.log('Node name: ', name);
     return name;
   },
 
   computeAssocServiceData: function (type) {
-    if (this.selectedTargetNode === -1) return -1;
+    if (this.selectedTargetNode === -1 || this.selectedGroup === -1) return -1;
     console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-      group: this.groups[this.selectedGroup],
+      group: this.groups[this.selectedGroup].key,
       instance: this.instances[this.selectedInstance] }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
@@ -578,33 +628,33 @@ Polymer({
   },
 
   computeWakeupServiceData: function (wakeupInput) {
-    console.log('Set wakeup', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-      value: wakeupInput }));
+//    console.log('Set wakeup', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+//      value: wakeupInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       value: wakeupInput };
   },
 
   computeNodeNameServiceData: function (newNodeNameInput) {
-    console.log('Rename node:', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-      name: newNodeNameInput }));
+//    console.log('Rename node:', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+//      name: newNodeNameInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       name: newNodeNameInput };
   },
 
   computeRefreshEntityServiceData: function (selectedEntity) {
     if (selectedEntity === -1) return -1;
-    console.log('Refresh enity:', JSON.stringify({ entity_id: this.entities[selectedEntity].entity_id }));
+//    console.log('Refresh enity:', JSON.stringify({ entity_id: this.entities[selectedEntity].entity_id }));
     return { entity_id: this.entities[selectedEntity].entity_id };
   },
 
   computeSetConfigParameterServiceData: function (configParameterInput) {
     if (this.selectedNode === -1) return -1;
-    console.log('Set config', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: configParameterInput,
-      value: this.configParameterValueInput,
-      size: this.configParameterSizeInput }));
+//    console.log('Set config', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+//      parameter: configParameterInput,
+//      value: this.configParameterValueInput,
+//      size: this.configParameterSizeInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: this.configParameterInput,
+      parameter: configParameterInput,
       value: this.configParameterValueInput,
       size: this.configParameterSizeInput };
   },
@@ -612,8 +662,8 @@ Polymer({
 
   computePrintConfigParameterServiceData: function (configParameterInput) {
     if (this.selectedNode === -1) return -1;
-    console.log('PrintConfig', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: configParameterInput }));
+//    console.log('PrintConfig', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+//      parameter: configParameterInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       parameter: configParameterInput };
   }
