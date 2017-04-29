@@ -302,37 +302,23 @@
           <!--TODO make api to get all config parameters and its values.-->
           <paper-card heading='Node config options'>
             <div class='device-picker'>
-            <paper-input
-              label="Config parameter"
-              type=number
-              value={{configParameterInput}}>
-            </paper-input>
-            <paper-input
-              label="Config value"
-              class='flex'
-              type=number
-              value={{configParameterValueInput}}>
-            </paper-input>
-            <paper-input
-              label="Config value size"
-              class='flex'
-              type=number
-              value={{configParameterSizeInput}}>
-            </paper-input>
+            <paper-dropdown-menu label="Config parameter" class='flex'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedConfigParameter}}'>
+                <template is='dom-repeat' items='[[config]]' as='state'>
+                  <paper-item>[[computeSelectCaptionConfigParameter(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
             </div>
             <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
                 domain='zwave'
                 service='set_config_parameter'
-                service-data=[[computeSetConfigParameterServiceData(configParameterInput)]]
+                service-data=[[computeSetConfigParameterServiceData(selectedConfigParameter)]]
               >Set Config Parameter</ha-call-service-button>
-              <ha-call-service-button
-                hass='[[hass]]'
-                domain='zwave'
-                service='print_config_parameter'
-                service-data=[[computePrintConfigParameterServiceData(configParameterInput)]]
-              >Print Config Parameter</ha-call-service-button>
             </div>
           </paper-card>
         </div>
@@ -388,19 +374,19 @@ Polymer({
     },
 
     groups: {
-      type: Object,
+      type: Array,
       computed: 'computeSelectedNodeGroups(selectedNode)'
+    },
+
+    config: {
+      type: Array,
+      value: -1
     },
 
     otherGroupNodes: {
       type: Array,
       value: -1,
-      computed: 'computeOtherGroupNodes(selectedGroup)'
-    },
-
-    groupsList: {
-      type: Array,
-      value: -1,
+      computed: 'computeSelectedNodeGroups(selectedNode)'
     },
 
     instances: {
@@ -411,8 +397,7 @@ Polymer({
     selectedNode: {
       type: Number,
       value: -1,
-      observers: ['computeIsNodeSelected',
-        'computeNodeNameServiceData']
+      observer: 'selectedNodeChanged'
     },
 
     selectedTargetNode: {
@@ -425,6 +410,12 @@ Polymer({
       type: Number,
       value: -1,
       observer: 'computeAssocServiceData'
+    },
+
+    selectedConfigParameter: {
+      type: Number,
+      value: -1,
+      observer: 'computeSetConfigParameterServiceData'
     },
 
     selectedInstance: {
@@ -442,22 +433,6 @@ Polymer({
 
     wakeupInput: {
       type: Number,
-    },
-
-    configParameterInput: { // TODO make api to get all config parameters and its values
-      type: Number,
-      observer: 'computePrintConfigParameterServiceData'
-    },
-
-    configParameterValueInput: {
-      type: Number,
-      observer: 'computeSetConfigParameterServiceData'
-    },
-
-    configParameterSizeInput: {
-      type: Number,
-      value: 2,
-      observer: 'computeSetConfigParameterServiceData'
     },
 
     newNodeNameInput: {
@@ -529,17 +504,27 @@ Polymer({
       Object.entries(groups).forEach(([key, value]) => {
         groupData.push({ key, value });
       });
-      this.groups = Object.entries(groups);
-      console.log(groupData);
-      console.log(this.nodes);
     });
     return groupData;
+  },
+
+  selectedNodeChanged: function (selectedNode) {
+    if (selectedNode === -1) return;
+//    console.log('selectedNodeChanged', selectedNode);
+    var configData = [];
+    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (configs) {
+      Object.entries(configs).forEach(([key, value]) => {
+        configData.push({ key, value });
+      });
+      this.config = configData;
+      console.log(this.config);
+    }.bind(this));
   },
 
   computeOtherGroupNodes: function (selectedGroup) {
     if (selectedGroup === -1) return -1;
     var associations = Object.values(this.groups[selectedGroup].value.associations);
-    console.log(associations);
+//    console.log(associations);
     if (0 in associations) return ['None'];
     return Object.values(this.groups[selectedGroup].value.associations);
   },
@@ -569,12 +554,19 @@ Polymer({
     return (stateObj.key + ': ' + stateObj.value.label);
   },
 
+  computeSelectCaptionConfigParameter: function (stateObj) {
+    console.log('computecap: ', this.config);
+    console.log(stateObj.value.label);
+    return (stateObj.key + ': ' + stateObj.value.label);
+  },
+
   computeIsNodeSelected: function () {
+//    console.log('node', this.config);
     return (!this.nodes || this.selectedNode === -1);
   },
 
   computeIsGroupSelected: function (selectedGroup) {
-    console.log(!selectedGroup === -1);
+//    console.log(!selectedGroup === -1);
     return (!this.nodes || this.selectedNode === -1 || selectedGroup === -1);
   },
 
@@ -615,11 +607,11 @@ Polymer({
 
   computeAssocServiceData: function (type) {
     if (this.selectedTargetNode === -1 || this.selectedGroup === -1) return -1;
-    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-      association: type,
-      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-      group: this.groups[this.selectedGroup].key,
-      instance: this.instances[this.selectedInstance] }));
+//    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+//      association: type,
+//      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
+//      group: this.groups[this.selectedGroup].key,
+//      instance: this.instances[this.selectedInstance] }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
@@ -647,14 +639,14 @@ Polymer({
     return { entity_id: this.entities[selectedEntity].entity_id };
   },
 
-  computeSetConfigParameterServiceData: function (configParameterInput) {
-    if (this.selectedNode === -1) return -1;
-//    console.log('Set config', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-//      parameter: configParameterInput,
-//      value: this.configParameterValueInput,
-//      size: this.configParameterSizeInput }));
+  computeSetConfigParameterServiceData: function (selectedConfigParameter) {
+    if (this.selectedNode === -1 || selectedConfigParameter === -1) return -1;
+    console.log('Set config', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+      parameter: this.config[selectedConfigParameter],
+      value: this.configParameterValueInput,
+      size: this.configParameterSizeInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: configParameterInput,
+      parameter: this.config[selectedConfigParameter],
       value: this.configParameterValueInput,
       size: this.configParameterSizeInput };
   },
