@@ -312,6 +312,8 @@
               </paper-listbox>
             </paper-dropdown-menu>
             </div>
+
+
             <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
@@ -380,7 +382,9 @@ Polymer({
 
     config: {
       type: Array,
-      value: -1
+      value: function () {
+        return [];
+      }
     },
 
     otherGroupNodes: {
