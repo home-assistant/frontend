@@ -71,7 +71,7 @@
       <div class='color_temp'>
         <ha-labeled-slider
           caption='Color Temperature' icon='mdi:thermometer'
-          min='154' max='500'
+          min='[[stateObj.attributes.min_mireds]]' max='[[stateObj.attributes.max_mireds]]'
           value='{{ctSliderValue}}'
           on-change='ctSliderChanged'></ha-labeled-slider>
       </div>
@@ -86,7 +86,7 @@
       <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>
       </ha-color-picker>
 
-      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color"></ha-attributes>
+      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
     </div>
   </template>
 </dom-module>
