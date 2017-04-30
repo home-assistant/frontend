@@ -71,7 +71,7 @@
       <div class='color_temp'>
         <ha-labeled-slider
           caption='Color Temperature' icon='mdi:thermometer'
-          min='{{stateObj.attributes.min_mireds}}' max='{{stateObj.attributes.max_mireds}}'
+          min='[[stateObj.attributes.min_mireds]]' max='[[stateObj.attributes.max_mireds]]'
           value='{{ctSliderValue}}'
           on-change='ctSliderChanged'></ha-labeled-slider>
       </div>
