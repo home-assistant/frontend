@@ -234,6 +234,14 @@ Polymer({
     },
   },
 
+  listeners: {
+    'hass-api-called': 'apiCalled',
+  },
+
+  apiCalled: function (ev) {
+    this.addonChanged(this.addon);
+  },
+
   addonChanged: function (addon) {
     if (!this.hass) {
       setTimeout(function () { this.addonChanged(addon); }.bind(this), 0);
@@ -242,10 +250,9 @@ Polymer({
 
     this.hass.callApi('get', 'hassio/addons/' + addon + '/info')
       .then(function (info) {
-        // Error if addon not installed.
-        if (info.result !== 'error') {
-          this.addonState = info.data;
-        }
+        this.addonState = info.data;
+      }.bind(this), function (info) {
+        this.addonState = null;
       }.bind(this));
     this.refreshLogs();
   },
