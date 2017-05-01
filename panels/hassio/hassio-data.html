@@ -25,6 +25,10 @@ Polymer({
   },
 
   attached: function () {
+    this.refresh();
+  },
+
+  refresh: function () {
     this.fetchSupervisorInfo();
     this.fetchHostInfo();
     this.fetchHassInfo();

@@ -12,6 +12,7 @@
   </style>
   <template>
     <hassio-data
+      id='data'
       hass='[[hass]]'
       supervisor='{{supervisorInfo}}'
       homeassistant='{{hassInfo}}'
@@ -100,6 +101,11 @@ Polymer({
 
   listeners: {
     'hassio-select-addon': 'addonSelected',
+    'hass-api-called': 'apiCalled',
+  },
+
+  apiCalled: function (ev) {
+    this.$.data.refresh();
   },
 
   computeIsLoaded: function (supervisorInfo, hostInfo, hassInfo, forceLoading) {
