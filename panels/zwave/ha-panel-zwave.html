@@ -313,6 +313,45 @@
             </paper-dropdown-menu>
             </div>
 
+            <template is='dom-if' if="[[isConfigParameterSelected(selectedConfigParameter, 'List')]]">
+            <div class='device-picker'>
+            <paper-dropdown-menu label="Config value" class='flex' placeholder='{{loadedConfigValue}}'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedConfigValue}}'>
+                <template is='dom-repeat' items='[[selectedConfigParameterValues]]' as='state'>
+                  <paper-item>[[state]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            </div>
+            </template>
+
+            <template is='dom-if' if="[[isConfigParameterSelected(selectedConfigParameter, 'Byte Short Int')]]">
+              <div class='card-actions'>
+                <paper-input
+                  label='{{selectedConfigParameterNumValues}}'
+                  type=number
+                  value='{{selectedConfigValue}}'
+                  max='{{configParameterMax}}'
+                  min='{{configParameterMin}}'>
+                </paper-input>
+              </div>
+            </template>
+
+            <template is='dom-if' if="[[isConfigParameterSelected(selectedConfigParameter, 'Bool Button')]]">
+            <div class='device-picker'>
+            <paper-dropdown-menu label="Config value" class='flex' placeholder='{{loadedConfigValue}}'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedConfigValue}}'>
+                <template is='dom-repeat' items='[[selectedConfigParameterValues]]' as='state'>
+                  <paper-item>[[state]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            </div>
+            </template>
 
             <div class='card-actions'>
               <ha-call-service-button
@@ -419,7 +458,45 @@ Polymer({
     selectedConfigParameter: {
       type: Number,
       value: -1,
+      observer: 'selectedConfigParameterChanged'
+    },
+
+    configParameterMax: {
+      type: Number,
+      value: -1
+    },
+
+    configParameterMin: {
+      type: Number,
+      value: -1
+    },
+
+    selectedConfigParameterType: {
+      type: String,
+      value: ''
+    },
+
+    selectedConfigValue: {
+      type: Number,
+      value: -1,
       observer: 'computeSetConfigParameterServiceData'
+    },
+
+    selectedConfigParameterValues: {
+      type: Array,
+      value: function () {
+        return [];
+      }
+    },
+
+    selectedConfigParameterNumValues: {
+      type: String,
+      value: ''
+    },
+
+    loadedConfigValue: {
+      type: Number,
+      value: -1
     },
 
     selectedInstance: {
@@ -523,6 +600,8 @@ Polymer({
       this.config = configData;
       console.log(this.config);
     }.bind(this));
+    this.selectedConfigParameter = -1;
+    this.selectedConfigParameterValue = -1;
   },
 
   computeOtherGroupNodes: function (selectedGroup) {
@@ -542,6 +621,48 @@ Polymer({
     });
 //    console.log('Entity attributes: ', att);
     return att.sort();
+  },
+
+  selectedConfigParameterChanged: function (selectedConfigParameter) {
+    if (selectedConfigParameter === -1) return;
+    console.log('selectedConfigParameterChanged');
+    console.log('parametervalue ', this.config[selectedConfigParameter].value.data_items, this.selectedConfigParameterValues);
+    console.log('parametertype ', this.config[selectedConfigParameter].value.type);
+    this.selectedConfigValue = -1;
+    this.loadedConfigValue = -1;
+    this.selectedConfigParameterValues = [];
+    this.selectedConfigParameterType = this.config[selectedConfigParameter].value.type;
+    this.configParameterMax = this.config[selectedConfigParameter].value.max;
+    this.configParameterMin = this.config[selectedConfigParameter].value.min;
+    this.loadedConfigValue = this.config[selectedConfigParameter].value.data;
+    if (('Short Byte Int').includes(this.selectedConfigParameterType)) {
+      this.selectedConfigParameterNumValues = this.config[selectedConfigParameter].value.data_items;
+      this.selectedConfigValue = this.loadedConfigValue;
+    }
+    if (('Bool Button').includes(this.selectedConfigParameterType)) {
+      this.selectedConfigParameterValues = ['True', 'False'];
+      if (this.config[selectedConfigParameter].value.data) {
+        this.loadedConfigValue = 'True';
+      } else this.loadedConfigValue = 'False';
+    }
+    if (('List').includes(this.selectedConfigParameterType)) {
+      this.selectedConfigParameterValues = this.config[selectedConfigParameter].value.data_items;
+    }
+    console.log('selectedvalue', this.selectedConfigValue);
+    console.log('loadedvalue ', this.loadedConfigValue);
+    console.log(this.selectedConfigParameterValues);
+    console.log(this.selectedConfigParameterType);
+  },
+
+  isConfigParameterSelected: function (selectedConfigParameter, type) {
+    if (selectedConfigParameter === -1) return false;
+    console.log('isConfigParameterSelected');
+    console.log('1', type, '=', this.config[selectedConfigParameter].value.type === type, this.selectedConfigParameterValues);
+    if (this.config[selectedConfigParameter].value.type === type) return true;
+    console.log('2', type, '=', type.includes(this.config[selectedConfigParameter].value.type), this.selectedConfigParameterValues);
+    if (type.includes(this.config[selectedConfigParameter].value.type)) return true;
+    console.log('4 None', this.selectedConfigParameterValues);
+    return false;
   },
 
   computeSelectCaption: function (stateObj) {
@@ -643,25 +764,27 @@ Polymer({
     return { entity_id: this.entities[selectedEntity].entity_id };
   },
 
-  computeSetConfigParameterServiceData: function (selectedConfigParameter) {
-    if (this.selectedNode === -1 || selectedConfigParameter === -1) return -1;
+  computeSetConfigParameterServiceData: function () {
+    if (this.selectedNode === -1 || this.selectedConfigParameter === -1) return -1;
+    var valueData = null;
+    if (('Short Byte Int').includes(this.selectedConfigParameterType)) {
+      console.log('shortbyteint', this.selectedValue);
+      valueData = this.selectedConfigValue;
+    } if (('Bool Button').includes(this.selectedConfigParameterType)) {
+      console.log('boolbutton', this.selectedConfigParameterValues[this.selectedConfigValue]);
+      valueData = this.selectedConfigParameterValues[this.selectedConfigValue];
+    } if (this.selectedConfigParameterType === 'List') {
+      console.log('list', this.config[this.selectedConfigParameter].value.data_items[this.selectedConfigValue]);
+      valueData = this.config[this.selectedConfigParameter].value.data_items[this.selectedConfigValue];
+    }
     console.log('Set config', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: this.config[selectedConfigParameter],
-      value: this.configParameterValueInput,
+      parameter: this.config[this.selectedConfigParameter].key,
+      value: valueData,
       size: this.configParameterSizeInput }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: this.config[selectedConfigParameter],
-      value: this.configParameterValueInput,
+      parameter: this.config[this.selectedConfigParameter],
+      value: valueData,
       size: this.configParameterSizeInput };
   },
-
-
-  computePrintConfigParameterServiceData: function (configParameterInput) {
-    if (this.selectedNode === -1) return -1;
-//    console.log('PrintConfig', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-//      parameter: configParameterInput }));
-    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: configParameterInput };
-  }
 });
 </script>
