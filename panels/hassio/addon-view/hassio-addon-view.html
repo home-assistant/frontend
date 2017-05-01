@@ -2,15 +2,13 @@
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
-<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
 <link rel="import" href="../../../src/components/ha-menu-button.html">
+
+<link rel="import" href="./hassio-addon-info.html">
+<link rel="import" href="./hassio-addon-state.html">
+<link rel="import" href="./hassio-addon-options.html">
+<link rel="import" href="./hassio-addon-logs.html">
 
 <dom-module id="hassio-addon-view">
   <template>
@@ -18,11 +16,9 @@
       paper-card {
         display: block;
       }
-      .controls paper-card {
+      .controls paper-card,
+      hassio-addon-options {
         margin-bottom: 24px;
-      }
-      iron-autogrow-textarea {
-        width: 100%;
       }
       .content {
         padding: 24px 0 32px;
@@ -53,112 +49,31 @@
 
       <div class='content'>
         <div class='status'>
-          <paper-card heading='Info'>
-            <div class="card-content">
-              <div>[[addonInfo.description]]</div>
-              <table class='info'>
-                <tr>
-                  <td>Installed</td>
-                  <td>[[computeInstallStatus(addonInfo)]]</td>
-                </tr>
-                <tr>
-                  <td>Version</td>
-                  <td>[[addonInfo.version]]</td>
-                </tr>
-                <tr>
-                  <td>Dedicated</td>
-                  <td>[[addonInfo.dedicated]]</td>
-                </tr>
-              </table>
-            </div>
-            <template is='dom-if' if='[[!addonState]]'>
-              <div class="card-actions">
-                <ha-call-api-button
-                  hass='[[hass]]'
-                  path="[[pathInstall(addon)]]"
-                >Install</ha-call-api-button>
-              </div>
-            </template>
-          </paper-card>
+          <hassio-addon-info
+            hass='[[hass]]'
+            addon-info='[[addonInfo]]'
+          ></hassio-addon-info>
 
-          <paper-card heading='Installed'>
-            <template is='dom-if' if='[[!addonState]]'>
-              <div class="card-content">
-                <div>Add-on is not installed.</div>
-              </div>
-            </template>
-
-            <template is='dom-if' if='[[addonState]]'>
-              <div class="card-content">
-                <table class='info'>
-                  <tr>
-                    <td>Version</td>
-                    <td>[[addonState.version]]</td>
-                  </tr>
-                  <tr>
-                    <td>State</td>
-                    <td>[[addonState.state]]</td>
-                  </tr>
-                  <tr>
-                    <td>Boot</td>
-                    <td>[[addonState.boot]]</td>
-                  </tr>
-                </table>
-              </div>
-              <div class="card-actions">
-                <template is='dom-if' if='[[!isRunning]]'>
-                  <ha-call-api-button
-                    hass='[[hass]]'
-                    path="[[pathStart(addon)]]"
-                  >Start</ha-call-api-button>
-                </template>
-                <template is='dom-if' if='[[computeUpdateAvailable(addonInfo)]]'>
-                  <ha-call-api-button
-                    hass='[[hass]]'
-                    path="[[pathUpdate(addon)]]"
-                  >Update</ha-call-api-button>
-                </template>
-                <template is='dom-if' if='[[isRunning]]'>
-                  <ha-call-api-button
-                    class='warning'
-                    hass='[[hass]]'
-                    path="[[pathStop(addon)]]"
-                  >Stop</ha-call-api-button>
-                </template>
-                <ha-call-api-button
-                  class='warning'
-                  hass='[[hass]]'
-                  path="[[pathUninstall(addon)]]"
-                >Uninstall</ha-call-api-button>
-              </div>
-            </template>
-          </paper-card>
+          <hassio-addon-state
+            hass='[[hass]]'
+            addon='[[addon]]'
+            addon-info='[[addonInfo]]'
+            addon-state='[[addonState]]'
+          ></hassio-addon-state>
         </div>
 
         <template is='dom-if' if='[[addonState]]'>
           <div class='controls'>
-            <paper-card heading='Options'>
-              <div class="card-content">
-                <iron-autogrow-textarea value="{{options}}"></iron-autogrow-textarea>
-              </div>
-              <div class="card-actions">
-                <ha-call-api-button
-                  hass='[[hass]]'
-                  disabled='[[!optionsParsed]]'
-                  data='[[computeOptionsData(optionsParsed)]]'
-                  path="[[pathOptions(addon)]]"
-                >Save</ha-call-api-button>
-              </div>
-            </paper-card>
+            <hassio-addon-options
+              hass='[[hass]]'
+              addon='[[addon]]'
+              addon-state='[[addonState]]'
+            ></hassio-addon-options>
 
-            <paper-card heading='Logs'>
-              <div class="card-content">
-                <pre>[[addonLogs]]</pre>
-              </div>
-              <div class="card-actions">
-                <paper-button on-tap='refreshLogs'>Refresh</paper-button>
-              </div>
-            </paper-card>
+            <hassio-addon-logs
+              hass='[[hass]]'
+              addon='[[addon]]'
+            ></hassio-addon-logs>
           </div>
         </template>
       </div>
@@ -189,27 +104,8 @@ Polymer({
       observer: 'addonChanged',
     },
 
-    options: {
-      type: String,
-      value: '',
-    },
-
-    optionsParsed: {
-      type: Object,
-      computed: 'parseOptions(options)',
-    },
-
     supervisorInfo: {
       type: Object,
-    },
-
-    hostInfo: {
-      type: Object,
-    },
-
-    isRunning: {
-      type: Boolean,
-      computed: 'computeIsRunning(addonState)',
     },
 
     addonInfo: {
@@ -220,7 +116,6 @@ Polymer({
     addonState: {
       type: Object,
       value: null,
-      observer: 'addonStateChanged',
     },
 
     addonLogs: {
@@ -249,18 +144,6 @@ Polymer({
       }.bind(this), function () {
         this.addonState = null;
       }.bind(this));
-    this.refreshLogs();
-  },
-
-  refreshLogs: function () {
-    this.hass.callApi('get', 'hassio/addons/' + this.addon + '/logs')
-      .then(function (info) {
-        this.addonLogs = info;
-      }.bind(this));
-  },
-
-  addonStateChanged: function (addonState) {
-    this.options = addonState ? JSON.stringify(addonState.options, null, 2) : '';
   },
 
   computeAddonInfo: function (supervisorInfo, addon) {
@@ -273,58 +156,8 @@ Polymer({
     return null;
   },
 
-  computeIsRunning: function (addonState) {
-    return addonState && addonState.state === 'started';
-  },
-
-  computeInstallStatus(addon) {
-    return addon.installed || 'Not installed';
-  },
-
-  computeUpdateAvailable: function (data) {
-    return data.version !== data.last_version;
-  },
-
-  parseOptions: function (options) {
-    try {
-      return JSON.parse(options);
-    } catch (err) {
-      return null;
-    }
-  },
-
-  computeOptionsData: function (optionsParsed) {
-    return {
-      options: optionsParsed,
-    };
-  },
-
   backTapped: function () {
     this.fire('hassio-select-addon', { addon: null });
-  },
-
-  pathStart: function (addon) {
-    return 'hassio/addons/' + addon + '/start';
-  },
-
-  pathStop: function (addon) {
-    return 'hassio/addons/' + addon + '/stop';
-  },
-
-  pathInstall: function (addon) {
-    return 'hassio/addons/' + addon + '/install';
-  },
-
-  pathUninstall: function (addon) {
-    return 'hassio/addons/' + addon + '/uninstall';
-  },
-
-  pathUpdate: function (addon) {
-    return 'hassio/addons/' + addon + '/update';
-  },
-
-  pathOptions: function (addon) {
-    return 'hassio/addons/' + addon + '/options';
   },
 });
 </script>
