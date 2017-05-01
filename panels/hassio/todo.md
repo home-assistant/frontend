@@ -1,6 +1,3 @@
-General:
- - Refresh data after API call
-
 Host:
  - Use feature detection
 
