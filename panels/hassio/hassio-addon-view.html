@@ -238,7 +238,7 @@ Polymer({
     'hass-api-called': 'apiCalled',
   },
 
-  apiCalled: function (ev) {
+  apiCalled: function () {
     this.addonChanged(this.addon);
   },
 
@@ -251,7 +251,7 @@ Polymer({
     this.hass.callApi('get', 'hassio/addons/' + addon + '/info')
       .then(function (info) {
         this.addonState = info.data;
-      }.bind(this), function (info) {
+      }.bind(this), function () {
         this.addonState = null;
       }.bind(this));
     this.refreshLogs();
