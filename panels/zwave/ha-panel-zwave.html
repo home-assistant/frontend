@@ -338,7 +338,6 @@
                 </paper-input>
               </div>
             </template>
-
             <template is='dom-if' if="[[isConfigParameterSelected(selectedConfigParameter, 'Bool Button')]]">
             <div class='device-picker'>
             <paper-dropdown-menu label="Config value" class='flex' placeholder='{{loadedConfigValue}}'>
@@ -352,7 +351,6 @@
             </paper-dropdown-menu>
             </div>
             </template>
-
             <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
@@ -364,6 +362,14 @@
           </paper-card>
         </div>
         </template>
+
+        <paper-card heading='OZW Log'>
+             <pre>[[ozwLogs]]</pre>
+          <div class="card-actions">
+            <paper-icon-button icon='mdi:refresh' on-tap='refreshLog'></paper-icon-button>
+          </div>
+        </paper-card>
+
      </app-header-layout>
   </template>
 </dom-module>
@@ -519,6 +525,11 @@ Polymer({
     newNodeNameInput: {
       type: String,
     },
+
+    ozwLogs: {
+      type: String,
+      value: '',
+    },
   },
 
   computeNodes: function (hass) {
@@ -663,6 +674,14 @@ Polymer({
     if (type.includes(this.config[selectedConfigParameter].value.type)) return true;
     console.log('4 None', this.selectedConfigParameterValues);
     return false;
+  },
+
+  refreshLog: function () {
+    this.ozwLogs = 'Loading ozw log...';
+    this.hass.callApi('GET', 'zwave/ozwlog')
+      .then(function (info) {
+        this.ozwLogs = info;
+      }.bind(this));
   },
 
   computeSelectCaption: function (stateObj) {
