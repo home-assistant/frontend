@@ -17,17 +17,15 @@
       }
     </style>
     <paper-card heading="Installed Addons">
-      <div class="card-content">
-        <template is='dom-repeat' items='[[data]]' as='addon'>
-          <paper-item>
-            <paper-item-body two-line on-tap='addonTapped'>
-              <div>[[addon.name]]</div>
-              <div secondary>[[addon.description]]</div>
-            </paper-item-body>
-            [[computeInstallStatus(addon)]]
-          </paper-item>
-        </template>
-      </div>
+      <template is='dom-repeat' items='[[data]]' as='addon'>
+        <paper-item>
+          <paper-item-body two-line on-tap='addonTapped'>
+            <div>[[addon.name]]</div>
+            <div secondary>[[addon.description]]</div>
+          </paper-item-body>
+          [[addon.installed]]
+        </paper-item>
+      </template>
     </paper-card>
   </template>
 </dom-module>
@@ -54,10 +52,6 @@ Polymer({
       type: Object,
       value: [],
     },
-  },
-
-  computeInstallStatus(addon) {
-    return addon.installed || 'Not installed';
   },
 
   addonTapped: function (ev) {
