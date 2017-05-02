@@ -356,7 +356,7 @@
                 hass='[[hass]]'
                 domain='zwave'
                 service='set_config_parameter'
-                service-data=[[computeSetConfigParameterServiceData(selectedConfigParameter)]]
+                service-data=[[computeSetConfigParameterServiceData(selectedConfigValue)]]
               >Set Config Parameter</ha-call-service-button>
             </div>
           </paper-card>
@@ -366,7 +366,7 @@
         <paper-card heading='OZW Log'>
              <pre>[[ozwLogs]]</pre>
           <div class="card-actions">
-            <paper-icon-button icon='mdi:refresh' on-tap='refreshLog'></paper-icon-button>
+            <paper-button on-tap='refreshLog'>Refresh</paper-icon-button>
           </div>
         </paper-card>
         </div>
@@ -784,27 +784,29 @@ Polymer({
     return { entity_id: this.entities[selectedEntity].entity_id };
   },
 
-  computeSetConfigParameterServiceData: function () {
+  computeSetConfigParameterServiceData: function (selectedConfigValue) {
     if (this.selectedNode === -1 || this.selectedConfigParameter === -1) return -1;
+//    console.log('computeSetConfigParameter');
     var valueData = null;
     if (('Short Byte Int').includes(this.selectedConfigParameterType)) {
-//      console.log('shortbyteint', this.selectedValue);
-      valueData = this.selectedConfigValue;
+//      console.log('shortbyteint', selectedConfigValue);
+      valueData = selectedConfigValue;
     } if (('Bool Button').includes(this.selectedConfigParameterType)) {
-//      console.log('boolbutton', this.selectedConfigParameterValues[this.selectedConfigValue]);
-      valueData = this.selectedConfigParameterValues[this.selectedConfigValue];
+//      console.log('boolbutton', this.selectedConfigParameterValues[selectedConfigValue]);
+      valueData = this.selectedConfigParameterValues[selectedConfigValue];
     } if (this.selectedConfigParameterType === 'List') {
-//      console.log('list', this.config[this.selectedConfigParameter].value.data_items[this.selectedConfigValue]);
-      valueData = this.config[this.selectedConfigParameter].value.data_items[this.selectedConfigValue];
+//      console.log('list', this.config[this.selectedConfigParameter].value.data_items[selectedConfigValue]);
+      valueData = selectedConfigValue;
     }
 //    console.log('Set config', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
 //      parameter: this.config[this.selectedConfigParameter].key,
-//      value: valueData,
-//      size: this.configParameterSizeInput }));
+//      value: valueData }));
+//    console.log({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+//      parameter: this.config[this.selectedConfigParameter].key,
+//      value: valueData });
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      parameter: this.config[this.selectedConfigParameter],
-      value: valueData,
-      size: this.configParameterSizeInput };
+      parameter: this.config[this.selectedConfigParameter].key,
+      value: valueData };
   },
 });
 </script>
