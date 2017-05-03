@@ -218,7 +218,8 @@
            </template>
           </template>
         </paper-card>
-      </div>
+        </div>
+<!--Node info card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <paper-card heading='Node Information'>
@@ -235,21 +236,10 @@
           </paper-card>
         </div>
         </template>
+<!--Group card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <paper-card heading='Node group associations'>
-            <div class='device-picker'>
-            <paper-dropdown-menu label="Target nodes" class='flex'>
-              <paper-listbox
-                class="dropdown-content"
-                selected='{{selectedTargetNode}}'>
-                 <template is='dom-repeat' items='[[nodes]]' as='state'>
-                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-            </div>
-          <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
             <!--TODO make api for getting groups and members-->
             <div class='device-picker'>
             <paper-dropdown-menu label="Group" class='flex'>
@@ -261,42 +251,38 @@
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
-            <paper-dropdown-menu label="Instance" class='flex'>
-              <paper-listbox
-                class="dropdown-content"
-                selected='{{selectedInstance}}'>
-                <template is='dom-repeat' items='[[instances]]' as='state'>
-                  <paper-item>[[state]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
             </div>
-            <div class='node-info'>
-              <template is='dom-if' if='[[!computeIsGroupSelected(selectedGroup)]]'>
+
+            <template is='dom-if' if='[[!computeIsGroupSelected(selectedGroup)]]'>
+              <div class='node-info'>
                 <span>Other Nodes in this group:</span>
                 <template is='dom-repeat' items='[[otherGroupNodes]]' as='state'>
                 <span>[[state]]</span>
                 </template>
-              </template>
-            </div>
+              </div>
+              <div class='node-info'>
+                <span>Max Associations:</span>
+                <span>[[maxAssociations]]</span>
+              </div>
             <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
                 domain='zwave'
                 service='change_association'
-                service-data=[[computeAssocServiceData('add')]]
-              >Set Association</ha-call-service-button>
+                service-data='[[computeAssocServiceData(selectedGroup, "add")]]'
+              >Add To Group</ha-call-service-button>
               <ha-call-service-button
                 hass='[[hass]]'
                 domain='zwave'
                 service='change_association'
-                service-data=[[computeAssocServiceData('remove')]]
-              >Remove Association</ha-call-service-button>
+                service-data='[[computeAssocServiceData(selectedGroup, "remove")]]'
+              >Remove From Group</ha-call-service-button>
             </div>
           </template>
           </paper-card>
         </div>
         </template>
+<!--Config card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <!--TODO make api to get all config parameters and its values.-->
@@ -362,11 +348,12 @@
           </paper-card>
         </div>
         </template>
+<!--Ozw log-->
         <div class='content'>
         <paper-card heading='OZW Log'>
              <pre>[[ozwLogs]]</pre>
           <div class="card-actions">
-            <paper-button on-tap='refreshLog'>Refresh</paper-icon-button>
+            <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
           </div>
         </paper-card>
         </div>
@@ -392,55 +379,9 @@ Polymer({
       value: false,
     },
 
-    selectedNodeAttrs: {
-      type: Array,
-      computed: 'computeSelectedNodeAttrs(selectedNode)'
-    },
-
-    selectedEntityAttrs: {
-      type: Array,
-      computed: 'computeSelectedEntityAttrs(selectedEntity)'
-    },
-
     nodes: {
       type: Array,
       computed: 'computeNodes(hass)'
-    },
-
-    entities: {
-      type: Array,
-      computed: 'computeEntities(selectedNode)',
-    },
-
-    nodeInfoActive: {
-      type: Boolean,
-    },
-
-    entityInfoActive: {
-      type: Boolean,
-    },
-
-    groups: {
-      type: Array,
-      computed: 'computeSelectedNodeGroups(selectedNode)'
-    },
-
-    config: {
-      type: Array,
-      value: function () {
-        return [];
-      }
-    },
-
-    otherGroupNodes: {
-      type: Array,
-      value: -1,
-      computed: 'computeOtherGroupNodes(selectedGroup)'
-    },
-
-    instances: {
-      type: Array,
-      value: [0, 1, 2, 3, 4, 5, 6] // TODO Make API to get available instances
     },
 
     selectedNode: {
@@ -449,16 +390,62 @@ Polymer({
       observer: 'selectedNodeChanged'
     },
 
-    selectedTargetNode: {
+    selectedNodeAttrs: {
+      type: Array,
+      computed: 'computeSelectedNodeAttrs(selectedNode)'
+    },
+
+    nodeInfoActive: {
+      type: Boolean,
+    },
+
+    entities: {
+      type: Array,
+      computed: 'computeEntities(selectedNode)',
+    },
+
+    entityInfoActive: {
+      type: Boolean,
+    },
+
+    selectedEntity: {
       type: Number,
       value: -1,
-      observer: 'computeAssocServiceData'
+      observers: ['computeIsEntitySelected',
+        'computeRefreshEntityServiceData']
+    },
+
+    selectedEntityAttrs: {
+      type: Array,
+      computed: 'computeSelectedEntityAttrs(selectedEntity)'
+    },
+
+    groups: {
+      type: Array,
     },
 
     selectedGroup: {
       type: Number,
       value: -1,
-      observer: 'computeAssocServiceData'
+    },
+
+    otherGroupNodes: {
+      type: Array,
+      value: -1,
+      computed: 'computeOtherGroupNodes(selectedGroup)'
+    },
+
+    maxAssociations: {
+      type: String,
+      value: '',
+      computed: 'computeMaxAssociations(selectedGroup)'
+    },
+
+    config: {
+      type: Array,
+      value: function () {
+        return [];
+      }
     },
 
     selectedConfigParameter: {
@@ -503,19 +490,6 @@ Polymer({
     loadedConfigValue: {
       type: Number,
       value: -1
-    },
-
-    selectedInstance: {
-      type: Number,
-      value: 0,
-      observer: 'computeAssocServiceData'
-    },
-
-    selectedEntity: {
-      type: Number,
-      value: -1,
-      observers: ['computeIsEntitySelected',
-        'computeRefreshEntityServiceData']
     },
 
     wakeupInput: {
@@ -589,16 +563,6 @@ Polymer({
     return att.sort();
   },
 
-  computeSelectedNodeGroups: function (selectedNode) {
-    if (selectedNode === -1 || !this.nodes) return -1;
-    var groupData = [];
-    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
-      Object.entries(groups).forEach(([key, value]) => {
-        groupData.push({ key, value });
-      });
-    });
-    return groupData;
-  },
 
   selectedNodeChanged: function (selectedNode) {
     if (selectedNode === -1) return;
@@ -611,17 +575,34 @@ Polymer({
       this.config = configData;
 //      console.log(this.config);
     }.bind(this));
+    var groupData = [];
+    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
+      Object.entries(groups).forEach(([key, value]) => {
+        groupData.push({ key, value });
+      });
+      this.groups = groupData;
+      console.log(this.groups);
+    }.bind(this));
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
+  },
+
+  computeMaxAssociations: function (selectedGroup) {
+    if (selectedGroup === -1) return -1;
+    var maxAssociations = this.groups[selectedGroup].value.max_associations;
+    console.log(maxAssociations);
+//    console.log(Object.values(this.groups[selectedGroup].value.associations));
+    if (!maxAssociations) return ['None'];
+    return maxAssociations;
   },
 
   computeOtherGroupNodes: function (selectedGroup) {
     if (selectedGroup === -1) return -1;
     var associations = Object.values(this.groups[selectedGroup].value.associations);
-//    console.log(associations);
+    console.log(associations);
 //    console.log(Object.values(this.groups[selectedGroup].value.associations));
-    if (0 in associations) return ['None'];
-    return Object.values(this.groups[selectedGroup].value.associations);
+    if (!associations.length) return ['None'];
+    return associations;
   },
 
   computeSelectedEntityAttrs: function (selectedEntity) {
@@ -720,10 +701,6 @@ Polymer({
     return (selectedEntity === -1);
   },
 
-  computeIsTargetNodeSelected: function (selectedTargetNode) {
-    return (!this.nodes || selectedTargetNode === -1);
-  },
-
   computeNodeServiceData: function (selectedNode) {
     return { node_id: this.nodes[selectedNode].attributes.node_id };
   },
@@ -750,18 +727,17 @@ Polymer({
     return name;
   },
 
-  computeAssocServiceData: function (type) {
-    if (this.selectedTargetNode === -1 || this.selectedGroup === -1) return -1;
-//    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-//      association: type,
-//      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-//      group: this.groups[this.selectedGroup].key,
-//      instance: this.instances[this.selectedInstance] }));
+  computeAssocServiceData: function (selectedGroup, type) {
+    if (!this.groups === -1 || selectedGroup === -1 || this.selectedNode === -1) return -1;
+    console.log('type', type);
+    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+      association: type,
+      target_node_id: this.nodes[this.selectedNode].attributes.node_id,
+      group: this.groups[selectedGroup].key }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
-      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-      group: this.groups[this.selectedGroup],
-      instance: this.instances[this.selectedInstance] };
+      target_node_id: this.nodes[this.selectedNode].attributes.node_id,
+      group: this.groups[selectedGroup] };
   },
 
   computeWakeupServiceData: function (wakeupInput) {
