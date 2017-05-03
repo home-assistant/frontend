@@ -1,0 +1,69 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../components/entity/state-info.html">
+
+<dom-module id="state-card-binary_sensor">
+    <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      ha-entity-toggle {
+        margin-left: 16px;
+      }
+    </style>
+
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+      <div class='binary_state'>[[computeStateDisplay(stateObj)]]</div>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-binary_sensor',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+  computeStateDisplay: function (stateObj) {
+    var state = window.hassUtil.computeStateState(stateObj);
+    switch (stateObj.attributes.device_class) {
+      case 'moisture':
+        return (state == 'off') ? 'dry' : 'wet';
+      case 'gas':
+      case 'motion':
+      case 'occupancy':
+      case 'smoke':
+      case 'sound':
+      case 'vibration':
+        return (state == 'off') ? 'clear' : 'detected';
+      case 'opening':
+        return (state == 'off') ? 'closed' : 'open';
+      case 'safety':
+        return (state == 'off') ? 'safe' : 'unsafe';
+      case 'cold':
+      case 'connectivity':
+      case 'heat':
+      case 'light':
+      case 'moving':
+      case 'power':
+      default:
+        return state;
+    }
+  },
+});
+</script>
