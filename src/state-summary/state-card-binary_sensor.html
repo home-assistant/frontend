@@ -5,19 +5,23 @@
 <link rel="import" href="../components/entity/state-info.html">
 
 <dom-module id="state-card-binary_sensor">
-    <template>
+  <template>
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
-      ha-entity-toggle {
+      .state {
+        @apply(--paper-font-body1);
+        color: var(--primary-text-color);
+
         margin-left: 16px;
+        text-align: right;
+        line-height: 40px;
       }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='binary_state'>[[computeStateDisplay(stateObj)]]</div>
+      <div class='state'>[[computeStateDisplay(stateObj)]]</div>
     </div>
-
   </template>
 </dom-module>
 
