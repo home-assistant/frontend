@@ -47,18 +47,18 @@ Polymer({
     var state = window.hassUtil.computeStateState(stateObj);
     switch (stateObj.attributes.device_class) {
       case 'moisture':
-        return (state == 'off') ? 'dry' : 'wet';
+        return (state === 'off') ? 'dry' : 'wet';
       case 'gas':
       case 'motion':
       case 'occupancy':
       case 'smoke':
       case 'sound':
       case 'vibration':
-        return (state == 'off') ? 'clear' : 'detected';
+        return (state === 'off') ? 'clear' : 'detected';
       case 'opening':
-        return (state == 'off') ? 'closed' : 'open';
+        return (state === 'off') ? 'closed' : 'open';
       case 'safety':
-        return (state == 'off') ? 'safe' : 'unsafe';
+        return (state === 'off') ? 'safe' : 'unsafe';
       case 'cold':
       case 'connectivity':
       case 'heat':
