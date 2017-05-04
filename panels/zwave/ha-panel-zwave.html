@@ -240,6 +240,18 @@
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
         <div class='content'>
           <paper-card heading='Node group associations'>
+            <div class='device-picker'>
+            <paper-dropdown-menu label="Target nodes" class='flex'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedTargetNode}}'>
+                 <template is='dom-repeat' items='[[nodes]]' as='state'>
+                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            </div>
+          <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
             <!--TODO make api for getting groups and members-->
             <div class='device-picker'>
             <paper-dropdown-menu label="Group" class='flex'>
@@ -252,7 +264,7 @@
               </paper-listbox>
             </paper-dropdown-menu>
             </div>
-
+            </template>
             <template is='dom-if' if='[[!computeIsGroupSelected(selectedGroup)]]'>
               <div class='node-info'>
                 <span>Other Nodes in this group:</span>
@@ -424,6 +436,11 @@ Polymer({
       type: Array,
     },
 
+    selectedTargetNode: {
+      type: Number,
+      value: -1
+    },
+
     selectedGroup: {
       type: Number,
       value: -1,
@@ -504,6 +521,7 @@ Polymer({
       type: String,
       value: '',
     },
+
   },
 
   computeNodes: function (hass) {
@@ -581,7 +599,15 @@ Polymer({
         groupData.push({ key, value });
       });
       this.groups = groupData;
-      console.log(this.groups);
+//      console.log(this.groups);
+    }.bind(this));
+    var userCodes = [];
+    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
+      Object.entries(usercodes).forEach(([key, value]) => {
+        userCodes.push({ key, value });
+      });
+      this.userCodes = userCodes;
+      console.log(this.userCodes);
     }.bind(this));
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
@@ -691,6 +717,10 @@ Polymer({
     return (!this.nodes || this.selectedNode === -1);
   },
 
+  computeIsTargetNodeSelected: function (selectedTargetNode) {
+    return (!this.nodes || selectedTargetNode === -1);
+  },
+
   computeIsGroupSelected: function (selectedGroup) {
 //    console.log(!selectedGroup === -1);
     return (!this.nodes || this.selectedNode === -1 || selectedGroup === -1);
@@ -732,11 +762,11 @@ Polymer({
     console.log('type', type);
     console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
-      target_node_id: this.nodes[this.selectedNode].attributes.node_id,
+      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
       group: this.groups[selectedGroup].key }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
-      target_node_id: this.nodes[this.selectedNode].attributes.node_id,
+      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
       group: this.groups[selectedGroup] };
   },
 
