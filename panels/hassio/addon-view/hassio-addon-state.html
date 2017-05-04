@@ -108,7 +108,7 @@ Polymer({
   },
 
   computeUpdateAvailable: function (data) {
-    return data && data.version !== data.last_version;
+    return data && !data.detached && data.version !== data.last_version;
   },
 
   pathStart: function (addon) {
