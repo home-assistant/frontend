@@ -686,7 +686,7 @@ Polymer({
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
     this.selectedUserCode = -1;
-    this.selectedUserCodeValue = ''
+    this.selectedUserCodeValue = '';
     this.selectedGroup = -1;
     var configData = [];
     this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (configs) {
