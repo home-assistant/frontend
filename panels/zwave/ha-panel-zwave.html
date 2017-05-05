@@ -36,7 +36,7 @@
       }
 
       paper-button[toggles][active] {
-        background: gray;
+        background: lightgray;
       }
 
       .card-actions.warning ha-call-service-button {
@@ -210,7 +210,7 @@
            <template is='dom-if' if='[[!computeIsEntitySelected(selectedEntity)]]'>
            <div class='content'>
              <div class='card-actions'>
-               <paper-button toggles raised noink active={{entityInfoActive}}>Entity Info</paper-button>
+               <paper-button toggles raised noink active={{entityInfoActive}}>Entity Attributes</paper-button>
              </div>
              <template is='dom-if' if={{entityInfoActive}}>
                <template is='dom-repeat' items='[[selectedEntityAttrs]]' as='state'>
@@ -612,6 +612,16 @@ Polymer({
     },
   },
 
+  listeners: {
+    'hass-service-called': 'serviceCalled',
+  },
+
+  serviceCalled: function (ev) {
+    if (ev.detail.success) {
+      this.selectedNodeChanged(this.selectedNode);
+    }
+  },
+
   computeNodes: function (hass) {
     return Object.keys(hass.states)
       .map(function (key) { return hass.states[key]; })
@@ -672,10 +682,11 @@ Polymer({
 
   selectedNodeChanged: function (selectedNode) {
     if (selectedNode === -1) return;
-//    console.log('selectedNodeChanged', selectedNode);
+    console.log('selectedNodeChanged', selectedNode);
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
     this.selectedUserCode = -1;
+    this.selectedUserCodeValue = ''
     this.selectedGroup = -1;
     var configData = [];
     this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (configs) {
@@ -814,8 +825,8 @@ Polymer({
   },
 
   computeSelectCaption: function (stateObj) {
-    return ' (Node ID: ' + stateObj.attributes.node_id + ') ' +
-      window.hassUtil.computeStateName(stateObj) + ' (' +
+    return window.hassUtil.computeStateName(stateObj) + ' (Node:' +
+      stateObj.attributes.node_id + ' ' +
       stateObj.attributes.query_stage + ')';
   },
 
