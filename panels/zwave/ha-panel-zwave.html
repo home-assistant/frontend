@@ -24,6 +24,11 @@
         text-transform: capitalize;
       }
 
+      .help-text {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
       paper-card {
         display: block;
         margin: 0 auto;
@@ -264,15 +269,15 @@
               </paper-listbox>
             </paper-dropdown-menu>
             </div>
-            </template>
+          </template>
             <template is='dom-if' if='[[!computeIsGroupSelected(selectedGroup)]]'>
-              <div class='node-info'>
+              <div class='help-text'>
                 <span>Other Nodes in this group:</span>
                 <template is='dom-repeat' items='[[otherGroupNodes]]' as='state'>
                 <span>[[state]]</span>
                 </template>
               </div>
-              <div class='node-info'>
+              <div class='help-text'>
                 <span>Max Associations:</span>
                 <span>[[maxAssociations]]</span>
               </div>
@@ -349,6 +354,9 @@
             </paper-dropdown-menu>
             </div>
             </template>
+            <div class='help-text'>
+              <span>[[configValueHelpText]]</span>
+            </div>
             <div class='card-actions'>
               <ha-call-service-button
                 hass='[[hass]]'
@@ -360,15 +368,62 @@
           </paper-card>
         </div>
         </template>
+<!--User Codes-->
+        <template is='dom-if' if='{{hasNodeUserCodes}}'>
+        <div class='content'>
+          <paper-card heading='Node user codes'>
+            <div class='device-picker'>
+            <paper-dropdown-menu label="Code slot" class='flex'>
+              <paper-listbox
+                class="dropdown-content"
+                selected='{{selectedUserCode}}'>
+                <template is='dom-repeat' items='[[userCodes]]' as='state'>
+                  <paper-item>[[computeSelectCaptionUserCodes(state)]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            </div>
+
+            <template is='dom-if' if="[[isUserCodeSelected(selectedUserCode)]]">
+              <div class='card-actions'>
+                <paper-input
+                  label='User code'
+                  type=number
+                  value='{{selectedUserCodeValue}}'
+                  maxlength='{{userCodeMaxLen}}'
+                  min='0'>
+                </paper-input>
+              </div>
+              <div class='card-actions'>
+                <ha-call-service-button
+                  hass='[[hass]]'
+                  domain='lock'
+                  service='set_usercode'
+                  service-data='[[computeUserCodeServiceData(selectedUserCodeValue, "Add")]]'
+                >Set Usercode</ha-call-service-button>
+                <ha-call-service-button
+                  hass='[[hass]]'
+                  domain='lock'
+                  service='clear_usercode'
+                  service-data='[[computeUserCodeServiceData(selectedUserCode, "Delete")]]'
+                >Delete Usercode</ha-call-service-button>
+              </div>
+            </template>
+          </paper-card>
+        </div>
+        </template>
 <!--Ozw log-->
         <div class='content'>
         <paper-card heading='OZW Log'>
-             <pre>[[ozwLogs]]</pre>
+          <div class='help-text'>
+            <pre>[[ozwLogs]]</pre>
+          </div>
           <div class="card-actions">
             <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
           </div>
         </paper-card>
         </div>
+
      </app-header-layout>
   </template>
 </dom-module>
@@ -481,6 +536,12 @@ Polymer({
       value: -1
     },
 
+    configValueHelpText: {
+      type: String,
+      value: '',
+      computed: 'computeConfigValueHelp(selectedConfigParameter)'
+    },
+
     selectedConfigParameterType: {
       type: String,
       value: ''
@@ -517,11 +578,38 @@ Polymer({
       type: String,
     },
 
+    userCodes: {
+      type: Array,
+      value: function () {
+        return [];
+      },
+    },
+
+    userCodeMaxLen: {
+      type: Number,
+      value: 4
+    },
+
+    hasNodeUserCodes: {
+      type: Boolean,
+      value: false
+    },
+
+    selectedUserCode: {
+      type: Number,
+      value: -1,
+      observer: 'selectedUserCodeChanged'
+    },
+
+    selectedUserCodeValue: {
+      type: Number,
+      value: -1
+    },
+
     ozwLogs: {
       type: String,
       value: '',
     },
-
   },
 
   computeNodes: function (hass) {
@@ -585,6 +673,10 @@ Polymer({
   selectedNodeChanged: function (selectedNode) {
     if (selectedNode === -1) return;
 //    console.log('selectedNodeChanged', selectedNode);
+    this.selectedConfigParameter = -1;
+    this.selectedConfigParameterValue = -1;
+    this.selectedUserCode = -1;
+    this.selectedGroup = -1;
     var configData = [];
     this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (configs) {
       Object.entries(configs).forEach(([key, value]) => {
@@ -602,30 +694,41 @@ Polymer({
 //      console.log(this.groups);
     }.bind(this));
     var userCodes = [];
+    this.hasNodeUserCodes = false;
+    this.notifyPath('hasNodeUserCodes');
     this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
       Object.entries(usercodes).forEach(([key, value]) => {
         userCodes.push({ key, value });
       });
       this.userCodes = userCodes;
-      console.log(this.userCodes);
+      this.hasNodeUserCodes = true;
+      this.notifyPath('hasNodeUserCodes');
+//      console.log('fetched usercodes', this.userCodes);
     }.bind(this));
-    this.selectedConfigParameter = -1;
-    this.selectedConfigParameterValue = -1;
   },
 
   computeMaxAssociations: function (selectedGroup) {
     if (selectedGroup === -1) return -1;
     var maxAssociations = this.groups[selectedGroup].value.max_associations;
-    console.log(maxAssociations);
+//    console.log(maxAssociations);
 //    console.log(Object.values(this.groups[selectedGroup].value.associations));
     if (!maxAssociations) return ['None'];
     return maxAssociations;
   },
 
+  computeConfigValueHelp: function (selectedConfigParameter) {
+    if (selectedConfigParameter === -1) return '';
+    var helpText = this.config[selectedConfigParameter].value.help;
+//    console.log(helpText);
+//    console.log(Object.values(this.groups[selectedGroup].value.associations));
+    if (!helpText) return ['No helptext available'];
+    return helpText;
+  },
+
   computeOtherGroupNodes: function (selectedGroup) {
     if (selectedGroup === -1) return -1;
     var associations = Object.values(this.groups[selectedGroup].value.associations);
-    console.log(associations);
+//    console.log(associations);
 //    console.log(Object.values(this.groups[selectedGroup].value.associations));
     if (!associations.length) return ['None'];
     return associations;
@@ -647,6 +750,7 @@ Polymer({
 //    console.log('selectedConfigParameterChanged');
 //    console.log('parametervalue ', this.config[selectedConfigParameter].value.data_items, this.selectedConfigParameterValues);
 //    console.log('parametertype ', this.config[selectedConfigParameter].value.type);
+//    console.log('parameterhelp ', this.config[selectedConfigParameter].value.help);
     this.selectedConfigValue = -1;
     this.loadedConfigValue = -1;
     this.selectedConfigParameterValues = [];
@@ -654,6 +758,7 @@ Polymer({
     this.configParameterMax = this.config[selectedConfigParameter].value.max;
     this.configParameterMin = this.config[selectedConfigParameter].value.min;
     this.loadedConfigValue = this.config[selectedConfigParameter].value.data;
+    this.configValueHelpText = this.config[selectedConfigParameter].value.help;
     if (('Short Byte Int').includes(this.selectedConfigParameterType)) {
       this.selectedConfigParameterNumValues = this.config[selectedConfigParameter].value.data_items;
       this.selectedConfigValue = this.loadedConfigValue;
@@ -684,6 +789,22 @@ Polymer({
     return false;
   },
 
+  isUserCodeSelected: function (selectedUserCode) {
+    if (selectedUserCode === -1) return false;
+    return true;
+  },
+
+  selectedUserCodeChanged: function (selectedUserCode) {
+    if (selectedUserCode === -1) return;
+//    console.log('pre', this.userCodes[selectedUserCode].value.code);
+    var value = (parseInt((this.userCodes[selectedUserCode].value.code).trim()));
+    this.userCodeMaxLen = (this.userCodes[selectedUserCode].value.length);
+//    console.log('length ', this.userCodes[selectedUserCode].value.length);
+    if (isNaN(value)) this.selectedUserCodeValue = '';
+    else this.selectedUserCodeValue = value;
+//    console.log('post', this.selectedUserCodeValue);
+  },
+
   refreshLog: function () {
     this.ozwLogs = 'Loading ozw log...';
     this.hass.callApi('GET', 'zwave/ozwlog')
@@ -712,6 +833,12 @@ Polymer({
     return (stateObj.key + ': ' + stateObj.value.label);
   },
 
+  computeSelectCaptionUserCodes: function (stateObj) {
+//    console.log('computecap: ', this.config);
+//    console.log(stateObj.value.label);
+    return (stateObj.key + ': ' + stateObj.value.label);
+  },
+
   computeIsNodeSelected: function () {
 //    console.log('node', this.config);
     return (!this.nodes || this.selectedNode === -1);
@@ -719,6 +846,10 @@ Polymer({
 
   computeIsTargetNodeSelected: function (selectedTargetNode) {
     return (!this.nodes || selectedTargetNode === -1);
+  },
+
+  computeIsUserCodeSelected: function (selectedUserCode) {
+    return (!this.userCodes || selectedUserCode === -1);
   },
 
   computeIsGroupSelected: function (selectedGroup) {
@@ -759,11 +890,11 @@ Polymer({
 
   computeAssocServiceData: function (selectedGroup, type) {
     if (!this.groups === -1 || selectedGroup === -1 || this.selectedNode === -1) return -1;
-    console.log('type', type);
-    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-      association: type,
-      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-      group: this.groups[selectedGroup].key }));
+//    console.log('type', type);
+//    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
+//      association: type,
+//      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
+//      group: this.groups[selectedGroup].key }));
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
@@ -813,6 +944,27 @@ Polymer({
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       parameter: this.config[this.selectedConfigParameter].key,
       value: valueData };
+  },
+
+  computeUserCodeServiceData: function (selectedUserCodeValue, type) {
+    if (this.selectedNode === -1 || !selectedUserCodeValue) return -1;
+//    console.log('computeUserCodeServiceData');
+    var serviceData = null;
+    var valueData = null;
+    if (type === 'Add') {
+//      console.log('add');
+      valueData = selectedUserCodeValue;
+      serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
+        code_slot: this.selectedUserCode,
+        usercode: valueData };
+    }
+    if (type === 'Delete') {
+//      console.log('delete');
+      serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
+        code_slot: this.selectedUserCode };
+    }
+//    console.log(serviceData);
+    return serviceData;
   },
 });
 </script>
