@@ -58,13 +58,6 @@
 
 <script>
 Polymer({
-  _coreRepos: [{
-    slug: 'core',
-    name: 'Built-in Add-Ons',
-    url: 'https://home-assistant.io/addons',
-    maintainer: 'Home Assistant authors',
-  }],
-
   is: 'hassio-addon-store',
 
   properties: {
@@ -114,7 +107,7 @@ Polymer({
     this.hass.callApi('get', 'hassio/supervisor/addons')
       .then(function (info) {
         this.addons = info.data.addons;
-        this.repos = this._coreRepos.concat(info.data.repositories);
+        this.repos = info.data.repositories;
       }.bind(this), function () {
         this.addons = [];
         this.repos = [];
