@@ -59,7 +59,7 @@ Polymer({
   },
 
   computeInstallStatus(addon) {
-    return addon.installed || 'Not installed';
+    return addon && addon.installed || 'Not installed';
   },
 });
 </script>
