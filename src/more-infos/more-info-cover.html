@@ -10,11 +10,16 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      .current_position {
+      .current_position, .tilt {
         max-height: 0px;
         overflow: hidden;
       }
-      .has-current_position .current_position {
+      .has-current_position .current_position,
+      .has-open_tilt .tilt,
+      .has-close_tilt .tilt,
+      .has-stop_tilt .tilt,
+      .has-set_tilt_position .tilt
+      {
         max-height: 90px;
       }
 
@@ -22,7 +27,7 @@
         visibility: hidden !important;
       }
     </style>
-
+WHAT DA FEQ
     <div class$='[[computeClassNames(stateObj)]]'>
 
       <div class='current_position'>
@@ -35,7 +40,7 @@
           on-change='coverPositionSliderChanged'></paper-slider>
       </div>
 
-      <div class='current_tilt_position' hidden$="[[!supportsTilt]]">
+      <div class='tilt'>
         <div>Tilt position</div>
         <paper-icon-button icon="mdi:arrow-top-right" 
           on-tap='onOpenTiltTap' title='Open tilt'
@@ -87,10 +92,6 @@ Polymer({
       type: Number,
     },
 
-    supportsTilt: {
-      type: Boolean,
-      value: false,
-    },
   },
 
   computeEntityObj: function (hass, stateObj) {
@@ -100,12 +101,21 @@ Polymer({
   stateObjChanged: function (newVal) {
     this.coverPositionSliderValue = newVal.attributes.current_position;
     this.coverTiltPositionSliderValue = newVal.attributes.current_tilt_position;
-    this.supportsTilt = (newVal.attributes.supported_features & 16) !== 0;
+  },
+
+  featureClassNames: {
+    16: 'has-open_tilt',
+    32: 'has-close_tilt',
+    64: 'has-stop_tilt',
+    128: 'has-set_tilt_position',
   },
 
   computeClassNames: function (stateObj) {
-    return window.hassUtil.attributeClassNames(
-      stateObj, ['current_position']);
+    var classes = [
+      window.hassUtil.attributeClassNames(stateObj, ['current_position']),
+      window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
+    ];
+    return classes.join(' ');
   },
 
   coverPositionSliderChanged: function (ev) {
