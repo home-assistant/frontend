@@ -1,5 +1,16 @@
 {
   "extends": "airbnb-base",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "settings": {
+    "react": {
+      "pragma": "h"
+    }
+  },
   "globals": {
     "__DEV__": false,
     "__DEMO__": false,
@@ -26,9 +37,24 @@
     "no-continue": 0,
     "no-param-reassign": 0,
     "no-multi-assign": 0,
-    "radix": 0
+    "radix": 0,
+    "import/prefer-default-export": 0,
+    "react/jsx-no-bind": [2, { "ignoreRefs": true }],
+    "react/jsx-no-duplicate-props": 2,
+    "react/self-closing-comp": 2,
+    "react/prefer-es6-class": 2,
+    "react/no-string-refs": 2,
+    "react/require-render-return": 2,
+    "react/no-find-dom-node": 2,
+    "react/no-is-mounted": 2,
+    "react/jsx-no-comment-textnodes": 2,
+    "react/jsx-curly-spacing": 2,
+    "react/jsx-no-undef": 2,
+    "react/jsx-uses-react": 2,
+    "react/jsx-uses-vars": 2
   },
   "plugins": [
-    "html"
+    "html",
+    "react"
   ]
 }
