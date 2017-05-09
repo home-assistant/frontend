@@ -1,14 +1,20 @@
 import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
-import buble from 'rollup-plugin-buble';
+import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
 
 const plugins = [
-  nodeResolve({}),
+  babel({
+  }),
+
+  nodeResolve({
+    jsnext: true,
+    main: true,
+  }),
 
   commonjs(),
 
@@ -21,7 +27,6 @@ const plugins = [
 ];
 
 if (!DEV) {
-  plugins.push(buble());
   plugins.push(uglify());
 }
 
