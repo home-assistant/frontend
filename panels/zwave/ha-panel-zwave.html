@@ -136,25 +136,25 @@
                 hass='[[hass]]'
                 domain='zwave'
                 service='refresh_node'
-                service-data=[[computeNodeServiceData(selectedNode)]]
+                service-data=[[nodeServiceData]]
               >Refresh Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='remove_failed_node'
-              service-data=[[computeNodeServiceData(selectedNode)]]
+              service-data=[[nodeServiceData]]
             >Remove Failed Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='replace_failed_node'
-              service-data=[[computeNodeServiceData(selectedNode)]]
+              service-data=[[nodeServiceData]]
             >Replace Failed Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='print_node'
-              service-data=[[computeNodeServiceData(selectedNode)]]
+              service-data=[[nodeServiceData]]
             >Print Node</ha-call-service-button>
             </div>
            <div class='card-actions'>
@@ -457,6 +457,12 @@ Polymer({
       observer: 'selectedNodeChanged'
     },
 
+    nodeServiceData: {
+      type: Object,
+      value: {},
+      computed: 'computeNodeServiceData(selectedNode)'
+    },
+
     selectedNodeAttrs: {
       type: Array,
       computed: 'computeSelectedNodeAttrs(selectedNode)'
@@ -682,7 +688,7 @@ Polymer({
 
   selectedNodeChanged: function (selectedNode) {
     if (selectedNode === -1) return;
-    console.log('selectedNodeChanged', selectedNode);
+//    console.log('selectedNodeChanged', selectedNode);
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
     this.selectedUserCode = -1;
