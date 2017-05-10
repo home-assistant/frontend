@@ -15,16 +15,14 @@
         max-width: 600px;
       }
     </style>
-      <div class='content'>
-        <paper-card heading='OZW Log'>
-          <div class='help-text'>
-            <pre>[[ozwLogs]]</pre>
-          </div>
-          <div class="card-actions">
-            <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
-          </div>
-        </paper-card>
+    <paper-card heading='OZW Log'>
+      <div class='help-text'>
+        <pre>[[ozwLogs]]</pre>
       </div>
+      <div class="card-actions">
+        <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
+      </div>
+    </paper-card>
   </template>
 </dom-module>
 <script>
@@ -33,6 +31,10 @@ Polymer({
   is: 'ozw-log',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     ozwLogs: {
       type: String,
       value: ''

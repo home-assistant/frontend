@@ -1,0 +1,86 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../src/components/buttons/ha-call-service-button.html">
+
+<dom-module id='zwave-network'>
+  <template>
+    <style include="iron-flex ha-style">
+      .content {
+        margin-top: 24px;
+      }
+
+      paper-card {
+        display: block;
+        margin: 0 auto;
+        max-width: 600px;
+      }
+
+      .card-actions.warning ha-call-service-button {
+        color: var(--google-red-500);
+      }
+    </style>
+    <paper-card heading='Z-Wave Network Management'>
+      <div class='card-content'>
+        Z-Wave Network controls.
+      </div>
+      <div class='card-actions'>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='add_node_secure'
+        >Add Node</ha-call-service-button>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='remove_node'
+        >Remove Node</ha-call-service-button>
+      </div>
+      <div class='card-actions warning'>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='cancel_command'
+        >Cancel Command</ha-call-service-button>
+      </div>
+      <div class='card-actions'>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='heal_network'
+        >Heal Network</ha-call-service-button>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='start_network'
+        >Start Network</ha-call-service-button>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='stop_network'
+        >Stop Network</ha-call-service-button>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='soft_reset'
+        >Soft Reset</ha-call-service-button>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='test_network'
+        >Test Network</ha-call-service-button>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+<script>
+
+Polymer({
+  is: 'zwave-network',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+  },
+});
+</script>
