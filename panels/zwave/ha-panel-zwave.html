@@ -11,6 +11,7 @@
 
 <link rel="import" href="../../src/components/buttons/ha-call-service-button.html">
 <link rel="import" href="../../src/resources/ha-style.html">
+<link rel="import" href="./zwave-log.html">
 
 <dom-module id="ha-panel-zwave">
   <template>
@@ -136,25 +137,25 @@
                 hass='[[hass]]'
                 domain='zwave'
                 service='refresh_node'
-                service-data=[[nodeServiceData]]
+                service-data=[[computeNodeServiceData(selectedNode)]]
               >Refresh Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='remove_failed_node'
-              service-data=[[nodeServiceData]]
+              service-data=[[computeNodeServiceData(selectedNode)]]
             >Remove Failed Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='replace_failed_node'
-              service-data=[[nodeServiceData]]
+              service-data=[[computeNodeServiceData(selectedNode)]]
             >Replace Failed Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='print_node'
-              service-data=[[nodeServiceData]]
+              service-data=[[computeNodeServiceData(selectedNode)]]
             >Print Node</ha-call-service-button>
             </div>
            <div class='card-actions'>
@@ -414,14 +415,10 @@
         </template>
 <!--Ozw log-->
         <div class='content'>
-        <paper-card heading='OZW Log'>
-          <div class='help-text'>
-            <pre>[[ozwLogs]]</pre>
-          </div>
-          <div class="card-actions">
-            <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
-          </div>
-        </paper-card>
+          <ozw-log
+            id='ozw-log'
+            hass='[[hass]]'
+          ></ozw-log>
         </div>
 
      </app-header-layout>
@@ -455,12 +452,6 @@ Polymer({
       type: Number,
       value: -1,
       observer: 'selectedNodeChanged'
-    },
-
-    nodeServiceData: {
-      type: Object,
-      value: {},
-      computed: 'computeNodeServiceData(selectedNode)'
     },
 
     selectedNodeAttrs: {
@@ -611,11 +602,6 @@ Polymer({
       type: Number,
       value: -1
     },
-
-    ozwLogs: {
-      type: String,
-      value: '',
-    },
   },
 
   listeners: {
@@ -688,7 +674,7 @@ Polymer({
 
   selectedNodeChanged: function (selectedNode) {
     if (selectedNode === -1) return;
-//    console.log('selectedNodeChanged', selectedNode);
+    console.log('selectedNodeChanged', selectedNode);
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
     this.selectedUserCode = -1;
@@ -718,7 +704,12 @@ Polymer({
         userCodes.push({ key, value });
       });
       this.userCodes = userCodes;
-      this.hasNodeUserCodes = true;
+      if (Object.keys(userCodes).length === 0) {
+        this.hasNodeUserCodes = false;
+      } else {
+        this.hasNodeUserCodes = true;
+      }
+//      console.log(this.hasNodeUserCodes);
       this.notifyPath('hasNodeUserCodes');
 //      console.log('fetched usercodes', this.userCodes);
     }.bind(this));
@@ -822,14 +813,6 @@ Polymer({
 //    console.log('post', this.selectedUserCodeValue);
   },
 
-  refreshLog: function () {
-    this.ozwLogs = 'Loading ozw log...';
-    this.hass.callApi('GET', 'zwave/ozwlog')
-      .then(function (info) {
-        this.ozwLogs = info;
-      }.bind(this));
-  },
-
   computeSelectCaption: function (stateObj) {
     return window.hassUtil.computeStateName(stateObj) + ' (Node:' +
       stateObj.attributes.node_id + ' ' +
@@ -915,7 +898,7 @@ Polymer({
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-      group: this.groups[selectedGroup] };
+      group: this.groups[selectedGroup].key };
   },
 
   computeWakeupServiceData: function (wakeupInput) {
