@@ -163,8 +163,9 @@ Polymer({
         // Normalize data: ensure trigger, action and condition are lists
         // Happens when people copy paste their automations into the config
         ['trigger', 'condition', 'action'].forEach(function (key) {
-          if (!Array.isArray(config[key])) {
-            config[key] = [config[key]];
+          var value = config[key];
+          if (value && !Array.isArray(value)) {
+            config[key] = [value];
           }
         });
         this.dirty = false;
