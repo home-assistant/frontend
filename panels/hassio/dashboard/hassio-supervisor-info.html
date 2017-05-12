@@ -35,6 +35,7 @@
         </table>
       </div>
       <div class="card-actions">
+        <paper-button on-tap='supervisorLogsTapped'>View logs</paper-button>
         <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
           <ha-call-api-button
             hass='[[hass]]'
@@ -69,5 +70,9 @@ Polymer({
   computeUpdateAvailable: function (data) {
     return data.version !== data.last_version;
   },
+
+  supervisorLogsTapped: function () {
+    this.fire('hassio-show-page', { page: 'supervisor' });
+  }
 });
 </script>
