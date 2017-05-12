@@ -38,7 +38,9 @@ const panelVulcan = new Vulcanize({
   inlineCss: true,
   implicitStrip: true,
   stripComments: true,
-  stripExcludes: undefined,
+  stripExcludes: [
+    'panels/hassio/hassio-main.html'
+  ],
 });
 
 const baseExcludes = [
@@ -47,6 +49,7 @@ const baseExcludes = [
 ];
 
 const toProcess = [
+  // This is the main entry point
   {
     source: './src/home-assistant.html',
     output: './build/frontend.html',
@@ -54,9 +57,18 @@ const toProcess = [
       stripExcludes: baseExcludes,
     })),
   },
+  // This is the Hass.io configuration panel
+  // It's build standalone because it is embedded in the supervisor.
+  {
+    source: './panels/hassio/hassio-main.html',
+    output: './build-temp/hassio-main.html',
+    vulcan: new Vulcanize(Object.assign({}, baseVulcanOptions, {
+      stripExcludes: baseExcludes,
+    })),
+  },
 ];
 
-fs.readdirSync('./panels').forEach(panel => {
+fs.readdirSync('./panels').forEach((panel) => {
   toProcess.push({
     source: `./panels/${panel}/ha-panel-${panel}.html`,
     output: `./build/panels/ha-panel-${panel}.html`,
@@ -85,7 +97,9 @@ hyd.Analyzer.analyze('src/home-assistant.html')
     .then(function (analyzer) {
       return analyzer._getDependencies('src/home-assistant.html');
     })
-    .then(deps => { panelVulcan.stripExcludes = deps; })
+    .then((deps) => {
+      panelVulcan.stripExcludes = panelVulcan.stripExcludes.concat(deps);
+    })
     // Chain all vulcanizing work as promises
     .then(() => toProcess.reduce(
       (p, entry) => p.then(() => vulcanizeEntry(entry)),
