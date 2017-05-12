@@ -43,15 +43,19 @@
         </table>
       </div>
       <div class="card-actions">
-        <ha-call-api-button
-          hass='[[hass]]'
-          path="hassio/host/update"
-        >Update</ha-call-api-button>
-        <ha-call-api-button
-          class='warning'
-          hass='[[hass]]'
-          path="hassio/host/reboot"
-        >Reboot</ha-call-api-button>
+        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="hassio/host/update"
+          >Update</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[computeRebootAvailable(data)]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path="hassio/host/reboot"
+          >Reboot</ha-call-api-button>
+        </template>
       </div>
     </paper-card>
   </template>
@@ -70,6 +74,14 @@ Polymer({
       type: Object,
       value: {},
     },
+  },
+
+  computeUpdateAvailable: function (data) {
+    return data.version !== data.last_version;
+  },
+
+  computeRebootAvailable: function (data) {
+    return data.features && data.features.indexOf("reboot") !== -1;
   },
 });
 </script>
