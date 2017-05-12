@@ -13,6 +13,8 @@
 <link rel="import" href="../../src/resources/ha-style.html">
 <link rel="import" href="./zwave-log.html">
 <link rel="import" href="./zwave-network.html">
+<link rel="import" href="./zwave-node-information.html">
+<link rel="import" href="./zwave-usercodes.html">
 
 <dom-module id="ha-panel-zwave">
   <template>
@@ -35,10 +37,6 @@
         display: block;
         margin: 0 auto;
         max-width: 600px;
-      }
-
-      paper-button[toggles][active] {
-        background: lightgray;
       }
 
       .device-picker {
@@ -177,20 +175,11 @@
         </div>
 <!--Node info card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
-        <div class='content'>
-          <paper-card heading='Node Information'>
-          <div class='card-actions'>
-            <paper-button toggles raised noink active={{nodeInfoActive}}>Show</paper-button>
-          </div>
-          <template is='dom-if' if={{nodeInfoActive}}>
-            <template is='dom-repeat' items='[[selectedNodeAttrs]]' as='state'>
-              <div class='node-info'>
-                <span>[[state]]</span>
-              </div>
-            </template>
-          </template>
-          </paper-card>
-        </div>
+          <zwave-node-information
+            id='zwave-node-information'
+            nodes='[[nodes]]'
+            selected-node='[[selectedNode]]'
+          ></zwave-node-information>
         </template>
 <!--Group card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
@@ -321,47 +310,13 @@
         </template>
 <!--User Codes-->
         <template is='dom-if' if='{{hasNodeUserCodes}}'>
-        <div class='content'>
-          <paper-card heading='Node user codes'>
-            <div class='device-picker'>
-            <paper-dropdown-menu label="Code slot" class='flex'>
-              <paper-listbox
-                class="dropdown-content"
-                selected='{{selectedUserCode}}'>
-                <template is='dom-repeat' items='[[userCodes]]' as='state'>
-                  <paper-item>[[computeSelectCaptionUserCodes(state)]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-            </div>
-
-            <template is='dom-if' if="[[isUserCodeSelected(selectedUserCode)]]">
-              <div class='card-actions'>
-                <paper-input
-                  label='User code'
-                  type=number
-                  value='{{selectedUserCodeValue}}'
-                  maxlength='{{userCodeMaxLen}}'
-                  min='0'>
-                </paper-input>
-              </div>
-              <div class='card-actions'>
-                <ha-call-service-button
-                  hass='[[hass]]'
-                  domain='lock'
-                  service='set_usercode'
-                  service-data='[[computeUserCodeServiceData(selectedUserCodeValue, "Add")]]'
-                >Set Usercode</ha-call-service-button>
-                <ha-call-service-button
-                  hass='[[hass]]'
-                  domain='lock'
-                  service='clear_usercode'
-                  service-data='[[computeUserCodeServiceData(selectedUserCode, "Delete")]]'
-                >Delete Usercode</ha-call-service-button>
-              </div>
-            </template>
-          </paper-card>
-        </div>
+          <zwave-usercodes
+            id='zwave-usercodes'
+            hass='[[hass]]'
+            nodes='[[nodes]]'
+            user-codes='[[userCodes]]'
+            selected-node='[[selectedNode]]'
+          ></zwave-usercodes>
         </template>
 <!--Ozw log-->
         <div class='content'>
@@ -395,6 +350,7 @@ Polymer({
 
     nodes: {
       type: Array,
+      notify: true,
       computed: 'computeNodes(hass)'
     },
 
@@ -402,15 +358,6 @@ Polymer({
       type: Number,
       value: -1,
       observer: 'selectedNodeChanged'
-    },
-
-    selectedNodeAttrs: {
-      type: Array,
-      computed: 'computeSelectedNodeAttrs(selectedNode)'
-    },
-
-    nodeInfoActive: {
-      type: Boolean,
     },
 
     entities: {
@@ -532,25 +479,9 @@ Polymer({
       },
     },
 
-    userCodeMaxLen: {
-      type: Number,
-      value: 4
-    },
-
     hasNodeUserCodes: {
       type: Boolean,
       value: false
-    },
-
-    selectedUserCode: {
-      type: Number,
-      value: -1,
-      observer: 'selectedUserCodeChanged'
-    },
-
-    selectedUserCodeValue: {
-      type: Number,
-      value: -1
     },
   },
 
@@ -609,18 +540,6 @@ Polymer({
         return 0;
       });
   },
-
-  computeSelectedNodeAttrs: function (selectedNode) {
-    if (selectedNode === -1) return 'No node selected';
-    var nodeAttrs = this.nodes[selectedNode].attributes;
-    var att = [];
-    Object.entries(nodeAttrs).forEach(([key, value]) => {
-      att.push(key + ': ' + value);
-    });
-//    console.log('Node attributes: ', att);
-    return att.sort();
-  },
-
 
   selectedNodeChanged: function (selectedNode) {
     if (selectedNode === -1) return;
