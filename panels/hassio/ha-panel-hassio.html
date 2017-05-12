@@ -127,7 +127,16 @@ Polymer({
 
   apiCalled: function (ev) {
     if (ev.detail.success) {
-      this.$.data.refresh();
+      var tries = 1;
+
+      var tryUpdate = function () {
+        this.$.data.refresh().catch(function () {
+          tries += 1;
+          setTimeout(tryUpdate, Math.min(tries, 5) * 1000);
+        })
+      }.bind(this);
+
+      tryUpdate();
     }
   },
 
