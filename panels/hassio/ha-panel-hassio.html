@@ -140,7 +140,7 @@ Polymer({
         this.$.data.refresh().catch(function () {
           tries += 1;
           setTimeout(tryUpdate, Math.min(tries, 5) * 1000);
-        })
+        });
       }.bind(this);
 
       tryUpdate();
