@@ -56,14 +56,16 @@ Polymer({
     };
 
     this.hass.callApi(this.method, this.path, this.data)
-      .then(function () {
+      .then(function (resp) {
         el.progress = false;
         el.$.progress.actionSuccess();
         eventData.success = true;
-      }, function () {
+        eventData.response = resp;
+      }, function (resp) {
         el.progress = false;
         el.$.progress.actionError();
         eventData.success = false;
+        eventData.response = resp;
       }).then(function () {
         el.fire('hass-api-called', eventData);
       });
