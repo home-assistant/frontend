@@ -15,6 +15,10 @@
     .info td:nth-child(2) {
       text-align: right;
     }
+    .errors {
+      color: var(--google-red-500);
+      margin-top: 16px;
+    }
   </style>
   <template>
     <paper-card heading="Host OS">
@@ -25,10 +29,6 @@
             <td>[[data.hostname]]</td>
           </tr>
           <tr>
-            <td>Control version</td>
-            <td>[[data.version]]</td>
-          </tr>
-          <tr>
             <td>Type</td>
             <td>[[data.type]]</td>
           </tr>
@@ -36,18 +36,33 @@
             <td>OS</td>
             <td>[[data.os]]</td>
           </tr>
+          <tr>
+            <td>Host Control version</td>
+            <td>[[data.version]]</td>
+          </tr>
+          <tr>
+            <td>Latest available version</td>
+            <td>[[data.last_version]]</td>
+          </tr>
         </table>
+        <template is='dom-if' if='[[errors]]'>
+          <div class='errors'>Error: [[errors]]</div>
+        </template>
       </div>
       <div class="card-actions">
-        <ha-call-api-button
-          hass='[[hass]]'
-          path="hassio/host/update"
-        >Update</ha-call-api-button>
-        <ha-call-api-button
-          class='warning'
-          hass='[[hass]]'
-          path="hassio/host/reboot"
-        >Reboot</ha-call-api-button>
+        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="hassio/host/update"
+          >Update</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[computeRebootAvailable(data)]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path="hassio/host/reboot"
+          >Reboot</ha-call-api-button>
+        </template>
       </div>
     </paper-card>
   </template>
@@ -66,6 +81,35 @@ Polymer({
       type: Object,
       value: {},
     },
+
+    errors: String,
+  },
+
+  listeners: {
+    'hass-api-called': 'apiCalled',
+  },
+
+  apiCalled: function (ev) {
+    if (ev.detail.success) {
+      this.errors = null;
+      return;
+    }
+
+    var response = ev.detail.response;
+
+    if (typeof response.body === 'object') {
+      this.errors = response.body.message || 'Unknown error';
+    } else {
+      this.errors = response.body;
+    }
+  },
+
+  computeUpdateAvailable: function (data) {
+    return data.version !== data.last_version;
+  },
+
+  computeRebootAvailable: function (data) {
+    return data.features && data.features.indexOf('reboot') !== -1;
   },
 });
 </script>

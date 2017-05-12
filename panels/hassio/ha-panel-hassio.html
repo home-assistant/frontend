@@ -3,6 +3,7 @@
 <link rel="import" href="./dashboard/hassio-dashboard.html">
 <link rel="import" href="./addon-view/hassio-addon-view.html">
 <link rel="import" href="./addon-store/hassio-addon-store.html">
+<link rel="import" href="./supervisor/hassio-supervisor.html">
 <link rel="import" href="./hassio-loading.html">
 <link rel="import" href="./hassio-data.html">
 
@@ -52,10 +53,16 @@
 
     <template is='dom-if' if='[[addonStoreSelected(currentPage)]]'>
       <hassio-addon-store
-        id='addon-store'
         hass='[[hass]]'
         supervisor-info='[[supervisorInfo]]'
       ></hassio-addon-store>
+    </template>
+
+    <template is='dom-if' if='[[supervisorSelected(currentPage)]]'>
+      <hassio-supervisor
+        hass='[[hass]]'
+        supervisor-info='[[supervisorInfo]]'
+      ></hassio-supervisor>
     </template>
   </template>
 </dom-module>
@@ -121,13 +128,22 @@ Polymer({
 
   listeners: {
     'hassio-select-addon': 'addonSelected',
-    'hassio-show-store': 'showStore',
+    'hassio-show-page': 'showPage',
     'hass-api-called': 'apiCalled',
   },
 
   apiCalled: function (ev) {
     if (ev.detail.success) {
-      this.$.data.refresh();
+      var tries = 1;
+
+      var tryUpdate = function () {
+        this.$.data.refresh().catch(function () {
+          tries += 1;
+          setTimeout(tryUpdate, Math.min(tries, 5) * 1000);
+        });
+      }.bind(this);
+
+      tryUpdate();
     }
   },
 
@@ -158,8 +174,8 @@ Polymer({
     }
   },
 
-  showStore: function () {
-    this.currentPage = 'addon-store';
+  showPage: function (ev) {
+    this.currentPage = ev.detail.page;
   },
 
   dashboardSelected: function (currentPage) {
@@ -172,6 +188,10 @@ Polymer({
 
   addonViewSelected: function (currentPage) {
     return currentPage === 'addon-view';
+  },
+
+  supervisorSelected: function (currentPage) {
+    return currentPage === 'supervisor';
   },
 
 });

@@ -13,21 +13,26 @@
       paper-card {
         display: block;
       }
+      .errors {
+        color: var(--google-red-500);
+        margin-bottom: 16px;
+      }
       iron-autogrow-textarea {
         width: 100%;
       }
     </style>
     <paper-card heading='Options'>
       <div class="card-content">
+        <template is='dom-if' if='[[errors]]'>
+          <div class='errors'>[[errors]]</div>
+        </template>
         <iron-autogrow-textarea value="{{options}}"></iron-autogrow-textarea>
       </div>
       <div class="card-actions">
-        <ha-call-api-button
-          hass='[[hass]]'
+        <paper-button
+          on-tap='saveTapped'
           disabled='[[!optionsParsed]]'
-          data='[[computeOptionsData(optionsParsed)]]'
-          path="[[pathOptions(addon)]]"
-        >Save</ha-call-api-button>
+        >Save</paper-button>
       </div>
     </paper-card>
   </template>
@@ -56,6 +61,11 @@ Polymer({
       computed: 'parseOptions(options)',
     },
 
+    errors: {
+      type: String,
+      value: null,
+    },
+
     addonState: {
       type: Object,
       value: null,
@@ -73,6 +83,16 @@ Polymer({
     } catch (err) {
       return null;
     }
+  },
+
+  saveTapped: function () {
+    this.errors = null;
+
+    this.hass.callApi('post', 'hassio/addons/' + this.addon + '/options', {
+      options: this.optionsParsed
+    }).catch(function (resp) {
+      this.errors = resp.body.message;
+    }.bind(this));
   },
 
   computeOptionsData: function (optionsParsed) {

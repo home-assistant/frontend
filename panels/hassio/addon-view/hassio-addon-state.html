@@ -54,6 +54,11 @@
             <ha-call-api-button
               class='warning'
               hass='[[hass]]'
+              path="[[pathRestart(addon)]]"
+            >Restart</ha-call-api-button>
+            <ha-call-api-button
+              class='warning'
+              hass='[[hass]]'
               path="[[pathStop(addon)]]"
             >Stop</ha-call-api-button>
           </template>
@@ -117,6 +122,10 @@ Polymer({
 
   pathStop: function (addon) {
     return 'hassio/addons/' + addon + '/stop';
+  },
+
+  pathRestart: function (addon) {
+    return 'hassio/addons/' + addon + '/restart';
   },
 
   pathInstall: function (addon) {
