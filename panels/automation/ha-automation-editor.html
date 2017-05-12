@@ -10,6 +10,7 @@
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 
 <link rel="import" href="../config/ha-config-section.html">
 
@@ -54,6 +55,23 @@
       span[slot=introduction] a {
         color: var(--primary-color);
       }
+      paper-fab {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        z-index: 1;
+        margin-bottom: -80px;
+        transition: margin-bottom .3s;
+      }
+
+      paper-fab[is-wide] {
+        bottom: 24px;
+        right: 24px;
+      }
+
+      paper-fab[dirty] {
+        margin-bottom: 0;
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -64,11 +82,6 @@
             on-tap='backTapped'
           ></paper-icon-button>
           <div main-title>Automation [[name]]</div>
-          <paper-icon-button
-            icon='mdi:content-save'
-            on-tap='saveAutomation'
-            disabled='[[!dirty]]'
-          ></paper-icon-button>
         </app-toolbar>
       </app-header>
 
@@ -77,6 +90,13 @@
           <div class='errors'>[[errors]]</div>
         </template>
         <div id='root'></div>
+        <paper-fab
+          is-wide$='[[isWide]]'
+          dirty$='[[dirty]]'
+          icon='mdi:content-save'
+          title='Save'
+          on-tap='saveAutomation'
+        ></paper-fab>
       </div>
     </app-header-layout>
 
