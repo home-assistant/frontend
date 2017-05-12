@@ -4,7 +4,7 @@
 
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<dom-module id='hassio-loading'>
+<dom-module id='hass-loading-screen'>
   <template>
     <style include='iron-flex ha-style'>
       [hidden] {
@@ -23,7 +23,7 @@
     <div class='placeholder'>
       <app-toolbar>
         <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-        <div main-title>Hass.io</div>
+        <div main-title>[[title]]</div>
       </app-toolbar>
       <div class='layout horizontal center-center'>
         <paper-spinner active></paper-spinner>
@@ -34,13 +34,9 @@
 
 <script>
 Polymer({
-  is: 'hassio-loading',
+  is: 'hass-loading-screen',
 
   properties: {
-    hass: {
-      type: Object,
-    },
-
     narrow: {
       type: Boolean,
       value: false,
@@ -49,6 +45,11 @@ Polymer({
     showMenu: {
       type: Boolean,
       value: false,
+    },
+
+    title: {
+      type: String,
+      value: '',
     },
   },
 });
