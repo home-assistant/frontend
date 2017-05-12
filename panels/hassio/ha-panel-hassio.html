@@ -3,6 +3,7 @@
 <link rel="import" href="./dashboard/hassio-dashboard.html">
 <link rel="import" href="./addon-view/hassio-addon-view.html">
 <link rel="import" href="./addon-store/hassio-addon-store.html">
+<link rel="import" href="./supervisor/hassio-supervisor.html">
 <link rel="import" href="./hassio-loading.html">
 <link rel="import" href="./hassio-data.html">
 
@@ -52,10 +53,16 @@
 
     <template is='dom-if' if='[[addonStoreSelected(currentPage)]]'>
       <hassio-addon-store
-        id='addon-store'
         hass='[[hass]]'
         supervisor-info='[[supervisorInfo]]'
       ></hassio-addon-store>
+    </template>
+
+    <template is='dom-if' if='[[supervisorSelected(currentPage)]]'>
+      <hassio-supervisor
+        hass='[[hass]]'
+        supervisor-info='[[supervisorInfo]]'
+      ></hassio-supervisor>
     </template>
   </template>
 </dom-module>
@@ -121,7 +128,7 @@ Polymer({
 
   listeners: {
     'hassio-select-addon': 'addonSelected',
-    'hassio-show-store': 'showStore',
+    'hassio-show-page': 'showPage',
     'hass-api-called': 'apiCalled',
   },
 
@@ -167,8 +174,8 @@ Polymer({
     }
   },
 
-  showStore: function () {
-    this.currentPage = 'addon-store';
+  showPage: function (ev) {
+    this.currentPage = ev.detail.page;
   },
 
   dashboardSelected: function (currentPage) {
@@ -181,6 +188,10 @@ Polymer({
 
   addonViewSelected: function (currentPage) {
     return currentPage === 'addon-view';
+  },
+
+  supervisorSelected: function (currentPage) {
+    return currentPage === 'supervisor';
   },
 
 });
