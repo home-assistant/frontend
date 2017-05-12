@@ -15,6 +15,10 @@
     .info td:nth-child(2) {
       text-align: right;
     }
+    .errors {
+      color: var(--google-red-500);
+      margin-top: 16px;
+    }
   </style>
   <template>
     <paper-card heading="Supervisor">
@@ -33,8 +37,12 @@
             <td>[[data.last_version]]</td>
           </tr>
         </table>
+        <template is='dom-if' if='[[errors]]'>
+          <div class='errors'>Error: [[errors]]</div>
+        </template>
       </div>
       <div class="card-actions">
+        <paper-button on-tap='supervisorLogsTapped'>View logs</paper-button>
         <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
           <ha-call-api-button
             hass='[[hass]]'
@@ -64,10 +72,35 @@ Polymer({
       type: Object,
       value: {},
     },
+
+    errors: String,
+  },
+
+  listeners: {
+    'hass-api-called': 'apiCalled',
+  },
+
+  apiCalled: function (ev) {
+    if (ev.detail.success) {
+      this.errors = null;
+      return;
+    }
+
+    var response = ev.detail.response;
+
+    if (typeof response.body === 'object') {
+      this.errors = response.body.message || 'Unknown error';
+    } else {
+      this.errors = response.body;
+    }
   },
 
   computeUpdateAvailable: function (data) {
     return data.version !== data.last_version;
   },
+
+  supervisorLogsTapped: function () {
+    this.fire('hassio-show-page', { page: 'supervisor' });
+  }
 });
 </script>

@@ -16,6 +16,10 @@
     .info td:nth-child(2) {
       text-align: right;
     }
+    .errors {
+      color: var(--google-red-500);
+      margin-top: 16px;
+    }
   </style>
   <template>
     <paper-card heading="Home Assistant">
@@ -30,6 +34,9 @@
             <td>[[data.last_version]]</td>
           </tr>
         </table>
+        <template is='dom-if' if='[[errors]]'>
+          <div class='errors'>Error: [[errors]]</div>
+        </template>
       </div>
       <div class="card-actions">
         <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
@@ -38,12 +45,11 @@
             path="hassio/homeassistant/update"
           >Update</ha-call-api-button>
         </template>
-        <ha-call-service-button
+        <ha-call-api-button
           class="warning"
           hass="[[hass]]"
-          domain="homeassistant"
-          service="restart"
-        >Restart</ha-call-service-button>
+          path="hassio/homeassistant/restart"
+        >Restart</ha-call-api-button>
       </div>
     </paper-card>
   </template>
@@ -62,6 +68,25 @@ Polymer({
       type: Object,
       value: {},
     },
+  },
+
+  listeners: {
+    'hass-api-called': 'apiCalled',
+  },
+
+  apiCalled: function (ev) {
+    if (ev.detail.success) {
+      this.errors = null;
+      return;
+    }
+
+    var response = ev.detail.response;
+
+    if (typeof response.body === 'object') {
+      this.errors = response.body.message || 'Unknown error';
+    } else {
+      this.errors = response.body;
+    }
   },
 
   computeUpdateAvailable: function (data) {

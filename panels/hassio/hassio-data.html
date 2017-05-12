@@ -29,27 +29,29 @@ Polymer({
   },
 
   refresh: function () {
-    this.fetchSupervisorInfo();
-    this.fetchHostInfo();
-    this.fetchHassInfo();
+    return Promise.all([
+      this.fetchSupervisorInfo(),
+      this.fetchHostInfo(),
+      this.fetchHassInfo(),
+    ]);
   },
 
   fetchSupervisorInfo: function () {
-    this.hass.callApi('get', 'hassio/supervisor/info')
+    return this.hass.callApi('get', 'hassio/supervisor/info')
       .then(function (info) {
         this.supervisor = info.data;
       }.bind(this));
   },
 
   fetchHostInfo: function () {
-    this.hass.callApi('get', 'hassio/host/info')
+    return this.hass.callApi('get', 'hassio/host/info')
       .then(function (info) {
         this.host = info.data;
       }.bind(this));
   },
 
   fetchHassInfo: function () {
-    this.hass.callApi('get', 'hassio/homeassistant/info')
+    return this.hass.callApi('get', 'hassio/homeassistant/info')
       .then(function (info) {
         this.homeassistant = info.data;
       }.bind(this));
