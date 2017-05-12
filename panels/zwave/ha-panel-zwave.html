@@ -546,8 +546,6 @@ Polymer({
     console.log('selectedNodeChanged', selectedNode);
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
-    this.selectedUserCode = -1;
-    this.selectedUserCodeValue = '';
     this.selectedGroup = -1;
     var configData = [];
     this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (configs) {
@@ -666,22 +664,6 @@ Polymer({
     return false;
   },
 
-  isUserCodeSelected: function (selectedUserCode) {
-    if (selectedUserCode === -1) return false;
-    return true;
-  },
-
-  selectedUserCodeChanged: function (selectedUserCode) {
-    if (selectedUserCode === -1) return;
-//    console.log('pre', this.userCodes[selectedUserCode].value.code);
-    var value = (parseInt((this.userCodes[selectedUserCode].value.code).trim()));
-    this.userCodeMaxLen = (this.userCodes[selectedUserCode].value.length);
-//    console.log('length ', this.userCodes[selectedUserCode].value.length);
-    if (isNaN(value)) this.selectedUserCodeValue = '';
-    else this.selectedUserCodeValue = value;
-//    console.log('post', this.selectedUserCodeValue);
-  },
-
   computeSelectCaption: function (stateObj) {
     return window.hassUtil.computeStateName(stateObj) + ' (Node:' +
       stateObj.attributes.node_id + ' ' +
@@ -702,12 +684,6 @@ Polymer({
     return (stateObj.key + ': ' + stateObj.value.label);
   },
 
-  computeSelectCaptionUserCodes: function (stateObj) {
-//    console.log('computecap: ', this.config);
-//    console.log(stateObj.value.label);
-    return (stateObj.key + ': ' + stateObj.value.label);
-  },
-
   computeIsNodeSelected: function () {
 //    console.log('node', this.config);
     return (!this.nodes || this.selectedNode === -1);
@@ -715,10 +691,6 @@ Polymer({
 
   computeIsTargetNodeSelected: function (selectedTargetNode) {
     return (!this.nodes || selectedTargetNode === -1);
-  },
-
-  computeIsUserCodeSelected: function (selectedUserCode) {
-    return (!this.userCodes || selectedUserCode === -1);
   },
 
   computeIsGroupSelected: function (selectedGroup) {
