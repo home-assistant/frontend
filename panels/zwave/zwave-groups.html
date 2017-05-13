@@ -215,7 +215,7 @@ Polymer({
 //    console.log('refresh');
     var groupData = [];
     this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
-      Object.entries(usercodes).forEach(([key, value]) => {
+      Object.entries(groups).forEach(([key, value]) => {
         groupData.push({ key, value });
       });
       this.groups = groupData;
@@ -226,8 +226,8 @@ Polymer({
 
   selectedGroupChanged: function (selectedGroup) {
     if (this.selectedGroup === -1 || selectedGroup === -1) return;
-      this.maxAssociations = this.groups[selectedGroup].value.max_associations;
-      this.otherGroupNodes = Object.values(this.groups[selectedGroup].value.associations)
+    this.maxAssociations = this.groups[selectedGroup].value.max_associations;
+    this.otherGroupNodes = Object.values(this.groups[selectedGroup].value.associations);
   },
 });
 </script>

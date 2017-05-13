@@ -63,7 +63,7 @@
           hass='[[hass]]'
         ></zwave-network>
       </div>
-
+<!--Node card-->
       <div class='content'>
         <paper-card heading='Z-Wave Node Management'>
           <div class='card-content'>
@@ -122,6 +122,7 @@
               service-data=[[computeNodeNameServiceData(newNodeNameInput)]]
             >Rename Node</ha-call-service-button>
            </div>
+
            <div class='device-picker'>
             <paper-dropdown-menu label="Entities of this node" class="flex">
               <paper-listbox
@@ -133,6 +134,7 @@
               </paper-listbox>
             </paper-dropdown-menu>
            </div>
+           <template is='dom-if' if='[[!computeIsEntitySelected(selectedEntity)]]'>
            <div class='card-actions'>
             <ha-call-service-button
               hass='[[hass]]'
@@ -141,7 +143,6 @@
               service-data=[[computeRefreshEntityServiceData(selectedEntity)]]
             >Refresh Entity</ha-call-service-button>
            </div>
-           <template is='dom-if' if='[[!computeIsEntitySelected(selectedEntity)]]'>
            <div class='content'>
              <div class='card-actions'>
                <paper-button toggles raised noink active={{entityInfoActive}}>Entity Attributes</paper-button>
@@ -154,6 +155,7 @@
                </template>
              </template>
            </div>
+
            </template>
           </template>
         </paper-card>
@@ -333,7 +335,7 @@ Polymer({
 
   selectedNodeChanged: function (selectedNode) {
     if (selectedNode === -1) return;
-    console.log('selectedNodeChanged', selectedNode);
+//    console.log('selectedNodeChanged', selectedNode);
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
     this.selectedGroup = -1;
