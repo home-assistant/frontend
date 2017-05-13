@@ -15,6 +15,7 @@
 <link rel="import" href="./zwave-network.html">
 <link rel="import" href="./zwave-node-information.html">
 <link rel="import" href="./zwave-usercodes.html">
+<link rel="import" href="./zwave-groups.html">
 
 <dom-module id="ha-panel-zwave">
   <template>
@@ -183,61 +184,12 @@
         </template>
 <!--Group card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
-        <div class='content'>
-          <paper-card heading='Node group associations'>
-            <div class='device-picker'>
-            <paper-dropdown-menu label="Node to control" class='flex'>
-              <paper-listbox
-                class="dropdown-content"
-                selected='{{selectedTargetNode}}'>
-                 <template is='dom-repeat' items='[[nodes]]' as='state'>
-                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-            </div>
-          <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
-            <!--TODO make api for getting groups and members-->
-            <div class='device-picker'>
-            <paper-dropdown-menu label="Group" class='flex'>
-              <paper-listbox
-                class="dropdown-content"
-                selected='{{selectedGroup}}'>
-                <template is='dom-repeat' items='[[groups]]' as='state'>
-                  <paper-item>[[computeSelectCaptionGroup(state)]]</paper-item>
-                </template>
-              </paper-listbox>
-            </paper-dropdown-menu>
-            </div>
-          </template>
-            <template is='dom-if' if='[[!computeIsGroupSelected(selectedGroup)]]'>
-              <div class='help-text'>
-                <span>Other Nodes in this group:</span>
-                <template is='dom-repeat' items='[[otherGroupNodes]]' as='state'>
-                <span>[[state]]</span>
-                </template>
-              </div>
-              <div class='help-text'>
-                <span>Max Associations:</span>
-                <span>[[maxAssociations]]</span>
-              </div>
-            <div class='card-actions'>
-              <ha-call-service-button
-                hass='[[hass]]'
-                domain='zwave'
-                service='change_association'
-                service-data='[[computeAssocServiceData(selectedGroup, "add")]]'
-              >Add To Group</ha-call-service-button>
-              <ha-call-service-button
-                hass='[[hass]]'
-                domain='zwave'
-                service='change_association'
-                service-data='[[computeAssocServiceData(selectedGroup, "remove")]]'
-              >Remove From Group</ha-call-service-button>
-            </div>
-          </template>
-          </paper-card>
-        </div>
+          <zwave-groups
+            hass='[[hass]]'
+            nodes='[[nodes]]'
+            selected-node='[[selectedNode]]'
+            groups='[[groups]]'
+          ></zwave-groups>
         </template>
 <!--Config card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
@@ -383,28 +335,6 @@ Polymer({
 
     groups: {
       type: Array,
-    },
-
-    selectedTargetNode: {
-      type: Number,
-      value: -1
-    },
-
-    selectedGroup: {
-      type: Number,
-      value: -1,
-    },
-
-    otherGroupNodes: {
-      type: Array,
-      value: -1,
-      computed: 'computeOtherGroupNodes(selectedGroup)'
-    },
-
-    maxAssociations: {
-      type: String,
-      value: '',
-      computed: 'computeMaxAssociations(selectedGroup)'
     },
 
     config: {
@@ -582,15 +512,6 @@ Polymer({
     }.bind(this));
   },
 
-  computeMaxAssociations: function (selectedGroup) {
-    if (selectedGroup === -1) return -1;
-    var maxAssociations = this.groups[selectedGroup].value.max_associations;
-//    console.log(maxAssociations);
-//    console.log(Object.values(this.groups[selectedGroup].value.associations));
-    if (!maxAssociations) return ['None'];
-    return maxAssociations;
-  },
-
   computeConfigValueHelp: function (selectedConfigParameter) {
     if (selectedConfigParameter === -1) return '';
     var helpText = this.config[selectedConfigParameter].value.help;
@@ -598,15 +519,6 @@ Polymer({
 //    console.log(Object.values(this.groups[selectedGroup].value.associations));
     if (!helpText) return ['No helptext available'];
     return helpText;
-  },
-
-  computeOtherGroupNodes: function (selectedGroup) {
-    if (selectedGroup === -1) return -1;
-    var associations = Object.values(this.groups[selectedGroup].value.associations);
-//    console.log(associations);
-//    console.log(Object.values(this.groups[selectedGroup].value.associations));
-    if (!associations.length) return ['None'];
-    return associations;
   },
 
   computeSelectedEntityAttrs: function (selectedEntity) {
@@ -674,10 +586,6 @@ Polymer({
     return window.hassUtil.computeStateName(stateObj);
   },
 
-  computeSelectCaptionGroup: function (stateObj) {
-    return (stateObj.key + ': ' + stateObj.value.label);
-  },
-
   computeSelectCaptionConfigParameter: function (stateObj) {
 //    console.log('computecap: ', this.config);
 //    console.log(stateObj.value.label);
@@ -687,15 +595,6 @@ Polymer({
   computeIsNodeSelected: function () {
 //    console.log('node', this.config);
     return (!this.nodes || this.selectedNode === -1);
-  },
-
-  computeIsTargetNodeSelected: function (selectedTargetNode) {
-    return (!this.nodes || selectedTargetNode === -1);
-  },
-
-  computeIsGroupSelected: function (selectedGroup) {
-//    console.log(!selectedGroup === -1);
-    return (!this.nodes || this.selectedNode === -1 || selectedGroup === -1);
   },
 
   computeIsEntitySelected: function (selectedEntity) {
@@ -727,19 +626,6 @@ Polymer({
     var name = str.replace('zwave.', '');
 //    console.log('Node name: ', name);
     return name;
-  },
-
-  computeAssocServiceData: function (selectedGroup, type) {
-    if (!this.groups === -1 || selectedGroup === -1 || this.selectedNode === -1) return -1;
-//    console.log('type', type);
-//    console.log('Change association', JSON.stringify({ node_id: this.nodes[this.selectedNode].attributes.node_id,
-//      association: type,
-//      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-//      group: this.groups[selectedGroup].key }));
-    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      association: type,
-      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
-      group: this.groups[selectedGroup].key };
   },
 
   computeWakeupServiceData: function (wakeupInput) {
@@ -785,27 +671,6 @@ Polymer({
     return { node_id: this.nodes[this.selectedNode].attributes.node_id,
       parameter: this.config[this.selectedConfigParameter].key,
       value: valueData };
-  },
-
-  computeUserCodeServiceData: function (selectedUserCodeValue, type) {
-    if (this.selectedNode === -1 || !selectedUserCodeValue) return -1;
-//    console.log('computeUserCodeServiceData');
-    var serviceData = null;
-    var valueData = null;
-    if (type === 'Add') {
-//      console.log('add');
-      valueData = selectedUserCodeValue;
-      serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
-        code_slot: this.selectedUserCode,
-        usercode: valueData };
-    }
-    if (type === 'Delete') {
-//      console.log('delete');
-      serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
-        code_slot: this.selectedUserCode };
-    }
-//    console.log(serviceData);
-    return serviceData;
   },
 });
 </script>
