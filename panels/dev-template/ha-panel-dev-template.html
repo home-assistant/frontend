@@ -56,6 +56,10 @@
       .rendered.error {
         color: red;
       }
+
+      #template --paper-input-container textarea {
+        white-space: pre-wrap;
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -75,7 +79,7 @@
             <li><a href='http://jinja.pocoo.org/docs/dev/templates/' target='_blank'>Jinja2 template documentation</a></li>
             <li><a href='https://home-assistant.io/topics/templating/' target='_blank'>Home Assistant template extensions</a></li>
           </ul>
-          <paper-textarea label="Template" value='{{template}}'></paper-textarea>
+          <paper-textarea id='template' label="Template" value='{{template}}'></paper-textarea>
         </div>
 
         <div class='render-pane'>
