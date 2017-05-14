@@ -59,8 +59,11 @@ Polymer({
   },
 
   computeOptionsData: function (options) {
+    var parsed = options.trim();
+    parsed = parsed ?
+      parsed.split("\n").map(function(ent) { return ent.trim(); }) : [];
     return {
-      addons_repositories: options.split('\n'),
+      addons_repositories: parsed,
     };
   },
 });
