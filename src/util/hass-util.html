@@ -395,6 +395,8 @@ window.hassUtil.stateIcon = function (state) {
   if (unit && domain === 'sensor') {
     if (unit === '°C' || unit === '°F') {
       return 'mdi:thermometer';
+    } else if (unit === '°') {
+      return 'mdi:navigation';
     } else if (unit === 'Mice') {
       return 'mdi:mouse-variant';
     }

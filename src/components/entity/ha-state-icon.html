@@ -4,6 +4,11 @@
 
 <dom-module id="ha-state-icon">
   <template>
+    <style>
+      iron-icon {
+        transition: 1s ease-out;
+      }
+    </style>
     <iron-icon icon="[[computeIcon(stateObj)]]"></iron-icon>
   </template>
 </dom-module>
@@ -15,11 +20,22 @@ Polymer({
   properties: {
     stateObj: {
       type: Object,
+      observer: 'computeRotation',
     },
   },
 
   computeIcon: function (stateObj) {
     return window.hassUtil.stateIcon(stateObj);
   },
+
+  computeRotation: function (stateObj) {
+    var units = stateObj.attributes.unit_of_measurement;
+    // TODO(sdague): we honestly probably want semantic meaning for
+    // sensors which we could select on, but use this as a shortcut.
+    if (units === '°') {
+      var deg = Number(stateObj.state) % 360;
+      this.children[0].style.transform = 'rotate(' + deg + 'deg)';
+    }
+  }
 });
 </script>
