@@ -18,7 +18,8 @@
       .has-open_tilt .tilt,
       .has-close_tilt .tilt,
       .has-stop_tilt .tilt,
-      .has-set_tilt_position .tilt
+      .has-set_tilt_position .tilt,
+      .has_current_tilt_position .tilt
       {
         max-height: 90px;
       }
@@ -112,6 +113,7 @@ Polymer({
   computeClassNames: function (stateObj) {
     var classes = [
       window.hassUtil.attributeClassNames(stateObj, ['current_position']),
+      window.hassUtil.attributeClassNames(stateObj, ['current_tilt_position']),
       window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
     ];
     return classes.join(' ');
