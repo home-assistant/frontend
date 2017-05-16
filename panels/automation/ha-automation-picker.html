@@ -44,6 +44,10 @@
         bottom: 24px;
         right: 24px;
       }
+
+      a {
+        color: var(--primary-color);
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -62,11 +66,14 @@
         </paper-card>
 
         <paper-card heading='Pick automation to edit'>
-          <template is='dom-if' if='[[!automations.length]]'>
             <div class='card-content'>
-              We couldn't find any editable automations.
+              The automation editor allows you to create and edit automations.
+              Please read <a href='https://home-assistant.io/docs/automation/editor/' target='_blank'>the instructions</a>
+              to make sure that you have configured Home Assistant correctly.
+              <template is='dom-if' if='[[!automations.length]]'>
+                <p>We couldn't find any editable automations.</p>
+              </template>
             </div>
-          </template>
           <template is='dom-repeat' items='[[automations]]' as='automation'>
             <paper-item>
               <paper-item-body two-line on-tap='automationTapped'>

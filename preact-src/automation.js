@@ -58,8 +58,10 @@ export default class Automation extends Component {
         <ha-config-section is-wide={isWide}>
           <span slot='header'>Triggers</span>
           <span slot='introduction'>
-            Like a journey, every automation starts with a single step.
-            In this case it's what should trigger the automation.
+            Triggers are what starts the processing of an automation rule.
+            It is possible to specify multiple triggers for the same rule.
+            Once a trigger starts, Home Assistant will validate the conditions,
+            if any, and call the action.
             <p><a href="https://home-assistant.io/docs/automation/trigger/" target="_blank">
               Learn more about triggers.
             </a></p>
@@ -71,7 +73,12 @@ export default class Automation extends Component {
           <ha-config-section is-wide={isWide}>
             <span slot='header'>Conditions</span>
             <span slot='introduction'>
-              Conditions can be used to prevent an automation from executing.
+              Conditions are an optional part of an automation rule and can be used to prevent
+              an action from happening when triggered. Conditions look very similar to triggers
+              but are very different. A trigger will look at events happening in the system
+              while a condition only looks at how the system looks right now. A trigger can
+              observe that a switch is being turned on. A condition can only see if a switch
+              is currently on or off.
               <p><a href="https://home-assistant.io/docs/scripts/conditions/" target="_blank">
                 Learn more about conditions.
               </a></p>
@@ -87,7 +94,7 @@ export default class Automation extends Component {
         <ha-config-section is-wide={isWide}>
           <span slot='header'>Action</span>
           <span slot='introduction'>
-            The action part defines what the automation should do.
+            The actions are what Home Assistant will do when the automation is triggered.
             <p><a href="https://home-assistant.io/docs/scripts/" target="_blank">
               Learn more about actions.
             </a></p>
