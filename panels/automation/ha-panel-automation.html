@@ -18,17 +18,19 @@
     <iron-media-query query="(min-width: 1296px)" query-matches="{{wideSidebar}}">
     </iron-media-query>
 
-    <template is='dom-if' if='[[!automation]]'>
+    <template is='dom-if' if='[[!showEditor]]'>
       <ha-automation-picker
         automations='[[automations]]'
+        is-wide='[[isWide]]'
       ></ha-automation-picker>
     </template>
 
-    <template is='dom-if' if='[[automation]]' restamp>
+    <template is='dom-if' if='[[showEditor]]' restamp>
       <ha-automation-editor
         hass='[[hass]]'
         automation='[[automation]]'
         is-wide='[[isWide]]'
+        creating-new='[[creatingNew]]'
       ></ha-automation-editor>
     </template>
   </template>
@@ -64,7 +66,7 @@ Polymer({
 
     automation: {
       type: Object,
-      computed: 'computeAutomation(automations, automationId)',
+      computed: 'computeAutomation(automations, automationId, creatingNew)',
     },
 
     wide: {
@@ -79,17 +81,31 @@ Polymer({
       type: Boolean,
       computed: 'computeIsWide(showMenu, wideSidebar, wide)'
     },
+
+    creatingNew: {
+      type: Boolean,
+      value: false,
+    },
+
+    showEditor: {
+      type: Boolean,
+      computed: 'computeShowEditor(automation, creatingNew)',
+    }
   },
 
   listeners: {
     'hass-automation-picked': 'automationPicked',
+    'hass-create-automation': 'createAutomation',
   },
 
   computeIsWide: function (showMenu, wideSidebar, wide) {
     return showMenu ? wideSidebar : wide;
   },
 
-  computeAutomation: function (automations, automationId) {
+  computeAutomation: function (automations, automationId, creatingNew) {
+    if (creatingNew) {
+      return null;
+    }
     for (var i = 0; i < automations.length; i++) {
       if (automations[i].attributes.id === automationId) {
         return automations[i];
@@ -126,8 +142,19 @@ Polymer({
     });
   },
 
+  computeShowEditor: function (automation, creatingNew) {
+    return creatingNew || automation;
+  },
+
   automationPicked: function (ev) {
     this.automationId = ev.detail.id;
-  }
+    if (this.creatingNew) {
+      this.creatingNew = false;
+    }
+  },
+
+  createAutomation: function () {
+    this.creatingNew = true;
+  },
 });
 </script>

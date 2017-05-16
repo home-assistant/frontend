@@ -141,6 +141,11 @@ Polymer({
       observer: 'automationChanged',
     },
 
+    creatingNew: {
+      type: Boolean,
+      observer: 'creatingNewChanged',
+    },
+
     name: {
       type: String,
       computed: 'computeName(automation)'
@@ -152,7 +157,7 @@ Polymer({
     },
   },
 
-  attached: function () {
+  created: function () {
     this.configChanged = this.configChanged.bind(this);
   },
 
@@ -194,6 +199,23 @@ Polymer({
       }.bind(this));
   },
 
+  creatingNewChanged: function (newVal) {
+    if (!newVal) {
+      return;
+    }
+    this.dirty = false;
+    this.config = {
+      alias: 'New Automation',
+      trigger: [
+        { platform: 'state' },
+      ],
+      action: [
+        { service: '' },
+      ],
+    };
+    this._updateComponent();
+  },
+
   isWideChanged: function () {
     if (this.config === null) return;
     this._updateComponent();
@@ -218,10 +240,16 @@ Polymer({
   },
 
   saveAutomation: function () {
+    var id = this.creatingNew ? '' + Date.now() : this.automation.attributes.id;
     this.hass.callApi(
-      'post', 'config/automation/config/' + this.automation.attributes.id,
-      this.config).then(function () {
+      'post', 'config/automation/config/' + id, this.config).then(function () {
         this.dirty = false;
+
+        if (this.creatingNew) {
+          this.fire('hass-automation-picked', {
+            id: id,
+          });
+        }
       }.bind(this), function (errors) {
         this.errors = errors.body.message;
         throw errors;
