@@ -112,8 +112,7 @@ Polymer({
 
   computeClassNames: function (stateObj) {
     var classes = [
-      window.hassUtil.attributeClassNames(stateObj, ['current_position']),
-      window.hassUtil.attributeClassNames(stateObj, ['current_tilt_position']),
+      window.hassUtil.attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
       window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
     ];
     return classes.join(' ');
