@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 
 <dom-module id="ha-automation-picker">
   <template>
@@ -30,6 +31,18 @@
 
       paper-item {
         cursor: pointer;
+      }
+
+      paper-fab {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        z-index: 1;
+      }
+
+      paper-fab[is-wide] {
+        bottom: 24px;
+        right: 24px;
       }
     </style>
 
@@ -64,6 +77,13 @@
             </paper-item>
           </template>
         </paper-card>
+
+        <paper-fab
+          is-wide$='[[isWide]]'
+          icon='mdi:plus'
+          title='Add Automation'
+          on-tap='addAutomation'
+        ></paper-fab>
       </div>
     </app-header-layout>
 
@@ -91,12 +111,20 @@ Polymer({
     automations: {
       type: Array,
     },
+
+    isWide: {
+      type: Boolean,
+    },
   },
 
   automationTapped: function (ev) {
     this.fire('hass-automation-picked', {
       id: this.automations[ev.model.index].attributes.id,
     });
+  },
+
+  addAutomation: function () {
+    this.fire('hass-create-automation');
   },
 
   computeName: function (automation) {
