@@ -124,50 +124,39 @@ Polymer({
 
   isUserCodeSelected: function (selectedUserCode) {
     if (selectedUserCode === -1) return false;
-//    console.log('usercode selected');
     return true;
   },
 
   computeSelectCaptionUserCodes: function (stateObj) {
-//    console.log('computecap: ', this.userCodes);
-//    console.log(stateObj.value.label);
     return (stateObj.key + ': ' + stateObj.value.label);
   },
 
   selectedUserCodeChanged: function (selectedUserCode) {
     if (this.selectedUserCode === -1 || selectedUserCode === -1) return;
-//    console.log('pre', this.userCodes[selectedUserCode].value.code);
     var value = (parseInt((this.userCodes[selectedUserCode].value.code).trim()));
     this.userCodeMaxLen = (this.userCodes[selectedUserCode].value.length);
-//    console.log('length ', this.userCodes[selectedUserCode].value.length);
     if (isNaN(value)) this.selectedUserCodeValue = '';
     else this.selectedUserCodeValue = value;
-//    console.log('post', this.selectedUserCodeValue);
   },
 
   computeUserCodeServiceData: function (selectedUserCodeValue, type) {
     if (this.selectedNode === -1 || !selectedUserCodeValue) return -1;
-//    console.log('computeUserCodeServiceData');
     var serviceData = null;
     var valueData = null;
     if (type === 'Add') {
-//      console.log('add');
       valueData = selectedUserCodeValue;
       serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
         code_slot: this.selectedUserCode,
         usercode: valueData };
     }
     if (type === 'Delete') {
-//      console.log('delete');
       serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
         code_slot: this.selectedUserCode };
     }
-//    console.log(serviceData);
     return serviceData;
   },
 
   refreshUserCodes: function (selectedNode) {
-//    console.log('refresh');
     this.selectedUserCodeValue = '';
     var userCodes = [];
     this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
@@ -176,7 +165,6 @@ Polymer({
       });
       this.userCodes = userCodes;
       this.selectedUserCodeChanged(this.selectedUserCode);
-//      console.log('new usercodes');
     }.bind(this));
   },
 });
