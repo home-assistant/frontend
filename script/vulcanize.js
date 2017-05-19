@@ -63,7 +63,7 @@ const toProcess = [
     source: './panels/hassio/hassio-main.html',
     output: './build-temp/hassio-main.html',
     vulcan: new Vulcanize(Object.assign({}, baseVulcanOptions, {
-      stripExcludes: baseExcludes,
+      stripExcludes: baseExcludes.concat('bower_components/polymer/polymer.html'),
     })),
   },
 ];
