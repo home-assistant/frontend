@@ -41,15 +41,16 @@ export default class JSONTextArea extends Component {
   render(props, { value, isValid }) {
     const style = {
       minWidth: 300,
+      width: '100%',
     };
     if (!isValid) {
       style.border = '1px solid red';
     }
     return (
-      <textarea
+      <iron-autogrow-textarea
         value={value}
         style={style}
-        onChange={this.onChange}
+        onValue-Changed={this.onChange}
       />
     );
   }
