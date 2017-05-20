@@ -18,10 +18,10 @@ export default class CallServiceAction extends Component {
   }
 
   /* eslint-disable camelcase */
-  serviceDataChanged(service_data) {
+  serviceDataChanged(data) {
     this.props.onChange(this.props.index, {
       ...this.props.action,
-      service_data,
+      data,
     });
   }
 
