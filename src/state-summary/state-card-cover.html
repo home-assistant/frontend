@@ -19,8 +19,8 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='horizontal layout'>
-        <ha-cover-controls hidden$="[[isTiltOnly(entityObj)]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
-        <ha-cover-tilt-controls hidden$="[[!isTiltOnly(entityObj)]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
+        <ha-cover-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
+        <ha-cover-tilt-controls hidden$="[[!entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
       </div>
     </div>
   </template>
@@ -51,9 +51,6 @@ Polymer({
 
   },
 
-  isTiltOnly: function (entityObj) {
-    return entityObj.computeOnlyTilt();
-  },
   computeEntityObj: function (hass, stateObj) {
     var entity = new window.CoverEntity(hass, stateObj);
     return entity;

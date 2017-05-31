@@ -40,7 +40,7 @@
       <div class='tilt'>
         <div>Tilt position</div>
         <div>
-          <ha-cover-tilt-controls hidden$="[[isTiltOnly(entityObj)]]" hass="[[hass]]" state-obj="[[stateObj]]">
+          <ha-cover-tilt-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]">
           </ha-cover-tilt-controls>
         </div>
         <paper-slider
@@ -82,10 +82,6 @@ Polymer({
       type: Number,
     },
 
-  },
-
-  isTiltOnly: function (entityObj) {
-    return entityObj.computeOnlyTilt();
   },
 
   computeEntityObj: function (hass, stateObj) {

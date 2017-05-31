@@ -66,6 +66,19 @@
     return (this.stateObj.attributes.supported_features & 128) !== 0;
   });
 
+  addGetter('isTiltOnly', function () {
+    var stateObj = this.stateObj;
+    var tiltClasses = [
+      window.hassUtil.featureClassNames(stateObj, this.tiltFeatureClassNames),
+    ];
+    var tiltClassString = tiltClasses.join(' ').trim();
+    var openClasses = [
+      window.hassUtil.featureClassNames(stateObj, this.openFeatureClassNames),
+    ];
+    var openClassString = openClasses.join(' ').trim();
+    return tiltClassString !== '' && openClassString === '';
+  });
+
   /* eslint-enable no-bitwise */
 
   Object.assign(window.CoverEntity.prototype, {
@@ -112,19 +125,6 @@
       2: 'has-close',
       4: 'has-support_set_position',
       8: 'has-support-stop',
-    },
-
-    computeOnlyTilt: function () {
-      var stateObj = this.stateObj;
-      var tiltClasses = [
-        window.hassUtil.featureClassNames(stateObj, this.tiltFeatureClassNames),
-      ];
-      var tiltClassString = tiltClasses.join(' ').trim();
-      var openClasses = [
-        window.hassUtil.featureClassNames(stateObj, this.openFeatureClassNames),
-      ];
-      var openClassString = openClasses.join(' ').trim();
-      return tiltClassString !== '' && openClassString === '';
     },
 
     // helper method
