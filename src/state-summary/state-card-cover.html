@@ -19,8 +19,8 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='horizontal layout'>
-        <ha-cover-controls hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
-        <ha-cover-tilt-controls hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
+        <ha-cover-controls hidden$="[[computeOnlyTilt(stateObj)]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
+        <ha-cover-tilt-controls hidden$="[[!computeOnlyTilt(stateObj)]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
       </div>
     </div>
   </template>
@@ -43,6 +43,32 @@ Polymer({
     stateObj: {
       type: Object,
     },
+
   },
+
+  tiltFeatureClassNames: {
+      16: 'has-open_tilt',
+      32: 'has-close_tilt',
+      64: 'has-stop_tilt',
+  },
+    
+  openFeatureClassNames: {
+      1: 'has-open',
+      2: 'has-close',
+      4: 'has-support_set_position',
+      8: 'has-support-stop',
+  },
+
+  computeOnlyTilt: function(stateObj) {
+      var tiltClasses = [
+        window.hassUtil.featureClassNames(stateObj, this.tiltFeatureClassNames),
+      ];
+      var tiltClassString = tiltClasses.join(' ').trim();
+      var openClasses = [
+        window.hassUtil.featureClassNames(stateObj, this.openFeatureClassNames),
+      ];
+      var openClassString = openClasses.join(' ').trim();
+      return tiltClassString != '' && openClassString == '';
+    }
 });
 </script>

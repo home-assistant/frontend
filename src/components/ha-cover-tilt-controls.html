@@ -10,21 +10,8 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      :host {
-        --ha-cover-tilt-controls-display: inline-block;
-        display: var(--ha-cover-tilt-controls-display);
-      }
-      
       .tilt {
         white-space: nowrap;
-        max-height: 0px;
-      }
-
-      .has-open_tilt .tilt,
-      .has-close_tilt .tilt,
-      .has-stop_tilt .tilt,
-      {
-        max-height: 40px;
       }
 
       [invisible] {
@@ -84,12 +71,7 @@ Polymer({
     var classes = [
       window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
     ];
-    var classString = classes.join(' ').trim();
-    if (classString === '') {
-      this.customStyle['--ha-cover-tilt-controls-display'] = 'none';
-      this.updateStyles();
-    }
-    return classString;
+    return classes.join(' ').trim();
   },
 
   onOpenTiltTap: function (ev) {

@@ -39,6 +39,9 @@
 
       <div class='tilt'>
         <div>Tilt position</div>
+        <div>
+          <ha-cover-tilt-controls hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
+        </div>
         <paper-slider
           min='0' max='100'
           value='{{coverTiltPositionSliderValue}}'
