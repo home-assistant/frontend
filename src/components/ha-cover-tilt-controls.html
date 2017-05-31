@@ -10,7 +10,7 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      .tilt {
+      :host {
         white-space: nowrap;
       }
 
@@ -18,22 +18,17 @@
         visibility: hidden !important;
       }
     </style>
-    <div class$='[[computeClassNames(stateObj)]]'>
-      <div class='tilt'>
-        <paper-icon-button icon="mdi:arrow-top-right" 
-          on-tap='onOpenTiltTap' title='Open tilt'
-          invisible$='[[!entityObj.supportsOpenTilt]]'
-          disabled='[[entityObj.isFullyOpenTilt]]'></paper-icon-button>
-        <paper-icon-button icon="mdi:stop" on-tap='onStopTiltTap'
-          invisible$='[[!entityObj.supportsStopTilt]]'
-          title='Stop tilt'></paper-icon-button>
-        <paper-icon-button icon="mdi:arrow-bottom-left"
-          on-tap='onCloseTiltTap' title='Close tilt'
-          invisible$='[[!entityObj.supportsCloseTilt]]'
-          disabled='[[entityObj.isFullyClosedTilt]]'></paper-icon-button>
-      </div>
-
-    </div>
+    <paper-icon-button icon="mdi:arrow-top-right" 
+      on-tap='onOpenTiltTap' title='Open tilt'
+      invisible$='[[!entityObj.supportsOpenTilt]]'
+      disabled='[[entityObj.isFullyOpenTilt]]'></paper-icon-button>
+    <paper-icon-button icon="mdi:stop" on-tap='onStopTiltTap'
+      invisible$='[[!entityObj.supportsStopTilt]]'
+      title='Stop tilt'></paper-icon-button>
+    <paper-icon-button icon="mdi:arrow-bottom-left"
+      on-tap='onCloseTiltTap' title='Close tilt'
+      invisible$='[[!entityObj.supportsCloseTilt]]'
+      disabled='[[entityObj.isFullyClosedTilt]]'></paper-icon-button>
   </template>
 </dom-module>
 
@@ -59,19 +54,6 @@ Polymer({
   computeEntityObj: function (hass, stateObj) {
     var entity = new window.CoverEntity(hass, stateObj);
     return entity;
-  },
-
-  featureClassNames: {
-    16: 'has-open_tilt',
-    32: 'has-close_tilt',
-    64: 'has-stop_tilt',
-  },
-
-  computeClassNames: function (stateObj) {
-    var classes = [
-      window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
-    ];
-    return classes.join(' ').trim();
   },
 
   onOpenTiltTap: function (ev) {
