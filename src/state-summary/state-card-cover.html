@@ -51,13 +51,13 @@ Polymer({
 
   },
 
-  isTiltOnly: function(entityObj) {
-      return entityObj.computeOnlyTilt();
+  isTiltOnly: function (entityObj) {
+    return entityObj.computeOnlyTilt();
   },
   computeEntityObj: function (hass, stateObj) {
     var entity = new window.CoverEntity(hass, stateObj);
     return entity;
   },
-  
+
 });
 </script>
