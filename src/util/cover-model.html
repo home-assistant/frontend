@@ -67,7 +67,6 @@
   });
 
   addGetter('isTiltOnly', function () {
-    var stateObj = this.stateObj;
     var supportsCover = this.supportsOpen || this.supportsClose || this.supportsStop;
     var supportsTilt = this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
     return supportsTilt && !supportsCover;
