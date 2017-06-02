@@ -23,6 +23,7 @@
       }
 
       .container-away_mode,
+      .container-frostguard_mode,
       .container-aux_heat,
       .container-temperature,
       .container-humidity,
@@ -33,6 +34,7 @@
       }
 
       .has-away_mode .container-away_mode,
+      .has-frostguard_mode .container-frostguard_mode,
       .has-aux_heat .container-aux_heat,
       .has-temperature .container-temperature,
       .has-humidity .container-humidity,
@@ -171,6 +173,16 @@
         </div>
       </div>
 
+      <div class='container-frostguard_mode'>
+        <div class='center horizontal layout single-row'>
+          <div class='flex'>Frost-guard Mode</div>
+          <paper-toggle-button
+            checked='[[frostguardToggleChecked]]'
+            on-change='frostguardToggleChanged'>
+          </paper-toggle-button>
+        </div>
+      </div>
+
       <div class='container-aux_heat'>
         <div class='center horizontal layout single-row'>
           <div class='flex'>Aux Heat</div>
@@ -220,6 +232,10 @@ Polymer({
       type: Boolean,
     },
 
+    frostguardToggleChecked: {
+      type: Boolean,
+    },
+
     auxToggleChecked: {
       type: Boolean,
     },
@@ -227,6 +243,7 @@ Polymer({
 
   stateObjChanged: function (newVal, oldVal) {
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
+    this.frostguardToggleChecked = newVal.attributes.frostguard_mode === 'on';
     this.auxToggleChecked = newVal.attributes.aux_heat === 'on';
 
     if (newVal.attributes.fan_list) {
@@ -284,7 +301,7 @@ Polymer({
   computeClassNames: function (stateObj) {
     return 'more-info-climate ' + window.hassUtil.attributeClassNames(
       stateObj, [
-        'away_mode', 'aux_heat', 'temperature', 'humidity', 'operation_list',
+        'away_mode', 'frostguard_mode', 'aux_heat', 'temperature', 'humidity', 'operation_list',
         'fan_list', 'swing_list',
       ]
     );
@@ -327,6 +344,15 @@ Polymer({
     if (oldVal === newVal) return;
 
     this.callServiceHelper('set_away_mode', { away_mode: newVal });
+  },
+
+  frostguardToggleChanged: function (ev) {
+    var oldVal = this.stateObj.attributes.frostguard_mode === 'on';
+    var newVal = ev.target.checked;
+
+    if (oldVal === newVal) return;
+
+    this.callServiceHelper('set_frostguard_mode', { frostguard_mode: newVal });
   },
 
   auxToggleChanged: function (ev) {
