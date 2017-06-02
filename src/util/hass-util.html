@@ -344,7 +344,7 @@ window.hassUtil.domainIcon = function (domain, state) {
 };
 
 window.hassUtil.binarySensorIcon = function (state) {
-  var activated = state.state && state.state === 'off';
+  var activated = state.state && (window.hassUtil.OFF_STATES.indexOf(state.state) !== -1);
   switch (state.attributes.device_class) {
     case 'connectivity':
       return activated ? 'mdi:server-network-off' : 'mdi:server-network';
