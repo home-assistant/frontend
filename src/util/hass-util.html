@@ -415,7 +415,11 @@ window.hassUtil.computeDomain = function (stateObj) {
   return stateObj._domain;
 };
 
-window.hassUtil.computeStateName = function (stateObj) {
+window.hassUtil.computeStateName = function (stateObj, optContext) {
+  if (optContext && stateObj.attributes.friendly_names &&
+      stateObj.attributes.friendly_names[optContext] !== undefined) {
+    return stateObj.attributes.friendly_names[optContext];
+  }
   if (stateObj._entityDisplay === undefined) {
     stateObj._entityDisplay = (
       stateObj.attributes.friendly_name ||

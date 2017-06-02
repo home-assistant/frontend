@@ -37,7 +37,7 @@
       
       test('default values', function() {
         assert.isUndefined(si.stateObj);
-        assert.isUndefined(si.inDialog);
+        assert.isFalse(si.inDialog);
       });
 
       test('has state-badge', function() {
