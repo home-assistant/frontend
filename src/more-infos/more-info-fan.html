@@ -217,11 +217,11 @@ Polymer({
   },
 
   computeHideNightMode: function (stateObj) {
-    return (this.stateObj.attributes.supported_features & 8) === 0;
+    return (stateObj.attributes.supported_features & 8) === 0;
   },
 
   computeHideAutoMode: function (stateObj) {
-    return (this.stateObj.attributes.supported_features & 16) === 0;
+    return (stateObj.attributes.supported_features & 16) === 0;
   },
 
 });
