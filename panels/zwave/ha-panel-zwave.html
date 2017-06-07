@@ -14,9 +14,10 @@
 <link rel="import" href="./zwave-log.html">
 <link rel="import" href="./zwave-network.html">
 <link rel="import" href="./zwave-node-information.html">
+<link rel="import" href="./zwave-values.html">
+<link rel="import" href="./zwave-groups.html">
 <link rel="import" href="./zwave-node-config.html">
 <link rel="import" href="./zwave-usercodes.html">
-<link rel="import" href="./zwave-groups.html">
 
 <dom-module id="ha-panel-zwave">
   <template>
@@ -168,6 +169,15 @@
             selected-node='[[selectedNode]]'
           ></zwave-node-information>
         </template>
+<!--Value card-->
+        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+          <zwave-values
+            hass='[[hass]]'
+            nodes='[[nodes]]'
+            selected-node='[[selectedNode]]'
+            values='[[values]]'
+          ></zwave-values>
+        </template>
 <!--Group card-->
         <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
           <zwave-groups
@@ -265,6 +275,10 @@ Polymer({
       computed: 'computeSelectedEntityAttrs(selectedEntity)'
     },
 
+    values: {
+      type: Array,
+    },
+
     groups: {
       type: Array,
     },
@@ -331,6 +345,8 @@ Polymer({
   },
 
   selectedNodeChanged: function (selectedNode) {
+    this.newNodeNameInput = '';
+
     if (selectedNode === -1) return;
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
@@ -341,6 +357,13 @@ Polymer({
         configData.push({ key, value });
       });
       this.config = configData;
+    }.bind(this));
+    var valueData = [];
+    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(function (values) {
+      Object.entries(values).forEach(([key, value]) => {
+        valueData.push({ key, value });
+      });
+      this.values = valueData;
     }.bind(this));
     var groupData = [];
     this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
@@ -402,9 +425,7 @@ Polymer({
   computeGetNodeName: function (selectedNode) {
     if (this.selectedNode === -1 ||
       !this.nodes[selectedNode].entity_id) return -1;
-    var str = (this.nodes[selectedNode].entity_id);
-    var name = str.replace('zwave.', '');
-    return name;
+    return this.nodes[selectedNode].attributes.node_name;
   },
 
   computeNodeNameServiceData: function (newNodeNameInput) {

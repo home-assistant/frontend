@@ -60,7 +60,7 @@
 	      </template>
 	      <template is='dom-if' if='[[defaultView]]'>
 	        <template is='dom-if' if='[[defaultView.attributes.icon]]'>
-		  <iron-icon title=$='[[computeStateName(defaultView)]]' icon='[[defaultView.attributes.icon]]'></iron-icon>
+		  <iron-icon title$='[[computeStateName(defaultView)]]' icon='[[defaultView.attributes.icon]]'></iron-icon>
 		</template>
 		<template is='dom-if' if='[[!defaultView.attributes.icon]]'>
 		  [[computeStateName(defaultView)]]
