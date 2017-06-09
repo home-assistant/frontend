@@ -12,12 +12,14 @@
     <style is='custom-style' include='iron-flex'></style>
     <style>
       .container-speed_list,
-      .container-direction {
+      .container-direction,
+      .container-oscillating {
         display: none;
       }
 
       .has-speed_list .container-speed_list,
-      .has-direction .container-direction {
+      .has-direction .container-direction,
+      .has-oscillating .container-oscillating {
         display: block;
       }
     </style>
@@ -35,7 +37,7 @@
         </paper-dropdown-menu>
       </div>
 
-      <div class='container-oscillating' hidden$='[[computeHideOscillation(stateObj)]]'>
+      <div class='container-oscillating'>
         <div class='center horizontal layout single-row'>
           <div class='flex'>Oscillate</div>
           <paper-toggle-button
@@ -154,10 +156,6 @@ Polymer({
 
   computeIsRotatingRight: function (stateObj) {
     return stateObj.attributes.direction === 'right';
-  },
-
-  computeHideOscillation: function (stateObj) {
-    return stateObj.attributes.direction;
   },
 
 });
