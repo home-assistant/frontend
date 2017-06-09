@@ -215,7 +215,7 @@
       // Find column with < 5 entities, else column with lowest count
       function getIndex(size) {
         var minIndex = 0;
-        for (i = minIndex; i < entityCount.length; i++) {
+        for (i = 0; i < entityCount.length; i++) {
           if (entityCount[i] < 5) {
             minIndex = i;
             break;
@@ -229,6 +229,7 @@
 
         return minIndex;
       }
+
       if (showIntroduction) {
         cards.columns[getIndex(5)].push({
           hass: hass,
@@ -262,7 +263,7 @@
         });
 
         // Add 1 to the size if we're rendering entities card
-        size += other.length > 1;
+        size += other.length > 0;
 
         curIndex = getIndex(size);
 
