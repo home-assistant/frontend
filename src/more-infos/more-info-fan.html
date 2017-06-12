@@ -24,6 +24,28 @@
 
     <div class$='[[computeClassNames(stateObj)]]'>
 
+      <div class='container-night-mode'
+           hidden$='[[computeHideAutoMode(stateObj)]]'>
+        <div class='center horizontal layout single-row'>
+          <div class='flex'>Auto Mode</div>
+          <paper-toggle-button
+              checked='[[autoModeToggleChecked]]'
+              on-change='autoModeToggleChanged'>
+          </paper-toggle-button>
+        </div>
+      </div>
+
+      <div class='container-night-mode'
+           hidden$='[[computeHideNightMode(stateObj)]]'>
+        <div class='center horizontal layout single-row'>
+          <div class='flex'>Night Mode</div>
+          <paper-toggle-button
+              checked='[[nightModeToggleChecked]]'
+              on-change='nightModeToggleChanged'>
+          </paper-toggle-button>
+        </div>
+      </div>
+
       <div class="container-speed_list">
         <paper-dropdown-menu label-float label='Speed'>
           <paper-menu class='dropdown-content' selected='{{speedIndex}}'>
@@ -83,10 +105,20 @@ Polymer({
     oscillationToggleChecked: {
       type: Boolean,
     },
+
+    nightModeToggleChecked: {
+      type: Boolean,
+    },
+
+    autoModeToggleChecked: {
+      type: Boolean,
+    },
   },
 
   stateObjChanged: function (newVal, oldVal) {
     this.oscillationToggleChecked = newVal.attributes.oscillating;
+    this.nightModeToggleChecked = newVal.attributes.night_mode;
+    this.autoModeToggleChecked = newVal.attributes.auto_mode;
 
     if (newVal.attributes.speed_list) {
       this.speedIndex = newVal.attributes.speed_list.indexOf(
@@ -134,6 +166,30 @@ Polymer({
     });
   },
 
+  nightModeToggleChanged: function (ev) {
+    var oldVal = this.stateObj.attributes.night_mode;
+    var newVal = ev.target.checked;
+
+    if (oldVal === newVal) return;
+
+    this.hass.callService('fan', 'set_night_mode', {
+      entity_id: this.stateObj.entity_id,
+      night_mode: newVal,
+    });
+  },
+
+  autoModeToggleChanged: function (ev) {
+    var oldVal = this.stateObj.attributes.auto_mode;
+    var newVal = ev.target.checked;
+
+    if (oldVal === newVal) return;
+
+    this.hass.callService('fan', 'set_auto_mode', {
+      entity_id: this.stateObj.entity_id,
+      auto_mode: newVal,
+    });
+  },
+
   onDirectionLeft: function () {
     this.hass.callService('fan', 'set_direction', {
       entity_id: this.stateObj.entity_id,
@@ -160,5 +216,14 @@ Polymer({
     return stateObj.attributes.direction;
   },
 
+  computeHideNightMode: function (stateObj) {
+    return (stateObj.attributes.supported_features & 8) === 0;
+  },
+
+  computeHideAutoMode: function (stateObj) {
+    return (stateObj.attributes.supported_features & 16) === 0;
+  },
+
 });
 </script>
+
