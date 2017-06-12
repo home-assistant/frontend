@@ -46,18 +46,20 @@
         </paper-dropdown-menu>
         </div>
         <template is='dom-if' if='[[!computeIsValueSelected(selectedValue)]]'>
-          <paper-input
-            float-label="Value Name"
-            type=text
-            value={{newValueNameInput}}
-            placeholder=[[computeGetValueName(selectedValue)]]>
-          </paper-input>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='rename_value'
-            service-data=[[computeValueNameServiceData(newValueNameInput)]]
-          >Rename Value</ha-call-service-button>
+          <div class='card-actions'>
+            <paper-input
+              float-label="Value Name"
+              type=text
+              value={{newValueNameInput}}
+              placeholder=[[computeGetValueName(selectedValue)]]>
+            </paper-input>
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='rename_value'
+              service-data=[[computeValueNameServiceData(newValueNameInput)]]
+            >Rename Value</ha-call-service-button>
+          </div>
         </template>
       </paper-card>
     </div>
