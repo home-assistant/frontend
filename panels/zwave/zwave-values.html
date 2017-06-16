@@ -107,7 +107,7 @@ Polymer({
   },
 
   computeSelectCaption: function (item) {
-    return item.value.label;
+    return item.value.label + ' (Instance: ' + item.value.instance + ', Index: ' + item.value.index + ')';
   },
 
   computeGetValueName: function (selectedValue) {
