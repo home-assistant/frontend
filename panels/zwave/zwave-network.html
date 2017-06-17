@@ -28,11 +28,19 @@
           hass='[[hass]]'
           domain='zwave'
           service='add_node_secure'
+          show-description
+        >Add Node Secure</ha-call-service-button>
+        <ha-call-service-button
+          hass='[[hass]]'
+          domain='zwave'
+          service='add_node'
+          show-description
         >Add Node</ha-call-service-button>
         <ha-call-service-button
           hass='[[hass]]'
           domain='zwave'
           service='remove_node'
+          show-description
         >Remove Node</ha-call-service-button>
       </div>
       <div class='card-actions warning'>
@@ -40,6 +48,7 @@
           hass='[[hass]]'
           domain='zwave'
           service='cancel_command'
+          show-description
         >Cancel Command</ha-call-service-button>
       </div>
       <div class='card-actions'>
@@ -47,26 +56,31 @@
           hass='[[hass]]'
           domain='zwave'
           service='heal_network'
+          show-description
         >Heal Network</ha-call-service-button>
         <ha-call-service-button
           hass='[[hass]]'
           domain='zwave'
           service='start_network'
+          show-description
         >Start Network</ha-call-service-button>
         <ha-call-service-button
           hass='[[hass]]'
           domain='zwave'
           service='stop_network'
+          show-description
         >Stop Network</ha-call-service-button>
         <ha-call-service-button
           hass='[[hass]]'
           domain='zwave'
           service='soft_reset'
+          show-description
         >Soft Reset</ha-call-service-button>
         <ha-call-service-button
           hass='[[hass]]'
           domain='zwave'
           service='test_network'
+          show-description
         >Test Network</ha-call-service-button>
       </div>
     </paper-card>

@@ -8,6 +8,9 @@
       progress='[[progress]]'
       on-tap='buttonTapped'
     ><slot></slot></ha-progress-button>
+  <template is='dom-if' if='[[showDescription]]'>
+    <div style="color: grey">[[getDescription(hass, domain, service)]]</div>
+  </template>
   </template>
 </dom-module>
 
@@ -37,6 +40,11 @@ Polymer({
       type: Object,
       value: {},
     },
+
+    showDescription: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   buttonTapped: function () {
@@ -60,6 +68,14 @@ Polymer({
       }).then(function () {
         el.fire('hass-service-called', eventData);
       });
-  }
+  },
+
+  getDescription: function (hass, domain, service) {
+    var domainServices = hass.config.services[domain];
+    if (!domainServices) return '';
+    var serviceObject = domainServices[service];
+    if (!serviceObject) return '';
+    return serviceObject.description;
+  },
 });
 </script>
