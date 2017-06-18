@@ -92,10 +92,10 @@ export default class Action extends Component {
               icon="mdi:dots-vertical"
               slot="dropdown-trigger"
             />
-            <paper-menu slot="dropdown-content">
+            <paper-listbox slot="dropdown-content">
               <paper-item disabled>Duplicate</paper-item>
               <paper-item onTap={this.onDelete}>Delete</paper-item>
-            </paper-menu>
+            </paper-listbox>
           </paper-menu-button>
         </div>
         <div class='card-content'>{content}</div>
