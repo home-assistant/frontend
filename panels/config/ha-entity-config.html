@@ -34,7 +34,7 @@
             disabled='[[!entities.length]]'
           >
             <paper-listbox
-              class="dropdown-content"
+              slot="dropdown-content"
               selected='{{selectedEntity}}'
             >
               <template is='dom-repeat' items='[[entities]]' as='state'>

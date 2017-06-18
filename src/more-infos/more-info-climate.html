@@ -119,7 +119,7 @@
       <div class='container-operation_list'>
         <div class='controls'>
           <paper-dropdown-menu label-float label='Operation'>
-            <paper-menu class="dropdown-content" selected="{{operationIndex}}">
+            <paper-menu slot="dropdown-content" selected="{{operationIndex}}">
               <template is='dom-repeat'
                         items='[[stateObj.attributes.operation_list]]'>
                 <paper-item class="capitalize">[[item]]</paper-item>
@@ -131,7 +131,7 @@
 
       <div class='container-fan_list'>
         <paper-dropdown-menu label-float label='Fan Mode'>
-          <paper-menu class="dropdown-content" selected="{{fanIndex}}">
+          <paper-menu slot="dropdown-content" selected="{{fanIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.fan_list]]'>
               <paper-item>[[item]]</paper-item>
@@ -142,7 +142,7 @@
 
       <div class='container-swing_list'>
         <paper-dropdown-menu label-float label='Swing Mode'>
-          <paper-menu class="dropdown-content" selected="{{swingIndex}}">
+          <paper-menu slot="dropdown-content" selected="{{swingIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.swing_list]]'>
               <paper-item>[[item]]</paper-item>

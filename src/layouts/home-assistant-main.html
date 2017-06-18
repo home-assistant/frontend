@@ -26,10 +26,10 @@
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
       responsive-width='0' disable-swipe='[[isSelectedMap]]'
       disable-edge-swipe='[[isSelectedMap]]'>
-      <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
+      <ha-sidebar slot="drawer" narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
 
       <iron-pages
-        main
+        slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
         selected='[[currentPanel]]'

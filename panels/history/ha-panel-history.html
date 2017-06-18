@@ -63,7 +63,10 @@
             label='Period'
             disabled='[[isLoadingData]]'
           >
-            <paper-menu class="dropdown-content" selected="{{_periodIndex}}">
+            <paper-menu
+              slot="dropdown-content"
+              selected="{{_periodIndex}}"
+            >
               <paper-item>1 day</paper-item>
               <paper-item>3 days</paper-item>
               <paper-item>1 week</paper-item>

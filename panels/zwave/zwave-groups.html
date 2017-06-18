@@ -37,7 +37,7 @@
           <div class='device-picker'>
           <paper-dropdown-menu label="Node to control" class='flex'>
             <paper-listbox
-              class="dropdown-content"
+              slot="dropdown-content"
               selected='{{selectedTargetNode}}'>
                <template is='dom-repeat' items='[[nodes]]' as='state'>
                 <paper-item>[[computeSelectCaption(state)]]</paper-item>
@@ -50,7 +50,7 @@
           <div class='device-picker'>
           <paper-dropdown-menu label="Group" class='flex'>
             <paper-listbox
-              class="dropdown-content"
+              slot="dropdown-content"
               selected='{{selectedGroup}}'>
               <template is='dom-repeat' items='[[groups]]' as='state'>
                 <paper-item>[[computeSelectCaptionGroup(state)]]</paper-item>

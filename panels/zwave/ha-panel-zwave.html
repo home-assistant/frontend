@@ -73,7 +73,7 @@
           <div class='device-picker'>
             <paper-dropdown-menu label="Nodes" class="flex">
               <paper-listbox
-                class="dropdown-content"
+                slot="dropdown-content"
                 selected='{{selectedNode}}'>
               <template is='dom-repeat' items='[[nodes]]' as='state'>
                 <paper-item>[[computeSelectCaption(state)]]</paper-item>
@@ -127,7 +127,7 @@
            <div class='device-picker'>
             <paper-dropdown-menu label="Entities of this node" class="flex">
               <paper-listbox
-                class="dropdown-content"
+                slot="dropdown-content"
                 selected='{{selectedEntity}}'>
                 <template is='dom-repeat' items='[[entities]]' as='state'>
                   <paper-item>[[computeSelectCaptionEnt(state)]]</paper-item>
