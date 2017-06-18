@@ -93,7 +93,7 @@
            hidden$='[[computeHideSelectSource(isOff, supportsSelectSource)]]'>
         <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
         <paper-dropdown-menu class="flex source-input" label-float label='Source'>
-          <paper-menu class="dropdown-content" selected="{{sourceIndex}}">
+          <paper-menu slot="dropdown-content" selected="{{sourceIndex}}">
             <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>

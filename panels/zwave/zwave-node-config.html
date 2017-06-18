@@ -55,7 +55,7 @@
         <div class='device-picker'>
         <paper-dropdown-menu label="Config parameter" class='flex'>
           <paper-listbox
-            class="dropdown-content"
+            slot="dropdown-content"
             selected='{{selectedConfigParameter}}'>
             <template is='dom-repeat' items='[[config]]' as='state'>
               <paper-item>[[computeSelectCaptionConfigParameter(state)]]</paper-item>
@@ -67,7 +67,7 @@
           <div class='device-picker'>
             <paper-dropdown-menu label="Config value" class='flex' placeholder='{{loadedConfigValue}}'>
               <paper-listbox
-                class="dropdown-content"
+                slot="dropdown-content"
                 selected='{{selectedConfigValue}}'>
                 <template is='dom-repeat' items='[[selectedConfigParameterValues]]' as='state'>
                   <paper-item>[[state]]</paper-item>
@@ -92,7 +92,7 @@
           <div class='device-picker'>
             <paper-dropdown-menu label="Config value" class='flex' placeholder='{{loadedConfigValue}}'>
               <paper-listbox
-                class="dropdown-content"
+                slot="dropdown-content"
                 selected='{{selectedConfigValue}}'>
                 <template is='dom-repeat' items='[[selectedConfigParameterValues]]' as='state'>
                   <paper-item>[[state]]</paper-item>

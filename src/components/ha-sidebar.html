@@ -101,19 +101,19 @@
 
     <paper-menu attr-for-selected='data-panel' selected='[[hass.currentPanel]]' on-iron-select='menuSelect'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
-        <iron-icon item-icon icon='mdi:apps'></iron-icon>
+        <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
         <span class='item-text'>States</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
         <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_path]]'>
-          <iron-icon item-icon icon='[[item.icon]]'></iron-icon>
+          <iron-icon slot="item-icon" icon='[[item.icon]]'></iron-icon>
           <span class='item-text'>[[item.title]]</span>
         </paper-icon-item>
       </template>
 
       <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
-        <iron-icon item-icon icon='mdi:exit-to-app'></iron-icon>
+        <iron-icon slot="item-icon" icon='mdi:exit-to-app'></iron-icon>
         <span class='item-text'>Log Out</span>
       </paper-icon-item>
     </paper-menu>
