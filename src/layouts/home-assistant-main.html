@@ -87,7 +87,7 @@ Polymer({
   },
 
   hassChanged: function (hass) {
-    if (this.currentPanel != hass.currentPanel) {
+    if (this.currentPanel !== hass.currentPanel) {
       this.currentPanel = hass.currentPanel;
 
       if (this.narrow) {

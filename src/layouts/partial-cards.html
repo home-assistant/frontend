@@ -278,7 +278,7 @@ Polymer({
   hassChanged: function (hass) {
     var newView = hass.currentView || '';
 
-    if (newView != this.currentView) {
+    if (newView !== this.currentView) {
       this.currentView = newView;
     }
 
