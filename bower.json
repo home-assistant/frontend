@@ -9,7 +9,6 @@
   "private": true,
   "devDependencies": {
     "app-layout": "~0.10.6",
-    "app-storage": "PolymerElements/app-storage#~0.9.8",
     "fecha": "~2.3.0",
     "font-roboto-local": "~1.0.1",
     "google-apis": "GoogleWebComponents/google-apis#~1.1.6",
@@ -21,7 +20,8 @@
     "vaadin-date-picker": "^1.2.1",
     "paper-slider": "1.0.14",
     "leaflet": "^1.0.2",
-    "polymer-sortablejs": "^0.1.3"
+    "polymer-sortablejs": "^0.1.3",
+    "app-storage": "^2.0.2"
   },
   "resolutions": {
     "paper-slider": "1.0.14"
