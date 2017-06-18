@@ -56,7 +56,7 @@ export default class Action extends Component {
         <div>
           <paper-dropdown-menu-light label="Action Type" no-animations>
             <paper-listbox
-              class="dropdown-content"
+              slot="dropdown-content"
               selected={selected}
               oniron-select={this.typeChanged}
             >
@@ -90,9 +90,9 @@ export default class Action extends Component {
           >
             <paper-icon-button
               icon="mdi:dots-vertical"
-              class="dropdown-trigger"
+              slot="dropdown-trigger"
             />
-            <paper-menu class="dropdown-content">
+            <paper-menu slot="dropdown-content">
               <paper-item disabled>Duplicate</paper-item>
               <paper-item onTap={this.onDelete}>Delete</paper-item>
             </paper-menu>
