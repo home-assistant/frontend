@@ -66,6 +66,12 @@
     return (this.stateObj.attributes.supported_features & 128) !== 0;
   });
 
+  addGetter('isTiltOnly', function () {
+    var supportsCover = this.supportsOpen || this.supportsClose || this.supportsStop;
+    var supportsTilt = this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
+    return supportsTilt && !supportsCover;
+  });
+
   /* eslint-enable no-bitwise */
 
   Object.assign(window.CoverEntity.prototype, {

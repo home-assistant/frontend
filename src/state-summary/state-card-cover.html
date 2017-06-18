@@ -5,6 +5,7 @@
 <link rel="import" href="../components/entity/state-info.html">
 
 <link rel="import" href="../components/ha-cover-controls.html">
+<link rel="import" href="../components/ha-cover-tilt-controls.html">
 
 <dom-module id="state-card-cover">
   <template>
@@ -17,7 +18,10 @@
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <ha-cover-controls hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
+      <div class='horizontal layout'>
+        <ha-cover-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
+        <ha-cover-tilt-controls hidden$="[[!entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
+      </div>
     </div>
   </template>
 </dom-module>
@@ -39,6 +43,18 @@ Polymer({
     stateObj: {
       type: Object,
     },
+
+    entityObj: {
+      type: Object,
+      computed: 'computeEntityObj(hass, stateObj)',
+    },
+
   },
+
+  computeEntityObj: function (hass, stateObj) {
+    var entity = new window.CoverEntity(hass, stateObj);
+    return entity;
+  },
+
 });
 </script>
