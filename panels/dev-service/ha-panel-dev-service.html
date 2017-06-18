@@ -188,6 +188,7 @@ Polymer({
   },
 
   computeAttributesArray: function (serviceDomains, domain, service) {
+    if (!serviceDomains) return [];
     if (!(domain in serviceDomains)) return [];
     if (!(service in serviceDomains[domain])) return [];
 
