@@ -15,9 +15,6 @@
         overflow: hidden;
       }
       .has-current_position .current_position,
-      .has-open_tilt .tilt,
-      .has-close_tilt .tilt,
-      .has-stop_tilt .tilt,
       .has-set_tilt_position .tilt,
       .has-current_tilt_position .tilt
       {
@@ -42,17 +39,10 @@
 
       <div class='tilt'>
         <div>Tilt position</div>
-        <paper-icon-button icon="mdi:arrow-top-right" 
-          on-tap='onOpenTiltTap' title='Open tilt'
-          invisible$='[[!entityObj.supportsOpenTilt]]'
-          disabled='[[entityObj.isFullyOpenTilt]]'></paper-icon-button>
-        <paper-icon-button icon="mdi:stop" on-tap='onStopTiltTap'
-          invisible$='[[!entityObj.supportsStopTilt]]'
-          title='Stop tilt'></paper-icon-button>
-        <paper-icon-button icon="mdi:arrow-bottom-left"
-          on-tap='onCloseTiltTap' title='Close tilt'
-          invisible$='[[!entityObj.supportsCloseTilt]]'
-          disabled='[[entityObj.isFullyClosedTilt]]'></paper-icon-button>
+        <div>
+          <ha-cover-tilt-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]">
+          </ha-cover-tilt-controls>
+        </div>
         <paper-slider
           min='0' max='100'
           value='{{coverTiltPositionSliderValue}}'
@@ -104,9 +94,6 @@ Polymer({
   },
 
   featureClassNames: {
-    16: 'has-open_tilt',
-    32: 'has-close_tilt',
-    64: 'has-stop_tilt',
     128: 'has-set_tilt_position',
   },
 
@@ -126,16 +113,5 @@ Polymer({
     this.entityObj.setCoverTiltPosition(ev.target.value);
   },
 
-  onOpenTiltTap: function () {
-    this.entityObj.openCoverTilt();
-  },
-
-  onCloseTiltTap: function () {
-    this.entityObj.closeCoverTilt();
-  },
-
-  onStopTiltTap: function () {
-    this.entityObj.stopCoverTilt();
-  },
 });
 </script>
