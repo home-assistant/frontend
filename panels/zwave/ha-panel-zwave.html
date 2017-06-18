@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href="../../bower_components/paper-listbox/paper-listbox.html">
@@ -28,7 +29,6 @@
 
       .node-info {
         margin-left: 16px;
-        text-transform: capitalize;
       }
 
       .help-text {
@@ -67,7 +67,8 @@
 <!--Node card-->
       <div class='content'>
         <paper-card heading='Z-Wave Node Management'>
-          <div class='card-content'>
+          <iron-icon on-tap='toggleHelp' style='padding: 14px 0 14px 12px' icon='mdi:help-circle'></iron-icon>
+          <div style='display:inline-block' class='card-content'>
             Z-Wave Node controls.
           </div>
           <div class='device-picker'>
@@ -81,35 +82,44 @@
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
+            <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+              <template is='dom-if' if='[[showHelp]]'>
+                <div style='color: grey; padding: 12px'>Select node to view per-node options</div>
+              </template>
+            </template>
 
-          <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+          <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
           <div class='card-actions'>
             <ha-call-service-button
                 hass='[[hass]]'
                 domain='zwave'
                 service='refresh_node'
                 service-data=[[computeNodeServiceData(selectedNode)]]
+                show-description=[[showHelp]]
               >Refresh Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='remove_failed_node'
               service-data=[[computeNodeServiceData(selectedNode)]]
+              show-description=[[showHelp]]
             >Remove Failed Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='replace_failed_node'
               service-data=[[computeNodeServiceData(selectedNode)]]
+              show-description=[[showHelp]]
             >Replace Failed Node</ha-call-service-button>
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='print_node'
               service-data=[[computeNodeServiceData(selectedNode)]]
+              show-description=[[showHelp]]
             >Print Node</ha-call-service-button>
-            </div>
-           <div class='card-actions'>
+          </div>
+          <div class='card-actions'>
             <paper-input
               float-label="New node name"
               type=text
@@ -121,6 +131,7 @@
               domain='zwave'
               service='rename_node'
               service-data=[[computeNodeNameServiceData(newNodeNameInput)]]
+              show-description=[[showHelp]]
             >Rename Node</ha-call-service-button>
            </div>
 
@@ -142,6 +153,7 @@
               domain='zwave'
               service='refresh_entity'
               service-data=[[computeRefreshEntityServiceData(selectedEntity)]]
+              show-description=[[showHelp]]
             >Refresh Entity</ha-call-service-button>
            </div>
            <div class='content'>
@@ -162,7 +174,7 @@
         </paper-card>
         </div>
 <!--Node info card-->
-        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+        <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
           <zwave-node-information
             id='zwave-node-information'
             nodes='[[nodes]]'
@@ -170,7 +182,7 @@
           ></zwave-node-information>
         </template>
 <!--Value card-->
-        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+        <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
           <zwave-values
             hass='[[hass]]'
             nodes='[[nodes]]'
@@ -179,7 +191,7 @@
           ></zwave-values>
         </template>
 <!--Group card-->
-        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+        <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
           <zwave-groups
             hass='[[hass]]'
             nodes='[[nodes]]'
@@ -188,7 +200,7 @@
           ></zwave-groups>
         </template>
 <!--Config card-->
-        <template is='dom-if' if='[[!computeIsNodeSelected(selectedNode)]]'>
+        <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
           <zwave-node-config
             hass='[[hass]]'
             nodes='[[nodes]]'
@@ -296,7 +308,12 @@ Polymer({
 
     hasNodeUserCodes: {
       type: Boolean,
-      value: false
+      value: false,
+    },
+
+    showHelp: {
+      type: Boolean,
+      value: false,
     },
   },
 
@@ -334,10 +351,12 @@ Polymer({
                 (!(ent.entity_id).match('zwave[.]')));
       })
       .sort(function (entityA, entityB) {
-        if (entityA.entity_id < entityB.entity_id) {
+        var nameA = window.hassUtil.computeStateName(entityA);
+        var nameB = window.hassUtil.computeStateName(entityB);
+        if (nameA < nameB) {
           return -1;
         }
-        if (entityA.entity_id > entityB.entity_id) {
+        if (nameA > nameB) {
           return 1;
         }
         return 0;
@@ -411,7 +430,7 @@ Polymer({
   },
 
   computeIsNodeSelected: function () {
-    return (!this.nodes || this.selectedNode === -1);
+    return (this.nodes && this.selectedNode !== -1);
   },
 
   computeIsEntitySelected: function (selectedEntity) {
@@ -436,6 +455,10 @@ Polymer({
   computeRefreshEntityServiceData: function (selectedEntity) {
     if (selectedEntity === -1) return -1;
     return { entity_id: this.entities[selectedEntity].entity_id };
+  },
+
+  toggleHelp: function () {
+    this.showHelp = !this.showHelp;
   },
 });
 </script>
