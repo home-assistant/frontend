@@ -63,7 +63,7 @@
     </style>
 
     <app-header-layout has-scrolling-region>
-      <app-header fixed>
+      <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>Services</div>
@@ -188,6 +188,7 @@ Polymer({
   },
 
   computeAttributesArray: function (serviceDomains, domain, service) {
+    if (!serviceDomains) return [];
     if (!(domain in serviceDomains)) return [];
     if (!(service in serviceDomains[domain])) return [];
 

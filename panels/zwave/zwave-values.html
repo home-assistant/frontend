@@ -37,7 +37,7 @@
         <div class='device-picker'>
         <paper-dropdown-menu label="Value" class='flex'>
           <paper-listbox
-            class="dropdown-content"
+            slot="dropdown-content"
             selected='{{selectedValue}}'>
              <template is='dom-repeat' items='[[values]]' as='item'>
               <paper-item>[[computeSelectCaption(item)]]</paper-item>

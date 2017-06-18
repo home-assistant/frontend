@@ -52,7 +52,7 @@
 
       <div class='effect_list'>
         <paper-dropdown-menu label-float label='Effect'>
-          <paper-menu class="dropdown-content" selected="{{effectIndex}}">
+          <paper-menu slot="dropdown-content" selected="{{effectIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.effect_list]]'>
               <paper-item>[[item]]</paper-item>

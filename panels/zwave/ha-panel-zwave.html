@@ -51,7 +51,7 @@
         }
     </style>
     <app-header-layout has-scrolling-region>
-      <app-header fixed>
+      <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>Z-Wave Manager</div>
@@ -74,7 +74,7 @@
           <div class='device-picker'>
             <paper-dropdown-menu label="Nodes" class="flex">
               <paper-listbox
-                class="dropdown-content"
+                slot="dropdown-content"
                 selected='{{selectedNode}}'>
               <template is='dom-repeat' items='[[nodes]]' as='state'>
                 <paper-item>[[computeSelectCaption(state)]]</paper-item>
@@ -138,7 +138,7 @@
            <div class='device-picker'>
             <paper-dropdown-menu label="Entities of this node" class="flex">
               <paper-listbox
-                class="dropdown-content"
+                slot="dropdown-content"
                 selected='{{selectedEntity}}'>
                 <template is='dom-repeat' items='[[entities]]' as='state'>
                   <paper-item>[[computeSelectCaptionEnt(state)]]</paper-item>

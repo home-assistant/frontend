@@ -37,7 +37,7 @@
     </style>
 
     <app-header-layout has-scrolling-region id='layout'>
-      <app-header effects="waterfall" condenses fixed>
+      <app-header effects="waterfall" condenses fixed slot="header">
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[computeTitle(views, locationName)]]</div>
@@ -126,7 +126,7 @@ Polymer({
     hass: {
       type: Object,
       value: null,
-      observer: 'computeAllViews'
+      observer: 'hassChanged'
     },
 
     narrow: {
@@ -162,7 +162,6 @@ Polymer({
 
     currentView: {
       type: String,
-      computed: 'computeCurrentView(hass)',
     },
 
     views: {
@@ -250,7 +249,7 @@ Polymer({
   },
 
   computeTitle: function (views, locationName) {
-    return views.length > 0 ? 'Home Assistant' : locationName;
+    return views && views.length > 0 ? 'Home Assistant' : locationName;
   },
 
   computeShowIntroduction: function (currentView, introductionLoaded, states) {
@@ -276,7 +275,13 @@ Polymer({
     return window.hassUtil.isComponentLoaded(hass, 'introduction');
   },
 
-  computeAllViews: function (hass) {
+  hassChanged: function (hass) {
+    var newView = hass.currentView || '';
+
+    if (newView !== this.currentView) {
+      this.currentView = newView;
+    }
+
     var views = window.HAWS.extractViews(hass.states);
     // If default view present, it's in first index.
     if (views.length > 0 && views[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
@@ -333,10 +338,6 @@ Polymer({
     }
 
     return states;
-  },
-
-  computeCurrentView: function (hass) {
-    return hass.currentView || '';
   },
 });
 </script>

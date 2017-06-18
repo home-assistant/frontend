@@ -26,10 +26,10 @@
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
       responsive-width='0' disable-swipe='[[isSelectedMap]]'
       disable-edge-swipe='[[isSelectedMap]]'>
-      <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
+      <ha-sidebar slot="drawer" narrow='[[narrow]]' hass='[[hass]]'></ha-sidebar>
 
       <iron-pages
-        main
+        slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
         selected='[[currentPanel]]'
@@ -63,6 +63,7 @@ Polymer({
     hass: {
       type: Object,
       value: null,
+      observer: 'hassChanged',
     },
 
     narrow: {
@@ -71,8 +72,6 @@ Polymer({
 
     currentPanel: {
       type: String,
-      computed: 'computeCurrentPanel(hass)',
-      observer: 'currentPanelChanged',
     },
 
     dockedSidebar: {
@@ -85,6 +84,16 @@ Polymer({
     'hass-open-menu': 'handleOpenMenu',
     'hass-close-menu': 'handleCloseMenu',
     'hass-start-voice': 'handleStartVoice',
+  },
+
+  hassChanged: function (hass) {
+    if (this.currentPanel !== hass.currentPanel) {
+      this.currentPanel = hass.currentPanel;
+
+      if (this.narrow) {
+        this.$.drawer.closeDrawer();
+      }
+    }
   },
 
   handleStartVoice: function (ev) {
@@ -107,22 +116,12 @@ Polymer({
     }
   },
 
-  currentPanelChanged: function () {
-    if (this.narrow) {
-      this.$.drawer.closeDrawer();
-    }
-  },
-
   attached: function () {
     window.removeInitMsg();
   },
 
   computeForceNarrow: function (narrow, dockedSidebar) {
     return narrow || !dockedSidebar;
-  },
-
-  computeCurrentPanel: function (hass) {
-    return hass.currentPanel;
   },
 
   computeDockedSidebar: function (hass) {

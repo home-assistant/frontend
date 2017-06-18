@@ -28,7 +28,7 @@
       on-tap='stopPropagation'
       selected-item-label='{{selectedOption}}'
       label='[[computeStateName(stateObj)]]'>
-      <paper-menu class="dropdown-content" selected="[[computeSelected(stateObj)]]">
+      <paper-menu slot="dropdown-content" selected="[[computeSelected(stateObj)]]">
         <template is='dom-repeat' items='[[stateObj.attributes.options]]'>
           <paper-item>[[item]]</paper-item>
         </template>

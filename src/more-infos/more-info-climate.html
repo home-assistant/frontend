@@ -7,7 +7,6 @@
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
-<link rel="import" href="../../bower_components/paper-range-slider/paper-range-slider.html">
 
 <link rel="import" href='../components/ha-climate-control.html'>
 
@@ -76,15 +75,6 @@
         --paper-slider-secondary-color: var(--paper-blue-400);
       }
 
-      paper-range-slider {
-        --paper-range-slider-lower-color: var(--paper-orange-400);
-        --paper-range-slider-active-color: var(--paper-green-400);
-        --paper-range-slider-higher-color: var(--paper-blue-400);
-        --paper-range-slider-knob-color: var(--primary-color);
-        --paper-range-slider-pin-color: var(--primary-color);
-        --paper-range-slider-width: 100%;
-      }
-
       .single-row {
         padding: 8px 0;
       }
@@ -129,7 +119,7 @@
       <div class='container-operation_list'>
         <div class='controls'>
           <paper-dropdown-menu label-float label='Operation'>
-            <paper-menu class="dropdown-content" selected="{{operationIndex}}">
+            <paper-menu slot="dropdown-content" selected="{{operationIndex}}">
               <template is='dom-repeat'
                         items='[[stateObj.attributes.operation_list]]'>
                 <paper-item class="capitalize">[[item]]</paper-item>
@@ -141,7 +131,7 @@
 
       <div class='container-fan_list'>
         <paper-dropdown-menu label-float label='Fan Mode'>
-          <paper-menu class="dropdown-content" selected="{{fanIndex}}">
+          <paper-menu slot="dropdown-content" selected="{{fanIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.fan_list]]'>
               <paper-item>[[item]]</paper-item>
@@ -152,7 +142,7 @@
 
       <div class='container-swing_list'>
         <paper-dropdown-menu label-float label='Swing Mode'>
-          <paper-menu class="dropdown-content" selected="{{swingIndex}}">
+          <paper-menu slot="dropdown-content" selected="{{swingIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.swing_list]]'>
               <paper-item>[[item]]</paper-item>
