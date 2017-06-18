@@ -49,22 +49,17 @@
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
     "polymer": "Polymer/polymer#~1.8.0",
     "polymer-sortablejs": "^0.1.3",
-    "vaadin-combo-box": "vaadin/vaadin-combo-box#~1.1.5",
-    "vaadin-date-picker": "^1.2.1"
+    "vaadin-combo-box": "vaadin/vaadin-combo-box#v2.0.0-alpha4",
+    "vaadin-date-picker": "vaadin/vaadin-date-picker#v2.0.0-alpha1",
+    "web-animations-js": "^2.2.5"
   },
   "resolutions": {
     "polymer": "^1.0.0",
     "webcomponentsjs": "^0.7.24",
-    "iron-autogrow-textarea": "^1.0.0",
-    "iron-flex-layout": "^1.0.3",
-    "iron-media-query": "^1.0.8",
-    "paper-button": "^1.0.0",
-    "iron-icon": "^1.0.7",
-    "paper-icon-button": "^1.0.5",
-    "paper-input": "^1.1.3",
-    "neon-animation": "^2.0.1",
-    "iron-input": "^1.0.8",
-    "paper-styles": "^2.0.0",
-    "paper-material": "^2.0.0"
+    "iron-flex-layout": "^2.0.0",
+    "paper-input": "^2.0.0",
+    "paper-styles": "2.0.0",
+    "iron-resizable-behavior": "^2.0.0",
+    "iron-a11y-keys-behavior": "^2.0.0"
   }
 }
