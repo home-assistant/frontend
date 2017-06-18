@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "app-layout": "~0.10.6",
+    "app-layout": "^2.0.0",
     "app-storage": "^2.0.2",
     "fecha": "~2.3.0",
     "font-roboto-local": "~1.0.1",
