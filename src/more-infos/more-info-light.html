@@ -2,7 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <link rel='import' href='../components/ha-labeled-slider.html'>
@@ -46,18 +46,22 @@
       .has-rgb_color ha-color-picker {
         max-height: 200px;
       }
+
+      paper-item {
+        cursor: pointer;
+      }
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
 
       <div class='effect_list'>
         <paper-dropdown-menu label-float label='Effect'>
-          <paper-menu slot="dropdown-content" selected="{{effectIndex}}">
+          <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.effect_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
 
