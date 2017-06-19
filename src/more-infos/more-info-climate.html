@@ -9,6 +9,7 @@
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
 
 <link rel="import" href='../components/ha-climate-control.html'>
+<link rel="import" href='../components/ha-climate-range-control.html'>
 
 <dom-module id='more-info-climate'>
   <template>
@@ -91,17 +92,28 @@
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='container-temperature'>
         <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
-          <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target
-            Temperature</div>
+          <div>Target Temperature</div>
           <ha-climate-control
              value='[[stateObj.attributes.temperature]]'
              units='[[stateObj.attributes.unit_of_measurement]]'
              step='[[computeTemperatureStepSize(stateObj)]]'
              min='[[stateObj.attributes.min_temp]]'
              max='[[stateObj.attributes.max_temp]]'
+             hidden$='[[computeHideTempControl(stateObj)]]'
              on-change='targetTemperatureChanged'
              >
           </ha-climate-control>
+          <ha-climate-range-control
+             value-low='[[stateObj.attributes.target_temp_low]]'
+             value-high='[[stateObj.attributes.target_temp_high]]'
+             units='[[stateObj.attributes.unit_of_measurement]]'
+             step='[[computeTemperatureStepSize(stateObj)]]'
+             min='[[stateObj.attributes.min_temp]]'
+             max='[[stateObj.attributes.max_temp]]'
+             hidden$='[[computeHideTempRangeControl(stateObj)]]'
+             on-change='targetTemperatureRangeChanged'
+             >
+          </ha-climate-range-control>
         </div>
       </div>
 
@@ -260,19 +272,13 @@ Polymer({
     return 0.5;
   },
 
-  computeTargetTempHidden: function (stateObj) {
-    return !stateObj.attributes.temperature &&
-        !stateObj.attributes.target_temp_low &&
-        !stateObj.attributes.target_temp_high;
+  computeHideTempControl: function (stateObj) {
+    return !stateObj.attributes.temperature;
   },
 
-  computeHideTempRangeSlider: function (stateObj) {
+  computeHideTempRangeControl: function (stateObj) {
     return !stateObj.attributes.target_temp_low &&
         !stateObj.attributes.target_temp_high;
-  },
-
-  computeHideTempSlider: function (stateObj) {
-    return !stateObj.attributes.temperature;
   },
 
   computeClassNames: function (stateObj) {
@@ -292,9 +298,9 @@ Polymer({
     this.callServiceHelper('set_temperature', { temperature: temperature });
   },
 
-  targetTemperatureRangeSliderChanged: function (ev) {
-    var targetTempLow = ev.currentTarget.valueMin;
-    var targetTempHigh = ev.currentTarget.valueMax;
+  targetTemperatureRangeChanged: function (ev) {
+    var targetTempLow = ev.currentTarget.valueLow;
+    var targetTempHigh = ev.currentTarget.valueHigh;
 
     if (targetTempLow === this.stateObj.attributes.target_temp_low &&
         targetTempHigh === this.stateObj.attributes.target_temp_high) return;
