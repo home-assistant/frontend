@@ -103,7 +103,7 @@ Polymer({
   },
 
   computeAutomation: function (automations, automationId, creatingNew) {
-    if (creatingNew) {
+    if (creatingNew || !automations) {
       return null;
     }
     for (var i = 0; i < automations.length; i++) {

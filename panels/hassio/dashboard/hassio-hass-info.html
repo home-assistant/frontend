@@ -5,23 +5,24 @@
 <link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
 
 <dom-module id="hassio-hass-info">
-  <style include="iron-flex ha-style">
-    paper-card {
-      display: block;
-      height: 100%;
-    }
-    .info {
-      width: 100%;
-    }
-    .info td:nth-child(2) {
-      text-align: right;
-    }
-    .errors {
-      color: var(--google-red-500);
-      margin-top: 16px;
-    }
-  </style>
   <template>
+    <style include="iron-flex ha-style">
+      paper-card {
+        display: block;
+        height: 100%;
+      }
+      .info {
+        width: 100%;
+      }
+      .info td:nth-child(2) {
+        text-align: right;
+      }
+      .errors {
+        color: var(--google-red-500);
+        margin-top: 16px;
+      }
+    </style>
+
     <paper-card heading="Home Assistant">
       <div class="card-content">
         <table class='info'>
