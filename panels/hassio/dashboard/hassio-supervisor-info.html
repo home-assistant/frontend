@@ -4,23 +4,23 @@
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 
 <dom-module id="hassio-supervisor-info">
-  <style include="iron-flex ha-style">
-    paper-card {
-      display: block;
-      height: 100%;
-    }
-    .info {
-      width: 100%;
-    }
-    .info td:nth-child(2) {
-      text-align: right;
-    }
-    .errors {
-      color: var(--google-red-500);
-      margin-top: 16px;
-    }
-  </style>
   <template>
+    <style include="iron-flex ha-style">
+      paper-card {
+        display: block;
+        height: 100%;
+      }
+      .info {
+        width: 100%;
+      }
+      .info td:nth-child(2) {
+        text-align: right;
+      }
+      .errors {
+        color: var(--google-red-500);
+        margin-top: 16px;
+      }
+    </style>
     <paper-card heading="Supervisor">
       <div class="card-content">
         <table class='info'>
