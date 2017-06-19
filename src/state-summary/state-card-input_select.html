@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
 <link rel="import" href="../components/entity/state-badge.html">
@@ -21,6 +21,10 @@
         display: block;
         margin-left: 53px;
       }
+
+      paper-item {
+        cursor: pointer;
+      }
     </style>
 
     <state-badge state-obj='[[stateObj]]'></state-badge>
@@ -28,11 +32,11 @@
       on-tap='stopPropagation'
       selected-item-label='{{selectedOption}}'
       label='[[computeStateName(stateObj)]]'>
-      <paper-menu slot="dropdown-content" selected="[[computeSelected(stateObj)]]">
+      <paper-listbox slot="dropdown-content" selected="[[computeSelected(stateObj)]]">
         <template is='dom-repeat' items='[[stateObj.attributes.options]]'>
           <paper-item>[[item]]</paper-item>
         </template>
-      </paper-menu>
+      </paper-listbox>
     </paper-dropdown-menu>
   </template>
 </dom-module>

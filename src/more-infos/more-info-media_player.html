@@ -7,7 +7,7 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../../bower_components/paper-slider/paper-slider.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
-<link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
 <dom-module id='more-info-media_player'>
@@ -45,6 +45,10 @@
 
       [hidden] {
         display: none !important;
+      }
+
+      paper-item {
+        cursor: pointer;
       }
     </style>
 
@@ -93,11 +97,11 @@
            hidden$='[[computeHideSelectSource(isOff, supportsSelectSource)]]'>
         <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
         <paper-dropdown-menu class="flex source-input" label-float label='Source'>
-          <paper-menu slot="dropdown-content" selected="{{sourceIndex}}">
+          <paper-listbox slot="dropdown-content" selected="{{sourceIndex}}">
             <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
       <!-- TTS -->

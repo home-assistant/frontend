@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
@@ -33,6 +33,10 @@
 
       paper-dropdown-menu {
         max-width: 100px;
+      }
+
+      paper-item {
+        cursor: pointer;
       }
     </style>
 
@@ -66,14 +70,14 @@
             label='Period'
             disabled='[[isLoadingData]]'
           >
-            <paper-menu
+            <paper-listbox
               slot="dropdown-content"
               selected="{{_periodIndex}}"
             >
               <paper-item>1 day</paper-item>
               <paper-item>3 days</paper-item>
               <paper-item>1 week</paper-item>
-            </paper-menu>
+            </paper-listbox>
           </paper-dropdown-menu>
         </div>
         <state-history-charts history-data="[[stateHistoryOutput]]"
