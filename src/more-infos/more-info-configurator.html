@@ -1,11 +1,9 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel='import' href='../../bower_components/iron-input/iron-input.html'>
-
 <link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
-<link rel='import' href='../../bower_components/paper-input/paper-input-container.html'>
+<link rel='import' href='../../bower_components/paper-input/paper-input.html'>
 
 <dom-module id='more-info-configurator'>
   <template>
@@ -66,10 +64,11 @@
         </p>
 
         <template is='dom-repeat' items='[[stateObj.attributes.fields]]'>
-          <paper-input-container id='paper-input-fields-{{item.id}}'>
-            <label>[[item.name]]</label>
-            <input is="iron-input" type="[[item.type]]" id='[[item.id]]' on-change="fieldChanged"/>
-          </paper-input-container>
+          <paper-input
+            label='[[item.name]]'
+            name='[[item.id]]'
+            on-change='fieldChanged'
+          ></paper-input>
         </template>
 
         <p class='submit'>
@@ -122,7 +121,8 @@ Polymer({
     },
 
     fieldInput: {
-      type: Object, value: {},
+      type: Object,
+      value: function () { return {}; },
     },
   },
 
@@ -136,7 +136,7 @@ Polymer({
 
   fieldChanged: function (ev) {
     var el = ev.target;
-    this.fieldInput[el.id] = el.value;
+    this.fieldInput[el.name] = el.value;
   },
 
   submitClicked: function () {
