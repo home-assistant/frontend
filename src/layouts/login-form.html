@@ -4,8 +4,7 @@
 
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
@@ -17,7 +16,7 @@
         white-space: nowrap;
       }
 
-      #passwordDecorator {
+      paper-input {
         display: block;
         margin-bottom: 16px;
       }
@@ -49,19 +48,14 @@
       <a href="#" id="hideKeyboardOnFocus"></a>
       <div class='interact'>
         <div id='loginform' hidden$="[[showSpinner]]">
-          <paper-input-container
-            id="passwordDecorator"
-            invalid="[[errorMessage]]"
-          >
-            <label>Password</label>
-            <input
-              is="iron-input"
-              type="password"
-              id="passwordInput"
-              bind-value="{{password}}"
-            />
-            <paper-input-error invalid="[[errorMessage]]">[[errorMessage]]</paper-input-error>
-          </paper-input-container>
+          <paper-input
+            id='passwordInput'
+            label='Password'
+            type='password'
+            invalid='[[errorMessage]]'
+            error-message='[[errorMessage]]'
+            value='{{password}}'
+          ></paper-input>
           <div class="layout horizontal center">
             <paper-checkbox for id='rememberLogin'>Remember</paper-checkbox>
             <paper-button id='loginButton'>Log In</paper-button>
@@ -138,7 +132,7 @@ Polymer({
   isValidatingChanged: function (newVal) {
     if (!newVal) {
       this.async(function () {
-        this.$.passwordInput.focus();
+        this.$.passwordInput.inputElement.inputElement.focus();
       }.bind(this), 10);
     }
   },
