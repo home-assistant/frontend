@@ -5,7 +5,7 @@ cache:
   - node_modules
   - bower_components
 install:
-  - npm install
+  - yarn install
   - bower install
 addons:
   firefox: latest
