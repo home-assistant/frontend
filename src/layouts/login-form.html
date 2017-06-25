@@ -131,7 +131,9 @@ Polymer({
   isValidatingChanged: function (newVal) {
     if (!newVal) {
       this.async(function () {
-        this.$.passwordInput.inputElement.inputElement.focus();
+        if (this.$.passwordInput.inputElement.inputElement) {
+          this.$.passwordInput.inputElement.inputElement.focus();
+        }
       }.bind(this), 10);
     }
   },
