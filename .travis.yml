@@ -6,7 +6,7 @@ cache:
   - bower_components
 install:
   - yarn install
-  - bower install
+  - ./node_modules/.bin/bower install
 addons:
   firefox: latest
   apt:
