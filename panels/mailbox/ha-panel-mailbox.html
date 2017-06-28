@@ -1,0 +1,165 @@
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
+
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+<link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
+
+<link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
+<link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
+<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+
+<link rel='import' href='../../src/components/ha-menu-button.html'>
+<link rel='import' href='../../src/resources/ha-style.html'>
+
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid-selection-column.html">
+
+
+<dom-module id='ha-panel-mailbox'>
+  <template>
+    <style include='ha-style'>
+      :host {
+        -ms-user-select: initial;
+        -webkit-user-select: initial;
+        -moz-user-select: initial;
+      }
+
+      .content {
+        padding: 16px;
+      }
+
+      .ha-form {
+        margin-right: 16px;
+        max-width: 500px;
+      }
+
+      .description {
+        margin-top: 24px;
+        white-space: pre-wrap;
+      }
+
+      .header {
+        @apply(--paper-font-title);
+      }
+
+      .attributes th {
+        text-align: left;
+      }
+
+      .attributes tr {
+        vertical-align: top;
+      }
+
+      .attributes tr:nth-child(even) {
+        background-color: #eee;
+      }
+
+      .attributes td:nth-child(3) {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      pre {
+        margin: 0;
+      }
+    </style>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Mailbox</div>
+        </app-toolbar>
+      </app-header>
+  <div>
+    <paper-button on-tap='deleteSelected' raised>Delete Selected</paper-button>
+  </div>
+  <div class="wrapper">
+    <vaadin-grid id="simple" size="200">
+      <vaadin-grid-selection-column auto-select>
+      </vaadin-grid-selection-column>
+
+      <vaadin-grid-column width="calc(15% - 100px)">
+        <template class="header">Time</template>
+        <template>[[item.timestamp]]</template>
+      </vaadin-grid-column>
+
+      <vaadin-grid-column width="calc(15% - 100px)">
+        <template class="header">Caller</template>
+        <template>[[item.caller]]</template>
+      </vaadin-grid-column>
+
+      <vaadin-grid-column width="calc(70% - 100px)">
+        <template class="header">Message</template>
+        <template>[[item.message]]</template>
+      </vaadin-grid-column>
+      <vaadin-grid-column width="100px" flex-grow=0>
+        <template class="header">Listen</template>
+        <!-- <template> <paper-icon-button icon='mdi:play-box-outline' on-tap='mp3'></paper-icon-button> </template> -->
+        <template> <audio controls> <source src="api/asteriskmbox/mp3/[[index]]" type="audio/mpeg"></audio></template>
+    </vaadin-grid>
+  </div>
+
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-panel-mailbox',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    narrow: {
+      type: Boolean,
+      value: false,
+    },
+
+    showMenu: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  hassChanged: function (newHass, oldHass) {
+      },
+
+
+  deleteSelected: function () {
+      var grid = this.$.simple
+      var items = grid.selectedItems;
+      var len = items.length;
+      var sha = [];
+      for (var i = 0; i < len; i++) {
+          sha.push(items[i]['sha']);
+      }
+      this.hass.callApi('POST', 'asteriskmbox/delete', sha);
+  },
+  attached: function () {
+        var grid = this._grid = this.$.simple
+        grid.size = 200;
+        grid.items = [{"timestamp": "dummy", "caller": "dummy", "message": "dummy"}];
+        this.getMessages().then(function (items) {
+            this._grid.items = items;
+        }.bind(this));
+    },
+    getMessages: function() {
+        return this.hass.callApi('GET', 'asteriskmbox/messages').then(function (values) {
+            var arrayLength = values.length;
+            var items = [];
+            for (var i = 0; i < arrayLength; i++) {
+                var datetime = window.hassUtil.formatDateTime(new Date(values[i]['info']['origtime'] * 1000));
+                items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha']}});
+            }
+            return items;
+            });
+   },
+
+});
+
+</script>
