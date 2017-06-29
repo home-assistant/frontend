@@ -14,67 +14,53 @@
       }
     </style>
     <paper-card heading='Installed'>
-      <template is='dom-if' if='[[!addonState]]'>
-        <div class="card-content">
-          <div>Add-on is not installed.</div>
-        </div>
-        <div class="card-actions">
+      <div class="card-content">
+        <table class='info'>
+          <tr>
+            <td>Version</td>
+            <td>[[addonState.version]]</td>
+          </tr>
+          <tr>
+            <td>State</td>
+            <td>[[addonState.state]]</td>
+          </tr>
+          <tr>
+            <td>Boot</td>
+            <td>[[addonState.boot]]</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card-actions">
+        <template is='dom-if' if='[[!isRunning]]'>
           <ha-call-api-button
             hass='[[hass]]'
-            path="[[pathInstall(addon)]]"
-          >Install</ha-call-api-button>
-        </div>
-      </template>
-
-      <template is='dom-if' if='[[addonState]]'>
-        <div class="card-content">
-          <table class='info'>
-            <tr>
-              <td>Version</td>
-              <td>[[addonState.version]]</td>
-            </tr>
-            <tr>
-              <td>State</td>
-              <td>[[addonState.state]]</td>
-            </tr>
-            <tr>
-              <td>Boot</td>
-              <td>[[addonState.boot]]</td>
-            </tr>
-          </table>
-        </div>
-        <div class="card-actions">
-          <template is='dom-if' if='[[!isRunning]]'>
-            <ha-call-api-button
-              hass='[[hass]]'
-              path="[[pathStart(addon)]]"
-            >Start</ha-call-api-button>
-          </template>
-          <template is='dom-if' if='[[isRunning]]'>
-            <ha-call-api-button
-              class='warning'
-              hass='[[hass]]'
-              path="[[pathRestart(addon)]]"
-            >Restart</ha-call-api-button>
-            <ha-call-api-button
-              class='warning'
-              hass='[[hass]]'
-              path="[[pathStop(addon)]]"
-            >Stop</ha-call-api-button>
-          </template>
-          <template is='dom-if' if='[[computeUpdateAvailable(addonState)]]'>
-            <ha-call-api-button
-              hass='[[hass]]'
-              path="[[pathUpdate(addon)]]"
-            >Update</ha-call-api-button>
-          </template>
+            path="[[pathStart(addon)]]"
+          >Start</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[isRunning]]'>
           <ha-call-api-button
             class='warning'
             hass='[[hass]]'
-            path="[[pathUninstall(addon)]]"
-          >Uninstall</ha-call-api-button>
-        </div>
-      </template>
+            path="[[pathRestart(addon)]]"
+          >Restart</ha-call-api-button>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path="[[pathStop(addon)]]"
+          >Stop</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[computeUpdateAvailable(addonState)]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="[[pathUpdate(addon)]]"
+          >Update</ha-call-api-button>
+        </template>
+        <ha-call-api-button
+          class='warning'
+          hass='[[hass]]'
+          path="[[pathUninstall(addon)]]"
+        >Uninstall</ha-call-api-button>
+      </div>
     </paper-card>
   </template>
 </dom-module>
@@ -126,10 +112,6 @@ Polymer({
 
   pathRestart: function (addon) {
     return 'hassio/addons/' + addon + '/restart';
-  },
-
-  pathInstall: function (addon) {
-    return 'hassio/addons/' + addon + '/install';
   },
 
   pathUninstall: function (addon) {

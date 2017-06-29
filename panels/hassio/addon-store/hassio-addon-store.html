@@ -8,51 +8,28 @@
 
 <link rel="import" href="./hassio-repositories-editor.html">
 <link rel="import" href="./hassio-addon-repository.html">
+<link rel="import" href="./hassio-addon-store-view.html">
+<link rel="import" href="./hassio-addon-store-overview.html">
 
 <dom-module id="hassio-addon-store">
   <template>
-    <style include="iron-flex ha-style">
-      paper-card {
-        display: block;
-      }
-      .content {
-        padding: 24px 0 32px;
-        max-width: 600px;
-        margin: 0 auto;
-      }
+    <template is='dom-if' if='[[selectedAddon]]' restamp>
+      <hassio-addon-store-view
+        hass='[[hass]]'
+        selected-addon='{{selectedAddon}}'
+        addon='[[selectedAddonObject]]'
+        repo='[[computeActiveRepo(repos, selectedAddonObject)]]'
+      ></hassio-addon-store-view>
+    </template>
 
-      hassio-addon-repository {
-        margin-top: 24px;
-      }
-    </style>
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <paper-icon-button
-            icon='mdi:arrow-left'
-            on-tap='backTapped'
-          ></paper-icon-button>
-          <div main-title>Hass.io Add-Ons</div>
-          <paper-icon-button
-            icon="mdi:refresh"
-            on-tap="refreshTapped"
-          ></paper-icon-button>
-        </app-toolbar>
-      </app-header>
-
-      <div class='content'>
-        <hassio-repositories-editor
-          hass='[[hass]]'
-          repos='[[supervisorInfo.addons_repositories]]'
-        ></hassio-repositories-editor>
-        <template is='dom-repeat' items='[[repos]]' as='repo'>
-          <hassio-addon-repository
-            repo='[[repo]]'
-            addons='[[computeAddOns(repo.slug)]]'
-          ></hassio-addon-repository>
-        </template>
-      </div>
-    </app-header-layout>
+    <template is='dom-if' if='[[!selectedAddon]]'>
+      <hassio-addon-store-overview
+        hass='[[hass]]'
+        selected-addon='{{selectedAddon}}'
+        addons='[[addons]]'
+        repos='[[repos]]'
+      ></hassio-addon-store-overview>
+    </template>
   </template>
 </dom-module>
 
@@ -65,13 +42,14 @@ Polymer({
       type: Object,
     },
 
-    narrow: {
-      type: Boolean,
+    selectedAddon: {
+      type: String,
+      value: null,
     },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
+    selectedAddonObject: {
+      type: Object,
+      computed: 'computeActiveAddon(addons, selectedAddon)',
     },
 
     addons: {
@@ -91,6 +69,7 @@ Polymer({
 
   listeners: {
     'hass-api-called': 'apiCalled',
+    'hassio-store-refresh': 'refreshData',
   },
 
   apiCalled: function (ev) {
@@ -114,21 +93,31 @@ Polymer({
       }.bind(this));
   },
 
-  computeAddOns: function (repo) {
-    return this.addons.filter(function (addon) {
-      return addon.repository === repo;
-    });
+  computeActiveAddon: function (addons, selectedAddon) {
+    for (var i = 0; i < addons.length; i++) {
+      if (addons[i].slug === selectedAddon) {
+        return addons[i];
+      }
+    }
+    return null;
   },
 
-  refreshTapped: function () {
+  computeActiveRepo: function (repos, selectedAddonObject) {
+    if (!selectedAddonObject) return null;
+
+    for (var i = 0; i < repos.length; i++) {
+      if (repos[i].slug === selectedAddonObject.repository) {
+        return repos[i];
+      }
+    }
+    return null;
+  },
+
+  refreshData: function () {
     this.hass.callApi('post', 'hassio/supervisor/reload')
       .then(function () {
         this.loadData();
       }.bind(this));
-  },
-
-  backTapped: function () {
-    this.fire('hassio-select-addon', { addon: null });
   },
 });
 </script>
