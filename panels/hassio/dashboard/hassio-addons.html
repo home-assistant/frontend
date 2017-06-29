@@ -17,6 +17,11 @@
       }
     </style>
     <paper-card heading="Installed Addons">
+      <template is='dom-if' if='[[!data.length]]'>
+        <div class='card-content'>
+          Looks like you don't have any add-ons installed yet. Head over to <a href='#' on-tap='openStore'>the add-on store</a> to get started!
+        </div>
+      </template>
       <template is='dom-repeat' items='[[data]]' as='addon'>
         <paper-item>
           <paper-item-body two-line on-tap='addonTapped'>
@@ -58,5 +63,10 @@ Polymer({
     this.fire('hassio-select-addon', { addon: this.data[ev.model.index].slug });
     ev.target.blur();
   },
+
+  openStore: function (ev) {
+    ev.preventDefault();
+    this.fire('hassio-show-page', { page: 'addon-store' });
+  }
 });
 </script>
