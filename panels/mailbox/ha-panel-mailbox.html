@@ -1,6 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+<link rel='import' href='../../bower_components/paper-dialog/paper-dialog.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
 
 <link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
@@ -74,7 +75,7 @@
         </app-toolbar>
       </app-header>
   <div>
-    <paper-button on-tap='deleteSelected' raised>Delete Selected</paper-button>
+    <paper-button on-tap='openDeleteDialog' raised>Delete Selected</paper-button>
   </div>
   <div class="wrapper">
     <vaadin-grid id="simple" size="200">
@@ -97,9 +98,23 @@
       </vaadin-grid-column>
       <vaadin-grid-column width="100px" flex-grow=0>
         <template class="header">Listen</template>
-        <!-- <template> <paper-icon-button icon='mdi:play-box-outline' on-tap='mp3'></paper-icon-button> </template> -->
-        <template> <audio controls> <source src="api/asteriskmbox/mp3/[[item.sha]]" type="audio/mpeg"></audio></template>
+        <template> <paper-icon-button data-sha$='[[item.sha]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button> </template>-->
+        <!--<template> <audio preload="none" duration="5" controls> <source src="api/asteriskmbox/mp3/[[item.sha]]" type="audio/mpeg"></audio></template>-->
     </vaadin-grid>
+    <paper-dialog id="mp3dialog">
+      <h2>Message Plaback</h2>
+      <div>
+          <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
+      </div>
+    </paper-dialog>
+    <paper-dialog id="confirmdel">
+      <h2>Delete Selected Messages</h2>
+      <p>Are you sure you want to delete the selected messages?</p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Decline</paper-button>
+        <paper-button dialog-confirm autofocus on-tap="deleteSelected">Accept</paper-button>
+      </div>
+    </paper-dialog>
   </div>
 
     </app-header-layout>
@@ -129,6 +144,17 @@ Polymer({
   hassChanged: function (newHass, oldHass) {
       },
 
+
+  openMP3Dialog: function(event) {
+      this.$.mp3dialog.open();
+      this.$.mp3src.src="/api/asteriskmbox/mp3/" + event.target.dataset.sha
+      this.$.mp3.load()
+      this.$.mp3.play()
+  },
+
+  openDeleteDialog: function() {
+      this.$.confirmdel.open();
+  },
 
   deleteSelected: function () {
       var grid = this.$.simple
