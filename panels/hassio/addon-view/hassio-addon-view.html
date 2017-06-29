@@ -128,8 +128,14 @@ Polymer({
     'hass-api-called': 'apiCalled',
   },
 
-  apiCalled: function () {
-    this.addonChanged(this.addon);
+  apiCalled: function (ev) {
+    var path = ev.detail.path;
+
+    if (path.substr(path.lastIndexOf('/') + 1) === 'uninstall') {
+      this.backTapped();
+    } else {
+      this.addonChanged(this.addon);
+    }
   },
 
   addonChanged: function (addon) {
