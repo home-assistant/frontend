@@ -98,7 +98,7 @@
       <vaadin-grid-column width="100px" flex-grow=0>
         <template class="header">Listen</template>
         <!-- <template> <paper-icon-button icon='mdi:play-box-outline' on-tap='mp3'></paper-icon-button> </template> -->
-        <template> <audio controls> <source src="api/asteriskmbox/mp3/[[index]]" type="audio/mpeg"></audio></template>
+        <template> <audio controls> <source src="api/asteriskmbox/mp3/[[item.sha]]" type="audio/mpeg"></audio></template>
     </vaadin-grid>
   </div>
 
@@ -154,7 +154,7 @@ Polymer({
             var items = [];
             for (var i = 0; i < arrayLength; i++) {
                 var datetime = window.hassUtil.formatDateTime(new Date(values[i]['info']['origtime'] * 1000));
-                items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha']}});
+                items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha']});
             }
             return items;
             });
