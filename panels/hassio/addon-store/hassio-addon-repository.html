@@ -65,7 +65,12 @@ Polymer({
   },
 
   computeInstallStatus: function (addon) {
-    return addon.installed || 'Not installed';
+    if (!addon.installed) {
+      return 'Not installed';
+    } else if (addon.installed !== addon.version) {
+      return addon.installed + ' (update available)';
+    }
+    return addon.installed;
   },
 
   addonTapped: function (ev) {
