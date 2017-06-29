@@ -98,7 +98,7 @@
       </vaadin-grid-column>
       <vaadin-grid-column width="100px" flex-grow=0>
         <template class="header">Listen</template>
-        <template> <paper-icon-button data-sha$='[[item.sha]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button> </template>-->
+        <template> <paper-icon-button data-sha$='[[item.sha]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button>[[item.duration]] secs</template>-->
         <!--<template> <audio preload="none" duration="5" controls> <source src="api/asteriskmbox/mp3/[[item.sha]]" type="audio/mpeg"></audio></template>-->
     </vaadin-grid>
     <paper-dialog id="mp3dialog">
@@ -180,7 +180,7 @@ Polymer({
             var items = [];
             for (var i = 0; i < arrayLength; i++) {
                 var datetime = window.hassUtil.formatDateTime(new Date(values[i]['info']['origtime'] * 1000));
-                items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha']});
+                items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha'], "duration": values[i]['info']['duration']});
             }
             return items;
             });
