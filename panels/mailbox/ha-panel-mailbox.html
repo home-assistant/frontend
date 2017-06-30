@@ -150,60 +150,64 @@ Polymer({
     },
   },
 
-  hassChanged: function(hass, oldHass) {
-    if (this._messages == undefined) {
-        this._messages = []
+  hassChanged: function (hass) {
+    if (!this._messages) {
+      this._messages = [];
     }
-    if (hass.states['sensor.voicemail'] == undefined) {
-        return [];
+    if (!hass.states['sensor.voicemail']) {
+      return;
     }
-    var vm = hass.states['sensor.voicemail']
-    if (vm.last_updated == undefined) {
-        return [];
+    var vm = hass.states['sensor.voicemail'];
+    if (!vm.last_updated) {
+      return;
     }
-    var lastUpdated = vm.last_updated
-    if (this._lastUpdated == undefined ||
-        this._lastUpdated != lastUpdated)
-    {
-        this.getMessages().then(function (items) {
-            this._messages = items;
-            this._lastUpdated = lastUpdated;
-        }.bind(this));
+    var lastUpdated = vm.last_updated;
+    if (!this._lastUpdated || this._lastUpdated !== lastUpdated) {
+      this.getMessages().then(function (items) {
+        this._messages = items;
+        this._lastUpdated = lastUpdated;
+      }.bind(this));
     }
   },
 
-  openMP3Dialog: function(event) {
-      this.$.mp3dialog.open();
-      this.$.mp3src.src="/api/asteriskmbox/mp3/" + event.target.dataset.sha
-      this.$.mp3.load()
-      this.$.mp3.play()
+  openMP3Dialog: function (event) {
+    this.$.mp3dialog.open();
+    this.$.mp3src.src = '/api/asteriskmbox/mp3/' + event.target.dataset.sha;
+    this.$.mp3.load();
+    this.$.mp3.play();
   },
 
-  openDeleteDialog: function() {
-      this.$.confirmdel.open();
+  openDeleteDialog: function () {
+    this.$.confirmdel.open();
   },
 
   deleteSelected: function () {
-      var grid = this.$.simple
-      var items = grid.selectedItems;
-      var len = items.length;
-      var sha = [];
-      for (var i = 0; i < len; i++) {
-          sha.push(items[i]['sha']);
-      }
-      this.hass.callApi('POST', 'asteriskmbox/delete', sha);
+    var grid = this.$.simple;
+    var items = grid.selectedItems;
+    var len = items.length;
+    var sha = [];
+    for (var i = 0; i < len; i++) {
+      sha.push(items[i].sha);
+    }
+    this.hass.callApi('POST', 'asteriskmbox/delete', sha);
   },
 
-  getMessages: function() {
-      return this.hass.callApi('GET', 'asteriskmbox/messages').then(function (values) {
-          var arrayLength = values.length;
-          var items = [];
-          for (var i = 0; i < arrayLength; i++) {
-              var datetime = window.hassUtil.formatDateTime(new Date(values[i]['info']['origtime'] * 1000));
-              items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha'], "duration": values[i]['info']['duration']});
-          }
-          return items;
-      });
+  getMessages: function () {
+    return this.hass.callApi('GET', 'asteriskmbox/messages').then(function (values) {
+      var arrayLength = values.length;
+      var items = [];
+      for (var i = 0; i < arrayLength; i++) {
+        var datetime = window.hassUtil.formatDateTime(new Date(values[i].info.origtime * 1000));
+        items.push({
+          timestamp: datetime,
+          caller: values[i].info.callerid,
+          message: values[i].text,
+          sha: values[i].sha,
+          duration: values[i].info.duration
+        });
+      }
+      return items;
+    });
   },
 });
 
