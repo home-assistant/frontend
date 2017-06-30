@@ -36,32 +36,27 @@
         max-width: 500px;
       }
 
-      .description {
-        margin-top: 24px;
-        white-space: pre-wrap;
-      }
-
       .header {
         @apply(--paper-font-title);
       }
 
-      .attributes th {
-        text-align: left;
+      .content {
+        padding: 16px;
       }
 
-      .attributes tr {
-        vertical-align: top;
+      .details {
+        padding: 10px;
+        margin: 10px;
+        display: flex;
+        justify-content: space-around;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14);
+        font-size: 20px;
+        white-space: normal;
       }
-
-      .attributes tr:nth-child(even) {
-        background-color: #eee;
+      vaadin-grid {
+        height: 100%;
+        max-height: 100%;
       }
-
-      .attributes td:nth-child(3) {
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-
       pre {
         margin: 0;
       }
@@ -74,49 +69,52 @@
           <div main-title>Mailbox</div>
         </app-toolbar>
       </app-header>
-  <div>
-    <paper-button on-tap='openDeleteDialog' raised>Delete Selected</paper-button>
-  </div>
-  <div class="wrapper">
-    <vaadin-grid id="simple" items='[[_messages]]' size="200">
-      <vaadin-grid-selection-column auto-select>
-      </vaadin-grid-selection-column>
-
-      <vaadin-grid-column width="calc(15% - 100px)">
-        <template class="header">Time</template>
-        <template>[[item.timestamp]]</template>
-      </vaadin-grid-column>
-
-      <vaadin-grid-column width="calc(15% - 100px)">
-        <template class="header">Caller</template>
-        <template>[[item.caller]]</template>
-      </vaadin-grid-column>
-
-      <vaadin-grid-column width="calc(70% - 100px)">
-        <template class="header">Message</template>
-        <template>[[item.message]]</template>
-      </vaadin-grid-column>
-      <vaadin-grid-column width="100px" flex-grow=0>
-        <template class="header">Listen</template>
-        <template> <paper-icon-button data-sha$='[[item.sha]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button>[[item.duration]] secs</template>-->
-        <!--<template> <audio preload="none" duration="5" controls> <source src="api/asteriskmbox/mp3/[[item.sha]]" type="audio/mpeg"></audio></template>-->
-    </vaadin-grid>
-    <paper-dialog id="mp3dialog">
-      <h2>Message Plaback</h2>
-      <div>
-          <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
+      <div class='content'>
+        <div>
+          <paper-button on-tap='openDeleteDialog' raised>Delete Selected</paper-button>
+        </div>
+        <div>
+          <vaadin-grid id="msgtable" items='[[_messages]]'>
+            <template class="row-details">
+              <div class="details">
+                [[item.message]]
+              </div>
+            </template>
+            <vaadin-grid-selection-column auto-select>
+            </vaadin-grid-selection-column>
+  
+            <vaadin-grid-column width="calc(30% - 100px)">
+              <template class="header">Time</template>
+              <template>[[item.timestamp]]</template>
+            </vaadin-grid-column>
+  
+            <vaadin-grid-column width="calc(30% - 100px)">
+              <template class="header">Caller</template>
+              <template>[[item.caller]]</template>
+            </vaadin-grid-column>
+            <vaadin-grid-column width="calc(20% - 100px">
+              <template class="header">Listen</template>
+              <template>
+                <paper-icon-button data-sha$='[[item.sha]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button>
+                [[item.duration]] secs
+              </template>
+          </vaadin-grid>
+          <paper-dialog id="mp3dialog">
+            <h2>Message Plaback</h2>
+            <div>
+              <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
+            </div>
+          </paper-dialog>
+          <paper-dialog id="confirmdel">
+            <h2>Delete Selected Messages</h2>
+            <p>Are you sure you want to delete the selected messages?</p>
+            <div class="buttons">
+              <paper-button dialog-dismiss>Decline</paper-button>
+              <paper-button dialog-confirm autofocus on-tap="deleteSelected">Accept</paper-button>
+            </div>
+          </paper-dialog>
+        </div>
       </div>
-    </paper-dialog>
-    <paper-dialog id="confirmdel">
-      <h2>Delete Selected Messages</h2>
-      <p>Are you sure you want to delete the selected messages?</p>
-      <div class="buttons">
-        <paper-button dialog-dismiss>Decline</paper-button>
-        <paper-button dialog-confirm autofocus on-tap="deleteSelected">Accept</paper-button>
-      </div>
-    </paper-dialog>
-  </div>
-
     </app-header-layout>
   </template>
 </dom-module>
@@ -165,6 +163,7 @@ Polymer({
     if (!this._lastUpdated || this._lastUpdated !== lastUpdated) {
       this.getMessages().then(function (items) {
         this._messages = items;
+        this.$.msgtable.expandedItems = items;
         this._lastUpdated = lastUpdated;
       }.bind(this));
     }
@@ -182,7 +181,7 @@ Polymer({
   },
 
   deleteSelected: function () {
-    var grid = this.$.simple;
+    var grid = this.$.msgTable;
     var items = grid.selectedItems;
     var len = items.length;
     var sha = [];
