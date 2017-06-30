@@ -78,7 +78,7 @@
     <paper-button on-tap='openDeleteDialog' raised>Delete Selected</paper-button>
   </div>
   <div class="wrapper">
-    <vaadin-grid id="simple" size="200">
+    <vaadin-grid id="simple" items='[[_messages]]' size="200">
       <vaadin-grid-selection-column auto-select>
       </vaadin-grid-selection-column>
 
@@ -128,6 +128,7 @@ Polymer({
   properties: {
     hass: {
       type: Object,
+      observer: 'hassChanged'
     },
 
     narrow: {
@@ -139,11 +140,37 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    _lasUpdated: {
+      type: String,
+    },
+
+    _messages: {
+      type: Array,
+    },
   },
 
-  hassChanged: function (newHass, oldHass) {
-      },
-
+  hassChanged: function(hass, oldHass) {
+    if (this._messages == undefined) {
+        this._messages = []
+    }
+    if (hass.states['sensor.voicemail'] == undefined) {
+        return [];
+    }
+    var vm = hass.states['sensor.voicemail']
+    if (vm.last_updated == undefined) {
+        return [];
+    }
+    var lastUpdated = vm.last_updated
+    if (this._lastUpdated == undefined ||
+        this._lastUpdated != lastUpdated)
+    {
+        this.getMessages().then(function (items) {
+            this._messages = items;
+            this._lastUpdated = lastUpdated;
+        }.bind(this));
+    }
+  },
 
   openMP3Dialog: function(event) {
       this.$.mp3dialog.open();
@@ -166,26 +193,18 @@ Polymer({
       }
       this.hass.callApi('POST', 'asteriskmbox/delete', sha);
   },
-  attached: function () {
-        var grid = this._grid = this.$.simple
-        grid.size = 200;
-        grid.items = [{"timestamp": "dummy", "caller": "dummy", "message": "dummy"}];
-        this.getMessages().then(function (items) {
-            this._grid.items = items;
-        }.bind(this));
-    },
-    getMessages: function() {
-        return this.hass.callApi('GET', 'asteriskmbox/messages').then(function (values) {
-            var arrayLength = values.length;
-            var items = [];
-            for (var i = 0; i < arrayLength; i++) {
-                var datetime = window.hassUtil.formatDateTime(new Date(values[i]['info']['origtime'] * 1000));
-                items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha'], "duration": values[i]['info']['duration']});
-            }
-            return items;
-            });
-   },
 
+  getMessages: function() {
+      return this.hass.callApi('GET', 'asteriskmbox/messages').then(function (values) {
+          var arrayLength = values.length;
+          var items = [];
+          for (var i = 0; i < arrayLength; i++) {
+              var datetime = window.hassUtil.formatDateTime(new Date(values[i]['info']['origtime'] * 1000));
+              items.push({"timestamp": datetime, "caller": values[i]['info']['callerid'], "message": values[i]['text'], "sha": values[i]['sha'], "duration": values[i]['info']['duration']});
+          }
+          return items;
+      });
+  },
 });
 
 </script>
