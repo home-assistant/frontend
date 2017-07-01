@@ -132,7 +132,7 @@ Polymer({
         mapItems.push(window.L.marker(
           [entity.attributes.latitude, entity.attributes.longitude],
           {
-            icon,
+            icon: icon,
             interactive: false,
             title: title,
           }
@@ -167,7 +167,7 @@ Polymer({
       mapItems.push(window.L.marker(
         [entity.attributes.latitude, entity.attributes.longitude],
         {
-          icon,
+          icon: icon,
           title: window.hassUtil.computeStateName(entity),
         }
       ).addTo(map));

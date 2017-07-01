@@ -71,8 +71,8 @@ Polymer({
     if (!this.nodes || selectedNode === -1) return;
     var nodeAttrs = this.nodes[this.selectedNode].attributes;
     var att = [];
-    Object.entries(nodeAttrs).forEach(([key, value]) => {
-      att.push(key + ': ' + value);
+    Object.keys(nodeAttrs).forEach(function (key) {
+      att.push(key + ': ' + nodeAttrs[key]);
     });
     this.selectedNodeAttrs = att.sort();
   },

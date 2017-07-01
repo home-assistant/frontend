@@ -109,11 +109,11 @@ Polymer({
     return isWide ? 'content' : 'content narrow';
   },
 
-  computeIsHassbianLoaded(hass) {
+  computeIsHassbianLoaded: function (hass) {
     return window.hassUtil.isComponentLoaded(hass, 'config.hassbian');
   },
 
-  computeIsZwaveLoaded(hass) {
+  computeIsZwaveLoaded: function (hass) {
     return window.hassUtil.isComponentLoaded(hass, 'config.zwave');
   },
 });

@@ -159,13 +159,17 @@ Polymer({
   refreshUserCodes: function (selectedNode) {
     this.selectedUserCodeValue = '';
     var userCodes = [];
-    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
-      Object.entries(usercodes).forEach(([key, value]) => {
-        userCodes.push({ key, value });
-      });
-      this.userCodes = userCodes;
-      this.selectedUserCodeChanged(this.selectedUserCode);
-    }.bind(this));
+    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(
+      function (usercodes) {
+        Object.keys(usercodes).forEach(function (key) {
+          userCodes.push({
+            key: key,
+            value: usercodes[key],
+          });
+        });
+        this.userCodes = userCodes;
+        this.selectedUserCodeChanged(this.selectedUserCode);
+      }.bind(this));
   },
 });
 </script>
