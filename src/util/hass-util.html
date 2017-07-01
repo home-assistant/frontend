@@ -431,7 +431,7 @@ window.hassUtil.computeStateState = function (stateObj) {
     stateObj._stateDisplay = stateObj.state.replace(/_/g, ' ');
 
     if (stateObj.attributes.unit_of_measurement) {
-      stateObj._stateDisplay += ` ${stateObj.attributes.unit_of_measurement}`;
+      stateObj._stateDisplay += ' ' + stateObj.attributes.unit_of_measurement;
     }
   }
 
