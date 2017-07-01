@@ -203,13 +203,17 @@ Polymer({
 
   refreshGroups: function (selectedNode) {
     var groupData = [];
-    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
-      Object.entries(groups).forEach(([key, value]) => {
-        groupData.push({ key, value });
-      });
-      this.groups = groupData;
-      this.selectedGroupChanged(this.selectedGroup);
-    }.bind(this));
+    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(
+      function (groups) {
+        Object.keys(groups).forEach(function (key) {
+          groupData.push({
+            key: key,
+            value: groups[key],
+          });
+        });
+        this.groups = groupData;
+        this.selectedGroupChanged(this.selectedGroup);
+      }.bind(this));
   },
 
   selectedGroupChanged: function (selectedGroup) {
