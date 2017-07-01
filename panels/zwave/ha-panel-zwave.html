@@ -370,50 +370,38 @@ Polymer({
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
     this.selectedGroup = -1;
-    var configData = [];
-    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (configs) {
-      Object.entries(configs).forEach(([key, value]) => {
-        configData.push({ key, value });
-      });
-      this.config = configData;
-    }.bind(this));
-    var valueData = [];
-    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(function (values) {
-      Object.entries(values).forEach(([key, value]) => {
-        valueData.push({ key, value });
-      });
-      this.values = valueData;
-    }.bind(this));
-    var groupData = [];
-    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
-      Object.entries(groups).forEach(([key, value]) => {
-        groupData.push({ key, value });
-      });
-      this.groups = groupData;
-    }.bind(this));
-    var userCodes = [];
+
+    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(
+      function (configs) {
+        this.config = this._objToArray(configs);
+      }.bind(this));
+
+    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(
+      function (values) {
+        this.values = this._objToArray(values);
+      }.bind(this));
+
+    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(
+      function (groups) {
+        this.groups = this._objToArray(groups);
+      }.bind(this));
+
     this.hasNodeUserCodes = false;
     this.notifyPath('hasNodeUserCodes');
-    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
-      Object.entries(usercodes).forEach(([key, value]) => {
-        userCodes.push({ key, value });
-      });
-      this.userCodes = userCodes;
-      if (Object.keys(userCodes).length === 0) {
-        this.hasNodeUserCodes = false;
-      } else {
-        this.hasNodeUserCodes = true;
-      }
-      this.notifyPath('hasNodeUserCodes');
-    }.bind(this));
+    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(
+      function (usercodes) {
+        this.userCodes = this._objToArray(usercodes);
+        this.hasNodeUserCodes = this.userCodes.length > 0;
+        this.notifyPath('hasNodeUserCodes');
+      }.bind(this));
   },
 
   computeSelectedEntityAttrs: function (selectedEntity) {
     if (selectedEntity === -1) return 'No entity selected';
     var entityAttrs = this.entities[selectedEntity].attributes;
     var att = [];
-    Object.entries(entityAttrs).forEach(([key, value]) => {
-      att.push(key + ': ' + value);
+    Object.keys(entityAttrs).forEach(function (key) {
+      att.push(key + ': ' + entityAttrs[key]);
     });
     return att.sort();
   },
@@ -459,6 +447,17 @@ Polymer({
 
   toggleHelp: function () {
     this.showHelp = !this.showHelp;
+  },
+
+  _objToArray: function (obj) {
+    var array = [];
+    Object.keys(obj).forEach(function (key) {
+      array.push({
+        key: key,
+        value: obj[key],
+      });
+    });
+    return array;
   },
 });
 </script>
