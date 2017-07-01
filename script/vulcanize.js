@@ -103,4 +103,5 @@ hyd.Analyzer.analyze('src/home-assistant.html')
     // Chain all vulcanizing work as promises
     .then(() => toProcess.reduce(
       (p, entry) => p.then(() => vulcanizeEntry(entry)),
-      Promise.resolve()));
+      Promise.resolve()))
+    .catch(err => console.error('Something went wrong!', err));
