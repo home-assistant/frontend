@@ -75,41 +75,41 @@
   /* eslint-enable no-bitwise */
 
   Object.assign(window.CoverEntity.prototype, {
-    openCover() {
+    openCover: function () {
       this.callService('open_cover');
     },
 
-    closeCover() {
+    closeCover: function () {
       this.callService('close_cover');
     },
 
-    stopCover() {
+    stopCover: function () {
       this.callService('stop_cover');
     },
 
-    openCoverTilt() {
+    openCoverTilt: function () {
       this.callService('open_cover_tilt');
     },
 
-    closeCoverTilt() {
+    closeCoverTilt: function () {
       this.callService('close_cover_tilt');
     },
 
-    stopCoverTilt() {
+    stopCoverTilt: function () {
       this.callService('stop_cover_tilt');
     },
 
-    setCoverPosition(position) {
+    setCoverPosition: function (position) {
       this.callService('set_cover_position', { position: position });
     },
 
-    setCoverTiltPosition(tiltPosition) {
+    setCoverTiltPosition: function (tiltPosition) {
       this.callService('set_cover_tilt_position', { tilt_position: tiltPosition });
     },
 
     // helper method
 
-    callService(service, data) {
+    callService: function (service, data) {
       var serviceData = data || {};
       serviceData.entity_id = this.stateObj.entity_id;
       this.hass.callService('cover', service, serviceData);
