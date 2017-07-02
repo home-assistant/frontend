@@ -76,7 +76,7 @@
     "iron-overlay-behavior": "^2.0.0",
     "iron-pages": "^2.0.0",
     "iron-range-behavior": "^2.0.0",
-    "iron-resizable-behavior": "^2.0.0",
+    "iron-resizable-behavior": "^2.0.1",
     "iron-scroll-target-behavior": "^2.0.0",
     "iron-selector": "^2.0.0",
     "iron-validatable-behavior": "^2.0.0",
