@@ -432,31 +432,33 @@ window.hassUtil.computeStateState = function (stateObj) {
     if (stateObj.attributes.unit_of_measurement) {
       stateObj._stateDisplay += ' ' + stateObj.attributes.unit_of_measurement;
     }
-    switch (stateObj.attributes.device_class) {
-      case 'moisture':
-        stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'dry' : 'wet';
-        break;
-      case 'gas':
-      case 'motion':
-      case 'occupancy':
-      case 'smoke':
-      case 'sound':
-      case 'vibration':
-        stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'clear' : 'detected';
-        break;
-      case 'opening':
-        stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'closed' : 'open';
-        break;
-      case 'safety':
-        stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'safe' : 'unsafe';
-        break;
-      case 'cold':
-      case 'connectivity':
-      case 'heat':
-      case 'light':
-      case 'moving':
-      case 'power':
-      default:
+    if (window.hassUtil.computeDomain(stateObj) === 'binary_sensor') {
+      switch (stateObj.attributes.device_class) {
+        case 'moisture':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'dry' : 'wet';
+          break;
+        case 'gas':
+        case 'motion':
+        case 'occupancy':
+        case 'smoke':
+        case 'sound':
+        case 'vibration':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'clear' : 'detected';
+          break;
+        case 'opening':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'closed' : 'open';
+          break;
+        case 'safety':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'safe' : 'unsafe';
+          break;
+        case 'cold':
+        case 'connectivity':
+        case 'heat':
+        case 'light':
+        case 'moving':
+        case 'power':
+        default:
+      }
     }
   }
 
