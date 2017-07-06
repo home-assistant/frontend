@@ -1,4 +1,5 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="./hass-loading-screen.html">
 
@@ -9,6 +10,12 @@
         display: none !important;
       }
     </style>
+    <app-route
+      route="{{route}}"
+      pattern="/:panel"
+      data="{{routeData}}"
+      tail="{{routeTail}}"
+    ></app-route>
 
     <template is='dom-if' if='[[!resolved]]'>
       <hass-loading-screen
@@ -43,6 +50,15 @@ Polymer({
       observer: 'updateAttributes',
     },
 
+    route: Object,
+
+    routeData: Object,
+
+    routeTail: {
+      type: Object,
+      observer: 'updateAttributes',
+    },
+
     resolved: {
       type: Boolean,
       value: false,
@@ -55,13 +71,13 @@ Polymer({
 
     panel: {
       type: Object,
-      computed: 'computeCurrentPanel(hass)',
+      computed: 'computeCurrentPanel(hass, routeData)',
       observer: 'panelChanged',
     },
   },
 
-  computeCurrentPanel: function (hass) {
-    return hass.config.panels[hass.currentPanel];
+  computeCurrentPanel: function (hass, routeData) {
+    return hass.config.panels[routeData.panel];
   },
 
   panelChanged: function (panel) {
@@ -102,6 +118,7 @@ Polymer({
     customEl.hass = this.hass;
     customEl.narrow = this.narrow;
     customEl.showMenu = this.showMenu;
+    customEl.route = this.routeTail;
   },
 });
 </script>
