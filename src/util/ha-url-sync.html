@@ -1,0 +1,63 @@
+<script>
+(function () {
+  /* eslint-disable no-console */
+  var DEBUG = false;
+
+  Polymer({
+    is: 'ha-url-sync',
+
+    properties: {
+      hass: {
+        type: Object,
+        observer: 'hassChanged',
+      },
+    },
+
+    hassChanged: function (newHass, oldHass) {
+      if (this.ignoreNextHassChange) {
+        if (DEBUG) console.log('ignore hasschange');
+        this.ignoreNextHassChange = false;
+        return;
+      } else if (!oldHass || oldHass.moreInfoEntityId === newHass.moreInfoEntityId) {
+        return;
+      }
+
+      if (newHass.moreInfoEntityId) {
+        if (DEBUG) console.log('pushing state');
+        history.pushState(null, null, window.location.pathname);
+      } else {
+        if (DEBUG) console.log('history back');
+        this.ignoreNextPopstate = true;
+        history.back();
+      }
+    },
+
+    popstateChangeListener: function (ev) {
+      if (this.ignoreNextPopstate) {
+        if (DEBUG) console.log('ignore popstate');
+        this.ignoreNextPopstate = false;
+        return;
+      }
+
+      if (DEBUG) console.log('popstate', ev);
+
+      if (this.hass.moreInfoEntityId) {
+        if (DEBUG) console.log('deselect entity');
+        this.ignoreNextHassChange = true;
+        this.fire('hass-more-info', { entityId: null });
+      }
+    },
+
+    attached: function () {
+      this.ignoreNextPopstate = false;
+      this.ignoreNextHassChange = false;
+      this.popstateChangeListener = this.popstateChangeListener.bind(this);
+      window.addEventListener('popstate', this.popstateChangeListener);
+    },
+
+    detached: function () {
+      window.removeEventListener('popstate', this.popstateChangeListener);
+    }
+  });
+}());
+</script>
