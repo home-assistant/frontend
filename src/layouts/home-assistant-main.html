@@ -46,7 +46,7 @@
         slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
-        selected='[[routeData.panel]]'
+        selected='[[_computeSelected(routeData)]]'
         selected-attribute='panel-visible'
       >
         <partial-cards
@@ -135,6 +135,10 @@ Polymer({
 
   computeDockedSidebar: function (hass) {
     return hass.dockedSidebar;
+  },
+
+  _computeSelected: function (routeData) {
+    return routeData.panel || 'states';
   },
 });
 </script>
