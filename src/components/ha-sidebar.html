@@ -99,7 +99,7 @@
       <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
     </app-toolbar>
 
-    <paper-listbox attr-for-selected='data-panel' selected='[[hass.currentPanel]]' on-iron-select='menuSelect'>
+    <paper-listbox attr-for-selected='data-panel' selected='[[route.panel]]'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
         <span class='item-text'>States</span>
@@ -178,9 +178,9 @@ Polymer({
       type: String,
     },
 
-    narrow: {
-      type: Boolean,
-    },
+    narrow: Boolean,
+
+    route: Object,
 
     panels: {
       type: Array,
@@ -191,10 +191,6 @@ Polymer({
       type: Boolean,
       value: true,
     },
-  },
-
-  created: function () {
-    this._boundUpdateStyles = this.updateStyles.bind(this);
   },
 
   computePanels: function (hass) {
@@ -236,10 +232,6 @@ Polymer({
     return result;
   },
 
-  menuSelect: function () {
-    this.debounce('updateStyles', this._boundUpdateStyles, 1);
-  },
-
   menuClicked: function (ev) {
     var target = ev.target;
     var checks = 5;
@@ -262,14 +254,16 @@ Polymer({
   },
 
   selectPanel: function (newChoice) {
-    if (newChoice === this.hass.currentPanel) {
-      return;
-    } else if (newChoice === 'logout') {
+    if (newChoice === 'logout') {
       this.handleLogOut();
       return;
     }
-    this.fire('hass-navigate', { panel: newChoice });
-    this.debounce('updateStyles', this._boundUpdateStyles, 1);
+    var path = '/' + newChoice;
+    if (path === document.location.pathname) {
+      return;
+    }
+    history.pushState(null, null, path);
+    this.fire('location-changed');
   },
 
   handleLogOut: function () {

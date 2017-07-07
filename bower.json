@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "app-layout": "^2.0.0",
+    "app-route": "PolymerElements/app-route#^2.0.0",
     "app-storage": "^2.0.2",
     "fecha": "~2.3.0",
     "font-roboto-local": "~1.0.1",
@@ -70,6 +71,7 @@
     "iron-input": "^2.0.0",
     "iron-jsonp-library": "^2.0.0",
     "iron-list": "^2.0.0",
+    "iron-location": "^2.0.1",
     "iron-media-query": "^2.0.0",
     "iron-menu-behavior": "^2.0.0",
     "iron-meta": "^2.0.0",
@@ -103,7 +105,6 @@
     "paper-scroll-header-panel": "^2.0.0",
     "paper-slider": "^2.0.0",
     "paper-spinner": "^2.0.0",
-    "paper-styles": "2.0.0",
     "paper-styles": "^2.0.0",
     "paper-tabs": "^2.0.0",
     "paper-toast": "^2.0.0",
