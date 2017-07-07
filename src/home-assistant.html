@@ -25,7 +25,6 @@
     <template is='dom-if' if='[[showMain]]' restamp>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
-        on-hass-navigate='handleNavigate'
         on-hass-dock-sidebar='handleDockSidebar'
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
@@ -127,8 +126,6 @@ Polymer({
       states: null,
       config: null,
       dockedSidebar: false,
-      currentPanel: 'states',
-      currentView: null,
       moreInfoEntityId: null,
       callService: function (domain, service, serviceData) {
         return conn.callService(domain, service, serviceData || {})
@@ -215,22 +212,6 @@ Polymer({
     this.hass = Object.assign(
       {}, this.hass,
       { moreInfoEntityId: ev.detail.entityId });
-  },
-
-  handleNavigate: function (ev) {
-    ev.stopPropagation();
-
-    var hass = Object.assign({}, this.hass);
-
-    if ('panel' in ev.detail) {
-      hass.currentPanel = ev.detail.panel;
-    }
-
-    if ('view' in ev.detail) {
-      hass.currentView = ev.detail.view;
-    }
-
-    this.hass = hass;
   },
 
   handleDockSidebar: function (ev) {

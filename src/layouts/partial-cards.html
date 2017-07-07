@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel='import' href='../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="../components/ha-menu-button.html">
 <link rel="import" href="../components/ha-start-voice-button.html">
@@ -35,7 +36,12 @@
         text-transform: uppercase;
       }
     </style>
-
+    <app-route
+      route="{{route}}"
+      pattern="/:view"
+      data="{{routeData}}"
+      active="{{routeMatch}}"
+    ></app-route>
     <app-header-layout has-scrolling-region id='layout'>
       <app-header effects="waterfall" condenses fixed slot="header">
         <app-toolbar>
@@ -49,24 +55,33 @@
             scrollable
             selected='[[currentView]]'
             attr-for-selected='data-entity'
-            on-iron-select='handleViewSelected'
+            on-iron-activate='handleViewSelected'
           >
             <paper-tab
               data-entity=''
               on-tap='scrollToTop'
             >
-	      <template is='dom-if' if='[[!defaultView]]'>
-	        [[locationName]]
-	      </template>
-	      <template is='dom-if' if='[[defaultView]]'>
-	        <template is='dom-if' if='[[defaultView.attributes.icon]]'>
-		  <iron-icon title$='[[computeStateName(defaultView)]]' icon='[[defaultView.attributes.icon]]'></iron-icon>
-		</template>
-		<template is='dom-if' if='[[!defaultView.attributes.icon]]'>
-		  [[computeStateName(defaultView)]]
-		</template>
+              <template is='dom-if' if='[[!defaultView]]'>
+                [[locationName]]
               </template>
-	    </paper-tab>
+              <template is='dom-if' if='[[defaultView]]'>
+                <template
+                  is='dom-if'
+                  if='[[defaultView.attributes.icon]]'
+                >
+                  <iron-icon
+                    title$='[[computeStateName(defaultView)]]'
+                    icon='[[defaultView.attributes.icon]]'
+                  ></iron-icon>
+                </template>
+                <template
+                  is='dom-if'
+                  if='[[!defaultView.attributes.icon]]'
+                >
+                  [[computeStateName(defaultView)]]
+                </template>
+              </template>
+            </paper-tab>
             <template is='dom-repeat' items='[[views]]'>
               <paper-tab
                 data-entity$='[[item.entity_id]]'
@@ -101,7 +116,6 @@
         <template is='dom-repeat' items='[[views]]'>
           <ha-cards
             data-view$='[[item.entity_id]]'
-            show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]'
             states='[[viewStates]]'
             columns='[[_columns]]'
             hass='[[hass]]'
@@ -144,6 +158,10 @@ Polymer({
       value: false,
     },
 
+    route: Object,
+    routeData: Object,
+    routeMatch: Boolean,
+
     _columns: {
       type: Number,
       value: 1,
@@ -162,6 +180,7 @@ Polymer({
 
     currentView: {
       type: String,
+      computed: '_computeCurrentView(routeMatch, routeData)',
     },
 
     views: {
@@ -242,10 +261,20 @@ Polymer({
 
   handleViewSelected: function (ev) {
     var view = ev.detail.item.getAttribute('data-entity') || null;
-    var current = this.currentView || null;
+    var current = this.currentView;
+
     if (view !== current) {
-      this.fire('hass-navigate', { view: view });
+      var path = this.route.prefix;
+      if (view) {
+        path += '/' + view;
+      }
+      history.pushState(null, null, path);
+      this.fire('location-changed');
     }
+  },
+
+  _computeCurrentView: function (routeMatch, routeData) {
+    return routeMatch ? routeData.view : '';
   },
 
   computeTitle: function (views, locationName) {
@@ -276,12 +305,6 @@ Polymer({
   },
 
   hassChanged: function (hass) {
-    var newView = hass.currentView || '';
-
-    if (newView !== this.currentView) {
-      this.currentView = newView;
-    }
-
     var views = window.HAWS.extractViews(hass.states);
     // If default view present, it's in first index.
     if (views.length > 0 && views[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
