@@ -5,12 +5,16 @@
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+
+
 <link rel="import" href="../../../src/components/ha-menu-button.html">
 
-<link rel="import" href="./hassio-host-info.html">
-<link rel="import" href="./hassio-hass-info.html">
-<link rel="import" href="./hassio-supervisor-info.html">
 <link rel="import" href="./hassio-addons.html">
+<link rel="import" href="./hassio-hass-update.html">
 
 <dom-module id="hassio-dashboard">
   <template>
@@ -31,6 +35,10 @@
       .status > *:first-child {
         margin-right: 24px;
       }
+
+      paper-listbox paper-item {
+        cursor: pointer;
+      }
     </style>
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed>
@@ -39,30 +47,30 @@
           <div main-title>Hass.io</div>
           <paper-icon-button
             icon="mdi:shopping"
-            on-tap="storeTapped"
+            on-tap="_openStore"
           ></paper-icon-button>
+          <paper-menu-button
+            no-animations
+            horizontal-align="right"
+          >
+            <paper-icon-button
+              icon="mdi:dots-vertical"
+              slot="dropdown-trigger"
+            ></paper-icon-button>
+            <paper-listbox slot="dropdown-content">
+              <paper-item
+                on-tap='_openAdvanced'
+              >Advanced Settings</paper-item>
+            </paper-listbox>
+          </paper-menu-button>
         </app-toolbar>
       </app-header>
 
       <div class='content'>
-        <div class='status'>
-          <hassio-supervisor-info
-            hass='[[hass]]'
-            data='[[supervisorInfo]]'
-          ></hassio-supervisor-info>
-
-          <hassio-host-info
-            hass='[[hass]]'
-            data='[[hostInfo]]'
-          ></hassio-host-info>
-        </div>
-        <div class='status'>
-          <hassio-hass-info
-            hass='[[hass]]'
-            data='[[hassInfo]]'
-          ></hassio-hass-info>
-          <div></div>
-        </div>
+        <hassio-hass-update
+          hass='[[hass]]'
+          data='[[hassInfo]]'
+        ></hassio-hass-update>
         <hassio-addons
           hass='[[hass]]'
           data='[[supervisorInfo.addons]]'
@@ -95,19 +103,22 @@ Polymer({
       value: {},
     },
 
-    hostInfo: {
-      type: Object,
-      value: {},
-    },
-
     hassInfo: {
       type: Object,
       value: {},
     },
   },
 
-  storeTapped: function () {
-    this.fire('hassio-show-page', { page: 'addon-store' });
+  _openStore: function (ev) {
+    history.pushState(null, null, '/hassio/store');
+    this.fire('location-changed');
+    ev.target.blur();
+  },
+
+  _openAdvanced: function (ev) {
+    history.pushState(null, null, '/hassio/advanced');
+    this.fire('location-changed');
+    ev.target.blur();
   },
 });
 </script>

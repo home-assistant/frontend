@@ -13,6 +13,7 @@
       hass='[[hass]]'
       narrow='[[narrow]]'
       show-menu='[[showMenu]]'
+      route='[[route]]'
     ></hassio-main>
   </template>
 </dom-module>
@@ -22,18 +23,10 @@ Polymer({
   is: 'ha-panel-hassio',
 
   properties: {
-    hass: {
-      type: Object,
-    },
-
-    narrow: {
-      type: Boolean,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+    hass: Object,
+    narrow: Boolean,
+    showMenu: Boolean,
+    route: Object,
 
     loaded: {
       type: Boolean,

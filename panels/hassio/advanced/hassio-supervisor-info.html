@@ -100,7 +100,8 @@ Polymer({
   },
 
   supervisorLogsTapped: function () {
-    this.fire('hassio-show-page', { page: 'supervisor' });
+    history.pushState(null, null, '/hassio/supervisor');
+    this.fire('location-changed');
   }
 });
 </script>
