@@ -94,6 +94,20 @@ Polymer({
         this.$.drawer.closeDrawer();
       }
     }
+
+    if (hass && !this._themeLoaded) {
+      this._themeLoaded = true;
+      var _this = this;
+      hass.callApi('get', 'themes').then(function (result) {
+        if (result.current_theme === 'default') return;
+        var theme = result.themes[result.current_theme];
+        Object.keys(theme).forEach(function (key) {
+          var value = theme[key];
+          _this.customStyle['--' + key] = value;
+        });
+        _this.updateStyles();
+      });
+    }
   },
 
   handleStartVoice: function (ev) {
