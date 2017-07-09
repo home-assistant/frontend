@@ -248,7 +248,7 @@ Polymer({
         this.dirty = false;
 
         if (this.creatingNew) {
-          history.pushState(null, null, '/automation/edit/' + id)
+          history.pushState(null, null, '/automation/edit/' + id);
           this.fire('location-changed');
         }
       }.bind(this), function (errors) {
