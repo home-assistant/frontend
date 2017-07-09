@@ -3,15 +3,17 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <script src="../../bower_components/leaflet/dist/leaflet.js"></script>
-<!-- otherwise the shadow dom polyfill breaks the CSS when vulcanized -->
-<link rel="stylesheet" href="../../bower_components/leaflet/dist/leaflet.css" />
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="./ha-entity-marker.html">
 
 <dom-module id="ha-panel-map">
   <template>
-    <link rel="stylesheet" href="../../bower_components/leaflet/dist/leaflet.css" />
+    <link
+      id='stylesheet'
+      rel="stylesheet"
+      href="../../bower_components/leaflet/dist/leaflet.css"
+    />
 
     <style include="ha-style">
       #map {
@@ -53,6 +55,11 @@ Polymer({
   },
 
   attached: function () {
+    // The link tag is resolved relative to the _current_ url instead of the
+    // source HTML file. Vulcanized this is taken care off. Fix it in dev.
+    if (window.HASS_DEV) {
+      this.$.stylesheet.href = '/static/home-assistant-polymer/bower_components/leaflet/dist/leaflet.css';
+    }
     var map = this._map = window.L.map(this.$.map);
     map.setView([51.505, -0.09], 13);
     window.L.tileLayer(
