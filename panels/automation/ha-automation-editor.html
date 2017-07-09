@@ -160,6 +160,7 @@ Polymer({
 
   created: function () {
     this.configChanged = this.configChanged.bind(this);
+    this._rendered = null;
   },
 
   detached: function () {
@@ -169,6 +170,8 @@ Polymer({
   },
 
   configChanged: function (config) {
+    // onChange gets called a lot during initial rendering causing recursing calls.
+    if (this._rendered === null) return;
     this.config = config;
     this.errors = null;
     this.dirty = true;
