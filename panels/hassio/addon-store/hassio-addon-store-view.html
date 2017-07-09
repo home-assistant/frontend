@@ -128,11 +128,12 @@ Polymer({
   },
 
   openAddon: function () {
-    this.fire('hassio-select-addon', { addon: this.addon.slug });
+    history.pushState(null, null, '/hassio/addon/' + this.addon.slug);
+    this.fire('location-changed');
   },
 
   backTapped: function () {
-    this.selectedAddon = null;
+    history.back();
   },
 });
 </script>

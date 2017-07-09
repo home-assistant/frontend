@@ -98,8 +98,7 @@ Polymer({
   },
 
   backTapped: function () {
-    // Closes the store. Needs to be done with app-route.
-    this.fire('hassio-select-addon', { addon: null });
+    history.back();
   },
 });
 </script>

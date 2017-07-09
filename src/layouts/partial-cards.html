@@ -38,7 +38,7 @@
     </style>
     <app-route
       route="{{route}}"
-      pattern="/:view"
+      pattern="/states/:view"
       data="{{routeData}}"
       active="{{routeMatch}}"
     ></app-route>
@@ -264,7 +264,7 @@ Polymer({
     var current = this.currentView;
 
     if (view !== current) {
-      var path = this.route.prefix;
+      var path = '/states';
       if (view) {
         path += '/' + view;
       }
