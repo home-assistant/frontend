@@ -78,7 +78,10 @@ Polymer({
   is: 'home-assistant-main',
 
   properties: {
-    hass: Object,
+    hass: {
+      type: Object,
+      observer: '_hassChanged',
+    },
 
     narrow: Boolean,
 
@@ -105,7 +108,9 @@ Polymer({
     if (this.narrow) {
       this.$.drawer.closeDrawer();
     }
+  },
 
+  _hassChanged: function (hass) {
     if (hass && !this._themeLoaded) {
       this._themeLoaded = true;
       var _this = this;
