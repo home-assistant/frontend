@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
+<link rel='import' href='../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="./ha-automation-picker.html">
 <link rel="import" href="./ha-automation-editor.html">
@@ -12,6 +13,17 @@
         height: 100%;
       }
     </style>
+    <app-route
+      route='[[route]]'
+      pattern='/edit/:automation'
+      data="{{_routeData}}"
+      active="{{_edittingAddon}}"
+    ></app-route>
+    <app-route
+      route='[[route]]'
+      pattern='/new'
+      active="{{_creatingNew}}"
+    ></app-route>
 
     <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
     </iron-media-query>
@@ -30,7 +42,7 @@
         hass='[[hass]]'
         automation='[[automation]]'
         is-wide='[[isWide]]'
-        creating-new='[[creatingNew]]'
+        creating-new='[[_creatingNew]]'
       ></ha-automation-editor>
     </template>
   </template>
@@ -41,73 +53,49 @@ Polymer({
   is: 'ha-panel-automation',
 
   properties: {
-    hass: {
-      type: Object,
-    },
-
-    narrow: {
-      type: Boolean,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+    hass: Object,
+    narrow: Boolean,
+    showMenu: Boolean,
+    route: Object,
+    _routeData: Object,
+    _routeMatches: Boolean,
+    _creatingNew: Boolean,
+    _edittingAddon: Boolean,
 
     automations: {
       type: Array,
       computed: 'computeAutomations(hass)',
     },
 
-    automationId: {
-      type: String,
-      value: null,
-    },
-
     automation: {
       type: Object,
-      computed: 'computeAutomation(automations, automationId, creatingNew)',
+      computed: 'computeAutomation(automations, _edittingAddon, _routeData)',
     },
 
-    wide: {
-      type: Boolean,
-    },
-
-    wideSidebar: {
-      type: Boolean,
-    },
+    wide: Boolean,
+    wideSidebar: Boolean,
 
     isWide: {
       type: Boolean,
       computed: 'computeIsWide(showMenu, wideSidebar, wide)'
     },
 
-    creatingNew: {
-      type: Boolean,
-      value: false,
-    },
-
     showEditor: {
       type: Boolean,
-      computed: 'computeShowEditor(automation, creatingNew)',
+      computed: 'computeShowEditor(_edittingAddon, _creatingNew)',
     }
-  },
-
-  listeners: {
-    'hass-automation-picked': 'automationPicked',
-    'hass-create-automation': 'createAutomation',
   },
 
   computeIsWide: function (showMenu, wideSidebar, wide) {
     return showMenu ? wideSidebar : wide;
   },
 
-  computeAutomation: function (automations, automationId, creatingNew) {
-    if (creatingNew || !automations) {
+  computeAutomation: function (automations, edittingAddon, routeData) {
+    if (!automations || !edittingAddon) {
       return null;
     }
     for (var i = 0; i < automations.length; i++) {
-      if (automations[i].attributes.id === automationId) {
+      if (automations[i].attributes.id === routeData.automation) {
         return automations[i];
       }
     }
@@ -142,19 +130,8 @@ Polymer({
     });
   },
 
-  computeShowEditor: function (automation, creatingNew) {
-    return creatingNew || automation;
-  },
-
-  automationPicked: function (ev) {
-    this.automationId = ev.detail.id;
-    if (this.creatingNew) {
-      this.creatingNew = false;
-    }
-  },
-
-  createAutomation: function () {
-    this.creatingNew = true;
+  computeShowEditor: function (_edittingAddon, _creatingNew) {
+    return _creatingNew || _edittingAddon;
   },
 });
 </script>
