@@ -77,7 +77,7 @@ Polymer({
   },
 
   computeCurrentPanel: function (hass, routeData) {
-    return hass.config.panels[routeData.panel];
+    return routeData ? hass.config.panels[routeData.panel] : null;
   },
 
   panelChanged: function (panel) {
