@@ -3,6 +3,7 @@
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
 
 <link rel="import" href="../../../src/components/ha-menu-button.html">
 
@@ -13,19 +14,23 @@
 
 <dom-module id="hassio-addon-store">
   <template>
-    <template is='dom-if' if='[[selectedAddon]]' restamp>
+    <app-route
+      route='[[route]]'
+      pattern='/:addon'
+      data="{{_routeData}}"
+      active="{{_routeMatches}}"
+    ></app-route>
+    <template is='dom-if' if='[[_routeMatches]]' restamp>
       <hassio-addon-store-view
         hass='[[hass]]'
-        selected-addon='{{selectedAddon}}'
         addon='[[selectedAddonObject]]'
         repo='[[computeActiveRepo(repos, selectedAddonObject)]]'
       ></hassio-addon-store-view>
     </template>
 
-    <template is='dom-if' if='[[!selectedAddon]]'>
+    <template is='dom-if' if='[[!_routeMatches]]'>
       <hassio-addon-store-overview
         hass='[[hass]]'
-        selected-addon='{{selectedAddon}}'
         addons='[[addons]]'
         repos='[[repos]]'
       ></hassio-addon-store-overview>
@@ -42,14 +47,13 @@ Polymer({
       type: Object,
     },
 
-    selectedAddon: {
-      type: String,
-      value: null,
-    },
+    route: Object,
+    _routeData: Object,
+    _routeMatches: Boolean,
 
     selectedAddonObject: {
       type: Object,
-      computed: 'computeActiveAddon(addons, selectedAddon)',
+      computed: 'computeActiveAddon(addons, _routeData.addon)',
     },
 
     addons: {

@@ -56,7 +56,7 @@
           narrow='[[narrow]]'
           hass='[[hass]]'
           show-menu='[[dockedSidebar]]'
-          route='[[routeTail]]'
+          route='[[route]]'
         ></partial-cards>
 
         <partial-panel-resolver
@@ -129,6 +129,9 @@ Polymer({
 
   attached: function () {
     window.removeInitMsg();
+    if (document.location.pathname === '/') {
+      history.replaceState(null, null, '/states');
+    }
   },
 
   computeForceNarrow: function (narrow, dockedSidebar) {

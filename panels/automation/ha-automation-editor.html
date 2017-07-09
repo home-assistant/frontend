@@ -228,7 +228,8 @@ Polymer({
         !confirm('You have unsaved changes. Are you sure you want to leave?')) {
       return;
     }
-    this.fire('hass-automation-picked', { id: null });
+    history.pushState(null, null, '/automation');
+    this.fire('location-changed');
   },
 
   _updateComponent: function () {
@@ -247,9 +248,8 @@ Polymer({
         this.dirty = false;
 
         if (this.creatingNew) {
-          this.fire('hass-automation-picked', {
-            id: id,
-          });
+          history.pushState(null, null, '/automation/edit/' + id);
+          this.fire('location-changed');
         }
       }.bind(this), function (errors) {
         this.errors = errors.body.message;
