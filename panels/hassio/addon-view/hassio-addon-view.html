@@ -2,6 +2,7 @@
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
 
 <link rel="import" href="../../../src/components/ha-menu-button.html">
 
@@ -36,6 +37,11 @@
         margin-right: 24px;
       }
     </style>
+    <app-route
+      route='[[route]]'
+      pattern='/addon/:addon'
+      data="{{_routeData}}"
+    ></app-route>
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed>
         <app-toolbar>
@@ -56,7 +62,7 @@
 
           <hassio-addon-state
             hass='[[hass]]'
-            addon='[[addon]]'
+            addon='[[_routeData.addon]]'
             addon-info='[[addonInfo]]'
             addon-state='[[addonState]]'
           ></hassio-addon-state>
@@ -66,13 +72,13 @@
           <div class='controls'>
             <hassio-addon-options
               hass='[[hass]]'
-              addon='[[addon]]'
+              addon='[[_routeData.addon]]'
               addon-state='[[addonState]]'
             ></hassio-addon-options>
 
             <hassio-addon-logs
               hass='[[hass]]'
-              addon='[[addon]]'
+              addon='[[_routeData.addon]]'
             ></hassio-addon-logs>
           </div>
         </template>
@@ -99,9 +105,10 @@ Polymer({
       value: false,
     },
 
-    addon: {
-      type: String,
-      observer: 'addonChanged',
+    route: Object,
+    _routeData: {
+      type: Object,
+      observer: '_routeDataChanged',
     },
 
     supervisorInfo: {
@@ -110,7 +117,7 @@ Polymer({
 
     addonInfo: {
       type: Object,
-      computed: 'computeAddonInfo(supervisorInfo, addon)',
+      computed: 'computeAddonInfo(supervisorInfo, _routeData.addon)',
     },
 
     addonState: {
@@ -134,17 +141,13 @@ Polymer({
     if (path.substr(path.lastIndexOf('/') + 1) === 'uninstall') {
       this.backTapped();
     } else {
-      this.addonChanged(this.addon);
+      this._routeDataChanged(this._routeData);
     }
   },
 
-  addonChanged: function (addon) {
-    if (!this.hass) {
-      setTimeout(function () { this.addonChanged(addon); }.bind(this), 0);
-      return;
-    }
-
-    this.hass.callApi('get', 'hassio/addons/' + addon + '/info')
+  _routeDataChanged: function (routeData) {
+    if (!routeData || !routeData.addon) return;
+    this.hass.callApi('get', 'hassio/addons/' + routeData.addon + '/info')
       .then(function (info) {
         this.addonState = info.data;
       }.bind(this), function () {
@@ -163,7 +166,7 @@ Polymer({
   },
 
   backTapped: function () {
-    this.fire('hassio-select-addon', { addon: null });
+    history.back();
   },
 });
 </script>

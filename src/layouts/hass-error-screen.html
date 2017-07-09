@@ -1,10 +1,10 @@
-<link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<dom-module id='hass-loading-screen'>
+<dom-module id='hass-error-screen'>
   <template>
     <style include='iron-flex ha-style'>
       .placeholder {
@@ -14,15 +14,21 @@
       .layout {
         height: calc(100% - 64px);
       }
+
+      paper-button {
+        font-weight: bold;
+        color: var(--primary-color);
+      }
     </style>
 
     <div class='placeholder'>
       <app-toolbar>
         <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-        <div main-title>[[title]]</div>
+        <div main-title>Home Assistant</div>
       </app-toolbar>
-      <div class='layout horizontal center-center'>
-        <paper-spinner active></paper-spinner>
+      <div class='layout vertical center-center'>
+        <h3>[[error]]</h3>
+        <paper-button on-tap='backTapped'>go back</paper-button>
       </div>
     </div>
   </template>
@@ -30,7 +36,7 @@
 
 <script>
 Polymer({
-  is: 'hass-loading-screen',
+  is: 'hass-error-screen',
 
   properties: {
     narrow: {
@@ -43,10 +49,14 @@ Polymer({
       value: false,
     },
 
-    title: {
+    error: {
       type: String,
-      value: '',
+      value: 'Oops! It looks like something went wrong.'
     },
+  },
+
+  backTapped: function () {
+    history.back();
   },
 });
 </script>

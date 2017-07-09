@@ -52,12 +52,6 @@ Polymer({
     addons: {
       type: Array,
     },
-
-    selectedAddon: {
-      type: String,
-      value: null,
-      notify: true,
-    },
   },
 
   computeShowIntro: function (repo) {
@@ -74,8 +68,8 @@ Polymer({
   },
 
   addonTapped: function (ev) {
-    this.selectedAddon = this.addons[ev.model.index].slug;
-    ev.target.blur();
+    history.pushState(null, null, '/hassio/store/' + this.addons[ev.model.index].slug);
+    this.fire('location-changed');
   },
 });
 </script>
