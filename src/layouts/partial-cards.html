@@ -45,12 +45,16 @@
     <app-header-layout has-scrolling-region id='layout'>
       <app-header effects="waterfall" condenses fixed slot="header">
         <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <ha-menu-button
+              narrow='[[narrow]]'
+              show-menu='[[showMenu]]'
+              hidden$='[[isSidebarHidden()]]'>
+          </ha-menu-button>
           <div main-title>[[computeTitle(views, locationName)]]</div>
           <ha-start-voice-button hass='[[hass]]'></ha-start-voice-button>
         </app-toolbar>
 
-        <div sticky hidden$='[[!views.length]]'>
+        <div sticky hidden$='[[areTabsHidden(views)]]'>
           <paper-tabs
             scrollable
             selected='[[currentView]]'
@@ -204,6 +208,8 @@ Polymer({
       mql.addListener(this.handleWindowChange);
       return mql;
     }.bind(this));
+    this._isKiosk = new URLSearchParams(
+        document.location.search.substring(1)).has('kiosk');
   },
 
   detached: function () {
@@ -218,6 +224,14 @@ Polymer({
     }, 0);
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
+  },
+
+  areTabsHidden: function (views) {
+    return !views.length || this._isKiosk;
+  },
+
+  isSidebarHidden: function () {
+    return this._isKiosk;
   },
 
   /**
