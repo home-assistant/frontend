@@ -10,6 +10,7 @@
 <link rel="import" href="./addon-view/hassio-addon-view.html">
 <link rel="import" href="./addon-store/hassio-addon-store.html">
 <link rel="import" href="./supervisor/hassio-supervisor.html">
+<link rel="import" href="./snapshot/hassio-snapshot.html">
 <link rel="import" href="./hassio-data.html">
 
 <dom-module id="hassio-main">
@@ -64,14 +65,12 @@
 
         <hassio-supervisor
           page-name='supervisor'
-          route='[[_routeTail]]'
           hass='[[hass]]'
           supervisor-info='[[supervisorInfo]]'
         ></hassio-supervisor>
 
         <hassio-dashboard
           page-name='dashboard'
-          route='[[_routeTail]]'
           hass='[[hass]]'
           narrow='[[narrow]]'
           show-menu='[[showMenu]]'
@@ -81,7 +80,6 @@
 
         <hassio-advanced
           page-name='advanced'
-          route='[[_routeTail]]'
           hass='[[hass]]'
           narrow='[[narrow]]'
           show-menu='[[showMenu]]'
@@ -89,6 +87,14 @@
           host-info='[[hostInfo]]'
           hass-info='[[hassInfo]]'
         ></hassio-advanced>
+
+        <hassio-snapshot
+          page-name='snapshot'
+          hass='[[hass]]'
+          narrow='[[narrow]]'
+          show-menu='[[showMenu]]'
+          supervisor-info='[[supervisorInfo]]'
+        ></hassio-snapshot>
 
         <hass-error-screen
           page-name='not-found'
