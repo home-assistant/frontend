@@ -59,6 +59,9 @@
             ></paper-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-item
+                on-tap='_openSnapshot'
+              >Snapshots</paper-item>
+              <paper-item
                 on-tap='_openAdvanced'
               >Advanced Settings</paper-item>
             </paper-listbox>
@@ -117,6 +120,12 @@ Polymer({
 
   _openAdvanced: function (ev) {
     history.pushState(null, null, '/hassio/advanced');
+    this.fire('location-changed');
+    ev.target.blur();
+  },
+
+  _openSnapshot: function (ev) {
+    history.pushState(null, null, '/hassio/snapshot');
     this.fire('location-changed');
     ev.target.blur();
   },
