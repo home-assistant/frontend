@@ -80,7 +80,6 @@ Polymer({
   properties: {
     hass: {
       type: Object,
-      observer: '_hassChanged',
     },
 
     narrow: Boolean,
@@ -104,25 +103,33 @@ Polymer({
     'hass-start-voice': 'handleStartVoice',
   },
 
+  ready: function () {
+    if (!this.hass) return;
+    var _this = this;
+    var defaultStyles = {};
+    function updateThemes(result) {
+      if (result.default_theme === 'default') {
+        _this.updateStyles(defaultStyles);
+        return;
+      }
+      var theme = result.themes[result.default_theme];
+      var styles = Object.assign({}, defaultStyles);
+      Object.keys(theme).forEach(function (key) {
+        var prefixedKey = '--' + key;
+        defaultStyles[prefixedKey] = '';
+        styles[prefixedKey] = theme[key];
+      });
+      _this.updateStyles(styles);
+    }
+    this.hass.callApi('get', 'themes').then(updateThemes);
+    this.hass.connection.subscribeEvents(
+      event => updateThemes(event.data),
+      'themes_updated');
+  },
+
   _routeChanged: function () {
     if (this.narrow) {
       this.$.drawer.closeDrawer();
-    }
-  },
-
-  _hassChanged: function (hass) {
-    if (hass && !this._themeLoaded) {
-      this._themeLoaded = true;
-      var _this = this;
-      hass.callApi('get', 'themes').then(function (result) {
-        if (result.current_theme === 'default') return;
-        var theme = result.themes[result.current_theme];
-        Object.keys(theme).forEach(function (key) {
-          var value = theme[key];
-          _this.customStyle['--' + key] = value;
-        });
-        _this.updateStyles();
-      });
     }
   },
 
