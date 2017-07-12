@@ -7,17 +7,13 @@
 <link rel="import" href="../../../src/components/ha-menu-button.html">
 
 <link rel="import" href="./hassio-addon-info.html">
-<link rel="import" href="./hassio-addon-state.html">
 <link rel="import" href="./hassio-addon-options.html">
 <link rel="import" href="./hassio-addon-logs.html">
 
 <dom-module id="hassio-addon-view">
   <template>
     <style include="iron-flex ha-style">
-      paper-card {
-        display: block;
-      }
-      .controls paper-card,
+      hassio-addon-info,
       hassio-addon-options {
         margin-bottom: 24px;
       }
@@ -25,16 +21,6 @@
         padding: 24px 0 32px;
         max-width: 600px;
         margin: 0 auto;
-      }
-      .status {
-        @apply(--layout-horizontal);
-        margin-bottom: 24px;
-      }
-      .status > * {
-        @apply(--layout-flex);
-      }
-      .status > *:first-child {
-        margin-right: 24px;
       }
     </style>
     <app-route
@@ -54,34 +40,22 @@
       </app-header>
 
       <div class='content'>
-        <div class='status'>
-          <hassio-addon-info
-            hass='[[hass]]'
-            addon-info='[[addonInfo]]'
-          ></hassio-addon-info>
+        <hassio-addon-info
+          hass='[[hass]]'
+          addon-info='[[addonInfo]]'
+          addon-state='[[addonState]]'
+        ></hassio-addon-info>
 
-          <hassio-addon-state
-            hass='[[hass]]'
-            addon='[[_routeData.addon]]'
-            addon-info='[[addonInfo]]'
-            addon-state='[[addonState]]'
-          ></hassio-addon-state>
-        </div>
+        <hassio-addon-options
+          hass='[[hass]]'
+          addon='[[_routeData.addon]]'
+          addon-state='[[addonState]]'
+        ></hassio-addon-options>
 
-        <template is='dom-if' if='[[addonState]]'>
-          <div class='controls'>
-            <hassio-addon-options
-              hass='[[hass]]'
-              addon='[[_routeData.addon]]'
-              addon-state='[[addonState]]'
-            ></hassio-addon-options>
-
-            <hassio-addon-logs
-              hass='[[hass]]'
-              addon='[[_routeData.addon]]'
-            ></hassio-addon-logs>
-          </div>
-        </template>
+        <hassio-addon-logs
+          hass='[[hass]]'
+          addon='[[_routeData.addon]]'
+        ></hassio-addon-logs>
       </div>
     </app-header-layout>
   </template>
@@ -94,15 +68,6 @@ Polymer({
   properties: {
     hass: {
       type: Object,
-    },
-
-    narrow: {
-      type: Boolean,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
     },
 
     route: Object,
@@ -137,6 +102,8 @@ Polymer({
 
   apiCalled: function (ev) {
     var path = ev.detail.path;
+
+    if (!path) return;
 
     if (path.substr(path.lastIndexOf('/') + 1) === 'uninstall') {
       this.backTapped();
