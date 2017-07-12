@@ -103,9 +103,9 @@ Polymer({
   apiCalled: function (ev) {
     var path = ev.detail.path;
 
-    if (!path) {
-      return;
-    } else if (path.substr(path.lastIndexOf('/') + 1) === 'uninstall') {
+    if (!path) return;
+
+    if (path.substr(path.lastIndexOf('/') + 1) === 'uninstall') {
       this.backTapped();
     } else {
       this._routeDataChanged(this._routeData);

@@ -197,11 +197,11 @@ Polymer({
   },
 
   _dataToggleAutoUpdate: function (addon, addonState) {
-    return addonState && {auto_update: !addonState.auto_update};
+    return addonState && { auto_update: !addonState.auto_update };
   },
 
   _dataToggleBoot: function (addon, addonState) {
-    return addonState && {boot: addonState.boot == 'manual' ? 'auto' : 'manual'};
+    return addonState && { boot: addonState.boot === 'manual' ? 'auto' : 'manual' };
   }
 });
 </script>
