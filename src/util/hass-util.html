@@ -466,11 +466,11 @@ window.hassUtil.computeStateState = function (stateObj) {
 };
 
 window.hassUtil.isComponentLoaded = function (hass, component) {
-  return hass.config.core.components.indexOf(component) !== -1;
+  return hass && hass.config.core.components.indexOf(component) !== -1;
 };
 
 window.hassUtil.computeLocationName = function (hass) {
-  return hass.config.core.location_name;
+  return hass && hass.config.core.location_name;
 };
 
 </script>

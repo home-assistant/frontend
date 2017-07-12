@@ -26,6 +26,11 @@
       data="{{routeData}}"
       tail="{{routeTail}}"
     ></app-route>
+    <app-route
+      route="{{route}}"
+      pattern="/states"
+      tail="{{statesRouteTail}}"
+    ></app-route>
     <ha-voice-command-dialog
       hass='[[hass]]'
       id='voiceDialog'
@@ -56,7 +61,8 @@
           narrow='[[narrow]]'
           hass='[[hass]]'
           show-menu='[[dockedSidebar]]'
-          route='[[route]]'
+          route='[[statesRouteTail]]'
+          show-tabs
         ></partial-cards>
 
         <partial-panel-resolver
@@ -88,6 +94,7 @@ Polymer({
     },
     routeData: Object,
     routeTail: Object,
+    statesRouteTail: Object,
 
     dockedSidebar: {
       type: Boolean,

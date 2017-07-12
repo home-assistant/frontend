@@ -38,23 +38,19 @@
     </style>
     <app-route
       route="{{route}}"
-      pattern="/states/:view"
+      pattern="/:view"
       data="{{routeData}}"
       active="{{routeMatch}}"
     ></app-route>
     <app-header-layout has-scrolling-region id='layout'>
       <app-header effects="waterfall" condenses fixed slot="header">
         <app-toolbar>
-          <ha-menu-button
-              narrow='[[narrow]]'
-              show-menu='[[showMenu]]'
-              hidden$='[[isSidebarHidden()]]'>
-          </ha-menu-button>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[computeTitle(views, locationName)]]</div>
           <ha-start-voice-button hass='[[hass]]'></ha-start-voice-button>
         </app-toolbar>
 
-        <div sticky hidden$='[[areTabsHidden(views)]]'>
+        <div sticky hidden$='[[areTabsHidden(views, showTabs)]]'>
           <paper-tabs
             scrollable
             selected='[[currentView]]'
@@ -199,6 +195,11 @@ Polymer({
       type: Object,
       computed: 'computeViewStates(currentView, hass, defaultView)',
     },
+
+    showTabs: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   created: function () {
@@ -208,8 +209,6 @@ Polymer({
       mql.addListener(this.handleWindowChange);
       return mql;
     }.bind(this));
-    this._isKiosk = new URLSearchParams(
-        document.location.search.substring(1)).has('kiosk');
   },
 
   detached: function () {
@@ -226,12 +225,8 @@ Polymer({
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   },
 
-  areTabsHidden: function (views) {
-    return !views.length || this._isKiosk;
-  },
-
-  isSidebarHidden: function () {
-    return this._isKiosk;
+  areTabsHidden: function (views, showTabs) {
+    return !views.length || !showTabs;
   },
 
   /**
@@ -319,6 +314,7 @@ Polymer({
   },
 
   hassChanged: function (hass) {
+    if (!hass) return;
     var views = window.HAWS.extractViews(hass.states);
     // If default view present, it's in first index.
     if (views.length > 0 && views[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
