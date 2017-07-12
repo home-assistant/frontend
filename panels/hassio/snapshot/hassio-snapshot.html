@@ -17,7 +17,7 @@
         display: block;
       }
 
-      paper-card:first-child {
+      paper-card {
         margin-bottom: 32px;
       }
 
@@ -75,7 +75,7 @@
               <p>Looks like you don't have any snapshots yet.</p>
             </template>
           </div>
-          <template is='dom-repeat' items='[[data]]' as='snapshot'>
+          <template is='dom-repeat' items='[[_data]]' as='snapshot'>
             <paper-item>
               <paper-item-body two-line>
                 <div>[[snapshot.name]]</div>
@@ -99,16 +99,42 @@ Polymer({
 
   properties: {
     hass: Object,
-    narrow: Boolean,
-    showMenu: Boolean,
-    supervisorInfo: Object,
+    visible: {
+      type: Boolean,
+      observer: '_visibleChanged',
+    },
     _snapshotName: String,
     _creatingSnapshot: Boolean,
     _error: Object,
-    data: {
+    _data: {
       type: Array,
-      computed: '_computeData(supervisorInfo)'
+      value: [],
+    },
+  },
+
+  listeners: {
+    'hass-api-called': '_apiCalled',
+  },
+
+  _visibleChanged: function (visible) {
+    if (visible) {
+      this._updateData();
     }
+  },
+
+  _apiCalled: function (ev) {
+    if (ev.detail.success) {
+      this._updateData();
+    }
+  },
+
+  _updateData: function () {
+    this.hass.callApi('get', 'hassio/snapshots')
+      .then(function (result) {
+        this._data = result.data.snapshots;
+      }.bind(this), function (error) {
+        this._error = error.message;
+      }.bind(this));
   },
 
   _createSnapshot: function () {
@@ -126,10 +152,6 @@ Polymer({
         this._creatingSnapshot = false;
         this._error = error.message;
       }.bind(this));
-  },
-
-  _computeData: function (supervisorInfo) {
-    return supervisorInfo.snapshots;
   },
 
   _computeRestorePath: function (snapshot) {

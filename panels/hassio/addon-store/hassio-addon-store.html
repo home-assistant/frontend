@@ -47,6 +47,11 @@ Polymer({
       type: Object,
     },
 
+    visible: {
+      type: Boolean,
+      observer: '_visibleChanged',
+    },
+
     route: Object,
     _routeData: Object,
     _routeMatches: Boolean,
@@ -78,16 +83,18 @@ Polymer({
 
   apiCalled: function (ev) {
     if (ev.detail.success) {
-      this.loadData();
+      this._loadData();
     }
   },
 
-  attached: function () {
-    this.loadData();
+  _visibleChanged: function (visible) {
+    if (visible) {
+      this._loadData();
+    }
   },
 
-  loadData: function () {
-    this.hass.callApi('get', 'hassio/supervisor/addons')
+  _loadData: function () {
+    this.hass.callApi('get', 'hassio/addons')
       .then(function (info) {
         this.addons = info.data.addons;
         this.repos = info.data.repositories;
@@ -120,7 +127,7 @@ Polymer({
   refreshData: function () {
     this.hass.callApi('post', 'hassio/supervisor/reload')
       .then(function () {
-        this.loadData();
+        this._loadData();
       }.bind(this));
   },
 });
