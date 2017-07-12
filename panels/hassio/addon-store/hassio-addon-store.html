@@ -87,7 +87,7 @@ Polymer({
   },
 
   loadData: function () {
-    this.hass.callApi('get', 'hassio/supervisor/addons')
+    this.hass.callApi('get', 'hassio/addons')
       .then(function (info) {
         this.addons = info.data.addons;
         this.repos = info.data.repositories;
