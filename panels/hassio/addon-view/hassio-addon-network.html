@@ -1,0 +1,135 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
+
+<dom-module id="hassio-addon-network">
+  <template>
+    <style include="ha-style">
+      :host {
+        display: block;
+      }
+      paper-card {
+        display: block;
+      }
+      .errors {
+        color: var(--google-red-500);
+        margin-bottom: 16px;
+      }
+    </style>
+    <paper-card heading='Network'>
+      <div class="card-content">
+        <template is='dom-if' if='[[errors]]'>
+          <div class='errors'>[[errors]]</div>
+        </template>
+
+        <table>
+          <tr>
+            <th>Container</th>
+            <th>Host</th>
+          </tr>
+          <template
+            is='dom-repeat'
+            items='[[_data]]'
+          >
+            <tr>
+              <td>
+                <paper-input
+                  value='[[item.container]]'
+                  no-label-float
+                  on-change='_valueContainerChanged'
+                ></paper-input>
+              </td>
+              <td>
+                <paper-input
+                  value='[[item.host]]'
+                  no-label-float
+                  on-change='_valueHostChanged'
+                ></paper-input>
+              </td>
+            </tr>
+          </template>
+        </table>
+      </div>
+      <div class="card-actions">
+        <paper-button
+          on-tap='_saveTapped'
+        >Save</paper-button>
+        <paper-button
+          on-tap='_addItemTapped'
+        >Add Row</paper-button>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'hassio-addon-network',
+
+  properties: {
+    hass: Object,
+    addon: String,
+    dirty: Boolean,
+    errors: {
+      type: String,
+      value: null,
+    },
+
+    _data: {
+      type: Object,
+      value: [],
+    },
+
+    addonState: {
+      type: Object,
+      observer: '_addonStateChanged',
+    },
+  },
+
+  _addItemTapped: function () {
+    this.push('_data', { container: '', host: '' });
+  },
+
+  _addonStateChanged: function (addonState) {
+    if (this.dirty || !addonState) return;
+
+    var network = addonState.network || {};
+    var items = [];
+    Object.keys(network).forEach(function (key) {
+      items.push({
+        container: key,
+        host: network[key]
+      });
+    });
+    this._data = items.sort(function (el1, el2) { return el1.host - el2.host; });
+  },
+
+  _valueContainerChanged: function (ev) {
+    this.set('_data.' + ev.model.index + '.container', ev.target.value);
+  },
+
+  _valueHostChanged: function (ev) {
+    this.set('_data.' + ev.model.index + '.host', parseInt(ev.target.value));
+  },
+
+  _saveTapped: function () {
+    this.errors = null;
+    var toSend = {};
+    this._data.forEach(function (item) {
+      toSend[item.container] = item.host;
+    });
+    var path = 'hassio/addons/' + this.addon + '/options';
+
+    this.hass.callApi('post', path, {
+      network: toSend
+    }).then(function () {
+      this.dirty = false;
+      this.fire('hass-api-called', { success: true, path: path });
+    }.bind(this), function (resp) {
+      this.errors = resp.body.message;
+    }.bind(this));
+  },
+});
+</script>
