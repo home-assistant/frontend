@@ -99,6 +99,10 @@ Polymer({
 
   properties: {
     hass: Object,
+    visible: {
+      type: Boolean,
+      observer: '_visibleChanged',
+    },
     _snapshotName: String,
     _creatingSnapshot: Boolean,
     _error: Object,
@@ -112,8 +116,10 @@ Polymer({
     'hass-api-called': '_apiCalled',
   },
 
-  attached: function () {
-    this._updateData();
+  _visibleChanged: function (visible) {
+    if (visible) {
+      this._updateData();
+    }
   },
 
   _apiCalled: function (ev) {

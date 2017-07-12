@@ -20,12 +20,12 @@
         <app-toolbar>
           <paper-icon-button
             icon='mdi:arrow-left'
-            on-tap='backTapped'
+            on-tap='_backTapped'
           ></paper-icon-button>
           <div main-title>Supervisor Logs</div>
           <paper-icon-button
             icon="mdi:refresh"
-            on-tap="refreshTapped"
+            on-tap="_refreshTapped"
           ></paper-icon-button>
         </app-toolbar>
       </app-header>
@@ -44,17 +44,9 @@ Polymer({
       type: Object,
     },
 
-    narrow: {
+    visible: {
       type: Boolean,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
-
-    supervisorInfo: {
-      type: Object,
+      observer: '_visibleChanged',
     },
 
     logs: {
@@ -63,11 +55,13 @@ Polymer({
     },
   },
 
-  attached: function () {
-    this.loadData();
+  _visibleChanged: function (visible) {
+    if (visible) {
+      this._loadData();
+    }
   },
 
-  loadData: function () {
+  _loadData: function () {
     this.hass.callApi('get', 'hassio/supervisor/logs')
       .then(function (info) {
         this.logs = info;
@@ -76,11 +70,11 @@ Polymer({
       }.bind(this));
   },
 
-  refreshTapped: function () {
-    this.loadData();
+  _refreshTapped: function () {
+    this._loadData();
   },
 
-  backTapped: function () {
+  _backTapped: function () {
     history.back();
   },
 });
