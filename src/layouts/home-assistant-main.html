@@ -14,6 +14,7 @@
 <link rel='import' href='../util/ha-url-sync.html'>
 
 <link rel='import' href='../components/ha-sidebar.html'>
+<link rel='import' href='../util/hass-util.html'>
 
 <dom-module id='home-assistant-main'>
   <template>
@@ -106,24 +107,10 @@ Polymer({
   ready: function () {
     if (!this.hass) return;
     var _this = this;
-    var defaultStyles = {};
-    function updateThemes(result) {
-      if (result.default_theme === 'default') {
-        _this.updateStyles(defaultStyles);
-        return;
-      }
-      var theme = result.themes[result.default_theme];
-      var styles = Object.assign({}, defaultStyles);
-      Object.keys(theme).forEach(function (key) {
-        var prefixedKey = '--' + key;
-        defaultStyles[prefixedKey] = '';
-        styles[prefixedKey] = theme[key];
-      });
-      _this.updateStyles(styles);
-    }
-    this.hass.callApi('get', 'themes').then(updateThemes);
+    this.hass.callApi('get', 'themes').then(
+      themes => window.hassUtil.applyThemesOnElement(_this, themes));
     this.hass.connection.subscribeEvents(
-      event => updateThemes(event.data),
+      event => window.hassUtil.applyThemesOnElement(_this, event.data),
       'themes_updated');
   },
 
