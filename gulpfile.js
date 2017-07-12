@@ -5,40 +5,29 @@ var watch = require('gulp-watch');
 
 let cache;
 
-gulp.task('ru_automation', function() {
+const _ru_base = function(rollup_config) {
   return rollup({
-      config: 'rollup/automation.js',
+      config: 'rollup/' + rollup_config,
       cache,
     })
     .on('bundle', (bundle) => cache = bundle)
     .pipe(gulp.dest('./'));
+};
+
+gulp.task('ru_automation', function() {
+  return _ru_base('automation.js');
 });
 
 gulp.task('ru_core', function() {
-  return rollup({
-      config: 'rollup/core.js',
-      cache,
-    })
-    .on('bundle', (bundle) => cache = bundle)
-    .pipe(gulp.dest('./'));
+  return _ru_base('core.js');
 });
 
 gulp.task('ru_compatibility', function() {
-  return rollup({
-      config: 'rollup/compatibility.js',
-      cache,
-    })
-    .on('bundle', (bundle) => cache = bundle)
-    .pipe(gulp.dest('./'));
+  return _ru_base('compatibility.js');
 });
 
 gulp.task('ru_demo', function() {
-  return rollup({
-      config: 'rollup/demo.js',
-      cache,
-    })
-    .on('bundle', (bundle) => cache = bundle)
-    .pipe(gulp.dest('./'));
+  return _ru_base('demo.js');
 });
 
 gulp.task('ru_all', [
