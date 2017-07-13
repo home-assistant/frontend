@@ -106,10 +106,14 @@ Polymer({
     if (!this.hass) return;
     var _this = this;
     this.hass.callApi('get', 'themes').then(
-      themes => window.hassUtil.applyThemesOnElement(_this, themes));
+        function (themes) {
+          window.hassUtil.applyThemesOnElement(_this, themes);
+        });
     this.hass.connection.subscribeEvents(
-      event => window.hassUtil.applyThemesOnElement(_this, event.data),
-      'themes_updated');
+        function (event) {
+          window.hassUtil.applyThemesOnElement(_this, event.data);
+        },
+        'themes_updated');
   },
 
   _routeChanged: function () {
