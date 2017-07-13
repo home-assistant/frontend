@@ -473,4 +473,21 @@ window.hassUtil.computeLocationName = function (hass) {
   return hass && hass.config.core.location_name;
 };
 
+window.hassUtil.applyThemesOnElement = function (element, themes) {
+  if (!element._themes) {
+    element._themes = {};
+  }
+  if (themes.default_theme === 'default') {
+    element.updateStyles(element._themes);
+    return;
+  }
+  var theme = themes.themes[themes.default_theme];
+  var styles = Object.assign({}, element._themes);
+  Object.keys(theme).forEach(function (key) {
+    var prefixedKey = '--' + key;
+    element._themes[prefixedKey] = '';
+    styles[prefixedKey] = theme[key];
+  });
+  element.updateStyles(styles);
+};
 </script>
