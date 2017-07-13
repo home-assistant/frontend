@@ -9,6 +9,25 @@ const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
 
 const plugins = [
   babel({
+    "babelrc": false,
+    "presets": [
+      [
+        "es2015",
+        {
+          "modules": false
+        }
+      ]
+    ],
+    "plugins": [
+      "external-helpers",
+      "transform-object-rest-spread",
+      [
+        "transform-react-jsx",
+        {
+          "pragma":"h"
+        }
+      ],
+    ]
   }),
 
   nodeResolve({
