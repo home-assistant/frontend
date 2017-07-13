@@ -14,6 +14,7 @@
 <link rel='import' href='../util/ha-url-sync.html'>
 
 <link rel='import' href='../components/ha-sidebar.html'>
+<link rel='import' href='../util/hass-util.html'>
 
 <dom-module id='home-assistant-main'>
   <template>
@@ -106,6 +107,20 @@ Polymer({
     'hass-open-menu': 'handleOpenMenu',
     'hass-close-menu': 'handleCloseMenu',
     'hass-start-voice': 'handleStartVoice',
+  },
+
+  ready: function () {
+    if (!this.hass) return;
+    var _this = this;
+    this.hass.callApi('get', 'themes').then(
+        function (themes) {
+          window.hassUtil.applyThemesOnElement(_this, themes);
+        });
+    this.hass.connection.subscribeEvents(
+        function (event) {
+          window.hassUtil.applyThemesOnElement(_this, event.data);
+        },
+        'themes_updated');
   },
 
   _routeChanged: function () {
