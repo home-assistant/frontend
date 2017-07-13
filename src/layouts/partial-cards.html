@@ -38,7 +38,7 @@
     </style>
     <app-route
       route="{{route}}"
-      pattern="/states/:view"
+      pattern="/:view"
       data="{{routeData}}"
       active="{{routeMatch}}"
     ></app-route>
@@ -50,7 +50,7 @@
           <ha-start-voice-button hass='[[hass]]'></ha-start-voice-button>
         </app-toolbar>
 
-        <div sticky hidden$='[[!views.length]]'>
+        <div sticky hidden$='[[areTabsHidden(views, showTabs)]]'>
           <paper-tabs
             scrollable
             selected='[[currentView]]'
@@ -195,6 +195,11 @@ Polymer({
       type: Object,
       computed: 'computeViewStates(currentView, hass, defaultView)',
     },
+
+    showTabs: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   created: function () {
@@ -218,6 +223,10 @@ Polymer({
     }, 0);
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
+  },
+
+  areTabsHidden: function (views, showTabs) {
+    return !views.length || !showTabs;
   },
 
   /**
@@ -305,6 +314,7 @@ Polymer({
   },
 
   hassChanged: function (hass) {
+    if (!hass) return;
     var views = window.HAWS.extractViews(hass.states);
     // If default view present, it's in first index.
     if (views.length > 0 && views[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
