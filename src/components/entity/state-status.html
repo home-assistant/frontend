@@ -1,0 +1,33 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="state-status">
+  <template>
+    <style>
+      .state {
+        @apply(--paper-font-body1);
+        color: var(--primary-text-color);
+
+        margin-left: 16px;
+        text-align: right;
+        line-height: 40px;
+      }
+    </style>
+    <div class='state'>[[computeStateDisplay(stateObj)]]</div>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'state-status',
+
+  properties: {
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  computeStateDisplay: function (stateObj) {
+    return window.hassUtil.computeStateState(stateObj);
+  },
+});
+</script>
