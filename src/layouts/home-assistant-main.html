@@ -41,8 +41,8 @@
 
     <paper-drawer-panel id='drawer'
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
-      responsive-width='0' disable-swipe='[[isSelectedMap]]'
-      disable-edge-swipe='[[isSelectedMap]]'>
+      responsive-width='0' disable-swipe='[[_computeDisableSwipe(routeData)]]'
+      disable-edge-swipe='[[_computeDisableSwipe(routeData)]]'>
       <ha-sidebar
         slot="drawer"
         narrow='[[narrow]]'
@@ -81,91 +81,98 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'home-assistant-main',
+(function () {
+  var NON_SWIPABLE_PANELS = ['kiosk', 'map'];
+  Polymer({
+    is: 'home-assistant-main',
 
-  properties: {
-    hass: Object,
+    properties: {
+      hass: Object,
 
-    narrow: Boolean,
+      narrow: Boolean,
 
-    route: {
-      type: Object,
-      observer: '_routeChanged',
+      route: {
+        type: Object,
+        observer: '_routeChanged',
+      },
+      routeData: Object,
+      routeTail: Object,
+      statesRouteTail: Object,
+
+      dockedSidebar: {
+        type: Boolean,
+        computed: 'computeDockedSidebar(hass)',
+      },
     },
-    routeData: Object,
-    routeTail: Object,
-    statesRouteTail: Object,
 
-    dockedSidebar: {
-      type: Boolean,
-      computed: 'computeDockedSidebar(hass)',
+    listeners: {
+      'hass-open-menu': 'handleOpenMenu',
+      'hass-close-menu': 'handleCloseMenu',
+      'hass-start-voice': 'handleStartVoice',
     },
-  },
 
-  listeners: {
-    'hass-open-menu': 'handleOpenMenu',
-    'hass-close-menu': 'handleCloseMenu',
-    'hass-start-voice': 'handleStartVoice',
-  },
+    ready: function () {
+      if (!this.hass) return;
+      var _this = this;
+      this.hass.callApi('get', 'themes').then(
+          function (themes) {
+            window.hassUtil.applyThemesOnElement(_this, themes);
+          });
+      this.hass.connection.subscribeEvents(
+          function (event) {
+            window.hassUtil.applyThemesOnElement(_this, event.data);
+          },
+          'themes_updated');
+    },
 
-  ready: function () {
-    if (!this.hass) return;
-    var _this = this;
-    this.hass.callApi('get', 'themes').then(
-        function (themes) {
-          window.hassUtil.applyThemesOnElement(_this, themes);
-        });
-    this.hass.connection.subscribeEvents(
-        function (event) {
-          window.hassUtil.applyThemesOnElement(_this, event.data);
-        },
-        'themes_updated');
-  },
+    _routeChanged: function () {
+      if (this.narrow) {
+        this.$.drawer.closeDrawer();
+      }
+    },
 
-  _routeChanged: function () {
-    if (this.narrow) {
+    handleStartVoice: function (ev) {
+      ev.stopPropagation();
+      this.$.voiceDialog.startListening();
+    },
+
+    handleOpenMenu: function () {
+      if (this.narrow) {
+        this.$.drawer.openDrawer();
+      } else {
+        this.fire('hass-dock-sidebar', { dock: true });
+      }
+    },
+
+    handleCloseMenu: function () {
       this.$.drawer.closeDrawer();
-    }
-  },
+      if (this.dockedSidebar) {
+        this.fire('hass-dock-sidebar', { dock: false });
+      }
+    },
 
-  handleStartVoice: function (ev) {
-    ev.stopPropagation();
-    this.$.voiceDialog.startListening();
-  },
+    attached: function () {
+      window.removeInitMsg();
+      if (document.location.pathname === '/') {
+        history.replaceState(null, null, '/states');
+      }
+    },
 
-  handleOpenMenu: function () {
-    if (this.narrow) {
-      this.$.drawer.openDrawer();
-    } else {
-      this.fire('hass-dock-sidebar', { dock: true });
-    }
-  },
+    computeForceNarrow: function (narrow, dockedSidebar) {
+      return narrow || !dockedSidebar;
+    },
 
-  handleCloseMenu: function () {
-    this.$.drawer.closeDrawer();
-    if (this.dockedSidebar) {
-      this.fire('hass-dock-sidebar', { dock: false });
-    }
-  },
+    computeDockedSidebar: function (hass) {
+      return hass.dockedSidebar;
+    },
 
-  attached: function () {
-    window.removeInitMsg();
-    if (document.location.pathname === '/') {
-      history.replaceState(null, null, '/states');
-    }
-  },
+    _computeSelected: function (routeData) {
+      return routeData.panel || 'states';
+    },
 
-  computeForceNarrow: function (narrow, dockedSidebar) {
-    return narrow || !dockedSidebar;
-  },
-
-  computeDockedSidebar: function (hass) {
-    return hass.dockedSidebar;
-  },
-
-  _computeSelected: function (routeData) {
-    return routeData.panel || 'states';
-  },
-});
+    _computeDisableSwipe: function (routeData) {
+      return NON_SWIPABLE_PANELS.indexOf(routeData.panel) !== -1;
+    },
+  });
+}());
 </script>
