@@ -26,7 +26,15 @@ Polymer({
     hass: Object,
     narrow: Boolean,
     showMenu: Boolean,
-    route: Object,
+    route: {
+      Object,
+      // Fake route object
+      value: {
+        prefix: '/hassio',
+        path: '',
+        __queryParams: {}
+      }
+    },
 
     loaded: {
       type: Boolean,
