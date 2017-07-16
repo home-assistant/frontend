@@ -425,6 +425,18 @@ window.hassUtil.computeStateName = function (stateObj) {
   return stateObj._entityDisplay;
 };
 
+window.hassUtil.sortByName = function (entityA, entityB) {
+  var nameA = window.hassUtil.computeStateName(entityA);
+  var nameB = window.hassUtil.computeStateName(entityB);
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+  return 0;
+};
+
 window.hassUtil.computeStateState = function (stateObj) {
   if (!stateObj._stateDisplay) {
     stateObj._stateDisplay = stateObj.state.replace(/_/g, ' ');

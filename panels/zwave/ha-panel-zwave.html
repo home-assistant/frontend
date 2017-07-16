@@ -324,15 +324,7 @@ Polymer({
         return (!ent.attributes.hidden &&
                 (ent.entity_id).match('zwave[.]'));
       })
-      .sort(function (entityA, entityB) {
-        if (entityA.entity_id < entityB.entity_id) {
-          return -1;
-        }
-        if (entityA.entity_id > entityB.entity_id) {
-          return 1;
-        }
-        return 0;
-      });
+      .sort(window.hassUtil.sortByName);
   },
 
   computeEntities: function (selectedNode) {
@@ -350,17 +342,7 @@ Polymer({
                 ent.attributes.node_id === nodeid &&
                 (!(ent.entity_id).match('zwave[.]')));
       })
-      .sort(function (entityA, entityB) {
-        var nameA = window.hassUtil.computeStateName(entityA);
-        var nameB = window.hassUtil.computeStateName(entityB);
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
-        return 0;
-      });
+      .sort(window.hassUtil.sortByName);
   },
 
   selectedNodeChanged: function (selectedNode) {
