@@ -3,7 +3,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../components/entity/state-info.html">
-<link rel="import" href="../components/entity/state-status.html">
+<link rel="import" href="../components/entity/ha-state-status.html">
 
 
 <dom-module id="state-card-display">
@@ -11,7 +11,7 @@
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <state-status state-obj="[[stateObj]]"></state-status>
+      <ha-state-status state-obj="[[stateObj]]"></ha-state-status>
     </div>
   </template>
 </dom-module>
