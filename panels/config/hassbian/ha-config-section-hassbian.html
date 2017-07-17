@@ -142,7 +142,7 @@ Polymer({
   },
 
   computeSuiteStatus: function (suiteStatus, suiteKey) {
-    const state = suiteStatus[suiteKey].state.replace(/_/, ' ');
+    var state = suiteStatus[suiteKey].state.replace(/_/, ' ');
     return state.substr(0, 1).toUpperCase() + state.substr(1);
   },
 
