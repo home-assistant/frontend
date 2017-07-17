@@ -1,5 +1,5 @@
 import { h, render } from 'preact';
-import Automation from '../../preact-src/automation';
+import Automation from './automation';
 
 window.AutomationEditor = function (mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
