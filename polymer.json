@@ -1,4 +1,5 @@
 {
+  "entrypoint": "src/entrypoint.html",
   "shell": "src/home-assistant.html",
   "fragments": [
     "panels/automation/ha-panel-automation.html",
@@ -19,11 +20,7 @@
   ],
   "sources": [
     "src/**/*",
-    "panels/**/*",
-    "bower.json"
-  ],
-  "extraDependencies": [
-    "bower_components/webcomponentsjs/*"
+    "panels/**/*"
   ],
   "lint": {
     "rules": ["polymer-2-hybrid"]
