@@ -1,0 +1,85 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel="import" href="../../src/components/ha-start-voice-button.html">
+
+<dom-module id="ha-panel-shopping-list">
+  <template>
+    <style include="ha-style">
+      :host {
+        height: 100%;
+      }
+      .content {
+        padding: 24px 0 32px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      paper-card {
+        display: block;
+      }
+    </style>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Shopping List</div>
+          <ha-start-voice-button hass='[[hass]]'></ha-start-voice-button>
+        </app-toolbar>
+      </app-header>
+
+      <div class='content'>
+        <paper-card heading="Shopping List">
+          <template is='dom-if' if='[[!items.length]]'>
+            <div class='card-content'>
+              No items on your shopping list. Activate voice control and say "Add candy to my shopping list".
+            </div>
+          </template>
+          <template is='dom-repeat' items='[[items]]'>
+            <paper-item>[[item]]</paper-item>
+          </template>
+        </paper-card>
+      </div>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-panel-shopping-list',
+
+  properties: {
+    hass: Object,
+    narrow: Boolean,
+    showMenu: Boolean,
+    items: {
+      type: Array,
+      value: [],
+    },
+  },
+
+  attached: function () {
+    this._fetchData = this._fetchData.bind(this);
+
+    this.hass.connection.subscribeEvents(this._fetchData, 'shopping_list_updated')
+      .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
+    this._fetchData();
+  },
+
+  detached: function () {
+    if (this._unsubEvents) this._unsubEvents();
+  },
+
+  _fetchData: function () {
+    this.hass.callApi('get', 'shopping_list')
+      .then(function (items) {
+        this.items = items;
+      }.bind(this));
+  }
+});
+</script>
