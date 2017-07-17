@@ -192,13 +192,5 @@ Polymer({
       }
     });
   },
-
-  computeMenuButtonClass: function (narrow, showMenu) {
-    return !narrow && showMenu ? 'menu-icon invisible' : 'menu-icon';
-  },
-
-  toggleMenu: function () {
-    this.fire('hass-open-menu');
-  },
 });
 </script>
