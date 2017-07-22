@@ -1,6 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 
@@ -12,6 +14,10 @@
       }
       paper-card {
         display: block;
+      }
+      .card-actions {
+        @apply(--layout);
+        @apply(--layout-justified);
       }
       .errors {
         color: var(--google-red-500);
@@ -33,6 +39,12 @@
           on-tap='saveTapped'
           disabled='[[!optionsParsed]]'
         >Save</paper-button>
+        <ha-call-api-button
+          class='warning'
+          hass='[[hass]]'
+          path="[[pathOptions(addon)]]"
+          data='[[_resetOptionsData]]'
+        >Reset to defaults</ha-call-api-button>
       </div>
     </paper-card>
   </template>
@@ -70,6 +82,11 @@ Polymer({
       type: Object,
       value: null,
       observer: 'addonStateChanged',
+    },
+
+    _resetOptionsData: {
+      type: Object,
+      value: { options: {} },
     },
   },
 

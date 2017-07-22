@@ -43,6 +43,10 @@
             on-tap='_backTapped'
           ></paper-icon-button>
           <div main-title>Snapshots</div>
+          <paper-icon-button
+            icon="mdi:refresh"
+            on-tap="_refreshTapped"
+          ></paper-icon-button>
         </app-toolbar>
       </app-header>
 
@@ -160,6 +164,13 @@ Polymer({
 
   _backTapped: function () {
     history.back();
+  },
+
+  _refreshTapped: function () {
+    this.hass.callApi('post', 'hassio/snapshots/reload')
+      .then(function () {
+        this._updateData();
+      }.bind(this));
   },
 });
 </script>

@@ -59,6 +59,9 @@
             ></paper-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-item
+                on-tap='_restartHomeAssistant'
+              >Restart Home Assistant</paper-item>
+              <paper-item
                 on-tap='_openSnapshot'
               >Snapshots</paper-item>
               <paper-item
@@ -129,5 +132,13 @@ Polymer({
     this.fire('location-changed');
     ev.target.blur();
   },
+
+  _restartHomeAssistant: function (ev) {
+    ev.target.blur();
+    // eslint-disable-next-line no-alert
+    if (confirm('Are you sure you want to restart Home Assistant?')) {
+      this.hass.callApi('POST', 'hassio/homeassistant/restart');
+    }
+  }
 });
 </script>

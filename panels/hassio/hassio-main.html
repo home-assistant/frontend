@@ -94,6 +94,7 @@
         <hass-error-screen
           page-name='not-found'
           error='Page not found.'
+          title='Hass.io'
         ></hass-error-screen>
       </iron-pages>
     </template>
@@ -110,6 +111,12 @@ Polymer({
     showMenu: Boolean,
     route: {
       type: Object,
+      // Fake route object
+      value: {
+        prefix: '/hassio',
+        path: '/dashboard',
+        __queryParams: {}
+      },
       observer: '_routeChanged',
     },
     _routeData: Object,

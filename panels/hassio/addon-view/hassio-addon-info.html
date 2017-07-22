@@ -10,6 +10,7 @@
 
 
 <link rel="import" href="../../../src/components/ha-icon-check.html">
+<link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 
 <dom-module id="hassio-addon-info">
   <template>
@@ -32,10 +33,24 @@
         --iron-icon-width: 16px;
         color: var(--primary-color);
       }
+
+      .card-actions a {
+        text-decoration: none;
+      }
+      .logo {
+        max-height: 70px;
+        max-width: 100%;
+      }
     </style>
     <paper-card heading='Info'>
       <div class="card-content">
         <table class='info' cellspacing="0">
+          <template is='dom-if' if='[[addonState.logo]]'>
+            <tr>
+              <td>Logo</td>
+              <td><img src='[[_pathLogo(addonInfo.slug)]]' class='logo'></td>
+            </tr>
+          </template>
           <tr>
             <td>Description</td>
             <td>[[addonInfo.description]]</td>
@@ -128,6 +143,13 @@
           >Start</ha-call-api-button>
         </template>
         <template is='dom-if' if='[[_isRunning]]'>
+          <template is='dom-if' if='[[addonState.webui]]'>
+            <a
+              href='[[_pathWebui(addonState.webui)]]'
+              tabindex="-1"
+              target="_blank"
+            ><paper-button>Open web UI</paper-button></a>
+          </template>
           <ha-call-api-button
             class='warning'
             hass='[[hass]]'
@@ -194,6 +216,14 @@ Polymer({
 
   _pathAddonOptions: function (addon) {
     return 'hassio/addons/' + addon + '/options';
+  },
+
+  _pathWebui: function (webui) {
+    return webui && webui.replace('[HOST]', document.location.hostname);
+  },
+
+  _pathLogo: function (addon) {
+    return 'hassio/addons/' + addon + '/logo';
   },
 
   _dataToggleAutoUpdate: function (addon, addonState) {

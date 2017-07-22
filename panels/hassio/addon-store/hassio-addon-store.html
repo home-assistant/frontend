@@ -125,7 +125,7 @@ Polymer({
   },
 
   refreshData: function () {
-    this.hass.callApi('post', 'hassio/supervisor/reload')
+    this.hass.callApi('post', 'hassio/addons/reload')
       .then(function () {
         this._loadData();
       }.bind(this));
