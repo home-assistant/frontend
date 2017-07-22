@@ -10,6 +10,7 @@
 
 
 <link rel="import" href="../../../src/components/ha-icon-check.html">
+<link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 
 <dom-module id="hassio-addon-info">
   <template>
@@ -36,10 +37,20 @@
       .card-actions a {
         text-decoration: none;
       }
+      .logo {
+        max-height: 70px;
+        max-width: 100%;
+      }
     </style>
     <paper-card heading='Info'>
       <div class="card-content">
         <table class='info' cellspacing="0">
+          <template is='dom-if' if='[[addonState.logo]]'>
+            <tr>
+              <td>Logo</td>
+              <td><img src='[[_pathLogo(addonInfo.slug)]]' class='logo'></td>
+            </tr>
+          </template>
           <tr>
             <td>Description</td>
             <td>[[addonInfo.description]]</td>
@@ -209,6 +220,10 @@ Polymer({
 
   _pathWebui: function (webui) {
     return webui.replace("[HOST]", document.location.hostname);
+  },
+
+  _pathLogo: function (addon) {
+    return 'hassio/addons/' + addon + '/logo';
   },
 
   _dataToggleAutoUpdate: function (addon, addonState) {
