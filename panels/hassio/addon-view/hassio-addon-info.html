@@ -32,6 +32,10 @@
         --iron-icon-width: 16px;
         color: var(--primary-color);
       }
+
+      .card-actions a {
+        text-decoration: none;
+      }
     </style>
     <paper-card heading='Info'>
       <div class="card-content">
@@ -128,6 +132,13 @@
           >Start</ha-call-api-button>
         </template>
         <template is='dom-if' if='[[_isRunning]]'>
+          <template is='dom-if' if='[[addonState.webui]]'>
+            <a
+              href='[[_pathWebui(addonState.webui)]]'
+              tabindex="-1"
+              target="_blank"
+            ><paper-button>Open web UI</paper-button></a>
+          </template>
           <ha-call-api-button
             class='warning'
             hass='[[hass]]'
@@ -194,6 +205,10 @@ Polymer({
 
   _pathAddonOptions: function (addon) {
     return 'hassio/addons/' + addon + '/options';
+  },
+
+  _pathWebui: function (webui) {
+    return webui.replace("[HOST]", document.location.hostname);
   },
 
   _dataToggleAutoUpdate: function (addon, addonState) {
