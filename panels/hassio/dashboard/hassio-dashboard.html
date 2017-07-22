@@ -135,6 +135,7 @@ Polymer({
 
   _restartHomeAssistant: function (ev) {
     ev.target.blur();
+    // eslint-disable-next-line no-alert
     if (confirm('Are you sure you want to restart Home Assistant?')) {
       this.hass.callApi('POST', 'hassio/homeassistant/restart');
     }
