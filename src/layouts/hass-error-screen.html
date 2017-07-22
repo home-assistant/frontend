@@ -24,7 +24,7 @@
     <div class='placeholder'>
       <app-toolbar>
         <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-        <div main-title>Home Assistant</div>
+        <div main-title>[[title]]</div>
       </app-toolbar>
       <div class='layout vertical center-center'>
         <h3>[[error]]</h3>
@@ -47,6 +47,11 @@ Polymer({
     showMenu: {
       type: Boolean,
       value: false,
+    },
+
+    title: {
+      type: String,
+      value: 'Home Assistant',
     },
 
     error: {
