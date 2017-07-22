@@ -219,7 +219,7 @@ Polymer({
   },
 
   _pathWebui: function (webui) {
-    return webui.replace("[HOST]", document.location.hostname);
+    return webui && webui.replace("[HOST]", document.location.hostname);
   },
 
   _pathLogo: function (addon) {
