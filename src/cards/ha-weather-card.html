@@ -120,20 +120,20 @@
   'use strict';
 
   var _WEATHER_TO_ICON = {
-    'cloudy': '\uD83C\uDF2B',
-    'fog': '\uD83C\uDF2B',
-    'hail': "Hail",
-    'lightning': '\uD83C\uDF29',
+    cloudy: '\uD83C\uDF2B',
+    fog: '\uD83C\uDF2B',
+    hail: 'Hail',
+    lightning: '\uD83C\uDF29',
     'lightning-rainy': '\u26c8',
-    'partlycloudy': '\u26c5',
-    'pouring': "\uD83C\uDF22",
-    'rainy': '\uD83C\uDF27',
-    'snowy': "\uD83C\uDF28",
-    'snowy-rainy': "SR",
-    'sunny': '\u2600',
-    'windy': "\uD83C\uDF2C",
-    'windy-variant': "[]",
-    'exceptional': "!!",
+    partlycloudy: '\u26c5',
+    pouring: '\uD83C\uDF22',
+    rainy: '\uD83C\uDF27',
+    snowy: '\uD83C\uDF28',
+    'snowy-rainy': 'SR',
+    sunny: '\u2600',
+    windy: '\uD83C\uDF2C',
+    'windy-variant': '[]',
+    exceptional: '!!',
   };
 
   var _DEGREE_TEXT = [
@@ -160,7 +160,6 @@
     },
 
     getDataArray: function () {
-      var dataArray = [];
       var data = this.stateObj.attributes.forecast;
       var i;
 
@@ -168,7 +167,10 @@
         return [];
       }
 
-      var dDate = [], dTempHigh = [], dTempLow = [], dCond = [];
+      var dDate = [];
+      var dTempHigh = [];
+      var dTempLow = [];
+      var dCond = [];
       for (i = 0; i < data.length; i++) {
         dDate.push(new Date(data[i].datetime).getDate());
         dTempHigh.push(data[i].temperature);
@@ -176,7 +178,7 @@
         dCond.push(_WEATHER_TO_ICON[data[i].condition]);
       }
 
-      return {"date": dDate, "cond": dCond, "temphigh": dTempHigh, "templow": dTempLow};
+      return { date: dDate, cond: dCond, temphigh: dTempHigh, templow: dTempLow };
     },
 
     checkRequirements: function () {
@@ -190,7 +192,6 @@
 
       this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
 
-      
       this.data = this.getDataArray();
     },
 
