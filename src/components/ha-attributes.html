@@ -32,12 +32,6 @@
 (function () {
   'use strict';
 
-  var FILTER_KEYS = [
-    'entity_picture', 'friendly_name', 'icon', 'unit_of_measurement',
-    'emulated_hue', 'emulated_hue_name', 'haaska_hidden', 'haaska_name',
-    'homebridge_hidden', 'homebridge_name', 'supported_features', 'attribution',
-    'custom_ui_state_card', 'device_class',
-  ];
   Polymer({
     is: 'ha-attributes',
     properties: {
@@ -55,7 +49,7 @@
     },
 
     computeFiltersArray: function (extraFilters) {
-      return FILTER_KEYS + (extraFilters ? extraFilters.split(',') : []);
+      return window.hassUtil.LOGIC_STATE_ATTRIBUTES + (extraFilters ? extraFilters.split(',') : []);
     },
 
     computeDisplayAttributes: function (stateObj, filtersArray) {
