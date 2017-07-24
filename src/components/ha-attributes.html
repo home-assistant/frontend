@@ -49,7 +49,7 @@
     },
 
     computeFiltersArray: function (extraFilters) {
-      return window.hassUtil.FILTER_KEYS + (extraFilters ? extraFilters.split(',') : []);
+      return window.hassUtil.LOGIC_STATE_ATTRIBUTES + (extraFilters ? extraFilters.split(',') : []);
     },
 
     computeDisplayAttributes: function (stateObj, filtersArray) {
