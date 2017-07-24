@@ -2,8 +2,6 @@
 
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 
-<link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
-
 <link rel='import' href='../components/ha-card.html'>
 <link rel='import' href='../components/ha-attributes.html'>
 <dom-module id='ha-weather-card'>
@@ -17,12 +15,101 @@
           color: var(--secondary-text-color);
           text-align: right;
         }
+        tr.temphigh span {
+          color: red;
+          font-weight: 600;
+        }
+        tr.templow span {
+          color: blue;
+        }
+        tr.date span {
+          color: darkgrey;
+          font-weight: 600;
+        }
+        .content td {
+          text-align: center;
+          vertical-align: middle;
+          overflow-x: hidden;
+        }
+        tr.cond td {
+          overflow-x: hidden;
+          overflow-y: visible;
+          text-align: center;
+          vertical-align: middle;
+          width:0%;
+          height: 2.4em;
+        }
+        tr.cond td div {
+          font-size: 2em;
+          margin-left: -2em;
+          transform: translateX(1em);
+        }
+        
+        .forecast td:first-child {
+          background-color: #ddd;
+        }
+        .forecast td:nth-child(2n+3) {
+          background-color: #eee;
+        }
+        table, tr, td {
+          border: 0;
+          padding: 0;
+          border-spacing: 0;
+        }
+        .currentcond {
+          text-align: center;
+          vertical-align: middle;
+        }
+        td.pw_small span {
+          font-size: 2.4em;
+        }
+        td.pw_small{
+          width: 25%;
+          height: 2.6em;
+        }
+        td.pw_smallp span {
+          font-size: 1.2em;
+        }
+        td.pw_large span {
+          font-size: 6em;
+        }
+
     </style>
-    <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <div id='chart_id' hidden$="[[!stateObj.attributes.forecast]]"></div>
-        <ha-attributes state-obj='[[stateObj]]' extra-filters='forecast'></ha-attributes>
+        <table class="currentcond" width="100%">
+          <tr>
+            <td class="pw_small"><span>[[stateObj.attributes.temperature]]°</span></td>
+            <td rowspan="2" class="pw_large"><span>[[nowCond]]</span></td>
+            <td class="pw_small"><span>[[stateObj.attributes.humidity]]%</span></td>
+          </tr>
+          <tr>
+            <td class="pw_smallp"><span>[[windBearing]]<br />[[stateObj.attributes.wind_speed]]</span></td>
+            <td class="pw_smallp"><span>Visual<br />[[stateObj.attributes.visibility]]</span></td>
+          </tr>
+        </table><br />
+        <table class="forecast" width="100%">
+          <tr class="cond">
+            <template is="dom-repeat" items="[[data.cond]]">
+              <td><div>[[item]]</div></td>
+            </template>
+          </tr>
+          <tr class="temphigh">
+            <template is="dom-repeat" items="[[data.temphigh]]">
+              <td><span>[[item]]</span></td>
+            </template>
+          </tr>
+          <tr class="templow">
+            <template is="dom-repeat" items="[[data.templow]]">
+              <td><span>[[item]]</span></td>
+            </template>
+          </tr>
+          <tr class="date">
+            <template is="dom-repeat" items="[[data.date]]">
+              <td><span>[[item]]</span></td>
+            </template>
+          </tr>
+        </table>
       </div>
     </ha-card>
   </template>
@@ -31,6 +118,28 @@
 <script>
 (function () {
   'use strict';
+
+  var _WEATHER_TO_ICON = {
+    cloudy: '\uD83C\uDF2B',
+    fog: '\uD83C\uDF2B',
+    hail: 'Hail',
+    lightning: '\uD83C\uDF29',
+    'lightning-rainy': '\u26c8',
+    partlycloudy: '\u26c5',
+    pouring: '\uD83C\uDF22',
+    rainy: '\uD83C\uDF27',
+    snowy: '\uD83C\uDF28',
+    'snowy-rainy': 'SR',
+    sunny: '\u2600',
+    windy: '\uD83C\uDF2C',
+    'windy-variant': '[]',
+    exceptional: '!!',
+  };
+
+  var _DEGREE_TEXT = [
+    'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
+  ];
 
   Polymer({
     is: 'ha-weather-card',
@@ -51,7 +160,6 @@
     },
 
     getDataArray: function () {
-      var dataArray = [];
       var data = this.stateObj.attributes.forecast;
       var i;
 
@@ -59,14 +167,18 @@
         return [];
       }
 
-      // Current values
-      dataArray.push([new Date(), this.stateObj.attributes.temperature]);
-
+      var dDate = [];
+      var dTempHigh = [];
+      var dTempLow = [];
+      var dCond = [];
       for (i = 0; i < data.length; i++) {
-        dataArray.push([new Date(data[i].datetime), data[i].temperature]);
+        dDate.push(new Date(data[i].datetime).getDate());
+        dTempHigh.push(data[i].temperature);
+        dTempLow.push(data[i].templow);
+        dCond.push(_WEATHER_TO_ICON[data[i].condition]);
       }
 
-      return dataArray;
+      return { date: dDate, cond: dCond, temphigh: dTempHigh, templow: dTempLow };
     },
 
     checkRequirements: function () {
@@ -74,56 +186,19 @@
         return;
       }
 
-      if (!window.google) {
-        return;
-      }
-
-      if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(
-          this.$.chart_id);
-      }
-
       if (!this.stateObj.attributes || !this.stateObj.attributes.forecast) {
         return;
       }
 
-      this.drawChart();
+      this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
+      this.windBearing = this.windBearingToText(this.stateObj.attributes.windBearing);
+
+      this.data = this.getDataArray();
     },
 
-    drawChart: function () {
-      var dataGrid = new window.google.visualization.DataTable();
-      var options = {
-        legend: {
-          position: 'top'
-        },
-        interpolateNulls: true,
-        titlePosition: 'none',
-        chartArea: {
-          left: 25,
-          top: 5,
-          height: '100%',
-          width: '90%',
-          bottom: 25,
-        },
-        curveType: 'function',
-      };
-
-      dataGrid.addColumn('datetime', 'Time');
-      dataGrid.addColumn('number', 'Temperature');
-
-      dataGrid.addRows(this.getDataArray());
-
-      this.chartEngine.draw(dataGrid, options);
-    },
-
-    googleApiLoaded: function () {
-      window.google.load('visualization', '1', {
-        packages: ['corechart'],
-        callback: function () {
-          this.checkRequirements();
-        }.bind(this),
-      });
-    },
+    windBearingToText: function (degree) {
+      return _DEGREE_TEXT[((parseInt(degree) + 5.63) / 11.25) | 0];
+    }
   });
 }());
 </script>
