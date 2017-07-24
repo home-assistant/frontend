@@ -112,6 +112,12 @@ Polymer({
       entityDisplay = window.hassUtil.computeStateName(stateInfo[0]);
 
       stateInfo.forEach(function (state) {
+        var timeStamp = new Date(state.last_changed);
+        if (timeStamp > endTime) {
+          // Drop datapoints that are after the requested endTime. This could happen if
+          // endTime is "now" and client time is not in sync with server time.
+          return;
+        }
         if (prevState !== null && state.state !== prevState) {
           newLastChanged = new Date(state.last_changed);
 

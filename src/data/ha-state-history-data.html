@@ -6,7 +6,7 @@
   var DATE_CACHE = {};
   var RECENT_CACHE = {};
 
-  function computeHistory(stateHistory, endTime) {
+  function computeHistory(stateHistory) {
     var lineChartDevices = {};
     var timelineDevices = [];
     var unitStates;
@@ -22,14 +22,6 @@
       if (stateInfo.size === 0) {
         return;
       }
-
-      // Duplicate the last state to the selected endTime so the chart expands
-      // to the end of the selected time. (If no additional state changes were
-      // found, the state was still the last state as of the end time.
-      var lastState = Object.assign({}, stateInfo[stateInfo.length - 1]);
-      lastState.last_changed = endTime;
-      lastState.last_updated = endTime;
-      stateInfo.push(lastState);
 
       stateWithUnit = stateInfo.find(
         function (state) { return 'unit_of_measurement' in state.attributes; });
@@ -145,7 +137,7 @@
 
       var prom = this.hass.callApi('GET', url).then(
         function (stateHistory) {
-          return computeHistory(stateHistory, Date.now());
+          return computeHistory(stateHistory);
         },
         function () {
           RECENT_CACHE[entityId] = false;
@@ -166,7 +158,7 @@
       if (!DATE_CACHE[filter]) {
         DATE_CACHE[filter] = this.hass.callApi('GET', 'history/period/' + filter).then(
           function (stateHistory) {
-            return computeHistory(stateHistory, endTime);
+            return computeHistory(stateHistory);
           },
           function () {
             DATE_CACHE[filter] = false;
