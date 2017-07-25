@@ -3,7 +3,7 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <dom-module id="ha-voice-command-dialog">
   <template>
@@ -13,26 +13,66 @@
       }
 
       .content {
-        width: 300px;
+        width: 450px;
         min-height: 80px;
         font-size: 18px;
       }
 
-      .icon {
-        float: left;
+      .messages {
+        max-height: 50vh;
+        overflow: scroll;
       }
 
-      .text {
-        margin-left: 48px;
+      .messages::after {
+        content: "";
+        clear: both;
+        display: block;
+      }
+
+      .message {
+        clear: both;
+        margin: 8px 0;
+        padding: 8px;
+        border-radius: 15px;
+      }
+
+      .message.user {
+        margin-left: 24px;
+        float: right;
+        text-align: right;
+        border-bottom-right-radius: 0px;
+        background-color: var(--light-primary-color);
+        color: var(--primary-text-color);
+      }
+
+      .message.hass {
         margin-right: 24px;
+        float: left;
+        border-bottom-left-radius: 0px;
+        background-color: var(--primary-color);
+        color: var(--text-primary-color);
       }
 
-      .error {
-        color: red;
+      .message.error {
+        background-color: var(--google-red-500);
+        color: var(--text-primary-color);
+      }
+
+      .icon {
+        text-align: center;
+      }
+
+      .icon paper-icon-button {
+        height: 52px;
+        width: 52px;
       }
 
       .interimTranscript {
         color: darkgrey;
+      }
+
+      [hidden] {
+        display: none;
       }
 
       @media all and (max-width: 450px) {
@@ -47,22 +87,38 @@
           right: 0px;
           overflow: scroll;
         }
+
+        .content {
+          width: auto;
+        }
+
+        .messages {
+          max-height: 68vh;
+        }
       }
     </style>
 
     <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
       <div class='content'>
-        <div class='icon'>
-          <iron-icon icon="mdi:text-to-speech" hidden$="[[isTransmitting]]"></iron-icon>
-          <paper-spinner active$="[[isTransmitting]]" hidden$="[[!isTransmitting]]"></paper-spinner>
+        <div class='messages' id='messages'>
+          <template is='dom-repeat' items='[[_conversation]]' as='message'>
+            <div class$='[[_computeMessageClasses(message)]]'>[[message.text]]</div>
+          </template>
         </div>
-        <div class='text' hidden$='[[hasError]]'>
-          <span>{{results.final}}</span>
-          <span class='interimTranscript'>[[results.interim]]</span>
-          …
-        </div>
-        <div class='text red' hidden$='[[!hasError]]'>
-          An error occurred. Unable to fulfill request.
+        <template is='dom-if' if='[[results]]'>
+          <div class='messages'>
+            <div class='message user'>
+              <span>{{results.final}}</span>
+              <span class='interimTranscript'>[[results.interim]]</span>
+              …
+            </div>
+          </div>
+        </template>
+        <div class='icon' hidden$="[[results]]">
+          <paper-icon-button
+            icon="mdi:text-to-speech"
+            on-tap='startListening'
+          ></paper-icon-button>
         </div>
       </div>
     </paper-dialog>
@@ -87,28 +143,15 @@ Polymer({
 
     results: {
       type: Object,
+      value: null,
+      observer: '_scrollMessagesBottom',
     },
 
-    isTransmitting: {
-      type: Boolean,
-      value: false,
-    },
-
-    isListening: {
-      type: Boolean,
-      value: false,
-    },
-
-    hasError: {
-      type: Boolean,
-      value: false,
-    },
-
-    showListenInterface: {
-      type: Boolean,
-      computed: 'computeShowListenInterface(isListening, isTransmitting)',
-      observer: 'showListenInterfaceChanged',
-    },
+    _conversation: {
+      type: Array,
+      value: function () { return []; },
+      observer: '_scrollMessagesBottom',
+    }
   },
 
   initRecognition: function () {
@@ -117,9 +160,6 @@ Polymer({
     /* eslint-enable new-cap */
 
     this.recognition.onstart = function () {
-      this.isListening = true;
-      this.isTransmitting = false;
-      this.hasError = false;
       this.results = {
         final: '',
         interim: '',
@@ -127,19 +167,24 @@ Polymer({
     }.bind(this);
     this.recognition.onerror = function () {
       this.recognition.abort();
-      this.hasError = true;
+      var text = this.results.final || this.results.interim;
+      this.results = null;
+      this.push('_conversation', { who: 'user', text: text, error: true });
     }.bind(this);
     this.recognition.onend = function () {
-      this.isListening = false;
-      this.isTransmitting = true;
       var text = this.results.final || this.results.interim;
+      this.results = null;
 
-      var listeningDone = function () {
-        this.isTransmitting = false;
-      }.bind(this);
+      if (text === '') return;
 
-      this.hass.callService('conversation', 'process', { text: text })
-        .then(listeningDone, listeningDone);
+      this.push('_conversation', { who: 'user', text: text });
+
+      this.hass.callApi('post', 'conversation/process', { text: text })
+        .then(function (response) {
+          this.push('_conversation', { who: 'hass', text: response.speech.plain.speech });
+        }.bind(this), function () {
+          this.set(['_conversation', this._conversation.length - 1, 'error'], true);
+        }.bind(this));
     }.bind(this);
 
     this.recognition.onresult = function (event) {
@@ -167,25 +212,33 @@ Polymer({
       this.initRecognition();
     }
 
+    this.results = {
+      interim: '',
+      final: '',
+    };
     this.recognition.start();
   },
 
-  computeShowListenInterface: function (isListening, isTransmitting) {
-    return isListening || isTransmitting;
+  _scrollMessagesBottom: function () {
+    this.async(function () {
+      this.$.messages.scrollTop = this.$.messages.scrollHeight;
+
+      if (this.$.messages.scrollTop !== 0) {
+        this.$.dialog.fire('iron-resize');
+      }
+    }.bind(this), 10);
   },
 
   dialogOpenChanged: function (newVal) {
-    if (!newVal && this.isListening) {
+    if (newVal) {
+      this.startListening();
+    } else if (!newVal && this.results) {
       this.recognition.abort();
     }
   },
 
-  showListenInterfaceChanged: function (newVal) {
-    if (!newVal && this.dialogOpen) {
-      this.dialogOpen = false;
-    } else if (newVal) {
-      this.dialogOpen = true;
-    }
-  },
+  _computeMessageClasses: function (message) {
+    return 'message ' + message.who + (message.error ? ' error' : '');
+  }
 });
 </script>
