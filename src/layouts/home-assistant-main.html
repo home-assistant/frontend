@@ -133,7 +133,7 @@
 
     handleStartVoice: function (ev) {
       ev.stopPropagation();
-      this.$.voiceDialog.startListening();
+      this.$.voiceDialog.dialogOpen = true;
     },
 
     handleOpenMenu: function () {
