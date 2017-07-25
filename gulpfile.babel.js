@@ -8,6 +8,11 @@ import gulpif from 'gulp-if';
 import { gulp as cssSlam } from 'css-slam';
 import htmlMinifier from 'gulp-html-minifier';
 import { PolymerProject, HtmlSplitter } from 'polymer-build';
+import {
+  composeStrategies,
+  generateShellMergeStrategy,
+  generateNoBackLinkStrategy
+} from 'polymer-bundler';
 import mergeStream from 'merge-stream';
 import babel from 'gulp-babel';
 import rename from 'gulp-rename';
@@ -68,6 +73,7 @@ function renamePanel(path) {
     path.dirname = 'panels/';
   }
 
+  // Rename frontend
   if (path.dirname === 'src' && path.basename === 'home-assistant' &&
       path.extname === '.html') {
     path.dirname = '';
@@ -76,17 +82,22 @@ function renamePanel(path) {
 }
 
 gulp.task('build', ['clean', 'ru_all'], () => {
+  // TODO this doesn't work yet
+  const strategy = composeStrategies([
+    generateShellMergeStrategy(polymerConfig.shell),
+    generateNoBackLinkStrategy([
+      'bower_components/font-roboto/roboto.html',
+      'bower_components/paper-styles/color.html',
+      // The Hass.io panel will be loaded on demand from supervisor
+      'panels/hassio/hassio-main.html'
+    ])
+  ]);
   const project = new PolymerProject(polymerConfig);
+
   mergeStream(minifyStream(project.sources()),
               minifyStream(project.dependencies()))
     .pipe(project.bundler({
-      // TODO this doesn't work yet
-      stripExcludes: [
-        'bower_components/font-roboto/roboto.html',
-        'bower_components/paper-styles/color.html',
-        // The Hass.io panel will be loaded on demand from supervisor
-        'panels/hassio/hassio-main.html'
-      ],
+      strategy,
       strip: true,
       sourcemaps: false,
       stripComments: true,
