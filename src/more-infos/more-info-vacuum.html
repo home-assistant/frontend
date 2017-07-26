@@ -74,7 +74,10 @@ Polymer({
   },
 
   supportsCommandBar: function (stateObj) {
-    return ((stateObj.attributes.supported_features & 4) !== 0) | ((stateObj.attributes.supported_features & 8) !== 0) | ((stateObj.attributes.supported_features & 8) !== 0)  | ((stateObj.attributes.supported_features & 512) !== 0);
+    return (((stateObj.attributes.supported_features & 4) !== 0)
+            | ((stateObj.attributes.supported_features & 8) !== 0)
+            | ((stateObj.attributes.supported_features & 8) !== 0)
+            | ((stateObj.attributes.supported_features & 512) !== 0));
   },
 
   /* eslint-enable no-bitwise */
