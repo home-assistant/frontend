@@ -116,12 +116,12 @@
       var _this = this;
       this.hass.callApi('get', 'themes').then(
           function (themes) {
-            this.hass.themes = themes;
+            _this.hass.themes = themes;
             window.hassUtil.applyThemesOnElement(_this, themes);
           });
       this.hass.connection.subscribeEvents(
           function (event) {
-            this.hass.themes = event.data;
+            _this.hass.themes = event.data;
             window.hassUtil.applyThemesOnElement(_this, event.data);
           },
           'themes_updated');
