@@ -48,7 +48,7 @@ Polymer({
   inputChanged: function (hass, inDialog, stateObj) {
     var stateCardType;
     if (!stateObj || !hass) return;
-    if (stateObj.state !== 'unavailable' && 'custom_ui_state_card' in stateObj.attributes) {
+    if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
       stateCardType = stateObj.attributes.custom_ui_state_card;
       this._ensureCustomUILoaded(stateCardType);
     } else {
