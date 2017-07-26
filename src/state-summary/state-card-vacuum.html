@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../components/entity/state-info.html">
+<link rel="import" href="../components/entity/ha-entity-toggle.html">
+
+<dom-module id="state-card-vacuum">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      :host {
+        @apply(--paper-font-body1);
+        line-height: 1.5;
+      }
+      .status {
+        color: var(--secondary-text-color);
+        margin-top: 10px;
+      }
+    </style>
+
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+      <ha-entity-toggle state-obj="[[stateObj]]" hass='[[hass]]'></ha-entity-toggle>
+    </div>
+    <div class='horizontal justified layout'>
+      <div class='status' hidden$='[[!supportsStatus(stateObj)]]'>
+        <span><strong>Status:</strong> [[stateObj.attributes.vacuum_status]]</span>
+      </div>
+      <!--<div class='status' hidden$='[[!supportsFanspeed(stateObj)]]'>-->
+        <!--<span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]] %</span>-->
+      <!--</div>-->
+      <!--<div class='status' hidden$='[[!supportsBattery(stateObj)]]'>-->
+        <!--<span><iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] %</span>-->
+      <!--</div>-->
+      <div class='status'>
+        <span hidden$='[[!supportsFanspeed(stateObj)]]'>
+          <iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]] %</span>
+        <span hidden$='[[!supportsBattery(stateObj)]]'>
+             <iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] %</span>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-vacuum',
+
+  properties: {
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  /* eslint-disable no-bitwise */
+
+  supportsFanspeed: function (stateObj) {
+    return (stateObj.attributes.supported_features & 32) !== 0;
+  },
+
+  supportsBattery: function (stateObj) {
+    return (stateObj.attributes.supported_features & 64) !== 0;
+  },
+
+  supportsStatus: function (stateObj) {
+    return (stateObj.attributes.supported_features & 128) !== 0;
+  },
+
+  /* eslint-enable no-bitwise */
+
+});
+</script>

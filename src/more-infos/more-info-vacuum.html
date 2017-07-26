@@ -1,0 +1,107 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+<link rel="import" href="../components/ha-attributes.html">
+
+<dom-module id="more-info-vacuum">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      :host {
+        @apply(--paper-font-body1);
+        line-height: 1.5;
+      }
+      .commands-subtitle {
+        color: var(--secondary-text-color);
+      }
+      .commands {
+        color: var(--dark-primary-color);
+        margin-bottom: 1.5em;
+      }
+    </style>
+    <div class='commands' hidden$='[[!supportsCommandBar(stateObj)]]'>
+      <div class="commands-subtitle">Vacuum cleaner commands:</div>
+      <div class='horizontal justified layout'>
+        <div hidden$='[[!supportsPause(stateObj)]]'>
+          <paper-icon-button icon='mdi:play-pause'
+            on-tap='onPlayPause' title='Play/Pause'></paper-icon-button>
+        </div>
+        <div hidden$='[[!supportsStop(stateObj)]]'>
+          <paper-icon-button icon='mdi:stop'
+            on-tap='onStop' title='Stop'></paper-icon-button>
+        </div>
+        <div hidden$='[[!supportsLocate(stateObj)]]'>
+        <paper-icon-button icon='mdi:map-marker'
+            on-tap='onLocate' title='Locate'></paper-icon-button>
+        </div>
+        <div hidden$='[[!supportsReturnHome(stateObj)]]'>
+        <paper-icon-button icon='mdi:home-map-marker'
+            on-tap='onReturnHome' title='Return home'></paper-icon-button>
+        </div>
+      </div>
+    </div>
+    <ha-attributes state-obj="[[stateObj]]"></ha-attributes>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'more-info-vacuum',
+
+  properties: {
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  /* eslint-disable no-bitwise */
+
+  supportsPause: function (stateObj) {
+    return (stateObj.attributes.supported_features & 4) !== 0;
+  },
+
+  supportsStop: function (stateObj) {
+    return (stateObj.attributes.supported_features & 8) !== 0;
+  },
+
+  supportsReturnHome: function (stateObj) {
+    return (stateObj.attributes.supported_features & 16) !== 0;
+  },
+
+  supportsLocate: function (stateObj) {
+    return (stateObj.attributes.supported_features & 512) !== 0;
+  },
+
+  supportsCommandBar: function (stateObj) {
+    return ((stateObj.attributes.supported_features & 4) !== 0) | ((stateObj.attributes.supported_features & 8) !== 0) | ((stateObj.attributes.supported_features & 8) !== 0)  | ((stateObj.attributes.supported_features & 512) !== 0);
+  },
+
+  /* eslint-enable no-bitwise */
+
+  onStop: function () {
+    this.hass.callService('vacuum', 'stop', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+  onPlayPause: function () {
+    this.hass.callService('vacuum', 'cleaning_play_pause', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+  onLocate: function () {
+    this.hass.callService('vacuum', 'locate', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+  onReturnHome: function () {
+    this.hass.callService('vacuum', 'return_to_base', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+});
+</script>
