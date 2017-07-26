@@ -49,13 +49,15 @@ Polymer({
 
     repos: {
       type: Array,
-      value: [],
       observer: 'reposChanged',
     },
   },
 
   reposChanged: function (repos) {
-    this.options = repos.join('\n');
+    this.options = repos
+      .filter(function (el) { return el.source !== null; })
+      .map(function (el) { return el.source; })
+      .join('\n');
   },
 
   computeOptionsData: function (options) {

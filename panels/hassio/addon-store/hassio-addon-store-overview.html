@@ -41,7 +41,7 @@
       <div class='content'>
         <hassio-repositories-editor
           hass='[[hass]]'
-          repos='[[supervisorInfo.addons_repositories]]'
+          repos='[[repos]]'
         ></hassio-repositories-editor>
         <template is='dom-repeat' items='[[repos]]' as='repo'>
           <hassio-addon-repository
@@ -77,7 +77,6 @@ Polymer({
 
     repos: {
       type: Array,
-      value: []
     },
 
     supervisorInfo: {
