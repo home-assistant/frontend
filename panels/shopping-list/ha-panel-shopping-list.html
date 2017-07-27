@@ -115,7 +115,7 @@ Polymer({
   },
 
   listeners: {
-    'keydown': '_checkEsc'
+    keydown: '_checkEsc'
   },
 
   attached: function () {
@@ -145,7 +145,7 @@ Polymer({
     ev.stopPropagation();
     var item = ev.model.item;
     this.hass.callApi('post', 'shopping_list/' + item.id, {
-      'complete': item.complete
+      complete: item.complete
     }).catch(function () {
       this._fetchData();
     }.bind(this));
@@ -154,14 +154,11 @@ Polymer({
   _enableEditting: function (ev) {
     var item = ev.model.item;
     var index = this.items.indexOf(item);
-    var target = ev.target;
 
     if (index === this._editIndex) return;
 
-    // ev.target.blur();
     this._editValue = item.name;
     this._editIndex = index;
-
   },
 
   _cancelEditting: function () {
@@ -185,7 +182,7 @@ Polymer({
 
     this.set(['items', index, 'name'], name);
     this.hass.callApi('post', 'shopping_list/' + item.id, {
-      'name': name
+      name: name
     }).catch(function () {
       this._fetchData();
     }.bind(this));
