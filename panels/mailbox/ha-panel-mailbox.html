@@ -157,10 +157,11 @@ Polymer({
     if (!this._messages) {
       this._messages = [];
     }
-    if (!hass.states['sensor.voicemail']) {
+    var entity_id = this.entity.entity_id
+    if (!hass.states[entity_id]) {
       return;
     }
-    var vm = hass.states['sensor.voicemail'];
+    var vm = hass.states[entity_id];
     if (!vm.last_updated) {
       return;
     }
@@ -187,7 +188,7 @@ Polymer({
   },
 
   deleteSelected: function () {
-    var grid = this.$.msgTable;
+    var grid = this.$.msgtable;
     var items = grid.selectedItems;
     var len = items.length;
     var sha = [];
