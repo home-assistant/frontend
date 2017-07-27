@@ -15,12 +15,28 @@
     </style>
 
     <div class='state'>
-      <paper-icon-button icon="mdi:arrow-up" on-tap='onOpenTap'
-        invisible$='[[!entityObj.supportsOpen]]'></paper-icon-button>
+      <template is='dom-if' if='[[entityObj.assumeState]]'>
+        <paper-icon-button icon="mdi:arrow-up" on-tap='onOpenTap'
+          invisible$='[[!entityObj.supportsOpen]]'></paper-icon-button>
+      </template>
+      <template is='dom-if' if='[[!entityObj.assumeState]]'>
+        <paper-icon-button icon="mdi:arrow-up" on-tap='onOpenTap'
+          invisible$='[[!entityObj.supportsOpen]]'
+          disabled='[[entityObj.isFullyOpen]]'></paper-icon-button>
+      </template>
+
       <paper-icon-button icon="mdi:stop" on-tap='onStopTap'
         invisible$='[[!entityObj.supportsStop]]'></paper-icon-button>
-      <paper-icon-button icon="mdi:arrow-down" on-tap='onCloseTap'
-        invisible$='[[!entityObj.supportsClose]]'></paper-icon-button>
+
+      <template is='dom-if' if='[[entityObj.assumeState]]'>
+        <paper-icon-button icon="mdi:arrow-down" on-tap='onCloseTap'
+          invisible$='[[!entityObj.supportsClose]]'></paper-icon-button>
+      </template>
+      <template is='dom-if' if='[[!entityObj.assumeState]]'>
+        <paper-icon-button icon="mdi:arrow-down" on-tap='onCloseTap'
+        invisible$='[[!entityObj.supportsClose]]'
+        disabled='[[entityObj.isFullyClosed]]'></paper-icon-button>
+      </template>
     </div>
   </template>
 </dom-module>
