@@ -36,19 +36,19 @@
     return this.stateObj.attributes.assumed_state === true;
   });
 
-  addGetter('disableButtonFullyOpen', function() {
+  addGetter('disableButtonFullyOpen', function () {
     return this.isFullyOpen && !this.assumeState;
   });
 
-  addGetter('disableButtonFullyClosed', function() {
+  addGetter('disableButtonFullyClosed', function () {
     return this.isFullyClosed && !this.assumeState;
   });
 
-  addGetter('disableButtonFullyOpenTilt', function() {
+  addGetter('disableButtonFullyOpenTilt', function () {
     return this.isFullyOpenTilt && !this.assumeState;
   });
 
-  addGetter('disableButtonFullyClosedTilt', function() {
+  addGetter('disableButtonFullyClosedTilt', function () {
     return this.isFullyClosedTilt && !this.assumeState;
   });
 
