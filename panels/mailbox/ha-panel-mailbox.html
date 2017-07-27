@@ -139,6 +139,11 @@ Polymer({
       value: false,
     },
 
+    entity: {
+      type: String,
+      computed: 'computeEntity(hass)',
+    },
+
     _lasUpdated: {
       type: String,
     },
@@ -170,8 +175,9 @@ Polymer({
   },
 
   openMP3Dialog: function (event) {
+    var entity_id = this.entity.entity_id
     this.$.mp3dialog.open();
-    this.$.mp3src.src = '/api/asteriskmbox/mp3/' + event.target.dataset.sha;
+    this.$.mp3src.src = '/api/mailbox/media/' + entity_id + "/" + event.target.dataset.sha;
     this.$.mp3.load();
     this.$.mp3.play();
   },
@@ -185,14 +191,16 @@ Polymer({
     var items = grid.selectedItems;
     var len = items.length;
     var sha = [];
+    var entity_id = this.entity.entity_id
     for (var i = 0; i < len; i++) {
       sha.push(items[i].sha);
     }
-    this.hass.callApi('POST', 'asteriskmbox/delete', sha);
+    this.hass.callApi('POST', 'mailbox/delete/' + entity_id, sha);
   },
 
   getMessages: function () {
-    return this.hass.callApi('GET', 'asteriskmbox/messages').then(function (values) {
+    var entity_id = this.entity.entity_id
+    return this.hass.callApi('GET', 'mailbox/messages/' + entity_id).then(function (values) {
       var arrayLength = values.length;
       var items = [];
       for (var i = 0; i < arrayLength; i++) {
@@ -207,6 +215,14 @@ Polymer({
       }
       return items;
     });
+  },
+
+  computeEntity: function (hass) {
+    return Object.keys(hass.states)
+      .map(function (key) { return hass.states[key]; })
+      .filter(function (ent) {
+        return ((ent.entity_id).match('mailbox[.]'));
+      })[0]
   },
 });
 
