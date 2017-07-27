@@ -31,10 +31,10 @@
   addGetter('isFullyClosedTilt', function () {
     return this.stateObj.attributes.current_tilt_position === 0;
   });
-  
+
   addGetter('assumeState', function () {
     return this.stateObj.attributes.assumed_state === true;
-  })
+  });
 
   /* eslint-disable no-bitwise */
 
