@@ -1,6 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <link rel="import" href="../components/entity/state-info.html">
 <link rel="import" href="../components/entity/ha-entity-toggle.html">
@@ -13,9 +17,17 @@
         @apply(--paper-font-body1);
         line-height: 1.5;
       }
-      .status {
+
+      .status-subtitle {
         color: var(--secondary-text-color);
-        margin-top: 10px;
+      }
+
+      .container-extra-controls {
+        margin-top: 1.5em;
+      }
+
+      paper-item {
+        cursor: pointer;
       }
     </style>
 
@@ -23,21 +35,65 @@
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <ha-entity-toggle state-obj="[[stateObj]]" hass='[[hass]]'></ha-entity-toggle>
     </div>
-    <div class='horizontal justified layout'>
-      <div class='status' hidden$='[[!supportsStatus(stateObj)]]'>
-        <span><strong>Status:</strong> [[stateObj.attributes.vacuum_status]]</span>
+
+    <div hidden$='{{inDialog}}'>
+      <div class='horizontal justified layout'>
+        <div class='status-subtitle' hidden$='[[!supportsStatus(stateObj)]]'>
+          <span><strong>  Status:</strong> [[stateObj.attributes.vacuum_status]]</span>
+        </div>
+        <div class='status-subtitle'>
+          <span hidden$='[[!supportsFanspeed(stateObj)]]'>
+              <iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]]</span>
+          <span hidden$='[[!supportsBattery(stateObj)]]'>
+               <iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] % </span>
+        </div>
       </div>
-      <!--<div class='status' hidden$='[[!supportsFanspeed(stateObj)]]'>-->
-        <!--<span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]] %</span>-->
-      <!--</div>-->
-      <!--<div class='status' hidden$='[[!supportsBattery(stateObj)]]'>-->
-        <!--<span><iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] %</span>-->
-      <!--</div>-->
-      <div class='status'>
-        <span hidden$='[[!supportsFanspeed(stateObj)]]'>
-          <iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]] %</span>
-        <span hidden$='[[!supportsBattery(stateObj)]]'>
-             <iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] %</span>
+    </div>
+
+    <div class="container-extra-controls" hidden$='{{!inDialog}}'>
+      <div class='horizontal justified layout'>
+        <div hidden$='[[!supportsStatus(stateObj)]]'>
+          <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.vacuum_status]]</strong></span>
+        </div>
+        <div hidden$='[[!supportsBattery(stateObj)]]'>
+          <span><iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] %</span>
+        </div>
+      </div>
+      <div class='commands' hidden$='[[!supportsCommandBar(stateObj)]]'>
+        <div><p></p></div>
+        <div class="status-subtitle">Vacuum cleaner commands:</div>
+        <div class='horizontal justified layout'>
+          <div hidden$='[[!supportsPause(stateObj)]]'>
+            <paper-icon-button icon='mdi:play-pause'
+              on-tap='onPlayPause' title='Play/Pause'></paper-icon-button>
+          </div>
+          <div hidden$='[[!supportsStop(stateObj)]]'>
+            <paper-icon-button icon='mdi:stop'
+              on-tap='onStop' title='Stop'></paper-icon-button>
+          </div>
+          <div hidden$='[[!supportsLocate(stateObj)]]'>
+          <paper-icon-button icon='mdi:map-marker'
+              on-tap='onLocate' title='Locate'></paper-icon-button>
+          </div>
+          <div hidden$='[[!supportsReturnHome(stateObj)]]'>
+          <paper-icon-button icon='mdi:home-map-marker'
+              on-tap='onReturnHome' title='Return home'></paper-icon-button>
+          </div>
+        </div>
+      </div>
+
+      <div class='horizontal justified layout' hidden$='[[!supportsFanspeed(stateObj)]]'>
+        <paper-dropdown-menu class="commands" label-float label='Fan speed'>
+          <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
+            <template is='dom-repeat'
+                      items='[[stateObj.attributes.vacuum_fanspeed_list]]'>
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <div class='commands' style="justify-content: center; align-self: center; padding-top: 1.3em">
+          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]]</span>
+        </div>
       </div>
     </div>
   </template>
@@ -48,16 +104,39 @@ Polymer({
   is: 'state-card-vacuum',
 
   properties: {
+    hass: {
+      type: Object,
+    },
+
     inDialog: {
       type: Boolean,
       value: false,
     },
+
     stateObj: {
       type: Object,
+    },
+
+    fanSpeedIndex: {
+      type: Number,
+      value: -1,
+      observer: 'fanSpeedChanged',
     },
   },
 
   /* eslint-disable no-bitwise */
+
+  supportsPause: function (stateObj) {
+    return (stateObj.attributes.supported_features & 4) !== 0;
+  },
+
+  supportsStop: function (stateObj) {
+    return (stateObj.attributes.supported_features & 8) !== 0;
+  },
+
+  supportsReturnHome: function (stateObj) {
+    return (stateObj.attributes.supported_features & 16) !== 0;
+  },
 
   supportsFanspeed: function (stateObj) {
     return (stateObj.attributes.supported_features & 32) !== 0;
@@ -71,7 +150,56 @@ Polymer({
     return (stateObj.attributes.supported_features & 128) !== 0;
   },
 
+  supportsLocate: function (stateObj) {
+    return (stateObj.attributes.supported_features & 512) !== 0;
+  },
+
+  supportsCommandBar: function (stateObj) {
+    return (((stateObj.attributes.supported_features & 4) !== 0)
+            | ((stateObj.attributes.supported_features & 8) !== 0)
+            | ((stateObj.attributes.supported_features & 8) !== 0)
+            | ((stateObj.attributes.supported_features & 512) !== 0));
+  },
+
   /* eslint-enable no-bitwise */
+
+  fanSpeedChanged: function (fanSpeedIndex) {
+    var fanSpeedInput;
+    // Selected Option will transition to '' before transitioning to new value
+    if (fanSpeedIndex === '' || fanSpeedIndex === -1) return;
+
+    fanSpeedInput = this.stateObj.attributes.vacuum_fanspeed_list[fanSpeedIndex];
+    if (fanSpeedInput === this.stateObj.attributes.vacuum_fanspeed) return;
+
+    this.hass.callService('vacuum', 'set_fanspeed', {
+      entity_id: this.stateObj.entity_id,
+      fanspeed: fanSpeedInput,
+    });
+  },
+
+  onStop: function () {
+    this.hass.callService('vacuum', 'stop', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+  onPlayPause: function () {
+    this.hass.callService('vacuum', 'cleaning_play_pause', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+  onLocate: function () {
+    this.hass.callService('vacuum', 'locate', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+  onReturnHome: function () {
+    this.hass.callService('vacuum', 'return_to_base', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
 
 });
 </script>
