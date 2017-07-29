@@ -149,7 +149,9 @@ Polymer({
 
     _conversation: {
       type: Array,
-      value: function () { return []; },
+      value: function () {
+        return [{ who: 'hass', text: 'How can I help?' }];
+      },
       observer: '_scrollMessagesBottom',
     }
   },

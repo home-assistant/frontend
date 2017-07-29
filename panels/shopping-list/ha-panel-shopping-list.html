@@ -3,7 +3,11 @@
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/components/ha-start-voice-button.html">
@@ -22,6 +26,17 @@
       paper-card {
         display: block;
       }
+      paper-item {
+        --paper-item-focused: {
+          background-color: white;
+        }
+      }
+      paper-checkbox {
+        padding: 11px 7px;
+      }
+      paper-input {
+        width: 100%;
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -34,14 +49,43 @@
       </app-header>
 
       <div class='content'>
-        <paper-card heading="Shopping List">
+        <paper-card>
           <template is='dom-if' if='[[!items.length]]'>
             <div class='card-content'>
               No items on your shopping list. Activate voice control and say "Add candy to my shopping list".
             </div>
           </template>
           <template is='dom-repeat' items='[[items]]'>
-            <paper-item>[[item]]</paper-item>
+            <paper-icon-item on-tap='_enableEditting'>
+              <paper-checkbox
+                slot="item-icon"
+                checked='{{item.complete}}'
+                on-tap='_itemCompleteTapped'
+                tabindex='0'
+              ></paper-checkbox>
+              <paper-item-body>
+                <template is='dom-if' if='[[!_computeIsEditting(_editIndex, index)]]'>
+                  [[item.name]]
+                </template>
+                <template is='dom-if' if='[[_computeIsEditting(_editIndex, index)]]' restamp>
+                  <paper-input
+                    tabindex='0'
+                    autofocus
+                    id='editBox'
+                    no-label-float
+                    value='{{_editValue}}'
+                    on-keydown='_editKeyPress'
+                  ></paper-input>
+                </template>
+              </paper-item-body>
+              <template is='dom-if' if='[[_computeIsEditting(_editIndex, index)]]'>
+                <paper-icon-button
+                  icon='mdi:content-save'
+                  on-tap='_finishEditting'
+                  alt='Save item'
+                ></paper-icon-button>
+              </template>
+            </paper-icon-item>
           </template>
         </paper-card>
       </div>
@@ -61,6 +105,18 @@ Polymer({
       type: Array,
       value: [],
     },
+    _editIndex: {
+      type: Number,
+      value: -1,
+    },
+    _editValue: {
+      type: String,
+      value: '',
+    },
+  },
+
+  listeners: {
+    keydown: '_checkEsc'
   },
 
   attached: function () {
@@ -80,6 +136,69 @@ Polymer({
       .then(function (items) {
         this.items = items;
       }.bind(this));
-  }
+  },
+
+  _computeIsEditting(editIndex, index) {
+    return editIndex === index;
+  },
+
+  _itemCompleteTapped: function (ev) {
+    ev.stopPropagation();
+    var item = ev.model.item;
+    this.hass.callApi('post', 'shopping_list/' + item.id, {
+      complete: item.complete
+    }).catch(function () {
+      this._fetchData();
+    }.bind(this));
+  },
+
+  _enableEditting: function (ev) {
+    var item = ev.model.item;
+    var index = this.items.indexOf(item);
+
+    if (index === this._editIndex) return;
+
+    this._editValue = item.name;
+    this._editIndex = index;
+  },
+
+  _cancelEditting: function () {
+    this._editIndex = -1;
+    this._editValue = '';
+  },
+
+  _finishEditting: function (ev) {
+    ev.stopPropagation();
+
+    var index = this._editIndex;
+    var name = this._editValue;
+    var item = this.items[index];
+
+    this._editIndex = -1;
+    this._editValue = '';
+
+    if (name === item.name) {
+      return;
+    }
+
+    this.set(['items', index, 'name'], name);
+    this.hass.callApi('post', 'shopping_list/' + item.id, {
+      name: name
+    }).catch(function () {
+      this._fetchData();
+    }.bind(this));
+  },
+
+  _editKeyPress: function (ev) {
+    if (ev.keyCode === 13) {
+      this._finishEditting(ev);
+    }
+  },
+
+  _checkEsc: function (ev) {
+    if (ev.keyCode === 27) {
+      this._cancelEditting();
+    }
+  },
 });
 </script>
