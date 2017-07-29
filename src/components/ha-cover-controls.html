@@ -46,12 +46,12 @@ Polymer({
     return new window.CoverEntity(hass, stateObj);
   },
   computeOpenDisabled: function (stateObj, entityObj) {
-  	assumedState = stateObj.attributes.assumed_state === true;
-  	return entityObj.isFullyOpen && !assumedState;
+    var assumedState = stateObj.attributes.assumed_state === true;
+    return entityObj.isFullyOpen && !assumedState;
   },
   computeClosedDisabled: function (stateObj, entityObj) {
-  	assumedState = (stateObj.attributes.assumed_state === true);
-  	return entityObj.isFullyClosed && !assumedState;
+    var assumedState = (stateObj.attributes.assumed_state === true);
+    return entityObj.isFullyClosed && !assumedState;
   },
   onOpenTap: function (ev) {
     ev.stopPropagation();

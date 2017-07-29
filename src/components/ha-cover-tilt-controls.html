@@ -47,15 +47,14 @@ Polymer({
     },
   },
   computeEntityObj: function (hass, stateObj) {
-    var entity = new window.CoverEntity(hass, stateObj);
-    return entity;
+    return new window.CoverEntity(hass, stateObj);
   },
   computeOpenDisabled: function (stateObj, entityObj) {
-    assumedState = stateObj.attributes.assumed_state === true;
+    var assumedState = stateObj.attributes.assumed_state === true;
     return entityObj.isFullyOpenTilt && !assumedState;
   },
   computeClosedDisabled: function (stateObj, entityObj) {
-    assumedState = (stateObj.attributes.assumed_state === true);
+    var assumedState = (stateObj.attributes.assumed_state === true);
     return entityObj.isFullyClosedTilt && !assumedState;
   },
   onOpenTiltTap: function (ev) {
