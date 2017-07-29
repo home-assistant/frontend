@@ -18,6 +18,11 @@
 
 <dom-module id='home-assistant-main'>
   <template>
+    <style>
+      :host {
+	      color: var(--primary-text-color);
+      }
+    </style>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
     <ha-url-sync hass='[[hass]]'></ha-url-sync>
     <app-location route="{{route}}"></app-location>
