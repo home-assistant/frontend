@@ -1,17 +1,16 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../bower_components/polymer/polymer.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
+
 <link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
-<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 
-<link rel="import" href="../components/entity/state-info.html">
-<link rel="import" href="../components/entity/ha-entity-toggle.html">
+<link rel="import" href="../components/ha-attributes.html">
 
-<dom-module id="state-card-vacuum">
+<dom-module id='more-info-vacuum'>
   <template>
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style is="custom-style" include="iron-flex"></style>
     <style>
       :host {
         @apply(--paper-font-body1);
@@ -22,41 +21,19 @@
         color: var(--secondary-text-color);
       }
 
-      .container-extra-controls {
-        margin-top: 1.5em;
-      }
-
       paper-item {
         cursor: pointer;
       }
+
     </style>
 
-    <div class='horizontal justified layout'>
-      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <ha-entity-toggle state-obj="[[stateObj]]" hass='[[hass]]'></ha-entity-toggle>
-    </div>
-
-    <div hidden$='{{inDialog}}'>
-      <div class='horizontal justified layout'>
-        <div class='status-subtitle' hidden$='[[!supportsStatus(stateObj)]]'>
-          <span><strong>  Status:</strong> [[stateObj.attributes.vacuum_status]]</span>
-        </div>
-        <div class='status-subtitle'>
-          <span hidden$='[[!supportsFanspeed(stateObj)]]'>
-              <iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]]</span>
-          <span hidden$='[[!supportsBattery(stateObj)]]'>
-               <iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] % </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="container-extra-controls" hidden$='{{!inDialog}}'>
+    <div>
       <div class='horizontal justified layout'>
         <div hidden$='[[!supportsStatus(stateObj)]]'>
-          <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.vacuum_status]]</strong></span>
+          <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.Status]]</strong></span>
         </div>
         <div hidden$='[[!supportsBattery(stateObj)]]'>
-          <span><iron-icon icon="[[stateObj.attributes.vacuum_battery_icon]]"></iron-icon> [[stateObj.attributes.vacuum_battery]] %</span>
+          <span><iron-icon icon="[[stateObj.attributes.Battery_icon]]"></iron-icon> [[stateObj.attributes.Battery]] %</span>
         </div>
       </div>
       <div class='commands' hidden$='[[!supportsCommandBar(stateObj)]]'>
@@ -86,22 +63,24 @@
         <paper-dropdown-menu class="commands" label-float label='Fan speed'>
           <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
             <template is='dom-repeat'
-                      items='[[stateObj.attributes.vacuum_fanspeed_list]]'>
+                      items='[[stateObj.attributes.Fanspeed_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <div class='commands' style="justify-content: center; align-self: center; padding-top: 1.3em">
-          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.vacuum_fanspeed]]</span>
+          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.Fanspeed]]</span>
         </div>
       </div>
     </div>
+
+    <ha-attributes state-obj="[[stateObj]]" extra-filters="Fanspeed,Fanspeed_list,Status,Battery,Battery_icon"></ha-attributes>
   </template>
 </dom-module>
 
 <script>
 Polymer({
-  is: 'state-card-vacuum',
+  is: 'more-info-vacuum',
 
   properties: {
     hass: {
@@ -168,8 +147,8 @@ Polymer({
     // Selected Option will transition to '' before transitioning to new value
     if (fanSpeedIndex === '' || fanSpeedIndex === -1) return;
 
-    fanSpeedInput = this.stateObj.attributes.vacuum_fanspeed_list[fanSpeedIndex];
-    if (fanSpeedInput === this.stateObj.attributes.vacuum_fanspeed) return;
+    fanSpeedInput = this.stateObj.attributes.Fanspeed_list[fanSpeedIndex];
+    if (fanSpeedInput === this.stateObj.attributes.Fanspeed) return;
 
     this.hass.callService('vacuum', 'set_fanspeed', {
       entity_id: this.stateObj.entity_id,
@@ -200,6 +179,5 @@ Polymer({
       entity_id: this.stateObj.entity_id
     });
   },
-
 });
 </script>
