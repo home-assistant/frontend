@@ -125,6 +125,7 @@ Polymer({
       connected: true,
       states: null,
       config: null,
+      themes: null,
       dockedSidebar: false,
       moreInfoEntityId: null,
       callService: function (domain, service, serviceData) {
@@ -186,11 +187,25 @@ Polymer({
       unsubConfig = unsub;
     });
 
+    var unsubThemes;
+
+    this.hass.callApi('get', 'themes').then(function (themes) {
+      el.hass.themes = themes;
+      window.hassUtil.applyThemesOnElement(el, themes);
+    });
+    conn.subscribeEvents(function (event) {
+      el.hass.themes = event.data;
+      window.hassUtil.applyThemesOnElement(el, event.data);
+    }, 'themes_updated').then(function (unsub) {
+      unsubThemes = unsub;
+    });
+
     this.unsubConnection = function () {
       conn.removeEventListener('ready', reconnected);
       conn.removeEventListener('disconnected', disconnected);
       unsubEntities();
       unsubConfig();
+      unsubThemes();
     };
   },
 
