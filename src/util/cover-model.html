@@ -32,26 +32,6 @@
     return this.stateObj.attributes.current_tilt_position === 0;
   });
 
-  addGetter('assumeState', function () {
-    return this.stateObj.attributes.assumed_state === true;
-  });
-
-  addGetter('disableButtonFullyOpen', function () {
-    return this.isFullyOpen && !this.assumeState;
-  });
-
-  addGetter('disableButtonFullyClosed', function () {
-    return this.isFullyClosed && !this.assumeState;
-  });
-
-  addGetter('disableButtonFullyOpenTilt', function () {
-    return this.isFullyOpenTilt && !this.assumeState;
-  });
-
-  addGetter('disableButtonFullyClosedTilt', function () {
-    return this.isFullyClosedTilt && !this.assumeState;
-  });
-
   /* eslint-disable no-bitwise */
 
   addGetter('supportsOpen', function () {
@@ -91,6 +71,7 @@
     var supportsTilt = this.supportsOpenTilt || this.supportsCloseTilt || this.supportsStopTilt;
     return supportsTilt && !supportsCover;
   });
+
 
   /* eslint-enable no-bitwise */
 
