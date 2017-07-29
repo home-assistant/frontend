@@ -492,15 +492,19 @@ window.hassUtil.computeLocationName = function (hass) {
   return hass && hass.config.core.location_name;
 };
 
-window.hassUtil.applyThemesOnElement = function (element, themes) {
+window.hassUtil.applyThemesOnElement = function (element, themes, localTheme) {
   if (!element._themes) {
     element._themes = {};
   }
-  if (themes.default_theme === 'default') {
+  var themeName = themes.default_theme;
+  if (localTheme === 'default' || (localTheme && themes.themes[localTheme])) {
+    themeName = localTheme;
+  }
+  if (themeName === 'default') {
     element.updateStyles(element._themes);
     return;
   }
-  var theme = themes.themes[themes.default_theme];
+  var theme = themes.themes[themeName];
   var styles = Object.assign({}, element._themes);
   Object.keys(theme).forEach(function (key) {
     var prefixedKey = '--' + key;

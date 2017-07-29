@@ -111,20 +111,6 @@
       'hass-start-voice': 'handleStartVoice',
     },
 
-    ready: function () {
-      if (!this.hass) return;
-      var _this = this;
-      this.hass.callApi('get', 'themes').then(
-          function (themes) {
-            window.hassUtil.applyThemesOnElement(_this, themes);
-          });
-      this.hass.connection.subscribeEvents(
-          function (event) {
-            window.hassUtil.applyThemesOnElement(_this, event.data);
-          },
-          'themes_updated');
-    },
-
     _routeChanged: function () {
       if (this.narrow) {
         this.$.drawer.closeDrawer();
