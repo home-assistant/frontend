@@ -25,6 +25,20 @@
       }
       paper-card {
         display: block;
+        padding-bottom: 16px;
+      }
+      .list-header { @apply --paper-font-headline; }
+      .list-options {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: var(--secondary-text-color);
+      }
+      .list-header paper-listbox {
+        width: 150px;
+      }
+      .list-header paper-item {
+        cursor: pointer;
       }
       paper-item {
         --paper-item-focused: {
@@ -36,6 +50,11 @@
       }
       paper-input {
         width: 100%;
+      }
+      .tip {
+        padding: 24px;
+        text-align: center;
+        color: var(--secondary-text-color);
       }
     </style>
 
@@ -50,9 +69,28 @@
 
       <div class='content'>
         <paper-card>
+          <div class="card-content list-header">Shopping List
+            <div class="list-options">
+              <paper-menu-button
+                horizontal-align="right"
+                horizontal-offset="-5"
+                vertical-offset="-5"
+              >
+                <paper-icon-button
+                  icon="mdi:dots-vertical"
+                  slot="dropdown-trigger"
+                ></paper-icon-button>
+                <paper-listbox slot="dropdown-content">
+                  <paper-item
+                    on-tap="_clearCompleted"
+                  >Clear completed</paper-item>
+                </paper-listbox>
+              </paper-menu-button>
+            </div>
+          </div>
           <template is='dom-if' if='[[!items.length]]'>
             <div class='card-content'>
-              No items on your shopping list. Activate voice control and say "Add candy to my shopping list".
+              You have no items on your shopping list.
             </div>
           </template>
           <template is='dom-repeat' items='[[items]]'>
@@ -88,6 +126,9 @@
             </paper-icon-item>
           </template>
         </paper-card>
+        <div class='tip'>
+          Tap the microphone on the top right and say "Add candy to my shopping list"
+        </div>
       </div>
     </app-header-layout>
   </template>
@@ -145,7 +186,7 @@ Polymer({
   _itemCompleteTapped: function (ev) {
     ev.stopPropagation();
     var item = ev.model.item;
-    this.hass.callApi('post', 'shopping_list/' + item.id, {
+    this.hass.callApi('post', 'shopping_list/item/' + item.id, {
       complete: item.complete
     }).catch(function () {
       this._fetchData();
@@ -182,7 +223,7 @@ Polymer({
     }
 
     this.set(['items', index, 'name'], name);
-    this.hass.callApi('post', 'shopping_list/' + item.id, {
+    this.hass.callApi('post', 'shopping_list/item/' + item.id, {
       name: name
     }).catch(function () {
       this._fetchData();
@@ -200,5 +241,9 @@ Polymer({
       this._cancelEditting();
     }
   },
+
+  _clearCompleted: function () {
+    this.hass.callApi('POST', 'shopping_list/clear_completed');
+  }
 });
 </script>
