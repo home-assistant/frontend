@@ -171,14 +171,18 @@ Polymer({
       this.recognition.abort();
       var text = this.results.final || this.results.interim;
       this.results = null;
+      if (text === '') {
+        text = '<Home Assistant did not hear anything>';
+      }
       this.push('_conversation', { who: 'user', text: text, error: true });
     }.bind(this);
     this.recognition.onend = function () {
+      // Already handled by onerror
+      if (this.results == null) {
+        return;
+      }
       var text = this.results.final || this.results.interim;
       this.results = null;
-
-      if (text === '') return;
-
       this.push('_conversation', { who: 'user', text: text });
 
       this.hass.callApi('post', 'conversation/process', { text: text })
