@@ -33,7 +33,7 @@
           <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.status]]</strong></span>
         </div>
         <div hidden$='[[!supportsBattery(stateObj)]]'>
-          <span><iron-icon icon="[[stateObj.attributes.battery_level_icon]]"></iron-icon> [[stateObj.attributes.battery_level]] %</span>
+          <span><iron-icon icon="[[stateObj.attributes.battery_icon]]"></iron-icon> [[stateObj.attributes.battery_level]] %</span>
         </div>
       </div>
       <div class='commands' hidden$='[[!supportsCommandBar(stateObj)]]'>
@@ -59,22 +59,22 @@
         </div>
       </div>
 
-      <div class='horizontal justified layout' hidden$='[[!supportsFanspeed(stateObj)]]'>
+      <div class='horizontal justified layout' hidden$='[[!supportsFanSpeed(stateObj)]]'>
         <paper-dropdown-menu class="commands" label-float label='Fan speed'>
           <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
             <template is='dom-repeat'
-                      items='[[stateObj.attributes.fanspeed_list]]'>
+                      items='[[stateObj.attributes.fan_speed_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <div class='commands' style="justify-content: center; align-self: center; padding-top: 1.3em">
-          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fanspeed]]</span>
+          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
         </div>
       </div>
     </div>
 
-    <ha-attributes state-obj="[[stateObj]]" extra-filters="fanspeed,fanspeed_list,status,battery_level,battery_level_icon"></ha-attributes>
+    <ha-attributes state-obj="[[stateObj]]" extra-filters="fan_speed,fan_speed_list,status,battery_level,battery_icon"></ha-attributes>
   </template>
 </dom-module>
 
@@ -117,7 +117,7 @@ Polymer({
     return (stateObj.attributes.supported_features & 16) !== 0;
   },
 
-  supportsFanspeed: function (stateObj) {
+  supportsFanSpeed: function (stateObj) {
     return (stateObj.attributes.supported_features & 32) !== 0;
   },
 
@@ -147,12 +147,12 @@ Polymer({
     // Selected Option will transition to '' before transitioning to new value
     if (fanSpeedIndex === '' || fanSpeedIndex === -1) return;
 
-    fanSpeedInput = this.stateObj.attributes.fanspeed_list[fanSpeedIndex];
-    if (fanSpeedInput === this.stateObj.attributes.fanspeed) return;
+    fanSpeedInput = this.stateObj.attributes.fan_speed_list[fanSpeedIndex];
+    if (fanSpeedInput === this.stateObj.attributes.fan_speed) return;
 
-    this.hass.callService('vacuum', 'set_fanspeed', {
+    this.hass.callService('vacuum', 'set_fan_speed', {
       entity_id: this.stateObj.entity_id,
-      fanspeed: fanSpeedInput,
+      fan_speed: fanSpeedInput,
     });
   },
 
