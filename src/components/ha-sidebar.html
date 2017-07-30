@@ -152,6 +152,12 @@
           icon='mdi:file-xml' data-panel='dev-template'
           alt="Templates" title="Templates"
           on-tap='menuClicked'></paper-icon-button>
+        <template is='dom-if' if='[[_mqttLoaded(hass)]]'>
+          <paper-icon-button
+            icon='mdi:altimeter' data-panel='dev-mqtt'
+            alt="MQTT" title="MQTT"
+            on-tap='menuClicked'></paper-icon-button>
+        </template>
         <paper-icon-button
           icon='mdi:information-outline' data-panel='dev-info'
           alt="Info" title="Info"
@@ -191,6 +197,10 @@ Polymer({
       type: Boolean,
       value: true,
     },
+  },
+
+  _mqttLoaded: function (hass) {
+    return hass.config.core.components.indexOf('mqtt') !== -1;
   },
 
   computePanels: function (hass) {
