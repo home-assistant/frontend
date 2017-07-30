@@ -61,20 +61,20 @@
       </div>
     </div>
 
-    <div class='horizontal justified layout' hidden$='[[!supportsFanSpeed(stateObj)]]'>
-      <paper-dropdown-menu label-float label='Fan speed'>
-        <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
-          <template is='dom-repeat'
-                    items='[[stateObj.attributes.fan_speed_list]]'>
-            <paper-item>[[item]]</paper-item>
-          </template>
-        </paper-listbox>
-      </paper-dropdown-menu>
-      <div style="justify-content: center; align-self: center; padding-top: 1.3em">
-        <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
-      </div>
-    </div>
     <div hidden$='[[!supportsFanSpeed(stateObj)]]'>
+      <div class='horizontal justified layout'>
+        <paper-dropdown-menu label-float label='Fan speed'>
+          <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
+            <template is='dom-repeat'
+                      items='[[stateObj.attributes.fan_speed_list]]'>
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <div style="justify-content: center; align-self: center; padding-top: 1.3em">
+          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
+        </div>
+      </div>
       <p></p>
     </div>
     <ha-attributes state-obj="[[stateObj]]" extra-filters="fan_speed,fan_speed_list,status,battery_level,battery_icon"></ha-attributes>
