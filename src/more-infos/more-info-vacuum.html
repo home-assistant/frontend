@@ -2,6 +2,9 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
+<link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
+
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
@@ -10,7 +13,7 @@
 
 <dom-module id='more-info-vacuum'>
   <template>
-    <style is="custom-style" include="iron-flex"></style>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
       :host {
         @apply(--paper-font-body1);
@@ -27,53 +30,51 @@
 
     </style>
 
-    <div>
+    <div class='horizontal justified layout'>
+      <div hidden$='[[!supportsStatus(stateObj)]]'>
+        <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.status]]</strong></span>
+      </div>
+      <div hidden$='[[!supportsBattery(stateObj)]]'>
+        <span><iron-icon icon="[[stateObj.attributes.battery_icon]]"></iron-icon> [[stateObj.attributes.battery_level]] %</span>
+      </div>
+    </div>
+    <div hidden$='[[!supportsCommandBar(stateObj)]]'>
+      <p></p>
+      <div class="status-subtitle">Vacuum cleaner commands:</div>
       <div class='horizontal justified layout'>
-        <div hidden$='[[!supportsStatus(stateObj)]]'>
-          <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.status]]</strong></span>
+        <div hidden$='[[!supportsPause(stateObj)]]'>
+          <paper-icon-button icon='mdi:play-pause'
+            on-tap='onPlayPause' title='Start/Pause'></paper-icon-button>
         </div>
-        <div hidden$='[[!supportsBattery(stateObj)]]'>
-          <span><iron-icon icon="[[stateObj.attributes.battery_icon]]"></iron-icon> [[stateObj.attributes.battery_level]] %</span>
+        <div hidden$='[[!supportsStop(stateObj)]]'>
+          <paper-icon-button icon='mdi:stop'
+            on-tap='onStop' title='Stop'></paper-icon-button>
         </div>
-      </div>
-      <div class='commands' hidden$='[[!supportsCommandBar(stateObj)]]'>
-        <div><p></p></div>
-        <div class="status-subtitle">Vacuum cleaner commands:</div>
-        <div class='horizontal justified layout'>
-          <div hidden$='[[!supportsPause(stateObj)]]'>
-            <paper-icon-button icon='mdi:play-pause'
-              on-tap='onPlayPause' title='Start/Pause'></paper-icon-button>
-          </div>
-          <div hidden$='[[!supportsStop(stateObj)]]'>
-            <paper-icon-button icon='mdi:stop'
-              on-tap='onStop' title='Stop'></paper-icon-button>
-          </div>
-          <div hidden$='[[!supportsLocate(stateObj)]]'>
-          <paper-icon-button icon='mdi:map-marker'
-              on-tap='onLocate' title='Locate'></paper-icon-button>
-          </div>
-          <div hidden$='[[!supportsReturnHome(stateObj)]]'>
-          <paper-icon-button icon='mdi:home-map-marker'
-              on-tap='onReturnHome' title='Return home'></paper-icon-button>
-          </div>
+        <div hidden$='[[!supportsLocate(stateObj)]]'>
+        <paper-icon-button icon='mdi:map-marker'
+            on-tap='onLocate' title='Locate'></paper-icon-button>
         </div>
-      </div>
-
-      <div class='horizontal justified layout' hidden$='[[!supportsFanSpeed(stateObj)]]'>
-        <paper-dropdown-menu class="commands" label-float label='Fan speed'>
-          <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
-            <template is='dom-repeat'
-                      items='[[stateObj.attributes.fan_speed_list]]'>
-              <paper-item>[[item]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-        <div class='commands' style="justify-content: center; align-self: center; padding-top: 1.3em">
-          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
+        <div hidden$='[[!supportsReturnHome(stateObj)]]'>
+        <paper-icon-button icon='mdi:home-map-marker'
+            on-tap='onReturnHome' title='Return home'></paper-icon-button>
         </div>
       </div>
     </div>
 
+    <div class='horizontal justified layout' hidden$='[[!supportsFanSpeed(stateObj)]]'>
+      <paper-dropdown-menu label-float label='Fan speed'>
+        <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
+          <template is='dom-repeat'
+                    items='[[stateObj.attributes.fan_speed_list]]'>
+            <paper-item>[[item]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <div style="justify-content: center; align-self: center; padding-top: 1.3em">
+        <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
+      </div>
+    </div>
+    <p></p>
     <ha-attributes state-obj="[[stateObj]]" extra-filters="fan_speed,fan_speed_list,status,battery_level,battery_icon"></ha-attributes>
   </template>
 </dom-module>
