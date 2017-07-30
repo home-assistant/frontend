@@ -74,7 +74,9 @@
         <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
       </div>
     </div>
-    <p></p>
+    <div hidden$='[[!supportsFanSpeed(stateObj)]]'>
+      <p></p>
+    </div>
     <ha-attributes state-obj="[[stateObj]]" extra-filters="fan_speed,fan_speed_list,status,battery_level,battery_icon"></ha-attributes>
   </template>
 </dom-module>
