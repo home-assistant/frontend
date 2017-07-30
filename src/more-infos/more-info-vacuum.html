@@ -30,10 +30,10 @@
     <div>
       <div class='horizontal justified layout'>
         <div hidden$='[[!supportsStatus(stateObj)]]'>
-          <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.Status]]</strong></span>
+          <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.status]]</strong></span>
         </div>
         <div hidden$='[[!supportsBattery(stateObj)]]'>
-          <span><iron-icon icon="[[stateObj.attributes.Battery_icon]]"></iron-icon> [[stateObj.attributes.Battery]] %</span>
+          <span><iron-icon icon="[[stateObj.attributes.battery_level_icon]]"></iron-icon> [[stateObj.attributes.battery_level]] %</span>
         </div>
       </div>
       <div class='commands' hidden$='[[!supportsCommandBar(stateObj)]]'>
@@ -63,18 +63,18 @@
         <paper-dropdown-menu class="commands" label-float label='Fan speed'>
           <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
             <template is='dom-repeat'
-                      items='[[stateObj.attributes.Fanspeed_list]]'>
+                      items='[[stateObj.attributes.fanspeed_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <div class='commands' style="justify-content: center; align-self: center; padding-top: 1.3em">
-          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.Fanspeed]]</span>
+          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fanspeed]]</span>
         </div>
       </div>
     </div>
 
-    <ha-attributes state-obj="[[stateObj]]" extra-filters="Fanspeed,Fanspeed_list,Status,Battery,Battery_icon"></ha-attributes>
+    <ha-attributes state-obj="[[stateObj]]" extra-filters="fanspeed,fanspeed_list,status,battery_level,battery_level_icon"></ha-attributes>
   </template>
 </dom-module>
 
@@ -147,8 +147,8 @@ Polymer({
     // Selected Option will transition to '' before transitioning to new value
     if (fanSpeedIndex === '' || fanSpeedIndex === -1) return;
 
-    fanSpeedInput = this.stateObj.attributes.Fanspeed_list[fanSpeedIndex];
-    if (fanSpeedInput === this.stateObj.attributes.Fanspeed) return;
+    fanSpeedInput = this.stateObj.attributes.fanspeed_list[fanSpeedIndex];
+    if (fanSpeedInput === this.stateObj.attributes.fanspeed) return;
 
     this.hass.callService('vacuum', 'set_fanspeed', {
       entity_id: this.stateObj.entity_id,
