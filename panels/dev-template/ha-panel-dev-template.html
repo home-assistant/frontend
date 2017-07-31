@@ -119,7 +119,15 @@ Polymer({
     template: {
       type: String,
       /* eslint-disable max-len */
-      value: '{%- if is_state("device_tracker.paulus", "home") and \n' +
+      value: 'Imitate available variables:\n' +
+             '{% set my_test_json = {\n' +
+             '  "temperature": 25,\n' +
+             '  "unit": "°C"\n' +
+             '} %}\n' +
+             '\n' +
+             'The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}. \n' +
+             '\n' +
+             '{% if is_state("device_tracker.paulus", "home") and \n' +
              '       is_state("device_tracker.anne_therese", "home") -%}\n' +
              '\n' +
              '  You are both home, you silly\n' +
@@ -132,7 +140,6 @@ Polymer({
              '{%- endif %}\n' +
              '\n' +
              'For loop example:\n' +
-             '\n' +
              '{% for state in states.sensor -%}\n' +
              '  {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}\n' +
              '  {{ state.name | lower }} is {{state.state}} {{- state.attributes.unit_of_measurement}}\n' +
