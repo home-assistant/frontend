@@ -85,6 +85,10 @@ Polymer({
     },
   },
 
+  listeners: {
+    settheme: 'setTheme',
+  },
+
   computeShowMain: function (hass, iconsLoaded) {
     return hass && hass.states && hass.config && iconsLoaded;
   },
@@ -191,11 +195,11 @@ Polymer({
 
     this.hass.callApi('get', 'themes').then(function (themes) {
       el.hass.themes = themes;
-      window.hassUtil.applyThemesOnElement(el, themes);
+      window.hassUtil.applyThemesOnElement(el, themes, el.hass.selectedTheme);
     });
     conn.subscribeEvents(function (event) {
       el.hass.themes = event.data;
-      window.hassUtil.applyThemesOnElement(el, event.data);
+      window.hassUtil.applyThemesOnElement(el, event.data, el.hass.selectedTheme);
     }, 'themes_updated').then(function (unsub) {
       unsubThemes = unsub;
     });
@@ -260,6 +264,11 @@ Polymer({
     if (this.connectionPromise !== null) {
       this.handleConnectionPromise(this.connectionPromise);
     }
+  },
+
+  setTheme: function () {
+    window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme);
+    this.$.storage.storeState();
   },
 });
 </script>
