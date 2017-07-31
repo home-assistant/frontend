@@ -91,7 +91,11 @@
         <div class='ha-form'>
           <vaadin-combo-box label='Domain' items='[[computeDomains(serviceDomains)]]' value='{{domain}}'></vaadin-combo-box>
           <vaadin-combo-box label='Service' items='[[computeServices(serviceDomains, domain)]]' value='{{service}}'></vaadin-combo-box>
-          <paper-textarea label='Service Data (JSON, optional)' value='{{serviceData}}'></paper-textarea>
+          <paper-textarea
+            always-float-label
+            label='Service Data (JSON, optional)'
+            value='{{serviceData}}'
+          ></paper-textarea>
           <paper-button on-tap='callService' raised>Call Service</paper-button>
         </div>
 
