@@ -126,7 +126,6 @@ Polymer({
   properties: {
     hass: {
       type: Object,
-      observer: 'hassChanged'
     },
 
     narrow: {
@@ -139,12 +138,7 @@ Polymer({
       value: false,
     },
 
-    entity: {
-      type: String,
-      computed: 'computeEntity(hass)',
-    },
-
-    _lasUpdated: {
+    platform: {
       type: String,
     },
 
@@ -153,32 +147,35 @@ Polymer({
     },
   },
 
-  hassChanged: function (hass) {
+  attached: function () {
+    this.hassChanged = this.hassChanged.bind(this);
+    this.hass.connection.subscribeEvents(this.hassChanged, 'mailbox_updated')
+      .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
+    this.computePlatform().then(function (platform) {
+        this.platform = platform;
+        this.hassChanged();
+    }.bind(this));
+  },
+
+  detached: function () {
+    if (this._unsubEvents) this._unsubEvents();
+  },
+
+  hassChanged: function () {
     if (!this._messages) {
       this._messages = [];
     }
-    var entity_id = this.entity.entity_id
-    if (!hass.states[entity_id]) {
-      return;
-    }
-    var vm = hass.states[entity_id];
-    if (!vm.last_updated) {
-      return;
-    }
-    var lastUpdated = vm.last_updated;
-    if (!this._lastUpdated || this._lastUpdated !== lastUpdated) {
-      this.getMessages().then(function (items) {
-        this._messages = items;
-        this.$.msgtable.expandedItems = items;
-        this._lastUpdated = lastUpdated;
-      }.bind(this));
-    }
+    var platform = this.platform
+    this.getMessages().then(function (items) {
+      this._messages = items;
+      this.$.msgtable.expandedItems = items;
+    }.bind(this));
   },
 
   openMP3Dialog: function (event) {
-    var entity_id = this.entity.entity_id
+    var platform = this.platform
     this.$.mp3dialog.open();
-    this.$.mp3src.src = '/api/mailbox/media/' + entity_id + "/" + event.target.dataset.sha;
+    this.$.mp3src.src = '/api/mailbox/media/' + platform + "/" + event.target.dataset.sha;
     this.$.mp3.load();
     this.$.mp3.play();
   },
@@ -192,16 +189,16 @@ Polymer({
     var items = grid.selectedItems;
     var len = items.length;
     var sha = [];
-    var entity_id = this.entity.entity_id
+    var platform = this.platform
     for (var i = 0; i < len; i++) {
       sha.push(items[i].sha);
     }
-    this.hass.callApi('POST', 'mailbox/delete/' + entity_id, sha);
+    this.hass.callApi('POST', 'mailbox/delete/' + platform, sha);
   },
 
   getMessages: function () {
-    var entity_id = this.entity.entity_id
-    return this.hass.callApi('GET', 'mailbox/messages/' + entity_id).then(function (values) {
+    var platform = this.platform
+    return this.hass.callApi('GET', 'mailbox/messages/' + platform).then(function (values) {
       var arrayLength = values.length;
       var items = [];
       for (var i = 0; i < arrayLength; i++) {
@@ -218,12 +215,10 @@ Polymer({
     });
   },
 
-  computeEntity: function (hass) {
-    return Object.keys(hass.states)
-      .map(function (key) { return hass.states[key]; })
-      .filter(function (ent) {
-        return ((ent.entity_id).match('mailbox[.]'));
-      })[0]
+  computePlatform: function (hass) {
+    return this.hass.callApi('GET', 'mailbox/platforms').then(function (platforms) {
+        return platforms[0]
+    });
   },
 });
 
