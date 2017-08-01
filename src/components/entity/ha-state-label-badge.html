@@ -10,19 +10,27 @@
       }
 
       ha-label-badge {
-        --ha-label-badge-color: rgb(223, 76, 30);
+        --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
+      }
+
+      .red {
+        --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
       }
 
       .blue {
-        --ha-label-badge-color: #039be5;
+        --ha-label-badge-color: var(--label-badge-blue, #039be5);
       }
 
       .green {
-        --ha-label-badge-color: #0DA035;
+        --ha-label-badge-color: var(--label-badge-green, #0DA035);
+      }
+
+      .yellow {
+        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
       }
 
       .grey {
-        --ha-label-badge-color: var(--paper-grey-500);
+        --ha-label-badge-color: var(--label-badge-grey, --paper-grey-500);
       }
     </style>
 
