@@ -18,11 +18,29 @@ Polymer({
     },
   },
 
+  _ensureCustomUILoaded: function (stateType) {
+    this.importHref(
+        '/local/custom_ui/state-card-' + stateType + '.html',
+        function () {},
+        /* eslint-disable no-console */
+        function () { console.error('Error loading %s from /local/custom_ui/state-card-%s.html', stateType, stateType); },
+        /* eslint-enable no-console */
+        true);
+  },
+
   cardDataChanged: function (newData) {
     if (!newData) return;
 
-    window.hassUtil.dynamicContentUpdater(this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
-                          newData);
+	var cardType = '';
+
+    if (newData.stateObj && newData.stateObj.attributes && 'custom_ui_state_card' in newData.stateObj.attributes) {
+      cardType = newData.stateObj.attributes.custom_ui_state_card;
+      this._ensureCustomUILoaded(cardType);
+      cardType = 'STATE-CARD-' + cardType.toUpperCase();
+    } else {
+      cardType = 'HA-' + newData.cardType.toUpperCase() + '-CARD';
+    }
+    window.hassUtil.dynamicContentUpdater(this, cardType, newData);
   },
 });
 </script>
