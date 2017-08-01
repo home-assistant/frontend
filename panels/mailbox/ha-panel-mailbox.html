@@ -95,7 +95,7 @@
             <vaadin-grid-column width="calc(20% - 100px">
               <template class="header">Listen</template>
               <template>
-                <paper-icon-button data-sha$='[[item.sha]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button>
+                <paper-icon-button data-sha$='[[item.sha]]' data-platform$='[[item.platform]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button>
                 [[item.duration]] secs
               </template>
           </vaadin-grid>
@@ -138,8 +138,8 @@ Polymer({
       value: false,
     },
 
-    platform: {
-      type: String,
+    platforms: {
+      type: Array,
     },
 
     _messages: {
@@ -151,8 +151,8 @@ Polymer({
     this.hassChanged = this.hassChanged.bind(this);
     this.hass.connection.subscribeEvents(this.hassChanged, 'mailbox_updated')
       .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
-    this.computePlatform().then(function (platform) {
-        this.platform = platform;
+    this.computePlatforms().then(function (platforms) {
+        this.platforms = platforms;
         this.hassChanged();
     }.bind(this));
   },
@@ -165,7 +165,6 @@ Polymer({
     if (!this._messages) {
       this._messages = [];
     }
-    var platform = this.platform
     this.getMessages().then(function (items) {
       this._messages = items;
       this.$.msgtable.expandedItems = items;
@@ -173,7 +172,7 @@ Polymer({
   },
 
   openMP3Dialog: function (event) {
-    var platform = this.platform
+    var platform = event.target.dataset.platform
     this.$.mp3dialog.open();
     this.$.mp3src.src = '/api/mailbox/media/' + platform + "/" + event.target.dataset.sha;
     this.$.mp3.load();
@@ -188,37 +187,52 @@ Polymer({
     var grid = this.$.msgtable;
     var items = grid.selectedItems;
     var len = items.length;
-    var sha = [];
-    var platform = this.platform
+    var map = {}
     for (var i = 0; i < len; i++) {
-      sha.push(items[i].sha);
-    }
-    this.hass.callApi('POST', 'mailbox/delete/' + platform, sha);
-  },
-
-  getMessages: function () {
-    var platform = this.platform
-    return this.hass.callApi('GET', 'mailbox/messages/' + platform).then(function (values) {
-      var arrayLength = values.length;
-      var items = [];
-      for (var i = 0; i < arrayLength; i++) {
-        var datetime = window.hassUtil.formatDateTime(new Date(values[i].info.origtime * 1000));
-        items.push({
-          timestamp: datetime,
-          caller: values[i].info.callerid,
-          message: values[i].text,
-          sha: values[i].sha,
-          duration: values[i].info.duration
-        });
+      var platform = items[i].platform;
+      if (! (platform in map)) {
+          map[platform] = []
       }
-      return items;
+      map[platform].push(items[i].sha);
+    }
+    Object.keys(map).forEach(function(platform) {
+        this.hass.callApi('POST', 'mailbox/delete/' + platform, map[platform]);
+    }.bind(this));
+  },
+  getMessages: function () {
+    let items = this.platforms.map((platform) => {
+      return this.hass.callApi('GET', 'mailbox/messages/' + platform).then(function (values) {
+        items = []
+        var arrayLength = values.length;
+        for (var i = 0; i < arrayLength; i++) {
+          var datetime = window.hassUtil.formatDateTime(new Date(values[i].info.origtime * 1000));
+          items.push({
+            timestamp: datetime,
+            caller: values[i].info.callerid,
+            message: values[i].text,
+            sha: values[i].sha,
+            duration: values[i].info.duration,
+            platform: platform
+          });
+        }
+        return items;
+      });
+    });
+    return Promise.all(items).then(function (items) {
+      var arrayLength = items.length;
+      var final = []
+      for (var i = 0; i < arrayLength; i++) {
+        final = final.concat(items[i]);
+      }
+      final.sort(function(a, b){
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+      return final;
     });
   },
 
-  computePlatform: function (hass) {
-    return this.hass.callApi('GET', 'mailbox/platforms').then(function (platforms) {
-        return platforms[0]
-    });
+  computePlatforms: function (hass) {
+    return this.hass.callApi('GET', 'mailbox/platforms');
   },
 });
 
