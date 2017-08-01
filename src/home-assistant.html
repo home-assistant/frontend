@@ -266,7 +266,8 @@ Polymer({
     }
   },
 
-  setTheme: function () {
+  setTheme: function (event) {
+    this.hass.selectedTheme = event.detail;
     window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme);
     this.$.storage.storeState();
   },

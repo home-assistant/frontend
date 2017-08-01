@@ -16,7 +16,7 @@
 
       <paper-card>
         <div class='card-content'>
-          <paper-dropdown-menu label='Theme'>
+          <paper-dropdown-menu label='Theme' vertical-align='bottom'>
             <paper-listbox
               slot="dropdown-content"
               selected='{{selectedTheme}}'
@@ -56,10 +56,10 @@ Polymer({
   },
 
   ready: function () {
-    if (this.hass.selectedTheme && this.themes.indexOf(this.hass.selectedTheme) >= 0) {
+    if (this.hass.selectedTheme && this.themes.indexOf(this.hass.selectedTheme) > 0) {
       this.selectedTheme = this.themes.indexOf(this.hass.selectedTheme);
-    } else {
-      this.selectedTheme = -1;
+    } else if (!this.hass.selectedTheme) {
+      this.selectedTheme = 0;
     }
   },
 
@@ -69,17 +69,16 @@ Polymer({
 
   computeThemes: function (hass) {
     if (!hass) return [];
-    return ['default'].concat(Object.keys(hass.themes.themes).sort());
+    return ['Backend-selected', 'default'].concat(Object.keys(hass.themes.themes).sort());
   },
 
   selectionChanged: function (hass, selection) {
-    if (selection >= 0 && selection < this.themes.length) {
+    if (selection > 0 && selection < this.themes.length) {
       if (hass.selectedTheme !== this.themes[selection]) {
-        hass.selectedTheme = this.themes[selection];
-        this.fire('settheme');
+        this.fire('settheme', this.themes[selection]);
       }
-    } else {
-      hass.selectedTheme = '';
+    } else if (selection === 0 && hass.selectedTheme !== '') {
+      this.fire('settheme', '');
     }
   }
 });
