@@ -75,6 +75,10 @@
         display: none;
       }
 
+      paper-dialog {
+        border-radius: 2px;
+      }
+
       @media all and (max-width: 450px) {
         paper-dialog {
           margin: 0;
@@ -86,6 +90,8 @@
           left: 0px;
           right: 0px;
           overflow: scroll;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
         }
 
         .content {
