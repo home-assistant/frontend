@@ -31,7 +31,7 @@ Polymer({
   cardDataChanged: function (newData) {
     if (!newData) return;
 
-	var cardType = '';
+    var cardType = '';
 
     if (newData.stateObj && newData.stateObj.attributes && 'custom_ui_state_card' in newData.stateObj.attributes) {
       cardType = newData.stateObj.attributes.custom_ui_state_card;
