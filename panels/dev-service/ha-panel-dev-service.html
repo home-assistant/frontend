@@ -48,8 +48,12 @@
         vertical-align: top;
       }
 
+      .attributes tr:nth-child(odd) {
+        background-color: var(--table-row-background-color,#eee)
+      }
+
       .attributes tr:nth-child(even) {
-        background-color: #eee;
+        background-color: var(--table-row-alternative-background-color,#eee)
       }
 
       .attributes td:nth-child(3) {
