@@ -50,6 +50,10 @@
           <paper-icon-button icon='mdi:stop'
             on-tap='onStop' title='Stop'></paper-icon-button>
         </div>
+        <div hidden$='[[!supportsCleanSpot(stateObj)]]'>
+        <paper-icon-button icon='mdi:broom'
+            on-tap='onCleanSpot' title='Clean spot'></paper-icon-button>
+        </div>
         <div hidden$='[[!supportsLocate(stateObj)]]'>
         <paper-icon-button icon='mdi:map-marker'
             on-tap='onLocate' title='Locate'></paper-icon-button>
@@ -136,11 +140,16 @@ Polymer({
     return (stateObj.attributes.supported_features & 512) !== 0;
   },
 
+  supportsCleanSpot: function (stateObj) {
+    return (stateObj.attributes.supported_features & 1024) !== 0;
+  },
+
   supportsCommandBar: function (stateObj) {
     return (((stateObj.attributes.supported_features & 4) !== 0)
             | ((stateObj.attributes.supported_features & 8) !== 0)
-            | ((stateObj.attributes.supported_features & 8) !== 0)
-            | ((stateObj.attributes.supported_features & 512) !== 0));
+            | ((stateObj.attributes.supported_features & 16) !== 0)
+            | ((stateObj.attributes.supported_features & 512) !== 0)
+            | ((stateObj.attributes.supported_features & 1024) !== 0));
   },
 
   /* eslint-enable no-bitwise */
@@ -173,6 +182,12 @@ Polymer({
 
   onLocate: function () {
     this.hass.callService('vacuum', 'locate', {
+      entity_id: this.stateObj.entity_id
+    });
+  },
+
+  onCleanSpot: function () {
+    this.hass.callService('vacuum', 'clean_spot', {
       entity_id: this.stateObj.entity_id
     });
   },
