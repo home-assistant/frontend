@@ -33,30 +33,12 @@ const baseVulcanOptions = {
   stripComments: true,
 };
 
-const panelVulcan = new Vulcanize({
-  inlineScripts: true,
-  inlineCss: true,
-  implicitStrip: true,
-  stripComments: true,
-  stripExcludes: [
-    'panels/hassio/hassio-main.html'
-  ],
-});
-
 const baseExcludes = [
   'bower_components/font-roboto/roboto.html',
   'bower_components/paper-styles/color.html',
 ];
 
 const toProcess = [
-  // This is the main entry point
-  {
-    source: './src/home-assistant.html',
-    output: './build/frontend.html',
-    vulcan: new Vulcanize(Object.assign({}, baseVulcanOptions, {
-      stripExcludes: baseExcludes,
-    })),
-  },
   // This is the Hass.io configuration panel
   // It's build standalone because it is embedded in the supervisor.
   {
@@ -70,14 +52,6 @@ const toProcess = [
     })),
   },
 ];
-
-fs.readdirSync('./panels').forEach((panel) => {
-  toProcess.push({
-    source: `./panels/${panel}/ha-panel-${panel}.html`,
-    output: `./build/panels/ha-panel-${panel}.html`,
-    vulcan: panelVulcan,
-  });
-});
 
 function vulcanizeEntry(entry) {
   return new Promise((resolve, reject) => {
@@ -95,16 +69,7 @@ function vulcanizeEntry(entry) {
   });
 }
 
-// Fetch all dependencies of main app and exclude them from panels
-hyd.Analyzer.analyze('src/home-assistant.html')
-    .then(function (analyzer) {
-      return analyzer._getDependencies('src/home-assistant.html');
-    })
-    .then((deps) => {
-      panelVulcan.stripExcludes = panelVulcan.stripExcludes.concat(deps);
-    })
-    // Chain all vulcanizing work as promises
-    .then(() => toProcess.reduce(
+toProcess.reduce(
       (p, entry) => p.then(() => vulcanizeEntry(entry)),
-      Promise.resolve()))
+      Promise.resolve())
     .catch(err => console.error('Something went wrong!', err));
