@@ -1,6 +1,7 @@
+import buble from 'gulp-buble';
+import uglify from 'gulp-uglify';
 import { gulp as cssSlam } from 'css-slam';
 import gulp from 'gulp';
-import babel from 'gulp-babel';
 import filter from 'gulp-filter';
 import htmlMinifier from 'gulp-html-minifier';
 import gulpif from 'gulp-if';
@@ -18,10 +19,8 @@ function minifyStream(stream) {
   const sourcesHtmlSplitter = new HtmlSplitter();
   return stream
     .pipe(sourcesHtmlSplitter.split())
-    .pipe(gulpif(/\.js$/, babel({
-      presets: ['babili'], // 'es2015'
-      // plugins: ['external-helpers']
-    })))
+    .pipe(gulpif(/\.js$/, buble()))
+    .pipe(gulpif(/\.js$/, uglify({ sourceMap : false })))
     .pipe(gulpif(/\.css$/, cssSlam()))
     .pipe(gulpif(/\.html$/, cssSlam()))
     .pipe(gulpif(/\.html$/, htmlMinifier({
