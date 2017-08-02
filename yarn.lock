@@ -7449,14 +7449,14 @@ uglify-js@2.6.x:
     uglify-to-browserify "~1.0.0"
     yargs "~3.10.0"
 
-uglify-js@3.0.x, uglify-js@^3.0.26, uglify-js@^3.0.9:
+uglify-js@3.0.x, uglify-js@^3.0.9:
   version "3.0.26"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.26.tgz#ba279ca597b13fe6c62c2d87dd5188e57a7a3233"
   dependencies:
     commander "~2.11.0"
     source-map "~0.5.1"
 
-uglify-js@^3.0.5:
+uglify-js@^3.0.27, uglify-js@^3.0.5:
   version "3.0.27"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.0.27.tgz#a97db8c8ba6b9dba4e2f88d86aa9548fa6320034"
   dependencies:

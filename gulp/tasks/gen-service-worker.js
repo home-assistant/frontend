@@ -9,6 +9,7 @@ Output service worker to build/service_worker.js
 
 TODO:
  - Use gulp streams
+ - Fix minifying the stream
 */
 var gulp = require('gulp');
 var crypto = require('crypto');
