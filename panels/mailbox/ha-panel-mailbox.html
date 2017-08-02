@@ -187,17 +187,10 @@ Polymer({
     var grid = this.$.msgtable;
     var items = grid.selectedItems;
     var len = items.length;
-    var map = {}
     for (var i = 0; i < len; i++) {
       var platform = items[i].platform;
-      if (! (platform in map)) {
-          map[platform] = []
-      }
-      map[platform].push(items[i].sha);
+      this.hass.callApi('DELETE', 'mailbox/delete/' + platform + '/' + items[i].sha);
     }
-    Object.keys(map).forEach(function(platform) {
-        this.hass.callApi('POST', 'mailbox/delete/' + platform, map[platform]);
-    }.bind(this));
   },
   getMessages: function () {
     let items = this.platforms.map((platform) => {
