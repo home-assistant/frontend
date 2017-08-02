@@ -66,7 +66,8 @@ function generateStripStrategy(urls) {
 function stripAllButEntrypoint(entryPoint) {
   return (bundles) => {
     for (const bundle of bundles) {
-      if (bundle.entrypoints.has(entryPoint)) {
+      if (bundle.entrypoints.size === 1 &&
+          bundle.entrypoints.has(entryPoint)) {
         for (const file of bundle.files) {
           if (!bundle.entrypoints.has(file)) {
             bundle.stripImports.add(file);

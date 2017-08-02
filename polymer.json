@@ -6,6 +6,7 @@
     "panels/config/ha-panel-config.html",
     "panels/dev-event/ha-panel-dev-event.html",
     "panels/dev-info/ha-panel-dev-info.html",
+    "panels/dev-mqtt/ha-panel-dev-mqtt.html",
     "panels/dev-service/ha-panel-dev-service.html",
     "panels/dev-state/ha-panel-dev-state.html",
     "panels/dev-template/ha-panel-dev-template.html",
