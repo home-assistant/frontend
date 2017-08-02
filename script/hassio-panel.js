@@ -2,7 +2,6 @@
 
 var Vulcanize = require('vulcanize');
 var minify = require('html-minifier');
-var hyd = require('hydrolysis');
 var fs = require('fs');
 
 if (!fs.existsSync('build')) {

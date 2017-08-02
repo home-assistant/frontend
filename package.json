@@ -51,7 +51,6 @@
     "gulp-rename": "^1.2.2",
     "gulp-rollup-each": "^1.0.2",
     "html-minifier": "^3.5.3",
-    "hydrolysis": "^1.25.0",
     "merge-stream": "^1.0.1",
     "polymer-build": "^2.0.0",
     "polymer-bundler": "^3.0.1",
