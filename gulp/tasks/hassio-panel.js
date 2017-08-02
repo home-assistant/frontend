@@ -1,15 +1,12 @@
-#!/usr/bin/env node
-
+/*
+TODO:
+ - Use gulp streams
+ - Use polymer bundler to vulcanize
+*/
+var gulp = require('gulp');
 var Vulcanize = require('vulcanize');
 var minify = require('html-minifier');
 var fs = require('fs');
-
-if (!fs.existsSync('build')) {
-  fs.mkdirSync('build');
-}
-if (!fs.existsSync('build/panels')) {
-  fs.mkdirSync('build/panels');
-}
 
 function minifyHTML(html) {
   return minify.minify(html, {
@@ -68,7 +65,14 @@ function vulcanizeEntry(entry) {
   });
 }
 
-toProcess.reduce(
-      (p, entry) => p.then(() => vulcanizeEntry(entry)),
-      Promise.resolve())
-    .catch(err => console.error('Something went wrong!', err));
+gulp.task('hassio-panel', () => {
+  if (!fs.existsSync('build-temp')) {
+    fs.mkdirSync('build-temp');
+  }
+
+  toProcess.reduce(
+        (p, entry) => p.then(() => vulcanizeEntry(entry)),
+        Promise.resolve());
+
+  return toProcess;
+});
