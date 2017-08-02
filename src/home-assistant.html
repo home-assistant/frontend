@@ -164,13 +164,13 @@ Polymer({
     }, this.$.storage.getStoredState());
 
     var reconnected = function () {
-      this.hass = Object.assign({}, this.hass, { connected: true });
+      this._updateHass({ connected: true });
     }.bind(this);
 
     conn.addEventListener('ready', reconnected);
 
     var disconnected = function () {
-      this.hass = Object.assign({}, this.hass, { connected: false });
+      this._updateHass({ connected: false });
     }.bind(this);
 
     conn.addEventListener('disconnected', disconnected);
@@ -178,7 +178,7 @@ Polymer({
     var unsubEntities;
 
     window.HAWS.subscribeEntities(conn, function (states) {
-      this.hass = Object.assign({}, this.hass, { states: states });
+      this._updateHass({ states: states });
     }.bind(this)).then(function (unsub) {
       unsubEntities = unsub;
     });
@@ -186,7 +186,7 @@ Polymer({
     var unsubConfig;
 
     window.HAWS.subscribeConfig(conn, function (config) {
-      this.hass = Object.assign({}, this.hass, { config: config });
+      this._updateHass({ config: config });
     }.bind(this)).then(function (unsub) {
       unsubConfig = unsub;
     });
@@ -194,11 +194,11 @@ Polymer({
     var unsubThemes;
 
     this.hass.callApi('get', 'themes').then(function (themes) {
-      el.hass.themes = themes;
+      el._updateHass({ themes: themes });
       window.hassUtil.applyThemesOnElement(el, themes, el.hass.selectedTheme);
     });
     conn.subscribeEvents(function (event) {
-      el.hass.themes = event.data;
+      el._updateHass({ themes: event.data });
       window.hassUtil.applyThemesOnElement(el, event.data, el.hass.selectedTheme);
     }, 'themes_updated').then(function (unsub) {
       unsubThemes = unsub;
@@ -228,16 +228,12 @@ Polymer({
   handleMoreInfo: function (ev) {
     ev.stopPropagation();
 
-    this.hass = Object.assign(
-      {}, this.hass,
-      { moreInfoEntityId: ev.detail.entityId });
+    this._updateHass({ moreInfoEntityId: ev.detail.entityId });
   },
 
   handleDockSidebar: function (ev) {
     ev.stopPropagation();
-    this.hass = Object.assign(
-      {}, this.hass,
-      { dockedSidebar: ev.detail.dock });
+    this._updateHass({ dockedSidebar: ev.detail.dock });
     this.$.storage.storeState();
   },
 
@@ -267,9 +263,13 @@ Polymer({
   },
 
   setTheme: function (event) {
-    this.hass.selectedTheme = event.detail;
+    this._updateHass({ selectedTheme: event.detail });
     window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme);
     this.$.storage.storeState();
+  },
+
+  _updateHass: function (obj) {
+    this.hass = Object.assign({}, this.hass, obj);
   },
 });
 </script>
