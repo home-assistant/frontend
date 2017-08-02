@@ -90,7 +90,7 @@ gulp.task('gen-service-worker', () => {
 
   var devBase = 'console.warn("Service worker caching disabled in development")';
 
-  var swHass = fs.readFileSync(path.resolve(__dirname, 'service-worker.js.tmpl'), 'UTF-8');
+  var swHass = fs.readFileSync(path.resolve(__dirname, '../service-worker.js.tmpl'), 'UTF-8');
 
   var genPromise = DEV ? Promise.resolve(devBase) : swPrecache.generate(options);
 
