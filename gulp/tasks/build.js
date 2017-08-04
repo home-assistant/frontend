@@ -1,26 +1,31 @@
-import buble from 'gulp-buble';
-import uglify from 'gulp-uglify';
-import { gulp as cssSlam } from 'css-slam';
-import gulp from 'gulp';
-import filter from 'gulp-filter';
-import htmlMinifier from 'gulp-html-minifier';
-import gulpif from 'gulp-if';
-import { PolymerProject, HtmlSplitter } from 'polymer-build';
-import {
+const babel = require('gulp-babel');
+const uglify = require('gulp-uglify');
+const { gulp: cssSlam } = require('css-slam');
+const gulp = require('gulp');
+const filter = require('gulp-filter');
+const htmlMinifier = require('gulp-html-minifier');
+const gulpif = require('gulp-if');
+const { PolymerProject, HtmlSplitter } = require('polymer-build');
+const {
   composeStrategies,
   generateShellMergeStrategy,
-} from 'polymer-bundler';
-import mergeStream from 'merge-stream';
-import rename from 'gulp-rename';
+} = require('polymer-bundler');
+const mergeStream = require('merge-stream');
+const rename = require('gulp-rename');
 
-import polymerConfig from '../../polymer';
+const polymerConfig = require('../../polymer');
 
 function minifyStream(stream) {
   const sourcesHtmlSplitter = new HtmlSplitter();
   return stream
     .pipe(sourcesHtmlSplitter.split())
-    .pipe(gulpif(/\.js$/, buble()))
-    .pipe(gulpif(/\.js$/, uglify({ sourceMap : false })))
+    .pipe(gulpif(/[^app]\.js$/, babel({
+      sourceType: 'script',
+      presets: [
+        ['es2015', { modules: false }]
+      ]
+    })))
+    .pipe(gulpif(/\.js$/, uglify({ sourceMap: false })))
     .pipe(gulpif(/\.css$/, cssSlam()))
     .pipe(gulpif(/\.html$/, cssSlam()))
     .pipe(gulpif(/\.html$/, htmlMinifier({

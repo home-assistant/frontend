@@ -47,7 +47,7 @@
     "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
-    "polymer": "Polymer/polymer#~1.9.2",
+    "polymer": "Polymer/polymer#~2.0.2",
     "polymer-sortablejs": "^0.1.3",
     "vaadin-combo-box": "vaadin/vaadin-combo-box#v2.0.0-alpha4",
     "vaadin-date-picker": "vaadin/vaadin-date-picker#v2.0.0-alpha1",
@@ -109,7 +109,7 @@
     "paper-tabs": "^2.0.0",
     "paper-toast": "^2.0.0",
     "paper-toggle-button": "^2.0.0",
-    "polymer": "~1.9.2",
-    "webcomponentsjs": "^0.7.24"
+    "polymer": "^2.0.2",
+    "webcomponentsjs": "^v1.0.2"
   }
 }
