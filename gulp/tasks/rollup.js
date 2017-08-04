@@ -1,6 +1,6 @@
-import gulp from 'gulp';
-import rollupEach from 'gulp-rollup-each';
-import rollupConfig from '../../rollup.config';
+const gulp = require('gulp');
+const rollupEach = require('gulp-rollup-each');
+const rollupConfig = require('../../rollup.config');
 
 gulp.task('run_rollup', () => {
   return gulp.src([

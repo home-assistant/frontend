@@ -25,6 +25,7 @@
     "preact": "^8.1.0"
   },
   "devDependencies": {
+    "babel-core": "^6.25.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-react-jsx": "^6.24.1",
@@ -40,7 +41,6 @@
     "eslint-plugin-react": "^7.0.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "gulp-buble": "^0.8.0",
     "gulp-filter": "^5.0.0",
     "gulp-html-minifier": "^0.1.8",
     "gulp-if": "^2.0.2",

@@ -1,8 +1,8 @@
-import commonjs from 'rollup-plugin-commonjs';
-import nodeResolve from 'rollup-plugin-node-resolve';
-import replace from 'rollup-plugin-replace';
-import babel from 'rollup-plugin-babel';
-import uglify from 'rollup-plugin-uglify';
+const commonjs = require('rollup-plugin-commonjs');
+const nodeResolve = require('rollup-plugin-node-resolve');
+const replace = require('rollup-plugin-replace');
+const babel = require('rollup-plugin-babel');
+const uglify = require('rollup-plugin-uglify');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
@@ -49,7 +49,7 @@ if (!DEV) {
   plugins.push(uglify());
 }
 
-export default {
+module.exports = {
   format: 'iife',
   exports: 'none',
   treeshake: true,
