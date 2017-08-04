@@ -492,25 +492,34 @@ window.hassUtil.computeLocationName = function (hass) {
   return hass && hass.config.core.location_name;
 };
 
-window.hassUtil.applyThemesOnElement = function (element, themes, localTheme) {
+window.hassUtil.applyThemesOnElement = function (element, themes, localTheme, updateMeta) {
   if (!element._themes) {
     element._themes = {};
   }
-  var themeName = themes.default_theme;
+  let themeName = themes.default_theme;
   if (localTheme === 'default' || (localTheme && themes.themes[localTheme])) {
     themeName = localTheme;
   }
-  if (themeName === 'default') {
-    element.updateStyles(element._themes);
-    return;
+  const styles = Object.assign({}, element._themes);
+  if (themeName !== 'default') {
+    var theme = themes.themes[themeName];
+    Object.keys(theme).forEach((key) => {
+      var prefixedKey = '--' + key;
+      element._themes[prefixedKey] = '';
+      styles[prefixedKey] = theme[key];
+    });
   }
-  var theme = themes.themes[themeName];
-  var styles = Object.assign({}, element._themes);
-  Object.keys(theme).forEach(function (key) {
-    var prefixedKey = '--' + key;
-    element._themes[prefixedKey] = '';
-    styles[prefixedKey] = theme[key];
-  });
   element.updateStyles(styles);
+
+  if (!updateMeta) return;
+
+  const meta = document.querySelector('meta[name=theme-color]');
+  if (meta) {
+    if (!meta.hasAttribute('default-content')) {
+      meta.setAttribute('default-content', meta.getAttribute('content'));
+    }
+    const themeColor = styles['--primary-color'] || meta.getAttribute('default-content');
+    meta.setAttribute('content', themeColor);
+  }
 };
 </script>
