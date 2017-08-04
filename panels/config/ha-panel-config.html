@@ -5,7 +5,7 @@
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel="import" href="./core/ha-config-section-core.html">
-<link rel="import" href="./group/ha-config-section-group.html">
+<!-- <link rel="import" href="./group/ha-config-section-group.html"> -->
 <link rel="import" href="./hassbian/ha-config-section-hassbian.html">
 <link rel="import" href="./z-wave/ha-config-section-zwave.html">
 
@@ -39,10 +39,14 @@
       </app-header>
 
       <div class$='[[computeClasses(isWide)]]'>
+        <!--
+          Sortable.js doesn't work in Polymer 2 making this panel useless.
+          Disabling for now.
         <ha-config-section-group
           is-wide='[[isWide]]'
           hass='[[hass]]'
         ></ha-config-section-group>
+        -->
 
         <ha-config-section-core
           is-wide='[[isWide]]'
