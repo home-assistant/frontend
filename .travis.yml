@@ -15,7 +15,7 @@ addons:
     packages:
     - google-chrome-stable
 script:
-  - npm run js_prod
+  - npm run build
   - npm run test
   - xvfb-run wct
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --plugin sauce; fi
