@@ -51,7 +51,8 @@
     "polymer-sortablejs": "^0.1.3",
     "vaadin-combo-box": "vaadin/vaadin-combo-box#^2.0.0",
     "vaadin-date-picker": "vaadin/vaadin-date-picker#^2.0.0",
-    "web-animations-js": "^2.2.5"
+    "web-animations-js": "^2.2.5",
+    "webcomponentsjs": "1.0.4"
   },
   "resolutions": {
     "iron-a11y-announcer": "^2.0.0",
@@ -110,7 +111,7 @@
     "paper-toast": "^2.0.0",
     "paper-toggle-button": "^2.0.0",
     "polymer": "^2.0.2",
-    "webcomponentsjs": "^v1.0.2"
+    "webcomponentsjs": "1.0.4"
   },
   "devDependencies": {
     "web-component-tester": "^6.0.0"
