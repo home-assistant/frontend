@@ -154,7 +154,7 @@
 
       for (i = 0; i < data.length; i++) {
         var d = data[i];
-        if(!d.condition) {
+        if (!d.condition) {
           dataArray.push([new Date(d.datetime), null, d.temperature, d.templow]);
         } else {
           dataArray.push([new Date(d.datetime), _WEATHER_TO_ICON[data[i].condition],
@@ -207,7 +207,7 @@
         },
         curveType: 'function',
         focusTarget: 'category',
-        colors: ["red", "blue"],
+        colors: ['red', 'blue'],
         annotations: {
           textStyle: {
             fontSize: '24',
@@ -216,7 +216,7 @@
       };
 
       dataGrid.addColumn('datetime', 'Time');
-      dataGrid.addColumn({type: 'string', role: 'annotation'});
+      dataGrid.addColumn({ type: 'string', role: 'annotation' });
       dataGrid.addColumn('number', 'Temperature');
       dataGrid.addColumn('number', 'Temperature Low');
 
