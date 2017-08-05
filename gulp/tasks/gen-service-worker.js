@@ -22,7 +22,7 @@ const config = require('../config');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 
-var rootDir = config.static_dir;
+var rootDir = '..';
 var panelDir = path.resolve(rootDir, 'panels');
 
 var dynamicUrlToDependencies = {
