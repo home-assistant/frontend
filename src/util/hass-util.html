@@ -244,12 +244,12 @@ window.hassUtil.stateMoreInfoType = function (stateObj) {
   var domain = window.hassUtil.computeDomain(stateObj);
 
   if (window.hassUtil.DOMAINS_WITH_MORE_INFO.indexOf(domain) !== -1) {
-    return domain;
+    return 'MORE-INFO-' + domain;
   }
   if (window.hassUtil.HIDE_MORE_INFO.indexOf(domain) !== -1) {
-    return 'hidden';
+    return 'MORE-INFO-HIDDEN';
   }
-  return 'default';
+  return 'MORE-INFO-DEFAULT';
 };
 
 window.hassUtil.domainIcon = function (domain, state) {
