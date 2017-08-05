@@ -3,7 +3,7 @@
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../components/ha-attributes.html'>
+<script src
 <dom-module id='ha-weather-card'>
   <template>
     <style>
@@ -70,8 +70,10 @@
         td.pw_smallp span {
           font-size: 1.2em;
         }
-        td.pw_large span {
-          font-size: 6em;
+        td.pw_large {
+          vertical-align: middle;
+          font-size: 5em;
+          overflow: visible;
         }
 
     </style>
@@ -89,7 +91,7 @@
           </tr>
         </table><br />
         <table class="forecast" width="100%">
-          <tr class="cond">
+          <tr class="cond" hidden$="[[!data.cond]]">
             <template is="dom-repeat" items="[[data.cond]]">
               <td><div>[[item]]</div></td>
             </template>
@@ -99,7 +101,7 @@
               <td><span>[[item]]</span></td>
             </template>
           </tr>
-          <tr class="templow">
+          <tr class="templow" hidden$="[[!data.templow]]">
             <template is="dom-repeat" items="[[data.templow]]">
               <td><span>[[item]]</span></td>
             </template>
@@ -120,20 +122,20 @@
   'use strict';
 
   var _WEATHER_TO_ICON = {
-    cloudy: '\uD83C\uDF2B',
-    fog: '\uD83C\uDF2B',
+    cloudy: '\u2601\ufe0f',
+    fog: '\uD83C\uDF2B\ufe0f',
     hail: 'Hail',
-    lightning: '\uD83C\uDF29',
-    'lightning-rainy': '\u26c8',
-    partlycloudy: '\u26c5',
-    pouring: '\uD83C\uDF22',
-    rainy: '\uD83C\uDF27',
-    snowy: '\uD83C\uDF28',
+    lightning: '\uD83C\uDF29\ufe0f',
+    'lightning-rainy': '\u26c8\ufe0f',
+    partlycloudy: '\u26c5\ufe0f',
+    pouring: '\uD83D\uDCA7\ufe0f',
+    rainy: '\uD83C\uDF27\ufe0f',
+    snowy: '\uD83C\uDF28\ufe0f',
     'snowy-rainy': 'SR',
-    sunny: '\u2600',
-    windy: '\uD83C\uDF2C',
+    sunny: '\u2600\ufe0f',
+    windy: '\uD83C\uDF2C\ufe0f',
     'windy-variant': '[]',
-    exceptional: '!!',
+    exceptional: '\u2b55\ufe0f',
   };
 
   var _DEGREE_TEXT = [
@@ -173,9 +175,15 @@
       var dCond = [];
       for (i = 0; i < data.length; i++) {
         dDate.push(new Date(data[i].datetime).getDate());
-        dTempHigh.push(data[i].temperature);
-        dTempLow.push(data[i].templow);
+        dTempHigh.push(Math.round(data[i].temperature));
+        dTempLow.push(Math.round(data[i].templow));
         dCond.push(_WEATHER_TO_ICON[data[i].condition]);
+      }
+      if(!data[0].templow) {
+        dTempLow = undefined;
+      }
+      if(!data[0].condition) {
+        dCond = undefined;
       }
 
       return { date: dDate, cond: dCond, temphigh: dTempHigh, templow: dTempLow };
