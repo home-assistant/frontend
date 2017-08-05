@@ -106,9 +106,15 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
     customEl = document.createElement(newElementTag);
   }
 
-  Object.keys(attributes).forEach(function (key) {
-    customEl[key] = attributes[key];
-  });
+  if (customEl.setProperties) {
+    customEl.setProperties(attributes);
+  } else {
+    // If custom element definition wasn't loaded yet - setProperties would be
+    // missing, but no harm in setting attributes one-by-one then.
+    Object.keys(attributes).forEach((key) => {
+      customEl[key] = attributes[key];
+    });
+  }
 
   if (customEl.parentNode === null) {
     rootEl.appendChild(customEl);
