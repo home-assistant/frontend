@@ -7,7 +7,6 @@
 <link rel="import" href="./ha-config-section-core.html">
 <!-- <link rel="import" href="./ha-config-section-group.html"> -->
 <link rel="import" href="./ha-config-section-hassbian.html">
-<link rel="import" href="../z-wave/ha-config-section-zwave.html">
 <link rel="import" href="./ha-config-section-themes.html">
 
 <dom-module id="ha-config-core">
@@ -68,14 +67,6 @@
             is-wide='[[isWide]]'
             hass='[[hass]]'
           ></ha-config-section-hassbian>
-        </template>
-
-        <template is='dom-if' if='[[computeIsZwaveLoaded(hass)]]'>
-          <div class='border'></div>
-          <ha-config-section-zwave
-            is-wide='[[isWide]]'
-            hass='[[hass]]'
-          ></ha-config-section-zwave>
         </template>
       </div>
     </app-header-layout>
