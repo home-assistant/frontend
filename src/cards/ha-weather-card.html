@@ -1,9 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
-
+<link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
 <link rel='import' href='../components/ha-card.html'>
-<script src
 <dom-module id='ha-weather-card'>
   <template>
     <style>
@@ -77,6 +75,7 @@
         }
 
     </style>
+    <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
         <table class="currentcond" width="100%">
@@ -86,32 +85,16 @@
             <td class="pw_small"><span>[[stateObj.attributes.humidity]]%</span></td>
           </tr>
           <tr>
-            <td class="pw_smallp"><span>[[windBearing]]<br />[[stateObj.attributes.wind_speed]]</span></td>
-            <td class="pw_smallp"><span>Visual<br />[[stateObj.attributes.visibility]]</span></td>
+            <td class="pw_smallp">
+              <span>[[windBearing]]<br />[[stateObj.attributes.wind_speed]]</span>
+            </td>
+            <td class="pw_smallp">
+              <span hidden$="[[!stateObj.attributes.visibility]]">
+                Visibility<br />[[stateObj.attributes.visibility]]
+              </span></td>
           </tr>
         </table><br />
-        <table class="forecast" width="100%">
-          <tr class="cond" hidden$="[[!data.cond]]">
-            <template is="dom-repeat" items="[[data.cond]]">
-              <td><div>[[item]]</div></td>
-            </template>
-          </tr>
-          <tr class="temphigh">
-            <template is="dom-repeat" items="[[data.temphigh]]">
-              <td><span>[[item]]</span></td>
-            </template>
-          </tr>
-          <tr class="templow" hidden$="[[!data.templow]]">
-            <template is="dom-repeat" items="[[data.templow]]">
-              <td><span>[[item]]</span></td>
-            </template>
-          </tr>
-          <tr class="date">
-            <template is="dom-repeat" items="[[data.date]]">
-              <td><span>[[item]]</span></td>
-            </template>
-          </tr>
-        </table>
+        <div id='chart_id' hidden$="[[!stateObj.attributes.forecast]]"></div>
       </div>
     </ha-card>
   </template>
@@ -160,8 +143,8 @@
     computeTitle: function (stateObj) {
       return stateObj.attributes.friendly_name;
     },
-
     getDataArray: function () {
+      var dataArray = [];
       var data = this.stateObj.attributes.forecast;
       var i;
 
@@ -169,29 +152,31 @@
         return [];
       }
 
-      var dDate = [];
-      var dTempHigh = [];
-      var dTempLow = [];
-      var dCond = [];
       for (i = 0; i < data.length; i++) {
-        dDate.push(new Date(data[i].datetime).getDate());
-        dTempHigh.push(Math.round(data[i].temperature));
-        dTempLow.push(Math.round(data[i].templow));
-        dCond.push(_WEATHER_TO_ICON[data[i].condition]);
-      }
-      if(!data[0].templow) {
-        dTempLow = undefined;
-      }
-      if(!data[0].condition) {
-        dCond = undefined;
+        var d = data[i];
+        if(!d.condition) {
+          dataArray.push([new Date(d.datetime), null, d.temperature, d.templow]);
+        } else {
+          dataArray.push([new Date(d.datetime), _WEATHER_TO_ICON[data[i].condition],
+            d.temperature, d.templow]);
+        }
       }
 
-      return { date: dDate, cond: dCond, temphigh: dTempHigh, templow: dTempLow };
+      return dataArray;
     },
 
     checkRequirements: function () {
       if (!this.stateObj) {
         return;
+      }
+
+      if (!window.google) {
+        return;
+      }
+
+      if (!this.chartEngine) {
+        this.chartEngine = new window.google.visualization.LineChart(
+          this.$.chart_id);
       }
 
       if (!this.stateObj.attributes || !this.stateObj.attributes.forecast) {
@@ -202,6 +187,52 @@
       this.windBearing = this.windBearingToText(this.stateObj.attributes.windBearing);
 
       this.data = this.getDataArray();
+
+      this.drawChart();
+    },
+    drawChart: function () {
+      var dataGrid = new window.google.visualization.DataTable();
+      var options = {
+        legend: {
+          position: 'top'
+        },
+        interpolateNulls: true,
+        titlePosition: 'none',
+        chartArea: {
+          left: 25,
+          top: 5,
+          height: '100%',
+          width: '90%',
+          bottom: 25,
+        },
+        curveType: 'function',
+        focusTarget: 'category',
+        colors: ["red", "blue"],
+        annotations: {
+          textStyle: {
+            fontSize: '24',
+          }
+        }
+      };
+
+      dataGrid.addColumn('datetime', 'Time');
+      dataGrid.addColumn({type: 'string', role: 'annotation'});
+      dataGrid.addColumn('number', 'Temperature');
+      dataGrid.addColumn('number', 'Temperature Low');
+
+      var dataArray = this.getDataArray();
+      dataGrid.addRows(dataArray);
+
+      this.chartEngine.draw(dataGrid, options);
+    },
+
+    googleApiLoaded: function () {
+      window.google.load('visualization', '1', {
+        packages: ['corechart'],
+        callback: function () {
+          this.checkRequirements();
+        }.bind(this),
+      });
     },
 
     windBearingToText: function (degree) {
