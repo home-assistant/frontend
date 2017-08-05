@@ -65,6 +65,6 @@
     "sw-precache": "^5.2.0",
     "uglify-js": "^3.0.27",
     "vulcanize": "^1.16.0",
-    "web-component-tester": "^5.0.1"
+    "web-component-tester": "^6.0.0"
   }
 }
