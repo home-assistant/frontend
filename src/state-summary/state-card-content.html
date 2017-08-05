@@ -37,10 +37,10 @@ Polymer({
 
   _ensureCustomUILoaded: function (stateType) {
     this.importHref(
-        '/local/custom_ui/state-card-' + stateType + '.html',
+        '/local/custom_ui/' + stateType + '.html',
         function () {},
         /* eslint-disable no-console */
-        function () { console.error('Error loading %s from /local/custom_ui/state-card-%s.html', stateType, stateType); },
+        function () { console.error('Error loading %s from /local/custom_ui/%s.html', stateType, stateType); },
         /* eslint-enable no-console */
         true);
   },
@@ -56,7 +56,7 @@ Polymer({
     }
     window.hassUtil.dynamicContentUpdater(
       this,
-      ('STATE-CARD-' + stateCardType.toUpperCase()),
+      (stateCardType.toUpperCase()),
       {
         hass: hass,
         stateObj: stateObj,
