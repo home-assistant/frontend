@@ -35,24 +35,14 @@ Polymer({
     'inputChanged(hass, inDialog, stateObj)',
   ],
 
-  _ensureCustomUILoaded: function (stateType) {
-    this.importHref(
-        '/local/custom_ui/' + stateType + '.html',
-        function () {},
-        /* eslint-disable no-console */
-        function () { console.error('Error loading %s from /local/custom_ui/%s.html', stateType, stateType); },
-        /* eslint-enable no-console */
-        true);
-  },
-
   inputChanged: function (hass, inDialog, stateObj) {
     var stateCardType;
     if (!stateObj || !hass) return;
     if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
       stateCardType = stateObj.attributes.custom_ui_state_card;
-      this._ensureCustomUILoaded(stateCardType);
+      window.hassUtil.ensureCustomUILoaded(stateCardType);
     } else {
-      stateCardType = window.hassUtil.stateCardType(hass, stateObj);
+      stateCardType = 'STATE-CARD-' + window.hassUtil.stateCardType(hass, stateObj);
     }
     window.hassUtil.dynamicContentUpdater(
       this,

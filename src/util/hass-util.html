@@ -25,7 +25,7 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
   'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
   'cover', 'fan', 'group', 'light', 'lock', 'media_player', 'script',
-  'sun', 'updater', 'vacuum',
+  'sun', 'updater',
 ];
 
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
@@ -225,7 +225,22 @@ window.hassUtil.stateCardType = function (hass, stateObj) {
   return 'display';
 };
 
+window.hassUtil.ensureCustomUILoaded = function (customUI) {
+  Polymer.Base.importHref(
+      '/local/custom_ui/' + customUI + '.html',
+      function () {},
+      /* eslint-disable no-console */
+      function () { console.error('Error loading %s from /local/custom_ui/%s.html', customUI, customUI); },
+      /* eslint-enable no-console */
+      true);
+},
+
 window.hassUtil.stateMoreInfoType = function (stateObj) {
+  if (stateObj.attributes && 'custom_ui_more_info' in stateObj.attributes) {
+    var customUI = stateObj.attributes.custom_ui_card;
+    window.hassUtil.ensureCustomUILoaded(customUI);
+    return customUI;
+  }
   var domain = window.hassUtil.computeDomain(stateObj);
 
   if (window.hassUtil.DOMAINS_WITH_MORE_INFO.indexOf(domain) !== -1) {
@@ -399,7 +414,7 @@ window.hassUtil.stateIcon = function (state) {
   var domain = window.hassUtil.computeDomain(state);
 
   if (unit && domain === 'sensor') {
-    if (unit === '°C' || unit === '°F') {
+    if (unit === 'Â°C' || unit === 'Â°F') {
       return 'mdi:thermometer';
     } else if (unit === 'Mice') {
       return 'mdi:mouse-variant';
@@ -492,19 +507,15 @@ window.hassUtil.computeLocationName = function (hass) {
   return hass && hass.config.core.location_name;
 };
 
-window.hassUtil.applyThemesOnElement = function (element, themes, localTheme) {
+window.hassUtil.applyThemesOnElement = function (element, themes) {
   if (!element._themes) {
     element._themes = {};
   }
-  var themeName = themes.default_theme;
-  if (localTheme === 'default' || (localTheme && themes.themes[localTheme])) {
-    themeName = localTheme;
-  }
-  if (themeName === 'default') {
+  if (themes.default_theme === 'default') {
     element.updateStyles(element._themes);
     return;
   }
-  var theme = themes.themes[themeName];
+  var theme = themes.themes[themes.default_theme];
   var styles = Object.assign({}, element._themes);
   Object.keys(theme).forEach(function (key) {
     var prefixedKey = '--' + key;
