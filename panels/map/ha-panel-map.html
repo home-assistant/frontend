@@ -10,11 +10,9 @@
 <dom-module id="ha-panel-map">
   <template>
     <link
-      id='stylesheet'
       rel="stylesheet"
-      href="../../bower_components/leaflet/dist/leaflet.css"
+      href="/static/images/leaflet/leaflet.css"
     />
-
     <style include="ha-style">
       #map {
         height: calc(100% - 64px);
@@ -55,11 +53,6 @@ Polymer({
   },
 
   attached: function () {
-    // The link tag is resolved relative to the _current_ url instead of the
-    // source HTML file. Vulcanized this is taken care off. Fix it in dev.
-    if (window.HASS_DEV) {
-      this.$.stylesheet.href = '/static/home-assistant-polymer/bower_components/leaflet/dist/leaflet.css';
-    }
     var map = this._map = window.L.map(this.$.map);
     map.setView([51.505, -0.09], 13);
     window.L.tileLayer(

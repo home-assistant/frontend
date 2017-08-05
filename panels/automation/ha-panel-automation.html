@@ -32,6 +32,8 @@
 
     <template is='dom-if' if='[[!showEditor]]'>
       <ha-automation-picker
+        narrow='[[narrow]]'
+        show-menu='[[showMenu]]'
         automations='[[automations]]'
         is-wide='[[isWide]]'
       ></ha-automation-picker>

@@ -20,7 +20,7 @@
 
       .messages {
         max-height: 50vh;
-        overflow: scroll;
+        overflow: auto;
       }
 
       .messages::after {
@@ -75,6 +75,10 @@
         display: none;
       }
 
+      paper-dialog {
+        border-radius: 2px;
+      }
+
       @media all and (max-width: 450px) {
         paper-dialog {
           margin: 0;
@@ -86,6 +90,8 @@
           left: 0px;
           right: 0px;
           overflow: scroll;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
         }
 
         .content {
@@ -149,7 +155,9 @@ Polymer({
 
     _conversation: {
       type: Array,
-      value: function () { return []; },
+      value: function () {
+        return [{ who: 'hass', text: 'How can I help?' }];
+      },
       observer: '_scrollMessagesBottom',
     }
   },
@@ -169,14 +177,18 @@ Polymer({
       this.recognition.abort();
       var text = this.results.final || this.results.interim;
       this.results = null;
+      if (text === '') {
+        text = '<Home Assistant did not hear anything>';
+      }
       this.push('_conversation', { who: 'user', text: text, error: true });
     }.bind(this);
     this.recognition.onend = function () {
+      // Already handled by onerror
+      if (this.results == null) {
+        return;
+      }
       var text = this.results.final || this.results.interim;
       this.results = null;
-
-      if (text === '') return;
-
       this.push('_conversation', { who: 'user', text: text });
 
       this.hass.callApi('post', 'conversation/process', { text: text })

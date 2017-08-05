@@ -226,7 +226,7 @@ Polymer({
   },
 
   areTabsHidden: function (views, showTabs) {
-    return !views.length || !showTabs;
+    return !views || !views.length || !showTabs;
   },
 
   /**

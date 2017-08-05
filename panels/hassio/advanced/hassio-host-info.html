@@ -63,6 +63,13 @@
             path="hassio/host/reboot"
           >Reboot</ha-call-api-button>
         </template>
+        <template is='dom-if' if='[[computeShutdownAvailable(data)]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path="hassio/host/shutdown"
+          >Shutdown</ha-call-api-button>
+        </template>
       </div>
     </paper-card>
   </template>
@@ -110,6 +117,10 @@ Polymer({
 
   computeRebootAvailable: function (data) {
     return data.features && data.features.indexOf('reboot') !== -1;
+  },
+
+  computeShutdownAvailable: function (data) {
+    return data.features && data.features.indexOf('shutdown') !== -1;
   },
 });
 </script>
