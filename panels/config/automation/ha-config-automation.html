@@ -1,11 +1,10 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
-<link rel='import' href='../../bower_components/app-route/app-route.html'>
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="./ha-automation-picker.html">
 <link rel="import" href="./ha-automation-editor.html">
 
-<dom-module id="ha-panel-automation">
+<dom-module id="ha-config-automation">
   <template>
     <style>
       ha-automation-picker,
@@ -24,11 +23,6 @@
       pattern='/new'
       active="{{_creatingNew}}"
     ></app-route>
-
-    <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
-    </iron-media-query>
-    <iron-media-query query="(min-width: 1296px)" query-matches="{{wideSidebar}}">
-    </iron-media-query>
 
     <template is='dom-if' if='[[!showEditor]]'>
       <ha-automation-picker
@@ -52,13 +46,14 @@
 
 <script>
 Polymer({
-  is: 'ha-panel-automation',
+  is: 'ha-config-automation',
 
   properties: {
     hass: Object,
     narrow: Boolean,
     showMenu: Boolean,
     route: Object,
+    isWide: Boolean,
     _routeData: Object,
     _routeMatches: Boolean,
     _creatingNew: Boolean,
@@ -74,22 +69,10 @@ Polymer({
       computed: 'computeAutomation(automations, _edittingAddon, _routeData)',
     },
 
-    wide: Boolean,
-    wideSidebar: Boolean,
-
-    isWide: {
-      type: Boolean,
-      computed: 'computeIsWide(showMenu, wideSidebar, wide)'
-    },
-
     showEditor: {
       type: Boolean,
       computed: 'computeShowEditor(_edittingAddon, _creatingNew)',
     }
-  },
-
-  computeIsWide: function (showMenu, wideSidebar, wide) {
-    return showMenu ? wideSidebar : wide;
   },
 
   computeAutomation: function (automations, edittingAddon, routeData) {
