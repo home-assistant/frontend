@@ -17,12 +17,12 @@
     <div class='state'>
       <paper-icon-button icon="mdi:arrow-up" on-tap='onOpenTap'
         invisible$='[[!entityObj.supportsOpen]]'
-        disabled='[[entityObj.isFullyOpen]]'></paper-icon-button>
+        disabled='[[computeOpenDisabled(stateObj, entityObj)]]'></paper-icon-button>
       <paper-icon-button icon="mdi:stop" on-tap='onStopTap'
         invisible$='[[!entityObj.supportsStop]]'></paper-icon-button>
       <paper-icon-button icon="mdi:arrow-down" on-tap='onCloseTap'
         invisible$='[[!entityObj.supportsClose]]'
-        disabled='[[entityObj.isFullyClosed]]'></paper-icon-button>
+        disabled='[[computeClosedDisabled(stateObj, entityObj)]]'></paper-icon-button>
     </div>
   </template>
 </dom-module>
@@ -44,6 +44,14 @@ Polymer({
   },
   computeEntityObj: function (hass, stateObj) {
     return new window.CoverEntity(hass, stateObj);
+  },
+  computeOpenDisabled: function (stateObj, entityObj) {
+    var assumedState = stateObj.attributes.assumed_state === true;
+    return entityObj.isFullyOpen && !assumedState;
+  },
+  computeClosedDisabled: function (stateObj, entityObj) {
+    var assumedState = (stateObj.attributes.assumed_state === true);
+    return entityObj.isFullyClosed && !assumedState;
   },
   onOpenTap: function (ev) {
     ev.stopPropagation();
