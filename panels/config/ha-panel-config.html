@@ -8,6 +8,7 @@
 <!-- <link rel="import" href="./group/ha-config-section-group.html"> -->
 <link rel="import" href="./hassbian/ha-config-section-hassbian.html">
 <link rel="import" href="./z-wave/ha-config-section-zwave.html">
+<link rel="import" href="themes/ha-config-section-themes.html">
 
 <dom-module id="ha-panel-config">
   <template>
@@ -52,6 +53,14 @@
           is-wide='[[isWide]]'
           hass='[[hass]]'
         ></ha-config-section-core>
+
+        <template is='dom-if' if='[[computeIsThemesLoaded(hass)]]'>
+          <div class='border'></div>
+          <ha-config-section-themes
+            is-wide='[[isWide]]'
+            hass='[[hass]]'
+          ></ha-config-section-themes>
+        </template>
 
         <template is='dom-if' if='[[computeIsHassbianLoaded(hass)]]'>
           <div class='border'></div>
@@ -119,6 +128,11 @@ Polymer({
 
   computeIsZwaveLoaded: function (hass) {
     return window.hassUtil.isComponentLoaded(hass, 'config.zwave');
+  },
+
+  computeIsThemesLoaded: function (hass) {
+    return hass.themes && hass.themes.themes &&
+      Object.keys(hass.themes.themes).length;
   },
 });
 </script>
