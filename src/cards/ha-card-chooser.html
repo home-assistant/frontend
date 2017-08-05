@@ -20,23 +20,21 @@ Polymer({
 
   _ensureCustomUILoaded: function (stateType) {
     this.importHref(
-        '/local/custom_ui/state-card-' + stateType + '.html',
+        '/local/custom_ui/card-' + stateType + '.html',
         function () {},
         /* eslint-disable no-console */
-        function () { console.error('Error loading %s from /local/custom_ui/state-card-%s.html', stateType, stateType); },
+        function () { console.error('Error loading %s from /local/custom_ui/card-%s.html', stateType, stateType); },
         /* eslint-enable no-console */
         true);
   },
-
+  
   cardDataChanged: function (newData) {
     if (!newData) return;
-
-    var cardType = '';
-
-    if (newData.stateObj && newData.stateObj.attributes && 'custom_ui_state_card' in newData.stateObj.attributes) {
-      cardType = newData.stateObj.attributes.custom_ui_state_card;
+    
+    if (newData.stateObj && newData.stateObj.attributes && 'custom_ui_card' in newData.stateObj.attributes) {
+      cardType = newData.stateObj.attributes.custom_ui_card;
       this._ensureCustomUILoaded(cardType);
-      cardType = 'STATE-CARD-' + cardType.toUpperCase();
+      cardType = 'CARD-' + cardType.toUpperCase();
     } else {
       cardType = 'HA-' + newData.cardType.toUpperCase() + '-CARD';
     }
