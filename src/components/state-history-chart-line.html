@@ -44,6 +44,10 @@
         observer: 'dataChanged',
       },
 
+      endTime: {
+        type: Object,
+      },
+
       chartEngine: {
         type: Object,
       },
@@ -116,9 +120,10 @@
         return new Date(states[0].last_changed);
       })));
 
-      endTime = new Date(Math.max.apply(null, deviceStates.map(function (states) {
-        return new Date(states[states.length - 1].last_changed);
-      })));
+      endTime = this.endTime ||
+        new Date(Math.max.apply(null, deviceStates.map(states =>
+          new Date(states[states.length - 1].last_changed)
+        )));
       if (endTime > new Date()) {
         endTime = new Date();
       }

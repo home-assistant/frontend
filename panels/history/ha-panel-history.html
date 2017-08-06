@@ -44,7 +44,7 @@
       hass='[[hass]]'
       filter-type='[[_filterType]]'
       start-time='[[_computeStartTime(_currentDate)]]'
-      end-time='[[_computeEndTime(_currentDate, _periodIndex)]]'
+      end-time='[[endTime]]'
       data='{{stateHistoryInput}}'
       is-loading='{{isLoadingData}}'
     ></ha-state-history-data>
@@ -80,8 +80,11 @@
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <state-history-charts history-data="[[stateHistoryOutput]]"
-          is-loading-data="[[isLoadingData]]"></state-history-charts>
+        <state-history-charts
+          history-data="[[stateHistoryOutput]]"
+          is-loading-data="[[isLoadingData]]"
+          end-time="[[endTime]]">
+        </state-history-charts>
       </div>
     </app-header-layout>
   </template>
@@ -124,6 +127,11 @@ Polymer({
     isLoadingData: {
       type: Boolean,
       value: false,
+    },
+
+    endTime: {
+      type: Object,
+      computed: '_computeEndTime(_currentDate, _periodIndex)',
     },
 
     // ISO8601 formatted date string
