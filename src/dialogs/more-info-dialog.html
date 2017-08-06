@@ -68,8 +68,11 @@
             data='{{stateHistory}}'
             is-loading='{{stateHistoryLoading}}'
           ></ha-state-history-data>
-          <state-history-charts history-data="[[stateHistory]]"
-            is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
+          <state-history-charts
+            history-data="[[stateHistory]]"
+            is-loading-data="[[isLoadingHistoryData]]"
+            up-to-now>
+          </state-history-charts>
         </div>
       </template>
       <paper-dialog-scrollable id='scrollable'>

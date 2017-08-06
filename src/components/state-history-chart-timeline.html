@@ -17,6 +17,10 @@ Polymer({
       observer: 'dataChanged',
     },
 
+    endTime: {
+      type: Object,
+    },
+
     isAttached: {
       type: Boolean,
       value: false,
@@ -79,8 +83,8 @@ Polymer({
         }, new Date()));
 
     // end time is Math.max(startTime, last_event)
-    endTime = new Date(
-      stateHistory.reduce(
+    endTime = this.endTime ||
+      new Date(stateHistory.reduce(
         function (maxTime, stateInfo) {
           return Math.max(maxTime, new Date(stateInfo[stateInfo.length - 1].last_changed));
         }, startTime));
