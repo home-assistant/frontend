@@ -5,53 +5,37 @@
   body {
     font-size: 14px;
 
-    /* for paper-toggle-button */
-    --paper-grey-50: #fafafa;
-    --paper-grey-200: #eeeeee;
+    --primary-color: #03A9F4; /* header */
+    --dark-primary-color: #0288D1;
+    --light-primary-color: #B3E5FC;
+    --text-primary-color: #FFFFFF; /* header */
+    --primary-background-color: #fafafa;
+    --primary-text-color: #212121;
+
+    --secondary-background-color: #E5E5E5; /* states, */
+    --secondary-text-color: #727272;
+
+    --tertiary-background-color: #FFFFFF; /* badges, state cards, side menu */
+    --tertiary-text-color: rgb(76, 76, 76); /* badges, */
+
+    --disabled-text-color: #bdbdbd;
+    --divider-color: rgba(0, 0, 0, .12);
+    --accent-color: #FF9800;
+
+    --table-row-background-color: transparant;
+    --table-row-alternative-background-color: var(--secondary-background-color);
 
     --paper-item-icon-color: #44739e;
     --paper-item-icon-active-color: #FDD835;
 
-    --dark-primary-color: #0288D1;
-    --primary-color: #03A9F4;
-    --light-primary-color: #B3E5FC;
-    --text-primary-color: #ffffff;
-    --accent-color: #FF9800;
-    --primary-background-color: var(--paper-grey-50);
-    --secondary-background-color: #E5E5E5;
-    --primary-text-color: #212121;
-    --secondary-text-color: #727272;
-    --disabled-text-color: #bdbdbd;
-    --divider-color: rgba(0, 0, 0, .12);
+    --sidebar-text_-_background: var(--tertiary-background-color);
 
-    --table-row-background-color: transparant;
-    --table-row-alternative-background-color: #eee;
-
-    --paper-toggle-button-checked-ink-color: #039be5;
-    --paper-toggle-button-checked-button-color: #039be5;
-    --paper-toggle-button-checked-bar-color: #039be5;
-
-    --paper-slider-knob-color: var(--primary-color);
-    --paper-slider-knob-start-color: var(--primary-color);
-    --paper-slider-pin-color: var(--primary-color);
-    --paper-slider-active-color: var(--primary-color);
-    --paper-slider-secondary-color: var(--light-primary-color);
-    --paper-slider-container-color: var(--divider-color);
-
-    --paper-card-background-color: #FFF;
-    --paper-listbox-background-color: #FFF;
-
-    /* for label-badge */
-    --label-badge-background-color: white;
-    --label-badge-text-color: rgb(76, 76, 76);
-    --label-badge-red: #DF4C1E;
-    --label-badge-blue: #039be5;
-    --label-badge-green: #0DA035;
-    --label-badge-yellow: #f4b400;
-    --label-badge-grey: var(--paper-grey-500);
+    /* for paper-toggle-button */
+    --paper-grey-50: var(--primary-background-color);
+    --paper-grey-200: var(--secondary-background-color); /* was #eeeeee Looks a lot like --secondary-background-color: #E5E5E5;*/
 
     /* Taken from paper-styles/color.html */
-    /* for paper-spinner */
+    /* for paper-spinner, badges */
     --google-red-500: #db4437;
     --google-blue-500: #4285f4;
     --google-green-500: #0f9d58;
@@ -61,6 +45,31 @@
     --paper-green-400: #66bb6a;
     --paper-blue-400: #42a5f5;
     --paper-orange-400: #ffa726;
+
+    --paper-card-background-color: var(--tertiary-background-color);
+    --paper-listbox-background-color: var(--tertiary-background-color);
+
+    --paper-toggle-button-checked-color: var(--primary-color);/* was #039be5; Looks a lot like --primary-color #03A9F4*/ 
+    --paper-toggle-button-checked-ink-color: var(--paper-toggle-button-checked-color);
+    --paper-toggle-button-checked-button-color: var(--paper-toggle-button-checked-color);
+    --paper-toggle-button-checked-bar-color: var(--paper-toggle-button-checked-color);
+
+    --paper-slider-color: var(--primary-color);
+    --paper-slider-knob-color: var(--paper-slider-color);
+    --paper-slider-knob-start-color: var(--paper-slider-color);
+    --paper-slider-pin-color: var(--paper-slider-color);
+    --paper-slider-active-color: var(--paper-slider-color);
+    --paper-slider-secondary-color: var(--light-primary-color);
+    --paper-slider-container-color: var(--divider-color);
+
+    /* for label-badge */
+    --label-badge-background-color: var(--tertiary-background-color);
+    --label-badge-text-color: var(--tertiary-text-color);
+    --label-badge-red: var(--google-red-500); /* was #DF4C1E; Looks a lot like --google-red-500*/ 
+    --label-badge-blue: var(--google-blue-500);/* was #039be5; Looks a lot like --google-blue-500*/ 
+    --label-badge-green: var(--google-green-500);/* was #0DA035; Looks a lot like --google-green-500*/ 
+    --label-badge-yellow: var(--google-yellow-500);/* was #f4b400; Looks a lot like --google-yellow-500*/ 
+    --label-badge-grey: var(--paper-grey-500);
 
     /* opacity for dark text on a light background */
     --dark-divider-opacity: 0.12;
@@ -91,11 +100,10 @@
       app-header, app-toolbar {
         background-color: var(--primary-color);
         font-weight: 400;
-        color: white;
+        color: var(--text-primary-color, white);
       }
 
-      app-toolbar ha-menu-button + [main-title],
-      app-toolbar paper-icon-button + [main-title] {
+      app-toolbar ha-menu-button + [main-title] {
         margin-left: 24px;
       }
 
