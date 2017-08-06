@@ -1,0 +1,81 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel="import" href="../../../src/components/ha-menu-button.html">
+
+<link rel="import" href="./ha-config-navigation.html">
+
+<dom-module id="ha-config-dashboard">
+  <template>
+    <style include="iron-flex ha-style">
+      .content {
+        padding-bottom: 32px;
+      }
+
+      .border {
+        margin: 32px auto 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        max-width: 1040px;
+      }
+
+      .narrow .border {
+        max-width: 640px;
+      }
+    </style>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Configuration</div>
+        </app-toolbar>
+      </app-header>
+
+      <div class$='[[computeClasses(isWide)]]'>
+        <!--
+          Sortable.js doesn't work in Polymer 2 making this panel useless.
+          Disabling for now.
+        <ha-config-section-group
+          is-wide='[[isWide]]'
+          hass='[[hass]]'
+        ></ha-config-section-group>
+        -->
+
+        <ha-config-navigation
+          is-wide='[[isWide]]'
+          hass='[[hass]]'
+        ></ha-config-navigation>
+
+        <!-- <template is='dom-if' if='[[computeIsZwaveLoaded(hass)]]'>
+          <div class='border'></div>
+          <ha-config-section-zwave
+            is-wide='[[isWide]]'
+            hass='[[hass]]'
+          ></ha-config-section-zwave>
+        </template> -->
+      </div>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-config-dashboard',
+
+  properties: {
+    hass: Object,
+    isWide: Boolean,
+  },
+
+  computeClasses: function (isWide) {
+    return isWide ? 'content' : 'content narrow';
+  },
+
+  computeIsThemesLoaded: function (hass) {
+    return hass.themes && hass.themes.themes &&
+      Object.keys(hass.themes.themes).length;
+  },
+});
+</script>

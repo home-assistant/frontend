@@ -1,84 +1,71 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
-<link rel="import" href="./core/ha-config-section-core.html">
-<!-- <link rel="import" href="./group/ha-config-section-group.html"> -->
-<link rel="import" href="./hassbian/ha-config-section-hassbian.html">
-<link rel="import" href="./z-wave/ha-config-section-zwave.html">
-<link rel="import" href="themes/ha-config-section-themes.html">
+<link rel='import' href='../../bower_components/app-route/app-route.html'>
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="../../src/layouts/hass-error-screen.html">
+
+<link rel="import" href="./dashboard/ha-config-dashboard.html">
+<link rel="import" href="./core/ha-config-core.html">
+<link rel="import" href="./automation/ha-config-automation.html">
+<link rel="import" href="./zwave/ha-config-zwave.html">
 
 <dom-module id="ha-panel-config">
   <template>
-    <style include="iron-flex ha-style">
-      .content {
-        padding-bottom: 32px;
-      }
-
-      .border {
-        margin: 32px auto 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-        max-width: 1040px;
-      }
-
-      .narrow .border {
-        max-width: 640px;
+    <style>
+      iron-pages {
+        height: 100%;
       }
     </style>
+    <app-route
+      route='[[route]]'
+      pattern='/:page'
+      data="{{_routeData}}"
+      tail="{{_routeTail}}"
+    ></app-route>
+
     <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
     </iron-media-query>
     <iron-media-query query="(min-width: 1296px)" query-matches="{{wideSidebar}}">
     </iron-media-query>
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Configuration</div>
-        </app-toolbar>
-      </app-header>
 
-      <div class$='[[computeClasses(isWide)]]'>
-        <!--
-          Sortable.js doesn't work in Polymer 2 making this panel useless.
-          Disabling for now.
-        <ha-config-section-group
-          is-wide='[[isWide]]'
-          hass='[[hass]]'
-        ></ha-config-section-group>
-        -->
+    <iron-pages
+      selected='[[_routeData.page]]'
+      attr-for-selected='page-name'
+      fallback-selection='not-found'
+      selected-attribute='visible'
+    >
+      <ha-config-dashboard
+        page-name='dashboard'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+      ></ha-config-dashboard>
 
-        <ha-config-section-core
-          is-wide='[[isWide]]'
-          hass='[[hass]]'
-        ></ha-config-section-core>
+      <ha-config-automation
+        page-name='automation'
+        route='[[_routeTail]]'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+      ></ha-config-automation>
 
-        <template is='dom-if' if='[[computeIsThemesLoaded(hass)]]'>
-          <div class='border'></div>
-          <ha-config-section-themes
-            is-wide='[[isWide]]'
-            hass='[[hass]]'
-          ></ha-config-section-themes>
-        </template>
+      <ha-config-zwave
+        page-name='zwave'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+      ></ha-config-zwave>
 
-        <template is='dom-if' if='[[computeIsHassbianLoaded(hass)]]'>
-          <div class='border'></div>
-          <ha-config-section-hassbian
-            is-wide='[[isWide]]'
-            hass='[[hass]]'
-          ></ha-config-section-hassbian>
-        </template>
+      <ha-config-core
+        page-name='core'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+      ></ha-config-core>
 
-        <template is='dom-if' if='[[computeIsZwaveLoaded(hass)]]'>
-          <div class='border'></div>
-          <ha-config-section-zwave
-            is-wide='[[isWide]]'
-            hass='[[hass]]'
-          ></ha-config-section-zwave>
-        </template>
-      </div>
-    </app-header-layout>
+      <hass-error-screen
+        page-name='not-found'
+        error='Page not found.'
+        title='Configuration'
+      ></hass-error-screen>
+    </iron-pages>
   </template>
 </dom-module>
 
@@ -87,26 +74,20 @@ Polymer({
   is: 'ha-panel-config',
 
   properties: {
-    hass: {
+    hass: Object,
+    narrow: Boolean,
+    showMenu: Boolean,
+
+    route: {
       type: Object,
+      observer: '_routeChanged',
     },
 
-    narrow: {
-      type: Boolean,
-    },
+    _routeData: Object,
+    _routeTail: Object,
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
-
-    wide: {
-      type: Boolean,
-    },
-
-    wideSidebar: {
-      type: Boolean,
-    },
+    wide: Boolean,
+    wideSidebar: Boolean,
 
     isWide: {
       type: Boolean,
@@ -118,21 +99,11 @@ Polymer({
     return showMenu ? wideSidebar : wide;
   },
 
-  computeClasses: function (isWide) {
-    return isWide ? 'content' : 'content narrow';
-  },
-
-  computeIsHassbianLoaded: function (hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'config.hassbian');
-  },
-
-  computeIsZwaveLoaded: function (hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'config.zwave');
-  },
-
-  computeIsThemesLoaded: function (hass) {
-    return hass.themes && hass.themes.themes &&
-      Object.keys(hass.themes.themes).length;
-  },
+  _routeChanged: function (route) {
+    if (route.path === '' && route.prefix === '/config') {
+      history.replaceState(null, null, '/config/dashboard');
+      this.fire('location-changed');
+    }
+  }
 });
 </script>

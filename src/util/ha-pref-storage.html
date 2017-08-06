@@ -25,7 +25,8 @@
       try {
         for (var i = 0; i < STORED_STATE.length; i++) {
           var key = STORED_STATE[i];
-          this.storage[key] = JSON.stringify(this.hass[key]);
+          var value = this.hass[key];
+          this.storage[key] = JSON.stringify(value === undefined ? null : value);
         }
       } catch (err) {
         // Safari throws exception in private mode

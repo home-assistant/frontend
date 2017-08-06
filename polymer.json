@@ -2,7 +2,6 @@
   "entrypoint": "src/entrypoint.html",
   "shell": "src/home-assistant.html",
   "fragments": [
-    "panels/automation/ha-panel-automation.html",
     "panels/config/ha-panel-config.html",
     "panels/dev-event/ha-panel-dev-event.html",
     "panels/dev-info/ha-panel-dev-info.html",
@@ -16,8 +15,7 @@
     "panels/kiosk/ha-panel-kiosk.html",
     "panels/logbook/ha-panel-logbook.html",
     "panels/map/ha-panel-map.html",
-    "panels/shopping-list/ha-panel-shopping-list.html",
-    "panels/zwave/ha-panel-zwave.html"
+    "panels/shopping-list/ha-panel-shopping-list.html"
   ],
   "sources": [
     "src/**/*",
