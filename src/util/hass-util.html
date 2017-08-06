@@ -25,7 +25,7 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
   'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
   'cover', 'fan', 'group', 'light', 'lock', 'media_player', 'script',
-  'sun', 'updater',
+  'sun', 'updater', 'vacuum',
 ];
 
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
@@ -106,9 +106,15 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
     customEl = document.createElement(newElementTag);
   }
 
-  Object.keys(attributes).forEach(function (key) {
-    customEl[key] = attributes[key];
-  });
+  if (customEl.setProperties) {
+    customEl.setProperties(attributes);
+  } else {
+    // If custom element definition wasn't loaded yet - setProperties would be
+    // missing, but no harm in setting attributes one-by-one then.
+    Object.keys(attributes).forEach((key) => {
+      customEl[key] = attributes[key];
+    });
+  }
 
   if (customEl.parentNode === null) {
     rootEl.appendChild(customEl);
@@ -492,21 +498,34 @@ window.hassUtil.computeLocationName = function (hass) {
   return hass && hass.config.core.location_name;
 };
 
-window.hassUtil.applyThemesOnElement = function (element, themes) {
+window.hassUtil.applyThemesOnElement = function (element, themes, localTheme, updateMeta) {
   if (!element._themes) {
     element._themes = {};
   }
-  if (themes.default_theme === 'default') {
-    element.updateStyles(element._themes);
-    return;
+  let themeName = themes.default_theme;
+  if (localTheme === 'default' || (localTheme && themes.themes[localTheme])) {
+    themeName = localTheme;
   }
-  var theme = themes.themes[themes.default_theme];
-  var styles = Object.assign({}, element._themes);
-  Object.keys(theme).forEach(function (key) {
-    var prefixedKey = '--' + key;
-    element._themes[prefixedKey] = '';
-    styles[prefixedKey] = theme[key];
-  });
+  const styles = Object.assign({}, element._themes);
+  if (themeName !== 'default') {
+    var theme = themes.themes[themeName];
+    Object.keys(theme).forEach((key) => {
+      var prefixedKey = '--' + key;
+      element._themes[prefixedKey] = '';
+      styles[prefixedKey] = theme[key];
+    });
+  }
   element.updateStyles(styles);
+
+  if (!updateMeta) return;
+
+  const meta = document.querySelector('meta[name=theme-color]');
+  if (meta) {
+    if (!meta.hasAttribute('default-content')) {
+      meta.setAttribute('default-content', meta.getAttribute('content'));
+    }
+    const themeColor = styles['--primary-color'] || meta.getAttribute('default-content');
+    meta.setAttribute('content', themeColor);
+  }
 };
 </script>

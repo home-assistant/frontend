@@ -27,7 +27,7 @@
       }
 
       app-header-layout {
-        background-color: #E5E5E5;
+        background-color: var(--secondary-background-color, #E5E5E5);
       }
 
       paper-tabs {
@@ -226,7 +226,7 @@ Polymer({
   },
 
   areTabsHidden: function (views, showTabs) {
-    return !views.length || !showTabs;
+    return !views || !views.length || !showTabs;
   },
 
   /**

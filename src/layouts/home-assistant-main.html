@@ -18,6 +18,11 @@
 
 <dom-module id='home-assistant-main'>
   <template>
+    <style>
+      :host {
+	      color: var(--primary-text-color);
+      }
+    </style>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
     <ha-url-sync hass='[[hass]]'></ha-url-sync>
     <app-location route="{{route}}"></app-location>
@@ -109,20 +114,6 @@
       'hass-open-menu': 'handleOpenMenu',
       'hass-close-menu': 'handleCloseMenu',
       'hass-start-voice': 'handleStartVoice',
-    },
-
-    ready: function () {
-      if (!this.hass) return;
-      var _this = this;
-      this.hass.callApi('get', 'themes').then(
-          function (themes) {
-            window.hassUtil.applyThemesOnElement(_this, themes);
-          });
-      this.hass.connection.subscribeEvents(
-          function (event) {
-            window.hassUtil.applyThemesOnElement(_this, event.data);
-          },
-          'themes_updated');
     },
 
     _routeChanged: function () {

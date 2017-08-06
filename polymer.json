@@ -1,10 +1,12 @@
 {
+  "entrypoint": "src/entrypoint.html",
   "shell": "src/home-assistant.html",
   "fragments": [
     "panels/automation/ha-panel-automation.html",
     "panels/config/ha-panel-config.html",
     "panels/dev-event/ha-panel-dev-event.html",
     "panels/dev-info/ha-panel-dev-info.html",
+    "panels/dev-mqtt/ha-panel-dev-mqtt.html",
     "panels/dev-service/ha-panel-dev-service.html",
     "panels/dev-state/ha-panel-dev-state.html",
     "panels/dev-template/ha-panel-dev-template.html",
@@ -19,11 +21,7 @@
   ],
   "sources": [
     "src/**/*",
-    "panels/**/*",
-    "bower.json"
-  ],
-  "extraDependencies": [
-    "bower_components/webcomponentsjs/*"
+    "panels/**/*"
   ],
   "lint": {
     "rules": ["polymer-2-hybrid"]
