@@ -239,7 +239,7 @@ window.hassUtil.ensureCustomUILoaded = function (customUI) {
       function () { console.error('Error loading %s from /local/custom_ui/%s.html', customUI, customUI); },
       /* eslint-enable no-console */
       true);
-},
+};
 
 window.hassUtil.stateMoreInfoType = function (stateObj) {
   if (stateObj.attributes && 'custom_ui_more_info' in stateObj.attributes) {
