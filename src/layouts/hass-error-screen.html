@@ -23,7 +23,6 @@
 
     <div class='placeholder'>
       <app-toolbar>
-        <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
         <div main-title>[[title]]</div>
       </app-toolbar>
       <div class='layout vertical center-center'>
@@ -39,16 +38,6 @@ Polymer({
   is: 'hass-error-screen',
 
   properties: {
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
-
     title: {
       type: String,
       value: 'Home Assistant',

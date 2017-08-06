@@ -1,17 +1,18 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
-<link rel='import' href="../../bower_components/paper-listbox/paper-listbox.html">
-<link rel='import' href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../src/components/ha-menu-button.html">
+<link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
+<link rel='import' href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel='import' href="../../../bower_components/paper-input/paper-input.html">
 
-<link rel="import" href="../../src/components/buttons/ha-call-service-button.html">
-<link rel="import" href="../../src/resources/ha-style.html">
+<link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
+<link rel="import" href="../../../src/components/ha-service-description.html">
+<link rel="import" href="../../../src/resources/ha-style.html">
 <link rel="import" href="./zwave-log.html">
 <link rel="import" href="./zwave-network.html">
 <link rel="import" href="./zwave-node-information.html">
@@ -19,8 +20,9 @@
 <link rel="import" href="./zwave-groups.html">
 <link rel="import" href="./zwave-node-config.html">
 <link rel="import" href="./zwave-usercodes.html">
+<link rel="import" href="./zwave-node-options.html">
 
-<dom-module id="ha-panel-zwave">
+<dom-module id="ha-config-zwave">
   <template>
     <style include="iron-flex ha-style">
       .content {
@@ -48,15 +50,39 @@
         padding-left: 24px;
         padding-right: 24px;
         padding-bottom: 24px;
-        }
+      }
+
+      ha-service-description {
+        display: block;
+        color: grey;
+      }
+
+      [hidden] {
+        display: none;
+      }
+
+      .toggle-help-icon {
+        position: absolute;
+        top: 6px;
+        right: 0;
+        color: var(--primary-color);
+      }
     </style>
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed>
         <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <paper-icon-button
+            icon='mdi:arrow-left'
+            on-tap='_backTapped'
+          ></paper-icon-button>
           <div main-title>Z-Wave Manager</div>
         </app-toolbar>
       </app-header>
+
+      <zwave-node-options
+        is-wide='[[isWide]]'
+        hass='[[hass]]'
+      ></zwave-node-options>
 
       <div class='content'>
         <zwave-network
@@ -67,10 +93,12 @@
 <!--Node card-->
       <div class='content'>
         <paper-card heading='Z-Wave Node Management'>
-          <iron-icon on-tap='toggleHelp' style='padding: 14px 0 14px 12px' icon='mdi:help-circle'></iron-icon>
-          <div style='display:inline-block' class='card-content'>
-            Z-Wave Node controls.
-          </div>
+          <paper-icon-button
+            class='toggle-help-icon'
+            on-tap='toggleHelp'
+            icon='mdi:help-circle'
+          ></paper-icon-button>
+
           <div class='device-picker'>
             <paper-dropdown-menu label="Nodes" class="flex">
               <paper-listbox
@@ -91,33 +119,57 @@
           <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
           <div class='card-actions'>
             <ha-call-service-button
-                hass='[[hass]]'
-                domain='zwave'
-                service='refresh_node'
-                service-data=[[computeNodeServiceData(selectedNode)]]
-                show-description=[[showHelp]]
-              >Refresh Node</ha-call-service-button>
+              hass='[[hass]]'
+              domain='zwave'
+              service='refresh_node'
+              service-data=[[computeNodeServiceData(selectedNode)]]
+            >Refresh Node</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='refresh_node'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
+
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='remove_failed_node'
               service-data=[[computeNodeServiceData(selectedNode)]]
-              show-description=[[showHelp]]
             >Remove Failed Node</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='remove_failed_node'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
+
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='replace_failed_node'
               service-data=[[computeNodeServiceData(selectedNode)]]
-              show-description=[[showHelp]]
             >Replace Failed Node</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='replace_failed_node'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
+
             <ha-call-service-button
               hass='[[hass]]'
               domain='zwave'
               service='print_node'
               service-data=[[computeNodeServiceData(selectedNode)]]
-              show-description=[[showHelp]]
             >Print Node</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='print_node'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
+
           </div>
           <div class='card-actions'>
             <paper-input
@@ -131,8 +183,13 @@
               domain='zwave'
               service='rename_node'
               service-data=[[computeNodeNameServiceData(newNodeNameInput)]]
-              show-description=[[showHelp]]
             >Rename Node</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='rename_node'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
            </div>
 
            <div class='device-picker'>
@@ -153,8 +210,13 @@
               domain='zwave'
               service='refresh_entity'
               service-data=[[computeRefreshEntityServiceData(selectedEntity)]]
-              show-description=[[showHelp]]
             >Refresh Entity</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='refresh_entity'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
            </div>
            <div class='content'>
              <div class='card-actions'>
@@ -232,21 +294,11 @@
 
 <script>
 Polymer({
-  is: 'ha-panel-zwave',
+  is: 'ha-config-zwave',
 
   properties: {
-    hass: {
-      type: Object,
-    },
-
-    narrow: {
-      type: Boolean,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+    hass: Object,
+    isWide: Boolean,
 
     nodes: {
       type: Array,
@@ -440,6 +492,10 @@ Polymer({
       });
     });
     return array;
+  },
+
+  _backTapped: function () {
+    history.back();
   },
 });
 </script>

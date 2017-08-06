@@ -186,6 +186,7 @@ Polymer({
   entityChanged: function (index) {
     if (!this.entities || !this.formEl) return;
     var entity = this.entities[index];
+    if (!entity) return;
 
     this.formState = 'loading';
     var el = this;
