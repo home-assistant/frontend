@@ -152,8 +152,8 @@ Polymer({
     this.hass.connection.subscribeEvents(this.hassChanged, 'mailbox_updated')
       .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
     this.computePlatforms().then(function (platforms) {
-        this.platforms = platforms;
-        this.hassChanged();
+      this.platforms = platforms;
+      this.hassChanged();
     }.bind(this));
   },
 
@@ -172,9 +172,9 @@ Polymer({
   },
 
   openMP3Dialog: function (event) {
-    var platform = event.target.dataset.platform
+    var platform = event.target.dataset.platform;
     this.$.mp3dialog.open();
-    this.$.mp3src.src = '/api/mailbox/media/' + platform + "/" + event.target.dataset.sha;
+    this.$.mp3src.src = '/api/mailbox/media/' + platform + '/' + event.target.dataset.sha;
     this.$.mp3.load();
     this.$.mp3.play();
   },
@@ -193,13 +193,13 @@ Polymer({
     }
   },
   getMessages: function () {
-    let items = this.platforms.map((platform) => {
+    const items = this.platforms.map(function (platform) {
       return this.hass.callApi('GET', 'mailbox/messages/' + platform).then(function (values) {
-        items = []
+        var platformItems = [];
         var arrayLength = values.length;
         for (var i = 0; i < arrayLength; i++) {
           var datetime = window.hassUtil.formatDateTime(new Date(values[i].info.origtime * 1000));
-          items.push({
+          platformItems.push({
             timestamp: datetime,
             caller: values[i].info.callerid,
             message: values[i].text,
@@ -208,23 +208,23 @@ Polymer({
             platform: platform
           });
         }
-        return items;
+        return platformItems;
       });
-    });
-    return Promise.all(items).then(function (items) {
+    }.bind(this));
+    return Promise.all(items).then(function (platformItems) {
       var arrayLength = items.length;
-      var final = []
+      var final = [];
       for (var i = 0; i < arrayLength; i++) {
-        final = final.concat(items[i]);
+        final = final.concat(platformItems[i]);
       }
-      final.sort(function(a, b){
+      final.sort(function (a, b) {
         return new Date(b.timestamp) - new Date(a.timestamp);
       });
       return final;
     });
   },
 
-  computePlatforms: function (hass) {
+  computePlatforms: function () {
     return this.hass.callApi('GET', 'mailbox/platforms');
   },
 });
