@@ -60,6 +60,33 @@
       pre {
         margin: 0;
       }
+      paper-dialog {
+        border-radius: 2px;
+      }
+
+      @media all and (max-width: 450px) {
+        paper-dialog {
+          margin: 0;
+          width: 100%;
+          max-height: calc(100% - 64px);
+
+          position: fixed !important;
+          bottom: 0px;
+          left: 0px;
+          right: 0px;
+          overflow: scroll;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+        }
+
+        .content {
+          width: auto;
+        }
+
+        .messages {
+          max-height: 68vh;
+        }
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -99,13 +126,13 @@
                 [[item.duration]] secs
               </template>
           </vaadin-grid>
-          <paper-dialog id="mp3dialog">
+          <paper-dialog with_backdrop id="mp3dialog">
             <h2>Message Plaback</h2>
             <div>
               <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
             </div>
           </paper-dialog>
-          <paper-dialog id="confirmdel">
+          <paper-dialog with_backdrop id="confirmdel">
             <h2>Delete Selected Messages</h2>
             <p>Are you sure you want to delete the selected messages?</p>
             <div class="buttons">
