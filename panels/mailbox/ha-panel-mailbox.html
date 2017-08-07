@@ -3,6 +3,8 @@
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-dialog/paper-dialog.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
+<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
 
 <link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
 <link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
@@ -13,9 +15,6 @@
 
 <link rel='import' href='../../src/components/ha-menu-button.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
-
-<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid.html">
-<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid-selection-column.html">
 
 
 <dom-module id='ha-panel-mailbox'>
@@ -44,18 +43,12 @@
         padding: 16px;
       }
 
-      .details {
-        padding: 10px;
-        margin: 10px;
-        display: flex;
-        justify-content: space-around;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14);
-        font-size: 20px;
-        white-space: normal;
+      .snippet {
+        overflow: hidden;
       }
-      vaadin-grid {
-        height: 100%;
-        max-height: 100%;
+      .row {
+        display: flex;
+       justify-content: space-between;
       }
       pre {
         margin: 0;
@@ -98,43 +91,34 @@
       </app-header>
       <div class='content'>
         <div>
-          <paper-button on-tap='openDeleteDialog' raised>Delete Selected</paper-button>
-        </div>
-        <div>
-          <vaadin-grid id="msgtable" items='[[_messages]]'>
-            <template class="row-details">
-              <div class="details">
-                [[item.message]]
+          <paper-card>
+          <template id="template" is='dom-repeat' items='[[_messages]]' on-dom-changed='_renderSnippet'>
+            <paper-item on-tap='openMP3Dialog'>
+            <paper-item-body style="width:100%" two-line>
+              <div class="row">
+                <div class="header">[[item.caller]]</div>
+                <div>[[item.duration]] secs</div>
               </div>
-            </template>
-            <vaadin-grid-selection-column auto-select>
-            </vaadin-grid-selection-column>
-  
-            <vaadin-grid-column width="calc(30% - 100px)">
-              <template class="header">Time</template>
-              <template>[[item.timestamp]]</template>
-            </vaadin-grid-column>
-  
-            <vaadin-grid-column width="calc(30% - 100px)">
-              <template class="header">Caller</template>
-              <template>[[item.caller]]</template>
-            </vaadin-grid-column>
-            <vaadin-grid-column width="calc(20% - 100px">
-              <template class="header">Listen</template>
-              <template>
-                <paper-icon-button data-sha$='[[item.sha]]' data-platform$='[[item.platform]]' icon='mdi:play-box-outline' on-tap='openMP3Dialog'></paper-icon-button>
-                [[item.duration]] secs
-              </template>
-          </vaadin-grid>
+              <div class="content snippet" secondary><b>[[item.timestamp]]</b> - [[item.message]]</div>
+            </paper-item-body>
+            </paper-item>
+		  </template>
+          </paper-card>
           <paper-dialog with_backdrop id="mp3dialog">
-            <h2>Message Plaback</h2>
+            <div class="row">
+              <div class="header">Message Plaback</div>
+              <div>
+                <paper-button on-tap='openDeleteDialog' raised>Delete</paper-button>
+              </div>
+            </div>
+            <div id="transcribe">text</div>
             <div>
               <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
             </div>
           </paper-dialog>
           <paper-dialog with_backdrop id="confirmdel">
-            <h2>Delete Selected Messages</h2>
-            <p>Are you sure you want to delete the selected messages?</p>
+            <h2>Delete Message</h2>
+            <p>Are you sure you want to delete this message?</p>
             <div class="buttons">
               <paper-button dialog-dismiss>Decline</paper-button>
               <paper-button dialog-confirm autofocus on-tap="deleteSelected">Accept</paper-button>
@@ -149,7 +133,6 @@
 <script>
 Polymer({
   is: 'ha-panel-mailbox',
-
   properties: {
     hass: {
       type: Object,
@@ -172,6 +155,22 @@ Polymer({
     _messages: {
       type: Array,
     },
+
+    currentMessage: {
+      type: Object,
+    },
+  },
+
+  _renderSnippet: function () {
+    const containers = document.querySelectorAll('.snippet');
+    Array.prototype.forEach.call(containers, (container) => {  // Loop through each container
+      var p = container.querySelector('p');
+      var divh = container.clientHeight;
+      while (p.offsetHeight > divh) {
+        // Check if the paragraph's height is taller than the container's height.
+        p.textContent = p.textContent.replace(/\W*\s(\S)*$/, '...');
+      }
+    });
   },
 
   attached: function () {
@@ -194,14 +193,15 @@ Polymer({
     }
     this.getMessages().then(function (items) {
       this._messages = items;
-      this.$.msgtable.expandedItems = items;
     }.bind(this));
   },
 
   openMP3Dialog: function (event) {
-    var platform = event.target.dataset.platform;
+    var platform = event.model.item.platform;
+    this.currentMessage = event.model.item;
     this.$.mp3dialog.open();
-    this.$.mp3src.src = '/api/mailbox/media/' + platform + '/' + event.target.dataset.sha;
+    this.$.mp3src.src = '/api/mailbox/media/' + platform + '/' + event.model.item.sha;
+    this.$.transcribe.innerText = event.model.item.message;
     this.$.mp3.load();
     this.$.mp3.play();
   },
@@ -211,13 +211,9 @@ Polymer({
   },
 
   deleteSelected: function () {
-    var grid = this.$.msgtable;
-    var items = grid.selectedItems;
-    var len = items.length;
-    for (var i = 0; i < len; i++) {
-      var platform = items[i].platform;
-      this.hass.callApi('DELETE', 'mailbox/delete/' + platform + '/' + items[i].sha);
-    }
+    var msg = this.currentMessage;
+    this.hass.callApi('DELETE', 'mailbox/delete/' + msg.platform + '/' + msg.sha);
+    this.$.mp3dialog.close();
   },
   getMessages: function () {
     const items = this.platforms.map(function (platform) {

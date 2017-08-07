@@ -50,7 +50,6 @@
     "polymer": "Polymer/polymer#~2.0.2",
     "vaadin-combo-box": "vaadin/vaadin-combo-box#^2.0.0",
     "vaadin-date-picker": "vaadin/vaadin-date-picker#^2.0.0",
-    "vaadin-grid": "vaadin/vaadin-grid#v3.0.0-beta1",
     "web-animations-js": "^2.2.5",
     "webcomponentsjs": "1.0.4"
   },
