@@ -73,6 +73,9 @@
           font-size: 5em;
           overflow: visible;
         }
+        span.line {
+          display: block;
+        }
 
     </style>
     <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
@@ -86,7 +89,8 @@
           </tr>
           <tr>
             <td class="pw_smallp">
-              <span>[[windBearing]]<br />[[stateObj.attributes.wind_speed]]</span>
+              <span class="line" hidden$="[[!stateObj.attributes.wind_bearing]]">[[windBearing]]</span>
+              <span class="line" hidden$="[[!stateObj.attributes.wind_speed]]">[[stateObj.attributes.wind_speed]]</span>
             </td>
             <td class="pw_smallp">
               <span hidden$="[[!stateObj.attributes.visibility]]">
@@ -184,7 +188,7 @@
       }
 
       this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
-      this.windBearing = this.windBearingToText(this.stateObj.attributes.windBearing);
+      this.windBearing = this.windBearingToText(this.stateObj.attributes.wind_bearing);
 
       this.data = this.getDataArray();
 
@@ -236,7 +240,12 @@
     },
 
     windBearingToText: function (degree) {
-      return _DEGREE_TEXT[((parseInt(degree) + 5.63) / 11.25) | 0];
+      var degreenum = parseInt(degree);
+      if (isFinite(degreenum)) {
+        return _DEGREE_TEXT[(((degreenum + 11.25) / 22.5) | 0) % 16];
+      } else {
+        return '';
+      }
     }
   });
 }());
