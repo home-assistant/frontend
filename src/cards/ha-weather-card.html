@@ -214,9 +214,8 @@
       var degreenum = parseInt(degree);
       if (isFinite(degreenum)) {
         return _DEGREE_TEXT[(((degreenum + 11.25) / 22.5) | 0) % 16];
-      } else {
-        return '';
       }
+      return '';
     }
   });
 }());
