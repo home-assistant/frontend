@@ -43,9 +43,6 @@
         padding: 16px;
       }
 
-      .snippet {
-        overflow: hidden;
-      }
       .row {
         display: flex;
        justify-content: space-between;
@@ -80,6 +77,49 @@
           max-height: 68vh;
         }
       }
+      /* styles for '...' */ 
+      .snippet {
+        /* hide text if it more than N lines  */
+        overflow: hidden;
+        /* for set '...' in absolute position */
+        position: relative; 
+        /* use this value to count block height */
+        line-height: 1.2em;
+        /* max-height = line-height (1.2) * lines max number (3) */
+        max-height: 2.4em; 
+        /* fix problem when last visible word doesn't adjoin right side  */
+        text-align: justify;
+
+        /* */
+        margin-right: -1em;
+        padding-right: 1em;
+      }
+      .wrap-snippet {
+        padding: 16px;
+        padding-top: 5px;
+      }
+      .snippet:before {
+        /* points in the end */
+        content: '...';
+        /* absolute position */
+        position: absolute;
+        /* set position to right bottom corner of block */
+        right: 0;
+        bottom: 0;
+      }
+      .snippet:after {
+        /* points in the end */
+        content: '';
+        /* absolute position */
+        position: absolute;
+        /* set position to right bottom corner of text */
+        right: 0;
+        width: 1em;
+        /* set width and height */
+        height: 1em;
+        margin-top: 0.2em;
+        background: white;
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -92,19 +132,21 @@
       <div class='content'>
         <div>
           <paper-card>
-          <template id="template" is='dom-repeat' items='[[_messages]]' on-dom-changed='_renderSnippet'>
+          <template id="template" is='dom-repeat' items='[[_messages]]'>
             <paper-item on-tap='openMP3Dialog'>
             <paper-item-body style="width:100%" two-line>
               <div class="row">
                 <div class="header">[[item.caller]]</div>
                 <div>[[item.duration]] secs</div>
               </div>
-              <div class="content snippet" secondary><b>[[item.timestamp]]</b> - [[item.message]]</div>
+      <div class='wrap-snippet'>
+              <div class="snippet" secondary><b>[[item.timestamp]]</b> - [[item.message]]</div>
+      </div>
             </paper-item-body>
             </paper-item>
 		  </template>
           </paper-card>
-          <paper-dialog with_backdrop id="mp3dialog">
+          <paper-dialog with_backdrop id="mp3dialog" on-iron-overlay-closed="_mp3Closed">
             <div class="row">
               <div class="header">Message Plaback</div>
               <div>
@@ -161,18 +203,6 @@ Polymer({
     },
   },
 
-  _renderSnippet: function () {
-    const containers = document.querySelectorAll('.snippet');
-    Array.prototype.forEach.call(containers, (container) => {  // Loop through each container
-      var p = container.querySelector('p');
-      var divh = container.clientHeight;
-      while (p.offsetHeight > divh) {
-        // Check if the paragraph's height is taller than the container's height.
-        p.textContent = p.textContent.replace(/\W*\s(\S)*$/, '...');
-      }
-    });
-  },
-
   attached: function () {
     this.hassChanged = this.hassChanged.bind(this);
     this.hass.connection.subscribeEvents(this.hassChanged, 'mailbox_updated')
@@ -204,6 +234,10 @@ Polymer({
     this.$.transcribe.innerText = event.model.item.message;
     this.$.mp3.load();
     this.$.mp3.play();
+  },
+
+  _mp3Closed: function () {
+    this.$.mp3.pause();
   },
 
   openDeleteDialog: function () {
