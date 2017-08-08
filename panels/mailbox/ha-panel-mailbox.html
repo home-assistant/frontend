@@ -28,6 +28,8 @@
 
       .content {
         padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
       }
 
       .ha-form {
@@ -37,10 +39,6 @@
 
       .header {
         @apply(--paper-font-title);
-      }
-
-      .content {
-        padding: 16px;
       }
 
       .row {
@@ -79,6 +77,7 @@
       }
       /* styles for '...' */ 
       .snippet {
+        color: var(--secondary-text-color);
         /* hide text if it more than N lines  */
         overflow: hidden;
         /* for set '...' in absolute position */
@@ -88,15 +87,16 @@
         /* max-height = line-height (1.2) * lines max number (3) */
         max-height: 2.4em; 
         /* fix problem when last visible word doesn't adjoin right side  */
-        text-align: justify;
+        /*text-align: justify; */
 
         /* */
         margin-right: -1em;
         padding-right: 1em;
       }
       .wrap-snippet {
-        padding: 16px;
-        padding-top: 5px;
+        padding-right: 16px;
+        padding-bottom: 20px;
+        font-size: 14px;
       }
       .snippet:before {
         /* points in the end */
@@ -120,6 +120,13 @@
         margin-top: 0.2em;
         background: white;
       }
+      .tip {
+        color: var(--secondary-text-color);
+        font-size: 14px;
+      }
+      .date {
+        color: var(--primary-text-color);
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -136,12 +143,14 @@
             <paper-item on-tap='openMP3Dialog'>
             <paper-item-body style="width:100%" two-line>
               <div class="row">
-                <div class="header">[[item.caller]]</div>
-                <div>[[item.duration]] secs</div>
+                <div>[[item.caller]]</div>
+                <div class="tip">[[item.duration]] secs</div>
               </div>
-      <div class='wrap-snippet'>
-              <div class="snippet" secondary><b>[[item.timestamp]]</b> - [[item.message]]</div>
-      </div>
+              <div class='wrap-snippet'>
+                <div class="snippet" secondary>
+                  <span class="date">[[item.timestamp]]</span> - [[item.message]]
+                </div>
+              </div>
             </paper-item-body>
             </paper-item>
 		  </template>
