@@ -1,9 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
-
+<link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../components/ha-attributes.html'>
 <dom-module id='ha-weather-card'>
   <template>
     <style>
@@ -15,101 +13,57 @@
           color: var(--secondary-text-color);
           text-align: right;
         }
-        tr.temphigh span {
-          color: red;
-          font-weight: 600;
-        }
-        tr.templow span {
-          color: blue;
-        }
-        tr.date span {
-          color: darkgrey;
-          font-weight: 600;
-        }
-        .content td {
+        .condicon {
           text-align: center;
-          vertical-align: middle;
-          overflow-x: hidden;
+          font-size: 4em;
         }
-        tr.cond td {
-          overflow-x: hidden;
-          overflow-y: visible;
+        .condtemp {
           text-align: center;
-          vertical-align: middle;
-          width:0%;
-          height: 2.4em;
+          font-size: 4em;
         }
-        tr.cond td div {
-          font-size: 2em;
-          margin-left: -2em;
-          transform: translateX(1em);
+        div.cond {
+          display: inline;
         }
-        
-        .forecast td:first-child {
-          background-color: #ddd;
+        div.conddetails {
+          float: right;
+          display: block table;
+          overflow: auto;
+          text-align: right;
         }
-        .forecast td:nth-child(2n+3) {
-          background-color: #eee;
+        span.line {
+          display: block;
         }
-        table, tr, td {
-          border: 0;
-          padding: 0;
-          border-spacing: 0;
+        .condsmall {
+          font-size: 1em;
         }
-        .currentcond {
-          text-align: center;
-          vertical-align: middle;
+        .clear {
+          clear: both;
         }
-        td.pw_small span {
-          font-size: 2.4em;
-        }
-        td.pw_small{
-          width: 25%;
-          height: 2.6em;
-        }
-        td.pw_smallp span {
-          font-size: 1.2em;
-        }
-        td.pw_large span {
-          font-size: 6em;
-        }
-
     </style>
+    <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <table class="currentcond" width="100%">
-          <tr>
-            <td class="pw_small"><span>[[stateObj.attributes.temperature]]°</span></td>
-            <td rowspan="2" class="pw_large"><span>[[nowCond]]</span></td>
-            <td class="pw_small"><span>[[stateObj.attributes.humidity]]%</span></td>
-          </tr>
-          <tr>
-            <td class="pw_smallp"><span>[[windBearing]]<br />[[stateObj.attributes.wind_speed]]</span></td>
-            <td class="pw_smallp"><span>Visual<br />[[stateObj.attributes.visibility]]</span></td>
-          </tr>
-        </table><br />
-        <table class="forecast" width="100%">
-          <tr class="cond">
-            <template is="dom-repeat" items="[[data.cond]]">
-              <td><div>[[item]]</div></td>
-            </template>
-          </tr>
-          <tr class="temphigh">
-            <template is="dom-repeat" items="[[data.temphigh]]">
-              <td><span>[[item]]</span></td>
-            </template>
-          </tr>
-          <tr class="templow">
-            <template is="dom-repeat" items="[[data.templow]]">
-              <td><span>[[item]]</span></td>
-            </template>
-          </tr>
-          <tr class="date">
-            <template is="dom-repeat" items="[[data.date]]">
-              <td><span>[[item]]</span></td>
-            </template>
-          </tr>
-        </table>
+        <div class='condpanel'>
+          <div class='cond condicon'>[[nowCond]]</div>
+          <div class='cond condtemp'>[[attr.temperature]]°</div>
+          <div class='cond conddetails'>
+            <div class="condsmall" hidden$="[[!attr.wind_speed]]">
+              Wind: 
+              <span hidden$="[[!attr.wind_speed]]">
+                [[attr.wind_speed]]
+              </span>
+              <span hidden$="[[!windBearing]]">[[windBearing]]</span>
+            </div>
+            <div class="condsmall" hidden$="[[!attr.humidity]]">
+              Humidity: [[attr.humidity]]%
+            </div>
+            <div class="condsmall" hidden$="[[!attr.visibility]]">
+              Visibility: [[attr.visibility]]
+            </div>
+          </div>
+          <div class='clear'></div>
+        </div>
+        <div id='chart_id' hidden$="[[!attr.forecast]]"></div>
       </div>
     </ha-card>
   </template>
@@ -120,20 +74,20 @@
   'use strict';
 
   var _WEATHER_TO_ICON = {
-    cloudy: '\uD83C\uDF2B',
-    fog: '\uD83C\uDF2B',
+    cloudy: '\u2601\ufe0f',
+    fog: '\uD83C\uDF2B\ufe0f',
     hail: 'Hail',
-    lightning: '\uD83C\uDF29',
-    'lightning-rainy': '\u26c8',
-    partlycloudy: '\u26c5',
-    pouring: '\uD83C\uDF22',
-    rainy: '\uD83C\uDF27',
-    snowy: '\uD83C\uDF28',
-    'snowy-rainy': 'SR',
-    sunny: '\u2600',
-    windy: '\uD83C\uDF2C',
-    'windy-variant': '[]',
-    exceptional: '!!',
+    lightning: '\uD83C\uDF29\ufe0f',
+    'lightning-rainy': '\u26c8\ufe0f',
+    partlycloudy: '\u26c5\ufe0f',
+    pouring: '\uD83D\uDCA7\ufe0f',
+    rainy: '\uD83C\uDF27\ufe0f',
+    snowy: '\uD83C\uDF28\ufe0f',
+    'snowy-rainy': '\uD83C\uDF28\ufe0f',
+    sunny: '\u2600\ufe0f',
+    windy: '\uD83C\uDF2C\ufe0f',
+    'windy-variant': '\uD83C\uDF2C\ufe0f',
+    exceptional: '\u2b55\ufe0f',
   };
 
   var _DEGREE_TEXT = [
@@ -158,8 +112,8 @@
     computeTitle: function (stateObj) {
       return stateObj.attributes.friendly_name;
     },
-
     getDataArray: function () {
+      var dataArray = [];
       var data = this.stateObj.attributes.forecast;
       var i;
 
@@ -167,18 +121,17 @@
         return [];
       }
 
-      var dDate = [];
-      var dTempHigh = [];
-      var dTempLow = [];
-      var dCond = [];
       for (i = 0; i < data.length; i++) {
-        dDate.push(new Date(data[i].datetime).getDate());
-        dTempHigh.push(data[i].temperature);
-        dTempLow.push(data[i].templow);
-        dCond.push(_WEATHER_TO_ICON[data[i].condition]);
+        var d = data[i];
+        if (!d.condition) {
+          dataArray.push([new Date(d.datetime), null, d.temperature, d.templow]);
+        } else {
+          dataArray.push([new Date(d.datetime), _WEATHER_TO_ICON[data[i].condition],
+            d.temperature, d.templow]);
+        }
       }
 
-      return { date: dDate, cond: dCond, temphigh: dTempHigh, templow: dTempLow };
+      return dataArray;
     },
 
     checkRequirements: function () {
@@ -186,18 +139,83 @@
         return;
       }
 
-      if (!this.stateObj.attributes || !this.stateObj.attributes.forecast) {
+      if (!this.stateObj.attributes) {
         return;
       }
 
+      this.attr = this.stateObj.attributes;
+
       this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
-      this.windBearing = this.windBearingToText(this.stateObj.attributes.windBearing);
+      this.windBearing = this.windBearingToText(this.attr.wind_bearing);
+
+      if (!window.google) {
+        return;
+      }
+
+      if (!this.chartEngine) {
+        this.chartEngine = new window.google.visualization.LineChart(
+          this.$.chart_id);
+      }
+
+      if (!this.attr.forecast) {
+        return;
+      }
 
       this.data = this.getDataArray();
+
+      this.drawChart();
+    },
+    drawChart: function () {
+      var dataGrid = new window.google.visualization.DataTable();
+      var options = {
+        legend: {
+          position: 'top'
+        },
+        interpolateNulls: true,
+        titlePosition: 'none',
+        chartArea: {
+          left: 25,
+          top: 5,
+          height: '100%',
+          width: '90%',
+          bottom: 25,
+        },
+        curveType: 'function',
+        focusTarget: 'category',
+        colors: ['red', 'blue'],
+        annotations: {
+          textStyle: {
+            fontSize: '24',
+          }
+        }
+      };
+
+      dataGrid.addColumn('datetime', 'Time');
+      dataGrid.addColumn({ type: 'string', role: 'annotation' });
+      dataGrid.addColumn('number', 'Temperature');
+      dataGrid.addColumn('number', 'Temperature Low');
+
+      var dataArray = this.getDataArray();
+      dataGrid.addRows(dataArray);
+
+      this.chartEngine.draw(dataGrid, options);
+    },
+
+    googleApiLoaded: function () {
+      window.google.load('visualization', '1', {
+        packages: ['corechart'],
+        callback: function () {
+          this.checkRequirements();
+        }.bind(this),
+      });
     },
 
     windBearingToText: function (degree) {
-      return _DEGREE_TEXT[((parseInt(degree) + 5.63) / 11.25) | 0];
+      var degreenum = parseInt(degree);
+      if (isFinite(degreenum)) {
+        return _DEGREE_TEXT[(((degreenum + 11.25) / 22.5) | 0) % 16];
+      }
+      return '';
     }
   });
 }());
