@@ -39,3 +39,9 @@ export default class StateTrigger extends Component {
     );
   }
 }
+
+StateTrigger.defaultConfig = {
+  entity_id: '',
+  from: '',
+  to: '',
+};

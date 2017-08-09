@@ -32,14 +32,20 @@ export default class NumericStateTrigger extends Component {
           value={below}
           onChange={this.onChange}
         />
-        Value template (optional)<br />
-        <textarea
+        <paper-textarea
+          label="Value template (optional)"
           name="value_template"
           value={value_template}
-          style={{ width: '100%', height: 100 }}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );
   }
 }
+
+NumericStateTrigger.defaultConfig = {
+  entity_id: '',
+  above: '',
+  below: '',
+  value_template: '',
+};

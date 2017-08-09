@@ -39,3 +39,8 @@ export default class EventTrigger extends Component {
     );
   }
 }
+
+EventTrigger.defaultConfig = {
+  event_type: '',
+  event_data: '{}',
+};

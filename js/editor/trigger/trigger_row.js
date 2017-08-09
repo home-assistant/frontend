@@ -1,19 +1,25 @@
 import { h, Component } from 'preact';
 
 import EventTrigger from './event';
-import StateTrigger from './state';
+import HassTrigger from './homeassistant';
+import MQTTTrigger from './mqtt';
 import NumericStateTrigger from './numeric_state';
+import StateTrigger from './state';
+import SunTrigger from './sun';
+import TemplateTrigger from './template';
+import TimeTrigger from './time';
+import ZoneTrigger from './zone';
 
 const TYPES = {
   event: EventTrigger,
   state: StateTrigger,
-  homeassistant: null,
-  mqtt: null,
+  homeassistant: HassTrigger,
+  mqtt: MQTTTrigger,
   numeric_state: NumericStateTrigger,
-  sun: null,
-  template: null,
-  time: null,
-  zone: null,
+  sun: SunTrigger,
+  template: TemplateTrigger,
+  time: TimeTrigger,
+  zone: ZoneTrigger,
 };
 
 const OPTIONS = Object.keys(TYPES).sort();
@@ -32,6 +38,7 @@ export default class TriggerRow extends Component {
     if (type !== this.props.trigger.platform) {
       this.props.onChange(this.props.index, {
         platform: type,
+        ...TYPES[type].defaultConfig
       });
     }
   }

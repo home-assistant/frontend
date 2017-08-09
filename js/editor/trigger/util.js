@@ -7,5 +7,6 @@ export function onChange(ev) {
     delete trigger[ev.target.name];
   }
 
+  console.log("change", trigger)
   this.props.onChange(this.props.index, trigger);
 }
