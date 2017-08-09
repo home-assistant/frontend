@@ -1,0 +1,88 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../components/entity/state-info.html">
+
+<dom-module id="state-card-sun">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      .card {
+	    @apply(--paper-font-body1);
+	    min-width: 150px;
+	    white-space: nowrap;
+	  }
+	    
+	  state-badge {
+	    float: left;
+	  }
+	
+	  .info {
+	    margin-left: 56px;
+	  }
+	
+	  .next-state {
+	    margin-left: 10px;
+	  }
+	
+	  .name, .next-state {
+	    @apply(--paper-font-common-nowrap);
+	    color: var(--primary-text-color);
+	    line-height: 40px;
+	    float: left;
+	  }
+      .state {
+        @apply(--paper-font-body1);
+        color: var(--primary-text-color);
+
+        margin-left: 16px;
+        text-align: right;
+        line-height: 40px;
+      }
+    </style>
+
+    <div class='horizontal justified layout'>
+      <div class='card'>
+	    <state-badge state-obj='[[stateObj]]'></state-badge>
+	    <div class="info">
+	        <div class='name' in-dialog$='[[inDialog]]'>[[computeStateName(stateObj)]]</div>
+	        <template is='dom-if' if='[[!inDialog]]'>
+		        <div class='next-state'><iron-icon icon="mdi:weather-sunset-up"></iron-icon> [[formatTime(stateObj.attributes.next_rising)]]</div>
+	    	    <div class='next-state'><iron-icon icon="mdi:weather-sunset-down"></iron-icon> [[formatTime(stateObj.attributes.next_setting)]]</div>
+	    	</template>
+	    </div>
+      </div>
+      <div class="state">[[computeStateDisplay(stateObj)]]</div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'state-card-sun',
+
+  properties: {
+    inDialog: {
+      type: Boolean,
+      value: false,
+    },
+
+    stateObj: {
+      type: Object,
+    },
+  },
+
+  computeStateName: function (stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
+  },
+
+  computeStateDisplay: function (stateObj) {
+    return window.hassUtil.computeStateState(stateObj);
+  },
+  
+  formatTime: function(dtstr) {
+	return window.hassUtil.formatTime(new Date(dtstr))
+  },
+});
+</script>
