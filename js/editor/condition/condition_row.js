@@ -1,8 +1,8 @@
 import { h, Component } from 'preact';
 
-import TriggerEdit from './trigger_edit';
+import ConditionEdit from './condition_edit';
 
-export default class TriggerRow extends Component {
+export default class ConditionRow extends Component {
   constructor() {
     super();
 
@@ -37,7 +37,7 @@ export default class TriggerRow extends Component {
           </paper-menu-button>
         </div>
         <div class='card-content'>
-          <TriggerEdit {...props} />
+          <ConditionEdit {...props} />
         </div>
       </paper-card>
     );
