@@ -38,7 +38,7 @@ export default class JSONTextArea extends Component {
     });
   }
 
-  render(props, { value, isValid }) {
+  render({ label }, { value, isValid }) {
     const style = {
       minWidth: 300,
       width: '100%',
@@ -47,10 +47,11 @@ export default class JSONTextArea extends Component {
       style.border = '1px solid red';
     }
     return (
-      <iron-autogrow-textarea
+      <paper-textarea
+        label={label}
         value={value}
         style={style}
-        onValue-Changed={this.onChange}
+        onvalue-changed={this.onChange}
       />
     );
   }

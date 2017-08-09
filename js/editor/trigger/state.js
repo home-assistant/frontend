@@ -1,12 +1,12 @@
 import { h, Component } from 'preact';
 
-import { onChange } from './util';
+import { onChangeEvent } from '../util';
 
 export default class StateTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChange.bind(this);
+    this.onChange = onChangeEvent.bind(this, 'trigger');
   }
 
   /* eslint-disable camelcase */
@@ -39,3 +39,9 @@ export default class StateTrigger extends Component {
     );
   }
 }
+
+StateTrigger.defaultConfig = {
+  entity_id: '',
+  from: '',
+  to: '',
+};

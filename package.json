@@ -11,8 +11,8 @@
     "gulp": "gulp",
     "build": "BUILD_DEV=0 gulp",
     "build_demo": "BUILD_DEV=0 BUILD_DEMO=1 gulp",
-    "dev": "npm run gulp ru_all",
-    "dev-watch": "npm run gulp watch_ru_all",
+    "dev": "npm run gulp ru_all gen-service-worker",
+    "dev-watch": "npm run gulp watch_ru_all gen-service-worker",
     "lint_js": "eslint src panels js --ext js,html",
     "lint_html": "ls -1 src/home-assistant.html panels/**/ha-panel-*.html | xargs polymer lint --input",
     "test": "npm run lint_js && npm run lint_html"

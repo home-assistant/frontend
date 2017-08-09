@@ -2,13 +2,13 @@ import { h, Component } from 'preact';
 
 import JSONTextArea from '../json_textarea';
 
-import { onChange } from './util';
+import { onChangeEvent } from '../util';
 
 export default class EventTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChange.bind(this);
+    this.onChange = onChangeEvent.bind(this, 'trigger');
     this.eventDataChanged = this.eventDataChanged.bind(this);
   }
 
@@ -30,8 +30,8 @@ export default class EventTrigger extends Component {
           value={event_type}
           onChange={this.onChange}
         />
-        Event Data
         <JSONTextArea
+          label="Event Data"
           value={event_data}
           onChange={this.eventDataChanged}
         />
@@ -39,3 +39,8 @@ export default class EventTrigger extends Component {
     );
   }
 }
+
+EventTrigger.defaultConfig = {
+  event_type: '',
+  event_data: {},
+};
