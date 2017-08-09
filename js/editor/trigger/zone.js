@@ -1,12 +1,12 @@
 import { h, Component } from 'preact';
 
-import { onChange } from './util';
+import { onChangeEvent } from '../util';
 
 export default class ZoneTrigger extends Component {
   constructor() {
     super();
 
-    this.onChange = onChange.bind(this);
+    this.onChange = onChangeEvent.bind(this, 'trigger');
     this.radioGroupPicked = this.radioGroupPicked.bind(this);
   }
 
