@@ -55,8 +55,6 @@ export default class Action extends Component {
     const selected = OPTIONS.indexOf(type);
     let content;
 
-    console.log('rendering', type, action)
-
     if (Comp) {
       content = (
         <div>
