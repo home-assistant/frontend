@@ -78,22 +78,21 @@ export default class Automation extends Component {
           <Trigger trigger={trigger} onChange={this.triggerChanged} />
         </ha-config-section>
 
-        { condition &&
-          <ha-config-section is-wide={isWide}>
-            <span slot='header'>Conditions</span>
-            <span slot='introduction'>
-              Conditions are an optional part of an automation rule and can be used to prevent
-              an action from happening when triggered. Conditions look very similar to triggers
-              but are very different. A trigger will look at events happening in the system
-              while a condition only looks at how the system looks right now. A trigger can
-              observe that a switch is being turned on. A condition can only see if a switch
-              is currently on or off.
-              <p><a href="https://home-assistant.io/docs/scripts/conditions/" target="_blank">
-                Learn more about conditions.
-              </a></p>
-            </span>
-            <Condition condition={condition} onChange={this.conditionChanged} />
-          </ha-config-section>}
+        <ha-config-section is-wide={isWide}>
+          <span slot='header'>Conditions</span>
+          <span slot='introduction'>
+            Conditions are an optional part of an automation rule and can be used to prevent
+            an action from happening when triggered. Conditions look very similar to triggers
+            but are very different. A trigger will look at events happening in the system
+            while a condition only looks at how the system looks right now. A trigger can
+            observe that a switch is being turned on. A condition can only see if a switch
+            is currently on or off.
+            <p><a href="https://home-assistant.io/docs/scripts/conditions/" target="_blank">
+              Learn more about conditions.
+            </a></p>
+          </span>
+          <Condition condition={condition} onChange={this.conditionChanged} />
+        </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
           <span slot='header'>Action</span>

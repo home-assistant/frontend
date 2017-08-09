@@ -15,7 +15,7 @@ export default class SunCondition extends Component {
     const condition = { ...this.props.condition };
 
     if (ev.target.selected) {
-      condition[key] = ev.target.value;
+      condition[key] = ev.target.selected;
     } else {
       delete condition[key];
     }
