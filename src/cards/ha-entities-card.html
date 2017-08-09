@@ -38,6 +38,9 @@
       .header-more-info {
         cursor: pointer;
       }
+      paper-icon-button[highlight] {
+        color: var(--accent-color);
+      }
     </style>
 
     <ha-card>
@@ -47,6 +50,12 @@
           <ha-entity-toggle
             hass='[[hass]]'
             state-obj='[[groupEntity]]'></ha-entity-toggle>
+        </template>
+        <template is='dom-if' if='[[showGroupPowerOff(groupEntity, states)]]'>
+          <paper-icon-button 
+            icon='mdi:power' 
+            highlight$='[[highlightGroupPowerOff(groupEntity)]]' 
+            on-tap='onGroupPowerOffTap'></paper-icon-button>
         </template>
       </div>
       <div class='states'>
@@ -115,26 +124,60 @@ Polymer({
   },
 
   showGroupToggle: function (groupEntity, states) {
-    if (!groupEntity || !states || groupEntity.attributes.control === 'hidden' ||
+    if (!groupEntity || !states || groupEntity.attributes.control ||
         (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;
     }
 
     // only show if we can toggle 2+ entities in group
+    return this.hasMultipleEntities();
+  },
+
+  showGroupPowerOff: function (groupEntity, states) {
+    if (!groupEntity || groupEntity.attributes.control !== 'power_off' ||
+        (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
+      return false;
+    }
+    
+    // only show if we can toggle 2+ entities in group
+    return this.hasMultipleEntities();
+  },
+
+  highlightGroupPowerOff: function (groupEntity) {
+    if (!groupEntity || groupEntity.state !== 'on') {
+      return false;
+    }
+
+    return true;
+  },
+
+  onGroupPowerOffTap: function (ev) {
+    ev.stopPropagation();
+    
+    if (this.groupEntity.state == 'on') {
+      this.hass.callService(
+        'homeassistant', 
+        'turn_off', 
+        { entity_id: this.groupEntity.entity_id }
+      );
+    }
+  },
+
+  hasMultipleEntities() {
     var canToggleCount = 0;
-    for (var i = 0; i < states.length; i++) {
-      if (!window.hassUtil.canToggleState(this.hass, states[i])) {
+    for (var i = 0; i < this.states.length; i++) {
+      if (!window.hassUtil.canToggleState(this.hass, this.states[i])) {
         continue;
       }
 
       canToggleCount++;
 
       if (canToggleCount > 1) {
-        break;
+        return true;
       }
     }
 
     return canToggleCount > 1;
-  },
+  }
 });
 </script>
