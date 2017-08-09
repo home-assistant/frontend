@@ -2,16 +2,16 @@ import { h, Component } from 'preact';
 
 import { onChangeEvent } from '../util';
 
-export default class NumericStateTrigger extends Component {
+export default class NumericStateCondition extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'trigger');
+    this.onChange = onChangeEvent.bind(this, 'condition');
   }
 
   /* eslint-disable camelcase */
-  render({ trigger }) {
-    const { value_template, entity_id, below, above } = trigger;
+  render({ condition }) {
+    const { value_template, entity_id, below, above } = condition;
     return (
       <div>
         <paper-input
@@ -43,7 +43,7 @@ export default class NumericStateTrigger extends Component {
   }
 }
 
-NumericStateTrigger.defaultConfig = {
+NumericStateCondition.defaultConfig = {
   entity_id: '',
   above: '',
   below: '',

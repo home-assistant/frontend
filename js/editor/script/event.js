@@ -3,7 +3,7 @@ import { h, Component } from 'preact';
 import JSONTextArea from '../json_textarea';
 import { onChangeEvent } from '../util';
 
-export default class CallServiceAction extends Component {
+export default class EventAction extends Component {
   constructor() {
     super();
 
@@ -19,24 +19,19 @@ export default class CallServiceAction extends Component {
   }
 
   render({ action }) {
-    const { alias, service, data } = action;
+    /* eslint-disable camelcase */
+    const { event, event_data } = action;
     return (
       <div>
         <paper-input
-          label="Alias"
-          name="alias"
-          value={alias}
-          onChange={this.onChange}
-        />
-        <paper-input
-          label="Service"
-          name="service"
-          value={service}
+          label="Event"
+          name="event"
+          value={event}
           onChange={this.onChange}
         />
         <JSONTextArea
           label="Service Data"
-          value={data}
+          value={event_data}
           onChange={this.serviceDataChanged}
         />
       </div>
@@ -44,9 +39,8 @@ export default class CallServiceAction extends Component {
   }
 }
 
-CallServiceAction.configKey = 'service';
-CallServiceAction.defaultConfig = {
-  alias: '',
-  service: '',
-  data: {}
+EventAction.configKey = 'event';
+EventAction.defaultConfig = {
+  event: '',
+  event_data: {},
 };

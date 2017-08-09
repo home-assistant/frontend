@@ -1,6 +1,7 @@
 import { h, Component } from 'preact';
 
 import TriggerRow from './trigger_row';
+import StateTrigger from './state';
 
 export default class Trigger extends Component {
   constructor() {
@@ -12,7 +13,8 @@ export default class Trigger extends Component {
 
   addTrigger() {
     const trigger = this.props.trigger.concat({
-      platform: 'event',
+      platform: 'state',
+      ...StateTrigger.defaultConfig,
     });
 
     this.props.onChange(trigger);

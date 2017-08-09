@@ -1,6 +1,7 @@
 import { h, Component } from 'preact';
 
 import Trigger from './trigger';
+import Condition from './condition';
 import Script from './script';
 
 export default class Automation extends Component {
@@ -9,6 +10,7 @@ export default class Automation extends Component {
 
     this.onChange = this.onChange.bind(this);
     this.triggerChanged = this.triggerChanged.bind(this);
+    this.conditionChanged = this.conditionChanged.bind(this);
     this.actionChanged = this.actionChanged.bind(this);
   }
 
@@ -23,6 +25,13 @@ export default class Automation extends Component {
     this.props.onChange({
       ...this.props.automation,
       trigger,
+    });
+  }
+
+  conditionChanged(condition) {
+    this.props.onChange({
+      ...this.props.automation,
+      condition,
     });
   }
 
@@ -83,12 +92,7 @@ export default class Automation extends Component {
                 Learn more about conditions.
               </a></p>
             </span>
-            <paper-card>
-              <div class='card-content'>
-                Conditions are not supported yet.
-                <pre>{JSON.stringify(condition, null, 2)}</pre>
-              </div>
-            </paper-card>
+            <Condition condition={condition} onChange={this.conditionChanged} />
           </ha-config-section>}
 
         <ha-config-section is-wide={isWide}>
