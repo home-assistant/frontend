@@ -48,5 +48,5 @@ CallServiceAction.configKey = 'service';
 CallServiceAction.defaultConfig = {
   alias: '',
   service: '',
-  service_data: {}
+  data: {}
 };

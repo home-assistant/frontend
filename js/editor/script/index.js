@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import ScriptAction from './script_action';
+import ActionRow from './action_row';
 
 export default class Script extends Component {
   constructor() {
@@ -34,7 +34,7 @@ export default class Script extends Component {
     return (
       <div class="script">
         {script.map((act, idx) => (
-          <ScriptAction
+          <ActionRow
             index={idx}
             action={act}
             onChange={this.actionChanged}

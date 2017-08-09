@@ -12,10 +12,15 @@ export default class SunCondition extends Component {
   }
 
   radioGroupPicked(key, ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.condition,
-      [key]: ev.target.selected,
-    });
+    const condition = { ...this.props.condition };
+
+    if (ev.target.selected) {
+      condition[key] = ev.target.value;
+    } else {
+      delete condition[key];
+    }
+
+    this.props.onChange(this.props.index, condition);
   }
 
   render({ condition }) {
@@ -39,6 +44,7 @@ export default class SunCondition extends Component {
           name="before_offset"
           value={before_offset}
           onChange={this.onChange}
+          disabled={before === undefined}
         />
 
         <label id="afterlabel">After:</label>
@@ -57,6 +63,7 @@ export default class SunCondition extends Component {
           name="after_offset"
           value={after_offset}
           onChange={this.onChange}
+          disabled={after === undefined}
         />
       </div>
     );
