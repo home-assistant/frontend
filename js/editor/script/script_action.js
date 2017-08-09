@@ -1,23 +1,29 @@
 import { h, Component } from 'preact';
 
-import CallService from './call_service';
-
-function getType(action) {
-  if ('service' in action) {
-    return 'Call Service';
-  }
-  return null;
-}
+import CallServiceAction from './call_service';
+import DelayAction from './delay';
+import EventAction from './event';
+import WaitAction from './wait';
 
 const TYPES = {
-  'Call Service': CallService,
-  Delay: null,
-  'Templated Delay': null,
-  Condition: null,
-  'Fire Event': null,
+  'Call Service': CallServiceAction,
+  Delay: DelayAction,
+  Wait: WaitAction,
+  // Condition: null,
+  'Fire Event': EventAction,
 };
 
 const OPTIONS = Object.keys(TYPES).sort();
+
+function getType(action) {
+  const keys = Object.keys(TYPES);
+  for (let i = 0; i < keys.length; i++) {
+    if (TYPES[keys[i]].configKey in action) {
+      return keys[i];
+    }
+  }
+  return null;
+}
 
 export default class Action extends Component {
   constructor() {
@@ -32,9 +38,7 @@ export default class Action extends Component {
     const oldType = getType(this.props.action);
 
     if (oldType !== newType) {
-      this.props.onChange(this.props.index, {
-        platform: newType,
-      });
+      this.props.onChange(this.props.index, TYPES[newType].defaultConfig);
     }
   }
 
@@ -47,9 +51,11 @@ export default class Action extends Component {
 
   render({ index, action, onChange }) {
     const type = getType(action);
-    const Comp = TYPES[type];
+    const Comp = type && TYPES[type];
     const selected = OPTIONS.indexOf(type);
     let content;
+
+    console.log('rendering', type, action)
 
     if (Comp) {
       content = (
@@ -60,7 +66,8 @@ export default class Action extends Component {
               selected={selected}
               oniron-select={this.typeChanged}
             >
-              {OPTIONS.map(opt => <paper-item>{opt}</paper-item>)}
+              {OPTIONS.map(opt =>
+                <paper-item disabled={TYPES[opt] === null}>{opt}</paper-item>)}
             </paper-listbox>
           </paper-dropdown-menu-light>
           <Comp
