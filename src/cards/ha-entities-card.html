@@ -46,12 +46,12 @@
     <ha-card>
       <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
         <div class='flex name'>[[computeTitle(states, groupEntity)]]</div>
-        <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
+        <template is='dom-if' if='[[showGroupToggle(groupEntity)]]'>
           <ha-entity-toggle
             hass='[[hass]]'
             state-obj='[[groupEntity]]'></ha-entity-toggle>
         </template>
-        <template is='dom-if' if='[[showGroupPowerOff(groupEntity, states)]]'>
+        <template is='dom-if' if='[[showGroupPowerOff(groupEntity)]]'>
           <paper-icon-button 
             icon='mdi:power' 
             highlight$='[[highlightGroupPowerOff(groupEntity)]]' 
@@ -123,8 +123,8 @@ Polymer({
     this.fire('hass-more-info', { entityId: entityId });
   },
 
-  showGroupToggle: function (groupEntity, states) {
-    if (!groupEntity || !states || groupEntity.attributes.control ||
+  showGroupToggle: function (groupEntity) {
+    if (!groupEntity || groupEntity.attributes.control ||
         (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;
     }
@@ -133,12 +133,12 @@ Polymer({
     return this.hasMultipleEntities();
   },
 
-  showGroupPowerOff: function (groupEntity, states) {
+  showGroupPowerOff: function (groupEntity) {
     if (!groupEntity || groupEntity.attributes.control !== 'power_off' ||
         (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;
     }
-    
+
     // only show if we can toggle 2+ entities in group
     return this.hasMultipleEntities();
   },
@@ -153,11 +153,11 @@ Polymer({
 
   onGroupPowerOffTap: function (ev) {
     ev.stopPropagation();
-    
-    if (this.groupEntity.state == 'on') {
+
+    if (this.groupEntity.state === 'on') {
       this.hass.callService(
-        'homeassistant', 
-        'turn_off', 
+        'homeassistant',
+        'turn_off',
         { entity_id: this.groupEntity.entity_id }
       );
     }
