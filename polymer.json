@@ -15,7 +15,8 @@
     "panels/kiosk/ha-panel-kiosk.html",
     "panels/logbook/ha-panel-logbook.html",
     "panels/map/ha-panel-map.html",
-    "panels/shopping-list/ha-panel-shopping-list.html"
+    "panels/shopping-list/ha-panel-shopping-list.html",
+    "panels/mailbox/ha-panel-mailbox.html",
   ],
   "sources": [
     "src/**/*",
