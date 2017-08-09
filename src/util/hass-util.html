@@ -302,6 +302,9 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'lock':
       return state && state === 'unlocked' ? 'mdi:lock-open' : 'mdi:lock';
 
+    case 'mailbox':
+      return 'mdi:mailbox';
+
     case 'media_player':
       return state && state !== 'off' && state !== 'idle' ?
         'mdi:cast-connected' : 'mdi:cast';
