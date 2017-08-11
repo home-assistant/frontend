@@ -3,6 +3,7 @@
 <script>
 (function () {
   var RECENT_THRESHOLD = 60000; // 1 minute
+  var DATE_CACHE_THRESHOLD = 180000; // 3 minute
   var DATE_CACHE = {};
   var RECENT_CACHE = {};
 
@@ -155,19 +156,29 @@
 
     getDate: function (startTime, endTime) {
       var filter = startTime.toISOString() + '?end_time=' + endTime.toISOString();
-      if (!DATE_CACHE[filter]) {
-        DATE_CACHE[filter] = this.hass.callApi('GET', 'history/period/' + filter).then(
-          function (stateHistory) {
-            return computeHistory(stateHistory);
-          },
-          function () {
-            DATE_CACHE[filter] = false;
-            return null;
-          }
-        );
+
+      var cache = DATE_CACHE[filter];
+
+      if (cache && Date.now() - cache.created < DATE_CACHE_THRESHOLD) {
+        return cache.data;
       }
 
-      return DATE_CACHE[filter];
+      var prom = this.hass.callApi('GET', 'history/period/' + filter).then(
+        function (stateHistory) {
+          return computeHistory(stateHistory);
+        },
+        function () {
+          DATE_CACHE[filter] = false;
+          return null;
+        }
+      );
+
+      DATE_CACHE[filter] = {
+        created: Date.now(),
+        data: prom,
+      };
+
+      return prom;
     },
   });
 }());
