@@ -91,7 +91,7 @@ export default class Automation extends Component {
               Learn more about conditions.
             </a></p>
           </span>
-          <Condition condition={condition} onChange={this.conditionChanged} />
+          <Condition condition={condition || []} onChange={this.conditionChanged} />
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
