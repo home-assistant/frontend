@@ -72,7 +72,7 @@
           ></paper-input>
         </template>
 
-        <p class='submit'>
+        <p class='submit' hidden$='[[!stateObj.attributes.submit_caption]]'>
           <paper-button
             raised
             disabled='[[isConfiguring]]'
@@ -82,7 +82,7 @@
               active='[[isConfiguring]]'
               hidden='[[!isConfiguring]]'
               alt='Configuring'></paper-spinner>
-            [[submitCaption]]
+            [[stateObj.attributes.submit_caption]]
           </paper-button>
 
         </p>
@@ -116,11 +116,6 @@ Polymer({
       value: false,
     },
 
-    submitCaption: {
-      type: String,
-      computed: 'computeSubmitCaption(stateObj)',
-    },
-
     fieldInput: {
       type: Object,
       value: function () { return {}; },
@@ -129,10 +124,6 @@ Polymer({
 
   computeIsConfigurable: function (stateObj) {
     return stateObj.state === 'configure';
-  },
-
-  computeSubmitCaption: function (stateObj) {
-    return stateObj.attributes.submit_caption || 'Set configuration';
   },
 
   fieldChanged: function (ev) {
