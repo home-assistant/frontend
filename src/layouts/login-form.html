@@ -57,7 +57,7 @@
           ></paper-input>
           <div class="layout horizontal center">
             <paper-checkbox for id='rememberLogin'>Remember</paper-checkbox>
-            <paper-button id='loginButton'>Log In</paper-button>
+            <paper-button on-tap='validatePassword'>Log In</paper-button>
           </div>
         </div>
         <div id="validatebox" hidden$="[[!showSpinner]]">
@@ -113,7 +113,6 @@ Polymer({
 
   listeners: {
     keydown: 'passwordKeyDown',
-    'loginButton.tap': 'validatePassword',
   },
 
   attached: function () {
