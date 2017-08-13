@@ -76,7 +76,7 @@ Polymer({
     var newVal = ev.target.checked;
 
     // HACK: https://github.com/PolymerElements/paper-toggle-button/issues/124
-    setTimeout(function() {
+    setTimeout(function () {
       const el = document.activeElement;
       el.blur();
       el.focus();
@@ -94,7 +94,7 @@ Polymer({
     this.toggleChecked = newVal;
 
     // HACK: https://github.com/PolymerElements/paper-toggle-button/issues/124
-    var el = this.shadowRoot.querySelector('paper-toggle-button')
+    var el = this.shadowRoot.querySelector('paper-toggle-button');
 
     if (el) {
       el.focus();
