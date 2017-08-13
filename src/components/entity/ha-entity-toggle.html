@@ -28,7 +28,7 @@
       <paper-icon-button icon="mdi:flash" on-tap="turnOn" state-active$='[[isOn]]'></paper-icon-button>
     </template>
     <template is='dom-if' if='[[!stateObj.attributes.assumed_state]]'>
-      <paper-toggle-button class='self-center'
+      <paper-toggle-button
         checked="[[toggleChecked]]"
         on-change="toggleChanged"></paper-toggle-button>
     </template>
@@ -75,6 +75,14 @@ Polymer({
   toggleChanged: function (ev) {
     var newVal = ev.target.checked;
 
+    // HACK: https://github.com/PolymerElements/paper-toggle-button/issues/124
+    setTimeout(function () {
+      const el = document.activeElement;
+      el.blur();
+      el.focus();
+    }, 0);
+    // END HACK
+
     if (newVal && !this.isOn) {
       this.callService(true);
     } else if (!newVal && this.isOn) {
@@ -84,6 +92,15 @@ Polymer({
 
   isOnChanged: function (newVal) {
     this.toggleChecked = newVal;
+
+    // HACK: https://github.com/PolymerElements/paper-toggle-button/issues/124
+    var el = this.shadowRoot.querySelector('paper-toggle-button');
+
+    if (el) {
+      el.focus();
+      el.blur();
+    }
+    // END HACK
   },
 
   forceStateChange: function () {
