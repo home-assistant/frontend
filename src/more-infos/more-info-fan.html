@@ -2,7 +2,7 @@
 
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
-<link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
@@ -12,13 +12,19 @@
     <style is='custom-style' include='iron-flex'></style>
     <style>
       .container-speed_list,
-      .container-direction {
+      .container-direction,
+      .container-oscillating {
         display: none;
       }
 
       .has-speed_list .container-speed_list,
-      .has-direction .container-direction {
+      .has-direction .container-direction,
+      .has-oscillating .container-oscillating {
         display: block;
+      }
+
+      paper-item {
+        cursor: pointer;
       }
     </style>
 
@@ -26,16 +32,16 @@
 
       <div class="container-speed_list">
         <paper-dropdown-menu label-float label='Speed'>
-          <paper-menu class='dropdown-content' selected='{{speedIndex}}'>
+          <paper-listbox slot="dropdown-content" selected='{{speedIndex}}'>
             <template is='dom-repeat'
                       items='[[stateObj.attributes.speed_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
 
-      <div class='container-oscillating' hidden$='[[computeHideOscillation(stateObj)]]'>
+      <div class='container-oscillating'>
         <div class='center horizontal layout single-row'>
           <div class='flex'>Oscillate</div>
           <paper-toggle-button
@@ -154,10 +160,6 @@ Polymer({
 
   computeIsRotatingRight: function (stateObj) {
     return stateObj.attributes.direction === 'right';
-  },
-
-  computeHideOscillation: function (stateObj) {
-    return stateObj.attributes.direction;
   },
 
 });

@@ -1,0 +1,85 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel='import' href='../../../bower_components/paper-listbox/paper-listbox.html'>
+<link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
+
+<link rel="import" href="../ha-config-section.html">
+
+<dom-module id="ha-config-section-themes">
+  <template>
+    <ha-config-section is-wide='[[isWide]]'>
+      <span slot='header'>Set a theme</span>
+      <span slot='introduction'>
+        Choose 'default' to use whatever theme the backend chooses or pick a theme for this device.
+      </span>
+
+      <paper-card>
+        <div class='card-content'>
+          <paper-dropdown-menu label='Theme' vertical-align='bottom'>
+            <paper-listbox
+              slot="dropdown-content"
+              selected='{{selectedTheme}}'
+            >
+              <template is='dom-repeat' items='[[themes]]' as='theme'>
+                <paper-item>[[theme]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+      </paper-card>
+    </ha-config-section>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-config-section-themes',
+
+  properties: {
+    hass: {
+      type: Object,
+    },
+
+    isWide: {
+      type: Boolean,
+    },
+
+    themes: {
+      type: Array,
+      computed: 'computeThemes(hass)',
+    },
+
+    selectedTheme: {
+      type: Number,
+    },
+  },
+
+  ready: function () {
+    if (this.hass.selectedTheme && this.themes.indexOf(this.hass.selectedTheme) > 0) {
+      this.selectedTheme = this.themes.indexOf(this.hass.selectedTheme);
+    } else if (!this.hass.selectedTheme) {
+      this.selectedTheme = 0;
+    }
+  },
+
+  observers: [
+    'selectionChanged(hass, selectedTheme)',
+  ],
+
+  computeThemes: function (hass) {
+    if (!hass) return [];
+    return ['Backend-selected', 'default'].concat(Object.keys(hass.themes.themes).sort());
+  },
+
+  selectionChanged: function (hass, selection) {
+    if (selection > 0 && selection < this.themes.length) {
+      if (hass.selectedTheme !== this.themes[selection]) {
+        this.fire('settheme', this.themes[selection]);
+      }
+    } else if (selection === 0 && hass.selectedTheme !== '') {
+      this.fire('settheme', '');
+    }
+  }
+});
+</script>

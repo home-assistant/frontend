@@ -1,0 +1,36 @@
+{
+  "entrypoint": "src/entrypoint.html",
+  "shell": "src/home-assistant.html",
+  "fragments": [
+    "panels/config/ha-panel-config.html",
+    "panels/dev-event/ha-panel-dev-event.html",
+    "panels/dev-info/ha-panel-dev-info.html",
+    "panels/dev-mqtt/ha-panel-dev-mqtt.html",
+    "panels/dev-service/ha-panel-dev-service.html",
+    "panels/dev-state/ha-panel-dev-state.html",
+    "panels/dev-template/ha-panel-dev-template.html",
+    "panels/hassio/ha-panel-hassio.html",
+    "panels/history/ha-panel-history.html",
+    "panels/iframe/ha-panel-iframe.html",
+    "panels/kiosk/ha-panel-kiosk.html",
+    "panels/logbook/ha-panel-logbook.html",
+    "panels/map/ha-panel-map.html",
+    "panels/shopping-list/ha-panel-shopping-list.html",
+    "panels/mailbox/ha-panel-mailbox.html"
+  ],
+  "sources": [
+    "src/**/*",
+    "panels/**/*"
+  ],
+  "lint": {
+    "rules": ["polymer-2-hybrid"]
+  },
+  "builds": [
+    {
+      "preset": "es5-bundled"
+    },
+    {
+      "preset": "es6-bundled"
+    }
+  ]
+}

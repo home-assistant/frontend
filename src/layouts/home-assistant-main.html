@@ -3,6 +3,10 @@
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel='import' href='../../bower_components/iron-pages/iron-pages.html'>
 
+<link rel='import' href='../../bower_components/app-route/app-route.html'>
+<link rel='import' href='../../bower_components/app-route/app-location.html'>
+
+
 <link rel='import' href='../layouts/partial-cards.html'>
 <link rel='import' href='../layouts/partial-panel-resolver.html'>
 <link rel="import" href="../dialogs/more-info-dialog.html">
@@ -10,11 +14,29 @@
 <link rel='import' href='../util/ha-url-sync.html'>
 
 <link rel='import' href='../components/ha-sidebar.html'>
+<link rel='import' href='../util/hass-util.html'>
 
 <dom-module id='home-assistant-main'>
   <template>
+    <style>
+      :host {
+	      color: var(--primary-text-color);
+      }
+    </style>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
     <ha-url-sync hass='[[hass]]'></ha-url-sync>
+    <app-location route="{{route}}"></app-location>
+    <app-route
+      route="{{route}}"
+      pattern="/:panel"
+      data="{{routeData}}"
+      tail="{{routeTail}}"
+    ></app-route>
+    <app-route
+      route="{{route}}"
+      pattern="/states"
+      tail="{{statesRouteTail}}"
+    ></app-route>
     <ha-voice-command-dialog
       hass='[[hass]]'
       id='voiceDialog'
@@ -24,15 +46,22 @@
 
     <paper-drawer-panel id='drawer'
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
-      responsive-width='0' disable-swipe='[[isSelectedMap]]'
-      disable-edge-swipe='[[isSelectedMap]]'>
-      <ha-sidebar drawer narrow='[[narrow]]' hass='[[hass]]' language='[[language]]' resources='[[resources]]'></ha-sidebar>
+      responsive-width='0' disable-swipe='[[_computeDisableSwipe(routeData)]]'
+      disable-edge-swipe='[[_computeDisableSwipe(routeData)]]'>
+      <ha-sidebar
+        slot="drawer"
+        narrow='[[narrow]]'
+        hass='[[hass]]'
+        route='[[routeData]]'
+        language='[[language]]'
+        resources='[[resources]]'
+      ></ha-sidebar>
 
       <iron-pages
-        main
+        slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
-        selected='[[currentPanel]]'
+        selected='[[_computeSelected(routeData)]]'
         selected-attribute='panel-visible'
       >
         <partial-cards
@@ -40,12 +69,15 @@
           narrow='[[narrow]]'
           hass='[[hass]]'
           show-menu='[[dockedSidebar]]'
+          route='[[statesRouteTail]]'
+          show-tabs
         ></partial-cards>
 
         <partial-panel-resolver
           id='panel-resolver'
           narrow='[[narrow]]'
           hass='[[hass]]'
+          route='[[route]]'
           show-menu='[[dockedSidebar]]'
         ></partial-panel-resolver>
 
@@ -56,89 +88,90 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'home-assistant-main',
+(function () {
+  var NON_SWIPABLE_PANELS = ['kiosk', 'map'];
+  Polymer({
+    is: 'home-assistant-main',
 
-  behaviors: [
-    Polymer.AppLocalizeBehavior,
-  ],
+    properties: {
+      hass: Object,
 
-  properties: {
-    hass: {
-      type: Object,
-      value: null,
+      narrow: Boolean,
+
+      route: {
+        type: Object,
+        observer: '_routeChanged',
+      },
+      routeData: Object,
+      routeTail: Object,
+      statesRouteTail: Object,
+
+      dockedSidebar: {
+        type: Boolean,
+        computed: 'computeDockedSidebar(hass)',
+      },
+      language: {
+        type: String,
+      },
+      resources: {
+        type: Object,
+      },
     },
 
-    narrow: {
-      type: Boolean,
+    listeners: {
+      'hass-open-menu': 'handleOpenMenu',
+      'hass-close-menu': 'handleCloseMenu',
+      'hass-start-voice': 'handleStartVoice',
     },
 
-    currentPanel: {
-      type: String,
-      computed: 'computeCurrentPanel(hass)',
-      observer: 'currentPanelChanged',
+    _routeChanged: function () {
+      if (this.narrow) {
+        this.$.drawer.closeDrawer();
+      }
     },
 
-    dockedSidebar: {
-      type: Boolean,
-      computed: 'computeDockedSidebar(hass)',
+    handleStartVoice: function (ev) {
+      ev.stopPropagation();
+      this.$.voiceDialog.dialogOpen = true;
     },
 
-    language: {
-      type: String,
+    handleOpenMenu: function () {
+      if (this.narrow) {
+        this.$.drawer.openDrawer();
+      } else {
+        this.fire('hass-dock-sidebar', { dock: true });
+      }
     },
 
-    resources: {
-      type: Object,
-    },
-  },
-
-  listeners: {
-    'hass-open-menu': 'handleOpenMenu',
-    'hass-close-menu': 'handleCloseMenu',
-    'hass-start-voice': 'handleStartVoice',
-  },
-
-  handleStartVoice: function (ev) {
-    ev.stopPropagation();
-    this.$.voiceDialog.startListening();
-  },
-
-  handleOpenMenu: function () {
-    if (this.narrow) {
-      this.$.drawer.openDrawer();
-    } else {
-      this.fire('hass-dock-sidebar', { dock: true });
-    }
-  },
-
-  handleCloseMenu: function () {
-    this.$.drawer.closeDrawer();
-    if (this.dockedSidebar) {
-      this.fire('hass-dock-sidebar', { dock: false });
-    }
-  },
-
-  currentPanelChanged: function () {
-    if (this.narrow) {
+    handleCloseMenu: function () {
       this.$.drawer.closeDrawer();
-    }
-  },
+      if (this.dockedSidebar) {
+        this.fire('hass-dock-sidebar', { dock: false });
+      }
+    },
 
-  attached: function () {
-    window.removeInitMsg();
-  },
+    attached: function () {
+      window.removeInitMsg();
+      if (document.location.pathname === '/') {
+        history.replaceState(null, null, '/states');
+      }
+    },
 
-  computeForceNarrow: function (narrow, dockedSidebar) {
-    return narrow || !dockedSidebar;
-  },
+    computeForceNarrow: function (narrow, dockedSidebar) {
+      return narrow || !dockedSidebar;
+    },
 
-  computeCurrentPanel: function (hass) {
-    return hass.currentPanel;
-  },
+    computeDockedSidebar: function (hass) {
+      return hass.dockedSidebar;
+    },
 
-  computeDockedSidebar: function (hass) {
-    return hass.dockedSidebar;
-  },
-});
+    _computeSelected: function (routeData) {
+      return routeData.panel || 'states';
+    },
+
+    _computeDisableSwipe: function (routeData) {
+      return NON_SWIPABLE_PANELS.indexOf(routeData.panel) !== -1;
+    },
+  });
+}());
 </script>

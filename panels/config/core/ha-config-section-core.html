@@ -1,19 +1,13 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-<link rel='import' href='../../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 
-<link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-
-<link rel="import" href="../../../src/components/ha-menu-button.html">
+<link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
 <link rel="import" href="../../../src/resources/ha-style.html">
 
 <link rel="import" href="../ha-config-section.html">
-<link rel="import" href="../ha-call-service-button.html">
 
 <dom-module id="ha-config-section-core">
   <template>
@@ -45,10 +39,6 @@
 
       .validate-log {
         white-space: pre-wrap;
-      }
-
-      .card-actions.warning ha-call-service-button {
-        color: var(--google-red-500);
       }
     </style>
     <ha-config-section
@@ -104,7 +94,13 @@
             domain='automation'
             service='reload'
             hidden$='[[!automationLoaded(hass)]]'
-          >Reload automation</ha-call-service-button>
+          >Reload Automation</ha-call-service-button>
+          <ha-call-service-button
+            hass='[[hass]]'
+            domain='script'
+            service='reload'
+            hidden$='[[!scriptLoaded(hass)]]'
+          >Reload Scripts</ha-call-service-button>
         </div>
       </paper-card>
 
@@ -114,11 +110,13 @@
         </div>
         <div class='card-actions warning'>
           <ha-call-service-button
+            class='warning'
             hass='[[hass]]'
             domain='homeassistant'
             service='restart'
           >Restart</ha-call-service-button>
           <ha-call-service-button
+            class='warning'
             hass='[[hass]]'
             domain='homeassistant'
             service='stop'
@@ -166,6 +164,10 @@ Polymer({
 
   automationLoaded: function (hass) {
     return window.hassUtil.isComponentLoaded(hass, 'automation');
+  },
+
+  scriptLoaded: function (hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'script');
   },
 
   validateConfig: function () {

@@ -103,8 +103,8 @@ Polymer({
   },
 
   updateCameraFeedSrc: function (stateObj) {
-    const attr = stateObj.attributes;
-    const time = (new Date()).getTime();
+    var attr = stateObj.attributes;
+    var time = (new Date()).getTime();
     this.cameraFeedSrc = attr.entity_picture + '&time=' + time;
   },
 

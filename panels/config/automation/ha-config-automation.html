@@ -1,0 +1,122 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel='import' href='../../../bower_components/app-route/app-route.html'>
+
+<link rel="import" href="./ha-automation-picker.html">
+<link rel="import" href="./ha-automation-editor.html">
+
+<dom-module id="ha-config-automation">
+  <template>
+    <style>
+      ha-automation-picker,
+      ha-automation-editor {
+        height: 100%;
+      }
+    </style>
+    <app-route
+      route='[[route]]'
+      pattern='/edit/:automation'
+      data="{{_routeData}}"
+      active="{{_edittingAddon}}"
+    ></app-route>
+    <app-route
+      route='[[route]]'
+      pattern='/new'
+      active="{{_creatingNew}}"
+    ></app-route>
+
+    <template is='dom-if' if='[[!showEditor]]'>
+      <ha-automation-picker
+        narrow='[[narrow]]'
+        show-menu='[[showMenu]]'
+        automations='[[automations]]'
+        is-wide='[[isWide]]'
+      ></ha-automation-picker>
+    </template>
+
+    <template is='dom-if' if='[[showEditor]]' restamp>
+      <ha-automation-editor
+        hass='[[hass]]'
+        automation='[[automation]]'
+        is-wide='[[isWide]]'
+        creating-new='[[_creatingNew]]'
+      ></ha-automation-editor>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-config-automation',
+
+  properties: {
+    hass: Object,
+    narrow: Boolean,
+    showMenu: Boolean,
+    route: Object,
+    isWide: Boolean,
+    _routeData: Object,
+    _routeMatches: Boolean,
+    _creatingNew: Boolean,
+    _edittingAddon: Boolean,
+
+    automations: {
+      type: Array,
+      computed: 'computeAutomations(hass)',
+    },
+
+    automation: {
+      type: Object,
+      computed: 'computeAutomation(automations, _edittingAddon, _routeData)',
+    },
+
+    showEditor: {
+      type: Boolean,
+      computed: 'computeShowEditor(_edittingAddon, _creatingNew)',
+    }
+  },
+
+  computeAutomation: function (automations, edittingAddon, routeData) {
+    if (!automations || !edittingAddon) {
+      return null;
+    }
+    for (var i = 0; i < automations.length; i++) {
+      if (automations[i].attributes.id === routeData.automation) {
+        return automations[i];
+      }
+    }
+    return null;
+  },
+
+  computeAutomations: function (hass) {
+    var automations = [];
+
+    Object.keys(hass.states).forEach(function (key) {
+      var entity = hass.states[key];
+
+      if (window.hassUtil.computeDomain(entity) === 'automation' &&
+          'id' in entity.attributes) {
+        automations.push(entity);
+      }
+    });
+
+    return automations.sort(function entitySortBy(entityA, entityB) {
+      var nameA = (entityA.attributes.alias ||
+                   entityA.entity_id).toLowerCase();
+      var nameB = (entityB.attributes.alias ||
+                   entityB.entity_id).toLowerCase();
+
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+  },
+
+  computeShowEditor: function (_edittingAddon, _creatingNew) {
+    return _creatingNew || _edittingAddon;
+  },
+});
+</script>

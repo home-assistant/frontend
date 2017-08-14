@@ -18,6 +18,12 @@
           "browserName": "MicrosoftEdge",
           "platform": "Windows 10",
           "version": "14.14393"
+        }, {
+          "deviceName": "Android GoogleAPI Emulator",
+          "platformName": "Android",
+          "platformVersion": "7.0",
+          "browserName": "Chrome",
+          "appiumVersion": "1.6.3"
         }
       ]
     }

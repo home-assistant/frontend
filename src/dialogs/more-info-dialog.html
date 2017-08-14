@@ -16,6 +16,7 @@
       paper-dialog {
         font-size: 14px;
         width: 365px;
+        border-radius: 2px;
       }
 
       paper-dialog[data-domain=camera] {
@@ -44,6 +45,8 @@
           left: 0px;
           right: 0px;
           overflow: scroll;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
         }
       }
 
@@ -65,8 +68,11 @@
             data='{{stateHistory}}'
             is-loading='{{stateHistoryLoading}}'
           ></ha-state-history-data>
-          <state-history-charts history-data="[[stateHistory]]"
-            is-loading-data="[[isLoadingHistoryData]]"></state-history-charts>
+          <state-history-charts
+            history-data="[[stateHistory]]"
+            is-loading-data="[[isLoadingHistoryData]]"
+            up-to-now>
+          </state-history-charts>
         </div>
       </template>
       <paper-dialog-scrollable id='scrollable'>

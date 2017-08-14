@@ -132,27 +132,27 @@
   });
 
   Object.assign(window.MediaPlayerEntity.prototype, {
-    mediaPlayPause() {
+    mediaPlayPause: function () {
       this.callService('media_play_pause');
     },
 
-    nextTrack() {
+    nextTrack: function () {
       this.callService('media_next_track');
     },
 
-    playbackControl() {
+    playbackControl: function () {
       this.callService('media_play_pause');
     },
 
-    previousTrack() {
+    previousTrack: function () {
       this.callService('media_previous_track');
     },
 
-    setVolume(volume) {
+    setVolume: function (volume) {
       this.callService('volume_set', { volume_level: volume });
     },
 
-    togglePower() {
+    togglePower: function () {
       if (this.isOff) {
         this.turnOn();
       } else {
@@ -160,32 +160,32 @@
       }
     },
 
-    turnOff() {
+    turnOff: function () {
       this.callService('turn_off');
     },
 
-    turnOn() {
+    turnOn: function () {
       this.callService('turn_on');
     },
 
-    volumeDown() {
+    volumeDown: function () {
       this.callService('volume_down');
     },
 
-    volumeMute(mute) {
+    volumeMute: function (mute) {
       if (!this.supportsVolumeMute) {
         throw new Error('Muting volume not supported');
       }
       this.callService('volume_mute', { is_volume_muted: mute });
     },
 
-    volumeUp() {
+    volumeUp: function () {
       this.callService('volume_up');
     },
 
     // helper method
 
-    callService(service, data) {
+    callService: function (service, data) {
       var serviceData = data || {};
       serviceData.entity_id = this.stateObj.entity_id;
       this.hass.callService('media_player', service, serviceData);

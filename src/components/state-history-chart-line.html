@@ -44,6 +44,10 @@
         observer: 'dataChanged',
       },
 
+      endTime: {
+        type: Object,
+      },
+
       chartEngine: {
         type: Object,
       },
@@ -84,6 +88,7 @@
       }
 
       options = {
+        backgroundColor: '#fafafa',
         legend: { position: 'top' },
         interpolateNulls: true,
         titlePosition: 'none',
@@ -115,19 +120,21 @@
         return new Date(states[0].last_changed);
       })));
 
-      endTime = new Date(Math.max.apply(null, deviceStates.map(function (states) {
-        return new Date(states[states.length - 1].last_changed);
-      })));
+      endTime = this.endTime ||
+        new Date(Math.max.apply(null, deviceStates.map(states =>
+          new Date(states[states.length - 1].last_changed)
+        )));
       if (endTime > new Date()) {
         endTime = new Date();
       }
 
       daysDelta = (endTime - startTime) / (24 * 3600 * 1000);
-      if (daysDelta > 30) {
+      // Avoid rounding up when the API returns a few extra seconds.
+      if (daysDelta > 30.1) {
         options.hAxis.format = 'MMM d';
-      } else if (daysDelta > 3) {
+      } else if (daysDelta > 3.1) {
         options.hAxis.format = 'EEE, MMM d';
-      } else if (daysDelta > 1) {
+      } else if (daysDelta > 1.1) {
         options.hAxis.format = 'EEE, MMM d, H:mm';
       }
 
@@ -145,11 +152,17 @@
         dataTable.addColumn({ type: 'datetime', id: 'Time' });
 
         function pushData(values, noInterpolationValues) {
+          var timestamp = values[0];
+          if (timestamp > endTime) {
+            // Drop datapoints that are after the requested endTime. This could happen if
+            // endTime is "now" and client time is not in sync with server time.
+            return;
+          }
           if (prevValues && noInterpolationValues) {
             // if we have to prevent interpolation, we add an old value for each
             // value that should not be interpolated at the same time that our new
             // line will be published.
-            data.push([values[0]].concat(prevValues.slice(1).map(
+            data.push([timestamp].concat(prevValues.slice(1).map(
               function (val, index) {
                 return noInterpolationValues[index] ? val : null;
               })));
@@ -158,44 +171,7 @@
           prevValues = values;
         }
 
-        if (domain === 'thermostat') {
-          // We differentiate between thermostats that have a target temperature
-          // range versus ones that have just a target temperature
-          hasTargetRange = states.reduce(
-            function (cum, cur) {
-              return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
-            }, false);
-
-          dataTable.addColumn('number', name + ' current temperature');
-
-          if (hasTargetRange) {
-            dataTable.addColumn('number', name + ' target temperature high');
-            dataTable.addColumn('number', name + ' target temperature low');
-
-            noInterpolations = [false, true, true];
-
-            processState = function (state) {
-              var curTemp = saveParseFloat(state.attributes.current_temperature);
-              var targetHigh = saveParseFloat(state.attributes.target_temp_high);
-              var targetLow = saveParseFloat(state.attributes.target_temp_low);
-              pushData(
-                [new Date(state.last_updated), curTemp, targetHigh, targetLow],
-                noInterpolations);
-            };
-          } else {
-            dataTable.addColumn('number', name + ' target temperature');
-
-            noInterpolations = [false, true];
-
-            processState = function (state) {
-              var curTemp = saveParseFloat(state.attributes.current_temperature);
-              var target = saveParseFloat(state.attributes.temperature);
-              pushData([new Date(state.last_updated), curTemp, target], noInterpolations);
-            };
-          }
-
-          states.forEach(processState);
-        } else if (domain === 'climate') {
+        if (domain === 'thermostat' || domain === 'climate') {
           // We differentiate between thermostats that have a target temperature
           // range versus ones that have just a target temperature
           hasTargetRange = states.reduce(

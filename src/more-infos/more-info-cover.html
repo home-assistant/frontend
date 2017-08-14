@@ -10,12 +10,14 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      .current_position, .current_tilt_position {
+      .current_position, .tilt {
         max-height: 0px;
         overflow: hidden;
       }
       .has-current_position .current_position,
-      .has-current_tilt_position .current_tilt_position {
+      .has-set_tilt_position .tilt,
+      .has-current_tilt_position .tilt
+      {
         max-height: 90px;
       }
 
@@ -23,7 +25,6 @@
         visibility: hidden !important;
       }
     </style>
-
     <div class$='[[computeClassNames(stateObj)]]'>
 
       <div class='current_position'>
@@ -36,19 +37,12 @@
           on-change='coverPositionSliderChanged'></paper-slider>
       </div>
 
-      <div class='current_tilt_position'>
+      <div class='tilt'>
         <div>Tilt position</div>
-        <paper-icon-button icon="mdi:arrow-top-right" 
-          on-tap='onOpenTiltTap' title='Open tilt'
-          invisible$='[[!entityObj.supportsOpenTilt]]'
-          disabled='[[entityObj.isFullyOpenTilt]]'></paper-icon-button>
-        <paper-icon-button icon="mdi:stop" on-tap='onStopTiltTap'
-          invisible$='[[!entityObj.supportsStopTilt]]'
-          title='Stop tilt'></paper-icon-button>
-        <paper-icon-button icon="mdi:arrow-bottom-left"
-          on-tap='onCloseTiltTap' title='Close tilt'
-          invisible$='[[!entityObj.supportsCloseTilt]]'
-          disabled='[[entityObj.isFullyClosedTilt]]'></paper-icon-button>
+        <div>
+          <ha-cover-tilt-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]">
+          </ha-cover-tilt-controls>
+        </div>
         <paper-slider
           min='0' max='100'
           value='{{coverTiltPositionSliderValue}}'
@@ -87,6 +81,7 @@ Polymer({
     coverTiltPositionSliderValue: {
       type: Number,
     },
+
   },
 
   computeEntityObj: function (hass, stateObj) {
@@ -98,9 +93,16 @@ Polymer({
     this.coverTiltPositionSliderValue = newVal.attributes.current_tilt_position;
   },
 
+  featureClassNames: {
+    128: 'has-set_tilt_position',
+  },
+
   computeClassNames: function (stateObj) {
-    return window.hassUtil.attributeClassNames(
-      stateObj, ['current_position', 'current_tilt_position']);
+    var classes = [
+      window.hassUtil.attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
+      window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
+    ];
+    return classes.join(' ');
   },
 
   coverPositionSliderChanged: function (ev) {
@@ -111,16 +113,5 @@ Polymer({
     this.entityObj.setCoverTiltPosition(ev.target.value);
   },
 
-  onOpenTiltTap: function () {
-    this.entityObj.openCoverTilt();
-  },
-
-  onCloseTiltTap: function () {
-    this.entityObj.closeCoverTilt();
-  },
-
-  onStopTiltTap: function () {
-    this.entityObj.stopCoverTilt();
-  },
 });
 </script>

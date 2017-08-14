@@ -2,8 +2,8 @@
 
 This is the repository for the official [Home Assistant](https://home-assistant.io) frontend. The frontend is built on top of the following technologies:
 
- * [Polymer](https://www.polymer-project.org/1.0/)
- * [NuclearJS](http://optimizely.github.io/nuclear-js/)
+ * [Websockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
+ * [Polymer](https://www.polymer-project.org/)
  * [Rollup](http://rollupjs.org/) to package Home Assistant JS
  * [Bower](https://bower.io) for Polymer package management
 

@@ -3,11 +3,10 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../../bower_components/paper-slider/paper-slider.html'>
-<link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
-<link rel="import" href="../../bower_components/paper-range-slider/paper-range-slider.html">
 
 <link rel="import" href='../components/ha-climate-control.html'>
 
@@ -52,6 +51,10 @@
         width: 100%;
       }
 
+      paper-item {
+        cursor: pointer;
+      }
+
       paper-slider {
         width: 100%;
       }
@@ -76,15 +79,6 @@
         --paper-slider-secondary-color: var(--paper-blue-400);
       }
 
-      paper-range-slider {
-        --paper-range-slider-lower-color: var(--paper-orange-400);
-        --paper-range-slider-active-color: var(--paper-green-400);
-        --paper-range-slider-higher-color: var(--paper-blue-400);
-        --paper-range-slider-knob-color: var(--primary-color);
-        --paper-range-slider-pin-color: var(--primary-color);
-        --paper-range-slider-width: 100%;
-      }
-
       .single-row {
         padding: 8px 0;
       }
@@ -102,7 +96,7 @@
           <ha-climate-control
              value='[[stateObj.attributes.temperature]]'
              units='[[stateObj.attributes.unit_of_measurement]]'
-             step='[[computeTemperatureStepSize(stateObj.attributes.unit_of_measurement)]]'
+             step='[[computeTemperatureStepSize(stateObj)]]'
              min='[[stateObj.attributes.min_temp]]'
              max='[[stateObj.attributes.max_temp]]'
              on-change='targetTemperatureChanged'
@@ -129,35 +123,35 @@
       <div class='container-operation_list'>
         <div class='controls'>
           <paper-dropdown-menu label-float label='Operation'>
-            <paper-menu class="dropdown-content" selected="{{operationIndex}}">
+            <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
               <template is='dom-repeat'
                         items='[[stateObj.attributes.operation_list]]'>
                 <paper-item class="capitalize">[[item]]</paper-item>
               </template>
-            </paper-menu>
+            </paper-listbox>
           </paper-dropdown-menu>
         </div>
       </div>
 
       <div class='container-fan_list'>
         <paper-dropdown-menu label-float label='Fan Mode'>
-          <paper-menu class="dropdown-content" selected="{{fanIndex}}">
+          <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.fan_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
 
       <div class='container-swing_list'>
         <paper-dropdown-menu label-float label='Swing Mode'>
-          <paper-menu class="dropdown-content" selected="{{swingIndex}}">
+          <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.swing_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
 
@@ -226,9 +220,8 @@ Polymer({
   },
 
   stateObjChanged: function (newVal, oldVal) {
-    this.targetTemperatureSliderValue = newVal.attributes.temperature;
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
-    this.auxheatToggleChecked = newVal.attributes.aux_heat === 'on';
+    this.auxToggleChecked = newVal.attributes.aux_heat === 'on';
 
     if (newVal.attributes.fan_list) {
       this.fanIndex = newVal.attributes.fan_list.indexOf(
@@ -258,8 +251,10 @@ Polymer({
     }
   },
 
-  computeTemperatureStepSize: function (units) {
-    if (units.indexOf('F') !== -1) {
+  computeTemperatureStepSize: function (stateObj) {
+    if (stateObj.attributes.target_temp_step) {
+      return stateObj.attributes.target_temp_step;
+    } else if (stateObj.attributes.unit_of_measurement.indexOf('F') !== -1) {
       return 1;
     }
     return 0.5;

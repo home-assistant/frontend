@@ -1,11 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
-
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
-
 <link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
-
 <link rel='import' href='../components/ha-card.html'>
-<link rel='import' href='../components/ha-attributes.html'>
 <dom-module id='ha-weather-card'>
   <template>
     <style>
@@ -17,12 +13,57 @@
           color: var(--secondary-text-color);
           text-align: right;
         }
+        .condicon {
+          text-align: center;
+          font-size: 4em;
+        }
+        .condtemp {
+          text-align: center;
+          font-size: 4em;
+        }
+        div.cond {
+          display: inline;
+        }
+        div.conddetails {
+          float: right;
+          display: block table;
+          overflow: auto;
+          text-align: right;
+        }
+        span.line {
+          display: block;
+        }
+        .condsmall {
+          font-size: 1em;
+        }
+        .clear {
+          clear: both;
+        }
     </style>
     <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <div id='chart_id' hidden$="[[!stateObj.attributes.forecast]]"></div>
-        <ha-attributes state-obj='[[stateObj]]' extra-filters='forecast'></ha-attributes>
+        <div class='condpanel'>
+          <div class='cond condicon'>[[nowCond]]</div>
+          <div class='cond condtemp'>[[attr.temperature]]°</div>
+          <div class='cond conddetails'>
+            <div class="condsmall" hidden$="[[!attr.wind_speed]]">
+              Wind: 
+              <span hidden$="[[!attr.wind_speed]]">
+                [[attr.wind_speed]]
+              </span>
+              <span hidden$="[[!windBearing]]">[[windBearing]]</span>
+            </div>
+            <div class="condsmall" hidden$="[[!attr.humidity]]">
+              Humidity: [[attr.humidity]]%
+            </div>
+            <div class="condsmall" hidden$="[[!attr.visibility]]">
+              Visibility: [[attr.visibility]]
+            </div>
+          </div>
+          <div class='clear'></div>
+        </div>
+        <div id='chart_id' hidden$="[[!attr.forecast]]"></div>
       </div>
     </ha-card>
   </template>
@@ -31,6 +72,28 @@
 <script>
 (function () {
   'use strict';
+
+  var _WEATHER_TO_ICON = {
+    cloudy: '\u2601\ufe0f',
+    fog: '\uD83C\uDF2B\ufe0f',
+    hail: 'Hail',
+    lightning: '\uD83C\uDF29\ufe0f',
+    'lightning-rainy': '\u26c8\ufe0f',
+    partlycloudy: '\u26c5\ufe0f',
+    pouring: '\uD83D\uDCA7\ufe0f',
+    rainy: '\uD83C\uDF27\ufe0f',
+    snowy: '\uD83C\uDF28\ufe0f',
+    'snowy-rainy': '\uD83C\uDF28\ufe0f',
+    sunny: '\u2600\ufe0f',
+    windy: '\uD83C\uDF2C\ufe0f',
+    'windy-variant': '\uD83C\uDF2C\ufe0f',
+    exceptional: '\u2b55\ufe0f',
+  };
+
+  var _DEGREE_TEXT = [
+    'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
+  ];
 
   Polymer({
     is: 'ha-weather-card',
@@ -49,7 +112,6 @@
     computeTitle: function (stateObj) {
       return stateObj.attributes.friendly_name;
     },
-
     getDataArray: function () {
       var dataArray = [];
       var data = this.stateObj.attributes.forecast;
@@ -59,11 +121,14 @@
         return [];
       }
 
-      // Current values
-      dataArray.push([new Date(), this.stateObj.attributes.temperature]);
-
       for (i = 0; i < data.length; i++) {
-        dataArray.push([new Date(data[i].datetime), data[i].temperature]);
+        var d = data[i];
+        if (!d.condition) {
+          dataArray.push([new Date(d.datetime), null, d.temperature, d.templow]);
+        } else {
+          dataArray.push([new Date(d.datetime), _WEATHER_TO_ICON[data[i].condition],
+            d.temperature, d.templow]);
+        }
       }
 
       return dataArray;
@@ -74,6 +139,15 @@
         return;
       }
 
+      if (!this.stateObj.attributes) {
+        return;
+      }
+
+      this.attr = this.stateObj.attributes;
+
+      this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
+      this.windBearing = this.windBearingToText(this.attr.wind_bearing);
+
       if (!window.google) {
         return;
       }
@@ -83,13 +157,14 @@
           this.$.chart_id);
       }
 
-      if (!this.stateObj.attributes || !this.stateObj.attributes.forecast) {
+      if (!this.attr.forecast) {
         return;
       }
 
+      this.data = this.getDataArray();
+
       this.drawChart();
     },
-
     drawChart: function () {
       var dataGrid = new window.google.visualization.DataTable();
       var options = {
@@ -106,12 +181,22 @@
           bottom: 25,
         },
         curveType: 'function',
+        focusTarget: 'category',
+        colors: ['red', 'blue'],
+        annotations: {
+          textStyle: {
+            fontSize: '24',
+          }
+        }
       };
 
       dataGrid.addColumn('datetime', 'Time');
+      dataGrid.addColumn({ type: 'string', role: 'annotation' });
       dataGrid.addColumn('number', 'Temperature');
+      dataGrid.addColumn('number', 'Temperature Low');
 
-      dataGrid.addRows(this.getDataArray());
+      var dataArray = this.getDataArray();
+      dataGrid.addRows(dataArray);
 
       this.chartEngine.draw(dataGrid, options);
     },
@@ -124,6 +209,14 @@
         }.bind(this),
       });
     },
+
+    windBearingToText: function (degree) {
+      var degreenum = parseInt(degree);
+      if (isFinite(degreenum)) {
+        return _DEGREE_TEXT[(((degreenum + 11.25) / 22.5) | 0) % 16];
+      }
+      return '';
+    }
   });
 }());
 </script>

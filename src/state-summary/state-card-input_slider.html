@@ -60,11 +60,10 @@ Polymer({
   },
 
   stateObjectChanged: function (newVal) {
-    this.value = Number(newVal.state);
     this.min = Number(newVal.attributes.min);
     this.max = Number(newVal.attributes.max);
-
     this.step = Number(newVal.attributes.step);
+    this.value = Number(newVal.state);
   },
 
   selectedValueChanged: function () {

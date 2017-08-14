@@ -1,0 +1,72 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
+<link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
+
+<dom-module id="hassio-hass-update">
+  <template>
+    <style include="iron-flex ha-style">
+      paper-card {
+        display: block;
+        height: 100%;
+        margin-bottom: 32px;
+      }
+      .errors {
+        color: var(--google-red-500);
+        margin-top: 16px;
+      }
+    </style>
+
+    <template is='dom-if' if='[[_computeUpdateAvailable(data)]]'>
+      <paper-card heading='Update Available! 🎉'>
+        <div class="card-content">
+          You are currently running Home Assistant version [[data.version]] and [[data.last_version]] is available.
+          <template is='dom-if' if='[[errors]]'>
+            <div class='errors'>Error: [[errors]]</div>
+          </template>
+        </div>
+        <div class='card-actions'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="hassio/homeassistant/update"
+          >Update</ha-call-api-button>
+        </div>
+      </paper-card>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'hassio-hass-update',
+
+  properties: {
+    hass: Object,
+    data: Object,
+  },
+
+  listeners: {
+    'hass-api-called': 'apiCalled',
+  },
+
+  apiCalled: function (ev) {
+    if (ev.detail.success) {
+      this.errors = null;
+      return;
+    }
+
+    var response = ev.detail.response;
+
+    if (typeof response.body === 'object') {
+      this.errors = response.body.message || 'Unknown error';
+    } else {
+      this.errors = response.body;
+    }
+  },
+
+  _computeUpdateAvailable: function (data) {
+    return data.version !== data.last_version;
+  },
+});
+</script>

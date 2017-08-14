@@ -49,10 +49,7 @@ Polymer({
 
   onTap: function (ev) {
     ev.stopPropagation();
-    if (ev.target === this.$.link) {
-      // Only open window if we clicked on card but not the link
-      return;
-    }
+    ev.preventDefault();
     window.open(this.stateObj.state, '_blank');
   },
 });

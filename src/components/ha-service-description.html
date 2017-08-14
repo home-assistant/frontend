@@ -1,0 +1,27 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id='ha-service-description'>
+  <template>
+    [[_getDescription(hass, domain, service)]]
+  </template>
+</dom-module>
+
+<script>
+Polymer({
+  is: 'ha-service-description',
+
+  properties: {
+    hass: Object,
+    domain: String,
+    service: String,
+  },
+
+  _getDescription: function (hass, domain, service) {
+    var domainServices = hass.config.services[domain];
+    if (!domainServices) return '';
+    var serviceObject = domainServices[service];
+    if (!serviceObject) return '';
+    return serviceObject.description;
+  },
+});
+</script>

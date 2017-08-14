@@ -1,24 +1,31 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-<style is="custom-style">
-  html {
+<custom-style>
+<style is="custom-style">/* remove is= on Polymer 2 */
+  body {
     font-size: 14px;
 
     /* for paper-toggle-button */
     --paper-grey-50: #fafafa;
     --paper-grey-200: #eeeeee;
 
+    --paper-item-icon-color: #44739e;
+    --paper-item-icon-active-color: #FDD835;
+
     --dark-primary-color: #0288D1;
-    --default-primary-color: #03A9F4;
     --primary-color: #03A9F4;
     --light-primary-color: #B3E5FC;
     --text-primary-color: #ffffff;
     --accent-color: #FF9800;
     --primary-background-color: var(--paper-grey-50);
+    --secondary-background-color: #E5E5E5;
     --primary-text-color: #212121;
     --secondary-text-color: #727272;
     --disabled-text-color: #bdbdbd;
     --divider-color: rgba(0, 0, 0, .12);
+
+    --table-row-background-color: transparant;
+    --table-row-alternative-background-color: #eee;
 
     --paper-toggle-button-checked-ink-color: #039be5;
     --paper-toggle-button-checked-button-color: #039be5;
@@ -32,7 +39,16 @@
     --paper-slider-container-color: var(--divider-color);
 
     --paper-card-background-color: #FFF;
-    --paper-menu-background-color: #FFF;
+    --paper-listbox-background-color: #FFF;
+
+    /* for label-badge */
+    --label-badge-background-color: white;
+    --label-badge-text-color: rgb(76, 76, 76);
+    --label-badge-red: #DF4C1E;
+    --label-badge-blue: #039be5;
+    --label-badge-green: #0DA035;
+    --label-badge-yellow: #f4b400;
+    --label-badge-grey: var(--paper-grey-500);
 
     /* Taken from paper-styles/color.html */
     /* for paper-spinner */
@@ -59,6 +75,7 @@
     --light-primary-opacity: 1.0;
   }
 </style>
+</custom-style>
 
 <dom-module id='ha-style'>
   <template>
@@ -77,7 +94,8 @@
         color: white;
       }
 
-      app-toolbar ha-menu-button + [main-title] {
+      app-toolbar ha-menu-button + [main-title],
+      app-toolbar paper-icon-button + [main-title] {
         margin-left: 24px;
       }
 
@@ -85,14 +103,16 @@
         @apply(--paper-font-title);
       }
 
-      .card-actions > paper-button:not([disabled]),
-      .card-actions > ha-call-service-button:not([disabled]) {
-        color: var(--default-primary-color);
+      .card-actions paper-button:not([disabled]),
+      .card-actions ha-call-api-button:not([disabled]),
+      .card-actions ha-call-service-button:not([disabled]) {
+        color: var(--primary-color);
         font-weight: 500;
       }
 
-      .card-actions > paper-button.warning:not([disabled]),
-      .card-actions > ha-call-service-button.warning:not([disabled]) {
+      .card-actions paper-button.warning:not([disabled]),
+      .card-actions ha-call-api-button.warning:not([disabled]),
+      .card-actions ha-call-service-button.warning:not([disabled]) {
         color: var(--google-red-500);
       }
     </style>

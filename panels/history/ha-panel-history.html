@@ -2,7 +2,7 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
@@ -23,6 +23,9 @@
       }
 
       vaadin-date-picker {
+        --vaadin-date-picker-clear-icon: {
+          display: none;
+        }
         margin-bottom: 24px;
         margin-right: 16px;
         max-width: 200px;
@@ -31,18 +34,22 @@
       paper-dropdown-menu {
         max-width: 100px;
       }
+
+      paper-item {
+        cursor: pointer;
+      }
     </style>
 
     <ha-state-history-data
       hass='[[hass]]'
       filter-type='[[_filterType]]'
       start-time='[[_computeStartTime(_currentDate)]]'
-      end-time='[[_computeEndTime(_currentDate, _periodIndex)]]'
+      end-time='[[endTime]]'
       data='{{stateHistoryInput}}'
       is-loading='{{isLoadingData}}'
     ></ha-state-history-data>
     <app-header-layout has-scrolling-region>
-      <app-header fixed>
+      <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>History</div>
@@ -63,15 +70,21 @@
             label='Period'
             disabled='[[isLoadingData]]'
           >
-            <paper-menu class="dropdown-content" selected="{{_periodIndex}}">
+            <paper-listbox
+              slot="dropdown-content"
+              selected="{{_periodIndex}}"
+            >
               <paper-item>1 day</paper-item>
               <paper-item>3 days</paper-item>
               <paper-item>1 week</paper-item>
-            </paper-menu>
+            </paper-listbox>
           </paper-dropdown-menu>
         </div>
-        <state-history-charts history-data="[[stateHistoryOutput]]"
-          is-loading-data="[[isLoadingData]]"></state-history-charts>
+        <state-history-charts
+          history-data="[[stateHistoryOutput]]"
+          is-loading-data="[[isLoadingData]]"
+          end-time="[[endTime]]">
+        </state-history-charts>
       </div>
     </app-header-layout>
   </template>
@@ -116,13 +129,18 @@ Polymer({
       value: false,
     },
 
+    endTime: {
+      type: Object,
+      computed: '_computeEndTime(_currentDate, _periodIndex)',
+    },
+
     // ISO8601 formatted date string
     _currentDate: {
       type: String,
       value: function () {
         var value = new Date();
-        value.setHours(0, 0, 0);
-        return value.toISOString().split('T')[0];
+        var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
+        return today.toISOString().split('T')[0];
       },
     },
 

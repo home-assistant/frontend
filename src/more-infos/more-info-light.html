@@ -2,7 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <link rel='import' href='../components/ha-labeled-slider.html'>
@@ -21,6 +21,10 @@
         max-height: 0px;
         overflow: hidden;
         transition: max-height .5s ease-in;
+      }
+
+      .color_temp {
+        --ha-slider-background: -webkit-linear-gradient(right, rgb(255, 160, 0) 0%, white 50%, rgb(166, 209, 255) 100%);
       }
 
       ha-color-picker {
@@ -42,18 +46,22 @@
       .has-rgb_color ha-color-picker {
         max-height: 200px;
       }
+
+      paper-item {
+        cursor: pointer;
+      }
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
 
       <div class='effect_list'>
         <paper-dropdown-menu label-float label='Effect'>
-          <paper-menu class="dropdown-content" selected="{{effectIndex}}">
+          <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.effect_list]]'>
               <paper-item>[[item]]</paper-item>
             </template>
-          </paper-menu>
+          </paper-listbox>
         </paper-dropdown-menu>
       </div>
 
@@ -67,7 +75,7 @@
       <div class='color_temp'>
         <ha-labeled-slider
           caption='Color Temperature' icon='mdi:thermometer'
-          min='154' max='500'
+          min='[[stateObj.attributes.min_mireds]]' max='[[stateObj.attributes.max_mireds]]'
           value='{{ctSliderValue}}'
           on-change='ctSliderChanged'></ha-labeled-slider>
       </div>
@@ -82,7 +90,7 @@
       <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>
       </ha-color-picker>
 
-      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color"></ha-attributes>
+      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
     </div>
   </template>
 </dom-module>
@@ -146,17 +154,25 @@ Polymer({
     }
   },
 
+  featureClassNames: {
+    1: 'has-brightness',
+  },
+
   computeClassNames: function (stateObj) {
-    var classes = window.hassUtil.attributeClassNames(
-      stateObj, ['rgb_color', 'color_temp', 'white_value',
-        'effect_list']);
-    var BRIGHTNESS_SUPPORTED = 1;
-    // If brightness is supported - show the slider even if the attribute is
-    // missing (because the light is off).
-    if (stateObj && (stateObj.attributes.supported_features & BRIGHTNESS_SUPPORTED)) {
-      classes += ' has-brightness';
+    var classes = [
+      window.hassUtil.attributeClassNames(
+        stateObj, ['color_temp', 'white_value', 'effect_list']),
+      window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
+    ];
+
+    // Lights that do shades of white can still have an rgb color
+    // In that case we don't want the color picker to show.
+    if (stateObj.attributes.supported_features &&
+        (stateObj.attributes.supported_features & 16) !== 0 &&
+        stateObj.attributes.rgb_color) {
+      classes.push('has-rgb_color');
     }
-    return classes;
+    return classes.join(' ');
   },
 
   effectChanged: function (effectIndex) {

@@ -25,13 +25,20 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
   'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
   'cover', 'fan', 'group', 'light', 'lock', 'media_player', 'script',
-  'sun', 'updater',
+  'sun', 'updater', 'vacuum',
 ];
 
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
 
 window.hassUtil.HIDE_MORE_INFO = [
   'input_select', 'scene', 'script', 'input_slider',
+];
+
+window.hassUtil.LOGIC_STATE_ATTRIBUTES = [
+  'entity_picture', 'friendly_name', 'icon', 'unit_of_measurement',
+  'emulated_hue', 'emulated_hue_name', 'haaska_hidden', 'haaska_name',
+  'homebridge_hidden', 'homebridge_name', 'supported_features', 'attribution',
+  'custom_ui_state_card', 'device_class',
 ];
 
 window.hassUtil.LANGUAGE = navigator.languages ?
@@ -45,6 +52,20 @@ window.hassUtil.attributeClassNames = function (stateObj, attributes) {
     }
   ).join(' ');
 };
+
+// Expects featureClassNames to be an object mapping feature-bit -> className
+window.hassUtil.featureClassNames = function (stateObj, featureClassNames) {
+  if (!stateObj || !stateObj.attributes.supported_features) return '';
+
+  var features = stateObj.attributes.supported_features;
+
+  return Object.keys(featureClassNames).map(
+    function (feature) {
+      return (features & feature) !== 0 ? featureClassNames[feature] : '';
+    }
+  ).join(' ');
+};
+
 
 window.hassUtil.canToggleState = function (hass, stateObj) {
   var domain = window.hassUtil.computeDomain(stateObj);
@@ -85,9 +106,15 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
     customEl = document.createElement(newElementTag);
   }
 
-  Object.keys(attributes).forEach(function (key) {
-    customEl[key] = attributes[key];
-  });
+  if (customEl.setProperties) {
+    customEl.setProperties(attributes);
+  } else {
+    // If custom element definition wasn't loaded yet - setProperties would be
+    // missing, but no harm in setting attributes one-by-one then.
+    Object.keys(attributes).forEach((key) => {
+      customEl[key] = attributes[key];
+    });
+  }
 
   if (customEl.parentNode === null) {
     rootEl.appendChild(customEl);
@@ -275,6 +302,9 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'lock':
       return state && state === 'unlocked' ? 'mdi:lock-open' : 'mdi:lock';
 
+    case 'mailbox':
+      return 'mdi:mailbox';
+
     case 'media_player':
       return state && state !== 'off' && state !== 'idle' ?
         'mdi:cast-connected' : 'mdi:cast';
@@ -311,6 +341,13 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'weblink':
       return 'mdi:open-in-new';
+
+    case 'zwave':
+      if (state) {
+        if (state.indexOf('Dead') !== -1) return 'mdi:emoticon-dead';
+        if (state.indexOf('Sleeping') !== -1) return 'mdi:sleep';
+      }
+      return 'mdi:nfc';
 
     default:
       /* eslint-disable no-console */
@@ -404,12 +441,52 @@ window.hassUtil.computeStateName = function (stateObj) {
   return stateObj._entityDisplay;
 };
 
+window.hassUtil.sortByName = function (entityA, entityB) {
+  var nameA = window.hassUtil.computeStateName(entityA);
+  var nameB = window.hassUtil.computeStateName(entityB);
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+  return 0;
+};
+
 window.hassUtil.computeStateState = function (stateObj) {
   if (!stateObj._stateDisplay) {
     stateObj._stateDisplay = stateObj.state.replace(/_/g, ' ');
 
     if (stateObj.attributes.unit_of_measurement) {
-      stateObj._stateDisplay += ` ${stateObj.attributes.unit_of_measurement}`;
+      stateObj._stateDisplay += ' ' + stateObj.attributes.unit_of_measurement;
+    }
+    if (window.hassUtil.computeDomain(stateObj) === 'binary_sensor') {
+      switch (stateObj.attributes.device_class) {
+        case 'moisture':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'dry' : 'wet';
+          break;
+        case 'gas':
+        case 'motion':
+        case 'occupancy':
+        case 'smoke':
+        case 'sound':
+        case 'vibration':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'clear' : 'detected';
+          break;
+        case 'opening':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'closed' : 'open';
+          break;
+        case 'safety':
+          stateObj._stateDisplay = (stateObj._stateDisplay === 'off') ? 'safe' : 'unsafe';
+          break;
+        case 'cold':
+        case 'connectivity':
+        case 'heat':
+        case 'light':
+        case 'moving':
+        case 'power':
+        default:
+      }
     }
   }
 
@@ -417,11 +494,41 @@ window.hassUtil.computeStateState = function (stateObj) {
 };
 
 window.hassUtil.isComponentLoaded = function (hass, component) {
-  return hass.config.core.components.indexOf(component) !== -1;
+  return hass && hass.config.core.components.indexOf(component) !== -1;
 };
 
 window.hassUtil.computeLocationName = function (hass) {
-  return hass.config.core.location_name;
+  return hass && hass.config.core.location_name;
 };
 
+window.hassUtil.applyThemesOnElement = function (element, themes, localTheme, updateMeta) {
+  if (!element._themes) {
+    element._themes = {};
+  }
+  let themeName = themes.default_theme;
+  if (localTheme === 'default' || (localTheme && themes.themes[localTheme])) {
+    themeName = localTheme;
+  }
+  const styles = Object.assign({}, element._themes);
+  if (themeName !== 'default') {
+    var theme = themes.themes[themeName];
+    Object.keys(theme).forEach((key) => {
+      var prefixedKey = '--' + key;
+      element._themes[prefixedKey] = '';
+      styles[prefixedKey] = theme[key];
+    });
+  }
+  element.updateStyles(styles);
+
+  if (!updateMeta) return;
+
+  const meta = document.querySelector('meta[name=theme-color]');
+  if (meta) {
+    if (!meta.hasAttribute('default-content')) {
+      meta.setAttribute('default-content', meta.getAttribute('content'));
+    }
+    const themeColor = styles['--primary-color'] || meta.getAttribute('default-content');
+    meta.setAttribute('content', themeColor);
+  }
+};
 </script>

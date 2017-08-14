@@ -1,7 +1,8 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/app-localize-behavior/app-localize-behavior.html'>
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
-<link rel='import' href='../../bower_components/paper-menu/paper-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-icon-item.html'>
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
@@ -25,6 +26,7 @@
         -webkit-user-select: none;
         -moz-user-select: none;
         border-right: 1px solid var(--divider-color);
+        background: var(--paper-listbox-background-color,var(--primary-background-color));
       }
 
       app-toolbar {
@@ -34,7 +36,7 @@
         background-color: var(--primary-background-color);
       }
 
-      paper-menu {
+      paper-listbox {
         padding-bottom: 0;
       }
 
@@ -49,14 +51,14 @@
         };
 
         --paper-item-selected: {
-          color: var(--default-primary-color);
+          color: var(--primary-color);
           background-color: var(--paper-grey-200);
           opacity: 1;
         };
       }
       paper-icon-item.iron-selected {
         --paper-item-icon: {
-          color: var(--default-primary-color);
+          color: var(--primary-color);
           opacity: 1;
         };
       }
@@ -92,6 +94,10 @@
         padding: 0 8px;
         opacity: var(--dark-secondary-opacity);
       }
+
+      dom-if {
+        display: none;
+      }
     </style>
 
     <app-toolbar>
@@ -99,24 +105,24 @@
       <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
     </app-toolbar>
 
-    <paper-menu attr-for-selected='data-panel' selected='[[hass.currentPanel]]' on-iron-select='menuSelect'>
+    <paper-listbox attr-for-selected='data-panel' selected='[[route.panel]]'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
-        <iron-icon item-icon icon='mdi:apps'></iron-icon>
+        <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
         <span class='item-text'>{{localize('panel.states')}}</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
         <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_path]]'>
-          <iron-icon item-icon icon='[[item.icon]]'></iron-icon>
+          <iron-icon slot="item-icon" icon='[[item.icon]]'></iron-icon>
           <span class='item-text'>{{localize(item.title)}}</span>
         </paper-icon-item>
       </template>
 
       <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
-        <iron-icon item-icon icon='mdi:exit-to-app'></iron-icon>
+        <iron-icon slot="item-icon" icon='mdi:exit-to-app'></iron-icon>
         <span class='item-text'>{{localize('panel.log_out')}}</span>
       </paper-icon-item>
-    </paper-menu>
+    </paper-listbox>
 
     <div>
       <template is='dom-if' if='[[pushSupported]]'>
@@ -152,6 +158,12 @@
           icon='mdi:file-xml' data-panel='dev-template'
           alt="Templates" title="Templates"
           on-tap='menuClicked'></paper-icon-button>
+        <template is='dom-if' if='[[_mqttLoaded(hass)]]'>
+          <paper-icon-button
+            icon='mdi:altimeter' data-panel='dev-mqtt'
+            alt="MQTT" title="MQTT"
+            on-tap='menuClicked'></paper-icon-button>
+        </template>
         <paper-icon-button
           icon='mdi:information-outline' data-panel='dev-info'
           alt="Info" title="Info"
@@ -182,9 +194,9 @@ Polymer({
       type: String,
     },
 
-    narrow: {
-      type: Boolean,
-    },
+    narrow: Boolean,
+
+    route: Object,
 
     panels: {
       type: Array,
@@ -212,8 +224,8 @@ Polymer({
     },
   },
 
-  created: function () {
-    this._boundUpdateStyles = this.updateStyles.bind(this);
+  _mqttLoaded: function (hass) {
+    return hass.config.core.components.indexOf('mqtt') !== -1;
   },
 
   computePanels: function (hass) {
@@ -255,10 +267,6 @@ Polymer({
     return result;
   },
 
-  menuSelect: function () {
-    this.debounce('updateStyles', this._boundUpdateStyles, 1);
-  },
-
   menuClicked: function (ev) {
     var target = ev.target;
     var checks = 5;
@@ -281,14 +289,16 @@ Polymer({
   },
 
   selectPanel: function (newChoice) {
-    if (newChoice === this.hass.currentPanel) {
-      return;
-    } else if (newChoice === 'logout') {
+    if (newChoice === 'logout') {
       this.handleLogOut();
       return;
     }
-    this.fire('hass-navigate', { panel: newChoice });
-    this.debounce('updateStyles', this._boundUpdateStyles, 1);
+    var path = '/' + newChoice;
+    if (path === document.location.pathname) {
+      return;
+    }
+    history.pushState(null, null, path);
+    this.fire('location-changed');
   },
 
   handleLogOut: function () {
