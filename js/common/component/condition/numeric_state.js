@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../util';
+import { onChangeEvent } from '../../util/event';
 
 export default class NumericStateCondition extends Component {
   constructor() {

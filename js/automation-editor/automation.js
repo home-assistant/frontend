@@ -1,8 +1,8 @@
 import { h, Component } from 'preact';
 
 import Trigger from './trigger';
-import Condition from './condition';
-import Script from './script';
+import Condition from '../common/component/condition';
+import Script from '../common/component/script';
 
 export default class Automation extends Component {
   constructor() {

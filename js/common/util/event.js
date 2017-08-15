@@ -1,7 +1,3 @@
-export function validEntityId(entityId) {
-  return /^(\w+)\.(\w+)$/.test(entityId);
-}
-
 export function onChangeEvent(prop, ev) {
   const data = { ...this.props[prop] };
 
