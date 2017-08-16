@@ -8,6 +8,7 @@
 <link rel="import" href="./dashboard/ha-config-dashboard.html">
 <link rel="import" href="./core/ha-config-core.html">
 <link rel="import" href="./automation/ha-config-automation.html">
+<link rel="import" href="./script/ha-config-script.html">
 <link rel="import" href="./zwave/ha-config-zwave.html">
 
 <dom-module id="ha-panel-config">
@@ -47,6 +48,13 @@
         hass='[[hass]]'
         is-wide='[[isWide]]'
       ></ha-config-automation>
+
+      <ha-config-script
+        page-name='script'
+        route='[[_routeTail]]'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+      ></ha-config-script>
 
       <ha-config-zwave
         page-name='zwave'

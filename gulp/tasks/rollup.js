@@ -6,7 +6,8 @@ gulp.task('run_rollup', () => {
   return gulp.src([
     'js/core.js',
     'js/compatibility.js',
-    'js/editor/editor.js',
+    'js/automation-editor/automation-editor.js',
+    'js/script-editor/script-editor.js',
     'demo_data/demo_data.js',
   ])
   .pipe(rollupEach(rollupConfig))

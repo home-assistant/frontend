@@ -1,8 +1,8 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../util';
+import { onChangeEvent } from '../../util/event';
 
-export default class StateCondition extends Component {
+export default class ZoneCondition extends Component {
   constructor() {
     super();
 
@@ -11,19 +11,19 @@ export default class StateCondition extends Component {
 
   /* eslint-disable camelcase */
   render({ condition }) {
-    const { after, before } = condition;
+    const { entity_id, zone } = condition;
     return (
       <div>
         <paper-input
-          label="After"
-          name="after"
-          value={after}
+          label="Entity Id"
+          name="entity_id"
+          value={entity_id}
           onChange={this.onChange}
         />
         <paper-input
-          label="Before"
-          name="before"
-          value={before}
+          label="Zone entity id"
+          name="zone"
+          value={zone}
           onChange={this.onChange}
         />
       </div>
@@ -31,7 +31,7 @@ export default class StateCondition extends Component {
   }
 }
 
-StateCondition.defaultConfig = {
-  after: '',
-  before: '',
+ZoneCondition.defaultConfig = {
+  entity_id: '',
+  zone: '',
 };
