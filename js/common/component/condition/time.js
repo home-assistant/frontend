@@ -2,7 +2,7 @@ import { h, Component } from 'preact';
 
 import { onChangeEvent } from '../../util/event';
 
-export default class StateCondition extends Component {
+export default class TimeCondition extends Component {
   constructor() {
     super();
 
@@ -31,7 +31,5 @@ export default class StateCondition extends Component {
   }
 }
 
-StateCondition.defaultConfig = {
-  after: '',
-  before: '',
+TimeCondition.defaultConfig = {
 };

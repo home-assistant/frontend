@@ -45,7 +45,4 @@ export default class NumericStateTrigger extends Component {
 
 NumericStateTrigger.defaultConfig = {
   entity_id: '',
-  above: '',
-  below: '',
-  value_template: '',
 };
