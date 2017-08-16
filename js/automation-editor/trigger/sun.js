@@ -45,5 +45,4 @@ export default class SunTrigger extends Component {
 
 SunTrigger.defaultConfig = {
   event: 'sunrise',
-  offset: '',
 };
