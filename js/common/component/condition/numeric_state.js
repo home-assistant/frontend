@@ -45,7 +45,4 @@ export default class NumericStateCondition extends Component {
 
 NumericStateCondition.defaultConfig = {
   entity_id: '',
-  above: '',
-  below: '',
-  value_template: '',
 };

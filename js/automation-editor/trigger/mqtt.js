@@ -32,6 +32,5 @@ export default class MQTTTrigger extends Component {
 }
 
 MQTTTrigger.defaultConfig = {
-  topic: '',
-  payload: '',
+  topic: ''
 };
