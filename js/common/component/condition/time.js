@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../util';
+import { onChangeEvent } from '../../util/event';
 
 export default class StateCondition extends Component {
   constructor() {
@@ -11,29 +11,27 @@ export default class StateCondition extends Component {
 
   /* eslint-disable camelcase */
   render({ condition }) {
-    const { entity_id, state } = condition;
-    const cndFor = condition.for;
+    const { after, before } = condition;
     return (
       <div>
         <paper-input
-          label="Entity Id"
-          name="entity_id"
-          value={entity_id}
+          label="After"
+          name="after"
+          value={after}
           onChange={this.onChange}
         />
         <paper-input
-          label="State"
-          name="state"
-          value={state}
+          label="Before"
+          name="before"
+          value={before}
           onChange={this.onChange}
         />
-        {cndFor && <pre>For: {JSON.stringify(cndFor, null, 2)}</pre>}
       </div>
     );
   }
 }
 
 StateCondition.defaultConfig = {
-  entity_id: '',
-  state: '',
+  after: '',
+  before: '',
 };

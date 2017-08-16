@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../util';
+import { onChangeEvent } from '../../util/event';
 
 export default class TemplateCondition extends Component {
   constructor() {
