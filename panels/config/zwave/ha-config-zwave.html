@@ -13,6 +13,9 @@
 <link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
 <link rel="import" href="../../../src/components/ha-service-description.html">
 <link rel="import" href="../../../src/resources/ha-style.html">
+
+<link rel="import" href="../ha-config-section.html">
+
 <link rel="import" href="./zwave-log.html">
 <link rel="import" href="./zwave-network.html">
 <link rel="import" href="./zwave-node-information.html">
@@ -84,21 +87,28 @@
         hass='[[hass]]'
       ></zwave-node-options>
 
-      <div class='content'>
-        <zwave-network
-          id='zwave-network'
-          hass='[[hass]]'
-        ></zwave-network>
-      </div>
-<!--Node card-->
-      <div class='content'>
-        <paper-card heading='Z-Wave Node Management'>
+      <zwave-network
+        id='zwave-network'
+        is-wide='[[isWide]]'
+        hass='[[hass]]'
+      ></zwave-network>
+
+      <!--Node card-->
+      <ha-config-section is-wide='[[isWide]]'>
+        <div style="position: relative" slot='header'>
+          <span>Z-Wave Node Management</span>
           <paper-icon-button
-            class='toggle-help-icon'
+            class="toggle-help-icon"
             on-tap='toggleHelp'
             icon='mdi:help-circle'
           ></paper-icon-button>
 
+        </div>
+        <span slot='introduction'>
+          Run Z-Wave commands that affect a single node. Pick a node to see a list of available commands.
+        </span>
+
+        <paper-card class="content">
           <div class='device-picker'>
             <paper-dropdown-menu label="Nodes" class="flex">
               <paper-listbox
@@ -234,35 +244,32 @@
            </template>
           </template>
         </paper-card>
-        </div>
-<!--Node info card-->
+
         <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
+          <!--Node info card-->
           <zwave-node-information
             id='zwave-node-information'
             nodes='[[nodes]]'
             selected-node='[[selectedNode]]'
           ></zwave-node-information>
-        </template>
-<!--Value card-->
-        <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
+
+          <!--Value card-->
           <zwave-values
             hass='[[hass]]'
             nodes='[[nodes]]'
             selected-node='[[selectedNode]]'
             values='[[values]]'
           ></zwave-values>
-        </template>
-<!--Group card-->
-        <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
+
+          <!--Group card-->
           <zwave-groups
             hass='[[hass]]'
             nodes='[[nodes]]'
             selected-node='[[selectedNode]]'
             groups='[[groups]]'
           ></zwave-groups>
-        </template>
-<!--Config card-->
-        <template is='dom-if' if='[[computeIsNodeSelected(selectedNode)]]'>
+
+          <!--Config card-->
           <zwave-node-config
             hass='[[hass]]'
             nodes='[[nodes]]'
@@ -270,23 +277,24 @@
             config='[[config]]'
           ></zwave-node-config>
         </template>
-<!--User Codes-->
-        <template is='dom-if' if='{{hasNodeUserCodes}}'>
-          <zwave-usercodes
-            id='zwave-usercodes'
-            hass='[[hass]]'
-            nodes='[[nodes]]'
-            user-codes='[[userCodes]]'
-            selected-node='[[selectedNode]]'
-          ></zwave-usercodes>
-        </template>
-<!--Ozw log-->
-        <div class='content'>
-          <ozw-log
-            id='ozw-log'
-            hass='[[hass]]'
-          ></ozw-log>
-        </div>
+      </ha-config-section>
+
+      <!--User Codes-->
+      <template is='dom-if' if='{{hasNodeUserCodes}}'>
+        <zwave-usercodes
+          id='zwave-usercodes'
+          hass='[[hass]]'
+          nodes='[[nodes]]'
+          user-codes='[[userCodes]]'
+          selected-node='[[selectedNode]]'
+        ></zwave-usercodes>
+      </template>
+
+      <!--Ozw log-->
+      <ozw-log
+        is-wide='[[isWide]]'
+        hass='[[hass]]'
+      ></ozw-log>
 
      </app-header-layout>
   </template>
@@ -406,28 +414,28 @@ Polymer({
     this.selectedGroup = -1;
 
     this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(
-      function (configs) {
+      (configs) => {
         this.config = this._objToArray(configs);
-      }.bind(this));
+      });
 
     this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(
-      function (values) {
+      (values) => {
         this.values = this._objToArray(values);
-      }.bind(this));
+      });
 
     this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(
-      function (groups) {
+      (groups) => {
         this.groups = this._objToArray(groups);
-      }.bind(this));
+      });
 
     this.hasNodeUserCodes = false;
     this.notifyPath('hasNodeUserCodes');
     this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(
-      function (usercodes) {
+      (usercodes) => {
         this.userCodes = this._objToArray(usercodes);
         this.hasNodeUserCodes = this.userCodes.length > 0;
         this.notifyPath('hasNodeUserCodes');
-      }.bind(this));
+      });
   },
 
   computeSelectedEntityAttrs: function (selectedEntity) {
