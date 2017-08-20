@@ -170,7 +170,13 @@ Polymer({
 
   computeOtherGroupNodes: function (selectedGroup) {
     if (selectedGroup === -1) return -1;
-    var associations = Object.values(this.groups[selectedGroup].value.associations);
+    var associations = [];
+    var groupnodes = Object.values(this.groups[selectedGroup].value.associations);
+    groupnodes.forEach(function (key, index) {
+      console.log(index, groupnodes.length);
+      if (index === (groupnodes.length - 1)) associations.push(key);
+      else associations.push(key + ', ');
+    }); Object.values(this.groups[selectedGroup].value.associations);
     if (!associations.length) return ['None'];
     return associations;
   },
