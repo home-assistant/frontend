@@ -430,6 +430,14 @@ window.hassUtil.computeDomain = function (stateObj) {
   return stateObj._domain;
 };
 
+window.hassUtil.computeObjectId = function (stateObj) {
+  if (!stateObj._object_id) {
+    stateObj._object_id = window.HAWS.extractObjectId(stateObj.entity_id);
+  }
+
+  return stateObj._object_id;
+};
+
 window.hassUtil.computeStateName = function (stateObj) {
   if (stateObj._entityDisplay === undefined) {
     stateObj._entityDisplay = (

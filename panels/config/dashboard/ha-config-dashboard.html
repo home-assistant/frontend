@@ -34,27 +34,10 @@
       </app-header>
 
       <div class$='[[computeClasses(isWide)]]'>
-        <!--
-          Sortable.js doesn't work in Polymer 2 making this panel useless.
-          Disabling for now.
-        <ha-config-section-group
-          is-wide='[[isWide]]'
-          hass='[[hass]]'
-        ></ha-config-section-group>
-        -->
-
         <ha-config-navigation
           is-wide='[[isWide]]'
           hass='[[hass]]'
         ></ha-config-navigation>
-
-        <!-- <template is='dom-if' if='[[computeIsZwaveLoaded(hass)]]'>
-          <div class='border'></div>
-          <ha-config-section-zwave
-            is-wide='[[isWide]]'
-            hass='[[hass]]'
-          ></ha-config-section-zwave>
-        </template> -->
       </div>
     </app-header-layout>
   </template>

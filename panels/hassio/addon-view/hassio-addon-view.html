@@ -8,12 +8,14 @@
 
 <link rel="import" href="./hassio-addon-info.html">
 <link rel="import" href="./hassio-addon-options.html">
+<link rel="import" href="./hassio-addon-network.html">
 <link rel="import" href="./hassio-addon-logs.html">
 
 <dom-module id="hassio-addon-view">
   <template>
     <style include="iron-flex ha-style">
       hassio-addon-info,
+      hassio-addon-network,
       hassio-addon-options {
         margin-bottom: 24px;
       }
@@ -51,6 +53,12 @@
           addon='[[_routeData.addon]]'
           addon-state='[[addonState]]'
         ></hassio-addon-options>
+
+        <hassio-addon-network
+          hass='[[hass]]'
+          addon='[[_routeData.addon]]'
+          addon-state='[[addonState]]'
+        ></hassio-addon-network>
 
         <hassio-addon-logs
           hass='[[hass]]'

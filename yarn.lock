@@ -258,6 +258,10 @@
   version "6.0.83"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.83.tgz#dd022db01ac2c01c1057775e88ccffce96d1d6fe"
 
+"@types/node@^6.0.46":
+  version "6.0.87"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-6.0.87.tgz#5ab5774f8351a33a935099fa6be850aa0b0ad564"
+
 "@types/nomnom@0.0.28":
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/@types/nomnom/-/nomnom-0.0.28.tgz#2d8968528ad7a9738dd0a6a3dfe5cdfdb8ac7974"
@@ -5559,6 +5563,12 @@ parse5@^2.2.1, parse5@^2.2.2, parse5@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-2.2.3.tgz#0c4fc41c1000c5e6b93d48b03f8083837834e9f6"
 
+parse5@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-3.0.2.tgz#05eff57f0ef4577fb144a79f8b9a967a6cc44510"
+  dependencies:
+    "@types/node" "^6.0.46"
+
 parsejson@0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/parsejson/-/parsejson-0.0.3.tgz#ab7e3759f209ece99437973f7d0f1f64ae0e64ab"
@@ -5741,6 +5751,32 @@ plylog@^0.5.0:
 polymer-analyzer@^2.0.0, polymer-analyzer@^2.0.2:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/polymer-analyzer/-/polymer-analyzer-2.2.1.tgz#c16d944d9371d8653eda52b37228d881cb030130"
+  dependencies:
+    "@types/chai-subset" "^1.3.0"
+    "@types/chalk" "^0.4.30"
+    "@types/clone" "^0.1.30"
+    "@types/cssbeautify" "^0.3.1"
+    "@types/doctrine" "^0.0.1"
+    "@types/escodegen" "^0.0.2"
+    "@types/estree" "^0.0.34"
+    "@types/node" "^6.0.0"
+    "@types/parse5" "^2.2.34"
+    chalk "^1.1.3"
+    clone "^2.0.0"
+    cssbeautify "^0.3.1"
+    doctrine "^2.0.0"
+    dom5 "^2.1.0"
+    escodegen "^1.7.0"
+    espree "^3.1.7"
+    estraverse "^4.2.0"
+    jsonschema "^1.1.0"
+    parse5 "^2.2.1"
+    shady-css-parser "0.0.8"
+    strip-indent "^2.0.0"
+
+polymer-analyzer@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/polymer-analyzer/-/polymer-analyzer-2.2.2.tgz#1f9420088b5ed354b53050941db27fe29a1beba4"
   dependencies:
     "@types/chai-subset" "^1.3.0"
     "@types/chalk" "^0.4.30"

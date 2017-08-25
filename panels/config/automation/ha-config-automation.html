@@ -16,7 +16,7 @@
       route='[[route]]'
       pattern='/edit/:automation'
       data="{{_routeData}}"
-      active="{{_edittingAddon}}"
+      active="{{_edittingAutomation}}"
     ></app-route>
     <app-route
       route='[[route]]'
@@ -57,7 +57,7 @@ Polymer({
     _routeData: Object,
     _routeMatches: Boolean,
     _creatingNew: Boolean,
-    _edittingAddon: Boolean,
+    _edittingAutomation: Boolean,
 
     automations: {
       type: Array,
@@ -66,12 +66,12 @@ Polymer({
 
     automation: {
       type: Object,
-      computed: 'computeAutomation(automations, _edittingAddon, _routeData)',
+      computed: 'computeAutomation(automations, _edittingAutomation, _routeData)',
     },
 
     showEditor: {
       type: Boolean,
-      computed: 'computeShowEditor(_edittingAddon, _creatingNew)',
+      computed: 'computeShowEditor(_edittingAutomation, _creatingNew)',
     }
   },
 
@@ -115,8 +115,8 @@ Polymer({
     });
   },
 
-  computeShowEditor: function (_edittingAddon, _creatingNew) {
-    return _creatingNew || _edittingAddon;
+  computeShowEditor: function (_edittingAutomation, _creatingNew) {
+    return _creatingNew || _edittingAutomation;
   },
 });
 </script>
