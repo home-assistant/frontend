@@ -204,7 +204,7 @@ class HaSidebar extends Polymer.Element {
         type: Boolean,
         value: true,
       },
-    }
+    };
   }
 
   _mqttLoaded(hass) {
@@ -268,7 +268,7 @@ class HaSidebar extends Polymer.Element {
   }
 
   toggleMenu() {
-    this.dispatchEvent(new CustomEvent('hass-close-menu', {bubbles: true, composed: true}));
+    this.dispatchEvent(new CustomEvent('hass-close-menu', { bubbles: true, composed: true }));
   }
 
   selectPanel(newChoice) {
@@ -281,13 +281,13 @@ class HaSidebar extends Polymer.Element {
       return;
     }
     history.pushState(null, null, path);
-    this.dispatchEvent(new CustomEvent('location-changed', {bubbles: true, composed: true}));
+    this.dispatchEvent(new CustomEvent('location-changed', { bubbles: true, composed: true }));
   }
 
   handleLogOut() {
-    this.dispatchEvent(new CustomEvent('hass-logout', {bubbles: true, composed: true}));
+    this.dispatchEvent(new CustomEvent('hass-logout', { bubbles: true, composed: true }));
   }
 }
 
-customElements.define(HaSidebar.is, HaSidebar)
+customElements.define(HaSidebar.is, HaSidebar);
 </script>
