@@ -1,4 +1,5 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href='../../bower_components/polymer/polymer-element.html'>
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 <link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
@@ -173,42 +174,45 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-sidebar',
+class HaSidebar extends Polymer.Element {
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get is() { return 'ha-sidebar'; }
 
-    menuShown: {
-      type: Boolean,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    menuSelected: {
-      type: String,
-    },
+      menuShown: {
+        type: Boolean,
+      },
 
-    narrow: Boolean,
+      menuSelected: {
+        type: String,
+      },
 
-    route: Object,
+      narrow: Boolean,
 
-    panels: {
-      type: Array,
-      computed: 'computePanels(hass)',
-    },
+      route: Object,
 
-    pushSupported: {
-      type: Boolean,
-      value: true,
-    },
-  },
+      panels: {
+        type: Array,
+        computed: 'computePanels(hass)',
+      },
 
-  _mqttLoaded: function (hass) {
+      pushSupported: {
+        type: Boolean,
+        value: true,
+      },
+    }
+  }
+
+  _mqttLoaded(hass) {
     return hass.config.core.components.indexOf('mqtt') !== -1;
-  },
+  }
 
-  computePanels: function (hass) {
+  computePanels(hass) {
     var panels = hass.config.panels;
     var sortValue = {
       map: 1,
@@ -245,9 +249,9 @@ Polymer({
     });
 
     return result;
-  },
+  }
 
-  menuClicked: function (ev) {
+  menuClicked(ev) {
     var target = ev.target;
     var checks = 5;
     var attr = target.getAttribute('data-panel');
@@ -262,13 +266,13 @@ Polymer({
     if (checks) {
       this.selectPanel(attr);
     }
-  },
+  }
 
-  toggleMenu: function () {
-    this.fire('hass-close-menu');
-  },
+  toggleMenu() {
+    this.dispatchEvent(new CustomEvent('hass-close-menu', {bubbles: true, composed: true}));
+  }
 
-  selectPanel: function (newChoice) {
+  selectPanel(newChoice) {
     if (newChoice === 'logout') {
       this.handleLogOut();
       return;
@@ -278,11 +282,13 @@ Polymer({
       return;
     }
     history.pushState(null, null, path);
-    this.fire('location-changed');
-  },
+    this.dispatchEvent(new CustomEvent('location-changed', {bubbles: true, composed: true}));
+  }
 
-  handleLogOut: function () {
-    this.fire('hass-logout');
-  },
-});
+  handleLogOut() {
+    this.dispatchEvent(new CustomEvent('hass-logout', {bubbles: true, composed: true}));
+  }
+}
+
+customElements.define(HaSidebar.is, HaSidebar)
 </script>
