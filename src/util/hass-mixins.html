@@ -1,0 +1,14 @@
+<script>
+window.hassMixins = window.hassMixins || {};
+
+/* @polymerMixin */
+window.hassMixins.HaFireMixin = function (superClass) {
+  return class extends superClass {
+
+    fire(eventName, data = {}) {
+      this.dispatchEvent(new CustomEvent(eventName,
+        Object.assign({}, data, { bubbles: true, composed: true })));
+    }
+  };
+};
+</script>

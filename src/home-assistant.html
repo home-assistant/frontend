@@ -1,4 +1,4 @@
-<link rel='import' href='../bower_components/polymer/polymer.html'>
+<link rel="import" href='../bower_components/polymer/polymer-element.html'>
 <!-- imported as first element so we can render the placeholder -->
 <link rel='import' href='../bower_components/paper-spinner/paper-spinner.html'>
 <link rel='import' href='./util/roboto.html'>
@@ -50,70 +50,70 @@ window.removeInitMsg = function () {
   }
 };
 
-Polymer({
-  is: 'home-assistant',
+class HomeAssistant extends Polymer.Element {
 
-  hostAttributes: {
-    icons: null,
-  },
+  static get is() { return 'home-assistant'; }
 
-  properties: {
-    connectionPromise: {
-      type: Object,
-      value: window.hassConnection || null,
-      observer: 'handleConnectionPromise',
-    },
-    connection: {
-      type: Object,
-      value: null,
-      observer: 'connectionChanged',
-    },
-    hass: {
-      type: Object,
-      value: null,
-    },
-    icons: {
-      type: String,
-    },
-    iconsLoaded: {
-      type: Boolean,
-      value: false,
-    },
-    showMain: {
-      type: Boolean,
-      computed: 'computeShowMain(hass, iconsLoaded)',
-    },
-  },
+  static get properties() {
+    return {
+      connectionPromise: {
+        type: Object,
+        value: window.hassConnection || null,
+        observer: 'handleConnectionPromise',
+      },
+      connection: {
+        type: Object,
+        value: null,
+        observer: 'connectionChanged',
+      },
+      hass: {
+        type: Object,
+        value: null,
+      },
+      icons: {
+        type: String,
+      },
+      iconsLoaded: {
+        type: Boolean,
+        value: false,
+      },
+      showMain: {
+        type: Boolean,
+        computed: 'computeShowMain(hass, iconsLoaded)',
+      },
+    };
+  }
 
-  listeners: {
-    settheme: 'setTheme',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('settheme', e => this.setTheme(e));
+    this.loadIcons();
+  }
 
-  computeShowMain: function (hass, iconsLoaded) {
+  computeShowMain(hass, iconsLoaded) {
     return hass && hass.states && hass.config && iconsLoaded;
-  },
+  }
 
-  computeShowLoading: function (connectionPromise, hass, iconsLoaded) {
+  computeShowLoading(connectionPromise, hass, iconsLoaded) {
     // Show loading when connecting or when connected but not all pieces loaded yet
     return (connectionPromise != null ||
             (hass && (!hass.states || !hass.config || !iconsLoaded)));
-  },
+  }
 
-  loadIcons: function () {
+  loadIcons() {
     // If the import fails, we'll try to import again, must be a server glitch
     // Since HTML imports only resolve once, we import another url.
     const success = () => {
       this.iconsLoaded = true;
     };
 
-    this.importHref('/static/mdi-' + this.icons + '.html',
+    Polymer.importHref('/static/mdi-' + this.icons + '.html',
                     success,
-                    function () {
-                      this.importHref('/static/mdi.html', success, success);
-                    });
-  },
+                    () => Polymer.importHref('/static/mdi.html', success, success),
+                    true /* true for async */);
+  }
 
-  connectionChanged: function (conn, oldConn) {
+  connectionChanged(conn, oldConn) {
     if (oldConn) {
       this.unsubConnection();
       this.unsubConnection = null;
@@ -209,9 +209,9 @@ Polymer({
       unsubConfig();
       unsubThemes();
     };
-  },
+  }
 
-  handleConnectionPromise: function (prom) {
+  handleConnectionPromise(prom) {
     if (!prom) return;
 
     prom.then((conn) => {
@@ -219,25 +219,25 @@ Polymer({
     }, () => {
       this.connectionPromise = null;
     });
-  },
+  }
 
-  handleMoreInfo: function (ev) {
+  handleMoreInfo(ev) {
     ev.stopPropagation();
 
     this._updateHass({ moreInfoEntityId: ev.detail.entityId });
-  },
+  }
 
-  handleDockSidebar: function (ev) {
+  handleDockSidebar(ev) {
     ev.stopPropagation();
     this._updateHass({ dockedSidebar: ev.detail.dock });
     this.$.storage.storeState();
-  },
+  }
 
-  handleNotification: function (ev) {
+  handleNotification(ev) {
     this.$.notifications.showNotification(ev.detail.message);
-  },
+  }
 
-  handleLogout: function () {
+  handleLogout() {
     delete localStorage.authToken;
     var conn = this.connection;
     this.connectionPromise = null;
@@ -248,20 +248,18 @@ Polymer({
       // However, after it is done, home-assistant-main is removed from the DOM by this element.
     }
     conn.close();
-  },
+  }
 
-  ready: function () {
-    this.loadIcons();
-  },
-
-  setTheme: function (event) {
+  setTheme(event) {
     this._updateHass({ selectedTheme: event.detail });
     window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
     this.$.storage.storeState();
-  },
+  }
 
-  _updateHass: function (obj) {
+  _updateHass(obj) {
     this.hass = Object.assign({}, this.hass, obj);
-  },
-});
+  }
+}
+
+customElements.define(HomeAssistant.is, HomeAssistant);
 </script>
