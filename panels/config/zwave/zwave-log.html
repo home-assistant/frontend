@@ -2,6 +2,8 @@
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 
+<link rel="import" href="../ha-config-section.html">
+
 <dom-module id='ozw-log'>
   <template>
     <style include="iron-flex ha-style">
@@ -15,14 +17,17 @@
         max-width: 600px;
       }
     </style>
-    <paper-card heading='OZW Log'>
-      <div class='help-text'>
-        <pre>[[ozwLogs]]</pre>
-      </div>
-      <div class="card-actions">
-        <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
-      </div>
-    </paper-card>
+    <ha-config-section is-wide='[[isWide]]'>
+      <span slot='header'>OZW Log</span>
+      <paper-card>
+        <div class='help-text'>
+          <pre>[[ozwLogs]]</pre>
+        </div>
+        <div class="card-actions">
+          <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
+        </div>
+      </paper-card>
+    </ha-config-section>
   </template>
 </dom-module>
 <script>
@@ -35,18 +40,23 @@ Polymer({
       type: Object,
     },
 
+    isWide: {
+      type: Boolean,
+      value: false,
+    },
+
     ozwLogs: {
       type: String,
-      value: ''
+      value: 'Refresh to pull log'
     },
   },
 
   refreshLog: function () {
     this.ozwLogs = 'Loading ozw log...';
     this.hass.callApi('GET', 'zwave/ozwlog')
-      .then(function (info) {
+      .then((info) => {
         this.ozwLogs = info;
-      }.bind(this));
+      });
   },
 });
 </script>
