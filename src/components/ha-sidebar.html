@@ -8,6 +8,8 @@
 
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
+<link rel='import' href='../util/hass-mixins.html'
+
 <link rel='import' href='./ha-push-notifications-toggle.html'>
 
 <dom-module id='ha-sidebar'>
@@ -173,7 +175,7 @@
 </dom-module>
 
 <script>
-class HaSidebar extends Polymer.Element {
+class HaSidebar extends window.hassMixins.HaFireMixin(Polymer.Element) {
 
   static get is() { return 'ha-sidebar'; }
 
@@ -268,7 +270,7 @@ class HaSidebar extends Polymer.Element {
   }
 
   toggleMenu() {
-    this.dispatchEvent(new CustomEvent('hass-close-menu', { bubbles: true, composed: true }));
+    this.fire('hass-close-menu');
   }
 
   selectPanel(newChoice) {
@@ -281,11 +283,11 @@ class HaSidebar extends Polymer.Element {
       return;
     }
     history.pushState(null, null, path);
-    this.dispatchEvent(new CustomEvent('location-changed', { bubbles: true, composed: true }));
+    this.fire('location-changed');
   }
 
   handleLogOut() {
-    this.dispatchEvent(new CustomEvent('hass-logout', { bubbles: true, composed: true }));
+    this.fire('hass-logout');
   }
 }
 
