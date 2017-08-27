@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel='import' href='../../bower_components/app-route/app-route.html'>
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
@@ -7,6 +7,7 @@
 
 <link rel="import" href="./dashboard/ha-config-dashboard.html">
 <link rel="import" href="./core/ha-config-core.html">
+<link rel="import" href="./cloud/ha-config-cloud.html">
 <link rel="import" href="./automation/ha-config-automation.html">
 <link rel="import" href="./script/ha-config-script.html">
 <link rel="import" href="./zwave/ha-config-zwave.html">
@@ -36,10 +37,24 @@
       fallback-selection='not-found'
       selected-attribute='visible'
     >
+      <ha-config-core
+        page-name='core'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+      ></ha-config-core>
+
+      <ha-config-cloud
+        page-name='cloud'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+        account='[[account]]'
+      ></ha-config-cloud>
+
       <ha-config-dashboard
         page-name='dashboard'
         hass='[[hass]]'
         is-wide='[[isWide]]'
+        account='[[account]]'
       ></ha-config-dashboard>
 
       <ha-config-automation
@@ -62,12 +77,6 @@
         is-wide='[[isWide]]'
       ></ha-config-zwave>
 
-      <ha-config-core
-        page-name='core'
-        hass='[[hass]]'
-        is-wide='[[isWide]]'
-      ></ha-config-core>
-
       <hass-error-screen
         page-name='not-found'
         error='Page not found.'
@@ -78,40 +87,57 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-config',
+class HaPanelConfig extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-panel-config'; }
 
-  properties: {
-    hass: Object,
-    narrow: Boolean,
-    showMenu: Boolean,
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      account: Object,
 
-    route: {
-      type: Object,
-      observer: '_routeChanged',
-    },
+      route: {
+        type: Object,
+        observer: '_routeChanged',
+      },
 
-    _routeData: Object,
-    _routeTail: Object,
+      _routeData: Object,
+      _routeTail: Object,
 
-    wide: Boolean,
-    wideSidebar: Boolean,
+      wide: Boolean,
+      wideSidebar: Boolean,
 
-    isWide: {
-      type: Boolean,
-      computed: 'computeIsWide(showMenu, wideSidebar, wide)'
-    },
-  },
+      isWide: {
+        type: Boolean,
+        computed: 'computeIsWide(showMenu, wideSidebar, wide)'
+      },
+    };
+  }
 
-  computeIsWide: function (showMenu, wideSidebar, wide) {
+  ready() {
+    super.ready();
+    if (window.hassUtil.isComponentLoaded(this.hass, 'cloud')) {
+      this.hass.callApi('get', 'cloud/account').then(
+        (account) => { this.account = account; }
+      );
+    }
+    this.addEventListener('ha-account-refreshed', (ev) => {
+      this.account = ev.detail.account;
+    });
+  }
+
+  computeIsWide(showMenu, wideSidebar, wide) {
     return showMenu ? wideSidebar : wide;
-  },
+  }
 
-  _routeChanged: function (route) {
+  _routeChanged(route) {
     if (route.path === '' && route.prefix === '/config') {
       history.replaceState(null, null, '/config/dashboard');
       this.fire('location-changed');
     }
   }
-});
+}
+
+customElements.define(HaPanelConfig.is, HaPanelConfig);
 </script>
