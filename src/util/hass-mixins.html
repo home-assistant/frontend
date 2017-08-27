@@ -2,7 +2,7 @@
 window.hassMixins = window.hassMixins || {};
 
 /* @polymerMixin */
-window.hassMixins.HaFireMixin = function (superClass) {
+window.hassMixins.HaFireMixin = Polymer.dedupingMixin(superClass => {
   return class extends superClass {
 
     fire(eventName, data = {}) {
@@ -10,5 +10,5 @@ window.hassMixins.HaFireMixin = function (superClass) {
         Object.assign({}, data, { bubbles: true, composed: true })));
     }
   };
-};
+});
 </script>
