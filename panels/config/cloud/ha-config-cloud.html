@@ -3,13 +3,12 @@
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
-<link rel="import" href="../../../src/components/ha-menu-button.html">
 <link rel="import" href="../ha-config-section.html">
 
-<link rel="import" href="./ha-config-navigation.html">
-<link rel="import" href="./ha-config-cloud-menu.html">
+<link rel="import" href="./ha-config-cloud-login.html">
+<link rel="import" href="./ha-config-cloud-account.html">
 
-<dom-module id="ha-config-dashboard">
+<dom-module id="ha-config-cloud">
   <template>
     <style include="iron-flex ha-style">
       .content {
@@ -20,8 +19,11 @@
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed>
         <app-toolbar>
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Configuration</div>
+          <paper-icon-button
+            icon='mdi:arrow-left'
+            on-tap='_backTapped'
+          ></paper-icon-button>
+          <div main-title>Cloud</div>
         </app-toolbar>
       </app-header>
 
@@ -29,21 +31,27 @@
         <ha-config-section
           is-wide='[[isWide]]'
         >
-          <span slot='header'>Configure Home Assistant</span>
+          <span slot='header'>Home Assistant Cloud</span>
           <span slot='introduction'>
-            Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.
+            The Home Assistant Cloud allows you to opt-in to functions that will bring your Home Assistant experience to the next level.
+
+            <p><i>
+              Home Assistant will never share information with our cloud without your prior permission.
+            </i></p>
           </span>
 
-          <template is='dom-if' if='[[computeIsCloudLoaded(hass)]]'>
-            <ha-config-cloud-menu
+          <template is='dom-if' if='[[account]]'>
+            <ha-config-cloud-account
               hass='[[hass]]'
               account='[[account]]'
-            ></ha-config-cloud-menu>
+            ></ha-config-cloud-account>
           </template>
 
-          <ha-config-navigation
-            hass='[[hass]]'
-          ></ha-config-navigation>
+          <template is='dom-if' if='[[!account]]'>
+            <ha-config-cloud-login
+              hass='[[hass]]'
+            ></ha-config-cloud-login>
+          </template>
         </ha-config-section>
       </div>
     </app-header-layout>
@@ -51,17 +59,21 @@
 </dom-module>
 
 <script>
-class HaConfigDashboard extends Polymer.Element {
-  static get is() { return 'ha-config-dashboard'; }
+class HaConfigCloud extends Polymer.Element {
+  static get is() { return 'ha-config-cloud'; }
 
   static get properties() {
     return {
       hass: Object,
       isWide: Boolean,
+      loadingAccount: {
+        type: Boolean,
+        value: false
+      },
       account: {
         type: Object,
         value: null,
-      }
+      },
     };
   }
 
@@ -69,10 +81,10 @@ class HaConfigDashboard extends Polymer.Element {
     return isWide ? 'content' : 'content narrow';
   }
 
-  computeIsCloudLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'cloud');
+  _backTapped() {
+    history.back();
   }
 }
 
-customElements.define(HaConfigDashboard.is, HaConfigDashboard);
+customElements.define(HaConfigCloud.is, HaConfigCloud);
 </script>
