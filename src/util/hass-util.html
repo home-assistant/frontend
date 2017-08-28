@@ -38,7 +38,7 @@ window.hassUtil.LOGIC_STATE_ATTRIBUTES = [
   'entity_picture', 'friendly_name', 'icon', 'unit_of_measurement',
   'emulated_hue', 'emulated_hue_name', 'haaska_hidden', 'haaska_name',
   'homebridge_hidden', 'homebridge_name', 'supported_features', 'attribution',
-  'custom_ui_state_card', 'device_class',
+  'custom_ui_state_card', 'custom_ui_card', 'custom_ui_more_info', 'device_class',
 ];
 
 window.hassUtil.LANGUAGE = navigator.languages ?
@@ -231,16 +231,31 @@ window.hassUtil.stateCardType = function (hass, stateObj) {
   return 'display';
 };
 
+window.hassUtil.ensureCustomUILoaded = function (customUI) {
+  Polymer.Base.importHref(
+      '/local/custom_ui/' + customUI + '.html',
+      function () {},
+      /* eslint-disable no-console */
+      function () { console.error('Error loading %s from /local/custom_ui/%s.html', customUI, customUI); },
+      /* eslint-enable no-console */
+      true);
+};
+
 window.hassUtil.stateMoreInfoType = function (stateObj) {
+  if (stateObj.attributes && 'custom_ui_more_info' in stateObj.attributes) {
+    var customUI = stateObj.attributes.custom_ui_more_info;
+    window.hassUtil.ensureCustomUILoaded(customUI);
+    return customUI;
+  }
   var domain = window.hassUtil.computeDomain(stateObj);
 
   if (window.hassUtil.DOMAINS_WITH_MORE_INFO.indexOf(domain) !== -1) {
-    return domain;
+    return 'MORE-INFO-' + domain;
   }
   if (window.hassUtil.HIDE_MORE_INFO.indexOf(domain) !== -1) {
-    return 'hidden';
+    return 'MORE-INFO-HIDDEN';
   }
-  return 'default';
+  return 'MORE-INFO-DEFAULT';
 };
 
 window.hassUtil.domainIcon = function (domain, state) {
@@ -527,9 +542,7 @@ window.hassUtil.applyThemesOnElement = function (element, themes, localTheme, up
     });
   }
   element.updateStyles(styles);
-
   if (!updateMeta) return;
-
   const meta = document.querySelector('meta[name=theme-color]');
   if (meta) {
     if (!meta.hasAttribute('default-content')) {

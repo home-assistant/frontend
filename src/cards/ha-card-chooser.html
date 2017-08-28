@@ -21,8 +21,16 @@ Polymer({
   cardDataChanged: function (newData) {
     if (!newData) return;
 
-    window.hassUtil.dynamicContentUpdater(this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
-                          newData);
+    var cardType;
+
+    if (newData.stateObj && newData.stateObj.attributes && 'custom_ui_card' in newData.stateObj.attributes) {
+      cardType = newData.stateObj.attributes.custom_ui_card;
+      window.hassUtil.ensureCustomUILoaded(cardType);
+      cardType = cardType.toUpperCase();
+    } else {
+      cardType = 'HA-' + newData.cardType.toUpperCase() + '-CARD';
+    }
+    window.hassUtil.dynamicContentUpdater(this, cardType, newData);
   },
 });
 </script>
