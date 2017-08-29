@@ -44,13 +44,8 @@ class HaCustomizeArray extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   getOptions(item) {
-    const domain = item.domain;
-    if (!domain) {
-      this.item.type = 'string';
-      this.fire('item-changed');
-      return [];
-    }
-    const options = item.options[domain];
+    const domain = item.domain || '*';
+    const options = item.options[domain] || item.options['*'];
     if (!options) {
       this.item.type = 'string';
       this.fire('item-changed');
