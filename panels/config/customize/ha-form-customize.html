@@ -4,17 +4,13 @@
 <link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
 
 <link rel="import" href="../../../src/util/hass-util.html">
-<script src="../../../src/util/hass-attributes-util.js"></script>
+<link rel="import" href="../../../src/util/hass-attributes-util.html">
 
 <link rel="import" href="./ha-form-customize-attributes.html">
 
 <dom-module id="ha-form-customize">
   <template>
     <style include="iron-flex ha-style ha-form-style">
-      [hidden] {
-        display: none;
-      }
-
       .warning {
         color: red;
       }
@@ -29,36 +25,32 @@
         Changes made here won't affect your configuration.
       </div>
     </template>
-    <!-- <dom-if> would be more appropriate here, but due to
-         https://github.com/Polymer/polymer/issues/4818 array observations don't
-         propagate properly via <dom-if>.
-    -->
-    <div hidden$='[[!hasLocalAttributes]]'>
+    <template is='dom-if' if='[[hasLocalAttributes]]'>
       <h4 class="attributes-text">
         The following attributes are already set in customize.yaml<br>
       </h4>
       <ha-form-customize-attributes attributes="{{localAttributes}}"></ha-form-customize-attributes>
-    </div>
-    <div hidden$='[[!hasGlobalAttributes]]'>
+    </template>
+    <template is='dom-if' if='[[hasGlobalAttributes]]'>
       <h4 class="attributes-text">
         The following attributes are customized from outside of customize.yaml<br>
         Possibly via a domain, a glob or a different include.
       </h4>
       <ha-form-customize-attributes attributes="{{globalAttributes}}"></ha-form-customize-attributes>
-    </div>
-    <div hidden$='[[!hasExistingAttributes]]'>
+    </template>
+    <template is='dom-if' if='[[hasExistingAttributes]]'>
       <h4 class="attributes-text">
         The following attributes of the entity are set programatically.<br>
         You can override them if you like.
       </h4>
       <ha-form-customize-attributes attributes="{{existingAttributes}}"></ha-form-customize-attributes>
-    </div>
-    <div hidden$='[[!hasNewAttributes]]'>
+    </template>
+    <template is='dom-if' if='[[hasNewAttributes]]'>
       <h4 class="attributes-text">
         The following attributes weren't set. Set them if you like.
       </h4>
       <ha-form-customize-attributes attributes="{{newAttributes}}"></ha-form-customize-attributes>
-    </div>
+    </template>
     <div class='form-group'>
       <paper-dropdown-menu
         label='Pick an attribute to override'
