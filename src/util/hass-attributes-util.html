@@ -1,3 +1,4 @@
+<script>
 window.hassAttributeUtil = window.hassAttributeUtil || {};
 
 window.hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
@@ -29,8 +30,12 @@ window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
     entity_picture: undefined,
     friendly_name: { type: 'string', description: 'Name' },
     icon: { type: 'icon' },
-    emulated_hue: { type: 'boolean' },
-    emulated_hue_name: { type: 'string' },
+    emulated_hue: {
+      type: 'boolean',
+      domains: ['emulated_hue'] },
+    emulated_hue_name: {
+      type: 'string',
+      domains: ['emulated_hue'] },
     haaska_hidden: undefined,
     haaska_name: undefined,
     homebridge_hidden: { type: 'boolean' },
@@ -44,7 +49,12 @@ window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
       description: 'Device class',
       domains: ['binary_sensor', 'cover'] },
     hidden: { type: 'boolean', description: 'Hide from UI' },
-    assumed_state: { type: 'boolean' },
-    initial_state: { type: 'string' },
+    assumed_state: {
+      type: 'boolean',
+      domains: ['switch', 'light', 'cover', 'climate', 'fan', 'group'] },
+    initial_state: {
+      type: 'string',
+      domains: ['automation'] },
     unit_of_measurement: { type: 'string' },
   };
+  </script>

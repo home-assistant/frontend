@@ -1,4 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/polymer/lib/mixins/mutable-data.html">
 
 <link rel="import" href="./ha-customize-attribute.html">
 
@@ -9,7 +10,7 @@
         display: none;
       }
     </style>
-    <template is='dom-repeat' items='{{attributes}}'>
+    <template is='dom-repeat' items='{{attributes}}' mutable-data>
       <ha-customize-attribute
         item="{{item}}"
         hidden$="[[item.closed]]">
@@ -19,7 +20,7 @@
 </dom-module>
 
 <script>
-class HaFormCustomizeAttributes extends Polymer.Element {
+class HaFormCustomizeAttributes extends Polymer.MutableData(Polymer.Element) {
 
   static get is() { return 'ha-form-customize-attributes'; }
 
