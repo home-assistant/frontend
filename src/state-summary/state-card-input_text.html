@@ -1,10 +1,12 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="../components/entity/state-info.html">
+
+<link rel="import" href="../util/hass-util.html">
 
 <dom-module id="state-card-input_text">
   <template>
@@ -27,45 +29,57 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'state-card-input_text',
+class StateCardInputText extends Polymer.Element {
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get is() { return 'state-card-input_text'; }
 
-    inDialog: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      hass: Object,
 
-    stateObj: {
-      type: Object,
-      observer: 'stateObjectChanged',
-    },
-    min: {
-      type: Number,
-      value: 0,
-    },
-    max: {
-      type: Number,
-      value: 100,
-    },
-    pattern: {
-      type: String,
-      value: '.*',
-    },
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
-    value: {
-      type: String,
-    },
-  },
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
 
-  stateObjectChanged: function (newVal) {
+      stateObj: {
+        type: Object,
+        observer: 'stateObjectChanged',
+      },
+
+      min: {
+        type: Number,
+        value: 0,
+      },
+
+      max: {
+        type: Number,
+        value: 100,
+      },
+
+      pattern: {
+        type: String,
+        value: '.*',
+      },
+
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+
+      value: {
+        type: String,
+      }
+
+    };
+  }
+
+  static get observers() {
+    return [
+    ];
+  }
+
+  stateObjectChanged(newVal) {
     this.min = Number(newVal.attributes.min);
     this.max = Number(newVal.attributes.max);
     if (newVal.attributes.pattern != null) {
@@ -73,9 +87,9 @@ Polymer({
     }
     this.disabled = Boolean(newVal.attributes.disabled);
     this.value = String(newVal.state);
-  },
+  }
 
-  selectedValueChanged: function () {
+  selectedValueChanged() {
     if (this.value === String(this.stateObj.state)) {
       return;
     }
@@ -83,10 +97,12 @@ Polymer({
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });
-  },
+  }
 
-  stopPropagation: function (ev) {
+  stopPropagation(ev) {
     ev.stopPropagation();
-  },
-});
+  }
+}
+
+customElements.define(StateCardInputText.is, StateCardInputText);
 </script>
