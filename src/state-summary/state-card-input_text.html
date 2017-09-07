@@ -20,8 +20,8 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <paper-input
-        minlength='[[min]]' maxlength='[[max]]' value='{{value}}' pin
-        disabled='[[disabled]]' auto-validate pattern='[[pattern]]'
+        minlength='[[stateObj.attributes.min]]' maxlength='[[stateObj.attributes.max]]' value='{{value}}'
+        disabled='[[stateObj.attributes.disabled]]' [[pattern]]
         on-change='selectedValueChanged' on-tap='stopPropagation'>
       </paper-input>
     </div>
@@ -47,24 +47,8 @@ class StateCardInputText extends Polymer.Element {
         observer: 'stateObjectChanged',
       },
 
-      min: {
-        type: Number,
-        value: 0,
-      },
-
-      max: {
-        type: Number,
-        value: 100,
-      },
-
       pattern: {
         type: String,
-        value: '.*',
-      },
-
-      disabled: {
-        type: Boolean,
-        value: false,
       },
 
       value: {
@@ -80,12 +64,11 @@ class StateCardInputText extends Polymer.Element {
   }
 
   stateObjectChanged(newVal) {
-    this.min = Number(newVal.attributes.min);
-    this.max = Number(newVal.attributes.max);
-    if (newVal.attributes.pattern != null) {
-      this.pattern = String(newVal.attributes.pattern);
+    if ((newVal.attributes.pattern === null) || (newVal.attributes.pattern === '')) {
+      this.pattern = '';
+    } else {
+      this.pattern = "auto-validate pattern='" + String(newVal.attributes.pattern) + "'";
     }
-    this.disabled = Boolean(newVal.attributes.disabled);
     this.value = String(newVal.state);
   }
 
@@ -93,7 +76,7 @@ class StateCardInputText extends Polymer.Element {
     if (this.value === String(this.stateObj.state)) {
       return;
     }
-    this.hass.callService('input_text', 'select_value', {
+    this.hass.callService('input_text', 'set_value', {
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });
