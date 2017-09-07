@@ -21,7 +21,7 @@
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <paper-input
         minlength='[[stateObj.attributes.min]]' maxlength='[[stateObj.attributes.max]]' value='{{value}}'
-        disabled='[[stateObj.attributes.disabled]]' [[pattern]]
+        [[pattern]]
         on-change='selectedValueChanged' on-tap='stopPropagation'>
       </paper-input>
     </div>
