@@ -103,7 +103,19 @@
         @apply(--paper-font-title);
       }
 
+      button.link {
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        text-align: left;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+
       .card-actions paper-button:not([disabled]),
+      .card-actions ha-progress-button:not([disabled]),
       .card-actions ha-call-api-button:not([disabled]),
       .card-actions ha-call-service-button:not([disabled]) {
         color: var(--primary-color);
