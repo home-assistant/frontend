@@ -99,8 +99,7 @@ Polymer({
 
   entityTapped: function (ev) {
     var entityId;
-    if (ev.target.classList.contains('paper-toggle-button') ||
-        ev.target.classList.contains('paper-icon-button') ||
+    if (ev.target.nodeName === 'STATE-CARD-INPUT_TEXT' ||
         (!ev.model && !this.groupEntity)) {
       return;
     }
