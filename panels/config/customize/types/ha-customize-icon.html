@@ -15,12 +15,12 @@
         margin-top: 10px;
       }
     </style>
-    <iron-icon class="icon-image" icon="mdi:[[item.value]]"></iron-icon>
+    <iron-icon class="icon-image" icon="[[item.value]]"></iron-icon>
     <paper-input
+      auto-validate pattern="(mdi:.*)?" error-message="Must start with 'mdi:'"
       disabled='[[item.secondary]]'
       label='icon'
       value='{{item.value}}'>
-      <span slot="prefix">mdi:</span>
     </paper-input>
   </template>
 </dom-module>
