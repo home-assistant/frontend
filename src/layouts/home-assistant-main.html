@@ -118,7 +118,7 @@
       super.ready();
       this.addEventListener('hass-open-menu', () => this.handleOpenMenu());
       this.addEventListener('hass-close-menu', () => this.handleCloseMenu());
-      this.addEventListener('hass-start-voice', () => this.handleStartVoice());
+      this.addEventListener('hass-start-voice', (ev) => this.handleStartVoice(ev));
     }
 
     _routeChanged() {
