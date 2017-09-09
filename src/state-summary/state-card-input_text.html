@@ -1,0 +1,88 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../components/entity/state-info.html">
+
+<link rel="import" href="../util/hass-util.html">
+
+<dom-module id="state-card-input_text">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      paper-input {
+        margin-left: 16px;
+      }
+    </style>
+
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+      <paper-input
+        no-label-float
+        minlength='[[stateObj.attributes.min]]'
+        maxlength='[[stateObj.attributes.max]]'
+        value='{{value}}'
+        auto-validate='[[stateObj.attributes.pattern]]'
+        pattern='[[stateObj.attributes.pattern]]'
+        on-change='selectedValueChanged'
+        on-tap='stopPropagation'
+        placeholder='(empty value)'
+      >
+      </paper-input>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+class StateCardInputText extends Polymer.Element {
+
+  static get is() { return 'state-card-input_text'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+
+      stateObj: {
+        type: Object,
+        observer: 'stateObjectChanged',
+      },
+
+      pattern: {
+        type: String,
+      },
+
+      value: {
+        type: String,
+      }
+
+    };
+  }
+
+  stateObjectChanged(newVal) {
+    this.value = newVal.state;
+  }
+
+  selectedValueChanged() {
+    if (this.value === this.stateObj.state) {
+      return;
+    }
+    this.hass.callService('input_text', 'set_value', {
+      value: this.value,
+      entity_id: this.stateObj.entity_id,
+    });
+  }
+
+  stopPropagation(ev) {
+    ev.stopPropagation();
+  }
+}
+
+customElements.define(StateCardInputText.is, StateCardInputText);
+</script>
