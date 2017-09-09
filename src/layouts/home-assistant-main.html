@@ -54,6 +54,8 @@
         narrow='[[narrow]]'
         hass='[[hass]]'
         route='[[routeData]]'
+        language='[[language]]'
+        resources='[[resources]]'
       ></ha-sidebar>
 
       <iron-pages
@@ -90,7 +92,9 @@
 (function () {
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
 
-  class HomeAssistantMain extends window.hassMixins.EventsMixin(Polymer.Element) {
+  class HomeAssistantMain extends window.hassMixins.LocalizeMixin(
+                                  window.hassMixins.EventsMixin(
+                                  Polymer.Element)) {
     static get is() { return 'home-assistant-main'; }
 
     static get properties() {
@@ -116,9 +120,9 @@
 
     ready() {
       super.ready();
-      this.addEventListener('hass-open-menu', this.handleOpenMenu);
-      this.addEventListener('hass-close-menu', this.handleCloseMenu);
-      this.addEventListener('hass-start-voice', this.handleStartVoice);
+      this.addEventListener('hass-open-menu', () => this.handleOpenMenu());
+      this.addEventListener('hass-close-menu', () => this.handleCloseMenu());
+      this.addEventListener('hass-start-voice', () => this.handleStartVoice());
     }
 
     _routeChanged() {

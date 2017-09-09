@@ -28,6 +28,8 @@
         on-hass-dock-sidebar='handleDockSidebar'
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
+        language='[[language]]'
+        resources='[[resources]]'
         hass='[[hass]]'
       ></home-assistant-main>
     </template>
@@ -50,7 +52,7 @@ window.removeInitMsg = function () {
   }
 };
 
-class HomeAssistant extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
 
   static get is() { return 'home-assistant'; }
 
@@ -81,12 +83,6 @@ class HomeAssistant extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior]
         type: Boolean,
         computed: 'computeShowMain(hass, iconsLoaded)',
       },
-      language: {
-        type: String,
-      },
-      resources: {
-        type: Object,
-      },
     };
   }
 
@@ -94,11 +90,11 @@ class HomeAssistant extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior]
     super.ready();
     this.addEventListener('settheme', e => this.setTheme(e));
     this.loadIcons();
+    this.loadResources();
   }
 
   attached() {
     super.attached();
-    this.loadResources();
   }
 
   computeShowMain(hass, iconsLoaded) {

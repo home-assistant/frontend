@@ -109,7 +109,7 @@
     <paper-listbox attr-for-selected='data-panel' selected='[[route.panel]]'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
-        <span class='item-text'>{{alert(localize('panel.states')}}</span>
+        <span class='item-text'>{{localize('panel.states')}}</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
@@ -175,8 +175,9 @@
 </dom-module>
 
 <script>
-class HaSidebar extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior],
-                        window.hassMixins.EventsMixin(Polymer.Element)) {
+class HaSidebar extends window.hassMixins.LocalizeMixin(
+                        window.hassMixins.EventsMixin(
+                        Polymer.Element)) {
 
   static get is() { return 'ha-sidebar'; }
 

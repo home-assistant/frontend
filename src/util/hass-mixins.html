@@ -76,4 +76,23 @@ window.hassMixins.NavigateMixin = Polymer.dedupingMixin(
     }
 });
 
+/* @polymerMixin */
+window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(
+  superClass => class extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], superClass) {
+    static get properties() {
+      return {
+        language: {
+          type: String,
+        },
+        resources: {
+          type: Object,
+        },
+        useKeyIfMissing: {
+          type: Boolean,
+          value: true,
+        },
+      };
+    }
+});
+
 </script>
