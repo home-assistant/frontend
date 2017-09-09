@@ -1,0 +1,91 @@
+<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../ha-config-section.html">
+
+<link rel="import" href="./ha-config-cloud-login.html">
+<link rel="import" href="./ha-config-cloud-account.html">
+
+<dom-module id="ha-config-cloud">
+  <template>
+    <style include="iron-flex ha-style">
+      .content {
+        padding-bottom: 32px;
+      }
+    </style>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <paper-icon-button
+            icon='mdi:arrow-left'
+            on-tap='_backTapped'
+          ></paper-icon-button>
+          <div main-title>Cloud</div>
+        </app-toolbar>
+      </app-header>
+
+      <div class$='[[computeClasses(isWide)]]'>
+        <ha-config-section
+          is-wide='[[isWide]]'
+        >
+          <span slot='header'>Home Assistant Cloud</span>
+          <span slot='introduction'>
+            The Home Assistant Cloud allows you to opt-in to functions that will bring your Home Assistant experience to the next level.
+
+            <p><i>
+              Home Assistant will never share information with our cloud without your prior permission.
+            </i></p>
+          </span>
+
+          <template is='dom-if' if='[[account]]'>
+            <ha-config-cloud-account
+              hass='[[hass]]'
+              account='[[account]]'
+            ></ha-config-cloud-account>
+          </template>
+
+          <template is='dom-if' if='[[!account]]'>
+            <ha-config-cloud-login
+              hass='[[hass]]'
+            ></ha-config-cloud-login>
+          </template>
+        </ha-config-section>
+      </div>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigCloud extends Polymer.Element {
+  static get is() { return 'ha-config-cloud'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      isWide: Boolean,
+      loadingAccount: {
+        type: Boolean,
+        value: false
+      },
+      account: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
+
+  computeClasses(isWide) {
+    return isWide ? 'content' : 'content narrow';
+  }
+
+  _backTapped() {
+    history.back();
+  }
+}
+
+customElements.define(HaConfigCloud.is, HaConfigCloud);
+</script>

@@ -53,8 +53,6 @@
         narrow='[[narrow]]'
         hass='[[hass]]'
         route='[[routeData]]'
-        language='[[language]]'
-        resources='[[resources]]'
       ></ha-sidebar>
 
       <iron-pages
@@ -109,12 +107,6 @@
       dockedSidebar: {
         type: Boolean,
         computed: 'computeDockedSidebar(hass)',
-      },
-      language: {
-        type: String,
-      },
-      resources: {
-        type: Object,
       },
     },
 

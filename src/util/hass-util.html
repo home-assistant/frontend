@@ -16,6 +16,7 @@ window.hassUtil.DOMAINS_WITH_CARD = [
   'configurator',
   'input_select',
   'input_slider',
+  'input_text',
   'media_player',
   'scene',
   'script',
@@ -31,14 +32,7 @@ window.hassUtil.DOMAINS_WITH_MORE_INFO = [
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
 
 window.hassUtil.HIDE_MORE_INFO = [
-  'input_select', 'scene', 'script', 'input_slider',
-];
-
-window.hassUtil.LOGIC_STATE_ATTRIBUTES = [
-  'entity_picture', 'friendly_name', 'icon', 'unit_of_measurement',
-  'emulated_hue', 'emulated_hue_name', 'haaska_hidden', 'haaska_name',
-  'homebridge_hidden', 'homebridge_name', 'supported_features', 'attribution',
-  'custom_ui_state_card', 'device_class',
+  'input_select', 'scene', 'script', 'input_slider', 'input_text'
 ];
 
 window.hassUtil.LANGUAGE = navigator.languages ?
@@ -295,6 +289,9 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'input_slider':
       return 'mdi:ray-vertex';
+
+    case 'input_text':
+      return 'mdi:textbox';
 
     case 'light':
       return 'mdi:lightbulb';

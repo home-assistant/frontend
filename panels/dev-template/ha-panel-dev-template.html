@@ -142,7 +142,7 @@ Polymer({
              'For loop example:\n' +
              '{% for state in states.sensor -%}\n' +
              '  {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}\n' +
-             '  {{ state.name | lower }} is {{state.state}} {{- state.attributes.unit_of_measurement}}\n' +
+             '  {{ state.name | lower }} is {{state.state_with_unit}}\n' +
              '{%- endfor -%}.',
       /* eslint-enable max-len */
       observer: 'templateChanged',

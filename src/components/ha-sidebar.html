@@ -1,5 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
-<link rel='import' href='../../bower_components/app-localize-behavior/app-localize-behavior.html'>
+<link rel="import" href='../../bower_components/polymer/polymer-element.html'>
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 <link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
@@ -8,6 +7,8 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<link rel='import' href='../util/hass-mixins.html'>
 
 <link rel='import' href='./ha-push-notifications-toggle.html'>
 
@@ -108,7 +109,7 @@
     <paper-listbox attr-for-selected='data-panel' selected='[[route.panel]]'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
-        <span class='item-text'>{{localize('panel.states')}}</span>
+        <span class='item-text'>{{alert(localize('panel.states')}}</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
@@ -174,61 +175,46 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-sidebar',
+class HaSidebar extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior],
+                        window.hassMixins.EventsMixin(Polymer.Element)) {
 
-  behaviors: [
-    Polymer.AppLocalizeBehavior,
-  ],
+  static get is() { return 'ha-sidebar'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    menuShown: {
-      type: Boolean,
-    },
+      menuShown: {
+        type: Boolean,
+      },
 
-    menuSelected: {
-      type: String,
-    },
+      menuSelected: {
+        type: String,
+      },
 
-    narrow: Boolean,
+      narrow: Boolean,
 
-    route: Object,
+      route: Object,
 
-    panels: {
-      type: Array,
-      computed: 'computePanels(hass)',
-    },
+      panels: {
+        type: Array,
+        computed: 'computePanels(hass)',
+      },
 
-    pushSupported: {
-      type: Boolean,
-      value: true,
-    },
+      pushSupported: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
 
-    language: {
-      type: String,
-    },
-
-    resources: {
-      type: Object,
-    },
-
-    // If a custom panel gave a name instead of a translation key,
-    // display the name instead of the missing key
-    useKeyIfMissing: {
-      type: Boolean,
-      value: true,
-    },
-  },
-
-  _mqttLoaded: function (hass) {
+  _mqttLoaded(hass) {
     return hass.config.core.components.indexOf('mqtt') !== -1;
-  },
+  }
 
-  computePanels: function (hass) {
+  computePanels(hass) {
     var panels = hass.config.panels;
     var sortValue = {
       map: 1,
@@ -265,9 +251,9 @@ Polymer({
     });
 
     return result;
-  },
+  }
 
-  menuClicked: function (ev) {
+  menuClicked(ev) {
     var target = ev.target;
     var checks = 5;
     var attr = target.getAttribute('data-panel');
@@ -282,13 +268,13 @@ Polymer({
     if (checks) {
       this.selectPanel(attr);
     }
-  },
+  }
 
-  toggleMenu: function () {
+  toggleMenu() {
     this.fire('hass-close-menu');
-  },
+  }
 
-  selectPanel: function (newChoice) {
+  selectPanel(newChoice) {
     if (newChoice === 'logout') {
       this.handleLogOut();
       return;
@@ -299,10 +285,12 @@ Polymer({
     }
     history.pushState(null, null, path);
     this.fire('location-changed');
-  },
+  }
 
-  handleLogOut: function () {
+  handleLogOut() {
     this.fire('hass-logout');
-  },
-});
+  }
+}
+
+customElements.define(HaSidebar.is, HaSidebar);
 </script>

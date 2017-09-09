@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../util/hass-util.html">
+
+<link rel="import" href="../util/hass-attributes-util.html">
 
 <dom-module id="ha-attributes">
   <template>
@@ -49,7 +50,7 @@
     },
 
     computeFiltersArray: function (extraFilters) {
-      return window.hassUtil.LOGIC_STATE_ATTRIBUTES + (extraFilters ? extraFilters.split(',') : []);
+      return Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES) + (extraFilters ? extraFilters.split(',') : []);
     },
 
     computeDisplayAttributes: function (stateObj, filtersArray) {

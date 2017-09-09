@@ -30,65 +30,68 @@
       .help-text {
         padding-left: 24px;
         padding-right: 24px;
+        padding-bottom: 12px;
       }
     </style>
-      <div class='content'>
-        <paper-card heading='Node group associations'>
-          <div class='device-picker'>
+    <paper-card class="content" heading='Node group associations'>
+      <!--TODO make api for getting groups and members-->
+      <div class='device-picker'>
+        <paper-dropdown-menu label="Group" class='flex'>
+          <paper-listbox
+              slot="dropdown-content"
+              selected='{{selectedGroup}}'>
+            <template is='dom-repeat' items='[[groups]]' as='state'>
+              <paper-item>[[computeSelectCaptionGroup(state)]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
+      <template is='dom-if' if='[[computeIsGroupSelected(selectedGroup)]]'>
+        <div class='device-picker'>
           <paper-dropdown-menu label="Node to control" class='flex'>
             <paper-listbox
-              slot="dropdown-content"
-              selected='{{selectedTargetNode}}'>
-               <template is='dom-repeat' items='[[nodes]]' as='state'>
+                slot="dropdown-content"
+                selected='{{selectedTargetNode}}'>
+              <template is='dom-repeat' items='[[nodes]]' as='state'>
                 <paper-item>[[computeSelectCaption(state)]]</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
-          </div>
-        <template is='dom-if' if='[[!computeIsTargetNodeSelected(selectedTargetNode)]]'>
-          <!--TODO make api for getting groups and members-->
-          <div class='device-picker'>
-          <paper-dropdown-menu label="Group" class='flex'>
-            <paper-listbox
-              slot="dropdown-content"
-              selected='{{selectedGroup}}'>
-              <template is='dom-repeat' items='[[groups]]' as='state'>
-                <paper-item>[[computeSelectCaptionGroup(state)]]</paper-item>
-              </template>
-            </paper-listbox>
-          </paper-dropdown-menu>
-          </div>
-        </template>
-        <template is='dom-if' if='[[!computeIsGroupSelected(selectedGroup)]]'>
-          <div class='help-text'>
-            <span>Other Nodes in this group:</span>
-            <template is='dom-repeat' items='[[otherGroupNodes]]' as='state'>
-            <span>[[state]]</span>
-            </template>
-          </div>
-          <div class='help-text'>
-            <span>Max Associations:</span>
-            <span>[[maxAssociations]]</span>
-          </div>
-          <div class='card-actions'>
-            <template is='dom-if' if='[[!noAssociationsLeft]]'>
-              <ha-call-service-button
+        </div>
+
+        <div class='help-text'>
+          <span>Other Nodes in this group:</span>
+          <template is='dom-repeat' items='[[otherGroupNodes]]' as='state'>
+            <div>[[state]]</div>
+          </template>
+        </div>
+        <div class='help-text'>
+          <span>Max Associations:</span>
+          <span>[[maxAssociations]]</span>
+        </div>
+      </template>
+
+      <template is='dom-if' if='[[computeIsTargetNodeSelected(selectedTargetNode)]]'>
+        <div class='card-actions'>
+          <template is='dom-if' if='[[!noAssociationsLeft]]'>
+            <ha-call-service-button
                 hass='[[hass]]'
                 domain='zwave'
                 service='change_association'
                 service-data='[[computeAssocServiceData(selectedGroup, "add")]]'
-              >Add To Group</ha-call-service-button>
-            </template>
-          <ha-call-service-button
-            hass='[[hass]]'
-            domain='zwave'
-            service='change_association'
-            service-data='[[computeAssocServiceData(selectedGroup, "remove")]]'
-          >Remove From Group</ha-call-service-button>
+            >Add To Group</ha-call-service-button>
+          </template>
+          <template is='dom-if' if='[[computeTargetInGroup(selectedGroup, selectedTargetNode)]]'>
+            <ha-call-service-button
+                hass='[[hass]]'
+                domain='zwave'
+                service='change_association'
+                service-data='[[computeAssocServiceData(selectedGroup, "remove")]]'
+            >Remove From Group</ha-call-service-button>
+          </template>
         </div>
       </template>
-      </paper-card>
-    </div>
+    </paper-card>
   </template>
 </dom-module>
 
@@ -164,15 +167,37 @@ Polymer({
   computeMaxAssociations: function (selectedGroup) {
     if (selectedGroup === -1) return -1;
     var maxAssociations = this.groups[selectedGroup].value.max_associations;
-    if (!maxAssociations) return ['None'];
+    if (!maxAssociations) return 'None';
     return maxAssociations;
   },
 
   computeOtherGroupNodes: function (selectedGroup) {
     if (selectedGroup === -1) return -1;
-    var associations = Object.values(this.groups[selectedGroup].value.associations);
+    var associations = Object.values(this.groups[selectedGroup].value.association_instances);
     if (!associations.length) return ['None'];
-    return associations;
+    return associations.map((assoc) => {
+      if (!assoc.length || assoc.length !== 2) {
+        return 'Unknown Node: ' + assoc;
+      }
+      const id = assoc[0];
+      const instance = assoc[1];
+      const node = this.nodes.find(n => n.attributes.node_id === id);
+      if (!node) {
+        return 'Unknown Node (id: ' + (instance ? id + '.' + instance : id) + ')';
+      }
+      let caption = this.computeSelectCaption(node);
+      if (instance) {
+        caption += '/ Instance: ' + instance;
+      }
+      return caption;
+    });
+  },
+
+  computeTargetInGroup: function (selectedGroup, selectedTargetNode) {
+    if (selectedGroup === -1 || selectedTargetNode === -1) return false;
+    const associations = Object.values(this.groups[selectedGroup].value.associations);
+    if (!associations.length) return false;
+    return associations.indexOf(this.nodes[selectedTargetNode].attributes.node_id) !== -1;
   },
 
   computeSelectCaption: function (stateObj) {
@@ -186,11 +211,11 @@ Polymer({
   },
 
   computeIsTargetNodeSelected: function (selectedTargetNode) {
-    return (!this.nodes || selectedTargetNode === -1);
+    return this.nodes && selectedTargetNode !== -1;
   },
 
   computeIsGroupSelected: function (selectedGroup) {
-    return (!this.nodes || this.selectedNode === -1 || selectedGroup === -1);
+    return this.nodes && this.selectedNode !== -1 && selectedGroup !== -1;
   },
 
   computeAssocServiceData: function (selectedGroup, type) {
@@ -223,4 +248,3 @@ Polymer({
   },
 });
 </script>
-
