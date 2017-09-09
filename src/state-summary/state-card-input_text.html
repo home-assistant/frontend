@@ -20,9 +20,16 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <paper-input
-        minlength='[[stateObj.attributes.min]]' maxlength='[[stateObj.attributes.max]]' value='{{value}}'
-        [[pattern]]
-        on-change='selectedValueChanged' on-tap='stopPropagation'>
+        no-label-float
+        minlength='[[stateObj.attributes.min]]'
+        maxlength='[[stateObj.attributes.max]]'
+        value='{{value}}'
+        auto-validate='[[stateObj.attributes.pattern]]'
+        pattern='[[stateObj.attributes.pattern]]'
+        on-change='selectedValueChanged'
+        on-tap='stopPropagation'
+        placeholder='(empty value)'
+      >
       </paper-input>
     </div>
   </template>
@@ -58,22 +65,12 @@ class StateCardInputText extends Polymer.Element {
     };
   }
 
-  static get observers() {
-    return [
-    ];
-  }
-
   stateObjectChanged(newVal) {
-    if ((newVal.attributes.pattern === null) || (newVal.attributes.pattern === '')) {
-      this.pattern = '';
-    } else {
-      this.pattern = "auto-validate pattern='" + String(newVal.attributes.pattern) + "'";
-    }
-    this.value = String(newVal.state);
+    this.value = newVal.state;
   }
 
   selectedValueChanged() {
-    if (this.value === String(this.stateObj.state)) {
+    if (this.value === this.stateObj.state) {
       return;
     }
     this.hass.callService('input_text', 'set_value', {
