@@ -1,6 +1,5 @@
 <link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../../bower_components/app-route/app-route.html'>
-<link rel="import" href="../../../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="../ha-config-section.html">
 
@@ -27,34 +26,37 @@
       <ha-config-cloud-account
         hass='[[hass]]'
         account='[[account]]'
+        is-wide='[[isWide]]'
       ></ha-config-cloud-account>
     </template>
 
     <template is='dom-if' if='[[!account]]' restamp>
-      <iron-pages
-        selected='[[_routeData.page]]'
-        attr-for-selected='page-name'
-        fallback-selection='login'
-        selected-attribute='visible'
-      >
+      <template is='dom-if' if='[[_isLoginPage(_routeData.page)]]' restamp>
         <ha-config-cloud-login
           page-name='login'
           hass='[[hass]]'
           is-wide='[[isWide]]'
+          email='{{_loginEmail}}'
         ></ha-config-cloud-login>
+      </template>
 
+      <template is='dom-if' if='[[_isRegisterPage(_routeData.page)]]' restamp>
         <ha-config-cloud-register
           page-name='register'
           hass='[[hass]]'
           is-wide='[[isWide]]'
+          email='{{_loginEmail}}'
         ></ha-config-cloud-register>
+      </template>
 
+      <template is='dom-if' if='[[_isForgotPasswordPage(_routeData.page)]]' restamp>
         <ha-config-cloud-forgot-password
           page-name='forgot-password'
           hass='[[hass]]'
           is-wide='[[isWide]]'
+          email='{{_loginEmail}}'
         ></ha-config-cloud-forgot-password>
-      </iron-pages>
+      </template>
     </template>
   </template>
 </dom-module>
@@ -80,7 +82,7 @@ class HaConfigCloud extends window.hassMixins.NavigateMixin(Polymer.Element) {
 
       _routeData: Object,
       _routeTail: Object,
-
+      _loginEmail: String,
     };
   }
 
@@ -100,6 +102,10 @@ class HaConfigCloud extends window.hassMixins.NavigateMixin(Polymer.Element) {
       this.navigate('/config/cloud/account', true);
     }
   }
+
+  _isRegisterPage(page) { return page === 'register'; }
+  _isForgotPasswordPage(page) { return page === 'forgot-password'; }
+  _isLoginPage(page) { return page === 'login'; }
 }
 
 customElements.define(HaConfigCloud.is, HaConfigCloud);

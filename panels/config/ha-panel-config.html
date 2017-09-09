@@ -58,6 +58,8 @@
         hass='[[hass]]'
         is-wide='[[isWide]]'
         account='[[account]]'
+        narrow='[[narrow]]'
+        show-menu='[[showMenu]]'
       ></ha-config-dashboard>
 
       <ha-config-automation
@@ -104,7 +106,10 @@ class HaPanelConfig extends window.hassMixins.EventsMixin(Polymer.Element) {
       hass: Object,
       narrow: Boolean,
       showMenu: Boolean,
-      account: Object,
+      account: {
+        type: Object,
+        value: null,
+      },
 
       route: {
         type: Object,

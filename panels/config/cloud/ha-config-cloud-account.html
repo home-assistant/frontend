@@ -77,10 +77,6 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(Polymer.Element
     this.hass.callApi('post', 'cloud/logout').then(
       () => this.fire('ha-account-refreshed', { account: null }));
   }
-
-  _backTapped() {
-    history.back();
-  }
 }
 
 customElements.define(HaConfigCloudAccount.is, HaConfigCloudAccount);

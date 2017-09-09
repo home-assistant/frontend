@@ -60,7 +60,7 @@
                 label='Email'
                 id='emailInput'
                 type='email'
-                value='{{_email}}'
+                value='{{email}}'
                 on-keydown='_keyDown'
               ></paper-input>
               <paper-input
@@ -109,20 +109,24 @@ class HaConfigCloudLogin extends
     return {
       hass: Object,
       isWide: Boolean,
-      visible: {
-        type: Boolean,
-        observer: '_visibleChanged'
+      email: {
+        type: String,
+        notify: true,
       },
-
-      _email: String,
-      _password: String,
-      _requestInProgress: Boolean,
+      _password: {
+        type: String,
+        value: '',
+      },
+      _requestInProgress: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   static get observers() {
     return [
-      '_inputChanged(_email, _password)'
+      '_inputChanged(email, _password)'
     ];
   }
 
@@ -139,7 +143,7 @@ class HaConfigCloudLogin extends
   }
 
   _handleLogin() {
-    if (!this._email) {
+    if (!this.email) {
       this.error = 'Email is required.';
     } else if (!this._password) {
       this.error = 'Password is required.';
@@ -150,18 +154,28 @@ class HaConfigCloudLogin extends
     this._requestInProgress = true;
 
     this.hass.callApi('post', 'cloud/login', {
-      email: this._email,
+      email: this.email,
       password: this._password,
     }).then(
       (account) => {
         this.fire('ha-account-refreshed', { account: account });
-        this._email = '';
+        this.email = '';
         this._password = '';
       }, (err) => {
         this._password = '';
-        this.error = err && err.body && err.body.message ?
-          err.body.message : 'Unknown error.';
         this._requestInProgress = false;
+        if (!err || !err.body || !err.body.message) {
+          this.error = 'Unknown error';
+          return;
+        } else if (err.body.code === 'UserNotConfirmed') {
+          alert('You need to confirm your email before logging in.');
+          this.navigate('/config/cloud/register#confirm');
+          return;
+        } else if (err.body.code === 'PasswordChangeRequired') {
+          alert('You need to change your password before logging in.');
+          this.navigate('/config/cloud/forgot-password');
+        }
+        this.error = err.body.message;
       });
   }
 
@@ -171,16 +185,6 @@ class HaConfigCloudLogin extends
 
   _handleForgotPassword() {
     this.navigate('/config/cloud/forgot-password');
-  }
-
-  _visibleChanged(visible) {
-    if (visible) {
-      // Reset the form
-      this._email = '';
-      this._password = '';
-      this._requestInProgress = false;
-      setTimeout(() => this.$.emailInput.focus(), 100);
-    }
   }
 }
 

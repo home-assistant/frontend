@@ -66,9 +66,10 @@
                   <div class='error' hidden$='[[!_error]]'>[[_error]]</div>
                 </div>
                 <paper-input
+                  autofocus
                   label='Email address'
                   type='email'
-                  value='{{_email}}'
+                  value='{{email}}'
                   on-keydown='_keyDown'
                 ></paper-input>
                 <paper-input
@@ -106,7 +107,7 @@
                   <paper-input
                     label='Email address'
                     type='email'
-                    value='{{_email}}'
+                    value='{{email}}'
                     on-keydown='_keyDown'
                   ></paper-input>
                 </template>
@@ -141,25 +142,33 @@ class HaConfigCloudRegister extends
     return {
       hass: Object,
       isWide: Boolean,
-      visible: {
-        type: Boolean,
-        observer: '_visibleChanged'
+      email: {
+        type: String,
+        notify: true,
       },
 
-      _requestInProgress: Boolean,
-      _email: String,
-      _password: String,
-      _showEmailInputForConfirmation: Boolean,
-      _hasConfirmationCode: {
+      _requestInProgress: {
         type: Boolean,
         value: false,
+      },
+      _password: {
+        type: String,
+        value: '',
+      },
+      _showEmailInputForConfirmation: {
+        type: Boolean,
+        value: false,
+      },
+      _hasConfirmationCode: {
+        type: Boolean,
+        value: () => document.location.hash === '#confirm'
       }
     };
   }
 
   static get observers() {
     return [
-      '_inputChanged(_email, _password)'
+      '_inputChanged(email, _password)'
     ];
   }
 
@@ -180,7 +189,7 @@ class HaConfigCloudRegister extends
   }
 
   _handleRegister() {
-    if (!this._email) {
+    if (!this.email) {
       this._error = 'Email is required.';
     } else if (!this._password) {
       this._error = 'Password is required.';
@@ -191,7 +200,7 @@ class HaConfigCloudRegister extends
     this._requestInProgress = true;
 
     this.hass.callApi('post', 'cloud/register', {
-      email: this._email,
+      email: this.email,
       password: this._password,
     }).then(
       () => {
@@ -212,7 +221,7 @@ class HaConfigCloudRegister extends
   }
 
   _handleVerifyEmail() {
-    if (!this._email) {
+    if (!this.email) {
       this._error = 'Email is required.';
     } else if (!this._confirmationCode) {
       this._error = 'Confirmation code is required.';
@@ -223,7 +232,7 @@ class HaConfigCloudRegister extends
     this._requestInProgress = true;
 
     this.hass.callApi('post', 'cloud/confirm_register', {
-      email: this._email,
+      email: this.email,
       confirmation_code: this._confirmationCode,
     }).then(
       () => {
@@ -236,18 +245,6 @@ class HaConfigCloudRegister extends
           err.body.message : 'Unknown error';
         this._requestInProgress = false;
       });
-  }
-
-  _visibleChanged(visible) {
-    if (visible) {
-      // Reset the form
-      this._error = '';
-      this._email = '';
-      this._password = '';
-      this._hasConfirmationCode = false;
-      this._showEmailInputForConfirmation = false;
-      this._requestInProgress = false;
-    }
   }
 }
 
