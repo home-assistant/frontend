@@ -93,10 +93,6 @@ class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     this.loadResources();
   }
 
-  attached() {
-    super.attached();
-  }
-
   computeShowMain(hass, iconsLoaded) {
     return hass && hass.states && hass.config && iconsLoaded;
   }
@@ -121,10 +117,10 @@ class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   }
 
   loadResources() {
-    window.getTranslation().then(function (result) {
+    window.getTranslation().then((result) => {
       this.language = result.language;
       this.resources = result.resources;
-    }.bind(this));
+    });
   }
 
   connectionChanged(conn, oldConn) {
