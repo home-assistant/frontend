@@ -25,7 +25,7 @@
         </app-toolbar>
       </app-header>
 
-      <div class$='[[computeClasses(isWide)]]'>
+      <div class='content'>
         <ha-config-section
           is-wide='[[isWide]]'
         >
@@ -58,15 +58,10 @@ class HaConfigDashboard extends Polymer.Element {
     return {
       hass: Object,
       isWide: Boolean,
-      account: {
-        type: Object,
-        value: null,
-      }
+      account: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
     };
-  }
-
-  computeClasses(isWide) {
-    return isWide ? 'content' : 'content narrow';
   }
 
   computeIsCloudLoaded(hass) {

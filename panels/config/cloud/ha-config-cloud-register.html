@@ -1,0 +1,252 @@
+<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href='../../../bower_components/paper-card/paper-card.html'>
+<link rel="import" href='../../../bower_components/paper-button/paper-button.html'>
+<link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
+
+<link rel="import" href="../../../src/layouts/hass-subpage.html">
+<link rel="import" href="../../../src/util/hass-mixins.html">
+<link rel="import" href='../../../src/resources/ha-style.html'>
+<link rel="import" href='../../../src/components/buttons/ha-progress-button.html'>
+
+<dom-module id="ha-config-cloud-register">
+  <template>
+    <style include="iron-flex ha-style">
+      paper-card {
+        display: block;
+      }
+      paper-item {
+        cursor: pointer;
+      }
+      paper-card:last-child {
+        margin-top: 24px;
+      }
+      h1 {
+        @apply(--paper-font-headline);
+        margin: 0;
+      }
+      .error {
+        color: var(--google-red-500);
+      }
+      .card-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      [hidden] {
+        display: none;
+      }
+    </style>
+    <hass-subpage title="Register Account">
+      <div class='content'>
+        <ha-config-section
+          is-wide='[[isWide]]'
+        >
+          <span slot='header'>Register with the Home Assistant Cloud</span>
+          <span slot='introduction'>
+            Register today to easily connect your Home Assistant to cloud-only services.
+
+            <p>
+              By registering an account you agree to the following terms and conditions.
+              <ul>
+                <li><a href='#'>Terms and Conditions</a></li>
+                <li><a href='#'>Privacy Policy</a></li>
+              </ul>
+            </p>
+
+            <p><i>
+              Home Assistant will never share information with our cloud without your prior permission.
+            </i></p>
+          </span>
+
+          <template is='dom-if' if='[[!_hasConfirmationCode]]'>
+            <paper-card>
+              <div class='card-content'>
+                <div class='header'>
+                  <h1>Register</h1>
+                  <div class='error' hidden$='[[!_error]]'>[[_error]]</div>
+                </div>
+                <paper-input
+                  autofocus
+                  label='Email address'
+                  type='email'
+                  value='{{email}}'
+                  on-keydown='_keyDown'
+                ></paper-input>
+                <paper-input
+                  label='Password'
+                  value='{{_password}}'
+                  type='password'
+                  on-keydown='_keyDown'
+                ></paper-input>
+              </div>
+              <div class='card-actions'>
+                <ha-progress-button
+                  on-tap='_handleRegister'
+                  progress='[[_requestInProgress]]'
+                >Create Account</ha-progress-button>
+                <button
+                  class='link'
+                  hidden='[[_requestInProgress]]'
+                  on-click='_handleShowVerifyAccount'
+                >have confirmation code?</button>
+              </div>
+            </paper-card>
+          </template>
+
+          <template is='dom-if' if='[[_hasConfirmationCode]]'>
+            <paper-card>
+              <div class='card-content'>
+                <div class='header'>
+                  <h1>Verify email</h1>
+                  <div class='error' hidden$='[[!_error]]'>[[_error]]</div>
+                </div>
+                <p>
+                  Check your email address, we've emailed you a verification code to activate your account.
+                </p>
+                <template is='dom-if' if='[[_showEmailInputForConfirmation]]'>
+                  <paper-input
+                    label='Email address'
+                    type='email'
+                    value='{{email}}'
+                    on-keydown='_keyDown'
+                  ></paper-input>
+                </template>
+                <paper-input
+                  label='Confirmation code'
+                  value='{{_confirmationCode}}'
+                  on-keydown='_keyDown'
+                  type='number'
+                ></paper-input>
+              </div>
+              <div class='card-actions'>
+                <ha-progress-button
+                  on-tap='_handleVerifyEmail'
+                  progress='[[_requestInProgress]]'
+                >Verify Email</ha-progress-button>
+              </div>
+            </paper-card>
+          </template>
+        </ha-config-section>
+      </div>
+    </hass-subpage>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigCloudRegister extends
+    window.hassMixins.NavigateMixin(
+      window.hassMixins.EventsMixin(Polymer.Element)) {
+  static get is() { return 'ha-config-cloud-register'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      isWide: Boolean,
+      email: {
+        type: String,
+        notify: true,
+      },
+
+      _requestInProgress: {
+        type: Boolean,
+        value: false,
+      },
+      _password: {
+        type: String,
+        value: '',
+      },
+      _showEmailInputForConfirmation: {
+        type: Boolean,
+        value: false,
+      },
+      _hasConfirmationCode: {
+        type: Boolean,
+        value: () => document.location.hash === '#confirm'
+      }
+    };
+  }
+
+  static get observers() {
+    return [
+      '_inputChanged(email, _password)'
+    ];
+  }
+
+  _inputChanged() {
+    this._error = false;
+  }
+
+  _keyDown(ev) {
+    // validate on enter
+    if (ev.keyCode === 13) {
+      if (this._hasConfirmationCode) {
+        this._handleVerifyEmail();
+      } else {
+        this._handleRegister();
+      }
+      ev.preventDefault();
+    }
+  }
+
+  _handleRegister() {
+    if (!this.email) {
+      this._error = 'Email is required.';
+    } else if (!this._password) {
+      this._error = 'Password is required.';
+    }
+
+    if (this._error) return;
+
+    this._requestInProgress = true;
+
+    this.hass.callApi('post', 'cloud/register', {
+      email: this.email,
+      password: this._password,
+    }).then(
+      () => {
+        this._requestInProgress = false;
+        this._hasConfirmationCode = true;
+      }, (err) => {
+        this._password = '';
+        this._requestInProgress = false;
+        this._error = err && err.body && err.body.message ?
+          err.body.message : 'Unknown error';
+      });
+  }
+
+  _handleShowVerifyAccount() {
+    this._error = '';
+    this._showEmailInputForConfirmation = true;
+    this._hasConfirmationCode = true;
+  }
+
+  _handleVerifyEmail() {
+    if (!this.email) {
+      this._error = 'Email is required.';
+    } else if (!this._confirmationCode) {
+      this._error = 'Confirmation code is required.';
+    }
+
+    if (this._error) return;
+
+    this._requestInProgress = true;
+
+    this.hass.callApi('post', 'cloud/confirm_register', {
+      email: this.email,
+      confirmation_code: this._confirmationCode,
+    }).then(
+      () => {
+        // eslint-disable-next-line
+        alert('Confirmation successful. You can now login.');
+        this.navigate('config/cloud/login');
+      }, (err) => {
+        this._confirmationCode = '';
+        this._error = err && err.body && err.body.message ?
+          err.body.message : 'Unknown error';
+        this._requestInProgress = false;
+      });
+  }
+}
+
+customElements.define(HaConfigCloudRegister.is, HaConfigCloudRegister);
+</script>

@@ -21,7 +21,7 @@
         <paper-item-body two-line>
           Home Assistant Cloud
           <template is='dom-if' if='[[account]]'>
-            <div secondary>Logged in as [[account.first_name]] [[account.last_name]]</div>
+            <div secondary>Logged in as [[account.email]]</div>
           </template>
           <template is='dom-if' if='[[!account]]'>
             <div secondary>Not logged in</div>
