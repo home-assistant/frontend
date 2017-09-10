@@ -3,12 +3,16 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href='../../../bower_components/paper-button/paper-button.html'>
 
+<link rel="import" href="../../../src/layouts/hass-subpage.html">
 <link rel="import" href="../../../src/util/hass-mixins.html">
 <link rel="import" href='../../../src/resources/ha-style.html'>
 
 <dom-module id="ha-config-cloud-account">
   <template>
     <style include="iron-flex ha-style">
+      .content {
+        padding-bottom: 24px;
+      }
       paper-card {
         display: block;
       }
@@ -25,20 +29,36 @@
         text-align: center;
       }
     </style>
-    <paper-card>
-      <div class='account'>
-        <paper-item-body two-line>
-          [[account.first_name]] [[account.last_name]]
-          <div secondary>[[account.email]]</div>
-        </paper-item-body>
-        <paper-button
-          class='warning'
-          on-tap='handleLogout'
-        >Sign out</paper-button>
-      </div>
-    </paper-card>
+    <hass-subpage title='Cloud Account'>
+      <div class='content'>
+        <ha-config-section
+          is-wide='[[isWide]]'
+        >
+          <span slot='header'>Home Assistant Cloud</span>
+          <span slot='introduction'>
+            The Home Assistant Cloud allows you to opt-in to functions that will bring your Home Assistant experience to the next level.
 
-    <div class='soon'>More configuration options coming soon.</div>
+            <p><i>
+              Home Assistant will never share information with our cloud without your prior permission.
+            </i></p>
+          </span>
+
+          <paper-card>
+            <div class='account'>
+              <paper-item-body>
+                [[account.email]]
+              </paper-item-body>
+              <paper-button
+                class='warning'
+                on-tap='handleLogout'
+              >Sign out</paper-button>
+            </div>
+          </paper-card>
+
+          <div class='soon'>More configuration options coming soon.</div>
+        </ha-config-section>
+      </div>
+    </hass-subpage>
   </template>
 </dom-module>
 

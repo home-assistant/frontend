@@ -1,8 +1,8 @@
 sudo: false
 language: node_js
 cache:
+  yarn: true
   directories:
-  - node_modules
   - bower_components
 install:
   - yarn install

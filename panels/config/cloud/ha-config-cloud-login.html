@@ -3,61 +3,130 @@
 <link rel="import" href='../../../bower_components/paper-button/paper-button.html'>
 <link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
 
+<link rel="import" href="../../../src/layouts/hass-subpage.html">
 <link rel="import" href="../../../src/util/hass-mixins.html">
 <link rel="import" href='../../../src/resources/ha-style.html'>
+<link rel="import" href='../../../src/components/buttons/ha-progress-button.html'>
 
 <dom-module id="ha-config-cloud-login">
   <template>
     <style include="iron-flex ha-style">
+      .content {
+        padding-bottom: 24px;
+      }
       paper-card {
         display: block;
+      }
+      paper-item {
+        cursor: pointer;
+      }
+      paper-card:last-child {
+        margin-top: 24px;
       }
       h1 {
         @apply(--paper-font-headline);
         margin: 0;
       }
+      .error {
+        color: var(--google-red-500);
+      }
+      .card-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      [hidden] {
+        display: none;
+      }
     </style>
-    <paper-card>
-      <div class='card-content'>
-        <h1>Sign In</h1>
-        <paper-input
-          label='Username'
-          value='{{username}}'
-          error-message='Failed to login'
-          invalid='[[error]]'
-          on-keydown='_keyDown'
-        ></paper-input>
-        <paper-input
-          label='Password'
-          value='{{password}}'
-          type='password'
-          on-keydown='_keyDown'
-        ></paper-input>
+    <hass-subpage title='Cloud Login'>
+      <div class='content'>
+        <ha-config-section
+          is-wide='[[isWide]]'
+        >
+          <span slot='header'>Home Assistant Cloud</span>
+          <span slot='introduction'>
+            The Home Assistant Cloud allows you to opt-in to functions that will bring your Home Assistant experience to the next level.
+
+            <p><i>
+              Home Assistant will never share information with our cloud without your prior permission.
+            </i></p>
+          </span>
+
+          <paper-card>
+            <div class='card-content'>
+              <h1>Sign In</h1>
+              <paper-input
+                label='Email'
+                id='emailInput'
+                type='email'
+                value='{{email}}'
+                on-keydown='_keyDown'
+              ></paper-input>
+              <paper-input
+                label='Password'
+                value='{{_password}}'
+                type='password'
+                on-keydown='_keyDown'
+              ></paper-input>
+              <div class='error' hidden$='[[!error]]'>[[error]]</div>
+            </div>
+            <div class='card-actions'>
+              <ha-progress-button
+                on-tap='_handleLogin'
+                progress='[[_requestInProgress]]'
+              >Sign in</ha-progress-button>
+              <button
+                class='link'
+                hidden='[[_requestInProgress]]'
+                on-click='_handleForgotPassword'
+              >forgot password?</button>
+            </div>
+          </paper-card>
+
+          <paper-card>
+            <paper-item on-tap='_handleRegister'>
+              <paper-item-body two-line>
+                Create Account
+                <div secondary>It is free and allows easy integration with voice assistants.</div>
+              </paper-item-body>
+              <iron-icon icon='mdi:chevron-right'></iron-icon>
+            </paper-item>
+          </paper-card>
+        </ha-config-section>
       </div>
-      <div class='card-actions'>
-        <paper-button
-          on-tap='_handleLogin'
-        >Sign in</paper-button>
-      </div>
-    </paper-card>
+    </hass-subpage>
   </template>
 </dom-module>
 
 <script>
-class HaConfigCloudLogin extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HaConfigCloudLogin extends
+    window.hassMixins.NavigateMixin(
+      window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-config-cloud-login'; }
 
   static get properties() {
     return {
       hass: Object,
-      username: String,
-      password: String,
+      isWide: Boolean,
+      email: {
+        type: String,
+        notify: true,
+      },
+      _password: {
+        type: String,
+        value: '',
+      },
+      _requestInProgress: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   static get observers() {
     return [
-      '_inputChanged(username, password)'
+      '_inputChanged(email, _password)'
     ];
   }
 
@@ -74,18 +143,48 @@ class HaConfigCloudLogin extends window.hassMixins.EventsMixin(Polymer.Element) 
   }
 
   _handleLogin() {
+    if (!this.email) {
+      this.error = 'Email is required.';
+    } else if (!this._password) {
+      this.error = 'Password is required.';
+    }
+
+    if (this.error) return;
+
+    this._requestInProgress = true;
+
     this.hass.callApi('post', 'cloud/login', {
-      username: this.username,
-      password: this.password,
+      email: this.email,
+      password: this._password,
     }).then(
       (account) => {
         this.fire('ha-account-refreshed', { account: account });
-        this.username = '';
-        this.password = '';
-      }, () => {
-        this.password = '';
-        this.error = true;
+        this.email = '';
+        this._password = '';
+      }, (err) => {
+        this._password = '';
+        this._requestInProgress = false;
+        if (!err || !err.body || !err.body.message) {
+          this.error = 'Unknown error';
+          return;
+        } else if (err.body.code === 'UserNotConfirmed') {
+          alert('You need to confirm your email before logging in.');
+          this.navigate('/config/cloud/register#confirm');
+          return;
+        } else if (err.body.code === 'PasswordChangeRequired') {
+          alert('You need to change your password before logging in.');
+          this.navigate('/config/cloud/forgot-password');
+        }
+        this.error = err.body.message;
       });
+  }
+
+  _handleRegister() {
+    this.navigate('/config/cloud/register');
+  }
+
+  _handleForgotPassword() {
+    this.navigate('/config/cloud/forgot-password');
   }
 }
 
