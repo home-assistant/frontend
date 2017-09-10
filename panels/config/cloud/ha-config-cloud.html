@@ -1,66 +1,68 @@
 <link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
-<link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel='import' href='../../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="../ha-config-section.html">
 
 <link rel="import" href="./ha-config-cloud-login.html">
+<link rel="import" href="./ha-config-cloud-register.html">
+<link rel="import" href="./ha-config-cloud-forgot-password.html">
 <link rel="import" href="./ha-config-cloud-account.html">
 
 <dom-module id="ha-config-cloud">
   <template>
-    <style include="iron-flex ha-style">
-      .content {
-        padding-bottom: 32px;
+    <style>
+      iron-pages {
+        height: 100%;
       }
     </style>
+    <app-route
+      route='[[route]]'
+      pattern='/:page'
+      data="{{_routeData}}"
+      tail="{{_routeTail}}"
+    ></app-route>
 
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <paper-icon-button
-            icon='mdi:arrow-left'
-            on-tap='_backTapped'
-          ></paper-icon-button>
-          <div main-title>Cloud</div>
-        </app-toolbar>
-      </app-header>
+    <template is='dom-if' if='[[account]]' restamp>
+      <ha-config-cloud-account
+        hass='[[hass]]'
+        account='[[account]]'
+        is-wide='[[isWide]]'
+      ></ha-config-cloud-account>
+    </template>
 
-      <div class$='[[computeClasses(isWide)]]'>
-        <ha-config-section
+    <template is='dom-if' if='[[!account]]' restamp>
+      <template is='dom-if' if='[[_isLoginPage(_routeData.page)]]' restamp>
+        <ha-config-cloud-login
+          page-name='login'
+          hass='[[hass]]'
           is-wide='[[isWide]]'
-        >
-          <span slot='header'>Home Assistant Cloud</span>
-          <span slot='introduction'>
-            The Home Assistant Cloud allows you to opt-in to functions that will bring your Home Assistant experience to the next level.
+          email='{{_loginEmail}}'
+        ></ha-config-cloud-login>
+      </template>
 
-            <p><i>
-              Home Assistant will never share information with our cloud without your prior permission.
-            </i></p>
-          </span>
+      <template is='dom-if' if='[[_isRegisterPage(_routeData.page)]]' restamp>
+        <ha-config-cloud-register
+          page-name='register'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+          email='{{_loginEmail}}'
+        ></ha-config-cloud-register>
+      </template>
 
-          <template is='dom-if' if='[[account]]'>
-            <ha-config-cloud-account
-              hass='[[hass]]'
-              account='[[account]]'
-            ></ha-config-cloud-account>
-          </template>
-
-          <template is='dom-if' if='[[!account]]'>
-            <ha-config-cloud-login
-              hass='[[hass]]'
-            ></ha-config-cloud-login>
-          </template>
-        </ha-config-section>
-      </div>
-    </app-header-layout>
+      <template is='dom-if' if='[[_isForgotPasswordPage(_routeData.page)]]' restamp>
+        <ha-config-cloud-forgot-password
+          page-name='forgot-password'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+          email='{{_loginEmail}}'
+        ></ha-config-cloud-forgot-password>
+      </template>
+    </template>
   </template>
 </dom-module>
 
 <script>
-class HaConfigCloud extends Polymer.Element {
+class HaConfigCloud extends window.hassMixins.NavigateMixin(Polymer.Element) {
   static get is() { return 'ha-config-cloud'; }
 
   static get properties() {
@@ -75,16 +77,35 @@ class HaConfigCloud extends Polymer.Element {
         type: Object,
         value: null,
       },
+
+      route: Object,
+
+      _routeData: Object,
+      _routeTail: Object,
+      _loginEmail: String,
     };
   }
 
-  computeClasses(isWide) {
-    return isWide ? 'content' : 'content narrow';
+  static get observers() {
+    return [
+      '_checkRoute(route, account)'
+    ];
   }
 
-  _backTapped() {
-    history.back();
+  _checkRoute(route, account) {
+    if (!route || route.prefix !== '/config/cloud') return;
+
+    if (!account && ['/forgot-password', '/register'].indexOf(route.path) === -1) {
+      this.navigate('/config/cloud/login', true);
+    } else if (account &&
+               ['/login', '/register', '/forgot-password'].indexOf(route.path) !== -1) {
+      this.navigate('/config/cloud/account', true);
+    }
   }
+
+  _isRegisterPage(page) { return page === 'register'; }
+  _isForgotPasswordPage(page) { return page === 'forgot-password'; }
+  _isLoginPage(page) { return page === 'login'; }
 }
 
 customElements.define(HaConfigCloud.is, HaConfigCloud);
