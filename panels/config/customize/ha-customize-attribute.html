@@ -68,7 +68,9 @@ class HaCustomizeAttribute extends Polymer.Element {
       if (wrapper.lastChild) {
         wrapper.removeChild(wrapper.lastChild);
       }
-      this.$.child = child = document.createElement(tag);
+      // Creating an element with upper case works fine in Chrome, but in FF it doesn't immediately
+      // become a defined Custom Element. Polymer does that in some later pass.
+      this.$.child = child = document.createElement(tag.toLowerCase());
       child.className = 'form-control';
       child.addEventListener('item-changed', () => {
         this.item = Object.assign({}, child.item);
