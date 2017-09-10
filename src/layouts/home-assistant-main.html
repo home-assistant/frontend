@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/paper-drawer-panel/paper-drawer-panel.html'>
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel='import' href='../../bower_components/iron-pages/iron-pages.html'>
@@ -14,6 +14,7 @@
 <link rel='import' href='../util/ha-url-sync.html'>
 
 <link rel='import' href='../components/ha-sidebar.html'>
+<link rel='import' href='../util/hass-mixins.html'>
 <link rel='import' href='../util/hass-util.html'>
 
 <dom-module id='home-assistant-main'>
@@ -87,83 +88,89 @@
 
 <script>
 (function () {
-  var NON_SWIPABLE_PANELS = ['kiosk', 'map'];
-  Polymer({
-    is: 'home-assistant-main',
+  const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
 
-    properties: {
-      hass: Object,
+  class HomeAssistantMain extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'home-assistant-main'; }
 
-      narrow: Boolean,
+    static get properties() {
+      return {
+        hass: Object,
 
-      route: {
-        type: Object,
-        observer: '_routeChanged',
-      },
-      routeData: Object,
-      routeTail: Object,
-      statesRouteTail: Object,
+        narrow: Boolean,
 
-      dockedSidebar: {
-        type: Boolean,
-        computed: 'computeDockedSidebar(hass)',
-      },
-    },
+        route: {
+          type: Object,
+          observer: '_routeChanged',
+        },
+        routeData: Object,
+        routeTail: Object,
+        statesRouteTail: Object,
 
-    listeners: {
-      'hass-open-menu': 'handleOpenMenu',
-      'hass-close-menu': 'handleCloseMenu',
-      'hass-start-voice': 'handleStartVoice',
-    },
+        dockedSidebar: {
+          type: Boolean,
+          computed: 'computeDockedSidebar(hass)',
+        },
+      };
+    }
 
-    _routeChanged: function () {
+    ready() {
+      super.ready();
+      this.addEventListener('hass-open-menu', () => this.handleOpenMenu());
+      this.addEventListener('hass-close-menu', () => this.handleCloseMenu());
+      this.addEventListener('hass-start-voice', ev => this.handleStartVoice(ev));
+    }
+
+    _routeChanged() {
       if (this.narrow) {
         this.$.drawer.closeDrawer();
       }
-    },
+    }
 
-    handleStartVoice: function (ev) {
+    handleStartVoice(ev) {
       ev.stopPropagation();
       this.$.voiceDialog.dialogOpen = true;
-    },
+    }
 
-    handleOpenMenu: function () {
+    handleOpenMenu() {
       if (this.narrow) {
         this.$.drawer.openDrawer();
       } else {
         this.fire('hass-dock-sidebar', { dock: true });
       }
-    },
+    }
 
-    handleCloseMenu: function () {
+    handleCloseMenu() {
       this.$.drawer.closeDrawer();
       if (this.dockedSidebar) {
         this.fire('hass-dock-sidebar', { dock: false });
       }
-    },
+    }
 
-    attached: function () {
+    attached() {
       window.removeInitMsg();
       if (document.location.pathname === '/') {
         history.replaceState(null, null, '/states');
       }
-    },
+    }
 
-    computeForceNarrow: function (narrow, dockedSidebar) {
+    computeForceNarrow(narrow, dockedSidebar) {
       return narrow || !dockedSidebar;
-    },
+    }
 
-    computeDockedSidebar: function (hass) {
+    computeDockedSidebar(hass) {
       return hass.dockedSidebar;
-    },
+    }
 
-    _computeSelected: function (routeData) {
+    _computeSelected(routeData) {
       return routeData.panel || 'states';
-    },
+    }
 
-    _computeDisableSwipe: function (routeData) {
+    _computeDisableSwipe(routeData) {
       return NON_SWIPABLE_PANELS.indexOf(routeData.panel) !== -1;
-    },
-  });
+    }
+  }
+
+  customElements.define(HomeAssistantMain.is, HomeAssistantMain);
 }());
 </script>
