@@ -222,13 +222,14 @@
                service='refresh_entity'
                hidden$='[[!showHelp]]'
              ></ha-service-description>
-             <div class='form-group'>
-               <paper-checkbox
-                 checked='{{entityIgnored}}'
-                 class='form-control'
-               >
-               Exclude this entity from Home Assistant
-               </paper-checkbox>
+           </div>
+           <div class='form-group'>
+             <paper-checkbox
+               checked='{{entityIgnored}}'
+               class='form-control'
+             >
+             Exclude this entity from Home Assistant
+             </paper-checkbox>
              <paper-input
                disabled='{{entityIgnored}}'
                label="Polling intensity"
@@ -236,13 +237,15 @@
                min=0
                value={{entityPollingIntensity}}>
              </paper-input>
-             </div>
+           </div>
+           <div class='card-actions'>
              <ha-call-service-button
                hass='[[hass]]'
                domain='zwave'
                service='set_poll_intensity'
                service-data=[[computePollIntensityServiceData(entityPollingIntensity)]]
              >Save</ha-call-service-button>
+           </div>
            <div class='content'>
              <div class='card-actions'>
                <paper-button toggles raised noink active={{entityInfoActive}}>Entity Attributes</paper-button>
