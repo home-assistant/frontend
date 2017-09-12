@@ -97,7 +97,9 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
     if (rootEl.lastChild) {
       rootEl.removeChild(rootEl.lastChild);
     }
-    customEl = document.createElement(newElementTag);
+    // Creating an element with upper case works fine in Chrome, but in FF it doesn't immediately
+    // become a defined Custom Element. Polymer does that in some later pass.
+    customEl = document.createElement(newElementTag.toLowerCase());
   }
 
   if (customEl.setProperties) {
