@@ -46,7 +46,7 @@ Polymer({
 
     selectedDate: {
       type: String,
-      value: "",
+      value: '',
       observer: 'dateTimeChanged'
     }
   },
@@ -60,40 +60,43 @@ Polymer({
   },
 
   getDateString: function (stateObj) {
+    var monthFiller;
     if (stateObj.attributes.month < 10) {
-      monthFiller = "0"
+      monthFiller = '0';
     } else {
-      monthFiller = ""
+      monthFiller = '';
     }
 
+    var dayFiller;
     if (stateObj.attributes.day < 10) {
-      dayFiller = "0"
+      dayFiller = '0';
     } else {
-      dayFiller = ""
+      dayFiller = '';
     }
 
-    return stateObj.attributes.year + "-" + monthFiller + stateObj.attributes.month + "-" + dayFiller + stateObj.attributes.day
+    return stateObj.attributes.year + '-' + monthFiller + stateObj.attributes.month + '-' + dayFiller + stateObj.attributes.day;
   },
 
-  dateTimeChanged: function (obj) {
+  dateTimeChanged: function () {
+    var minuteFiller;
     if (this.selectedMinute < 10) {
-      minuteFiller = "0"
+      minuteFiller = '0';
     } else {
-      minuteFiller = ""
+      minuteFiller = '';
     }
 
-    timeStr = this.selectedHour + ":" + minuteFiller + this.selectedMinute
+    var timeStr = this.selectedHour + ':' + minuteFiller + this.selectedMinute;
 
     var serviceData = {
       entity_id: this.stateObj.entity_id
-    }
+    };
 
     if (this.stateObj.attributes.has_time) {
-      serviceData.time = timeStr
+      serviceData.time = timeStr;
     }
 
     if (this.stateObj.attributes.has_date) {
-      serviceData.date = this.selectedDate
+      serviceData.date = this.selectedDate;
       if (this.selectedDate.length < 1) {
         return; // Date was not set
       }
@@ -102,14 +105,14 @@ Polymer({
     this.hass.callService('input_datetime', 'set_datetime', serviceData);
   },
 
-  stateObjChanged: function (newVal, oldVal) {
+  stateObjChanged: function (newVal) {
     if (newVal.attributes.has_time) {
-      this.selectedHour = newVal.attributes.hour
-      this.selectedMinute = newVal.attributes.minute
+      this.selectedHour = newVal.attributes.hour;
+      this.selectedMinute = newVal.attributes.minute;
     }
 
     if (newVal.attributes.has_date) {
-      this.selectedDate = this.getDateString(newVal)
+      this.selectedDate = this.getDateString(newVal);
     }
   },
 

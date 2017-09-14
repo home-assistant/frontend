@@ -499,14 +499,18 @@ window.hassUtil.computeStateState = function (stateObj) {
         default:
       }
     } else if (window.hassUtil.computeDomain(stateObj) === 'input_datetime') {
-      if (! stateObj.attributes.has_time) {
-        date = new Date(stateObj.attributes.year, stateObj.attributes.month, stateObj.attributes.day);
+      var date;
+      if (!stateObj.attributes.has_time) {
+        date = new Date(stateObj.attributes.year, stateObj.attributes.month,
+                        stateObj.attributes.day);
         stateObj._stateDisplay = window.hassUtil.formatDate(date);
-      } else if (! stateObj.attributes.has_date) {
+      } else if (!stateObj.attributes.has_date) {
         date = new Date(1970, 1, 1, stateObj.attributes.hour, stateObj.attributes.minute);
         stateObj._stateDisplay = window.hassUtil.formatTime(date);
       } else {
-        date = new Date(stateObj.attributes.year, stateObj.attributes.month, stateObj.attributes.day, stateObj.attributes.hour, stateObj.attributes.minute);
+        date = new Date(stateObj.attributes.year, stateObj.attributes.month,
+                        stateObj.attributes.day, stateObj.attributes.hour,
+                        stateObj.attributes.minute);
         stateObj._stateDisplay = window.hassUtil.formatDateTime(date);
       }
     }
