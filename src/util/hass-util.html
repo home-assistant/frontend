@@ -26,7 +26,7 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
   'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
   'cover', 'fan', 'group', 'history_graph', 'light', 'lock', 'media_player', 'script',
-  'sun', 'updater', 'vacuum',
+  'sun', 'updater', 'vacuum', 'input_datetime',
 ];
 
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'history_graph', 'scene'];
@@ -497,6 +497,17 @@ window.hassUtil.computeStateState = function (stateObj) {
         case 'moving':
         case 'power':
         default:
+      }
+    } else if (window.hassUtil.computeDomain(stateObj) === 'input_datetime') {
+      if (! stateObj.attributes.has_time) {
+        date = new Date(stateObj.attributes.year, stateObj.attributes.month, stateObj.attributes.day);
+        stateObj._stateDisplay = window.hassUtil.formatDate(date);
+      } else if (! stateObj.attributes.has_date) {
+        date = new Date(1970, 1, 1, stateObj.attributes.hour, stateObj.attributes.minute);
+        stateObj._stateDisplay = window.hassUtil.formatTime(date);
+      } else {
+        date = new Date(stateObj.attributes.year, stateObj.attributes.month, stateObj.attributes.day, stateObj.attributes.hour, stateObj.attributes.minute);
+        stateObj._stateDisplay = window.hassUtil.formatDateTime(date);
       }
     }
   }
