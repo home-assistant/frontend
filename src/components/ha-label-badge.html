@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 
 <dom-module id='ha-label-badge'>
@@ -41,7 +41,6 @@
       left: 0;
       right: 0;
       line-height: 1em;
-
       font-size: 0.5em;
     }
     .label-badge .label span {
@@ -59,8 +58,8 @@
     }
     .badge-container .title {
       margin-top: 1em;
-      font-size: .9em;
-      width: 5em;
+      font-size: var(--ha-label-badge-title-font-size, .9em);
+      width: var(--ha-label-badge-title-width, 5em);
       font-weight: 300;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -86,52 +85,37 @@
 </dom-module>
 
 <script>
-// Beware: Polymer will not call computeHideIcon and computeHideValue if any of
-// the parameters are undefined. Set to null if not using.
-Polymer({
-  is: 'ha-label-badge',
+class HaLabelBadge extends Polymer.Element {
+  static get is() { return 'ha-label-badge'; }
+  static get properties() {
+    return {
+      value: String,
+      icon: String,
+      label: String,
+      description: String,
 
-  properties: {
-    value: {
-      type: String,
-      value: null,
-    },
+      image: {
+        type: String,
+        observer: 'imageChanged',
+      },
+    };
+  }
 
-    icon: {
-      type: String,
-      value: null,
-    },
-
-    label: {
-      type: String,
-      value: null,
-    },
-
-    description: {
-      type: String,
-    },
-
-    image: {
-      type: String,
-      value: null,
-      observer: 'imageChanged',
-    },
-  },
-
-  computeClasses: function (value) {
+  computeClasses(value) {
     return value && value.length > 4 ? 'value big' : 'value';
-  },
+  }
 
-  computeHideIcon: function (icon, value, image) {
+  computeHideIcon(icon, value, image) {
     return !icon || value || image;
-  },
+  }
 
-  computeHideValue: function (value, image) {
+  computeHideValue(value, image) {
     return !value || image;
-  },
+  }
 
-  imageChanged: function (newVal) {
+  imageChanged(newVal) {
     this.$.badge.style.backgroundImage = newVal ? 'url(' + newVal + ')' : '';
-  },
-});
+  }
+}
+customElements.define(HaLabelBadge.is, HaLabelBadge);
 </script>
