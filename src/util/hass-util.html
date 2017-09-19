@@ -15,7 +15,7 @@ window.hassUtil.DOMAINS_WITH_CARD = [
   'cover',
   'configurator',
   'input_select',
-  'input_slider',
+  'input_number',
   'input_text',
   'media_player',
   'scene',
@@ -32,7 +32,7 @@ window.hassUtil.DOMAINS_WITH_MORE_INFO = [
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
 
 window.hassUtil.HIDE_MORE_INFO = [
-  'input_select', 'scene', 'script', 'input_slider', 'input_text'
+  'input_select', 'scene', 'script', 'input_number', 'input_text'
 ];
 
 window.hassUtil.LANGUAGE = navigator.languages ?
@@ -289,7 +289,7 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'input_select':
       return 'mdi:format-list-bulleted';
 
-    case 'input_slider':
+    case 'input_number':
       return 'mdi:ray-vertex';
 
     case 'input_text':
