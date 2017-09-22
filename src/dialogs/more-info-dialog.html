@@ -157,7 +157,7 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   computeCacheConfig(stateObj) {
     return {
-      refresh: 3, // DO NOT SUBMIT
+      refresh: 60,
       cacheKey: 'more_info.' + stateObj.entity_id,
       hoursToShow: 24,
     };
