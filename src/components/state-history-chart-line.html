@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 
 <script>
 (function () {
@@ -20,52 +21,52 @@
     return !isNaN(parsed) && isFinite(parsed) ? parsed : null;
   }
 
-  Polymer({
-    is: 'state-history-chart-line',
+  class StateHistoryChartLine extends
+      Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+    static get is() { return 'state-history-chart-line'; }
+    static get properties() {
+      return {
+        data: {
+          type: Object,
+        },
 
-    properties: {
-      data: {
-        type: Object,
-        observer: 'dataChanged',
-      },
+        unit: {
+          type: String,
+        },
 
-      unit: {
-        type: String,
-      },
+        isSingleDevice: {
+          type: Boolean,
+          value: false,
+        },
 
-      isSingleDevice: {
-        type: Boolean,
-        value: false,
-      },
+        endTime: {
+          type: Object,
+        },
 
-      isAttached: {
-        type: Boolean,
-        value: false,
-        observer: 'dataChanged',
-      },
+        chartEngine: {
+          type: Object,
+        },
+      };
+    }
 
-      endTime: {
-        type: Object,
-      },
+    static get observers() {
+      return ['dataChanged(data, endTime)'];
+    }
 
-      chartEngine: {
-        type: Object,
-      },
-    },
-
-    created: function () {
-      this.style.display = 'block';
-    },
-
-    attached: function () {
-      this.isAttached = true;
-    },
-
-    dataChanged: function () {
+    connectedCallback() {
+      super.connectedCallback();
+      this._isAttached = true;
       this.drawChart();
-    },
+      this.addEventListener('iron-resize', () => {
+        this.async(this.drawChart, 10);
+      });
+    }
 
-    drawChart: function () {
+    dataChanged() {
+      this.drawChart();
+    }
+
+    drawChart() {
       var unit = this.unit;
       var deviceStates = this.data;
       var options;
@@ -75,7 +76,7 @@
       var finalDataTable;
       var daysDelta;
 
-      if (!this.isAttached) {
+      if (!this._isAttached) {
         return;
       }
 
@@ -117,12 +118,12 @@
       }
 
       startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
-        return new Date(states[0].last_changed);
+        return new Date(states.states[0].last_changed);
       })));
 
       endTime = this.endTime ||
         new Date(Math.max.apply(null, deviceStates.map(states =>
-          new Date(states[states.length - 1].last_changed)
+          new Date(states.states[states.states.length - 1].last_changed)
         )));
       if (endTime > new Date()) {
         endTime = new Date();
@@ -139,9 +140,8 @@
       }
 
       dataTables = deviceStates.map(function (states) {
-        var last = states[states.length - 1];
-        var domain = window.hassUtil.computeDomain(last);
-        var name = window.hassUtil.computeStateName(last);
+        var domain = states.domain;
+        var name = states.name;
         var data = [];
         var dataTable = new window.google.visualization.DataTable();
         // array containing [time, value1, value2, etc]
@@ -174,7 +174,7 @@
         if (domain === 'thermostat' || domain === 'climate') {
           // We differentiate between thermostats that have a target temperature
           // range versus ones that have just a target temperature
-          hasTargetRange = states.reduce(
+          hasTargetRange = states.states.reduce(
             function (cum, cur) {
               return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
             }, false);
@@ -192,7 +192,7 @@
               var targetHigh = saveParseFloat(state.attributes.target_temp_high);
               var targetLow = saveParseFloat(state.attributes.target_temp_low);
               pushData(
-                [new Date(state.last_updated), curTemp, targetHigh, targetLow],
+                [new Date(state.last_changed), curTemp, targetHigh, targetLow],
                 noInterpolations);
             };
           } else {
@@ -203,18 +203,18 @@
             processState = function (state) {
               var curTemp = saveParseFloat(state.attributes.current_temperature);
               var target = saveParseFloat(state.attributes.temperature);
-              pushData([new Date(state.last_updated), curTemp, target], noInterpolations);
+              pushData([new Date(state.last_changed), curTemp, target], noInterpolations);
             };
           }
 
-          states.forEach(processState);
+          states.states.forEach(processState);
         } else {
           dataTable.addColumn('number', name);
 
           // Only disable interpolation for sensors
           noInterpolations = domain !== 'sensor' && [true];
 
-          states.forEach(function (state) {
+          states.states.forEach(function (state) {
             var value = saveParseFloat(state.state);
             pushData([new Date(state.last_changed), value], noInterpolations);
           });
@@ -241,7 +241,8 @@
       }
 
       this.chartEngine.draw(finalDataTable, options);
-    },
-  });
+    }
+  }
+  customElements.define(StateHistoryChartLine.is, StateHistoryChartLine);
 }());
 </script>

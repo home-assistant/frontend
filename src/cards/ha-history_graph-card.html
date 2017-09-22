@@ -1,0 +1,83 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../components/state-history-charts.html">
+<link rel='import' href='../components/ha-card.html'>
+<link rel="import" href="../data/ha-state-history-data.html">
+<link rel='import' href='../util/hass-mixins.html'>
+
+<dom-module id='ha-history_graph-card'>
+  <template>
+    <style include="iron-flex">
+      .content {
+        padding: 0 16px 16px;
+      }
+    </style>
+    <ha-state-history-data
+      hass='[[hass]]'
+      filter-type='recent-entity'
+      entity-id='[[computeEntityId(stateObj)]]'
+      data='{{stateHistory}}'
+      is-loading='{{stateHistoryLoading}}'
+      cache-config='[[computeCacheConfig(stateObj)]]'
+    ></ha-state-history-data>
+    <ha-card
+        on-tap='cardTapped'
+        header='[[computeTitle(stateObj, inDialog)]]'
+        elevation='[[computeElevation(inDialog)]]'>
+      <div class='content'>
+         <state-history-charts
+           history-data="[[stateHistory]]"
+           is-loading-data="[[stateHistoryLoading]]"
+           up-to-now
+           no-single>
+         </state-history-charts>
+       </div>
+    </ha-card>
+  </template>
+</dom-module>
+
+<script>
+class HaHistoryGraphCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-history_graph-card'; }
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+      inDialog: Boolean,
+      stateHistory: Object,
+      stateHistoryLoading: Boolean,
+    };
+  }
+
+  computeTitle(stateObj, inDialog) {
+    if (inDialog) return null;
+    return stateObj.attributes.friendly_name;
+  }
+
+  computeEntityId(stateObj) {
+    return stateObj.attributes.entity_id;
+  }
+
+  computeCacheConfig(stateObj) {
+    return {
+      refresh: stateObj.attributes.refresh || 0,
+      cacheKey: stateObj.entity_id,
+      hoursToShow: (stateObj && stateObj.attributes.hours_to_show) || 24,
+    };
+  }
+
+  computeElevation(inDialog) {
+    return inDialog ? 0 : 1;
+  }
+
+  cardTapped(ev) {
+    const mq = window.matchMedia('(min-width: 610px) and (min-height: 550px)');
+    if (mq.matches) {
+      ev.stopPropagation();
+      this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    }
+  }
+}
+customElements.define(HaHistoryGraphCard.is, HaHistoryGraphCard);
+</script>
