@@ -59,6 +59,7 @@
               service='rename_value'
               service-data=[[computeValueNameServiceData(newValueNameInput)]]
             >Rename Value</ha-call-service-button>
+
           </div>
         </template>
       </paper-card>
@@ -90,6 +91,7 @@ Polymer({
     selectedValue: {
       type: Number,
       value: -1,
+      observer: 'selectedValueChanged'
     },
   },
 
@@ -98,8 +100,8 @@ Polymer({
   },
 
   serviceCalled: function (ev) {
+    var foo = this;
     if (ev.detail.success) {
-      var foo = this;
       setTimeout(function () {
         foo.refreshValues(foo.selectedNode);
       }, 5000);
@@ -140,6 +142,16 @@ Polymer({
       value_id: this.values[this.selectedValue].key,
       name: newValueNameInput,
     };
+  },
+
+  selectedValueChanged: function (selectedValue) {
+    if (!this.selectedNode === -1 || this.selectedValue === -1) return;
+    var el = this;
+    this.hass.callApi('GET', 'config/zwave/device_config/' + this.values[selectedValue].value.entity_id)
+      .then(function (data) {
+        el.entityIgnored = data.ignored || false;
+        el.entityPollingIntensity = el.values[selectedValue].value.poll_intensity;
+      });
   },
 });
 </script>
