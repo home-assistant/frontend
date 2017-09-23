@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <script>
-(function () {
+{
   const RECENT_THRESHOLD = 60000; // 1 minute
   const RECENT_CACHE = {};
   const DOMAINS_USE_LAST_UPDATED = ['thermostat', 'climate'];
@@ -335,5 +335,5 @@
     }
   }
   customElements.define(HaStateHistoryData.is, HaStateHistoryData);
-}());
+}
 </script>

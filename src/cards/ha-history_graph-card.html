@@ -1,39 +1,41 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 
 <link rel="import" href="../components/state-history-charts.html">
-<link rel='import' href='../components/ha-card.html'>
 <link rel="import" href="../data/ha-state-history-data.html">
 <link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id='ha-history_graph-card'>
   <template>
-    <style include="iron-flex">
+    <style>
       .content {
         padding: 0 16px 16px;
+      }
+      paper-card {
+        width: 100%;
       }
     </style>
     <ha-state-history-data
       hass='[[hass]]'
       filter-type='recent-entity'
-      entity-id='[[computeEntityId(stateObj)]]'
+      entity-id='[[computeHistoryEntities(stateObj)]]'
       data='{{stateHistory}}'
       is-loading='{{stateHistoryLoading}}'
       cache-config='[[computeCacheConfig(stateObj)]]'
     ></ha-state-history-data>
-    <ha-card
+    <paper-card
         on-tap='cardTapped'
-        header='[[computeTitle(stateObj, inDialog)]]'
+        heading='[[computeTitle(stateObj)]]'
         elevation='[[computeElevation(inDialog)]]'>
-      <div class='content'>
+      <div class$='[[computeClass(inDialog)]]'>
          <state-history-charts
            history-data="[[stateHistory]]"
            is-loading-data="[[stateHistoryLoading]]"
            up-to-now
            no-single>
          </state-history-charts>
-       </div>
-    </ha-card>
+      </div>
+    </paper-card>
   </template>
 </dom-module>
 
@@ -44,18 +46,24 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(Polymer.Element) 
     return {
       hass: Object,
       stateObj: Object,
-      inDialog: Boolean,
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
       stateHistory: Object,
       stateHistoryLoading: Boolean,
     };
   }
 
-  computeTitle(stateObj, inDialog) {
-    if (inDialog) return null;
-    return stateObj.attributes.friendly_name;
+  computeTitle(stateObj) {
+    return window.hassUtil.computeStateName(stateObj);
   }
 
-  computeEntityId(stateObj) {
+  computeClass(inDialog) {
+    return inDialog ? '' : 'content';
+  }
+
+  computeHistoryEntities(stateObj) {
     return stateObj.attributes.entity_id;
   }
 
