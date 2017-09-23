@@ -333,25 +333,16 @@ Polymer({
     this.callService('media_next_track');
   },
 
-  handleSourceChanged: function (sourceIndex) {
+  handleSourceChanged: function (sourceIndex, sourceIndexOld) {
     var sourceInput;
     // Selected Option will transition to '' before transitioning to new value
     if (!this.stateObj
         || this.stateObj.attributes.source_list === undefined
         || sourceIndex < 0
         || sourceIndex >= this.stateObj.attributes.source_list.length
+        || sourceIndexOld === undefined
     ) {
       return;
-    }
-
-    // doubleCheck: Don't switch to zero, if we actually know better.
-    // This get's triggered from _flushProperties() (bower_components)
-    if (sourceIndex === 0) {
-      var doubleCheck = this.stateObj.attributes.source_list.indexOf(
-        this.stateObj.attributes.source);
-      if (doubleCheck >= 0 && sourceIndex !== doubleCheck) {
-        sourceIndex = doubleCheck;
-      }
     }
 
     sourceInput = this.stateObj.attributes.source_list[sourceIndex];
