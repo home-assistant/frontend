@@ -8,11 +8,22 @@
 <dom-module id='ha-history_graph-card'>
   <template>
     <style>
-      .content {
+      paper-card:not([dialog]) .content {
         padding: 0 16px 16px;
       }
       paper-card {
         width: 100%;
+      }
+      .header {
+        @apply(--paper-font-headline);
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 20px 16px 12px;
+        @apply(--paper-font-common-nowrap);
+      }
+      paper-card[dialog] .header {
+        padding-top: 0;
+        padding-left: 0;
       }
     </style>
     <ha-state-history-data
@@ -23,11 +34,11 @@
       is-loading='{{stateHistoryLoading}}'
       cache-config='[[computeCacheConfig(stateObj)]]'
     ></ha-state-history-data>
-    <paper-card
+    <paper-card dialog$='[[inDialog]]'
         on-tap='cardTapped'
-        heading='[[computeTitle(stateObj)]]'
         elevation='[[computeElevation(inDialog)]]'>
-      <div class$='[[computeClass(inDialog)]]'>
+      <div class='header'>[[computeTitle(stateObj)]]</div>
+      <div class='content'>
          <state-history-charts
            history-data="[[stateHistory]]"
            is-loading-data="[[stateHistoryLoading]]"
@@ -59,7 +70,7 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(Polymer.Element) 
     return window.hassUtil.computeStateName(stateObj);
   }
 
-  computeClass(inDialog) {
+  computeContentClass(inDialog) {
     return inDialog ? '' : 'content';
   }
 
