@@ -344,6 +344,15 @@ Polymer({
       return;
     }
 
+    // doubleCheck: Don't switch to zero, if we actually know better.
+    // This get's triggered from _flushProperties() (bower_components)
+    if (sourceIndex == 0) {
+      var doubleCheck = this.stateObj.attributes.source_list.indexOf(this.stateObj.attributes.source);
+      if (doubleCheck >= 0 && sourceIndex != doubleCheck) {
+        sourceIndex = doubleCheck;
+      }
+    }
+
     sourceInput = this.stateObj.attributes.source_list[sourceIndex];
 
     if (sourceInput === this.stateObj.attributes.source) {
