@@ -15,6 +15,7 @@
 <link rel="import" href="../../../src/resources/ha-style.html">
 
 <link rel="import" href="../ha-config-section.html">
+<link rel="import" href="../ha-form-style.html">
 
 <link rel="import" href="./zwave-log.html">
 <link rel="import" href="./zwave-network.html">
@@ -23,11 +24,10 @@
 <link rel="import" href="./zwave-groups.html">
 <link rel="import" href="./zwave-node-config.html">
 <link rel="import" href="./zwave-usercodes.html">
-<link rel="import" href="./zwave-node-options.html">
 
 <dom-module id="ha-config-zwave">
   <template>
-    <style include="iron-flex ha-style">
+    <style include="iron-flex ha-style ha-form-style">
       .content {
         margin-top: 24px;
       }
@@ -81,11 +81,6 @@
           <div main-title>Z-Wave Manager</div>
         </app-toolbar>
       </app-header>
-
-      <zwave-node-options
-        is-wide='[[isWide]]'
-        hass='[[hass]]'
-      ></zwave-node-options>
 
       <zwave-network
         id='zwave-network'
@@ -215,18 +210,41 @@
            </div>
            <template is='dom-if' if='[[!computeIsEntitySelected(selectedEntity)]]'>
            <div class='card-actions'>
-            <ha-call-service-button
-              hass='[[hass]]'
-              domain='zwave'
-              service='refresh_entity'
-              service-data=[[computeRefreshEntityServiceData(selectedEntity)]]
-            >Refresh Entity</ha-call-service-button>
-            <ha-service-description
-              hass='[[hass]]'
-              domain='zwave'
-              service='refresh_entity'
-              hidden$='[[!showHelp]]'
-            ></ha-service-description>
+             <ha-call-service-button
+               hass='[[hass]]'
+               domain='zwave'
+               service='refresh_entity'
+               service-data=[[computeRefreshEntityServiceData(selectedEntity)]]
+             >Refresh Entity</ha-call-service-button>
+             <ha-service-description
+               hass='[[hass]]'
+               domain='zwave'
+               service='refresh_entity'
+               hidden$='[[!showHelp]]'
+             ></ha-service-description>
+           </div>
+           <div class='form-group'>
+             <paper-checkbox
+               checked='{{entityIgnored}}'
+               class='form-control'
+             >
+             Exclude this entity from Home Assistant
+             </paper-checkbox>
+             <paper-input
+               disabled='{{entityIgnored}}'
+               label="Polling intensity"
+               type=number
+               min=0
+               value={{entityPollingIntensity}}>
+             </paper-input>
+           </div>
+           <div class='card-actions'>
+             <ha-call-service-button
+               hass='[[hass]]'
+               domain='zwave'
+               service='set_poll_intensity'
+               service-data=[[computePollIntensityServiceData(entityPollingIntensity)]]
+             >Save</ha-call-service-button>
            </div>
            <div class='content'>
              <div class='card-actions'>
@@ -338,8 +356,7 @@ Polymer({
     selectedEntity: {
       type: Number,
       value: -1,
-      observers: ['computeIsEntitySelected',
-        'computeRefreshEntityServiceData']
+      observer: 'selectedEntityChanged',
     },
 
     selectedEntityAttrs: {
@@ -375,6 +392,25 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    entityIgnored: {
+      type: Boolean,
+    },
+
+    entityPollingIntensity: {
+      type: Number,
+    },
+  },
+
+  listeners: {
+    'hass-service-called': 'serviceCalled',
+  },
+
+  serviceCalled: function (ev) {
+    var el = this;
+    if ((ev.detail.success) && (ev.detail.service === 'set_poll_intensity')) {
+      el.saveEntity();
+    }
   },
 
   computeNodes: function (hass) {
@@ -438,6 +474,24 @@ Polymer({
       });
   },
 
+  selectedEntityChanged: function (selectedEntity) {
+    if (selectedEntity === -1) return;
+    var el = this;
+    el.hass.callApi('GET', 'zwave/values/' + el.nodes[el.selectedNode].attributes.node_id).then(
+      (values) => {
+        el.values = el._objToArray(values);
+      });
+
+    var valueId = el.entities[selectedEntity].attributes.value_id;
+    var valueData = el.values.find(function (obj) { return obj.key === valueId; });
+    var valueIndex = el.values.indexOf(valueData);
+    el.hass.callApi('GET', 'config/zwave/device_config/' + valueId)
+      .then(function (data) {
+        el.entityIgnored = data.ignored || false;
+        el.entityPollingIntensity = el.values[valueIndex].value.poll_intensity;
+      });
+  },
+
   computeSelectedEntityAttrs: function (selectedEntity) {
     if (selectedEntity === -1) return 'No entity selected';
     var entityAttrs = this.entities[selectedEntity].attributes;
@@ -485,6 +539,24 @@ Polymer({
   computeRefreshEntityServiceData: function (selectedEntity) {
     if (selectedEntity === -1) return -1;
     return { entity_id: this.entities[selectedEntity].entity_id };
+  },
+
+  computePollIntensityServiceData: function (entityPollingIntensity) {
+    if (!this.selectedNode === -1 || this.selectedEntity === -1) return -1;
+    return {
+      node_id: this.nodes[this.selectedNode].attributes.node_id,
+      value_id: this.entities[this.selectedEntity].attributes.value_id,
+      poll_intensity: parseInt(entityPollingIntensity),
+    };
+  },
+
+  saveEntity: function () {
+    var data = {
+      ignored: this.entityIgnored,
+      polling_intensity: parseInt(this.entityPollingIntensity),
+    };
+    return this.hass.callApi(
+      'POST', 'config/zwave/device_config/' + this.entities[this.selectedEntity].entity_id, data);
   },
 
   toggleHelp: function () {
