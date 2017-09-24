@@ -83,7 +83,7 @@ gulp.task(taskName, ['build-translation-fingerprints'], function() {
     }))
     .pipe(gulp.dest('build-temp'))
     .pipe(insert.wrap('<script>\nvar translationFingerprints = ', ';\n</script>'))
-    .pipe(rename('translationFingerprints.html'))
+    .pipe(rename('translationMetadata.html'))
     .pipe(gulp.dest('build-temp'));
 });
 tasks.push(taskName);
