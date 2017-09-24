@@ -92,6 +92,10 @@
 (function () {
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
 
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
   class HomeAssistantMain extends window.hassMixins.LocalizeMixin(
                                   window.hassMixins.EventsMixin(
                                   Polymer.Element)) {
