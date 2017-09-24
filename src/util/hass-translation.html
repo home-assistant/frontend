@@ -6,7 +6,7 @@ function getActiveTranslation() {
   // report languages with specific cases.
   var lookup = {};
   /* eslint-disable no-undef */
-  Object.keys(translationFingerprints).forEach(function (tr) {
+  Object.keys(translationMetadata).forEach(function (tr) {
     lookup[tr.toLowerCase()] = tr;
   });
 
@@ -55,7 +55,7 @@ var translations = {};
 window.getTranslation = function (translationInput) {
   var translation = translationInput || getActiveTranslation();
   /* eslint-disable no-undef */
-  var translationFingerprint = translationFingerprints[translation];
+  var translationFingerprint = translationMetadata[translation].fingerprint;
 
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {

@@ -1,4 +1,7 @@
 {
+  "language": {
+    "en": "English"
+  },
   "panel": {
     "states": "States",
     "map": "Map",

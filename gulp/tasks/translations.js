@@ -29,6 +29,22 @@ function flatten (data) {
   return recursive_flatten('', data);
 }
 
+var taskName = 'build-translation-native-names';
+gulp.task(taskName, function() {
+  return gulp.src(inDir + '/*.json')
+    .pipe(transform(function(data, file) {
+      // Look up the native name for each language and generate a json
+      // object with all available languages and native names
+      const lang = path.basename(file.relative, '.json');
+      return {[lang]: {nativeName: data.language[lang]}};
+    }))
+    .pipe(merge({
+      fileName: 'translationNativeNames.json',
+    }))
+    .pipe(gulp.dest('build-temp'));
+});
+tasks.push(taskName);
+
 var taskName = 'build-merged-translations';
 gulp.task(taskName, function () {
   return gulp.src(inDir + '/*.json')
@@ -36,11 +52,11 @@ gulp.task(taskName, function () {
       // For each language generate a merged json file. It begins with en.json as
       // a failsafe for untranslated strings, and merges all parent tags into one
       // file for each specific subtag
-      var tr = path.basename(file.history[0], '.json');
-      var subtags = tr.split('-');
-      var src = [inDir + '/en.json']; // Start with en as a fallback for missing translations
+      const tr = path.basename(file.history[0], '.json');
+      const subtags = tr.split('-');
+      const src = [inDir + '/en.json']; // Start with en as a fallback for missing translations
       for (i = 1; i <= subtags.length; i++) {
-        var lang = subtags.slice(0, i).join('-');
+        const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
       }
       return gulp.src(src)
@@ -66,23 +82,27 @@ gulp.task(taskName, ['build-merged-translations'], function() {
     .pipe(hash({
       algorithm: 'md5',
       hashLength: 32,
+      template: '<%= name %>-<%= hash %>.json',
     }))
     .pipe(hash.manifest('translationFingerprints.json'))
+    .pipe(transform(function(data, file) {
+      Object.keys(data).map(function(key, index) {
+        data[key] = {fingerprint: data[key]};
+      });
+      return data;
+    }))
     .pipe(gulp.dest('build-temp'));
 });
 tasks.push(taskName);
 
 var taskName = 'build-translations';
-gulp.task(taskName, ['build-translation-fingerprints'], function() {
-  return gulp.src('build-temp/translationFingerprints.json')
-    .pipe(transform(function(data, file) {
-      Object.keys(data).forEach(function (key) {
-        data[key] += '.json';
-      });
-      return (data);
-    }))
-    .pipe(gulp.dest('build-temp'))
-    .pipe(insert.wrap('<script>\nvar translationFingerprints = ', ';\n</script>'))
+gulp.task(taskName, ['build-translation-fingerprints', 'build-translation-native-names'], function() {
+  return gulp.src([
+      'build-temp/translationFingerprints.json',
+      'build-temp/translationNativeNames.json',
+    ])
+    .pipe(merge({}))
+    .pipe(insert.wrap('<script>\nconst translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
     .pipe(gulp.dest('build-temp'));
 });
