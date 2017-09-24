@@ -333,13 +333,14 @@ Polymer({
     this.callService('media_next_track');
   },
 
-  handleSourceChanged: function (sourceIndex) {
+  handleSourceChanged: function (sourceIndex, sourceIndexOld) {
     var sourceInput;
     // Selected Option will transition to '' before transitioning to new value
     if (!this.stateObj
         || this.stateObj.attributes.source_list === undefined
         || sourceIndex < 0
         || sourceIndex >= this.stateObj.attributes.source_list.length
+        || sourceIndexOld === undefined
     ) {
       return;
     }
