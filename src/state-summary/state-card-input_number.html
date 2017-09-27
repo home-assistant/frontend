@@ -21,7 +21,7 @@
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-        <div hidden='[[stateObj.attributes.hiddenslider]]'>
+        <div hidden='[[hiddenslider]]'>
           <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' pin
             on-change='selectedValueChanged' on-tap='stopPropagation'
           >
@@ -35,7 +35,7 @@
         type='number'
         on-change='selectedValueChanged'
         on-tap='stopPropagation'
-        hidden='[[stateObj.attributes.hiddenbox]]'
+        hidden='[[hiddenbox]]'
       >
       </paper-input>
     </div>
@@ -50,12 +50,18 @@ class StateCardInputNumber extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-
+      hiddenbox: {
+        type: Boolean,
+        value: true,
+      },
+      hiddenslider: {
+        type: Boolean,
+        value: true,
+      },
       inDialog: {
         type: Boolean,
         value: false,
       },
-
       stateObj: {
         type: Object,
         observer: 'stateObjectChanged',
@@ -78,7 +84,6 @@ class StateCardInputNumber extends Polymer.Element {
       value: {
         type: Number,
       },
-
     };
   }
 
@@ -88,6 +93,13 @@ class StateCardInputNumber extends Polymer.Element {
     this.step = Number(newVal.attributes.step);
     this.value = Number(newVal.state);
     this.maxlength = this.max.legnth;
+    if (newVal.attributes.mode === 'slider') {
+      this.hiddenbox = true;
+      this.hiddenslider = false;
+    } else {
+      this.hiddenbox = false;
+      this.hiddenslider = true;
+    }
   }
 
   selectedValueChanged() {
