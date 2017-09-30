@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel='import' href='../../../bower_components/paper-listbox/paper-listbox.html'>
@@ -33,46 +33,52 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-section-themes',
+class HaConfigSectionThemes extends window.hassMixins.EventsMixin(Polymer.Element) {
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get is() { return 'ha-config-section-themes'; }
 
-    isWide: {
-      type: Boolean,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    themes: {
-      type: Array,
-      computed: 'computeThemes(hass)',
-    },
+      isWide: {
+        type: Boolean,
+      },
 
-    selectedTheme: {
-      type: Number,
-    },
-  },
+      themes: {
+        type: Array,
+        computed: 'computeThemes(hass)',
+      },
 
-  ready: function () {
+      selectedTheme: {
+        type: Number,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'selectionChanged(hass, selectedTheme)',
+    ];
+  }
+
+  ready() {
+    super.ready();
     if (this.hass.selectedTheme && this.themes.indexOf(this.hass.selectedTheme) > 0) {
       this.selectedTheme = this.themes.indexOf(this.hass.selectedTheme);
     } else if (!this.hass.selectedTheme) {
       this.selectedTheme = 0;
     }
-  },
+  }
 
-  observers: [
-    'selectionChanged(hass, selectedTheme)',
-  ],
-
-  computeThemes: function (hass) {
+  computeThemes(hass) {
     if (!hass) return [];
     return ['Backend-selected', 'default'].concat(Object.keys(hass.themes.themes).sort());
-  },
+  }
 
-  selectionChanged: function (hass, selection) {
+  selectionChanged(hass, selection) {
     if (selection > 0 && selection < this.themes.length) {
       if (hass.selectedTheme !== this.themes[selection]) {
         this.fire('settheme', this.themes[selection]);
@@ -81,5 +87,7 @@ Polymer({
       this.fire('settheme', '');
     }
   }
-});
+}
+
+customElements.define(HaConfigSectionThemes.is, HaConfigSectionThemes);
 </script>

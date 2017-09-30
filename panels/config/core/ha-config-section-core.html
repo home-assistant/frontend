@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
@@ -129,48 +129,51 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-section-core',
+class HaConfigSectionCore extends Polymer.Element {
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get is() { return 'ha-config-section-core'; }
 
-    isWide: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    validating: {
-      type: Boolean,
-      value: false,
-    },
+      isWide: {
+        type: Boolean,
+        value: false,
+      },
 
-    validateResult: {
-      type: String,
-      value: '',
-    },
+      validating: {
+        type: Boolean,
+        value: false,
+      },
 
-    validateLog: {
-      type: String,
-      value: '',
-    },
-  },
+      validateResult: {
+        type: String,
+        value: '',
+      },
 
-  groupLoaded: function (hass) {
+      validateLog: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  groupLoaded(hass) {
     return window.hassUtil.isComponentLoaded(hass, 'group');
-  },
+  }
 
-  automationLoaded: function (hass) {
+  automationLoaded(hass) {
     return window.hassUtil.isComponentLoaded(hass, 'automation');
-  },
+  }
 
-  scriptLoaded: function (hass) {
+  scriptLoaded(hass) {
     return window.hassUtil.isComponentLoaded(hass, 'script');
-  },
+  }
 
-  validateConfig: function () {
+  validateConfig() {
     this.validating = true;
     this.validateLog = '';
     this.validateResult = '';
@@ -189,5 +192,7 @@ Polymer({
         }
       });
   }
-});
+}
+
+customElements.define(HaConfigSectionCore.is, HaConfigSectionCore);
 </script>

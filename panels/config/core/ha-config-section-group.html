@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -35,37 +35,40 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-section-group',
+class HaConfigSectionGroup extends Polymer.Element {
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get is() { return 'ha-config-section-group'; }
 
-    isWide: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    entities: {
-      type: Array,
-      computed: 'computeEntities(hass)',
-    },
+      isWide: {
+        type: Boolean,
+        value: false,
+      },
 
-    entityConfig: {
-      type: Object,
-      value: {
-        component: 'ha-form-group',
-        computeSelectCaption: function (stateObj) {
-          return window.hassUtil.computeStateName(stateObj) +
-            (stateObj.attributes.view ? ' (view)' : '');
-        },
+      entities: {
+        type: Array,
+        computed: 'computeEntities(hass)',
+      },
+
+      entityConfig: {
+        type: Object,
+        value: {
+          component: 'ha-form-group',
+          computeSelectCaption: function (stateObj) {
+            return window.hassUtil.computeStateName(stateObj) +
+              (stateObj.attributes.view ? ' (view)' : '');
+          },
+        }
       }
-    }
-  },
+    };
+  }
 
-  computeEntities: function (hass) {
+  computeEntities(hass) {
     return Object.keys(hass.states)
       .map(function (key) { return hass.states[key]; })
       .filter(function (entity) {
@@ -73,6 +76,8 @@ Polymer({
                 !entity.attributes.auto);
       })
       .sort(window.hassUtil.sortByName);
-  },
-});
+  }
+}
+
+customElements.define(HaConfigSectionGroup.is, HaConfigSectionGroup);
 </script>
