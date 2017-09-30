@@ -4,18 +4,18 @@
 function getActiveTranslation() {
   // Perform case-insenstive comparison since browser isn't required to
   // report languages with specific cases.
-  var lookup = {};
+  const lookup = {};
   /* eslint-disable no-undef */
-  Object.keys(translationMetadata).forEach(function (tr) {
+  Object.keys(window.translationMetadata).forEach(function (tr) {
     lookup[tr.toLowerCase()] = tr;
   });
 
   // Search for a matching translation from most specific to general
   function languageGetTranslation(language) {
-    var subtags = language.toLowerCase().split('-');
+    const subtags = language.toLowerCase().split('-');
 
     for (var i = subtags.length; i >= 1; i--) {
-      var lang = subtags.slice(0, i).join('-');
+      const lang = subtags.slice(0, i).join('-');
 
       if (lookup[lang]) {
         return lookup[lang];
@@ -25,8 +25,8 @@ function getActiveTranslation() {
   }
 
   var translation = null;
-  if (window.localStorage.language) {
-    translation = languageGetTranslation(window.localStorage.language);
+  if (window.localStorage.selectedLanguage) {
+    translation = languageGetTranslation(JSON.parse(window.localStorage.selectedLanguage));
     if (translation) {
       return translation;
     }
@@ -50,12 +50,12 @@ function getActiveTranslation() {
 
 // Store loaded translations in memory so translations are available immediately
 // when DOM is created in Polymer. Even a cache lookup creates noticable latency.
-var translations = {};
+const translations = {};
 
 window.getTranslation = function (translationInput) {
   var translation = translationInput || getActiveTranslation();
   /* eslint-disable no-undef */
-  var translationFingerprint = translationMetadata[translation].fingerprint;
+  var translationFingerprint = window.translationMetadata[translation].fingerprint;
 
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {

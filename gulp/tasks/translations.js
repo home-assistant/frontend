@@ -102,7 +102,7 @@ gulp.task(taskName, ['build-translation-fingerprints', 'build-translation-native
       'build-temp/translationNativeNames.json',
     ])
     .pipe(merge({}))
-    .pipe(insert.wrap('<script>\nconst translationMetadata = ', ';\n</script>'))
+    .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
     .pipe(gulp.dest('build-temp'));
 });

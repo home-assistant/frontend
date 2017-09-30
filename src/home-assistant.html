@@ -90,6 +90,7 @@ class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   ready() {
     super.ready();
     this.addEventListener('settheme', e => this.setTheme(e));
+    this.addEventListener('hass-language-select', e => this.selectLanguage(e));
     this.loadIcons();
     this.loadResources();
   }
@@ -265,6 +266,12 @@ class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     this._updateHass({ selectedTheme: event.detail });
     window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
     this.$.storage.storeState();
+  }
+
+  selectLanguage(event) {
+    this._updateHass({ selectedLanguage: event.detail.language });
+    this.$.storage.storeState();
+    this.loadResources();
   }
 
   _updateHass(obj) {
