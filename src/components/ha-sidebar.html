@@ -224,7 +224,7 @@ class HaSidebar extends window.hassMixins.LocalizeMixin(
 
       languages: {
         type: Array,
-        computed: 'computeLanguages()',
+        computed: 'computeLanguages(hass)',
       },
 
       pushSupported: {
@@ -277,10 +277,13 @@ class HaSidebar extends window.hassMixins.LocalizeMixin(
     return result;
   }
 
-  computeLanguages() {
-    return Object.keys(window.translationMetadata).map(key => ({
+  computeLanguages(hass) {
+    if (!hass || !hass.translationMetadata) {
+      return [];
+    }
+    return Object.keys(hass.translationMetadata).map(key => ({
       tag: key,
-      nativeName: window.translationMetadata[key].nativeName,
+      nativeName: hass.translationMetadata[key].nativeName,
     }));
   }
 
