@@ -141,19 +141,6 @@
 
       <div class='divider'></div>
 
-      <paper-icon-item class='horizontal layout justified'>
-        <iron-icon slot="item-icon" icon='mdi:translate'></iron-icon>
-        <paper-dropdown-menu label="Language">
-          <paper-listbox slot="dropdown-content" on-selected-item-changed="handleLanguageSelect" attr-for-selected="language-tag" selected="[[language]]">
-            <template is='dom-repeat' items='[[languages]]'>
-              <paper-item language-tag="[[item.tag]]">[[item.nativeName]]</paper-item>
-            </template>
-          </paper-listbox>
-        ></paper-dropdown-menu>
-      </paper-icon-item>
-
-      <div class='divider'></div>
-
       <div class='subheader'>Developer Tools</div>
 
       <div class='dev-tools layout horizontal justified'>
@@ -222,11 +209,6 @@ class HaSidebar extends window.hassMixins.LocalizeMixin(
         computed: 'computePanels(hass)',
       },
 
-      languages: {
-        type: Array,
-        computed: 'computeLanguages(hass)',
-      },
-
       pushSupported: {
         type: Boolean,
         value: true,
@@ -275,22 +257,6 @@ class HaSidebar extends window.hassMixins.LocalizeMixin(
     });
 
     return result;
-  }
-
-  computeLanguages(hass) {
-    if (!hass || !hass.translationMetadata) {
-      return [];
-    }
-    return Object.keys(hass.translationMetadata).map(key => ({
-      tag: key,
-      nativeName: hass.translationMetadata[key].nativeName,
-    }));
-  }
-
-  handleLanguageSelect(ev) {
-    if (ev.detail.value) {
-      this.fire('hass-language-select', { language: ev.detail.value.languageTag });
-    }
   }
 
   menuClicked(ev) {
