@@ -91,11 +91,12 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(
         resources: {
           type: Object,
         },
-        useKeyIfMissing: {
-          type: Boolean,
-          value: true,
-        },
       };
+    }
+
+    localize(namespace, message, ...args) {
+      // Return the input message if no translation is found
+      return super.localize(namespace + '.' + message, ...args) || message;
     }
 });
 
