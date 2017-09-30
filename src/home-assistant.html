@@ -28,8 +28,6 @@
         on-hass-dock-sidebar='handleDockSidebar'
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
-        language='[[language]]'
-        resources='[[resources]]'
         hass='[[hass]]'
       ></home-assistant-main>
     </template>
@@ -53,7 +51,7 @@ window.removeInitMsg = function () {
 };
 
 /* @appliesMixin window.hassMixins.LocalizeMixin */
-class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class HomeAssistant extends Polymer.Element {
 
   static get is() { return 'home-assistant'; }
 
@@ -120,8 +118,10 @@ class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
 
   loadResources() {
     window.getTranslation().then((result) => {
-      this.language = result.language;
-      this.resources = result.resources;
+      this._updateHass({
+        language: result.language,
+        resources: result.resources,
+      });
     });
   }
 
@@ -141,6 +141,8 @@ class HomeAssistant extends window.hassMixins.LocalizeMixin(Polymer.Element) {
       states: null,
       config: null,
       themes: null,
+      language: null,
+      resources: null,
       dockedSidebar: false,
       moreInfoEntityId: null,
       callService: (domain, service, serviceData) =>
