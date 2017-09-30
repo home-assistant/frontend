@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
@@ -131,41 +131,44 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-form-group',
+class HaFormGroup extends Polymer.Element {
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get is() { return 'ha-form-group'; }
 
-    entity: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    entityName: {
-      type: String,
-      value: '',
-    },
+      entity: {
+        type: Object,
+      },
 
-    entityType: {
-      type: String,
-    },
+      entityName: {
+        type: String,
+        value: '',
+      },
 
-    entityChildren: {
-      type: Object,
-    },
-  },
+      entityType: {
+        type: String,
+      },
 
-  handleRowChosen: function (ev) {
+      entityChildren: {
+        type: Object,
+      },
+    };
+  }
+
+  handleRowChosen(ev) {
     // Polymer element and sortablejs both fire the same events, filter one out
     if (!ev.detail || !window.navigator.vibrate) return;
 
     // Tell the user that moving his finger now will start dragging.
     window.navigator.vibrate(50);
-  },
+  }
 
-  loadEntity: function (entity) {
+  loadEntity(entity) {
     var states = this.hass.states;
     this.entity = entity;
     this.entityName = entity.attributes.friendly_name || '';
@@ -175,9 +178,9 @@ Polymer({
         return states[ent] || { state: false, entity_id: ent, attributes: {} };
       });
     return Promise.resolve();
-  },
+  }
 
-  saveEntity: function () {
+  saveEntity() {
     var data = {
       name: this.entityName,
       view: this.entityType === 'view',
@@ -186,10 +189,8 @@ Polymer({
 
     var objectId = this.entity.entity_id.split('.')[1];
     return this.hass.callApi('POST', 'config/group/config/' + objectId, data);
-  },
+  }
+}
 
-  // deleteEntity: function () {
-  //   return new Promise.resolve();
-  // }
-});
+customElements.define(HaFormGroup.is, HaFormGroup);
 </script>

@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel='import' href='../../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
@@ -65,25 +65,28 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-section-hassbian',
+class HaConfigSectionHassbian extends Polymer.Element {
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get is() { return 'ha-config-section-hassbian'; }
 
-    isWide: {
-      type: Boolean,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    suiteStatus: {
-      type: Object,
-      value: null,
-    },
-  },
+      isWide: {
+        type: Boolean,
+      },
 
-  updateStatus: function () {
+      suiteStatus: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
+
+  updateStatus() {
     // TODO tapping install while something is installing triggers a second
     //      update loop to start.
     this.hass.callApi('GET', 'config/hassbian/suites').then(function (suites) {
@@ -102,14 +105,14 @@ Polymer({
         this.async(this.updateStatus, 5000);
       }
     }.bind(this));
-  },
+  }
 
-  attached: function () {
+  attached() {
     this.updateStatus = this.updateStatus.bind(this);
     this.updateStatus();
-  },
+  }
 
-  computeSuiteKeys: function (suiteStatus) {
+  computeSuiteKeys(suiteStatus) {
     // Prioritize installing packages
     return Object.keys(suiteStatus).sort(function (keyA, keyB) {
       var installingA = suiteStatus[keyA].state === 'installing';
@@ -131,37 +134,39 @@ Polymer({
       }
       return 0;
     });
-  },
+  }
 
-  computeSuiteDescription: function (suiteStatus, suiteKey) {
+  computeSuiteDescription(suiteStatus, suiteKey) {
     return suiteStatus[suiteKey].description;
-  },
+  }
 
-  computeTitle: function (suiteKey) {
+  computeTitle(suiteKey) {
     return suiteKey.substr(0, 1).toUpperCase() + suiteKey.substr(1);
-  },
+  }
 
-  computeSuiteStatus: function (suiteStatus, suiteKey) {
+  computeSuiteStatus(suiteStatus, suiteKey) {
     var state = suiteStatus[suiteKey].state.replace(/_/, ' ');
     return state.substr(0, 1).toUpperCase() + state.substr(1);
-  },
+  }
 
-  computeShowStatus: function (suiteStatus, suiteKey) {
+  computeShowStatus(suiteStatus, suiteKey) {
     var state = suiteStatus[suiteKey].state;
     return state !== 'installing' && state !== 'not_installed';
-  },
+  }
 
-  computeShowInstall: function (suiteStatus, suiteKey) {
+  computeShowInstall(suiteStatus, suiteKey) {
     return suiteStatus[suiteKey].state === 'not_installed';
-  },
+  }
 
-  suiteMoreInfoTapped: function () {
+  suiteMoreInfoTapped() {
     // console.log('learn more', ev.model.item);
-  },
+  }
 
-  suiteActionTapped: function () {
+  suiteActionTapped() {
     // TODO install tapped suite
     this.hass.callApi('POST', 'config/hassbian/suites/openzwave/install').then(this.updateStatus);
-  },
-});
+  }
+}
+
+customElements.define(HaConfigSectionHassbian.is, HaConfigSectionHassbian);
 </script>
