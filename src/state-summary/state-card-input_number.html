@@ -106,7 +106,7 @@ class StateCardInputNumber extends Polymer.Element {
     if (this.value === Number(this.stateObj.state)) {
       return;
     }
-    this.hass.callService('input_number', 'select_value', {
+    this.hass.callService('input_number', 'set_value', {
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });
