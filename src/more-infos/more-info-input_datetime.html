@@ -8,12 +8,16 @@
   <template>
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <div class$='[[computeClassNames(stateObj)]]'>
-      <div hidden$='[[doesNotHaveDate(stateObj)]]'>
-        <vaadin-date-picker label="Date" value="{{selectedDate}}"></vaadin-date-picker>
-      </div>
-      <div hidden$='[[doesNotHaveTime(stateObj)]]'>
-        <paper-time-input hour="{{selectedHour}}" min="{{selectedMinute}}" format="24"></paper-time-input>
-      </div>
+      <template is="dom-if" if="[[doesHaveDate(stateObj)]]" restamp>
+        <div>
+          <vaadin-date-picker label="Date" value="{{selectedDate}}"></vaadin-date-picker>
+        </div>
+      </template>
+      <template is="dom-if" if="[[doesHaveTime(stateObj)]]" restamp>
+        <div>
+          <paper-time-input hour="{{selectedHour}}" min="{{selectedMinute}}" format="24"></paper-time-input>
+        </div>
+      </template>
     </div>
   </template>
 </dom-module>
@@ -51,12 +55,12 @@ Polymer({
     }
   },
 
-  doesNotHaveDate: function (stateObj) {
-    return !stateObj.attributes.has_date;
+  doesHaveDate: function (stateObj) {
+    return stateObj.attributes.has_date;
   },
 
-  doesNotHaveTime: function (stateObj) {
-    return !stateObj.attributes.has_time;
+  doesHaveTime: function (stateObj) {
+    return stateObj.attributes.has_time;
   },
 
   getDateString: function (stateObj) {
