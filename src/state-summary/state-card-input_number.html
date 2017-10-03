@@ -1,0 +1,121 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+
+<link rel="import" href="../components/entity/state-info.html">
+
+<link rel="import" href="../util/hass-util.html">
+
+<dom-module id="state-card-input_number">
+  <template>
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      paper-slider {
+        margin-left: 16px;
+      }
+    </style>
+
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+        <div hidden='[[hiddenslider]]'>
+          <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' pin
+            on-change='selectedValueChanged' on-tap='stopPropagation'
+          >
+          </paper-slider>
+        </div>
+      <paper-input
+        no-label-float
+        auto-validate
+        pattern='[0-9]*'
+        value='{{value}}'
+        type='number'
+        on-change='selectedValueChanged'
+        on-tap='stopPropagation'
+        hidden='[[hiddenbox]]'
+      >
+      </paper-input>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+class StateCardInputNumber extends Polymer.Element {
+
+  static get is() { return 'state-card-input_number'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      hiddenbox: {
+        type: Boolean,
+        value: true,
+      },
+      hiddenslider: {
+        type: Boolean,
+        value: true,
+      },
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+      stateObj: {
+        type: Object,
+        observer: 'stateObjectChanged',
+      },
+      min: {
+        type: Number,
+        value: 0,
+      },
+      max: {
+        type: Number,
+        value: 100,
+      },
+      maxlength: {
+        type: Number,
+        value: 3
+      },
+      step: {
+        type: Number,
+      },
+      value: {
+        type: Number,
+      },
+    };
+  }
+
+  stateObjectChanged(newVal) {
+    this.min = Number(newVal.attributes.min);
+    this.max = Number(newVal.attributes.max);
+    this.step = Number(newVal.attributes.step);
+    this.value = Number(newVal.state);
+    this.maxlength = this.max.legnth;
+    if (newVal.attributes.mode === 'slider') {
+      this.hiddenbox = true;
+      this.hiddenslider = false;
+    } else {
+      this.hiddenbox = false;
+      this.hiddenslider = true;
+    }
+  }
+
+  selectedValueChanged() {
+    if (this.value === Number(this.stateObj.state)) {
+      return;
+    }
+    this.hass.callService('input_number', 'set_value', {
+      value: this.value,
+      entity_id: this.stateObj.entity_id,
+    });
+  }
+
+  stopPropagation(ev) {
+    ev.stopPropagation();
+  }
+}
+
+customElements.define(StateCardInputNumber.is, StateCardInputNumber);
+</script>
