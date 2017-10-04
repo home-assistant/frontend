@@ -355,6 +355,14 @@ Polymer({
 
     if (currentView) {
       states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
+      for (var entity_id in states) {
+        state = states[entity_id]
+        if (window.hassUtil.computeDomain(state) == 'group') {
+          // For groups inside other groups we ignore the "order" attribute
+          // to respect the order in the entity_id list of the parent group
+          delete state.attributes.order;
+        }
+      }
     } else {
       states = window.HAWS.getViewEntities(
         hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
