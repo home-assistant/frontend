@@ -43,7 +43,7 @@
     <ha-state-history-data
       hass='[[hass]]'
       filter-type='[[_filterType]]'
-      start-time='[[_computeStartTime(_currentDate)]]'
+      start-time='[[_computeStartTime(_currentDate, _periodIndex)]]'
       end-time='[[endTime]]'
       data='{{stateHistoryInput}}'
       is-loading='{{isLoadingData}}'
@@ -167,15 +167,18 @@ Polymer({
     });
   },
 
-  _computeStartTime: function (_currentDate) {
+  _computeStartTime: function (_currentDate, periodIndex) {
     if (!_currentDate) return undefined;
     var parts = _currentDate.split('-');
     parts[1] = parseInt(parts[1]) - 1;
+    if (new Date(parts[0], parts[1], parts[2]).toDateString() === new Date().toDateString()) {
+      parts[2] = parseInt(parts[2]) - (this._computeFilterDays(periodIndex) - 1);
+    }
     return new Date(parts[0], parts[1], parts[2]);
   },
 
   _computeEndTime: function (_currentDate, periodIndex) {
-    var startTime = this._computeStartTime(_currentDate);
+    var startTime = this._computeStartTime(_currentDate, periodIndex);
     var endTime = new Date(startTime);
     endTime.setDate(
       startTime.getDate() + this._computeFilterDays(periodIndex));
