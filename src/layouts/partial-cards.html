@@ -111,6 +111,7 @@
           columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
+          sort-groups='[[sortGroups]]'
         ></ha-cards>
 
         <template is='dom-repeat' items='[[views]]'>
@@ -120,6 +121,7 @@
             columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
+            sort-groups='[[sortGroups]]'
           ></ha-cards>
         </template>
 
@@ -156,6 +158,11 @@ Polymer({
     panelVisible: {
       type: Boolean,
       value: false,
+    },
+
+    sortGroups: {
+      type: Boolean,
+      value: true,
     },
 
     route: Object,
@@ -350,8 +357,12 @@ Polymer({
           states[entityId] = state;
         }
       }
+
+      this.sortGroups = true
       return states;
     }
+
+    this.sortGroups = false
 
     if (currentView) {
       states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);

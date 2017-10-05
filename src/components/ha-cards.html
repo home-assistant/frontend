@@ -175,16 +175,21 @@
         value: false,
       },
 
+      sortGroups: {
+        type: Boolean,
+        value: true
+      },
+
       cards: {
         type: Object,
       },
     },
 
     observers: [
-      'updateCards(columns, states, showIntroduction, panelVisible, viewVisible)',
+      'updateCards(columns, states, showIntroduction, panelVisible, viewVisible, sortGroups)',
     ],
 
-    updateCards: function (columns, states, showIntroduction, panelVisible, viewVisible) {
+    updateCards: function (columns, states, showIntroduction, panelVisible, viewVisible, sortGroups) {
       /* eslint-disable no-console */
       if (!panelVisible || !viewVisible) {
         return;
@@ -193,12 +198,12 @@
         'updateCards', function () {
           // Things might have changed since it got scheduled.
           if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(columns, states, showIntroduction);
+            this.cards = this.computeCards(columns, states, showIntroduction, sortGroups);
           }
         }.bind(this), 10);
     },
 
-    computeCards: function (columns, states, showIntroduction) {
+    computeCards: function (columns, states, showIntroduction, sortGroups) {
       var hass = this.hass;
 
       var cards = {
@@ -286,7 +291,7 @@
         });
       }
 
-      var sorted = window.HAWS.splitByGroups(states);
+      var sorted = window.HAWS.splitByGroups(states, sortGroups);
 
       var badgesColl = {};
       var beforeGroupColl = {};
