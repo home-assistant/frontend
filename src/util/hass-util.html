@@ -25,11 +25,11 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
   'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
-  'cover', 'fan', 'group', 'light', 'lock', 'media_player', 'script',
+  'cover', 'fan', 'group', 'history_graph', 'light', 'lock', 'media_player', 'script',
   'sun', 'updater', 'vacuum',
 ];
 
-window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'scene'];
+window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'history_graph', 'scene'];
 
 window.hassUtil.HIDE_MORE_INFO = [
   'input_select', 'scene', 'script', 'input_number', 'input_text'
@@ -273,6 +273,9 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'fan':
       return 'mdi:fan';
+
+    case 'history_graph':
+      return 'mdi:chart-line';
 
     case 'group':
       return 'mdi:google-circles-communities';

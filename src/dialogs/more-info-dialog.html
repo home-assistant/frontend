@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
@@ -9,6 +9,7 @@
 <link rel="import" href="../components/state-history-charts.html">
 <link rel="import" href="../more-infos/more-info-content.html">
 <link rel="import" href="../data/ha-state-history-data.html">
+<link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id="more-info-dialog">
   <template>
@@ -21,6 +22,14 @@
 
       paper-dialog[data-domain=camera] {
         width: auto;
+      }
+
+      paper-dialog[data-domain=history_graph] {
+        width: 90%;
+      }
+
+      paper-dialog[data-domain=history_graph] h2 {
+        display: none;
       }
 
       state-history-charts {
@@ -48,6 +57,13 @@
           border-bottom-left-radius: 0px;
           border-bottom-right-radius: 0px;
         }
+        paper-dialog[data-domain=history_graph] {
+          width: 100%;
+        }
+      }
+
+      dom-if {
+        display: none;
       }
 
     </style>
@@ -63,10 +79,11 @@
         <div>
           <ha-state-history-data
             hass='[[hass]]'
-            filter-type='[[_filterType]]'
+            filter-type='recent-entity'
             entity-id='[[stateObj.entity_id]]'
             data='{{stateHistory}}'
             is-loading='{{stateHistoryLoading}}'
+            cache-config='[[computeCacheConfig(stateObj)]]'
           ></ha-state-history-data>
           <state-history-charts
             history-data="[[stateHistory]]"
@@ -84,72 +101,71 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-dialog',
+class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'more-info-dialog'; }
+  static get properties() {
+    return {
+      hass: Object,
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+      stateObj: {
+        type: Object,
+        computed: 'computeStateObj(hass)',
+        observer: 'stateObjChanged',
+      },
 
-    stateObj: {
-      type: Object,
-      computed: 'computeStateObj(hass)',
-      observer: 'stateObjChanged',
-    },
+      stateHistory: Object,
 
-    stateHistory: {
-      type: Object,
-    },
+      stateHistoryLoading: Boolean,
 
-    stateHistoryLoading: {
-      type: Boolean,
-    },
+      isLoadingHistoryData: {
+        type: Boolean,
+        computed: 'computeIsLoadingHistoryData(delayedDialogOpen, stateHistoryLoading)',
+      },
 
-    isLoadingHistoryData: {
-      type: Boolean,
-      computed: 'computeIsLoadingHistoryData(delayedDialogOpen, stateHistoryLoading)',
-    },
+      hasHistoryComponent: {
+        type: Boolean,
+        computed: 'computeHasHistoryComponent(hass)',
+      },
 
-    hasHistoryComponent: {
-      type: Boolean,
-      computed: 'computeHasHistoryComponent(hass)',
-    },
+      showHistoryComponent: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowHistoryComponent(hasHistoryComponent, stateObj)',
+      },
 
-    showHistoryComponent: {
-      type: Boolean,
-      value: false,
-      computed: 'computeShowHistoryComponent(hasHistoryComponent, stateObj)',
-    },
+      dialogOpen: {
+        type: Boolean,
+        value: false,
+        observer: 'dialogOpenChanged',
+      },
 
-    dialogOpen: {
-      type: Boolean,
-      value: false,
-      observer: 'dialogOpenChanged',
-    },
+      delayedDialogOpen: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-    delayedDialogOpen: {
-      type: Boolean,
-      value: false,
-    },
-
-    _filterType: {
-      type: String,
-      value: 'recent-entity',
-    },
-  },
-
-  ready: function () {
+  connectedCallback() {
+    super.connectedCallback();
     this.$.scrollable.dialogElement = this.$.dialog;
-  },
+  }
 
-  computeDomain: function (stateObj) {
+  computeDomain(stateObj) {
     return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
-  },
+  }
 
-  computeStateObj: function (hass) {
+  computeStateObj(hass) {
     return hass.states[hass.moreInfoEntityId] || null;
-  },
+  }
+
+  computeCacheConfig(stateObj) {
+    return {
+      refresh: 60,
+      cacheKey: 'more_info.' + stateObj.entity_id,
+      hoursToShow: 24,
+    };
+  }
 
   /**
    * We depend on a delayed dialogOpen value to tell the chart component
@@ -157,40 +173,41 @@ Polymer({
    * before the dialog is attached to the screen and is unable to determine
    * graph size resulting in scroll bars.
    */
-  computeIsLoadingHistoryData: function (delayedDialogOpen, stateHistoryLoading) {
+  computeIsLoadingHistoryData(delayedDialogOpen, stateHistoryLoading) {
     return !delayedDialogOpen || stateHistoryLoading;
-  },
+  }
 
-  computeHasHistoryComponent: function (hass) {
+  computeHasHistoryComponent(hass) {
     return window.hassUtil.isComponentLoaded(hass, 'history');
-  },
+  }
 
-  computeShowHistoryComponent: function (hasHistoryComponent, stateObj) {
+  computeShowHistoryComponent(hasHistoryComponent, stateObj) {
     return this.hasHistoryComponent && stateObj &&
       window.hassUtil.DOMAINS_WITH_NO_HISTORY.indexOf(
         window.hassUtil.computeDomain(stateObj)) === -1;
-  },
+  }
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged(newVal) {
     if (!newVal) {
       this.dialogOpen = false;
       return;
     }
 
-    this.async(function () {
+    window.setTimeout(() => {
       // allow dialog to render content before showing it so it is
       // positioned correctly.
       this.dialogOpen = true;
-    }.bind(this), 10);
-  },
+    }, 10);
+  }
 
-  dialogOpenChanged: function (newVal) {
+  dialogOpenChanged(newVal) {
     if (newVal) {
-      this.async(function () { this.delayedDialogOpen = true; }.bind(this), 100);
+      window.setTimeout(() => { this.delayedDialogOpen = true; }, 100);
     } else if (!newVal && this.stateObj) {
       this.fire('hass-more-info', { entityId: null });
       this.delayedDialogOpen = false;
     }
-  },
-});
+  }
+}
+customElements.define(MoreInfoDialog.is, MoreInfoDialog);
 </script>
