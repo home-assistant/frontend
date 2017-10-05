@@ -336,7 +336,6 @@ Polymer({
     var entityId;
     var state;
     var states;
-    var statesValues;
     var entityIds = Object.keys(hass.states);
 
     // If we base off all entities, only have to filter out hidden
@@ -361,10 +360,9 @@ Polymer({
         hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
     }
 
-    statesValues = Object.values(states);
-    for (i = 0; i < statesValues.length; i++) {
-      state = statesValues[i];
-      if (window.hassUtil.computeDomain(state) === 'group') {
+    for (var entity_id in states) {
+      state = states[entity_id]
+      if (window.hassUtil.computeDomain(state) == 'group') {
         // For groups inside other groups we ignore the "order" attribute
         // to respect the order in the entity_id list of the parent group
         delete state.attributes.order;
