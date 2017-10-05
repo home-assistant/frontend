@@ -1,47 +1,38 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-
-<style>
-  div.charts-tooltip {
-    z-index: 200 !important;
-  }
-</style>
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 
 <script>
+class StateHistoryChartTimeline extends
+    Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+  static get is() { return 'state-history-chart-timeline'; }
+  static get properties() {
+    return {
+      data: {
+        type: Object,
+      },
+      noSingle: Boolean,
+      endTime: Date,
+    };
+  }
 
-Polymer({
-  is: 'state-history-chart-timeline',
+  static get observers() {
+    return ['dataChanged(data, endTime)'];
+  }
 
-  properties: {
-    data: {
-      type: Object,
-      observer: 'dataChanged',
-    },
-
-    endTime: {
-      type: Object,
-    },
-
-    isAttached: {
-      type: Boolean,
-      value: false,
-      observer: 'dataChanged',
-    },
-  },
-
-  created: function () {
-    this.style.display = 'block';
-  },
-
-  attached: function () {
-    this.isAttached = true;
-  },
-
-  dataChanged: function () {
+  connectedCallback() {
+    super.connectedCallback();
+    this._isAttached = true;
     this.drawChart();
-  },
+    this.addEventListener('iron-resize', () => {
+      this.async(this.drawChart, 10);
+    });
+  }
 
-  drawChart: function () {
-    var root = Polymer.dom(this);
+  dataChanged() {
+    this.drawChart();
+  }
+
+  drawChart() {
     var stateHistory = this.data;
     var chart;
     var dataTable;
@@ -51,12 +42,12 @@ Polymer({
     var format;
     var daysDelta;
 
-    if (!this.isAttached) {
+    if (!this._isAttached) {
       return;
     }
 
-    while (root.node.lastChild) {
-      root.node.removeChild(root.node.lastChild);
+    while (this.lastChild) {
+      this.removeChild(this.lastChild);
     }
 
     if (!stateHistory || stateHistory.length === 0) {
@@ -79,14 +70,15 @@ Polymer({
     startTime = new Date(
       stateHistory.reduce(
         function (minTime, stateInfo) {
-          return Math.min(minTime, new Date(stateInfo[0].last_changed));
+          return Math.min(minTime, new Date(stateInfo.data[0].last_changed));
         }, new Date()));
 
     // end time is Math.max(startTime, last_event)
     endTime = this.endTime ||
       new Date(stateHistory.reduce(
         function (maxTime, stateInfo) {
-          return Math.max(maxTime, new Date(stateInfo[stateInfo.length - 1].last_changed));
+          return Math.max(maxTime,
+                          new Date(stateInfo.data[stateInfo.data.length - 1].last_changed));
         }, startTime));
 
     if (endTime > new Date()) {
@@ -111,11 +103,11 @@ Polymer({
       var prevState = null;
       var prevLastChanged = null;
 
-      if (stateInfo.length === 0) return;
+      if (stateInfo.data.length === 0) return;
 
-      entityDisplay = window.hassUtil.computeStateName(stateInfo[0]);
+      entityDisplay = stateInfo.name;
 
-      stateInfo.forEach(function (state) {
+      stateInfo.data.forEach(function (state) {
         var timeStamp = new Date(state.last_changed);
         if (timeStamp > endTime) {
           // Drop datapoints that are after the requested endTime. This could happen if
@@ -145,13 +137,14 @@ Polymer({
       height: 55 + (numTimelines * 42),
 
       timeline: {
-        showRowLabels: stateHistory.length > 1,
+        showRowLabels: this.noSingle || stateHistory.length > 1,
       },
 
       hAxis: {
         format: format
       },
     });
-  },
-});
+  }
+}
+customElements.define(StateHistoryChartTimeline.is, StateHistoryChartTimeline);
 </script>
