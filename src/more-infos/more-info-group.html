@@ -95,8 +95,9 @@ Polymer({
     } else {
       window.hassUtil.dynamicContentUpdater(
         this.$.groupedControlDetails,
-          'MORE-INFO-' + window.hassUtil.stateMoreInfoType(groupDomainStateObj).toUpperCase(),
-          { stateObj: groupDomainStateObj, hass: this.hass });
+        'MORE-INFO-' + window.hassUtil.stateMoreInfoType(groupDomainStateObj).toUpperCase(),
+        { stateObj: groupDomainStateObj, hass: this.hass }
+      );
     }
   },
 });

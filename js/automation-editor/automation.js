@@ -43,7 +43,9 @@ export default class Automation extends Component {
   }
 
   render({ automation, isWide }) {
-    const { alias, trigger, condition, action } = automation;
+    const {
+      alias, trigger, condition, action
+    } = automation;
 
     return (
       <div>

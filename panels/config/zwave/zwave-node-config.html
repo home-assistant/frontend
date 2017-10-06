@@ -236,8 +236,10 @@ Polymer({
   },
 
   computeWakeupServiceData: function (wakeupInput) {
-    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      value: wakeupInput };
+    return {
+      node_id: this.nodes[this.selectedNode].attributes.node_id,
+      value: wakeupInput
+    };
   },
 
   computeConfigValueHelp: function (selectedConfigParameter) {
@@ -257,9 +259,11 @@ Polymer({
     } if (this.selectedConfigParameterType === 'List') {
       valueData = this.selectedConfigParameterValues[selectedConfigValue];
     }
-    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
+    return {
+      node_id: this.nodes[this.selectedNode].attributes.node_id,
       parameter: this.config[this.selectedConfigParameter].key,
-      value: valueData };
+      value: valueData
+    };
   },
 
   selectedConfigParameterChanged: function (selectedConfigParameter) {
@@ -300,17 +304,16 @@ Polymer({
 
   refreshConfig: function (selectedNode) {
     var configData = [];
-    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(
-      function (config) {
-        Object.keys(config).forEach(function (key) {
-          configData.push({
-            key: key,
-            value: config[key],
-          });
+    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (config) {
+      Object.keys(config).forEach(function (key) {
+        configData.push({
+          key: key,
+          value: config[key],
         });
-        this.config = configData;
-        this.selectedConfigParameterChanged(this.selectedConfigParameter);
-      }.bind(this));
+      });
+      this.config = configData;
+      this.selectedConfigParameterChanged(this.selectedConfigParameter);
+    }.bind(this));
   },
 });
 </script>

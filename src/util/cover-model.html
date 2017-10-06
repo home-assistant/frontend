@@ -6,8 +6,10 @@
   };
 
   function addGetter(name, getter) {
-    Object.defineProperty(window.CoverEntity.prototype, name,
-                          { get: getter });
+    Object.defineProperty(
+      window.CoverEntity.prototype, name,
+      { get: getter }
+    );
   }
 
   addGetter('isFullyOpen', function () {

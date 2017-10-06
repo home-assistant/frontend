@@ -190,13 +190,12 @@
       if (!panelVisible || !viewVisible) {
         return;
       }
-      this.debounce(
-        'updateCards', function () {
-          // Things might have changed since it got scheduled.
-          if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(columns, states, showIntroduction);
-          }
-        }.bind(this), 10);
+      this.debounce('updateCards', function () {
+        // Things might have changed since it got scheduled.
+        if (this.panelVisible && this.viewVisible) {
+          this.cards = this.computeCards(columns, states, showIntroduction);
+        }
+      }.bind(this), 10);
     },
 
     computeCards: function (columns, states, showIntroduction) {

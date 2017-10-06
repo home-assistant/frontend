@@ -95,8 +95,7 @@ Polymer({
     this.oscillationToggleChecked = newVal.attributes.oscillating;
 
     if (newVal.attributes.speed_list) {
-      this.speedIndex = newVal.attributes.speed_list.indexOf(
-        newVal.attributes.speed);
+      this.speedIndex = newVal.attributes.speed_list.indexOf(newVal.attributes.speed);
     } else {
       this.speedIndex = -1;
     }
@@ -109,9 +108,7 @@ Polymer({
   },
 
   computeClassNames: function (stateObj) {
-    return 'more-info-fan ' + window.hassUtil.attributeClassNames(
-      stateObj, ['oscillating', 'speed_list', 'direction']
-    );
+    return 'more-info-fan ' + window.hassUtil.attributeClassNames(stateObj, ['oscillating', 'speed_list', 'direction']);
   },
 
   speedChanged: function (speedIndex) {

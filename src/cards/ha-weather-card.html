@@ -153,8 +153,7 @@
       }
 
       if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(
-          this.$.chart_id);
+        this.chartEngine = new window.google.visualization.LineChart(this.$.chart_id);
       }
 
       if (!this.attr.forecast) {

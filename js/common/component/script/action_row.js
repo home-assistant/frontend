@@ -42,5 +42,4 @@ export default class Action extends Component {
       </paper-card>
     );
   }
-
 }
