@@ -10,7 +10,7 @@ gulp.task('run_rollup', () => {
     'js/script-editor/script-editor.js',
     'demo_data/demo_data.js',
   ])
-  .pipe(rollupEach(rollupConfig))
+  .pipe(rollupEach(rollupConfig, rollupConfig))
   .pipe(gulp.dest('build-temp'));
 });
 
