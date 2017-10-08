@@ -111,6 +111,7 @@
           columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
+          ordered-groups='[[orderedGroups]]'
         ></ha-cards>
 
         <template is='dom-repeat' items='[[views]]'>
@@ -120,6 +121,7 @@
             columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
+            ordered-groups='[[orderedGroups]]'
           ></ha-cards>
         </template>
 
@@ -194,6 +196,11 @@ Polymer({
     viewStates: {
       type: Object,
       computed: 'computeViewStates(currentView, hass, defaultView)',
+    },
+
+    orderedGroups: {
+      type: Array,
+      computed: 'computeOrderedGroups(currentView, hass, defaultView)',
     },
 
     showTabs: {
@@ -326,6 +333,10 @@ Polymer({
     this.views = views;
   },
 
+  isView: function (currentView, defaultView) {
+    return currentView || defaultView;
+  },
+
   /*
     Compute the states to show for current view.
 
@@ -339,7 +350,7 @@ Polymer({
     var entityIds = Object.keys(hass.states);
 
     // If we base off all entities, only have to filter out hidden
-    if (!currentView && !defaultView) {
+    if (!this.isView(currentView, defaultView)) {
       states = {};
       for (i = 0; i < entityIds.length; i++) {
         entityId = entityIds[i];
@@ -350,6 +361,7 @@ Polymer({
           states[entityId] = state;
         }
       }
+
       return states;
     }
 
@@ -371,6 +383,24 @@ Polymer({
     }
 
     return states;
+  },
+
+  /*
+    Compute the ordered list of groups for this view
+  */
+  computeOrderedGroups: function (currentView, hass, defaultView) {
+    if (!this.isView(currentView, defaultView)) {
+      return null;
+    }
+
+    var orderedGroups = {};
+    var entitiesList = hass.states[currentView || this.DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
+
+    for (var i = 0; i < entitiesList.length; i++) {
+      orderedGroups[entitiesList[i]] = i;
+    }
+
+    return orderedGroups;
   },
 });
 </script>
