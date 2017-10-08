@@ -392,8 +392,15 @@ Polymer({
     if (!this.isView(currentView, defaultView)) {
       return null;
     }
-    var viewState = hass.states[currentView || this.DEFAULT_VIEW_ENTITY_ID];
-    return viewState.attributes.entity_id;
+
+    var orderedGroups = {};
+    var entitiesList = hass.states[currentView || this.DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
+
+    for (var i = 0; i < entitiesList.length; i++) {
+      orderedGroups[entitiesList[i]] = i;
+    }
+
+    return orderedGroups;
   },
 });
 </script>
