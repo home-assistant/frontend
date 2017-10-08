@@ -111,7 +111,7 @@
           columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
-          sort-groups='[[sortGroups]]'
+          ordered-groups='[[orderedGroups]]'
         ></ha-cards>
 
         <template is='dom-repeat' items='[[views]]'>
@@ -121,7 +121,7 @@
             columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
-            sort-groups='[[sortGroups]]'
+            ordered-groups='[[orderedGroups]]'
           ></ha-cards>
         </template>
 
@@ -160,11 +160,6 @@ Polymer({
       value: false,
     },
 
-    sortGroups: {
-      type: Boolean,
-      value: true,
-    },
-
     route: Object,
     routeData: Object,
     routeMatch: Boolean,
@@ -201,6 +196,11 @@ Polymer({
     viewStates: {
       type: Object,
       computed: 'computeViewStates(currentView, hass, defaultView)',
+    },
+
+    orderedGroups: {
+      type: Array,
+      computed: 'computeOrderedGroups(currentView, hass, defaultView)',
     },
 
     showTabs: {
@@ -333,6 +333,10 @@ Polymer({
     this.views = views;
   },
 
+  isView: function (currentView, defaultView) {
+    return currentView || defaultView;
+  },
+
   /*
     Compute the states to show for current view.
 
@@ -346,7 +350,7 @@ Polymer({
     var entityIds = Object.keys(hass.states);
 
     // If we base off all entities, only have to filter out hidden
-    if (!currentView && !defaultView) {
+    if (!this.isView(currentView, defaultView)) {
       states = {};
       for (i = 0; i < entityIds.length; i++) {
         entityId = entityIds[i];
@@ -358,11 +362,8 @@ Polymer({
         }
       }
 
-      this.sortGroups = true;
       return states;
     }
-
-    this.sortGroups = false;
 
     if (currentView) {
       states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
@@ -382,6 +383,17 @@ Polymer({
     }
 
     return states;
+  },
+
+  /*
+    Compute the ordered list of groups for this view
+  */
+  computeOrderedGroups: function (currentView, hass, defaultView) {
+    if (!this.isView(currentView, defaultView)) {
+      return null;
+    }
+    var viewState = hass.states[currentView || this.DEFAULT_VIEW_ENTITY_ID];
+    return viewState.attributes.entity_id;
   },
 });
 </script>
