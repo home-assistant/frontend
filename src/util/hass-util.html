@@ -40,11 +40,9 @@ window.hassUtil.LANGUAGE = navigator.languages ?
 
 window.hassUtil.attributeClassNames = function (stateObj, attributes) {
   if (!stateObj) return '';
-  return attributes.map(
-    function (attribute) {
-      return attribute in stateObj.attributes ? 'has-' + attribute : '';
-    }
-  ).join(' ');
+  return attributes.map(function (attribute) {
+    return attribute in stateObj.attributes ? 'has-' + attribute : '';
+  }).join(' ');
 };
 
 // Expects featureClassNames to be an object mapping feature-bit -> className
@@ -53,11 +51,9 @@ window.hassUtil.featureClassNames = function (stateObj, featureClassNames) {
 
   var features = stateObj.attributes.supported_features;
 
-  return Object.keys(featureClassNames).map(
-    function (feature) {
-      return (features & feature) !== 0 ? featureClassNames[feature] : '';
-    }
-  ).join(' ');
+  return Object.keys(featureClassNames).map(function (feature) {
+    return (features & feature) !== 0 ? featureClassNames[feature] : '';
+  }).join(' ');
 };
 
 
@@ -164,8 +160,10 @@ if (toLocaleStringSupportsOptions()) {
 
 if (toLocaleDateStringSupportsOptions()) {
   window.hassUtil.formatDate = function (dateObj) {
-    return dateObj.toLocaleDateString(window.hassUtil.LANGUAGE,
-      { year: 'numeric', month: 'long', day: 'numeric' });
+    return dateObj.toLocaleDateString(
+      window.hassUtil.LANGUAGE,
+      { year: 'numeric', month: 'long', day: 'numeric' }
+    );
   };
 } else {
   window.hassUtil.formatDate = function (dateObj) {
@@ -175,8 +173,10 @@ if (toLocaleDateStringSupportsOptions()) {
 
 if (toLocaleTimeStringSupportsOptions()) {
   window.hassUtil.formatTime = function (dateObj) {
-    return dateObj.toLocaleTimeString(window.hassUtil.LANGUAGE,
-      { hour: 'numeric', minute: '2-digit' });
+    return dateObj.toLocaleTimeString(
+      window.hassUtil.LANGUAGE,
+      { hour: 'numeric', minute: '2-digit' }
+    );
   };
 } else {
   window.hassUtil.formatTime = function (dateObj) {
@@ -193,8 +193,10 @@ window.hassUtil.relativeTime = function (dateObj) {
   for (i = 0; i < tests.length; i += 2) {
     if (delta < tests[i]) {
       delta = Math.floor(delta);
-      return format.replace('%s',
-        delta === 1 ? '1 ' + tests[i + 1] : delta + ' ' + tests[i + 1] + 's');
+      return format.replace(
+        '%s',
+        delta === 1 ? '1 ' + tests[i + 1] : delta + ' ' + tests[i + 1] + 's'
+      );
     }
 
     delta /= tests[i];
@@ -353,8 +355,7 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     default:
       /* eslint-disable no-console */
-      console.warn(
-        'Unable to find icon for domain ' + domain + ' (' + state + ')');
+      console.warn('Unable to find icon for domain ' + domain + ' (' + state + ')');
       /* eslint-enable no-console */
       return window.hassUtil.DEFAULT_ICON;
   }
@@ -445,7 +446,7 @@ window.hassUtil.computeStateName = function (stateObj) {
     stateObj._entityDisplay = (
       stateObj.attributes.friendly_name ||
       window.HAWS.extractObjectId(stateObj.entity_id)
-          .replace(/_/g, ' '));
+        .replace(/_/g, ' '));
   }
 
   return stateObj._entityDisplay;

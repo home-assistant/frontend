@@ -129,7 +129,8 @@ Polymer({
     currentState = this.stateObj;
     this.hass.callService(
       serviceDomain, service,
-      { entity_id: this.stateObj.entity_id })
+      { entity_id: this.stateObj.entity_id }
+    )
       .then(function () {
         setTimeout(function () {
           // If after 2 seconds we have not received a state update

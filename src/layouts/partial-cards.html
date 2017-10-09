@@ -368,8 +368,7 @@ Polymer({
     if (currentView) {
       states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
     } else {
-      states = window.HAWS.getViewEntities(
-        hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
+      states = window.HAWS.getViewEntities(hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
     }
 
     // Make sure certain domains are always shown.

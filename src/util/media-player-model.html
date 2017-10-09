@@ -6,8 +6,10 @@
   };
 
   function addGetter(name, getter) {
-    Object.defineProperty(window.MediaPlayerEntity.prototype, name,
-                          { get: getter });
+    Object.defineProperty(
+      window.MediaPlayerEntity.prototype, name,
+      { get: getter }
+    );
   }
 
   addGetter('isOff', function () {
@@ -39,8 +41,7 @@
   });
 
   addGetter('hasMediaControl', function () {
-    return ['playing', 'paused', 'unknown'].indexOf(
-        this.stateObj.state) !== -1;
+    return ['playing', 'paused', 'unknown'].indexOf(this.stateObj.state) !== -1;
   });
 
   addGetter('volumeSliderValue', function () {

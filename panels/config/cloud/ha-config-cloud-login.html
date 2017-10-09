@@ -101,8 +101,7 @@
 
 <script>
 class HaConfigCloudLogin extends
-    window.hassMixins.NavigateMixin(
-      window.hassMixins.EventsMixin(Polymer.Element)) {
+  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-config-cloud-login'; }
 
   static get properties() {
@@ -156,27 +155,26 @@ class HaConfigCloudLogin extends
     this.hass.callApi('post', 'cloud/login', {
       email: this.email,
       password: this._password,
-    }).then(
-      (account) => {
-        this.fire('ha-account-refreshed', { account: account });
-        this.email = '';
-        this._password = '';
-      }, (err) => {
-        this._password = '';
-        this._requestInProgress = false;
-        if (!err || !err.body || !err.body.message) {
-          this.error = 'Unknown error';
-          return;
-        } else if (err.body.code === 'UserNotConfirmed') {
-          alert('You need to confirm your email before logging in.');
-          this.navigate('/config/cloud/register#confirm');
-          return;
-        } else if (err.body.code === 'PasswordChangeRequired') {
-          alert('You need to change your password before logging in.');
-          this.navigate('/config/cloud/forgot-password');
-        }
-        this.error = err.body.message;
-      });
+    }).then((account) => {
+      this.fire('ha-account-refreshed', { account: account });
+      this.email = '';
+      this._password = '';
+    }, (err) => {
+      this._password = '';
+      this._requestInProgress = false;
+      if (!err || !err.body || !err.body.message) {
+        this.error = 'Unknown error';
+        return;
+      } else if (err.body.code === 'UserNotConfirmed') {
+        alert('You need to confirm your email before logging in.');
+        this.navigate('/config/cloud/register#confirm');
+        return;
+      } else if (err.body.code === 'PasswordChangeRequired') {
+        alert('You need to change your password before logging in.');
+        this.navigate('/config/cloud/forgot-password');
+      }
+      this.error = err.body.message;
+    });
   }
 
   _handleRegister() {

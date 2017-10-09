@@ -22,7 +22,7 @@
   }
 
   class StateHistoryChartLine extends
-      Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+    Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
     static get is() { return 'state-history-chart-line'; }
     static get properties() {
       return {
@@ -123,8 +123,7 @@
 
       endTime = this.endTime ||
         new Date(Math.max.apply(null, deviceStates.map(states =>
-          new Date(states.states[states.states.length - 1].last_changed)
-        )));
+          new Date(states.states[states.states.length - 1].last_changed))));
       if (endTime > new Date()) {
         endTime = new Date();
       }
@@ -162,10 +161,9 @@
             // if we have to prevent interpolation, we add an old value for each
             // value that should not be interpolated at the same time that our new
             // line will be published.
-            data.push([timestamp].concat(prevValues.slice(1).map(
-              function (val, index) {
-                return noInterpolationValues[index] ? val : null;
-              })));
+            data.push([timestamp].concat(prevValues.slice(1).map(function (val, index) {
+              return noInterpolationValues[index] ? val : null;
+            })));
           }
           data.push(values);
           prevValues = values;
@@ -174,10 +172,9 @@
         if (domain === 'thermostat' || domain === 'climate') {
           // We differentiate between thermostats that have a target temperature
           // range versus ones that have just a target temperature
-          hasTargetRange = states.states.reduce(
-            function (cum, cur) {
-              return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
-            }, false);
+          hasTargetRange = states.states.reduce(function (cum, cur) {
+            return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
+          }, false);
 
           dataTable.addColumn('number', name + ' current temperature');
 
@@ -193,7 +190,8 @@
               var targetLow = saveParseFloat(state.attributes.target_temp_low);
               pushData(
                 [new Date(state.last_changed), curTemp, targetHigh, targetLow],
-                noInterpolations);
+                noInterpolations
+              );
             };
           } else {
             dataTable.addColumn('number', name + ' target temperature');
@@ -233,11 +231,13 @@
         finalDataTable = dataTables.slice(1).reduce(
           function (tot, cur) {
             return window.google.visualization.data.join(
-            tot, cur, 'full', [[0, 0]],
-            range(1, tot.getNumberOfColumns()),
-            range(1, cur.getNumberOfColumns()));
+              tot, cur, 'full', [[0, 0]],
+              range(1, tot.getNumberOfColumns()),
+              range(1, cur.getNumberOfColumns())
+            );
           },
-          dataTables[0]);
+          dataTables[0]
+        );
       }
 
       this.chartEngine.draw(finalDataTable, options);

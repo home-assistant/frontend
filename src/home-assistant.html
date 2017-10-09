@@ -49,7 +49,6 @@ window.removeInitMsg = function () {
 };
 
 class HomeAssistant extends Polymer.Element {
-
   static get is() { return 'home-assistant'; }
 
   static get properties() {
@@ -105,10 +104,12 @@ class HomeAssistant extends Polymer.Element {
       this.iconsLoaded = true;
     };
 
-    Polymer.importHref('/static/mdi-' + this.icons + '.html',
-                    success,
-                    () => Polymer.importHref('/static/mdi.html', success, success),
-                    true /* true for async */);
+    Polymer.importHref(
+      '/static/mdi-' + this.icons + '.html',
+      success,
+      () => Polymer.importHref('/static/mdi.html', success, success),
+      true /* true for async */
+    );
   }
 
   connectionChanged(conn, oldConn) {
@@ -131,27 +132,28 @@ class HomeAssistant extends Polymer.Element {
       moreInfoEntityId: null,
       callService: (domain, service, serviceData) =>
         conn.callService(domain, service, serviceData || {})
-          .then(() => {
-            var message;
-            var name;
-            if (serviceData.entity_id && this.hass.states &&
+          .then(
+            () => {
+              var message;
+              var name;
+              if (serviceData.entity_id && this.hass.states &&
                 this.hass.states[serviceData.entity_id]) {
-              name = window.hassUtil.computeStateName(this.hass.states[serviceData.entity_id]);
+                name = window.hassUtil.computeStateName(this.hass.states[serviceData.entity_id]);
+              }
+              if (service === 'turn_on' && serviceData.entity_id) {
+                message = 'Turned on ' + (name || serviceData.entity_id) + '.';
+              } else if (service === 'turn_off' && serviceData.entity_id) {
+                message = 'Turned off ' + (name || serviceData.entity_id) + '.';
+              } else {
+                message = 'Service ' + domain + '/' + service + ' called.';
+              }
+              notifications.showNotification(message);
+            },
+            function () {
+              notifications.showNotification('Failed to call service ' + domain + '/' + service);
+              return Promise.reject();
             }
-            if (service === 'turn_on' && serviceData.entity_id) {
-              message = 'Turned on ' + (name || serviceData.entity_id) + '.';
-            } else if (service === 'turn_off' && serviceData.entity_id) {
-              message = 'Turned off ' + (name || serviceData.entity_id) + '.';
-            } else {
-              message = 'Service ' + domain + '/' + service + ' called.';
-            }
-            notifications.showNotification(message);
-          },
-          function () {
-            notifications.showNotification(
-              'Failed to call service ' + domain + '/' + service);
-            return Promise.reject();
-          }),
+          ),
       callApi: (method, path, parameters) => {
         var host = window.location.protocol + '//' + window.location.host;
         var auth = conn.options.authToken ? conn.options : {};

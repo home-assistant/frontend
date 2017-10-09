@@ -189,19 +189,23 @@
       'updateCards(columns, states, showIntroduction, panelVisible, viewVisible, orderedGroups)',
     ],
 
-    updateCards: function (columns, states, showIntroduction, panelVisible, viewVisible,
-      orderedGroups) {
-      /* eslint-disable no-console */
+    updateCards: function (
+      columns,
+      states,
+      showIntroduction,
+      panelVisible,
+      viewVisible,
+      orderedGroups
+    ) {
       if (!panelVisible || !viewVisible) {
         return;
       }
-      this.debounce(
-        'updateCards', function () {
-          // Things might have changed since it got scheduled.
-          if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(columns, states, showIntroduction, orderedGroups);
-          }
-        }.bind(this), 10);
+      this.debounce('updateCards', function () {
+        // Things might have changed since it got scheduled.
+        if (this.panelVisible && this.viewVisible) {
+          this.cards = this.computeCards(columns, states, showIntroduction, orderedGroups);
+        }
+      }.bind(this), 10);
     },
 
     computeCards: function (columns, states, showIntroduction, orderedGroups) {

@@ -183,8 +183,8 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   computeShowHistoryComponent(hasHistoryComponent, stateObj) {
     return this.hasHistoryComponent && stateObj &&
-      window.hassUtil.DOMAINS_WITH_NO_HISTORY.indexOf(
-        window.hassUtil.computeDomain(stateObj)) === -1;
+      window.hassUtil.DOMAINS_WITH_NO_HISTORY
+        .indexOf(window.hassUtil.computeDomain(stateObj)) === -1;
   }
 
   stateObjChanged(newVal) {

@@ -22,7 +22,7 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
       if (data) {
         resolve(data);
       } else {
-        reject('Request not allowed in demo mode.');
+        reject(new Error('Request not allowed in demo mode.'));
       }
     });
   }

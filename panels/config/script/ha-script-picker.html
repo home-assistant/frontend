@@ -115,8 +115,7 @@ Polymer({
   },
 
   scriptTapped: function (ev) {
-    history.pushState(
-      null, null, '/config/script/edit/' + this.scripts[ev.model.index].entity_id);
+    history.pushState(null, null, '/config/script/edit/' + this.scripts[ev.model.index].entity_id);
     this.fire('location-changed');
   },
 

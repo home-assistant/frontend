@@ -11,7 +11,9 @@ export default class NumericStateTrigger extends Component {
 
   /* eslint-disable camelcase */
   render({ trigger }) {
-    const { value_template, entity_id, below, above } = trigger;
+    const {
+      value_template, entity_id, below, above
+    } = trigger;
     return (
       <div>
         <paper-input
