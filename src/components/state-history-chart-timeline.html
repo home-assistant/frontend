@@ -3,7 +3,7 @@
 
 <script>
 class StateHistoryChartTimeline extends
-    Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+  Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
   static get is() { return 'state-history-chart-timeline'; }
   static get properties() {
     return {
@@ -67,19 +67,18 @@ class StateHistoryChartTimeline extends
       dataTable.addRow([entityDisplay, stateDisplay, start, end]);
     }
 
-    startTime = new Date(
-      stateHistory.reduce(
-        function (minTime, stateInfo) {
-          return Math.min(minTime, new Date(stateInfo.data[0].last_changed));
-        }, new Date()));
+    startTime = new Date(stateHistory.reduce(function (minTime, stateInfo) {
+      return Math.min(minTime, new Date(stateInfo.data[0].last_changed));
+    }, new Date()));
 
     // end time is Math.max(startTime, last_event)
     endTime = this.endTime ||
-      new Date(stateHistory.reduce(
-        function (maxTime, stateInfo) {
-          return Math.max(maxTime,
-                          new Date(stateInfo.data[stateInfo.data.length - 1].last_changed));
-        }, startTime));
+      new Date(stateHistory.reduce(function (maxTime, stateInfo) {
+        return Math.max(
+          maxTime,
+          new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
+        );
+      }, startTime));
 
     if (endTime > new Date()) {
       endTime = new Date();

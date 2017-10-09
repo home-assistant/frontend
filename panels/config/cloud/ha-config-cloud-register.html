@@ -134,8 +134,7 @@
 
 <script>
 class HaConfigCloudRegister extends
-    window.hassMixins.NavigateMixin(
-      window.hassMixins.EventsMixin(Polymer.Element)) {
+  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-config-cloud-register'; }
 
   static get properties() {
@@ -202,16 +201,15 @@ class HaConfigCloudRegister extends
     this.hass.callApi('post', 'cloud/register', {
       email: this.email,
       password: this._password,
-    }).then(
-      () => {
-        this._requestInProgress = false;
-        this._hasConfirmationCode = true;
-      }, (err) => {
-        this._password = '';
-        this._requestInProgress = false;
-        this._error = err && err.body && err.body.message ?
-          err.body.message : 'Unknown error';
-      });
+    }).then(() => {
+      this._requestInProgress = false;
+      this._hasConfirmationCode = true;
+    }, (err) => {
+      this._password = '';
+      this._requestInProgress = false;
+      this._error = err && err.body && err.body.message ?
+        err.body.message : 'Unknown error';
+    });
   }
 
   _handleShowVerifyAccount() {
@@ -234,17 +232,16 @@ class HaConfigCloudRegister extends
     this.hass.callApi('post', 'cloud/confirm_register', {
       email: this.email,
       confirmation_code: this._confirmationCode,
-    }).then(
-      () => {
-        // eslint-disable-next-line
+    }).then(() => {
+      // eslint-disable-next-line
         alert('Confirmation successful. You can now login.');
-        this.navigate('config/cloud/login');
-      }, (err) => {
-        this._confirmationCode = '';
-        this._error = err && err.body && err.body.message ?
-          err.body.message : 'Unknown error';
-        this._requestInProgress = false;
-      });
+      this.navigate('config/cloud/login');
+    }, (err) => {
+      this._confirmationCode = '';
+      this._error = err && err.body && err.body.message ?
+        err.body.message : 'Unknown error';
+      this._requestInProgress = false;
+    });
   }
 }
 

@@ -33,10 +33,8 @@
 window.hassMixins = window.hassMixins || {};
 
 /* @polymerMixin */
-window.hassMixins.EventsMixin = Polymer.dedupingMixin(
-  superClass => class extends superClass {
-
-    /**
+window.hassMixins.EventsMixin = Polymer.dedupingMixin(superClass => class extends superClass {
+  /**
      * Dispatches a custom event with an optional detail value.
      *
      * @param {string} type Name of event type.
@@ -51,25 +49,24 @@ window.hassMixins.EventsMixin = Polymer.dedupingMixin(
      *  `node` on which to fire the event (HTMLElement, defaults to `this`).
      * @return {Event} The new event that was fired.
      */
-    fire(type, detail, options) {
-      options = options || {};
-      detail = (detail === null || detail === undefined) ? {} : detail;
-      const event = new Event(type, {
-        bubbles: options.bubbles === undefined ? true : options.bubbles,
-        cancelable: Boolean(options.cancelable),
-        composed: options.composed === undefined ? true : options.composed
-      });
-      event.detail = detail;
-      const node = options.node || this;
-      node.dispatchEvent(event);
-      return event;
-    }
+  fire(type, detail, options) {
+    options = options || {};
+    detail = (detail === null || detail === undefined) ? {} : detail;
+    const event = new Event(type, {
+      bubbles: options.bubbles === undefined ? true : options.bubbles,
+      cancelable: Boolean(options.cancelable),
+      composed: options.composed === undefined ? true : options.composed
+    });
+    event.detail = detail;
+    const node = options.node || this;
+    node.dispatchEvent(event);
+    return event;
   }
-);
+});
 
 /* @polymerMixin */
-window.hassMixins.NavigateMixin = Polymer.dedupingMixin(
-  superClass => class extends window.hassMixins.EventsMixin(superClass) {
+window.hassMixins.NavigateMixin = Polymer.dedupingMixin(superClass =>
+  class extends window.hassMixins.EventsMixin(superClass) {
     navigate(path, replace = false) {
       if (replace) {
         history.replaceState(null, null, path);
@@ -78,6 +75,6 @@ window.hassMixins.NavigateMixin = Polymer.dedupingMixin(
       }
       this.fire('location-changed');
     }
-});
+  });
 
 </script>

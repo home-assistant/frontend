@@ -449,38 +449,33 @@ Polymer({
     this.selectedConfigParameterValue = -1;
     this.selectedGroup = -1;
 
-    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(
-      (configs) => {
-        this.config = this._objToArray(configs);
-      });
+    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then((configs) => {
+      this.config = this._objToArray(configs);
+    });
 
-    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(
-      (values) => {
-        this.values = this._objToArray(values);
-      });
+    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then((values) => {
+      this.values = this._objToArray(values);
+    });
 
-    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(
-      (groups) => {
-        this.groups = this._objToArray(groups);
-      });
+    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then((groups) => {
+      this.groups = this._objToArray(groups);
+    });
 
     this.hasNodeUserCodes = false;
     this.notifyPath('hasNodeUserCodes');
-    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(
-      (usercodes) => {
-        this.userCodes = this._objToArray(usercodes);
-        this.hasNodeUserCodes = this.userCodes.length > 0;
-        this.notifyPath('hasNodeUserCodes');
-      });
+    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then((usercodes) => {
+      this.userCodes = this._objToArray(usercodes);
+      this.hasNodeUserCodes = this.userCodes.length > 0;
+      this.notifyPath('hasNodeUserCodes');
+    });
   },
 
   selectedEntityChanged: function (selectedEntity) {
     if (selectedEntity === -1) return;
     var el = this;
-    el.hass.callApi('GET', 'zwave/values/' + el.nodes[el.selectedNode].attributes.node_id).then(
-      (values) => {
-        el.values = el._objToArray(values);
-      });
+    el.hass.callApi('GET', 'zwave/values/' + el.nodes[el.selectedNode].attributes.node_id).then((values) => {
+      el.values = el._objToArray(values);
+    });
 
     var valueId = el.entities[selectedEntity].attributes.value_id;
     var valueData = el.values.find(function (obj) { return obj.key === valueId; });
@@ -532,8 +527,10 @@ Polymer({
   },
 
   computeNodeNameServiceData: function (newNodeNameInput) {
-    return { node_id: this.nodes[this.selectedNode].attributes.node_id,
-      name: newNodeNameInput };
+    return {
+      node_id: this.nodes[this.selectedNode].attributes.node_id,
+      name: newNodeNameInput
+    };
   },
 
   computeRefreshEntityServiceData: function (selectedEntity) {
@@ -555,8 +552,7 @@ Polymer({
       ignored: this.entityIgnored,
       polling_intensity: parseInt(this.entityPollingIntensity),
     };
-    return this.hass.callApi(
-      'POST', 'config/zwave/device_config/' + this.entities[this.selectedEntity].entity_id, data);
+    return this.hass.callApi('POST', 'config/zwave/device_config/' + this.entities[this.selectedEntity].entity_id, data);
   },
 
   toggleHelp: function () {

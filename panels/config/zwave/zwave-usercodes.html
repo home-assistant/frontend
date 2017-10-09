@@ -145,13 +145,17 @@ Polymer({
     var valueData = null;
     if (type === 'Add') {
       valueData = selectedUserCodeValue;
-      serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
+      serviceData = {
+        node_id: this.nodes[this.selectedNode].attributes.node_id,
         code_slot: this.selectedUserCode,
-        usercode: valueData };
+        usercode: valueData
+      };
     }
     if (type === 'Delete') {
-      serviceData = { node_id: this.nodes[this.selectedNode].attributes.node_id,
-        code_slot: this.selectedUserCode };
+      serviceData = {
+        node_id: this.nodes[this.selectedNode].attributes.node_id,
+        code_slot: this.selectedUserCode
+      };
     }
     return serviceData;
   },
@@ -159,17 +163,16 @@ Polymer({
   refreshUserCodes: function (selectedNode) {
     this.selectedUserCodeValue = '';
     var userCodes = [];
-    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(
-      function (usercodes) {
-        Object.keys(usercodes).forEach(function (key) {
-          userCodes.push({
-            key: key,
-            value: usercodes[key],
-          });
+    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
+      Object.keys(usercodes).forEach(function (key) {
+        userCodes.push({
+          key: key,
+          value: usercodes[key],
         });
-        this.userCodes = userCodes;
-        this.selectedUserCodeChanged(this.selectedUserCode);
-      }.bind(this));
+      });
+      this.userCodes = userCodes;
+      this.selectedUserCodeChanged(this.selectedUserCode);
+    }.bind(this));
   },
 });
 </script>

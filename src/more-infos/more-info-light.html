@@ -138,8 +138,7 @@ Polymer({
       this.wvSliderValue = newVal.attributes.white_value;
 
       if (newVal.attributes.effect_list) {
-        this.effectIndex = newVal.attributes.effect_list.indexOf(
-          newVal.attributes.effect);
+        this.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
       } else {
         this.effectIndex = -1;
       }
@@ -160,8 +159,7 @@ Polymer({
 
   computeClassNames: function (stateObj) {
     var classes = [
-      window.hassUtil.attributeClassNames(
-        stateObj, ['color_temp', 'white_value', 'effect_list']),
+      window.hassUtil.attributeClassNames(stateObj, ['color_temp', 'white_value', 'effect_list']),
       window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
     ];
 

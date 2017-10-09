@@ -74,8 +74,7 @@ Polymer({
   },
 
   _computeLoaded: function (hass, component) {
-    return component.loaded || window.hassUtil.isComponentLoaded(
-      hass, component.domain);
+    return component.loaded || window.hassUtil.isComponentLoaded(hass, component.domain);
   },
 
   _computeCaption: function (component) {
@@ -87,8 +86,7 @@ Polymer({
   },
 
   _navigate: function (ev) {
-    history.pushState(
-      null, null, '/config/' + ev.model.item.domain);
+    history.pushState(null, null, '/config/' + ev.model.item.domain);
     this.fire('location-changed');
   },
 });
