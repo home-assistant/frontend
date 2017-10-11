@@ -69,7 +69,9 @@ class HaConfigSectionTranslation extends window.hassMixins.LocalizeMixin(
   }
 
   handleLanguageSelect(ev) {
-    if (ev.detail.value) {
+    // Only fire event if language was changed. This prevents select updates when
+    // responding to hass changes.
+    if (ev.detail.value && ev.detail.value.languageTag !== this.language) {
       this.fire('hass-language-select', { language: ev.detail.value.languageTag });
     }
   }
