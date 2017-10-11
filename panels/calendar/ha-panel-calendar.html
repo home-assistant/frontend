@@ -24,14 +24,17 @@
       </app-header>
       <div class='content'>
         <paper-card>
-          <template is='dom-if' items='[[!platforms.length]]'>
+          <template is='dom-if' if='[[!_platforms.length]]'>
             <div class='card-content'>
               No platforms
             </div>
           </template>
-          <template is='dom-repeat' items='[[platforms]]'>
+          <template is='dom-repeat' items='[[_platforms]]' as="platform">
             <div class='card-content'>
-                Platforms
+              [[platform.name]]
+              <template is='dom-if' if='[[!platform.events]]'>
+                No Events?
+              </template>
             </div>
           </template>
         </paper-card>
@@ -58,21 +61,24 @@ Polymer({
       value: false,
     },
 
-    platforms: {
+    _platforms: {
       type: Array,
+      notify: true,
+      reflectToAttribute: true
     },
 
     _events: {
-      type: Array,
+      type: Object,
     },
   },
 
   attached: function () {
     this.hassChanged = this.hassChanged.bind(this);
-    console.log('attached');
     this.computePlatforms().then(function(platforms) {
-      console.log(platforms);
-      this.platforms = platforms;
+      this._platforms = platforms.map(function(platform) {
+        return { name: platform };
+      }.bind(this));
+
       this.hassChanged();
     }.bind(this));
   },
@@ -80,10 +86,34 @@ Polymer({
   hassChanged: function() {
     console.log('hass changed');
     // TODO: Load events
+
+    if(this._platforms) {
+      this._platforms.forEach(function(platform) {
+        this.computeEvents(platform.name).then(function(events) {
+          platform.events = events;
+          console.log(platform);
+          console.log(this._platforms);
+          return platform;
+        }.bind(this));
+
+        console.log(this._platforms);
+       // return platform;
+       }.bind(this));
+        /*console.log(i);
+        this.computeEvents(this.platforms[i].name).then(function(events) {
+          this.platforms[i].events = events;
+          console.log(this.platforms);
+        //});*/
+      }
+
   },
 
   computePlatforms: function () {
      return this.hass.callApi('GET', 'calendar/platforms');
+  },
+
+  computeEvents: function (platform) {
+    return this.hass.callApi('GET', 'calendar/events/' + platform);
   },
 });
 
