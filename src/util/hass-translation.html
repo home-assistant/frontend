@@ -53,46 +53,27 @@ function getActiveTranslation() {
 const translations = {};
 
 window.getTranslation = function (translationInput) {
-  var translation = translationInput || getActiveTranslation();
-  /* eslint-disable no-undef */
-  var translationFingerprint = window.translationMetadata[translation].fingerprint;
+  const translation = translationInput || getActiveTranslation();
+  const translationFingerprint = window.translationMetadata[translation].fingerprint;
 
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {
-    translations[translationFingerprint] = new Promise(function (resolve) {
-      var translationUrl = '/static/translations/' + translationFingerprint;
-      var request = new XMLHttpRequest();
-      request.onreadystatechange = function () {
-        if (request.readyState === 4) {
-          if (request.status === 200) {
-            var resources = {};
-            resources[translation] = JSON.parse(request.responseText);
-            resolve({
-              language: translation,
-              resources: resources,
-            });
-          } else {
-            /* eslint-disable no-console */
-            console.error('Unable to load translation ' + translation + '. Falling back to en.');
-            fallbackFetch = function () {
-              delete translations[translationFingerprint];
-              getTranslation('en').then(function (result) {
-                resolve(result);
-              });
-            };
-            if (translationInput !== 'en') {
-              // Initial fetch failed. Try fallback to en
-              fallbackFetch();
-            } else {
-              // Fallback fetch failed. Retry after 5 seconds
-              setTimeout(fallbackFetch, 5000);
-            }
+    translations[translationFingerprint] =
+      fetch('/static/translations/' + translationFingerprint)
+        .then(response => response.json()).then(data => ({
+          language: translation,
+          resources: {
+            [translation]: data
+          },
+        }))
+        .catch((error) => {
+          delete translations[translationFingerprint];
+          if (translationInput !== 'en') {
+            // Couldn't load selected translation. Try a fall back to en before failing.
+            return window.getTranslation('en');
           }
-        }
-      };
-      request.open('GET', translationUrl);
-      request.send();
-    });
+          return Promise.reject(error);
+        });
   }
   return translations[translationFingerprint];
 };
