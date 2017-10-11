@@ -17,7 +17,7 @@
 
       <paper-card>
         <div class='card-content'>
-          <paper-dropdown-menu label="Language">
+          <paper-dropdown-menu label="Language" dynamic-align>
             <paper-listbox slot="dropdown-content" on-selected-item-changed="handleLanguageSelect" attr-for-selected="language-tag" selected="[[language]]">
               <template is='dom-repeat' items='[[languages]]'>
                 <paper-item language-tag="[[item.tag]]">[[item.nativeName]]</paper-item>
