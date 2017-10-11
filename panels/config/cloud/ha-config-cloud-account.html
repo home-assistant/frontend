@@ -74,8 +74,7 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(Polymer.Element
   }
 
   handleLogout() {
-    this.hass.callApi('post', 'cloud/logout').then(
-      () => this.fire('ha-account-refreshed', { account: null }));
+    this.hass.callApi('post', 'cloud/logout').then(() => this.fire('ha-account-refreshed', { account: null }));
   }
 }
 

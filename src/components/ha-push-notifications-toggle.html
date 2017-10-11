@@ -52,7 +52,8 @@ Polymer({
       function () {
         // no service worker.
         el._setPushSupported(false);
-      });
+      }
+    );
   },
   handlePushChange: function (ev) {
     if (ev.target.checked) {

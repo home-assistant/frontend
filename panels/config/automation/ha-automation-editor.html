@@ -239,28 +239,26 @@ Polymer({
   },
 
   _updateComponent: function () {
-    this._rendered = window.AutomationEditor(
-      this.$.root, {
-        automation: this.config,
-        onChange: this.configChanged,
-        isWide: this.isWide,
-      }, this._rendered);
+    this._rendered = window.AutomationEditor(this.$.root, {
+      automation: this.config,
+      onChange: this.configChanged,
+      isWide: this.isWide,
+    }, this._rendered);
   },
 
   saveAutomation: function () {
     var id = this.creatingNew ? '' + Date.now() : this.automation.attributes.id;
-    this.hass.callApi(
-      'post', 'config/automation/config/' + id, this.config).then(function () {
-        this.dirty = false;
+    this.hass.callApi('post', 'config/automation/config/' + id, this.config).then(function () {
+      this.dirty = false;
 
-        if (this.creatingNew) {
-          history.replaceState(null, null, '/config/automation/edit/' + id);
-          this.fire('location-changed');
-        }
-      }.bind(this), function (errors) {
-        this.errors = errors.body.message;
-        throw errors;
-      }.bind(this));
+      if (this.creatingNew) {
+        history.replaceState(null, null, '/config/automation/edit/' + id);
+        this.fire('location-changed');
+      }
+    }.bind(this), function (errors) {
+      this.errors = errors.body.message;
+      throw errors;
+    }.bind(this));
   },
 
   computeName: function (automation) {

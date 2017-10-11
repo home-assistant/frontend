@@ -72,7 +72,6 @@
 
 <script>
 class HaFormCustomize extends Polymer.Element {
-
   static get is() { return 'ha-form-customize'; }
 
   static get properties() {
@@ -139,17 +138,17 @@ class HaFormCustomize extends Polymer.Element {
   loadEntity(entity) {
     this.entity = entity;
     return this.hass.callApi('GET', 'config/customize/config/' + entity.entity_id)
-          .then((data) => {
-            this.localConfig = data.local;
-            this.globalConfig = data.global;
-            this.newAttributes = [];
-          });
+      .then((data) => {
+        this.localConfig = data.local;
+        this.globalConfig = data.global;
+        this.newAttributes = [];
+      });
   }
 
   saveEntity() {
     const data = {};
-    const attrs = this.localAttributes.concat(
-      this.globalAttributes, this.existingAttributes, this.newAttributes);
+    const attrs = this.localAttributes
+      .concat(this.globalAttributes, this.existingAttributes, this.newAttributes);
     attrs.forEach((attr) => {
       if (attr.closed || attr.secondary || !attr.attribute || !attr.value) return;
       const value = attr.type === 'json' ? JSON.parse(attr.value) : attr.value;
@@ -190,14 +189,14 @@ class HaFormCustomize extends Polymer.Element {
     const localKeys = Object.keys(localConfig);
     const globalKeys = Object.keys(globalConfig);
     const entityKeys = Object.keys(entity.attributes)
-        .filter(key => !localKeys.includes(key) && !globalKeys.includes(key));
+      .filter(key => !localKeys.includes(key) && !globalKeys.includes(key));
     return this._computeAttributes(entity.attributes, entityKeys, true);
   }
 
   computeShowWarning(localConfig, globalConfig) {
     if (!localConfig || !globalConfig) return false;
-    return Object.keys(localConfig).some(
-        key => JSON.stringify(globalConfig[key]) !== JSON.stringify(localConfig[key]));
+    return Object.keys(localConfig)
+      .some(key => JSON.stringify(globalConfig[key]) !== JSON.stringify(localConfig[key]));
   }
 
   filterFromAttributes(attributes) {
@@ -207,15 +206,15 @@ class HaFormCustomize extends Polymer.Element {
   getNewAttributesOptions(localAttributes, globalAttributes, existingAttributes, newAttributes) {
     const knownKeys =
         Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES)
-            .filter((key) => {
-              const conf = window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
-              return conf && (!conf.domains || !this.entity ||
+          .filter((key) => {
+            const conf = window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
+            return conf && (!conf.domains || !this.entity ||
                               conf.domains.includes(window.hassUtil.computeDomain(this.entity)));
-            })
-            .filter(this.filterFromAttributes(localAttributes))
-            .filter(this.filterFromAttributes(globalAttributes))
-            .filter(this.filterFromAttributes(existingAttributes))
-            .filter(this.filterFromAttributes(newAttributes));
+          })
+          .filter(this.filterFromAttributes(localAttributes))
+          .filter(this.filterFromAttributes(globalAttributes))
+          .filter(this.filterFromAttributes(existingAttributes))
+          .filter(this.filterFromAttributes(newAttributes));
     return knownKeys.sort().concat('Other');
   }
 
@@ -268,7 +267,11 @@ class HaFormCustomize extends Polymer.Element {
     this.hasNewAttributes =
         this.newAttributes && this.newAttributes.some(attr => !attr.closed);
     this.newAttributesOptions = this.getNewAttributesOptions(
-        this.localAttributes, this.globalAttributes, this.existingAttributes, this.newAttributes);
+      this.localAttributes,
+      this.globalAttributes,
+      this.existingAttributes,
+      this.newAttributes
+    );
   }
 }
 customElements.define(HaFormCustomize.is, HaFormCustomize);

@@ -141,10 +141,9 @@ Polymer({
 
     this.errorLog = 'Loading error log…';
 
-    this.hass.callApi('GET', 'error_log').then(
-      function (log) {
-        this.errorLog = log || 'No errors have been reported.';
-      }.bind(this));
+    this.hass.callApi('GET', 'error_log').then(function (log) {
+      this.errorLog = log || 'No errors have been reported.';
+    }.bind(this));
   },
 });
 </script>

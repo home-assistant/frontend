@@ -8,6 +8,7 @@
 <link rel='import' href='more-info-cover.html'>
 <link rel='import' href='more-info-default.html'>
 <link rel='import' href='more-info-fan.html'>
+<link rel='import' href='more-info-history_graph.html'>
 <link rel='import' href='more-info-group.html'>
 <link rel='import' href='more-info-light.html'>
 <link rel='import' href='more-info-lock.html'>
@@ -47,7 +48,8 @@ Polymer({
     } else {
       window.hassUtil.dynamicContentUpdater(
         this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
-        { hass: this.hass, stateObj: stateObj, isVisible: true });
+        { hass: this.hass, stateObj: stateObj, isVisible: true }
+      );
     }
   },
 });

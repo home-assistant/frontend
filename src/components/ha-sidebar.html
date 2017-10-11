@@ -96,10 +96,6 @@
         padding: 0 8px;
         opacity: var(--dark-secondary-opacity);
       }
-
-      dom-if {
-        display: none;
-      }
     </style>
 
     <app-toolbar>
@@ -183,7 +179,6 @@
 class HaSidebar extends window.hassMixins.LocalizeMixin(
                         window.hassMixins.EventsMixin(
                         Polymer.Element)) {
-
   static get is() { return 'ha-sidebar'; }
 
   static get properties() {

@@ -122,17 +122,16 @@ Polymer({
 
   refreshValues: function (selectedNode) {
     var valueData = [];
-    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(
-      function (values) {
-        Object.keys(values).forEach(function (key) {
-          valueData.push({
-            key: key,
-            value: values[key],
-          });
+    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(function (values) {
+      Object.keys(values).forEach(function (key) {
+        valueData.push({
+          key: key,
+          value: values[key],
         });
-        this.values = valueData;
-        this.selectedValueChanged(this.selectedValue);
-      }.bind(this));
+      });
+      this.values = valueData;
+      this.selectedValueChanged(this.selectedValue);
+    }.bind(this));
   },
 
   computeValueNameServiceData: function (newValueNameInput) {

@@ -177,8 +177,7 @@ Polymer({
   _computeEndTime: function (_currentDate, periodIndex) {
     var startTime = this._computeStartTime(_currentDate);
     var endTime = new Date(startTime);
-    endTime.setDate(
-      startTime.getDate() + this._computeFilterDays(periodIndex));
+    endTime.setDate(startTime.getDate() + this._computeFilterDays(periodIndex));
     return endTime;
   },
 

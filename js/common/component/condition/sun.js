@@ -25,7 +25,9 @@ export default class SunCondition extends Component {
 
   render({ condition }) {
     /* eslint-disable camelcase */
-    const { after, after_offset, before, before_offset } = condition;
+    const {
+      after, after_offset, before, before_offset
+    } = condition;
     return (
       <div>
         <label id="beforelabel">Before:</label>

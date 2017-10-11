@@ -132,9 +132,7 @@ class HaPanelConfig extends window.hassMixins.EventsMixin(Polymer.Element) {
   ready() {
     super.ready();
     if (window.hassUtil.isComponentLoaded(this.hass, 'cloud')) {
-      this.hass.callApi('get', 'cloud/account').then(
-        (account) => { this.account = account; }
-      );
+      this.hass.callApi('get', 'cloud/account').then((account) => { this.account = account; });
     }
     this.addEventListener('ha-account-refreshed', (ev) => {
       this.account = ev.detail.account;

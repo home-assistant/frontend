@@ -95,14 +95,13 @@ Polymer({
       panel.url,
 
       function success() {
-        window.hassUtil.dynamicContentUpdater(
-          this.$.panel, 'ha-panel-' + panel.component_name, {
-            hass: this.hass,
-            narrow: this.narrow,
-            showMenu: this.showMenu,
-            route: this.routeTail,
-            panel: panel,
-          });
+        window.hassUtil.dynamicContentUpdater(this.$.panel, 'ha-panel-' + panel.component_name, {
+          hass: this.hass,
+          narrow: this.narrow,
+          showMenu: this.showMenu,
+          route: this.routeTail,
+          panel: panel,
+        });
         this.resolved = true;
       }.bind(this),
 
@@ -110,7 +109,8 @@ Polymer({
         this.errorLoading = true;
       }.bind(this),
 
-      true /* async */);
+      true /* async */
+    );
   },
 
   updateAttributes: function () {

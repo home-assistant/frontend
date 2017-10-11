@@ -22,10 +22,6 @@
       ha-entity-toggle {
         margin-left: 16px;
       }
-
-      dom-if {
-        display: none;
-      }
     </style>
 
     <div class='horizontal justified layout'>
@@ -59,7 +55,8 @@ Polymer({
     ev.stopPropagation();
     this.hass.callService(
       'script', 'turn_on',
-      { entity_id: this.stateObj.entity_id });
+      { entity_id: this.stateObj.entity_id }
+    );
   },
 });
 </script>
