@@ -41,6 +41,7 @@
     "eslint-plugin-react": "^7.0.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
+    "gulp-file": "^0.3.0",
     "gulp-filter": "^5.0.1",
     "gulp-html-minifier": "^0.1.8",
     "gulp-if": "^2.0.2",
