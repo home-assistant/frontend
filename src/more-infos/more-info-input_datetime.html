@@ -6,7 +6,6 @@
 
 <dom-module id="more-info-input_datetime">
   <template>
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <div class$='[[computeClassNames(stateObj)]]'>
       <template is="dom-if" if="[[doesHaveDate(stateObj)]]" restamp>
         <div>
@@ -23,47 +22,51 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-input_datetime',
+class DatetimeInput extends Polymer.Element {
+  static get is() {
+    return 'more-info-input_datetime';
+  }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  constructor() {
+    super();
+    this.is_ready = false;
+  }
 
-    stateObj: {
-      type: Object,
-      observer: 'stateObjChanged',
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    selectedHour: {
-      type: Number,
-      value: 0,
-      observer: 'dateTimeChanged',
-    },
+      stateObj: {
+        type: Object,
+        observer: 'stateObjChanged',
+      },
 
-    selectedMinute: {
-      type: Number,
-      value: 0,
-      observer: 'dateTimeChanged',
-    },
+      selectedHour: {
+        type: Number,
+        observer: 'dateTimeChanged',
+      },
 
-    selectedDate: {
-      type: String,
-      value: '',
-      observer: 'dateTimeChanged'
-    }
-  },
+      selectedMinute: {
+        type: Number,
+        observer: 'dateTimeChanged',
+      },
 
-  doesHaveDate: function (stateObj) {
-    return stateObj.attributes.has_date;
-  },
+      selectedDate: {
+        type: String,
+        observer: 'dateTimeChanged'
+      }
+    };
+  }
 
-  doesHaveTime: function (stateObj) {
-    return stateObj.attributes.has_time;
-  },
+  ready() {
+    super.ready();
+    this.is_ready = true;
+  }
 
-  getDateString: function (stateObj) {
+  /* Convert the date in the stateObj into a string useable by vaadin-date-picker */
+  getDateString(stateObj) {
     var monthFiller;
     if (stateObj.attributes.month < 10) {
       monthFiller = '0';
@@ -79,37 +82,61 @@ Polymer({
     }
 
     return stateObj.attributes.year + '-' + monthFiller + stateObj.attributes.month + '-' + dayFiller + stateObj.attributes.day;
-  },
+  }
 
-  dateTimeChanged: function () {
-    var minuteFiller;
-    if (this.selectedMinute < 10) {
-      minuteFiller = '0';
-    } else {
-      minuteFiller = '';
+  /* Should fire when any value was changed *by the user*, not b/c of setting
+   * initial values. */
+  dateTimeChanged() {
+    // Check if the change is really coming from the user
+    if (!this.is_ready) {
+      return;
     }
 
-    var timeStr = this.selectedHour + ':' + minuteFiller + this.selectedMinute;
+    var minuteFiller;
+    var changed = false;
 
     var serviceData = {
       entity_id: this.stateObj.entity_id
     };
 
     if (this.stateObj.attributes.has_time) {
+      changed |= (parseInt(this.selectedMinute) !== this.stateObj.attributes.minute);
+      changed |= (parseInt(this.selectedHour) !== this.stateObj.attributes.hour);
+
+      if (this.selectedMinute < 10) {
+        minuteFiller = '0';
+      } else {
+        minuteFiller = '';
+      }
+
+      var timeStr = this.selectedHour + ':' + minuteFiller + this.selectedMinute;
+
       serviceData.time = timeStr;
     }
 
     if (this.stateObj.attributes.has_date) {
+      var dateValInput = new Date(this.selectedDate);
+      var dateValState = new Date(this.stateObj.attributes.year,
+                                  this.stateObj.attributes.month,
+                                  this.stateObj.attributes.day);
+
+      changed |= (dateValState !== dateValInput);
+
       serviceData.date = this.selectedDate;
       if (this.selectedDate.length < 1) {
         return; // Date was not set
       }
     }
 
-    this.hass.callService('input_datetime', 'set_datetime', serviceData);
-  },
+    if (changed) {
+      this.hass.callService('input_datetime', 'set_datetime', serviceData);
+    }
+  }
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged(newVal) {
+    // Set to non-ready s.t. dateTimeChanged does not fire
+    this.is_ready = false;
+
     if (newVal.attributes.has_time) {
       this.selectedHour = newVal.attributes.hour;
       this.selectedMinute = newVal.attributes.minute;
@@ -118,13 +145,24 @@ Polymer({
     if (newVal.attributes.has_date) {
       this.selectedDate = this.getDateString(newVal);
     }
-  },
 
-  computeClassNames: function (stateObj) {
+    this.is_ready = true;
+  }
+
+  doesHaveDate(stateObj) {
+    return stateObj.attributes.has_date;
+  }
+
+  doesHaveTime(stateObj) {
+    return stateObj.attributes.has_time;
+  }
+
+  computeClassNames(stateObj) {
     return 'more-info-input_datetime ' + window.hassUtil.attributeClassNames(
       stateObj, ['has_time', 'has_date']
     );
-  },
+  }
+}
 
-});
+customElements.define(DatetimeInput.is, DatetimeInput);
 </script>
