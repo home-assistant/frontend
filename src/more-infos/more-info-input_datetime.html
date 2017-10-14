@@ -116,9 +116,11 @@ class DatetimeInput extends Polymer.Element {
 
     if (this.stateObj.attributes.has_date) {
       var dateValInput = new Date(this.selectedDate);
-      var dateValState = new Date(this.stateObj.attributes.year,
-                                  this.stateObj.attributes.month,
-                                  this.stateObj.attributes.day);
+      var dateValState = new Date(
+        this.stateObj.attributes.year,
+        this.stateObj.attributes.month,
+        this.stateObj.attributes.day
+      );
 
       changed |= (dateValState !== dateValInput);
 
