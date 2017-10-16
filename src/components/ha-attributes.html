@@ -50,7 +50,7 @@
     },
 
     computeFiltersArray: function (extraFilters) {
-      return Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES) + (extraFilters ? extraFilters.split(',') : []);
+      return Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(extraFilters ? extraFilters.split(',') : []);
     },
 
     computeDisplayAttributes: function (stateObj, filtersArray) {
