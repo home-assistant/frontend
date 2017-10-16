@@ -1,6 +1,8 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
 
 <link rel='import' href='../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item-body.html'>
 
 <link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
 <link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
@@ -23,17 +25,23 @@
         </app-toolbar>
       </app-header>
       <div class='content'>
-        <paper-card>
-          <template is='dom-if' if='[[!_platforms.length]]'>
+        <template is='dom-repeat' items='[[_platforms]]' as="platform">
+          <paper-card heading='[[platform.name]]'>
             <div class='card-content'>
-              No platforms
-            </div>
-          </template>
-          <template is='dom-repeat' items='[[_platforms]]' as="platform">
-            <div class='card-content'>
-              [[platform.name]]
               <template is='dom-if' if='[[!platform.events]]'>
                 No Events?
+              </template>
+              <template is='dom-repeat'items='[[platform.events]]' as='event' sort="sortEvents">
+                <paper-item>
+                  <paper-item-body style="width:100%" two-line>
+                    <div class="row">
+                      <div>[[event.text]]</div>
+                    </div>
+                    <div secondary>
+                      <span class="date">[[event.start]] - [[event.end]]</span>
+                    </div>
+                  </paper-item-body>
+                </paper-item>
               </template>
             </div>
           </template>
@@ -84,28 +92,14 @@ Polymer({
   },
 
   hassChanged: function() {
-    console.log('hass changed');
-    // TODO: Load events
-
     if(this._platforms) {
-      this._platforms.forEach(function(platform) {
+      this._platforms.forEach(function(platform, index) {
         this.computeEvents(platform.name).then(function(events) {
           platform.events = events;
-          console.log(platform);
-          console.log(this._platforms);
-          return platform;
+          this.notifyPath('_platforms.' + index + '.events');
         }.bind(this));
-
-        console.log(this._platforms);
-       // return platform;
        }.bind(this));
-        /*console.log(i);
-        this.computeEvents(this.platforms[i].name).then(function(events) {
-          this.platforms[i].events = events;
-          console.log(this.platforms);
-        //});*/
       }
-
   },
 
   computePlatforms: function () {
@@ -115,6 +109,10 @@ Polymer({
   computeEvents: function (platform) {
     return this.hass.callApi('GET', 'calendar/events/' + platform);
   },
+
+  sortEvents: function(a, b) {
+    return new Date(a.start) - new Date(b.start);    
+  }
 });
 
 </script>
