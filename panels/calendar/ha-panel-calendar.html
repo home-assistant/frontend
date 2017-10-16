@@ -15,6 +15,10 @@
 <dom-module id='ha-panel-calendar'>
   <template>
     <style include='ha-style'>
+      .event-active .row {
+        color: green;
+        font-weight: bold;
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -32,7 +36,7 @@
                 No Events?
               </template>
               <template is='dom-repeat'items='[[platform.events]]' as='event' sort="sortEvents">
-                <paper-item disabled='[[eventPassed(event)]]'>
+                <paper-item disabled='[[eventPassed(event)]]' class$="[[checkActive(event)]]">
                   <paper-item-body style="width:100%" two-line>
                     <div class="row">
                       <div>[[event.text]]</div>
@@ -99,11 +103,10 @@ Polymer({
           this.notifyPath('_platforms.' + index + '.events');
         }.bind(this));
        }.bind(this));
-      }
+    }
   },
 
   computePlatforms: function () {
-    console.log(new Date());
      return this.hass.callApi('GET', 'calendar/platforms');
   },
 
@@ -117,6 +120,10 @@ Polymer({
 
   eventPassed: function(event) {
     return (new Date(event.start) < new Date() && new Date(event.end) < new Date());
+  },
+
+  checkActive: function(event) {
+    return (new Date(event.start) < new Date() && new Date(event.end) > new Date()) ? 'event-active': '';
   }
 });
 
