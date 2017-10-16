@@ -32,7 +32,7 @@
                 No Events?
               </template>
               <template is='dom-repeat'items='[[platform.events]]' as='event' sort="sortEvents">
-                <paper-item>
+                <paper-item disabled='[[eventPassed(event)]]'>
                   <paper-item-body style="width:100%" two-line>
                     <div class="row">
                       <div>[[event.text]]</div>
@@ -112,6 +112,10 @@ Polymer({
 
   sortEvents: function(a, b) {
     return new Date(a.start) - new Date(b.start);    
+  },
+
+  eventPassed: function(event) {
+    return new Date(event.start) < new Date();
   }
 });
 
