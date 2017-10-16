@@ -103,6 +103,7 @@ Polymer({
   },
 
   computePlatforms: function () {
+    console.log(new Date());
      return this.hass.callApi('GET', 'calendar/platforms');
   },
 
@@ -115,7 +116,7 @@ Polymer({
   },
 
   eventPassed: function(event) {
-    return new Date(event.start) < new Date();
+    return (new Date(event.start) < new Date() && new Date(event.end) < new Date());
   }
 });
 
