@@ -51,78 +51,80 @@
 </dom-module>
 
 <script>
-const UPDATE_INTERVAL = 10000; // ms
+{
+  const UPDATE_INTERVAL = 10000; // ms
 
-class HaCameraCard extends window.hassMixins.EventsMixin(Polymer.Element) {
-  static get is() { return 'ha-camera-card'; }
-  static get properties() {
-    return {
-      hass: {
-        type: Object,
-      },
+  class HaCameraCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'ha-camera-card'; }
+    static get properties() {
+      return {
+        hass: {
+          type: Object,
+        },
 
 
-      stateObj: {
-        type: Object,
-        observer: 'updateCameraFeedSrc',
-      },
+        stateObj: {
+          type: Object,
+          observer: 'updateCameraFeedSrc',
+        },
 
-      cameraFeedSrc: {
-        type: String,
-      },
+        cameraFeedSrc: {
+          type: String,
+        },
 
-      imageLoaded: {
-        type: Boolean,
-        value: true,
-      },
+        imageLoaded: {
+          type: Boolean,
+          value: true,
+        },
 
-      /**
-       * The z-depth of the card, from 0-5.
-       */
-      elevation: {
-        type: Number,
-        value: 1,
-        reflectToAttribute: true,
-      },
-    };
+        /**
+         * The z-depth of the card, from 0-5.
+         */
+        elevation: {
+          type: Number,
+          value: 1,
+          reflectToAttribute: true,
+        },
+      };
+    }
+
+    ready() {
+      super.ready();
+      this.addEventListener('tap', () => this.cardTapped());
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+      this.timer = setInterval(() => this.updateCameraFeedSrc(), UPDATE_INTERVAL);
+    }
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      clearInterval(this.timer);
+    }
+
+    cardTapped() {
+      this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    }
+
+    updateCameraFeedSrc() {
+      var attr = this.stateObj.attributes;
+      var time = (new Date()).getTime();
+      this.cameraFeedSrc = attr.entity_picture + '&time=' + time;
+    }
+
+    imageLoadSuccess() {
+      this.imageLoaded = true;
+    }
+
+    imageLoadFail() {
+      this.imageLoaded = false;
+    }
+
+    computeStateName(stateObj) {
+      return window.hassUtil.computeStateName(stateObj);
+    }
   }
-
-  ready() {
-    super.ready();
-    this.addEventListener('tap', () => this.cardTapped());
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.timer = setInterval(() => this.updateCameraFeedSrc(), UPDATE_INTERVAL);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    clearInterval(this.timer);
-  }
-
-  cardTapped() {
-    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
-  }
-
-  updateCameraFeedSrc() {
-    var attr = this.stateObj.attributes;
-    var time = (new Date()).getTime();
-    this.cameraFeedSrc = attr.entity_picture + '&time=' + time;
-  }
-
-  imageLoadSuccess() {
-    this.imageLoaded = true;
-  }
-
-  imageLoadFail() {
-    this.imageLoaded = false;
-  }
-
-  computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
-  }
+  customElements.define(HaCameraCard.is, HaCameraCard);
 }
-customElements.define(HaCameraCard.is, HaCameraCard);
 </script>
