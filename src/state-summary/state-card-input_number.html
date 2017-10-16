@@ -27,7 +27,10 @@
       <paper-input
         no-label-float
         auto-validate
-        pattern='[0-9]*'
+        pattern='[0-9]+([\.][0-9]+)?'
+        step='[[step]]'
+        min='[[min]]'
+        max='[[max]]'
         value='{{value}}'
         type='number'
         on-change='selectedValueChanged'
