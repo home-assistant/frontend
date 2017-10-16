@@ -99,10 +99,7 @@
     static get is() { return 'ha-weather-card'; }
     static get properties() {
       return {
-        hass: {
-          type: Object,
-        },
-
+        hass: Object,
         stateObj: {
           type: Object,
           observer: 'checkRequirements'

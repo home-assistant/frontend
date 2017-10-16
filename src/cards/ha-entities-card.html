@@ -69,17 +69,9 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-entities-card'; }
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      states: {
-        type: Array,
-      },
-
-      groupEntity: {
-        type: Object,
-      },
+      hass: Object,
+      states: Array,
+      groupEntity: Object,
     };
   }
 

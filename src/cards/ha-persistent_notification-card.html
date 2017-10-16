@@ -33,14 +33,8 @@ class HaPersistentNotificationCard extends Polymer.Element {
   static get is() { return 'ha-persistent_notification-card'; }
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      stateObj: {
-        type: Object,
-      },
-
+      hass: Object,
+      stateObj: Object,
       scriptLoaded: {
         type: Boolean,
         value: false,

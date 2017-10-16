@@ -58,25 +58,16 @@
     static get is() { return 'ha-camera-card'; }
     static get properties() {
       return {
-        hass: {
-          type: Object,
-        },
-
-
+        hass: Object,
         stateObj: {
           type: Object,
           observer: 'updateCameraFeedSrc',
         },
-
-        cameraFeedSrc: {
-          type: String,
-        },
-
+        cameraFeedSrc: String,
         imageLoaded: {
           type: Boolean,
           value: true,
         },
-
         /**
          * The z-depth of the card, from 0-5.
          */

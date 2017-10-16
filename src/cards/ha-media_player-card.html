@@ -210,29 +210,18 @@ class HaMediaPlayerCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-media_player-card'; }
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      stateObj: {
-        type: Object,
-      },
-
+      hass: Object,
+      stateObj: Object,
       playerObj: {
         type: Object,
         computed: 'computePlayerObj(hass, stateObj)',
         observer: 'playerObjChanged',
       },
-
       playbackControlIcon: {
         type: String,
         computed: 'computePlaybackControlIcon(playerObj)',
       },
-
-      playbackPosition: {
-        type: Number,
-      },
-
+      playbackPosition: Number,
       /**
        * The z-depth of the card, from 0-5.
        */
