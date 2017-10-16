@@ -279,15 +279,16 @@ Polymer({
       this.$.cover.style.backgroundImage = '';
     }
 
-    if (playerObj.isPlaying) {
+    if (playerObj.isPlaying && playerObj.showProgress) {
       if (!this._positionTracking) {
         this._positionTracking = setInterval(this.updatePlaybackPosition, 1000);
       }
-      this.updatePlaybackPosition();
     } else if (this._positionTracking) {
       clearInterval(this._positionTracking);
       this._positionTracking = null;
-      this.playbackPosition = 0;
+    }
+    if (playerObj.showProgress) {
+      this.updatePlaybackPosition();
     }
   },
 
