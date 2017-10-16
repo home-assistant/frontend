@@ -51,15 +51,18 @@
   addGetter('showProgress', function () {
     return (
       (this.isPlaying || this.isPaused) &&
+      'media_duration' in this.stateObj.attributes &&
       'media_position' in this.stateObj.attributes &&
       'media_position_updated_at' in this.stateObj.attributes);
   });
 
   addGetter('currentProgress', function () {
-    return (
-      this.stateObj.attributes.media_position +
-      ((Date.now() -
-        new Date(this.stateObj.attributes.media_position_updated_at)) / 1000));
+    var progress = this.stateObj.attributes.media_position;
+    if (this.isPlaying) {
+      progress += (Date.now() -
+                   new Date(this.stateObj.attributes.media_position_updated_at).getTime()) / 1000.0;
+    }
+    return progress;
   });
 
   /* eslint-disable no-bitwise */
