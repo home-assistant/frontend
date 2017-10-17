@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='../components/ha-card.html'>
 
@@ -67,18 +67,17 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-introduction-card',
-
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    showHideInstruction: {
-      type: Boolean,
-      value: true,
-    },
-  },
-});
+class HaIntroductionCard extends Polymer.Element {
+  static get is() { return 'ha-introduction-card'; }
+  static get properties() {
+    return {
+      hass: Object,
+      showHideInstruction: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
+}
+customElements.define(HaIntroductionCard.is, HaIntroductionCard);
 </script>

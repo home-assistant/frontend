@@ -1,10 +1,11 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../components/ha-card.html'>
 <link rel='import' href='../components/entity/ha-entity-toggle.html'>
 <link rel='import' href='../state-summary/state-card-content.html'>
+<link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id='ha-entities-card'>
   <template>
@@ -64,30 +65,23 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-entities-card',
+class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-entities-card'; }
+  static get properties() {
+    return {
+      hass: Object,
+      states: Array,
+      groupEntity: Object,
+    };
+  }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    states: {
-      type: Array,
-    },
-
-    groupEntity: {
-      type: Object,
-    },
-  },
-
-  computeTitle: function (states, groupEntity) {
+  computeTitle(states, groupEntity) {
     return groupEntity ?
       window.hassUtil.computeStateName(groupEntity) :
       window.hassUtil.computeDomain(states[0]).replace(/_/g, ' ');
-  },
+  }
 
-  computeTitleClass: function (groupEntity) {
+  computeTitleClass(groupEntity) {
     var classes = 'header horizontal layout center ';
     if (groupEntity) {
       classes += 'header-more-info';
@@ -95,9 +89,9 @@ Polymer({
       classes += 'domain';
     }
     return classes;
-  },
+  }
 
-  entityTapped: function (ev) {
+  entityTapped(ev) {
     var entityId;
     if (ev.target.nodeName === 'STATE-CARD-INPUT_TEXT' ||
         (!ev.model && !this.groupEntity)) {
@@ -111,9 +105,9 @@ Polymer({
       entityId = this.groupEntity.entity_id;
     }
     this.fire('hass-more-info', { entityId: entityId });
-  },
+  }
 
-  showGroupToggle: function (groupEntity, states) {
+  showGroupToggle(groupEntity, states) {
     if (!groupEntity || !states || groupEntity.attributes.control === 'hidden' ||
         (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;
@@ -134,6 +128,7 @@ Polymer({
     }
 
     return canToggleCount > 1;
-  },
-});
+  }
+}
+customElements.define(HaEntitiesCard.is, HaEntitiesCard);
 </script>

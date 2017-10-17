@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 <link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
 <link rel='import' href='../components/ha-card.html'>
@@ -95,24 +95,22 @@
     'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
   ];
 
-  Polymer({
-    is: 'ha-weather-card',
+  class HaWeatherCard extends Polymer.Element {
+    static get is() { return 'ha-weather-card'; }
+    static get properties() {
+      return {
+        hass: Object,
+        stateObj: {
+          type: Object,
+          observer: 'checkRequirements'
+        },
+      };
+    }
 
-    properties: {
-      hass: {
-        type: Object,
-      },
-
-      stateObj: {
-        type: Object,
-        observer: 'checkRequirements'
-      },
-    },
-
-    computeTitle: function (stateObj) {
+    computeTitle(stateObj) {
       return stateObj.attributes.friendly_name;
-    },
-    getDataArray: function () {
+    }
+    getDataArray() {
       var dataArray = [];
       var data = this.stateObj.attributes.forecast;
       var i;
@@ -132,9 +130,9 @@
       }
 
       return dataArray;
-    },
+    }
 
-    checkRequirements: function () {
+    checkRequirements() {
       if (!this.stateObj) {
         return;
       }
@@ -163,8 +161,8 @@
       this.data = this.getDataArray();
 
       this.drawChart();
-    },
-    drawChart: function () {
+    }
+    drawChart() {
       var dataGrid = new window.google.visualization.DataTable();
       var options = {
         legend: {
@@ -198,24 +196,25 @@
       dataGrid.addRows(dataArray);
 
       this.chartEngine.draw(dataGrid, options);
-    },
+    }
 
-    googleApiLoaded: function () {
+    googleApiLoaded() {
       window.google.load('visualization', '1', {
         packages: ['corechart'],
         callback: function () {
           this.checkRequirements();
         }.bind(this),
       });
-    },
+    }
 
-    windBearingToText: function (degree) {
+    windBearingToText(degree) {
       var degreenum = parseInt(degree);
       if (isFinite(degreenum)) {
         return _DEGREE_TEXT[(((degreenum + 11.25) / 22.5) | 0) % 16];
       }
       return '';
     }
-  });
+  }
+  customElements.define(HaWeatherCard.is, HaWeatherCard);
 }());
 </script>
