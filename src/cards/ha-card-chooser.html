@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='./ha-camera-card.html'>
 <link rel='import' href='./ha-entities-card.html'>
@@ -9,23 +9,25 @@
 <link rel='import' href='./ha-persistent_notification-card.html'>
 
 <script>
-Polymer({
-  is: 'ha-card-chooser',
+class HaCardChooser extends Polymer.Element {
+  static get is() { return 'ha-card-chooser'; }
+  static get properties() {
+    return {
+      cardData: {
+        type: Object,
+        observer: 'cardDataChanged',
+      },
+    };
+  }
 
-  properties: {
-    cardData: {
-      type: Object,
-      observer: 'cardDataChanged',
-    },
-  },
-
-  cardDataChanged: function (newData) {
+  cardDataChanged(newData) {
     if (!newData) return;
 
     window.hassUtil.dynamicContentUpdater(
       this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
       newData
     );
-  },
-});
+  }
+}
+customElements.define(HaCardChooser.is, HaCardChooser);
 </script>

@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -7,6 +7,7 @@
 <link rel='import' href='../../bower_components/paper-progress/paper-progress.html'>
 
 <link rel='import' href='../util/media-player-model.html'>
+<link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id='ha-media_player-card'>
   <template>
@@ -205,48 +206,34 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-media_player-card',
+class HaMediaPlayerCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-media_player-card'; }
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+      playerObj: {
+        type: Object,
+        computed: 'computePlayerObj(hass, stateObj)',
+        observer: 'playerObjChanged',
+      },
+      playbackControlIcon: {
+        type: String,
+        computed: 'computePlaybackControlIcon(playerObj)',
+      },
+      playbackPosition: Number,
+      /**
+       * The z-depth of the card, from 0-5.
+       */
+      elevation: {
+        type: Number,
+        value: 1,
+        reflectToAttribute: true,
+      },
+    };
+  }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    stateObj: {
-      type: Object,
-    },
-
-    playerObj: {
-      type: Object,
-      computed: 'computePlayerObj(hass, stateObj)',
-      observer: 'playerObjChanged',
-    },
-
-    playbackControlIcon: {
-      type: String,
-      computed: 'computePlaybackControlIcon(playerObj)',
-    },
-
-    playbackPosition: {
-      type: Number,
-    },
-
-    /**
-     * The z-depth of the card, from 0-5.
-     */
-    elevation: {
-      type: Number,
-      value: 1,
-      reflectToAttribute: true,
-    },
-  },
-
-  created: function () {
-    this.updatePlaybackPosition = this.updatePlaybackPosition.bind(this);
-  },
-
-  playerObjChanged: function (playerObj) {
+  playerObjChanged(playerObj) {
     var picture = playerObj.stateObj.attributes.entity_picture;
     var dummy;
     if (picture) {
@@ -281,7 +268,7 @@ Polymer({
 
     if (playerObj.isPlaying && playerObj.showProgress) {
       if (!this._positionTracking) {
-        this._positionTracking = setInterval(this.updatePlaybackPosition, 1000);
+        this._positionTracking = setInterval(() => this.updatePlaybackPosition(), 1000);
       }
     } else if (this._positionTracking) {
       clearInterval(this._positionTracking);
@@ -290,13 +277,13 @@ Polymer({
     if (playerObj.showProgress) {
       this.updatePlaybackPosition();
     }
-  },
+  }
 
-  updatePlaybackPosition: function () {
+  updatePlaybackPosition() {
     this.playbackPosition = this.playerObj.currentProgress;
-  },
+  }
 
-  computeBannerClasses: function (playerObj) {
+  computeBannerClasses(playerObj) {
     var cls = 'banner';
 
     if (playerObj.isOff || playerObj.isIdle) {
@@ -308,56 +295,57 @@ Polymer({
     }
 
     return cls;
-  },
+  }
 
-  computeHideProgress: function (playerObj) {
+  computeHideProgress(playerObj) {
     return !playerObj.showProgress;
-  },
+  }
 
-  computeHidePowerButton: function (playerObj) {
+  computeHidePowerButton(playerObj) {
     return playerObj.isOff ? !playerObj.supportsTurnOn : !playerObj.supportsTurnOff;
-  },
+  }
 
-  computePlayerObj: function (hass, stateObj) {
+  computePlayerObj(hass, stateObj) {
     return new window.MediaPlayerEntity(hass, stateObj);
-  },
+  }
 
-  computePlaybackControlIcon: function (playerObj) {
+  computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
       return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
     } else if (playerObj.isPaused || playerObj.isOff || playerObj.isIdle) {
       return playerObj.supportsPlay ? 'mdi:play' : null;
     }
     return '';
-  },
+  }
 
-  computeStateName: function (stateObj) {
+  computeStateName(stateObj) {
     return window.hassUtil.computeStateName(stateObj);
-  },
+  }
 
-  handleNext: function (ev) {
+  handleNext(ev) {
     ev.stopPropagation();
     this.playerObj.nextTrack();
-  },
+  }
 
-  handleOpenMoreInfo: function (ev) {
+  handleOpenMoreInfo(ev) {
     ev.stopPropagation();
     this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
-  },
+  }
 
-  handlePlaybackControl: function (ev) {
+  handlePlaybackControl(ev) {
     ev.stopPropagation();
     this.playerObj.mediaPlayPause();
-  },
+  }
 
-  handlePrevious: function (ev) {
+  handlePrevious(ev) {
     ev.stopPropagation();
     this.playerObj.previousTrack();
-  },
+  }
 
-  handleTogglePower: function (ev) {
+  handleTogglePower(ev) {
     ev.stopPropagation();
     this.playerObj.togglePower();
-  },
-});
+  }
+}
+customElements.define(HaMediaPlayerCard.is, HaMediaPlayerCard);
 </script>

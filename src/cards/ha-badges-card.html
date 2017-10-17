@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='../components/entity/ha-state-label-badge.html'>
 
@@ -17,17 +17,14 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-badges-card',
-
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    states: {
-      type: Array,
-    },
-  },
-});
+class HaBadgesCard extends Polymer.Element {
+  static get is() { return 'ha-badges-card'; }
+  static get properties() {
+    return {
+      hass: Object,
+      states: Array,
+    };
+  }
+}
+customElements.define(HaBadgesCard.is, HaBadgesCard);
 </script>

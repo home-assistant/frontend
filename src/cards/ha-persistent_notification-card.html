@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 
 <link rel='import' href='../components/ha-card.html'>
@@ -29,34 +29,31 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-persistent_notification-card',
+class HaPersistentNotificationCard extends Polymer.Element {
+  static get is() { return 'ha-persistent_notification-card'; }
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+      scriptLoaded: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get observers() {
+    return [
+      'computeContent(stateObj, scriptLoaded)',
+    ];
+  }
 
-    stateObj: {
-      type: Object,
-    },
-
-    scriptLoaded: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  observers: [
-    'computeContent(stateObj, scriptLoaded)',
-  ],
-
-  computeTitle: function (stateObj) {
+  computeTitle(stateObj) {
     return (stateObj.attributes.title ||
             window.hassUtil.computeStateName(stateObj));
-  },
+  }
 
-  loadScript: function () {
+  loadScript() {
     var success = function () {
       this.scriptLoaded = true;
     }.bind(this);
@@ -71,9 +68,9 @@ Polymer({
       '/static/micromarkdown-js.html',
       success, error
     );
-  },
+  }
 
-  computeContent: function (stateObj, scriptLoaded) {
+  computeContent(stateObj, scriptLoaded) {
     var el = '';
     var message = '';
     if (scriptLoaded) {
@@ -81,16 +78,17 @@ Polymer({
       message = window.micromarkdown.parse(stateObj.state);
       el.innerHTML = message;
     }
-  },
+  }
 
-  ready: function () {
+  ready() {
     this.loadScript();
-  },
+  }
 
-  dismissTap: function (ev) {
+  dismissTap(ev) {
     ev.preventDefault();
 
     this.hass.callApi('DELETE', 'states/' + this.stateObj.entity_id);
-  },
-});
+  }
+}
+customElements.define(HaPersistentNotificationCard.is, HaPersistentNotificationCard);
 </script>
