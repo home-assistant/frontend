@@ -9,7 +9,7 @@
     <div class$='[[computeClassNames(stateObj)]]'>
       <template is="dom-if" if="[[doesHaveDate(stateObj)]]" restamp>
         <div>
-          <vaadin-date-picker label="Date" value="{{selectedDate}}"></vaadin-date-picker>
+          <vaadin-date-picker id="dateInput" on-value-changed="dateTimeChanged" label="Date" value="{{selectedDate}}"></vaadin-date-picker>
         </div>
       </template>
       <template is="dom-if" if="[[doesHaveTime(stateObj)]]" restamp>
@@ -55,7 +55,6 @@ class DatetimeInput extends Polymer.Element {
 
       selectedDate: {
         type: String,
-        observer: 'dateTimeChanged'
       }
     };
   }
@@ -115,17 +114,18 @@ class DatetimeInput extends Polymer.Element {
     }
 
     if (this.stateObj.attributes.has_date) {
-      var dateValInput = new Date(this.selectedDate);
-      var dateValState = new Date(
+      const dateInput = this.shadowRoot.querySelector('#dateInput');
+      const dateValInput = new Date(dateInput.value);
+      const dateValState = new Date(
         this.stateObj.attributes.year,
-        this.stateObj.attributes.month,
+        this.stateObj.attributes.month - 1,
         this.stateObj.attributes.day
       );
 
       changed |= (dateValState !== dateValInput);
 
-      serviceData.date = this.selectedDate;
-      if (this.selectedDate.length < 1) {
+      serviceData.date = dateInput.value;
+      if (dateInput.value.length < 1) {
         return; // Date was not set
       }
     }

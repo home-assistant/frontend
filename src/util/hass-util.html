@@ -504,20 +504,20 @@ window.hassUtil.computeStateState = function (stateObj) {
       if (!stateObj.attributes.has_time) {
         date = new Date(
           stateObj.attributes.year,
-          stateObj.attributes.month,
+          stateObj.attributes.month - 1,
           stateObj.attributes.day
         );
         stateObj._stateDisplay = window.hassUtil.formatDate(date);
       } else if (!stateObj.attributes.has_date) {
         date = new Date(
-          1970, 1, 1,
+          1970, 0, 1,
           stateObj.attributes.hour,
           stateObj.attributes.minute
         );
         stateObj._stateDisplay = window.hassUtil.formatTime(date);
       } else {
         date = new Date(
-          stateObj.attributes.year, stateObj.attributes.month,
+          stateObj.attributes.year, stateObj.attributes.month - 1,
           stateObj.attributes.day, stateObj.attributes.hour,
           stateObj.attributes.minute
         );
