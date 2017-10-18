@@ -14,5 +14,3 @@ yarn install
 
 # Build files that need to be generated to run development mode
 yarn dev
-
-cd ../../../../..
