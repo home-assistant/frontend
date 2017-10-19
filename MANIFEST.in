@@ -1,0 +1,4 @@
+include README.md
+include LICENSE.md
+graft hass_frontend
+recursive-exclude * *.py[co]

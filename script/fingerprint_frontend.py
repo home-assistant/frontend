@@ -7,7 +7,7 @@ import hashlib
 import json
 
 fingerprint_file = '../version.py'
-base_dir = 'final/'
+base_dir = 'hass_frontend/'
 
 
 def fingerprint():

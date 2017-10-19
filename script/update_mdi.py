@@ -12,7 +12,7 @@ GETTING_STARTED_URL = ('https://raw.githubusercontent.com/Templarian/'
 DOWNLOAD_LINK = re.compile(r'(/api/download/polymer/v1/([A-Z0-9-]{36}))')
 START_ICONSET = '<iron-iconset-svg'
 
-OUTPUT_BASE = 'final'
+OUTPUT_BASE = 'hass_frontend'
 ICONSET_OUTPUT = os.path.join(OUTPUT_BASE, 'mdi.html')
 
 
