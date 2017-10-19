@@ -16,7 +16,7 @@ cp bower_components/webcomponentsjs/custom-elements-es5-adapter.js final
 cp build/*.js build/*.html final
 mkdir final/panels
 cp build/panels/*.html final/panels
-
+cp -r bower_components/font-roboto-local/fonts final
 script/update_mdi.py
 
 BUILD_DEV=0 ./node_modules/.bin/gulp gen-service-worker
@@ -24,7 +24,7 @@ cp build/service_worker.js final
 cd final
 
 # Pack frontend
-gzip -f -n -k -9 *.html *.js ./panels/*.html
+gzip -f -n -k -9 *.html *.js ./panels/*.html ./fonts/roboto/*.ttf ./fonts/robotomono/*.ttf
 
 cd ..
 
