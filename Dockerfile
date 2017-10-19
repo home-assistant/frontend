@@ -10,14 +10,11 @@ RUN apk update \
   && touch ~/.bashrc \
   && curl -o- -L https://yarnpkg.com/install.sh | bash
 
-RUN pip3 install requests
-
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+RUN mkdir -p /frontend
+WORKDIR /frontend
 COPY . .
 
 ENV NODE_ENV production
 RUN yarn
 RUN ./node_modules/.bin/bower install --allow-root
-RUN ./script/build_frontend
-CMD [ "/bin/bash" ]
+CMD [ "/bin/bash", "./script/build_frontend" ]
