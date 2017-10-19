@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """Download the latest Polymer v1 iconset for materialdesignicons.com."""
-
-import gzip
 import os
 import re
-import requests
 import sys
+import urllib.request
 
 from fingerprint_frontend import fingerprint
 
@@ -16,12 +14,16 @@ START_ICONSET = '<iron-iconset-svg'
 
 OUTPUT_BASE = 'final'
 ICONSET_OUTPUT = os.path.join(OUTPUT_BASE, 'mdi.html')
-ICONSET_OUTPUT_GZ = os.path.join(OUTPUT_BASE, 'mdi.html.gz')
+
+
+def get_text(url):
+    with urllib.request.urlopen(url) as f:
+        return f.read().decode('utf-8')
 
 
 def get_remote_version():
     """Get current version and download link."""
-    gs_page = requests.get(GETTING_STARTED_URL).text
+    gs_page = get_text(GETTING_STARTED_URL)
 
     mdi_download = re.search(DOWNLOAD_LINK, gs_page)
 
@@ -43,10 +45,6 @@ def write_component(source):
         print('Writing icons to', ICONSET_OUTPUT)
         outp.write(source)
 
-    with gzip.open(ICONSET_OUTPUT_GZ, 'wb') as outp:
-        print('Writing icons gz to', ICONSET_OUTPUT_GZ)
-        outp.write(source.encode('utf-8'))
-
 
 def main():
     """Main section of the script."""
@@ -57,7 +55,7 @@ def main():
     print("materialdesignicons.com icon updater")
 
     remote_url = get_remote_version()
-    source = clean_component(requests.get(remote_url).text)
+    source = clean_component(get_text(remote_url))
     write_component(source)
     fingerprint()
 

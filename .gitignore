@@ -5,3 +5,4 @@ bower_components/*
 npm-debug.log
 .DS_Store
 final/*
+*.py[cod]
