@@ -238,23 +238,23 @@ class HaMediaPlayerCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     var dummy;
     if (picture) {
       dummy = document.createElement('IMG');
-      dummy.onload = function () {
+      dummy.onload = () => {
         this.$.cover.style.backgroundImage = 'url(' + picture + ')';
         dummy.onerror = dummy.onload = null;
         dummy.src = '';
         dummy = null;
-      }.bind(this);
-      dummy.onerror = function () {
+      };
+      dummy.onerror = () => {
         this.$.cover.style.backgroundImage = '';
-        this.toggleClass('no-cover', true, this.$.cover.parentElement);
+        this.$.cover.parentElement.classList.add('no-cover');
         dummy.onerror = dummy.onload = null;
         dummy.src = '';
         dummy = null;
-      }.bind(this);
+      };
       if (this._timeout_id) {
         clearTimeout(this._timeout_id);
       }
-      this._timeout_id = setTimeout(function () {
+      this._timeout_id = setTimeout(() => {
         if (dummy) {
           // Background load still inflight. Clear real image.
           this.$.cover.style.backgroundImage = '';
