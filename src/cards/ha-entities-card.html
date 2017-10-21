@@ -44,7 +44,7 @@
     </style>
 
     <ha-card>
-      <div class$='[[computeTitleClass(groupEntity)]]'>
+      <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
         <div class='flex name'>[[computeTitle(states, groupEntity)]]</div>
         <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
           <ha-entity-toggle
@@ -54,7 +54,7 @@
       </div>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
-          <div class$='[[computeStateClass(item)]]' on-tap='entityTapped'>
+          <div class$='[[computeStateClass(item)]]'>
             <state-card-content
               hass='[[hass]]'
               class="state-card"
@@ -137,11 +137,12 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   ready() {
-    super.ready();
+    //super.ready();
     var CardsWithMore = this.$.querySelectorAll('.state .has-more-info-card');
-    [].forEach.call(CardsWithMore, function(stateCard) {
-      stateCard.addEventListener('on-tap', e => this.entityTapped(e));
-    });
+    alert(CardsWithMore.length);
+    for (var i = 0; i < CardsWithMore.length; i++) {
+      CardsWithMore[i].addEventListener('on-tap', e => this.entityTapped(e));
+    }
   }
 }
 customElements.define(HaEntitiesCard.is, HaEntitiesCard);
