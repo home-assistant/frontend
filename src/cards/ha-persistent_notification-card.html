@@ -75,7 +75,7 @@ class HaPersistentNotificationCard extends Polymer.Element {
     var message = '';
     if (scriptLoaded) {
       el = this.$.pnContent;
-      message = window.micromarkdown.parse(stateObj.state);
+      message = window.micromarkdown.parse(stateObj.attributes.message);
       el.innerHTML = message;
     }
   }
