@@ -54,7 +54,7 @@
       </div>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
-          <div class$='[[computeStateCardClass(item)]]' on-tap$='[[computeStateCardOnTap(item)]]'>
+          <div class$='[[computeStateClass(item)]]' on-tap='entityTapped'>
             <state-card-content
               hass='[[hass]]'
               class="state-card"
@@ -93,12 +93,8 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     return classes;
   }
 
-  computeStateCardClass(stateObj) {
-    return window.hassUtil.stateMoreInfoType(stateObj) === 'hidden' ? 'state' : 'state has-more-info-card';
-  }
-
-  computeStateCardOnTap(stateObj) {
-    return window.hassUtil.stateMoreInfoType(stateObj) === 'hidden' ? null : this.entityTapped;
+  computeStateClass(stateObj) {
+    return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state has-more-info-card' : 'state');
   }
 
   entityTapped(ev) {
@@ -138,6 +134,14 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
 
     return canToggleCount > 1;
+  }
+
+  ready() {
+    super.ready();
+    var stateCardWithInfoCard = this.$.querySelectorAll('.state .has-more-info-card');
+    [].forEach.call(stateCardWithInfoCard, function(stateCard) {
+      stateCard.addEventListener('on-tap', e => this.entityTapped(e));
+    });
   }
 }
 customElements.define(HaEntitiesCard.is, HaEntitiesCard);
