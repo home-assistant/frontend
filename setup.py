@@ -8,4 +8,4 @@ setup(name='home-assistant-frontend',
       author_email='Paulus@PaulusSchoutsen.nl',
       license='Apache License 2.0',
       packages=find_packages(include=['hass_frontend', 'hass_frontend.*']),
-      zip_safe=True)
+      zip_safe=False)
