@@ -16,6 +16,8 @@
       }
       .state {
         padding: 4px 16px;
+      }
+      .has-more-info {
         cursor: pointer;
       }
       .header {
@@ -52,7 +54,7 @@
       </div>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
-          <div class='state' on-tap='entityTapped'>
+          <div class='[[computeStateClass(item)]]' on-tap='[[computeEntityTapped(item)]]'>
             <state-card-content
               hass='[[hass]]'
               class="state-card"
@@ -89,6 +91,14 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
       classes += 'domain';
     }
     return classes;
+  }
+
+  computeStateClass(item) {
+    window.hassUtil.stateMoreInfoType(item) === 'hidden' ? 'state' : 'state has-more-info';
+  }
+
+  computeEntityTapped(item) {
+    window.hassUtil.stateMoreInfoType(item) === 'hidden' ? null : 'entityTapped';
   }
 
   entityTapped(ev) {
