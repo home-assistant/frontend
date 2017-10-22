@@ -89,7 +89,7 @@ gulp.task('gen-service-worker', () => {
         rootDir + '/fonts/roboto/Roboto-Bold.ttf',
         rootDir + '/images/card_media_player_bg.png',
       ],
-      stripPrefix: 'final',
+      stripPrefix: 'hass_frontend',
       replacePrefix: 'static',
       verbose: true,
       // Allow our users to refresh to get latest version.
