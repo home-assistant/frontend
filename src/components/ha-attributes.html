@@ -67,8 +67,8 @@
     },
 
     formatAttributeValue: function (stateObj, attribute) {
-      if (stateObj.attributes[attribute] === null) return 'undefined';
       var value = stateObj.attributes[attribute];
+      if (value == null) return 'undefined';
       if (Array.isArray(value)) {
         return value.join(', ');
       }
