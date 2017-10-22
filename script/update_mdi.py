@@ -5,8 +5,6 @@ import re
 import sys
 import urllib.request
 
-from fingerprint_frontend import fingerprint
-
 GETTING_STARTED_URL = ('https://raw.githubusercontent.com/Templarian/'
                        'MaterialDesign/master/site/getting-started.savvy')
 DOWNLOAD_LINK = re.compile(r'(/api/download/polymer/v1/([A-Z0-9-]{36}))')
@@ -57,7 +55,6 @@ def main():
     remote_url = get_remote_version()
     source = clean_component(get_text(remote_url))
     write_component(source)
-    fingerprint()
 
     print('Updated to latest version')
 
