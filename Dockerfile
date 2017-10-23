@@ -12,9 +12,14 @@ RUN apk update \
 
 RUN mkdir -p /frontend
 WORKDIR /frontend
-COPY . .
 
 ENV NODE_ENV production
+
+COPY package.json ./
 RUN yarn
+
+COPY bower.json ./
 RUN ./node_modules/.bin/bower install --allow-root
+
+COPY . .
 CMD [ "/bin/bash", "./script/build_frontend" ]
