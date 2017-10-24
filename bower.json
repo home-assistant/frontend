@@ -23,6 +23,7 @@
     "iron-media-query": "PolymerElements/iron-media-query#^2.0.0",
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
     "leaflet": "^1.0.2",
+    "leaflet-providers": "^1.1.17",
     "neon-animation": "PolymerElements/neon-animation#^2.0.1",
     "paper-button": "PolymerElements/paper-button#^2.0.0",
     "paper-card": "PolymerElements/paper-card#^2.0.0",
@@ -56,5 +57,8 @@
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"
+  },
+  "resolutions": {
+    "leaflet": "^1.0.2"
   }
 }
