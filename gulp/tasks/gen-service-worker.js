@@ -23,7 +23,7 @@ const config = require('../config');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 
-var rootDir = '..';
+var rootDir = 'hass_frontend';
 var panelDir = path.resolve(rootDir, 'panels');
 
 var dynamicUrlToDependencies = {
@@ -44,8 +44,8 @@ var staticFingerprinted = [
 // These panels will always be registered inside HA and thus can
 // be safely assumed to be able to preload.
 var panelsFingerprinted = [
-  'map', 'dev-event', 'dev-info', 'dev-service', 'dev-state', 'dev-template',
-  'dev-mqtt',
+  'dev-event', 'dev-info', 'dev-service', 'dev-state', 'dev-template',
+  'dev-mqtt', 'kiosk',
 ];
 
 function md5(filename) {
@@ -71,7 +71,7 @@ gulp.task('gen-service-worker', () => {
     panelsFingerprinted.forEach(panel => {
       var fpath = panelDir + '/ha-panel-' + panel + '.html';
       var hash = md5(fpath);
-      var url = '/frontend/panels/' + panel + '-' + hash + '.html';
+      var url = '/static/panels/ha-panel-' + panel + '-' + hash + '.html';
       dynamicUrlToDependencies[url] = [fpath];
     });
 
@@ -89,9 +89,11 @@ gulp.task('gen-service-worker', () => {
         rootDir + '/fonts/roboto/Roboto-Bold.ttf',
         rootDir + '/images/card_media_player_bg.png',
       ],
-      stripPrefix: '..',
+      stripPrefix: 'hass_frontend',
       replacePrefix: 'static',
       verbose: true,
+      // Allow our users to refresh to get latest version.
+      clientsClaim: true,
     };
 
     genPromise = swPrecache.generate(options);
