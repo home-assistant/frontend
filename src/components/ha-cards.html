@@ -245,7 +245,7 @@
         cards.columns[getIndex(5)].push({
           hass: hass,
           cardType: 'introduction',
-          showHideInstruction: states.size > 0 && !window.HASS_DEMO,
+          showHideInstruction: Object.keys(states).length > 0 && !window.HASS_DEMO,
         });
       }
 

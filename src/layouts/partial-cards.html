@@ -298,7 +298,7 @@ Polymer({
   },
 
   computeShowIntroduction: function (currentView, introductionLoaded, states) {
-    return currentView === '' && (introductionLoaded || states.size === 0);
+    return currentView === '' && (introductionLoaded || Object.keys(states).length === 0);
   },
 
   computeStateName: function (stateObj) {

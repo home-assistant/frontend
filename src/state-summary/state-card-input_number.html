@@ -21,16 +21,16 @@
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-        <div hidden='[[hiddenslider]]'>
-          <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' pin
-            on-change='selectedValueChanged' on-tap='stopPropagation'
-          >
-          </paper-slider>
-        </div>
+        <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' hidden='[[hiddenslider]]' pin
+          on-change='selectedValueChanged' on-tap='stopPropagation'>
+        </paper-slider>
       <paper-input
         no-label-float
         auto-validate
-        pattern='[0-9]*'
+        pattern='[0-9]+([\.][0-9]+)?'
+        step='[[step]]'
+        min='[[min]]'
+        max='[[max]]'
         value='{{value}}'
         type='number'
         on-change='selectedValueChanged'

@@ -1,0 +1,6 @@
+node_modules
+bower_components
+hass_frontend
+build
+build-temp
+.git

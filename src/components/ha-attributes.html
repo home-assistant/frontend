@@ -50,7 +50,7 @@
     },
 
     computeFiltersArray: function (extraFilters) {
-      return Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES) + (extraFilters ? extraFilters.split(',') : []);
+      return Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(extraFilters ? extraFilters.split(',') : []);
     },
 
     computeDisplayAttributes: function (stateObj, filtersArray) {
@@ -68,6 +68,7 @@
 
     formatAttributeValue: function (stateObj, attribute) {
       var value = stateObj.attributes[attribute];
+      if (value === null) return '-';
       if (Array.isArray(value)) {
         return value.join(', ');
       }
