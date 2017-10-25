@@ -46,6 +46,7 @@
     "paper-spinner": "PolymerElements/paper-spinner#^2.0.0",
     "paper-styles": "PolymerElements/paper-styles#^2.0.0",
     "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
+    "paper-time-input": "ryanburns23/paper-time-input#^2.0.4",
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
     "polymer": "^2.1.1",
