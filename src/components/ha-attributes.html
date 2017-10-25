@@ -68,6 +68,7 @@
 
     formatAttributeValue: function (stateObj, attribute) {
       var value = stateObj.attributes[attribute];
+      if (value === null) return '-';
       if (Array.isArray(value)) {
         return value.join(', ');
       }
