@@ -4,3 +4,18 @@ node_modules/*
 bower_components/*
 npm-debug.log
 .DS_Store
+hass_frontend/*
+
+# Python stuff
+*.py[cod]
+*.egg
+*.egg-info
+
+# venv stuff
+pyvenv.cfg
+pip-selfcheck.json
+venv
+.venv
+lib
+bin
+dist
