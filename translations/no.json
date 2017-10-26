@@ -3,6 +3,7 @@
     "no": "Norsk"
   },
   "panel": {
+    "states": "Tilstander",
     "map": "Kart",
     "logbook": "Loggbok",
     "history": "Historie",
