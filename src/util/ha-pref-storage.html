@@ -1,26 +1,25 @@
 <script>
-(function () {
-  var STORED_STATE = [
+{
+  const STORED_STATE = [
     'dockedSidebar',
     'selectedTheme',
     'selectedLanguage',
   ];
 
-  Polymer({
-    is: 'ha-pref-storage',
+  class HaPrefStorage extends Polymer.Element {
+    static get is() { return 'ha-pref-storage'; }
 
-    properties: {
-      hass: {
-        type: Object,
-      },
+    static get properties() {
+      return {
+        hass: Object,
+        storage: {
+          type: Object,
+          value: window.localStorage || {},
+        },
+      };
+    }
 
-      storage: {
-        type: Object,
-        value: window.localStorage || {},
-      },
-    },
-
-    storeState: function () {
+    storeState() {
       if (!this.hass) return;
 
       try {
@@ -32,9 +31,9 @@
       } catch (err) {
         // Safari throws exception in private mode
       }
-    },
+    }
 
-    getStoredState: function () {
+    getStoredState() {
       var state = {};
 
       for (var i = 0; i < STORED_STATE.length; i++) {
@@ -46,6 +45,7 @@
 
       return state;
     }
-  });
-}());
+  }
+  customElements.define(HaPrefStorage.is, HaPrefStorage);
+}
 </script>

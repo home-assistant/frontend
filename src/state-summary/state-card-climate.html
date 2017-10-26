@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -56,20 +56,20 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'state-card-climate',
+class StateCardClimate extends Polymer.Element {
+  static get is() { return 'state-card-climate'; }
 
-  properties: {
-    inDialog: {
-      type: Boolean,
-      value: false,
-    },
-    stateObj: {
-      type: Object,
-    },
-  },
+  static get properties() {
+    return {
+      stateObj: Object,
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  computeTargetTemperature: function (stateObj) {
+  computeTargetTemperature(stateObj) {
     var stateTemp = '';
 
     if (stateObj.attributes.target_temp_low &&
@@ -83,7 +83,7 @@ Polymer({
     }
 
     return stateTemp;
-  },
-
-});
+  }
+}
+customElements.define(StateCardClimate.is, StateCardClimate);
 </script>

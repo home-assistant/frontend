@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../components/entity/state-badge.html">
 
@@ -25,32 +25,33 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'state-card-weblink',
+class StateCardWeblink extends Polymer.Element {
+  static get is() { return 'state-card-weblink'; }
 
-  properties: {
-    inDialog: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      stateObj: Object,
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-    stateObj: {
-      type: Object,
-    },
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('tap', ev => this.onTap(ev));
+  }
 
-  listeners: {
-    tap: 'onTap',
-  },
-
-  computeStateName: function (stateObj) {
+  computeStateName(stateObj) {
     return window.hassUtil.computeStateName(stateObj);
-  },
+  }
 
-  onTap: function (ev) {
+  onTap(ev) {
     ev.stopPropagation();
     ev.preventDefault();
     window.open(this.stateObj.state, '_blank');
-  },
-});
+  }
+}
+customElements.define(StateCardWeblink.is, StateCardWeblink);
 </script>
