@@ -39,6 +39,7 @@ var staticFingerprinted = [
   'mdi.html',
   'core.js',
   'compatibility.js',
+  'translations/en.json',
 ];
 
 // These panels will always be registered inside HA and thus can
@@ -62,9 +63,10 @@ gulp.task('gen-service-worker', () => {
     // Create fingerprinted versions of our dependencies.
     staticFingerprinted.forEach(fn => {
       var parts = path.parse(fn);
-      var hash = md5(rootDir + '/' + parts.name + parts.ext);
-      var url = '/static/' + parts.name + '-' + hash + parts.ext;
-      var fpath = rootDir + '/' + parts.name + parts.ext;
+      var base = parts.dir.length > 0 ? parts.dir + '/' + parts.name : parts.name;
+      var hash = md5(rootDir + '/' + base + parts.ext);
+      var url = '/static/' + base + '-' + hash + parts.ext;
+      var fpath = rootDir + '/' + base + parts.ext;
       dynamicUrlToDependencies[url] = [fpath];
     });
 
@@ -89,6 +91,10 @@ gulp.task('gen-service-worker', () => {
         rootDir + '/fonts/roboto/Roboto-Bold.ttf',
         rootDir + '/images/card_media_player_bg.png',
       ],
+      runtimeCaching: [{
+        urlPattern: /\/static\/translations\//,
+        handler: 'cacheFirst',
+      }],
       stripPrefix: 'hass_frontend',
       replacePrefix: 'static',
       verbose: true,

@@ -77,4 +77,37 @@ window.hassMixins.NavigateMixin = Polymer.dedupingMixin(superClass =>
     }
   });
 
+/* @polymerMixin */
+window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
+  class extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], superClass) {
+    static get properties() {
+      return {
+        hass: {
+          type: Object,
+        },
+        language: {
+          type: String,
+          computed: 'computeLanguage(hass)',
+        },
+        resources: {
+          type: Object,
+          computed: 'computeResources(hass)',
+        },
+      };
+    }
+
+    computeLanguage(hass) {
+      return hass && hass.language;
+    }
+
+    computeResources(hass) {
+      return hass && hass.resources;
+    }
+
+    localize(namespace, message, ...args) {
+      // Return the input message if no translation is found
+      return super.localize(namespace + '.' + message, ...args) || message;
+    }
+  });
+
 </script>
