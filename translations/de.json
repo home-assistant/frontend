@@ -1,0 +1,12 @@
+{
+  "language": {
+    "de": "Deutsch"
+  },
+  "panel": {
+    "states": "Zustände",
+    "map": "Karte",
+    "logbook": "Logbuch",
+    "history": "Verlauf",
+    "log_out": "Abmelden"
+  }
+}
