@@ -21,6 +21,10 @@ cp build/*.js build/*.html $OUTPUT_DIR
 mkdir $OUTPUT_DIR/panels
 cp build/panels/*.html $OUTPUT_DIR/panels
 
+# Panels
+mkdir $OUTPUT_DIR/translations
+cp build/translations/*.json $OUTPUT_DIR/translations
+
 # Local Roboto
 cp -r bower_components/font-roboto-local/fonts $OUTPUT_DIR
 
@@ -43,7 +47,13 @@ cp build/service_worker.js $OUTPUT_DIR
 
 # GZIP frontend
 cd $OUTPUT_DIR
-gzip -f -n -k -9 *.html *.js ./panels/*.html ./fonts/roboto/*.ttf ./fonts/robotomono/*.ttf
+gzip -f -n -k -9 \
+    *.html \
+    *.js \
+    ./panels/*.html \
+    ./translations/*.json \
+    ./fonts/roboto/*.ttf \
+    ./fonts/robotomono/*.ttf
 cd ..
 
 # Generate the __init__ file
