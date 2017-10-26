@@ -1,0 +1,12 @@
+{
+  "language": {
+    "nl": "Nederlands"
+  },
+  "panel": {
+    "states": "Status",
+    "map": "Kaart",
+    "logbook": "Logboek",
+    "history": "Historie",
+    "log_out": "Uitloggen"
+  }
+}
