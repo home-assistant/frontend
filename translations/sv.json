@@ -1,0 +1,12 @@
+{
+  "language": {
+    "sv": "Svenska"
+  },
+  "panel": {
+    "states": "Tillstånd",
+    "map": "Karta",
+    "logbook": "Loggbok",
+    "history": "Historik",
+    "log_out": "Logga Ut"
+  }
+}
