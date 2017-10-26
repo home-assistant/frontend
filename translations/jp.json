@@ -1,0 +1,12 @@
+{
+  "language": {
+    "en": "日本語"
+  },
+  "panel": {
+    "states": "州",
+    "map": "地図",
+    "logbook": "ログブック",
+    "history": "履歴",
+    "log_out": "ログアウト"
+  }
+}
