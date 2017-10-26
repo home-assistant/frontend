@@ -1,4 +1,5 @@
 <link rel="import" href='../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../bower_components/app-localize-behavior/app-localize-behavior.html'>
 <link rel='import' href='./util/roboto.html'>
 <link rel='import' href='../bower_components/paper-styles/typography.html'>
 <link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
@@ -7,6 +8,7 @@
 <link rel="import" href="../bower_components/neon-animation/web-animations.html">
 
 
+<link rel='import' href='./util/hass-translation.html'>
 <link rel='import' href='./util/hass-util.html'>
 <link rel='import' href='./util/ha-pref-storage.html'>
 <link rel='import' href='./util/hass-call-api.html'>
@@ -84,7 +86,9 @@ class HomeAssistant extends Polymer.Element {
   ready() {
     super.ready();
     this.addEventListener('settheme', e => this.setTheme(e));
+    this.addEventListener('hass-language-select', e => this.selectLanguage(e));
     this.loadIcons();
+    this.loadResources();
   }
 
   computeShowMain(hass, iconsLoaded) {
@@ -112,6 +116,15 @@ class HomeAssistant extends Polymer.Element {
     );
   }
 
+  loadResources() {
+    window.getTranslation().then((result) => {
+      this._updateHass({
+        language: result.language,
+        resources: result.resources,
+      });
+    });
+  }
+
   connectionChanged(conn, oldConn) {
     if (oldConn) {
       this.unsubConnection();
@@ -128,6 +141,9 @@ class HomeAssistant extends Polymer.Element {
       states: null,
       config: null,
       themes: null,
+      language: null,
+      resources: null,
+      translationMetadata: window.translationMetadata,
       dockedSidebar: false,
       moreInfoEntityId: null,
       callService: (domain, service, serviceData) =>
@@ -254,6 +270,12 @@ class HomeAssistant extends Polymer.Element {
     this._updateHass({ selectedTheme: event.detail });
     window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
     this.$.storage.storeState();
+  }
+
+  selectLanguage(event) {
+    this._updateHass({ selectedLanguage: event.detail.language });
+    this.$.storage.storeState();
+    this.loadResources();
   }
 
   _updateHass(obj) {

@@ -30,7 +30,7 @@ function renamePanel(path) {
   }
 }
 
-gulp.task('build', ['ru_all'], () => {
+gulp.task('build', ['ru_all', 'build-translations'], () => {
   const strategy = composeStrategies([
     generateShellMergeStrategy(polymerConfig.shell),
     stripImportsStrategy([

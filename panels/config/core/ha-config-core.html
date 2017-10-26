@@ -7,6 +7,7 @@
 <link rel="import" href="./ha-config-section-core.html">
 <!-- <link rel="import" href="./ha-config-section-group.html"> -->
 <link rel="import" href="./ha-config-section-hassbian.html">
+<link rel="import" href="./ha-config-section-translation.html">
 <link rel="import" href="./ha-config-section-themes.html">
 
 <dom-module id="ha-config-core">
@@ -53,6 +54,14 @@
           hass='[[hass]]'
         ></ha-config-section-core>
 
+        <template is='dom-if' if='[[computeIsTranslationLoaded(hass)]]'>
+          <div class='border'></div>
+          <ha-config-section-translation
+            is-wide='[[isWide]]'
+            hass='[[hass]]'
+          ></ha-config-section-translation>
+        </template>
+
         <template is='dom-if' if='[[computeIsThemesLoaded(hass)]]'>
           <div class='border'></div>
           <ha-config-section-themes
@@ -94,6 +103,13 @@ class HaConfigCore extends Polymer.Element {
 
   computeIsZwaveLoaded(hass) {
     return window.hassUtil.isComponentLoaded(hass, 'config.zwave');
+  }
+
+  computeIsTranslationLoaded(hass) {
+    // Return false to hide language selection until i18n is ready to be
+    // deployed.
+    return false && hass.translationMetadata &&
+      Object.keys(hass.translationMetadata).length;
   }
 
   computeIsThemesLoaded(hass) {

@@ -9,6 +9,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel='import' href='../util/hass-mixins.html'>
+<link rel='import' href='../util/hass-translation.html'>
 
 <link rel='import' href='./ha-push-notifications-toggle.html'>
 
@@ -105,19 +106,19 @@
     <paper-listbox attr-for-selected='data-panel' selected='[[route.panel]]'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
-        <span class='item-text'>States</span>
+        <span class='item-text'>{{localize('panel', 'states')}}</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
         <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_path]]'>
           <iron-icon slot="item-icon" icon='[[item.icon]]'></iron-icon>
-          <span class='item-text'>[[item.title]]</span>
+          <span class='item-text'>{{localize('panel', item.title)}}</span>
         </paper-icon-item>
       </template>
 
       <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
         <iron-icon slot="item-icon" icon='mdi:exit-to-app'></iron-icon>
-        <span class='item-text'>Log Out</span>
+        <span class='item-text'>{{localize('panel', 'log_out')}}</span>
       </paper-icon-item>
     </paper-listbox>
 
@@ -171,7 +172,12 @@
 </dom-module>
 
 <script>
-class HaSidebar extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaSidebar extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-sidebar'; }
 
   static get properties() {

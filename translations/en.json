@@ -1,0 +1,12 @@
+{
+  "language": {
+    "en": "English"
+  },
+  "panel": {
+    "states": "States",
+    "map": "Map",
+    "logbook": "Logbook",
+    "history": "History",
+    "log_out": "Log Out"
+  }
+}
