@@ -1,0 +1,12 @@
+{
+  "language": {
+    "nl": "Nederlands"
+  },
+  "panel": {
+    "states": "Toestanden",
+    "map": "Kaart",
+    "logbook": "Logboek",
+    "history": "Geschiedenis",
+    "log_out": "Log Uit"
+  }
+}
