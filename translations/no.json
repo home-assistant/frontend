@@ -1,0 +1,12 @@
+{
+  "language": {
+    "no": "Norwegian"
+  },
+  "panel": {
+    "states": "Tilstand",
+    "map": "Kart",
+    "logbook": "Logbok",
+    "history": "Historie",
+    "log_out": "Logg ut"
+  }
+}
