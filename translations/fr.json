@@ -1,0 +1,12 @@
+{
+  "language": {
+    "fr": "Français"
+  },
+  "panel": {
+    "states": "États",
+    "map": "Carte",
+    "logbook": "Registre",
+    "history": "Historique",
+    "log_out": "Se déconnecter"
+  }
+}
