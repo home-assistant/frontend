@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -23,22 +23,19 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'state-card-toggle',
+class StateCardToggle extends Polymer.Element {
+  static get is() { return 'state-card-toggle'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    inDialog: {
-      type: Boolean,
-      value: false,
-    },
-
-    stateObj: {
-      type: Object,
-    },
-  },
-});
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+}
+customElements.define(StateCardToggle.is, StateCardToggle);
 </script>

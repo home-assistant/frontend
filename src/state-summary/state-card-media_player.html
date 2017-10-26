@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -46,32 +46,27 @@
 </dom-module>
 
 <script>
-Polymer({
-  PLAYING_STATES: ['playing', 'paused'],
-  is: 'state-card-media_player',
+class StateCardMediaPlayer extends Polymer.Element {
+  static get is() { return 'state-card-media_player'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+      playerObj: {
+        type: Object,
+        computed: 'computePlayerObj(hass, stateObj)',
+      },
+    };
+  }
 
-    inDialog: {
-      type: Boolean,
-      value: false,
-    },
-
-    stateObj: {
-      type: Object,
-    },
-
-    playerObj: {
-      type: Object,
-      computed: 'computePlayerObj(hass, stateObj)',
-    },
-  },
-
-  computePlayerObj: function (hass, stateObj) {
+  computePlayerObj(hass, stateObj) {
     return new window.MediaPlayerEntity(hass, stateObj);
-  },
-});
+  }
+}
+customElements.define(StateCardMediaPlayer.is, StateCardMediaPlayer);
 </script>
