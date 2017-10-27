@@ -1,0 +1,13 @@
+{
+  "language": {
+    "en": "English"
+  },
+  "panel": {
+    "config": "विन्यास",
+    "states": "अवलोकन",
+    "map": "नक्शा",
+    "logbook": "कार्यपंजी",
+    "history": "हिस्टरी",
+    "log_out": "लोग आउट"
+  }
+}
