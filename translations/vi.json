@@ -1,0 +1,13 @@
+{
+  "language": {
+    "vi": "Tiếng Việt"
+  },
+  "panel": {
+    "config": "Cấu hình",
+    "states": "Tổng quan",
+    "map": "Bản đồ",
+    "logbook": "Nhật ký",
+    "history": "Lịch sử",
+    "log_out": "Đăng xuất"
+  }
+}

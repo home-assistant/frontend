@@ -1,0 +1,13 @@
+{
+  "language": {
+    "no": "Norsk"
+  },
+  "panel": {
+    "states": "Oversikt",
+    "map": "Kart",
+    "logbook": "Loggbok",
+    "history": "Historie",
+    "log_out": "Logg av",
+    "configuration": "Innstillinger"
+  }
+}
