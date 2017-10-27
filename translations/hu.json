@@ -1,0 +1,13 @@
+{
+  "language": {
+    "hu": "Magyar"
+  },
+  "panel": {
+    "config": "Konfiguráció",
+    "states": "Áttekintés",
+    "map": "Térkép",
+    "logbook": "Napló",
+    "history": "Előzmények",
+    "log_out": "Kilépés"
+  }
+}
