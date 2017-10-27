@@ -6,7 +6,7 @@ function getActiveTranslation() {
   // report languages with specific cases.
   const lookup = {};
   /* eslint-disable no-undef */
-  Object.keys(window.translationMetadata).forEach(function (tr) {
+  Object.keys(window.translationMetadata).forEach((tr) => {
     lookup[tr.toLowerCase()] = tr;
   });
 
@@ -14,7 +14,7 @@ function getActiveTranslation() {
   function languageGetTranslation(language) {
     const subtags = language.toLowerCase().split('-');
 
-    for (var i = subtags.length; i >= 1; i--) {
+    for (let i = subtags.length; i >= 1; i--) {
       const lang = subtags.slice(0, i).join('-');
 
       if (lookup[lang]) {
@@ -24,14 +24,14 @@ function getActiveTranslation() {
     return null;
   }
 
-  var translation = null;
-  if (window.localStorage.selectedLanguage) {
+  let translation = null;
+  if (window.localStorage.selectedLanguage && JSON.parse(window.localStorage.selectedLanguage)) {
     translation = languageGetTranslation(JSON.parse(window.localStorage.selectedLanguage));
     if (translation) {
       return translation;
     }
   } else if (navigator.languages) {
-    for (var i = 0; i < navigator.languages.length; i++) {
+    for (let i = 0; i < navigator.languages.length; i++) {
       translation = languageGetTranslation(navigator.languages[i]);
       if (translation) {
         return translation;
@@ -54,7 +54,11 @@ const translations = {};
 
 window.getTranslation = function (translationInput) {
   const translation = translationInput || getActiveTranslation();
-  const translationFingerprint = window.translationMetadata[translation].fingerprint;
+  const metadata = window.translationMetadata[translation];
+  if (!metadata) {
+    return Promise.reject(new Error('Language ' + translation + ' not found in metadata'));
+  }
+  const translationFingerprint = metadata.fingerprint;
 
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {
