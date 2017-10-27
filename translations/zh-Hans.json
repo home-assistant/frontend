@@ -1,0 +1,12 @@
+{
+  "language": {
+    "zh-Hans": "简体中文"
+  },
+  "panel": {
+    "states": "状态",
+    "map": "地图",
+    "logbook": "日志",
+    "history": "历史",
+    "log_out": "退出登录"
+  }
+}

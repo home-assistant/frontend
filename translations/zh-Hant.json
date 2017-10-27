@@ -1,0 +1,12 @@
+{
+  "language": {
+    "zh-Hant": "繁體中文"
+  },
+  "panel": {
+    "states": "狀態",
+    "map": "地圖",
+    "logbook": "日誌",
+    "history": "歷史",
+    "log_out": "退出登錄"
+  }
+}
