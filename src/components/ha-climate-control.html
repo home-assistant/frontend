@@ -63,20 +63,28 @@
         },
       },
       incrementValue: function () {
-        var newval = this.value + this.step;
+        var newval = Number(this.value) + this.step;
         this.last_changed = Date.now();
         if (newval <= this.max) {
           this.value = newval;
         } else {
+          /* eslint-disable no-console */
+          console.log('WARN, trying to set greate than max temp. temp: %s, step: %s, max: %s',
+                      this.value, this.step, this.max);
+          /* eslint-enable no-console */
           this.value = this.max;
         }
       },
       decrementValue: function () {
-        var newval = this.value - this.step;
+        var newval = Number(this.value) - this.step;
         this.last_changed = Date.now();
         if (newval >= this.min) {
           this.value = newval;
         } else {
+          /* eslint-disable no-console */
+          console.log('WARN, trying to set less than min temp. temp: %s, step: %s, min: %s',
+                      this.value, this.step, this.min);
+          /* eslint-enable no-console */
           this.value = this.min;
         }
       },
