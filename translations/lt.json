@@ -1,0 +1,12 @@
+{
+	"language": {
+		"lt": "Lietuvių"
+	},
+	"panel": {
+		"states": "Valdymas",
+		"map": "Žemėlapis",
+		"logbook": "Veiksmų žurnalas",
+		"history": "Istorija",
+		"log_out": "Atsijungti"
+	}
+}

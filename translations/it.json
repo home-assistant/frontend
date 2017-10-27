@@ -1,12 +1,12 @@
 {
   "language": {
-    "en": "English"
+    "it": "Italiano"
   },
   "panel": {
-    "states": "Overview",
-    "map": "Map",
+    "states": "Stati",
+    "map": "Mappa",
     "logbook": "Logbook",
-    "history": "History",
+    "history": "Storico",
     "log_out": "Log Out"
   }
 }

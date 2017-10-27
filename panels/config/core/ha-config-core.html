@@ -106,9 +106,7 @@ class HaConfigCore extends Polymer.Element {
   }
 
   computeIsTranslationLoaded(hass) {
-    // Return false to hide language selection until i18n is ready to be
-    // deployed.
-    return false && hass.translationMetadata &&
+    return hass.translationMetadata &&
       Object.keys(hass.translationMetadata).length;
   }
 
