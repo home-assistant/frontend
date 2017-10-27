@@ -1,0 +1,13 @@
+{
+  "language": {
+    "tr": "Türkçe"
+  },
+  "panel": {
+    "config": "Ayarlar",
+    "states": "Genel Bakış",
+    "map": "Harita",
+    "logbook": "Kayıt Defteri",
+    "history": "Geçmiş",
+    "log_out": "Çıkış"
+  }
+}
