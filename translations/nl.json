@@ -1,8 +1,9 @@
 {
     "language": {
-        "nl": "Dutch"
+        "nl": "Nederlands"
     },
     "panel": {
+        "config": "Instellingen",
         "states": "Overzicht",
         "map": "Kaart",
         "logbook": "Logboek",
