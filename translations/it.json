@@ -1,0 +1,12 @@
+{
+  "language": {
+    "it": "Italiano"
+  },
+  "panel": {
+    "states": "Stati",
+    "map": "Mappa",
+    "logbook": "Logbook",
+    "history": "Storico",
+    "log_out": "Log Out"
+  }
+}
