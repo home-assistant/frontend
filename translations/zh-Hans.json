@@ -3,6 +3,7 @@
     "zh-Hans": "简体中文"
   },
   "panel": {
+    "config": "设置",
     "states": "概览",
     "map": "地图",
     "logbook": "日志",
