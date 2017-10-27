@@ -36,9 +36,10 @@ class HaPersistentNotificationCard extends Polymer.Element {
       hass: Object,
       stateObj: Object,
       scriptLoaded: {
-        type: Boolean,
-        value: false,
-      },
+        type: Number,
+        // 0 = not loaded, 1 = success, 2 = error
+        value: 0,
+      }
     };
   }
 
@@ -53,40 +54,27 @@ class HaPersistentNotificationCard extends Polymer.Element {
             window.hassUtil.computeStateName(stateObj));
   }
 
-  loadScript() {
-    var success = function () {
-      this.scriptLoaded = true;
-    }.bind(this);
-
-    var error = function () {
-      /* eslint-disable no-console */
-      console.error('Micromarkdown was not loaded.');
-      /* eslint-enable no-console */
-    };
-
-    this.importHref(
-      '/static/micromarkdown-js.html',
-      success, error
-    );
-  }
-
   computeContent(stateObj, scriptLoaded) {
-    var el = '';
-    var message = '';
-    if (scriptLoaded) {
-      el = this.$.pnContent;
-      message = window.micromarkdown.parse(stateObj.attributes.message);
-      el.innerHTML = message;
+    if (scriptLoaded === 1) {
+      const converter = window.Markdown.getSanitizingConverter();
+      this.$.pnContent.innerHTML = converter.makeHtml(stateObj.attributes.message);
+    } else if (scriptLoaded === 2) {
+      this.$.pnContent.innerText = stateObj.attributes.message;
     }
   }
 
   ready() {
-    this.loadScript();
+    super.ready();
+
+    Polymer.importHref(
+      '/static/pagedown-js.html',
+      () => { this.scriptLoaded = 1; },
+      () => { this.scriptLoaded = 2; },
+    );
   }
 
   dismissTap(ev) {
     ev.preventDefault();
-
     this.hass.callApi('DELETE', 'states/' + this.stateObj.entity_id);
   }
 }

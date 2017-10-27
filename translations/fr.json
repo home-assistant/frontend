@@ -3,6 +3,7 @@
     "fr": "Français"
   },
   "panel": {
+    "config": "Configuration",
     "states": "États",
     "map": "Carte",
     "logbook": "Journal",

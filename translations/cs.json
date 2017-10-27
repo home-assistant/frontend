@@ -3,6 +3,7 @@
     "cs": "Čeština"
   },
   "panel": {
+    "config": "Nastavení",
     "states": "Stavy",
     "map": "Mapa",
     "logbook": "Deník",
