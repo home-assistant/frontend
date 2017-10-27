@@ -3,6 +3,7 @@
     "en": "English"
   },
   "panel": {
+    "config": "Configuration",
     "states": "Overview",
     "map": "Map",
     "logbook": "Logbook",
