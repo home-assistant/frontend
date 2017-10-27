@@ -55,13 +55,10 @@ class HaPersistentNotificationCard extends Polymer.Element {
   }
 
   computeContent(stateObj, scriptLoaded) {
-    if (scriptLoaded === 0) {
-      return;
-    } else if (scriptLoaded === 1) {
-      const converter = Markdown.getSanitizingConverter();
-      this.$.pnContent.innerHTML = converter.makeHtml(
-        stateObj.attributes.message);
-    } else {
+    if (scriptLoaded === 1) {
+      const converter = window.Markdown.getSanitizingConverter();
+      this.$.pnContent.innerHTML = converter.makeHtml(stateObj.attributes.message);
+    } else if (scriptLoaded === 2) {
       this.$.pnContent.innerText = stateObj.attributes.message;
     }
   }
