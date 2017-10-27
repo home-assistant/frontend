@@ -3,10 +3,10 @@
         "nl": "Dutch"
     },
     "panel": {
-        "states": "Status",
+        "states": "Overzicht",
         "map": "Kaart",
         "logbook": "Logboek",
-        "history": "Historie",
+        "history": "Geschiedenis",
         "log_out": "Uitloggen"
     }
 }
