@@ -3,10 +3,11 @@
     "zh-Hant": "繁體中文"
   },
   "panel": {
-    "states": "狀態",
+    "config": "設定",
+    "states": "概覽",
     "map": "地圖",
     "logbook": "日誌",
     "history": "歷史",
-    "log_out": "退出登錄"
+    "log_out": "登出"
   }
 }
