@@ -5,8 +5,8 @@
   "panel": {
     "states": "États",
     "map": "Carte",
-    "logbook": "Registre",
+    "logbook": "Journal",
     "history": "Historique",
-    "log_out": "Se déconnecter"
+    "log_out": "Déconnexion"
   }
 }
