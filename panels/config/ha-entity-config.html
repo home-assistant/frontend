@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <dom-module id="ha-entity-config">
   <template>
     <style include="iron-flex ha-style">
@@ -80,83 +81,86 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-entity-config',
+class HaEntityConfig extends Polymer.Element {
+  static get is() { return 'ha-entity-config'; }
 
-  properties: {
-    hass: {
-      type: Object,
-      observer: 'hassChanged',
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+        observer: 'hassChanged',
+      },
 
-    label: {
-      type: String,
-      value: 'Device',
-    },
+      label: {
+        type: String,
+        value: 'Device',
+      },
 
-    entities: {
-      type: Array,
-      observer: 'entitiesChanged',
-    },
+      entities: {
+        type: Array,
+        observer: 'entitiesChanged',
+      },
 
-    allowDelete: {
-      type: Boolean,
-      value: false,
-    },
+      allowDelete: {
+        type: Boolean,
+        value: false,
+      },
 
-    selectedEntity: {
-      type: Number,
-      value: -1,
-      observer: 'entityChanged',
-    },
+      selectedEntity: {
+        type: Number,
+        value: -1,
+        observer: 'entityChanged',
+      },
 
-    formState: {
-      type: String,
-      // no-devices, loading, saving, editing
-      value: 'no-devices',
-    },
+      formState: {
+        type: String,
+        // no-devices, loading, saving, editing
+        value: 'no-devices',
+      },
 
-    config: {
-      type: Object,
-    }
-  },
+      config: {
+        type: Object,
+      }
+    };
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     this.formEl = document.createElement(this.config.component);
     this.formEl.hass = this.hass;
     this.$.form.appendChild(this.formEl);
     this.entityChanged(this.selectedEntity);
-  },
+  }
 
-  computeSelectCaption: function (stateObj) {
+  computeSelectCaption(stateObj) {
     return this.config.computeSelectCaption ?
       this.config.computeSelectCaption(stateObj) :
       window.hassUtil.computeStateName(stateObj);
-  },
+  }
 
-  computeShowNoDevices: function (formState) {
+  computeShowNoDevices(formState) {
     return formState === 'no-devices';
-  },
+  }
 
-  computeShowSpinner: function (formState) {
+  computeShowSpinner(formState) {
     return formState === 'loading' || formState === 'saving';
-  },
+  }
 
-  computeShowPlaceholder: function (formState) {
+  computeShowPlaceholder(formState) {
     return formState !== 'editing';
-  },
+  }
 
-  computeShowForm: function (formState) {
+  computeShowForm(formState) {
     return formState === 'editing';
-  },
+  }
 
-  hassChanged: function (hass) {
+  hassChanged(hass) {
     if (this.formEl) {
       this.formEl.hass = hass;
     }
-  },
+  }
 
-  entitiesChanged: function (entities, oldEntities) {
+  entitiesChanged(entities, oldEntities) {
     if (entities.length === 0) {
       this.formState = 'no-devices';
       return;
@@ -177,9 +181,9 @@ Polymer({
       // Entity moved index
       this.selectedEntity = newIndex;
     }
-  },
+  }
 
-  entityChanged: function (index) {
+  entityChanged(index) {
     if (!this.entities || !this.formEl) return;
     var entity = this.entities[index];
     if (!entity) return;
@@ -190,15 +194,17 @@ Polymer({
       .then(function () {
         el.formState = 'editing';
       });
-  },
+  }
 
-  saveEntity: function () {
+  saveEntity() {
     this.formState = 'saving';
     var el = this;
     this.formEl.saveEntity()
       .then(function () {
         el.formState = 'editing';
       });
-  },
-});
+  }
+}
+
+customElements.define(HaEntityConfig.is, HaEntityConfig);
 </script>

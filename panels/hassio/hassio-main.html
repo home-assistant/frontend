@@ -1,9 +1,10 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="../../src/layouts/hass-loading-screen.html">
 <link rel="import" href="../../src/layouts/hass-error-screen.html">
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <link rel="import" href="./dashboard/hassio-dashboard.html">
 <link rel="import" href="./advanced/hassio-advanced.html">
@@ -102,61 +103,65 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-main',
+class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-main'; }
 
-  properties: {
-    hass: Object,
-    narrow: Boolean,
-    showMenu: Boolean,
-    route: {
-      type: Object,
-      // Fake route object
-      value: {
-        prefix: '/hassio',
-        path: '/dashboard',
-        __queryParams: {}
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      route: {
+        type: Object,
+        // Fake route object
+        value: {
+          prefix: '/hassio',
+          path: '/dashboard',
+          __queryParams: {}
+        },
+        observer: '_routeChanged',
       },
-      observer: '_routeChanged',
-    },
-    _routeData: Object,
-    _routeTail: Object,
+      _routeData: Object,
+      _routeTail: Object,
 
-    addon: {
-      type: String,
-      value: '',
-    },
+      addon: {
+        type: String,
+        value: '',
+      },
 
-    supervisorInfo: {
-      type: Object,
-      value: null,
-    },
+      supervisorInfo: {
+        type: Object,
+        value: null,
+      },
 
-    hostInfo: {
-      type: Object,
-      value: null,
-    },
+      hostInfo: {
+        type: Object,
+        value: null,
+      },
 
-    hassInfo: {
-      type: Object,
-      value: null,
-    },
+      hassInfo: {
+        type: Object,
+        value: null,
+      },
 
-    loaded: {
-      type: Boolean,
-      computed: '_computeIsLoaded(supervisorInfo, hostInfo, hassInfo)',
-    },
-  },
+      loaded: {
+        type: Boolean,
+        computed: '_computeIsLoaded(supervisorInfo, hostInfo, hassInfo)',
+      },
+    };
+  }
 
-  listeners: {
-    'hass-api-called': '_apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this._apiCalled(ev));
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     this._routeChanged(this.route);
-  },
+  }
 
-  _apiCalled: function (ev) {
+  _apiCalled(ev) {
     if (ev.detail.success) {
       var tries = 1;
 
@@ -169,19 +174,21 @@ Polymer({
 
       tryUpdate();
     }
-  },
+  }
 
-  _computeIsLoaded: function (supervisorInfo, hostInfo, hassInfo) {
+  _computeIsLoaded(supervisorInfo, hostInfo, hassInfo) {
     return (supervisorInfo !== null &&
             hostInfo !== null &&
             hassInfo !== null);
-  },
+  }
 
-  _routeChanged: function (route) {
+  _routeChanged(route) {
     if (route.path === '' && route.prefix === '/hassio') {
       history.replaceState(null, null, '/hassio/dashboard');
       this.fire('location-changed');
     }
   }
-});
+}
+
+customElements.define(HassioMain.is, HassioMain);
 </script>

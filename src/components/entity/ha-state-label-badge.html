@@ -1,4 +1,6 @@
-<link rel='import' href='../../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel='import' href='../ha-label-badge.html'>
 
@@ -45,30 +47,33 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-state-label-badge',
+class HaStateLabelBadge extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-state-label-badge'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    state: {
-      type: Object,
-      observer: 'stateChanged',
-    },
-  },
+      state: {
+        type: Object,
+        observer: 'stateChanged',
+      },
+    };
+  }
 
-  listeners: {
-    tap: 'badgeTap',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('tap', ev => this.badgeTap(ev));
+  }
 
-  badgeTap: function (ev) {
+  badgeTap(ev) {
     ev.stopPropagation();
     this.fire('hass-more-info', { entityId: this.state.entity_id });
-  },
+  }
 
-  computeClasses: function (state) {
+  computeClasses(state) {
     switch (window.hassUtil.computeDomain(state)) {
       case 'binary_sensor':
       case 'updater':
@@ -76,9 +81,9 @@ Polymer({
       default:
         return '';
     }
-  },
+  }
 
-  computeValue: function (state) {
+  computeValue(state) {
     switch (window.hassUtil.computeDomain(state)) {
       case 'binary_sensor':
       case 'device_tracker':
@@ -90,9 +95,9 @@ Polymer({
       default:
         return state.state === 'unknown' ? '-' : state.state;
     }
-  },
+  }
 
-  computeIcon: function (state) {
+  computeIcon(state) {
     if (state.state === 'unavailable') {
       return null;
     }
@@ -120,13 +125,13 @@ Polymer({
       default:
         return null;
     }
-  },
+  }
 
-  computeImage: function (state) {
+  computeImage(state) {
     return state.attributes.entity_picture || null;
-  },
+  }
 
-  computeLabel: function (state) {
+  computeLabel(state) {
     if (state.state === 'unavailable') {
       return 'unavai';
     }
@@ -146,14 +151,16 @@ Polymer({
       default:
         return state.attributes.unit_of_measurement || null;
     }
-  },
+  }
 
-  computeDescription: function (state) {
+  computeDescription(state) {
     return window.hassUtil.computeStateName(state);
-  },
+  }
 
-  stateChanged: function () {
+  stateChanged() {
     this.updateStyles();
-  },
-});
+  }
+}
+
+customElements.define(HaStateLabelBadge.is, HaStateLabelBadge);
 </script>

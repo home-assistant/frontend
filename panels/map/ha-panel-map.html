@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
@@ -29,26 +29,29 @@
 <script>
 window.L.Icon.Default.imagePath = '/static/images/leaflet';
 
-Polymer({
-  is: 'ha-panel-map',
+class HaPanelMap extends Polymer.Element {
+  static get is() { return 'ha-panel-map'; }
 
-  properties: {
-    hass: {
-      type: Object,
-      observer: 'drawEntities',
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+        observer: 'drawEntities',
+      },
 
-    narrow: {
-      type: Boolean,
-    },
+      narrow: {
+        type: Boolean,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     var map = this._map = window.L.map(this.$.map);
     var style = document.createElement('link');
     style.setAttribute('href', window.HASS_DEV ?
@@ -67,13 +70,13 @@ Polymer({
 
     this.drawEntities(this.hass);
 
-    this.async(function () {
+    setTimeout(() => {
       map.invalidateSize();
       this.fitMap();
-    }.bind(this), 1);
-  },
+    }, 1);
+  }
 
-  fitMap: function () {
+  fitMap() {
     var bounds;
 
     if (this._mapItems.length === 0) {
@@ -85,9 +88,9 @@ Polymer({
       bounds = new window.L.latLngBounds(this._mapItems.map(item => item.getLatLng()));
       this._map.fitBounds(bounds.pad(0.5));
     }
-  },
+  }
 
-  drawEntities: function (hass) {
+  drawEntities(hass) {
     /* eslint-disable vars-on-top */
     var map = this._map;
     if (!map) return;
@@ -186,6 +189,8 @@ Polymer({
         ).addTo(map));
       }
     });
-  },
-});
+  }
+}
+
+customElements.define(HaPanelMap.is, HaPanelMap);
 </script>

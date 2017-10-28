@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
@@ -73,73 +73,77 @@
 </dom-module>
 <script>
 
-Polymer({
-  is: 'zwave-usercodes',
+class ZwaveUsercodes extends Polymer.Element {
+  static get is() { return 'zwave-usercodes'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    nodes: {
-      type: Array,
-    },
+      nodes: {
+        type: Array,
+      },
 
-    selectedNode: {
-      type: Number,
-    },
+      selectedNode: {
+        type: Number,
+      },
 
-    userCodes: {
-      type: Object,
-    },
+      userCodes: {
+        type: Object,
+      },
 
-    userCodeMaxLen: {
-      type: Number,
-      value: 4
-    },
+      userCodeMaxLen: {
+        type: Number,
+        value: 4
+      },
 
-    selectedUserCode: {
-      type: Number,
-      value: -1,
-      observer: 'selectedUserCodeChanged'
-    },
+      selectedUserCode: {
+        type: Number,
+        value: -1,
+        observer: 'selectedUserCodeChanged'
+      },
 
-    selectedUserCodeValue: {
-      type: Number,
-      value: -1
-    },
-  },
+      selectedUserCodeValue: {
+        type: Number,
+        value: -1
+      },
+    };
+  }
 
-  listeners: {
-    'hass-service-called': 'serviceCalled',
-  },
-  serviceCalled: function (ev) {
+  ready() {
+    super.ready();
+    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+  }
+
+  serviceCalled(ev) {
     if (ev.detail.success) {
       var foo = this;
       setTimeout(function () {
         foo.refreshUserCodes(foo.selectedNode);
       }, 5000);
     }
-  },
+  }
 
-  isUserCodeSelected: function (selectedUserCode) {
+  isUserCodeSelected(selectedUserCode) {
     if (selectedUserCode === -1) return false;
     return true;
-  },
+  }
 
-  computeSelectCaptionUserCodes: function (stateObj) {
+  computeSelectCaptionUserCodes(stateObj) {
     return (stateObj.key + ': ' + stateObj.value.label);
-  },
+  }
 
-  selectedUserCodeChanged: function (selectedUserCode) {
+  selectedUserCodeChanged(selectedUserCode) {
     if (this.selectedUserCode === -1 || selectedUserCode === -1) return;
     var value = (parseInt((this.userCodes[selectedUserCode].value.code).trim()));
     this.userCodeMaxLen = (this.userCodes[selectedUserCode].value.length);
     if (isNaN(value)) this.selectedUserCodeValue = '';
     else this.selectedUserCodeValue = value;
-  },
+  }
 
-  computeUserCodeServiceData: function (selectedUserCodeValue, type) {
+  computeUserCodeServiceData(selectedUserCodeValue, type) {
     if (this.selectedNode === -1 || !selectedUserCodeValue) return -1;
     var serviceData = null;
     var valueData = null;
@@ -158,9 +162,9 @@ Polymer({
       };
     }
     return serviceData;
-  },
+  }
 
-  refreshUserCodes: function (selectedNode) {
+  refreshUserCodes(selectedNode) {
     this.selectedUserCodeValue = '';
     var userCodes = [];
     this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
@@ -173,6 +177,8 @@ Polymer({
       this.userCodes = userCodes;
       this.selectedUserCodeChanged(this.selectedUserCode);
     }.bind(this));
-  },
-});
+  }
+}
+
+customElements.define(ZwaveUsercodes.is, ZwaveUsercodes);
 </script>

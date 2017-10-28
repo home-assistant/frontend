@@ -2,9 +2,7 @@
 <link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 
 <script>
-(function () {
-  'use strict';
-
+{
   function range(start, end) {
     var result = [];
     var i;
@@ -58,7 +56,7 @@
       this._isAttached = true;
       this.drawChart();
       this.addEventListener('iron-resize', () => {
-        this.async(this.drawChart, 10);
+        setTimeout(() => this.drawChart(), 10);
       });
     }
 
@@ -244,5 +242,5 @@
     }
   }
   customElements.define(StateHistoryChartLine.is, StateHistoryChartLine);
-}());
+}
 </script>

@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -32,42 +32,47 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-cover-tilt-controls',
-  properties: {
-    hass: {
-      type: Object,
-    },
-    stateObj: {
-      type: Object,
-    },
-    entityObj: {
-      type: Object,
-      computed: 'computeEntityObj(hass, stateObj)',
-    },
-  },
-  computeEntityObj: function (hass, stateObj) {
+class HaCoverTiltControls extends Polymer.Element {
+  static get is() { return 'ha-cover-tilt-controls'; }
+
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
+      stateObj: {
+        type: Object,
+      },
+      entityObj: {
+        type: Object,
+        computed: 'computeEntityObj(hass, stateObj)',
+      },
+    };
+  }
+  computeEntityObj(hass, stateObj) {
     return new window.CoverEntity(hass, stateObj);
-  },
-  computeOpenDisabled: function (stateObj, entityObj) {
+  }
+  computeOpenDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
     return entityObj.isFullyOpenTilt && !assumedState;
-  },
-  computeClosedDisabled: function (stateObj, entityObj) {
+  }
+  computeClosedDisabled(stateObj, entityObj) {
     var assumedState = (stateObj.attributes.assumed_state === true);
     return entityObj.isFullyClosedTilt && !assumedState;
-  },
-  onOpenTiltTap: function (ev) {
+  }
+  onOpenTiltTap(ev) {
     ev.stopPropagation();
     this.entityObj.openCoverTilt();
-  },
-  onCloseTiltTap: function (ev) {
+  }
+  onCloseTiltTap(ev) {
     ev.stopPropagation();
     this.entityObj.closeCoverTilt();
-  },
-  onStopTiltTap: function (ev) {
+  }
+  onStopTiltTap(ev) {
     ev.stopPropagation();
     this.entityObj.stopCoverTilt();
-  },
-});
+  }
+}
+
+customElements.define(HaCoverTiltControls.is, HaCoverTiltControls);
 </script>

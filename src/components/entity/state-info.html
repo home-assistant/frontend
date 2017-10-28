@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="./state-badge.html">
 <link rel="import" href="../ha-relative-time.html">
@@ -57,26 +57,30 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'state-info',
+class StateInfo extends Polymer.Element {
+  static get is() { return 'state-info'; }
 
-  properties: {
-    detailed: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      detailed: {
+        type: Boolean,
+        value: false,
+      },
 
-    stateObj: {
-      type: Object,
-    },
+      stateObj: {
+        type: Object,
+      },
 
-    inDialog: {
-      type: Boolean,
-    },
-  },
+      inDialog: {
+        type: Boolean,
+      },
+    };
+  }
 
-  computeStateName: function (stateObj) {
+  computeStateName(stateObj) {
     return window.hassUtil.computeStateName(stateObj);
   }
-});
+}
+
+customElements.define(StateInfo.is, StateInfo);
 </script>

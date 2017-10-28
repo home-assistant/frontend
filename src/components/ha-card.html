@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
 <dom-module id='ha-card'>
@@ -28,21 +28,25 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-card',
+class HaCard extends Polymer.Element {
+  static get is() { return 'ha-card'; }
 
-  properties: {
-    header: {
-      type: String,
-    },
-    /**
-     * The z-depth of the card, from 0-5.
-     */
-    elevation: {
-      type: Number,
-      value: 1,
-      reflectToAttribute: true,
-    },
-  },
-});
+  static get properties() {
+    return {
+      header: {
+        type: String,
+      },
+      /**
+       * The z-depth of the card, from 0-5.
+       */
+      elevation: {
+        type: Number,
+        value: 1,
+        reflectToAttribute: true,
+      },
+    };
+  }
+}
+
+customElements.define(HaCard.is, HaCard);
 </script>

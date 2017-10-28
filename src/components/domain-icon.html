@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
@@ -9,23 +9,27 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'domain-icon',
+class DomainIcon extends Polymer.Element {
+  static get is() { return 'domain-icon'; }
 
-  properties: {
-    domain: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      domain: {
+        type: String,
+        value: '',
+      },
 
-    state: {
-      type: String,
-      value: '',
-    },
-  },
+      state: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  computeIcon: function (domain, state) {
+  computeIcon(domain, state) {
     return window.hassUtil.domainIcon(domain, state);
-  },
-});
+  }
+}
+
+customElements.define(DomainIcon.is, DomainIcon);
 </script>

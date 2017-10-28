@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
@@ -76,27 +76,30 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-host-info',
+class HassioHostInfo extends Polymer.Element {
+  static get is() { return 'hassio-host-info'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    data: {
-      type: Object,
-      value: {},
-    },
+      data: {
+        type: Object,
+        value: {},
+      },
 
-    errors: String,
-  },
+      errors: String,
+    };
+  }
 
-  listeners: {
-    'hass-api-called': 'apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
 
-  apiCalled: function (ev) {
+  apiCalled(ev) {
     if (ev.detail.success) {
       this.errors = null;
       return;
@@ -109,18 +112,20 @@ Polymer({
     } else {
       this.errors = response.body;
     }
-  },
+  }
 
-  computeUpdateAvailable: function (data) {
+  computeUpdateAvailable(data) {
     return data.version !== data.last_version;
-  },
+  }
 
-  computeRebootAvailable: function (data) {
+  computeRebootAvailable(data) {
     return data.features && data.features.indexOf('reboot') !== -1;
-  },
+  }
 
-  computeShutdownAvailable: function (data) {
+  computeShutdownAvailable(data) {
     return data.features && data.features.indexOf('shutdown') !== -1;
-  },
-});
+  }
+}
+
+customElements.define(HassioHostInfo.is, HassioHostInfo);
 </script>

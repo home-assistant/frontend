@@ -101,12 +101,13 @@ class HaConfigSectionHassbian extends Polymer.Element {
       }
 
       if (isInstalling) {
-        this.async(this.updateStatus, 5000);
+        setTimeout(() => this.updateStatus(), 5000);
       }
     }.bind(this));
   }
 
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     this.updateStatus = this.updateStatus.bind(this);
     this.updateStatus();
   }

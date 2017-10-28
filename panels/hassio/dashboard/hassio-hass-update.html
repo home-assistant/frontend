@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
@@ -38,19 +38,22 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-hass-update',
+class HassioHassUpdate extends Polymer.Element {
+  static get is() { return 'hassio-hass-update'; }
 
-  properties: {
-    hass: Object,
-    data: Object,
-  },
+  static get properties() {
+    return {
+      hass: Object,
+      data: Object,
+    };
+  }
 
-  listeners: {
-    'hass-api-called': 'apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
 
-  apiCalled: function (ev) {
+  apiCalled(ev) {
     if (ev.detail.success) {
       this.errors = null;
       return;
@@ -63,10 +66,12 @@ Polymer({
     } else {
       this.errors = response.body;
     }
-  },
+  }
 
-  _computeUpdateAvailable: function (data) {
+  _computeUpdateAvailable(data) {
     return data.version !== data.last_version;
-  },
-});
+  }
+}
+
+customElements.define(HassioHassUpdate.is, HassioHassUpdate);
 </script>

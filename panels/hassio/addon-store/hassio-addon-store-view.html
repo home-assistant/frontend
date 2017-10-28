@@ -1,9 +1,10 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 
 <dom-module id="hassio-addon-store-view">
@@ -90,50 +91,55 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addon-store-view',
+class HassioAddonStoreView extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-addon-store-view'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    selectedAddon: {
-      type: String,
-      value: null,
-      notify: true,
-    },
+      selectedAddon: {
+        type: String,
+        value: null,
+        notify: true,
+      },
 
-    addon: {
-      type: Object,
-    },
+      addon: {
+        type: Object,
+      },
 
-    repo: {
-      type: Object,
-    },
-  },
+      repo: {
+        type: Object,
+      },
+    };
+  }
 
-  listeners: {
-    'hass-api-called': 'apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
 
-  pathInstall: function (addon) {
+  pathInstall(addon) {
     return addon && 'hassio/addons/' + addon.slug + '/install';
-  },
+  }
 
-  apiCalled: function (ev) {
+  apiCalled(ev) {
     if (ev.detail.success) {
       this.openAddon();
     }
-  },
+  }
 
-  openAddon: function () {
+  openAddon() {
     history.pushState(null, null, '/hassio/addon/' + this.addon.slug);
     this.fire('location-changed');
-  },
+  }
 
-  backTapped: function () {
+  backTapped() {
     history.back();
-  },
-});
+  }
+}
+
+customElements.define(HassioAddonStoreView.is, HassioAddonStoreView);
 </script>

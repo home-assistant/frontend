@@ -1,6 +1,7 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 
 <dom-module id="hassio-supervisor-info">
@@ -60,27 +61,30 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-supervisor-info',
+class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-supervisor-info'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    data: {
-      type: Object,
-      value: {},
-    },
+      data: {
+        type: Object,
+        value: {},
+      },
 
-    errors: String,
-  },
+      errors: String,
+    };
+  }
 
-  listeners: {
-    'hass-api-called': 'apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
 
-  apiCalled: function (ev) {
+  apiCalled(ev) {
     if (ev.detail.success) {
       this.errors = null;
       return;
@@ -93,15 +97,17 @@ Polymer({
     } else {
       this.errors = response.body;
     }
-  },
+  }
 
-  computeUpdateAvailable: function (data) {
+  computeUpdateAvailable(data) {
     return data.version !== data.last_version;
-  },
+  }
 
-  supervisorLogsTapped: function () {
+  supervisorLogsTapped() {
     history.pushState(null, null, '/hassio/supervisor');
     this.fire('location-changed');
   }
-});
+}
+
+customElements.define(HassioSupervisorInfo.is, HassioSupervisorInfo);
 </script>

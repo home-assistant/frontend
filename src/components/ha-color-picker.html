@@ -1,4 +1,6 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id='ha-color-picker'>
   <template>
@@ -20,67 +22,75 @@
  *
  * Adapted to work with Polymer.
  */
-Polymer({
-  is: 'ha-color-picker',
+class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-color-picker'; }
 
-  properties: {
-    color: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      color: {
+        type: Object,
+      },
 
-    width: {
-      type: Number,
-    },
+      width: {
+        type: Number,
+      },
 
-    height: {
-      type: Number,
-    },
-  },
+      height: {
+        type: Number,
+      },
+    };
+  }
 
-  listeners: {
-    mousedown: 'onMouseDown',
-    mouseup: 'onMouseUp',
-    touchstart: 'onTouchStart',
-    touchend: 'onTouchEnd',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('mousedown', ev => this.onMouseDown(ev));
+    this.addEventListener('mouseup', ev => this.onMouseUp(ev));
+    this.addEventListener('touchstart', ev => this.onTouchStart(ev));
+    this.addEventListener('touchend', ev => this.onTouchEnd(ev));
+    this.setColor = this.setColor.bind(this);
+    this.mouseMoveIsThrottled = true;
+    this.canvas = this.$.canvas;
+    this.context = this.canvas.getContext('2d');
+    this.drawGradient();
+  }
 
-  onMouseDown: function (ev) {
+  onMouseDown(ev) {
     this.onMouseMove(ev);
     this.addEventListener('mousemove', this.onMouseMove);
-  },
+  }
 
-  onMouseUp: function () {
+  onMouseUp() {
     this.removeEventListener('mousemove', this.onMouseMove);
-  },
+  }
 
-  onTouchStart: function (ev) {
+  onTouchStart(ev) {
     this.onTouchMove(ev);
     this.addEventListener('touchmove', this.onTouchMove);
-  },
+  }
 
-  onTouchEnd: function () {
+  onTouchEnd() {
     this.removeEventListener('touchmove', this.onTouchMove);
-  },
+  }
 
-  onTouchMove: function (ev) {
+  onTouchMove(ev) {
     if (!this.mouseMoveIsThrottled) {
       return;
     }
     this.mouseMoveIsThrottled = false;
     this.processColorSelect(ev.touches[0]);
-    this.async(function () { this.mouseMoveIsThrottled = true; }.bind(this), 100);
-  },
+    setTimeout(() => { this.mouseMoveIsThrottled = true; }, 100);
+  }
 
-  onMouseMove: function (ev) {
+  onMouseMove(ev) {
     if (!this.mouseMoveIsThrottled) {
       return;
     }
     this.mouseMoveIsThrottled = false;
     this.processColorSelect(ev);
     this.async(function () { this.mouseMoveIsThrottled = true; }.bind(this), 100);
-  },
+  }
 
-  processColorSelect: function (ev) {
+  processColorSelect(ev) {
     var rect = this.canvas.getBoundingClientRect();
 
     // boundary check because people can move off-canvas.
@@ -90,29 +100,21 @@ Polymer({
     }
 
     this.onColorSelect(ev.clientX - rect.left, ev.clientY - rect.top);
-  },
+  }
 
-  onColorSelect: function (x, y) {
+  onColorSelect(x, y) {
     var data = this.context.getImageData(x, y, 1, 1).data;
 
     this.setColor({ r: data[0], g: data[1], b: data[2] });
-  },
+  }
 
-  setColor: function (rgb) {
+  setColor(rgb) {
     this.color = rgb;
 
     this.fire('colorselected', { rgb: this.color });
-  },
+  }
 
-  ready: function () {
-    this.setColor = this.setColor.bind(this);
-    this.mouseMoveIsThrottled = true;
-    this.canvas = this.$.canvas;
-    this.context = this.canvas.getContext('2d');
-    this.drawGradient();
-  },
-
-  drawGradient: function () {
+  drawGradient() {
     var style;
     var width;
     var height;
@@ -143,6 +145,8 @@ Polymer({
 
     this.context.fillStyle = bwGradient;
     this.context.fillRect(0, 0, width, height);
-  },
-});
+  }
+}
+
+customElements.define(HaColorPicker.is, HaColorPicker);
 </script>

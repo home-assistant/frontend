@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -39,61 +39,64 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addon-store',
+class HassioAddonStore extends Polymer.Element {
+  static get is() { return 'hassio-addon-store'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    visible: {
-      type: Boolean,
-      observer: '_visibleChanged',
-    },
+      visible: {
+        type: Boolean,
+        observer: '_visibleChanged',
+      },
 
-    route: Object,
-    _routeData: Object,
-    _routeMatches: Boolean,
+      route: Object,
+      _routeData: Object,
+      _routeMatches: Boolean,
 
-    selectedAddonObject: {
-      type: Object,
-      computed: 'computeActiveAddon(addons, _routeData.addon)',
-    },
+      selectedAddonObject: {
+        type: Object,
+        computed: 'computeActiveAddon(addons, _routeData.addon)',
+      },
 
-    addons: {
-      type: Array,
-      value: [],
-    },
+      addons: {
+        type: Array,
+        value: [],
+      },
 
-    repos: {
-      type: Array,
-      value: []
-    },
+      repos: {
+        type: Array,
+        value: []
+      },
 
-    supervisorInfo: {
-      type: Object,
-    }
-  },
+      supervisorInfo: {
+        type: Object,
+      }
+    };
+  }
 
-  listeners: {
-    'hass-api-called': 'apiCalled',
-    'hassio-store-refresh': 'refreshData',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+    this.addEventListener('hassio-store-refresh', ev => this.refreshData(ev));
+  }
 
-  apiCalled: function (ev) {
+  apiCalled(ev) {
     if (ev.detail.success) {
       this._loadData();
     }
-  },
+  }
 
-  _visibleChanged: function (visible) {
+  _visibleChanged(visible) {
     if (visible) {
       this._loadData();
     }
-  },
+  }
 
-  _loadData: function () {
+  _loadData() {
     this.hass.callApi('get', 'hassio/addons')
       .then(function (info) {
         this.addons = info.data.addons;
@@ -102,18 +105,18 @@ Polymer({
         this.addons = [];
         this.repos = [];
       }.bind(this));
-  },
+  }
 
-  computeActiveAddon: function (addons, selectedAddon) {
+  computeActiveAddon(addons, selectedAddon) {
     for (var i = 0; i < addons.length; i++) {
       if (addons[i].slug === selectedAddon) {
         return addons[i];
       }
     }
     return null;
-  },
+  }
 
-  computeActiveRepo: function (repos, selectedAddonObject) {
+  computeActiveRepo(repos, selectedAddonObject) {
     if (!selectedAddonObject) return null;
 
     for (var i = 0; i < repos.length; i++) {
@@ -122,13 +125,15 @@ Polymer({
       }
     }
     return null;
-  },
+  }
 
-  refreshData: function () {
+  refreshData() {
     this.hass.callApi('post', 'hassio/addons/reload')
       .then(function () {
         this._loadData();
       }.bind(this));
-  },
-});
+  }
+}
+
+customElements.define(HassioAddonStore.is, HassioAddonStore);
 </script>

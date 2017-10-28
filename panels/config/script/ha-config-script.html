@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel='import' href='../../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="./ha-script-picker.html">
@@ -45,37 +45,39 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-script',
+class HaConfigScript extends Polymer.Element {
+  static get is() { return 'ha-config-script'; }
 
-  properties: {
-    hass: Object,
-    narrow: Boolean,
-    showMenu: Boolean,
-    route: Object,
-    isWide: Boolean,
-    _routeData: Object,
-    _routeMatches: Boolean,
-    _creatingNew: Boolean,
-    _edittingScript: Boolean,
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      route: Object,
+      isWide: Boolean,
+      _routeData: Object,
+      _routeMatches: Boolean,
+      _creatingNew: Boolean,
+      _edittingScript: Boolean,
 
-    scripts: {
-      type: Array,
-      computed: 'computeScripts(hass)',
-    },
+      scripts: {
+        type: Array,
+        computed: 'computeScripts(hass)',
+      },
 
-    script: {
-      type: Object,
-      computed: 'computeScript(scripts, _edittingScript, _routeData)',
-    },
+      script: {
+        type: Object,
+        computed: 'computeScript(scripts, _edittingScript, _routeData)',
+      },
 
-    showEditor: {
-      type: Boolean,
-      computed: 'computeShowEditor(_edittingScript, _creatingNew)',
-    }
-  },
+      showEditor: {
+        type: Boolean,
+        computed: 'computeShowEditor(_edittingScript, _creatingNew)',
+      }
+    };
+  }
 
-  computeScript: function (scripts, edittingAddon, routeData) {
+  computeScript(scripts, edittingAddon, routeData) {
     if (!scripts || !edittingAddon) {
       return null;
     }
@@ -85,9 +87,9 @@ Polymer({
       }
     }
     return null;
-  },
+  }
 
-  computeScripts: function (hass) {
+  computeScripts(hass) {
     var scripts = [];
 
     Object.keys(hass.states).forEach(function (key) {
@@ -110,10 +112,12 @@ Polymer({
       }
       return 0;
     });
-  },
+  }
 
-  computeShowEditor: function (_edittingScript, _creatingNew) {
+  computeShowEditor(_edittingScript, _creatingNew) {
     return _creatingNew || _edittingScript;
-  },
-});
+  }
+}
+
+customElements.define(HaConfigScript.is, HaConfigScript);
 </script>

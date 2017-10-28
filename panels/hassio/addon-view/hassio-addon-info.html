@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -172,66 +172,70 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addon-info',
+class HassioAddonInfo extends Polymer.Element {
+  static get is() { return 'hassio-addon-info'; }
 
-  properties: {
-    hass: Object,
-    addonInfo: Object,
-    addonState: Object,
+  static get properties() {
+    return {
+      hass: Object,
+      addonInfo: Object,
+      addonState: Object,
 
-    _isRunning: {
-      type: Boolean,
-      computed: '_computeIsRunning(addonState)',
-    },
-  },
+      _isRunning: {
+        type: Boolean,
+        computed: '_computeIsRunning(addonState)',
+      },
+    };
+  }
 
-  _computeIsRunning: function (addonState) {
+  _computeIsRunning(addonState) {
     return addonState && addonState.state === 'started';
-  },
+  }
 
-  _computeUpdateAvailable: function (data) {
+  _computeUpdateAvailable(data) {
     return data && !data.detached && data.version !== data.last_version;
-  },
+  }
 
-  _pathStart: function (addon) {
+  _pathStart(addon) {
     return 'hassio/addons/' + addon + '/start';
-  },
+  }
 
-  _pathStop: function (addon) {
+  _pathStop(addon) {
     return 'hassio/addons/' + addon + '/stop';
-  },
+  }
 
-  _pathRestart: function (addon) {
+  _pathRestart(addon) {
     return 'hassio/addons/' + addon + '/restart';
-  },
+  }
 
-  _pathUninstall: function (addon) {
+  _pathUninstall(addon) {
     return 'hassio/addons/' + addon + '/uninstall';
-  },
+  }
 
-  _pathUpdate: function (addon) {
+  _pathUpdate(addon) {
     return 'hassio/addons/' + addon + '/update';
-  },
+  }
 
-  _pathAddonOptions: function (addon) {
+  _pathAddonOptions(addon) {
     return 'hassio/addons/' + addon + '/options';
-  },
+  }
 
-  _pathWebui: function (webui) {
+  _pathWebui(webui) {
     return webui && webui.replace('[HOST]', document.location.hostname);
-  },
+  }
 
-  _pathLogo: function (addon) {
+  _pathLogo(addon) {
     return '/api/hassio/addons/' + addon + '/logo';
-  },
+  }
 
-  _dataToggleAutoUpdate: function (addon, addonState) {
+  _dataToggleAutoUpdate(addon, addonState) {
     return addonState && { auto_update: !addonState.auto_update };
-  },
+  }
 
-  _dataToggleBoot: function (addon, addonState) {
+  _dataToggleBoot(addon, addonState) {
     return addonState && { boot: addonState.boot === 'manual' ? 'auto' : 'manual' };
   }
-});
+}
+
+customElements.define(HassioAddonInfo.is, HassioAddonInfo);
 </script>
