@@ -25,8 +25,16 @@ function getActiveTranslation() {
   }
 
   let translation = null;
-  if (window.localStorage.selectedLanguage && JSON.parse(window.localStorage.selectedLanguage)) {
-    translation = languageGetTranslation(JSON.parse(window.localStorage.selectedLanguage));
+  let selectedLanguage;
+  if (window.localStorage.selectedLanguage) {
+    try {
+      selectedLanguage = JSON.parse(window.localStorage.selectedLanguage);
+    } catch (e) {
+      // Ignore parsing error.
+    }
+  }
+  if (selectedLanguage) {
+    translation = languageGetTranslation(selectedLanguage);
     if (translation) {
       return translation;
     }
