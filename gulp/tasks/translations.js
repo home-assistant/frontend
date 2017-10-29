@@ -17,7 +17,7 @@ function recursive_flatten (prefix, data) {
   var output = {};
   Object.keys(data).forEach(function (key) {
     if (typeof(data[key]) === 'object') {
-      output = Object.assign({}, output, recursive_flatten(key + '.', data[key]));
+      output = Object.assign({}, output, recursive_flatten(prefix + key + '.', data[key]));
     } else {
       output[prefix + key] = data[key];
     }
