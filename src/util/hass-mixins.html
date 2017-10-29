@@ -82,9 +82,7 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
   class extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], superClass) {
     static get properties() {
       return {
-        hass: {
-          type: Object,
-        },
+        hass: Object,
         language: {
           type: String,
           computed: 'computeLanguage(hass)',
@@ -104,9 +102,9 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
       return hass && hass.resources;
     }
 
-    localize(namespace, message, ...args) {
-      // Return the input message if no translation is found
-      return super.localize(namespace + '.' + message, ...args) || message;
+    localize(namespace, message, fallback = true, ...args) {
+      return super.localize(namespace + '.' + message, ...args)
+        || (fallback === true ? message : null);
     }
   });
 
