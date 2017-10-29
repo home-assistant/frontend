@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
@@ -169,7 +170,11 @@ class HaPanelDevTemplate extends Polymer.Element {
     if (this.error) {
       this.error = false;
     }
-    this.debounce('render-template', this.renderTemplate.bind(this), 500);
+    this._debouncer = Polymer.Debouncer.debounce(
+      this._debouncer,
+      Polymer.Async.timeOut.after(500),
+      () => { this.renderTemplate(); }
+    );
   }
 
   renderTemplate() {
