@@ -87,7 +87,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
     this.mouseMoveIsThrottled = false;
     this.processColorSelect(ev);
-    this.async(function () { this.mouseMoveIsThrottled = true; }.bind(this), 100);
+    setTimeout(() => { this.mouseMoveIsThrottled = true; }, 100);
   }
 
   processColorSelect(ev) {
