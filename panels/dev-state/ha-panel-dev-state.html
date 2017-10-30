@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
@@ -98,59 +98,61 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-dev-state',
+class HaPanelDevState extends Polymer.Element {
+  static get is() { return 'ha-panel-dev-state'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    _entityId: {
-      type: String,
-      value: '',
-    },
+      _entityId: {
+        type: String,
+        value: '',
+      },
 
-    _state: {
-      type: String,
-      value: '',
-    },
+      _state: {
+        type: String,
+        value: '',
+      },
 
-    _stateAttributes: {
-      type: String,
-      value: '',
-    },
+      _stateAttributes: {
+        type: String,
+        value: '',
+      },
 
-    _showAttributes: {
-      type: Boolean,
-      value: true,
-    },
+      _showAttributes: {
+        type: Boolean,
+        value: true,
+      },
 
-    _entities: {
-      type: Array,
-      computed: 'computeEntities(hass)',
-    },
-  },
+      _entities: {
+        type: Array,
+        computed: 'computeEntities(hass)',
+      },
+    };
+  }
 
-  entitySelected: function (ev) {
+  entitySelected(ev) {
     var state = ev.model.entity;
     this._entityId = state.entity_id;
     this._state = state.state;
     this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
     ev.preventDefault();
-  },
+  }
 
-  handleSetState: function () {
+  handleSetState() {
     var attr;
     var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, '');
     try {
@@ -167,9 +169,9 @@ Polymer({
       state: this._state,
       attributes: attr,
     });
-  },
+  }
 
-  computeEntities: function (hass) {
+  computeEntities(hass) {
     return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
       .sort(function (entityA, entityB) {
         if (entityA.entity_id < entityB.entity_id) {
@@ -180,13 +182,13 @@ Polymer({
         }
         return 0;
       });
-  },
+  }
 
-  computeShowAttributes: function (narrow, _showAttributes) {
+  computeShowAttributes(narrow, _showAttributes) {
     return !narrow && _showAttributes;
-  },
+  }
 
-  attributeString: function (entity) {
+  attributeString(entity) {
     var output = '';
     var i;
     var keys;
@@ -203,6 +205,8 @@ Polymer({
     }
 
     return output;
-  },
-});
+  }
+}
+
+customElements.define(HaPanelDevState.is, HaPanelDevState);
 </script>

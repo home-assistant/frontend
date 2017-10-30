@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel='import' href='../../src/layouts/partial-cards.html'>
 
@@ -15,12 +15,16 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-kiosk',
+class HaPanelKiosk extends Polymer.Element {
+  static get is() { return 'ha-panel-kiosk'; }
 
-  properties: {
-    hass: Object,
-    route: Object,
-  },
-});
+  static get properties() {
+    return {
+      hass: Object,
+      route: Object,
+    };
+  }
+}
+
+customElements.define(HaPanelKiosk.is, HaPanelKiosk);
 </script>

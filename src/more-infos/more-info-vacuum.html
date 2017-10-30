@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -86,75 +86,77 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-vacuum',
+class MoreInfoVacuum extends Polymer.Element {
+  static get is() { return 'more-info-vacuum'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    inDialog: {
-      type: Boolean,
-      value: false,
-    },
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
 
-    stateObj: {
-      type: Object,
-    },
+      stateObj: {
+        type: Object,
+      },
 
-    fanSpeedIndex: {
-      type: Number,
-      value: -1,
-      observer: 'fanSpeedChanged',
-    },
-  },
+      fanSpeedIndex: {
+        type: Number,
+        value: -1,
+        observer: 'fanSpeedChanged',
+      },
+    };
+  }
 
   /* eslint-disable no-bitwise */
 
-  supportsPause: function (stateObj) {
+  supportsPause(stateObj) {
     return (stateObj.attributes.supported_features & 4) !== 0;
-  },
+  }
 
-  supportsStop: function (stateObj) {
+  supportsStop(stateObj) {
     return (stateObj.attributes.supported_features & 8) !== 0;
-  },
+  }
 
-  supportsReturnHome: function (stateObj) {
+  supportsReturnHome(stateObj) {
     return (stateObj.attributes.supported_features & 16) !== 0;
-  },
+  }
 
-  supportsFanSpeed: function (stateObj) {
+  supportsFanSpeed(stateObj) {
     return (stateObj.attributes.supported_features & 32) !== 0;
-  },
+  }
 
-  supportsBattery: function (stateObj) {
+  supportsBattery(stateObj) {
     return (stateObj.attributes.supported_features & 64) !== 0;
-  },
+  }
 
-  supportsStatus: function (stateObj) {
+  supportsStatus(stateObj) {
     return (stateObj.attributes.supported_features & 128) !== 0;
-  },
+  }
 
-  supportsLocate: function (stateObj) {
+  supportsLocate(stateObj) {
     return (stateObj.attributes.supported_features & 512) !== 0;
-  },
+  }
 
-  supportsCleanSpot: function (stateObj) {
+  supportsCleanSpot(stateObj) {
     return (stateObj.attributes.supported_features & 1024) !== 0;
-  },
+  }
 
-  supportsCommandBar: function (stateObj) {
+  supportsCommandBar(stateObj) {
     return (((stateObj.attributes.supported_features & 4) !== 0)
             | ((stateObj.attributes.supported_features & 8) !== 0)
             | ((stateObj.attributes.supported_features & 16) !== 0)
             | ((stateObj.attributes.supported_features & 512) !== 0)
             | ((stateObj.attributes.supported_features & 1024) !== 0));
-  },
+  }
 
   /* eslint-enable no-bitwise */
 
-  fanSpeedChanged: function (fanSpeedIndex) {
+  fanSpeedChanged(fanSpeedIndex) {
     var fanSpeedInput;
     // Selected Option will transition to '' before transitioning to new value
     if (fanSpeedIndex === '' || fanSpeedIndex === -1) return;
@@ -166,36 +168,38 @@ Polymer({
       entity_id: this.stateObj.entity_id,
       fan_speed: fanSpeedInput,
     });
-  },
+  }
 
-  onStop: function () {
+  onStop() {
     this.hass.callService('vacuum', 'stop', {
       entity_id: this.stateObj.entity_id
     });
-  },
+  }
 
-  onPlayPause: function () {
+  onPlayPause() {
     this.hass.callService('vacuum', 'start_pause', {
       entity_id: this.stateObj.entity_id
     });
-  },
+  }
 
-  onLocate: function () {
+  onLocate() {
     this.hass.callService('vacuum', 'locate', {
       entity_id: this.stateObj.entity_id
     });
-  },
+  }
 
-  onCleanSpot: function () {
+  onCleanSpot() {
     this.hass.callService('vacuum', 'clean_spot', {
       entity_id: this.stateObj.entity_id
     });
-  },
+  }
 
-  onReturnHome: function () {
+  onReturnHome() {
     this.hass.callService('vacuum', 'return_to_base', {
       entity_id: this.stateObj.entity_id
     });
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoVacuum.is, MoreInfoVacuum);
 </script>

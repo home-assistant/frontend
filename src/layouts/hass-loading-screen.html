@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
@@ -29,24 +30,28 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hass-loading-screen',
+class HassLoadingScreen extends Polymer.Element {
+  static get is() { return 'hass-loading-screen'; }
 
-  properties: {
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    title: {
-      type: String,
-      value: '',
-    },
-  },
-});
+      title: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+}
+
+customElements.define(HassLoadingScreen.is, HassLoadingScreen);
 </script>

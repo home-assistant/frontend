@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
@@ -34,23 +35,27 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hass-error-screen',
+class HassErrorScreen extends Polymer.Element {
+  static get is() { return 'hass-error-screen'; }
 
-  properties: {
-    title: {
-      type: String,
-      value: 'Home Assistant',
-    },
+  static get properties() {
+    return {
+      title: {
+        type: String,
+        value: 'Home Assistant',
+      },
 
-    error: {
-      type: String,
-      value: 'Oops! It looks like something went wrong.'
-    },
-  },
+      error: {
+        type: String,
+        value: 'Oops! It looks like something went wrong.'
+      },
+    };
+  }
 
-  backTapped: function () {
+  backTapped() {
     history.back();
-  },
-});
+  }
+}
+
+customElements.define(HassErrorScreen.is, HassErrorScreen);
 </script>

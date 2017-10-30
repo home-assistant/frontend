@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
@@ -78,48 +78,51 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-logbook',
+class HaPanelLogbook extends Polymer.Element {
+  static get is() { return 'ha-panel-logbook'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
-
-    // ISO8601 formatted date string
-    _currentDate: {
-      type: String,
-      value: function () {
-        var value = new Date();
-        var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
-        return today.toISOString().split('T')[0];
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
       },
-    },
 
-    isLoading: {
-      type: Boolean,
-    },
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
 
-    entries: {
-      type: Array,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    datePicker: {
-      type: Object,
-    },
-  },
+      // ISO8601 formatted date string
+      _currentDate: {
+        type: String,
+        value: function () {
+          var value = new Date();
+          var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
+          return today.toISOString().split('T')[0];
+        },
+      },
 
-  attached: function () {
+      isLoading: {
+        type: Boolean,
+      },
+
+      entries: {
+        type: Array,
+      },
+
+      datePicker: {
+        type: Object,
+      },
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
     // We are unable to parse date because we use intl api to render date
     // So we just return last known date.
     var lastFormatDate = new Date();
@@ -130,13 +133,15 @@ Polymer({
       lastFormatDate = date;
       return window.hassUtil.formatDate(date);
     });
-  },
+  }
 
-  _computeFilterDate: function (_currentDate) {
+  _computeFilterDate(_currentDate) {
     if (!_currentDate) return undefined;
     var parts = _currentDate.split('-');
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]).toISOString();
-  },
-});
+  }
+}
+
+customElements.define(HaPanelLogbook.is, HaPanelLogbook);
 </script>

@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./ha-progress-button.html">
 
 <dom-module id='ha-call-service-button'>
@@ -12,34 +12,36 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-call-service-button',
+class HaCallServiceButton extends Polymer.Element {
+  static get is() { return 'ha-call-service-button'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    progress: {
-      type: Boolean,
-      value: false,
-    },
+      progress: {
+        type: Boolean,
+        value: false,
+      },
 
-    domain: {
-      type: String,
-    },
+      domain: {
+        type: String,
+      },
 
-    service: {
-      type: String,
-    },
+      service: {
+        type: String,
+      },
 
-    serviceData: {
-      type: Object,
-      value: {},
-    },
-  },
+      serviceData: {
+        type: Object,
+        value: {},
+      },
+    };
+  }
 
-  buttonTapped: function () {
+  buttonTapped() {
     this.progress = true;
     var el = this;
     var eventData = {
@@ -60,6 +62,8 @@ Polymer({
       }).then(function () {
         el.fire('hass-service-called', eventData);
       });
-  },
-});
+  }
+}
+
+customElements.define(HaCallServiceButton.is, HaCallServiceButton);
 </script>

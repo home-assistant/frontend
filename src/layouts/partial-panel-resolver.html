@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="./hass-loading-screen.html">
@@ -29,58 +29,60 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'partial-panel-resolver',
+class PartialPanelResolver extends Polymer.Element {
+  static get is() { return 'partial-panel-resolver'; }
 
-  properties: {
-    hass: {
-      type: Object,
-      observer: 'updateAttributes',
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+        observer: 'updateAttributes',
+      },
 
-    narrow: {
-      type: Boolean,
-      value: false,
-      observer: 'updateAttributes',
-    },
+      narrow: {
+        type: Boolean,
+        value: false,
+        observer: 'updateAttributes',
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-      observer: 'updateAttributes',
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+        observer: 'updateAttributes',
+      },
 
-    route: Object,
+      route: Object,
 
-    routeData: Object,
+      routeData: Object,
 
-    routeTail: {
-      type: Object,
-      observer: 'updateAttributes',
-    },
+      routeTail: {
+        type: Object,
+        observer: 'updateAttributes',
+      },
 
-    resolved: {
-      type: Boolean,
-      value: false,
-    },
+      resolved: {
+        type: Boolean,
+        value: false,
+      },
 
-    errorLoading: {
-      type: Boolean,
-      value: false,
-    },
+      errorLoading: {
+        type: Boolean,
+        value: false,
+      },
 
-    panel: {
-      type: Object,
-      computed: 'computeCurrentPanel(hass, routeData)',
-      observer: 'panelChanged',
-    },
-  },
+      panel: {
+        type: Object,
+        computed: 'computeCurrentPanel(hass, routeData)',
+        observer: 'panelChanged',
+      },
+    };
+  }
 
-  computeCurrentPanel: function (hass, routeData) {
+  computeCurrentPanel(hass, routeData) {
     return routeData ? hass.config.panels[routeData.panel] : null;
-  },
+  }
 
-  panelChanged: function (panel) {
+  panelChanged(panel) {
     if (!panel) {
       if (this.$.panel.lastChild) {
         this.$.panel.removeChild(this.$.panel.lastChild);
@@ -91,10 +93,10 @@ Polymer({
     this.resolved = false;
     this.errorLoading = false;
 
-    this.importHref(
+    Polymer.importHref(
       panel.url,
 
-      function success() {
+      () => {
         window.hassUtil.dynamicContentUpdater(this.$.panel, 'ha-panel-' + panel.component_name, {
           hass: this.hass,
           narrow: this.narrow,
@@ -103,23 +105,25 @@ Polymer({
           panel: panel,
         });
         this.resolved = true;
-      }.bind(this),
+      },
 
-      function error() {
+      () => {
         this.errorLoading = true;
-      }.bind(this),
+      },
 
       true /* async */
     );
-  },
+  }
 
-  updateAttributes: function () {
+  updateAttributes() {
     var customEl = Polymer.dom(this.$.panel).lastChild;
     if (!customEl) return;
     customEl.hass = this.hass;
     customEl.narrow = this.narrow;
     customEl.showMenu = this.showMenu;
     customEl.route = this.routeTail;
-  },
-});
+  }
+}
+
+customElements.define(PartialPanelResolver.is, PartialPanelResolver);
 </script>

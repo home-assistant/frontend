@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -12,6 +12,7 @@
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/resources/ha-style.html">
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <link rel="import" href="./events-list.html">
 
@@ -71,40 +72,42 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-dev-event',
+class HaPanelDevEvent extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-panel-dev-event'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    eventType: {
-      type: String,
-      value: '',
-    },
+      eventType: {
+        type: String,
+        value: '',
+      },
 
-    eventData: {
-      type: String,
-      value: '',
-    },
-  },
+      eventData: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  eventSelected: function (ev) {
+  eventSelected(ev) {
     this.eventType = ev.detail.eventType;
-  },
+  }
 
-  fireEvent: function () {
+  fireEvent() {
     var eventData;
 
     try {
@@ -122,11 +125,13 @@ Polymer({
           message: 'Event ' + this.eventType + ' successful fired!',
         });
       }.bind(this));
-  },
+  }
 
-  computeFormClasses: function (narrow) {
+  computeFormClasses(narrow) {
     return narrow ?
       'content fit' : 'content fit layout horizontal';
-  },
-});
+  }
+}
+
+customElements.define(HaPanelDevEvent.is, HaPanelDevEvent);
 </script>

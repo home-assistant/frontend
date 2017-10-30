@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -25,47 +25,51 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-sun',
+class MoreInfoSun extends Polymer.Element {
+  static get is() { return 'more-info-sun'; }
 
-  properties: {
-    stateObj: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      stateObj: {
+        type: Object,
+      },
 
-    risingDate: {
-      type: Object,
-      computed: 'computeRising(stateObj)',
-    },
+      risingDate: {
+        type: Object,
+        computed: 'computeRising(stateObj)',
+      },
 
-    settingDate: {
-      type: Object,
-      computed: 'computeSetting(stateObj)',
-    },
-  },
+      settingDate: {
+        type: Object,
+        computed: 'computeSetting(stateObj)',
+      },
+    };
+  }
 
-  computeRising: function (stateObj) {
+  computeRising(stateObj) {
     return new Date(stateObj.attributes.next_rising);
-  },
+  }
 
-  computeSetting: function (stateObj) {
+  computeSetting(stateObj) {
     return new Date(stateObj.attributes.next_setting);
-  },
+  }
 
-  computeOrder: function (risingDate, settingDate) {
+  computeOrder(risingDate, settingDate) {
     return risingDate > settingDate ? ['set', 'ris'] : ['ris', 'set'];
-  },
+  }
 
-  itemCaption: function (type) {
+  itemCaption(type) {
     return type === 'ris' ? 'Rising ' : 'Setting ';
-  },
+  }
 
-  itemDate: function (type) {
+  itemDate(type) {
     return type === 'ris' ? this.risingDate : this.settingDate;
-  },
+  }
 
-  itemValue: function (type) {
+  itemValue(type) {
     return window.hassUtil.formatTime(this.itemDate(type));
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoSun.is, MoreInfoSun);
 </script>

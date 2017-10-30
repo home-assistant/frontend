@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 
@@ -133,36 +133,38 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-voice-command-dialog',
+class HaVoiceCommandDialog extends Polymer.Element {
+  static get is() { return 'ha-voice-command-dialog'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    dialogOpen: {
-      type: Boolean,
-      value: false,
-      observer: 'dialogOpenChanged',
-    },
-
-    results: {
-      type: Object,
-      value: null,
-      observer: '_scrollMessagesBottom',
-    },
-
-    _conversation: {
-      type: Array,
-      value: function () {
-        return [{ who: 'hass', text: 'How can I help?' }];
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
       },
-      observer: '_scrollMessagesBottom',
-    }
-  },
 
-  initRecognition: function () {
+      dialogOpen: {
+        type: Boolean,
+        value: false,
+        observer: 'dialogOpenChanged',
+      },
+
+      results: {
+        type: Object,
+        value: null,
+        observer: '_scrollMessagesBottom',
+      },
+
+      _conversation: {
+        type: Array,
+        value: function () {
+          return [{ who: 'hass', text: 'How can I help?' }];
+        },
+        observer: '_scrollMessagesBottom',
+      }
+    };
+  }
+
+  initRecognition() {
     /* eslint-disable new-cap */
     this.recognition = new webkitSpeechRecognition();
     /* eslint-enable new-cap */
@@ -217,9 +219,9 @@ Polymer({
         final: oldResults.final + finalTranscript,
       };
     }.bind(this);
-  },
+  }
 
-  startListening: function () {
+  startListening() {
     if (!this.recognition) {
       this.initRecognition();
     }
@@ -229,28 +231,30 @@ Polymer({
       final: '',
     };
     this.recognition.start();
-  },
+  }
 
-  _scrollMessagesBottom: function () {
-    this.async(function () {
+  _scrollMessagesBottom() {
+    setTimeout(() => {
       this.$.messages.scrollTop = this.$.messages.scrollHeight;
 
       if (this.$.messages.scrollTop !== 0) {
         this.$.dialog.fire('iron-resize');
       }
-    }.bind(this), 10);
-  },
+    }, 10);
+  }
 
-  dialogOpenChanged: function (newVal) {
+  dialogOpenChanged(newVal) {
     if (newVal) {
       this.startListening();
     } else if (!newVal && this.results) {
       this.recognition.abort();
     }
-  },
+  }
 
-  _computeMessageClasses: function (message) {
+  _computeMessageClasses(message) {
     return 'message ' + message.who + (message.error ? ' error' : '');
   }
-});
+}
+
+customElements.define(HaVoiceCommandDialog.is, HaVoiceCommandDialog);
 </script>

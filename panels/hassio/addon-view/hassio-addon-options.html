@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 <link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -51,58 +51,60 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addon-options',
+class HassioAddonOptions extends Polymer.Element {
+  static get is() { return 'hassio-addon-options'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    addon: {
-      type: String,
-    },
+      addon: {
+        type: String,
+      },
 
-    options: {
-      type: String,
-      value: '',
-    },
+      options: {
+        type: String,
+        value: '',
+      },
 
-    optionsParsed: {
-      type: Object,
-      computed: 'parseOptions(options)',
-    },
+      optionsParsed: {
+        type: Object,
+        computed: 'parseOptions(options)',
+      },
 
-    errors: {
-      type: String,
-      value: null,
-    },
+      errors: {
+        type: String,
+        value: null,
+      },
 
-    addonState: {
-      type: Object,
-      value: null,
-      observer: 'addonStateChanged',
-    },
+      addonState: {
+        type: Object,
+        value: null,
+        observer: 'addonStateChanged',
+      },
 
-    _resetOptionsData: {
-      type: Object,
-      value: { options: {} },
-    },
-  },
+      _resetOptionsData: {
+        type: Object,
+        value: { options: {} },
+      },
+    };
+  }
 
-  addonStateChanged: function (addonState) {
+  addonStateChanged(addonState) {
     this.options = addonState ? JSON.stringify(addonState.options, null, 2) : '';
-  },
+  }
 
-  parseOptions: function (options) {
+  parseOptions(options) {
     try {
       return JSON.parse(options);
     } catch (err) {
       return null;
     }
-  },
+  }
 
-  saveTapped: function () {
+  saveTapped() {
     this.errors = null;
 
     this.hass.callApi('post', 'hassio/addons/' + this.addon + '/options', {
@@ -110,16 +112,18 @@ Polymer({
     }).catch(function (resp) {
       this.errors = resp.body.message;
     }.bind(this));
-  },
+  }
 
-  computeOptionsData: function (optionsParsed) {
+  computeOptionsData(optionsParsed) {
     return {
       options: optionsParsed,
     };
-  },
+  }
 
-  pathOptions: function (addon) {
+  pathOptions(addon) {
     return 'hassio/addons/' + addon + '/options';
-  },
-});
+  }
+}
+
+customElements.define(HassioAddonOptions.is, HassioAddonOptions);
 </script>

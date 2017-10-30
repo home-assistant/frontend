@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <dom-module id="more-info-updater">
   <template>
@@ -15,18 +15,22 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-updater',
+class MoreInfoUpdater extends Polymer.Element {
+  static get is() { return 'more-info-updater'; }
 
-  properties: {
-    stateObj: {
-      type: Object,
-    },
-  },
+  static get properties() {
+    return {
+      stateObj: {
+        type: Object,
+      },
+    };
+  }
 
-  computeReleaseNotes: function (stateObj) {
+  computeReleaseNotes(stateObj) {
     return (stateObj.attributes.release_notes ||
             'https://home-assistant.io/getting-started/updating/');
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoUpdater.is, MoreInfoUpdater);
 </script>

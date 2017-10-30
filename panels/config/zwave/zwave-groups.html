@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
@@ -96,82 +96,85 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'zwave-groups',
+class ZwaveGroups extends Polymer.Element {
+  static get is() { return 'zwave-groups'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    nodes: {
-      type: Array,
-    },
+      nodes: {
+        type: Array,
+      },
 
-    groups: {
-      type: Array,
-    },
+      groups: {
+        type: Array,
+      },
 
-    selectedNode: {
-      type: Number,
-    },
+      selectedNode: {
+        type: Number,
+      },
 
-    selectedTargetNode: {
-      type: Number,
-      value: -1
-    },
+      selectedTargetNode: {
+        type: Number,
+        value: -1
+      },
 
-    selectedGroup: {
-      type: Number,
-      value: -1,
-      observer: 'selectedGroupChanged'
-    },
+      selectedGroup: {
+        type: Number,
+        value: -1,
+        observer: 'selectedGroupChanged'
+      },
 
-    otherGroupNodes: {
-      type: Array,
-      value: -1,
-      computed: 'computeOtherGroupNodes(selectedGroup)'
-    },
+      otherGroupNodes: {
+        type: Array,
+        value: -1,
+        computed: 'computeOtherGroupNodes(selectedGroup)'
+      },
 
-    maxAssociations: {
-      type: String,
-      value: '',
-      computed: 'computeMaxAssociations(selectedGroup)'
-    },
+      maxAssociations: {
+        type: String,
+        value: '',
+        computed: 'computeMaxAssociations(selectedGroup)'
+      },
 
-    noAssociationsLeft: {
-      type: Boolean,
-      value: true,
-      computed: 'computeAssociationsLeft(selectedGroup)'
-    },
-  },
+      noAssociationsLeft: {
+        type: Boolean,
+        value: true,
+        computed: 'computeAssociationsLeft(selectedGroup)'
+      },
+    };
+  }
 
-  listeners: {
-    'hass-service-called': 'serviceCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+  }
 
-  serviceCalled: function (ev) {
+  serviceCalled(ev) {
     if (ev.detail.success) {
       var foo = this;
       setTimeout(function () {
         foo.refreshGroups(foo.selectedNode);
       }, 5000);
     }
-  },
+  }
 
-  computeAssociationsLeft: function (selectedGroup) {
+  computeAssociationsLeft(selectedGroup) {
     if (selectedGroup === -1) return true;
     return (this.maxAssociations === this.otherGroupNodes.length);
-  },
+  }
 
-  computeMaxAssociations: function (selectedGroup) {
+  computeMaxAssociations(selectedGroup) {
     if (selectedGroup === -1) return -1;
     var maxAssociations = this.groups[selectedGroup].value.max_associations;
     if (!maxAssociations) return 'None';
     return maxAssociations;
-  },
+  }
 
-  computeOtherGroupNodes: function (selectedGroup) {
+  computeOtherGroupNodes(selectedGroup) {
     if (selectedGroup === -1) return -1;
     var associations = Object.values(this.groups[selectedGroup].value.association_instances);
     if (!associations.length) return ['None'];
@@ -191,34 +194,34 @@ Polymer({
       }
       return caption;
     });
-  },
+  }
 
-  computeTargetInGroup: function (selectedGroup, selectedTargetNode) {
+  computeTargetInGroup(selectedGroup, selectedTargetNode) {
     if (selectedGroup === -1 || selectedTargetNode === -1) return false;
     const associations = Object.values(this.groups[selectedGroup].value.associations);
     if (!associations.length) return false;
     return associations.indexOf(this.nodes[selectedTargetNode].attributes.node_id) !== -1;
-  },
+  }
 
-  computeSelectCaption: function (stateObj) {
+  computeSelectCaption(stateObj) {
     return window.hassUtil.computeStateName(stateObj) + ' (Node:' +
       stateObj.attributes.node_id + ' ' +
       stateObj.attributes.query_stage + ')';
-  },
+  }
 
-  computeSelectCaptionGroup: function (stateObj) {
+  computeSelectCaptionGroup(stateObj) {
     return (stateObj.key + ': ' + stateObj.value.label);
-  },
+  }
 
-  computeIsTargetNodeSelected: function (selectedTargetNode) {
+  computeIsTargetNodeSelected(selectedTargetNode) {
     return this.nodes && selectedTargetNode !== -1;
-  },
+  }
 
-  computeIsGroupSelected: function (selectedGroup) {
+  computeIsGroupSelected(selectedGroup) {
     return this.nodes && this.selectedNode !== -1 && selectedGroup !== -1;
-  },
+  }
 
-  computeAssocServiceData: function (selectedGroup, type) {
+  computeAssocServiceData(selectedGroup, type) {
     if (!this.groups === -1 || selectedGroup === -1 || this.selectedNode === -1) return -1;
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
@@ -226,9 +229,9 @@ Polymer({
       target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
       group: this.groups[selectedGroup].key
     };
-  },
+  }
 
-  refreshGroups: function (selectedNode) {
+  refreshGroups(selectedNode) {
     var groupData = [];
     this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
       Object.keys(groups).forEach(function (key) {
@@ -240,12 +243,14 @@ Polymer({
       this.groups = groupData;
       this.selectedGroupChanged(this.selectedGroup);
     }.bind(this));
-  },
+  }
 
-  selectedGroupChanged: function (selectedGroup) {
+  selectedGroupChanged(selectedGroup) {
     if (this.selectedGroup === -1 || selectedGroup === -1) return;
     this.maxAssociations = this.groups[selectedGroup].value.max_associations;
     this.otherGroupNodes = Object.values(this.groups[selectedGroup].value.associations);
-  },
-});
+  }
+}
+
+customElements.define(ZwaveGroups.is, ZwaveGroups);
 </script>

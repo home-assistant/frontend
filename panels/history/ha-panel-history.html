@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
@@ -91,70 +91,73 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-history',
+class HaPanelHistory extends Polymer.Element {
+  static get is() { return 'ha-panel-history'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    narrow: {
-      type: Boolean,
-    },
-
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
-
-    stateHistoryInput: {
-      type: Object,
-      value: null,
-      observer: 'stateHistoryObserver'
-    },
-
-    stateHistoryOutput: {
-      type: Object,
-      value: null,
-    },
-
-    _periodIndex: {
-      type: Number,
-      value: 0,
-    },
-
-    isLoadingData: {
-      type: Boolean,
-      value: false,
-    },
-
-    endTime: {
-      type: Object,
-      computed: '_computeEndTime(_currentDate, _periodIndex)',
-    },
-
-    // ISO8601 formatted date string
-    _currentDate: {
-      type: String,
-      value: function () {
-        var value = new Date();
-        var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
-        return today.toISOString().split('T')[0];
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
       },
-    },
 
-    _filterType: {
-      type: String,
-      value: 'date',
-    },
-  },
+      narrow: {
+        type: Boolean,
+      },
 
-  datepickerFocus: function () {
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
+
+      stateHistoryInput: {
+        type: Object,
+        value: null,
+        observer: 'stateHistoryObserver'
+      },
+
+      stateHistoryOutput: {
+        type: Object,
+        value: null,
+      },
+
+      _periodIndex: {
+        type: Number,
+        value: 0,
+      },
+
+      isLoadingData: {
+        type: Boolean,
+        value: false,
+      },
+
+      endTime: {
+        type: Object,
+        computed: '_computeEndTime(_currentDate, _periodIndex)',
+      },
+
+      // ISO8601 formatted date string
+      _currentDate: {
+        type: String,
+        value: function () {
+          var value = new Date();
+          var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
+          return today.toISOString().split('T')[0];
+        },
+      },
+
+      _filterType: {
+        type: String,
+        value: 'date',
+      },
+    };
+  }
+
+  datepickerFocus() {
     this.datePicker.adjustPosition();
-  },
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     // We are unable to parse date because we use intl api to render date
     // So we just return last known date.
     var lastFormatDate = new Date();
@@ -165,23 +168,23 @@ Polymer({
       lastFormatDate = date;
       return window.hassUtil.formatDate(date);
     });
-  },
+  }
 
-  _computeStartTime: function (_currentDate) {
+  _computeStartTime(_currentDate) {
     if (!_currentDate) return undefined;
     var parts = _currentDate.split('-');
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]);
-  },
+  }
 
-  _computeEndTime: function (_currentDate, periodIndex) {
+  _computeEndTime(_currentDate, periodIndex) {
     var startTime = this._computeStartTime(_currentDate);
     var endTime = new Date(startTime);
     endTime.setDate(startTime.getDate() + this._computeFilterDays(periodIndex));
     return endTime;
-  },
+  }
 
-  _computeFilterDays: function (periodIndex) {
+  _computeFilterDays(periodIndex) {
     switch (periodIndex) {
       case 1:
         return 3;
@@ -189,15 +192,17 @@ Polymer({
         return 7;
       default: return 1;
     }
-  },
+  }
 
-  stateHistoryObserver: function (newVal) {
-    this.async(function () {
+  stateHistoryObserver(newVal) {
+    setTimeout(() => {
       if (newVal === this.stateHistoryInput) {
         // Input didn't change
         this.stateHistoryOutput = newVal;
       }
-    }.bind(this), 1);
-  },
-});
+    }, 1);
+  }
+}
+
+customElements.define(HaPanelHistory.is, HaPanelHistory);
 </script>

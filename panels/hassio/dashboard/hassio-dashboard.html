@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -10,7 +10,7 @@
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 
-
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 <link rel="import" href="../../../src/components/ha-menu-button.html">
 
 <link rel="import" href="./hassio-addons.html">
@@ -87,58 +87,62 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-dashboard',
+class HassioDashboard extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-dashboard'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-    },
+      narrow: {
+        type: Boolean,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    supervisorInfo: {
-      type: Object,
-      value: {},
-    },
+      supervisorInfo: {
+        type: Object,
+        value: {},
+      },
 
-    hassInfo: {
-      type: Object,
-      value: {},
-    },
-  },
+      hassInfo: {
+        type: Object,
+        value: {},
+      },
+    };
+  }
 
-  _openStore: function (ev) {
+  _openStore(ev) {
     history.pushState(null, null, '/hassio/store');
     this.fire('location-changed');
     ev.target.blur();
-  },
+  }
 
-  _openAdvanced: function (ev) {
+  _openAdvanced(ev) {
     history.pushState(null, null, '/hassio/advanced');
     this.fire('location-changed');
     ev.target.blur();
-  },
+  }
 
-  _openSnapshot: function (ev) {
+  _openSnapshot(ev) {
     history.pushState(null, null, '/hassio/snapshot');
     this.fire('location-changed');
     ev.target.blur();
-  },
+  }
 
-  _restartHomeAssistant: function (ev) {
+  _restartHomeAssistant(ev) {
     ev.target.blur();
     // eslint-disable-next-line no-alert
     if (confirm('Are you sure you want to restart Home Assistant?')) {
       this.hass.callApi('POST', 'hassio/homeassistant/restart');
     }
   }
-});
+}
+
+customElements.define(HassioDashboard.is, HassioDashboard);
 </script>

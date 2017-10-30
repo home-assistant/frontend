@@ -1,9 +1,11 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <link rel='import' href='../components/ha-labeled-slider.html'>
 <link rel='import' href='../components/ha-color-picker.html'>
@@ -96,166 +98,171 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-light',
-
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    stateObj: {
-      type: Object,
-      observer: 'stateObjChanged',
-    },
-
-    effectIndex: {
-      type: Number,
-      value: -1,
-      observer: 'effectChanged',
-    },
-
-    brightnessSliderValue: {
-      type: Number,
-      value: 0,
-    },
-
-    ctSliderValue: {
-      type: Number,
-      value: 0,
-    },
-
-    wvSliderValue: {
-      type: Number,
-      value: 0,
-    },
-  },
-
-  stateObjChanged: function (newVal, oldVal) {
-    if (newVal && newVal.state === 'on') {
-      this.brightnessSliderValue = newVal.attributes.brightness;
-      this.ctSliderValue = newVal.attributes.color_temp;
-      this.wvSliderValue = newVal.attributes.white_value;
-
-      if (newVal.attributes.effect_list) {
-        this.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
-      } else {
-        this.effectIndex = -1;
-      }
-    } else {
-      this.brightnessSliderValue = 0;
-    }
-
-    if (oldVal) {
-      this.async(function () {
-        this.fire('iron-resize');
-      }.bind(this), 500);
-    }
-  },
-
-  featureClassNames: {
+{
+  const FEATURE_CLASS_NAMES = {
     1: 'has-brightness',
-  },
+  };
+  class MoreInfoLight extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'more-info-light'; }
 
-  computeClassNames: function (stateObj) {
-    var classes = [
-      window.hassUtil.attributeClassNames(stateObj, ['color_temp', 'white_value', 'effect_list']),
-      window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
-    ];
+    static get properties() {
+      return {
+        hass: {
+          type: Object,
+        },
 
-    // Lights that do shades of white can still have an rgb color
-    // In that case we don't want the color picker to show.
-    if (stateObj.attributes.supported_features &&
-        (stateObj.attributes.supported_features & 16) !== 0 &&
-        stateObj.attributes.rgb_color) {
-      classes.push('has-rgb_color');
+        stateObj: {
+          type: Object,
+          observer: 'stateObjChanged',
+        },
+
+        effectIndex: {
+          type: Number,
+          value: -1,
+          observer: 'effectChanged',
+        },
+
+        brightnessSliderValue: {
+          type: Number,
+          value: 0,
+        },
+
+        ctSliderValue: {
+          type: Number,
+          value: 0,
+        },
+
+        wvSliderValue: {
+          type: Number,
+          value: 0,
+        },
+      };
     }
-    return classes.join(' ');
-  },
 
-  effectChanged: function (effectIndex) {
-    var effectInput;
-    // Selected Option will transition to '' before transitioning to new value
-    if (effectIndex === '' || effectIndex === -1) return;
+    stateObjChanged(newVal, oldVal) {
+      if (newVal && newVal.state === 'on') {
+        this.brightnessSliderValue = newVal.attributes.brightness;
+        this.ctSliderValue = newVal.attributes.color_temp;
+        this.wvSliderValue = newVal.attributes.white_value;
 
-    effectInput = this.stateObj.attributes.effect_list[effectIndex];
-    if (effectInput === this.stateObj.attributes.effect) return;
+        if (newVal.attributes.effect_list) {
+          this.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
+        } else {
+          this.effectIndex = -1;
+        }
+      } else {
+        this.brightnessSliderValue = 0;
+      }
 
-    this.hass.callService('light', 'turn_on', {
-      entity_id: this.stateObj.entity_id,
-      effect: effectInput,
-    });
-  },
+      if (oldVal) {
+        setTimeout(() => {
+          this.fire('iron-resize');
+        }, 500);
+      }
+    }
 
-  brightnessSliderChanged: function (ev) {
-    var bri = parseInt(ev.target.value, 10);
+    computeClassNames(stateObj) {
+      var classes = [
+        window.hassUtil.attributeClassNames(stateObj, ['color_temp', 'white_value', 'effect_list']),
+        window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES),
+      ];
 
-    if (isNaN(bri)) return;
+      // Lights that do shades of white can still have an rgb color
+      // In that case we don't want the color picker to show.
+      if (stateObj.attributes.supported_features &&
+          (stateObj.attributes.supported_features & 16) !== 0 &&
+          stateObj.attributes.rgb_color) {
+        classes.push('has-rgb_color');
+      }
+      return classes.join(' ');
+    }
 
-    if (bri === 0) {
-      this.hass.callService('light', 'turn_off', {
-        entity_id: this.stateObj.entity_id,
-      });
-    } else {
+    effectChanged(effectIndex) {
+      var effectInput;
+      // Selected Option will transition to '' before transitioning to new value
+      if (effectIndex === '' || effectIndex === -1) return;
+
+      effectInput = this.stateObj.attributes.effect_list[effectIndex];
+      if (effectInput === this.stateObj.attributes.effect) return;
+
       this.hass.callService('light', 'turn_on', {
         entity_id: this.stateObj.entity_id,
-        brightness: bri,
+        effect: effectInput,
       });
     }
-  },
 
-  ctSliderChanged: function (ev) {
-    var ct = parseInt(ev.target.value, 10);
+    brightnessSliderChanged(ev) {
+      var bri = parseInt(ev.target.value, 10);
 
-    if (isNaN(ct)) return;
+      if (isNaN(bri)) return;
 
-    this.hass.callService('light', 'turn_on', {
-      entity_id: this.stateObj.entity_id,
-      color_temp: ct,
-    });
-  },
-
-  wvSliderChanged: function (ev) {
-    var wv = parseInt(ev.target.value, 10);
-
-    if (isNaN(wv)) return;
-
-    this.hass.callService('light', 'turn_on', {
-      entity_id: this.stateObj.entity_id,
-      white_value: wv,
-    });
-  },
-
-  serviceChangeColor: function (hass, entityId, color) {
-    hass.callService('light', 'turn_on', {
-      entity_id: entityId,
-      rgb_color: [color.r, color.g, color.b],
-    });
-  },
-
-  /**
-   * Called when a new color has been picked. We will not respond to every
-   * color pick event but have a pause between requests.
-   */
-  colorPicked: function (ev) {
-    if (this.skipColorPicked) {
-      this.colorChanged = true;
-      return;
+      if (bri === 0) {
+        this.hass.callService('light', 'turn_off', {
+          entity_id: this.stateObj.entity_id,
+        });
+      } else {
+        this.hass.callService('light', 'turn_on', {
+          entity_id: this.stateObj.entity_id,
+          brightness: bri,
+        });
+      }
     }
 
-    this.color = ev.detail.rgb;
+    ctSliderChanged(ev) {
+      var ct = parseInt(ev.target.value, 10);
 
-    this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
+      if (isNaN(ct)) return;
 
-    this.colorChanged = false;
-    this.skipColorPicked = true;
+      this.hass.callService('light', 'turn_on', {
+        entity_id: this.stateObj.entity_id,
+        color_temp: ct,
+      });
+    }
 
-    this.colorDebounce = setTimeout(function () {
-      if (this.colorChanged) {
-        this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
+    wvSliderChanged(ev) {
+      var wv = parseInt(ev.target.value, 10);
+
+      if (isNaN(wv)) return;
+
+      this.hass.callService('light', 'turn_on', {
+        entity_id: this.stateObj.entity_id,
+        white_value: wv,
+      });
+    }
+
+    serviceChangeColor(hass, entityId, color) {
+      hass.callService('light', 'turn_on', {
+        entity_id: entityId,
+        rgb_color: [color.r, color.g, color.b],
+      });
+    }
+
+    /**
+     * Called when a new color has been picked. We will not respond to every
+     * color pick event but have a pause between requests.
+     */
+    colorPicked(ev) {
+      if (this.skipColorPicked) {
+        this.colorChanged = true;
+        return;
       }
-      this.skipColorPicked = false;
-    }.bind(this), 500);
-  },
-});
+
+      this.color = ev.detail.rgb;
+
+      this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
+
+      this.colorChanged = false;
+      this.skipColorPicked = true;
+
+      this.colorDebounce = setTimeout(function () {
+        if (this.colorChanged) {
+          this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
+        }
+        this.skipColorPicked = false;
+      }.bind(this), 500);
+    }
+  }
+
+  customElements.define(MoreInfoLight.is, MoreInfoLight);
+}
 </script>

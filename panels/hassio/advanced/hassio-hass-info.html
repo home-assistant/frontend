@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
@@ -57,25 +57,28 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-hass-info',
+class HassioHassInfo extends Polymer.Element {
+  static get is() { return 'hassio-hass-info'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    data: {
-      type: Object,
-      value: {},
-    },
-  },
+      data: {
+        type: Object,
+        value: {},
+      },
+    };
+  }
 
-  listeners: {
-    'hass-api-called': 'apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
 
-  apiCalled: function (ev) {
+  apiCalled(ev) {
     if (ev.detail.success) {
       this.errors = null;
       return;
@@ -88,10 +91,12 @@ Polymer({
     } else {
       this.errors = response.body;
     }
-  },
+  }
 
-  computeUpdateAvailable: function (data) {
+  computeUpdateAvailable(data) {
     return data.version !== data.last_version;
-  },
-});
+  }
+}
+
+customElements.define(HassioHassInfo.is, HassioHassInfo);
 </script>

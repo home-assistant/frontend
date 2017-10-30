@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -70,74 +70,78 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'login-form',
+class LoginForm extends Polymer.Element {
+  static get is() { return 'login-form'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    connectionPromise: {
-      type: Object,
-      notify: true,
-      observer: 'handleConnectionPromiseChanged',
-    },
+      connectionPromise: {
+        type: Object,
+        notify: true,
+        observer: 'handleConnectionPromiseChanged',
+      },
 
-    errorMessage: {
-      type: String,
-      value: '',
-    },
+      errorMessage: {
+        type: String,
+        value: '',
+      },
 
-    isValidating: {
-      type: Boolean,
-      observer: 'isValidatingChanged',
-      value: false,
-    },
+      isValidating: {
+        type: Boolean,
+        observer: 'isValidatingChanged',
+        value: false,
+      },
 
-    showLoading: {
-      type: Boolean,
-      value: false,
-    },
+      showLoading: {
+        type: Boolean,
+        value: false,
+      },
 
-    showSpinner: {
-      type: Boolean,
-      computed: 'computeShowSpinner(showLoading, isValidating)',
-    },
+      showSpinner: {
+        type: Boolean,
+        computed: 'computeShowSpinner(showLoading, isValidating)',
+      },
 
-    password: {
-      type: String,
-      value: '',
-    },
-  },
+      password: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  listeners: {
-    keydown: 'passwordKeyDown',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('keydown', ev => this.passwordKeyDown(ev));
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     window.removeInitMsg();
-  },
+  }
 
-  computeLoadingMsg: function (isValidating) {
+  computeLoadingMsg(isValidating) {
     return isValidating ? 'Connecting' : 'Loading data';
-  },
+  }
 
-  computeShowSpinner: function (forceShowLoading, isValidating) {
+  computeShowSpinner(forceShowLoading, isValidating) {
     return forceShowLoading || isValidating;
-  },
+  }
 
-  isValidatingChanged: function (newVal) {
+  isValidatingChanged(newVal) {
     if (!newVal) {
-      this.async(function () {
+      setTimeout(() => {
         if (this.$.passwordInput.inputElement.inputElement) {
           this.$.passwordInput.inputElement.inputElement.focus();
         }
-      }.bind(this), 10);
+      }, 10);
     }
-  },
+  }
 
-  passwordKeyDown: function (ev) {
+  passwordKeyDown(ev) {
     // validate on enter
     if (ev.keyCode === 13) {
       this.validatePassword();
@@ -146,9 +150,9 @@ Polymer({
     } else if (this.errorMessage) {
       this.errorMessage = '';
     }
-  },
+  }
 
-  validatePassword: function () {
+  validatePassword() {
     var auth = this.password;
     this.$.hideKeyboardOnFocus.focus();
     this.connectionPromise = window.createHassConnection(auth);
@@ -158,9 +162,9 @@ Polymer({
         localStorage.authToken = auth;
       });
     }
-  },
+  }
 
-  handleConnectionPromiseChanged: function (newVal) {
+  handleConnectionPromiseChanged(newVal) {
     if (!newVal) return;
 
     var el = this;
@@ -184,5 +188,7 @@ Polymer({
       }
     );
   }
-});
+}
+
+customElements.define(LoginForm.is, LoginForm);
 </script>
