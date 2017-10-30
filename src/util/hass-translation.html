@@ -64,7 +64,10 @@ window.getTranslation = function (translationInput) {
   const translation = translationInput || getActiveTranslation();
   const metadata = window.translationMetadata[translation];
   if (!metadata) {
-    return Promise.reject(new Error('Language ' + translation + ' not found in metadata'));
+    if (translationInput !== 'en') {
+      return window.getTranslation('en');
+    }
+    return Promise.reject(new Error('Language en not found in metadata'));
   }
   const translationFingerprint = metadata.fingerprint;
 
