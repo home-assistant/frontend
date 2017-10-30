@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-spinner/paper-spinner.html">
 
@@ -58,51 +58,56 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-progress-button',
+class HaProgressButton extends Polymer.Element {
+  static get is() { return 'ha-progress-button'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    progress: {
-      type: Boolean,
-      value: false,
-    },
+      progress: {
+        type: Boolean,
+        value: false,
+      },
 
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  tempClass: function (className) {
+  tempClass(className) {
     var classList = this.$.container.classList;
     classList.add(className);
-    this.async(function () {
+    setTimeout(() => {
       classList.remove(className);
     }, 1000);
-  },
+  }
 
-  listeners: {
-    tap: 'buttonTapped',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('tap', ev => this.buttonTapped(ev));
+  }
 
-  buttonTapped: function (ev) {
+  buttonTapped(ev) {
     if (this.progress) ev.stopPropagation();
-  },
+  }
 
-  actionSuccess: function () {
+  actionSuccess() {
     this.tempClass('success');
-  },
+  }
 
-  actionError: function () {
+  actionError() {
     this.tempClass('error');
-  },
+  }
 
-  computeDisabled: function (disabled, progress) {
+  computeDisabled(disabled, progress) {
     return disabled || progress;
-  },
-});
+  }
+}
+
+customElements.define(HaProgressButton.is, HaProgressButton);
 </script>

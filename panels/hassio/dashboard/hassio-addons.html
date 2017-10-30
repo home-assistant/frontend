@@ -1,7 +1,9 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <dom-module id="hassio-addons">
   <template>
@@ -36,39 +38,43 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addons',
+class HassioAddons extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-addons'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-    },
+      narrow: {
+        type: Boolean,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    data: {
-      type: Object,
-      value: [],
-    },
-  },
+      data: {
+        type: Object,
+        value: [],
+      },
+    };
+  }
 
-  addonTapped: function (ev) {
+  addonTapped(ev) {
     history.pushState(null, null, '/hassio/addon/' + this.data[ev.model.index].slug);
     this.fire('location-changed');
     ev.target.blur();
-  },
+  }
 
-  openStore: function (ev) {
+  openStore(ev) {
     history.pushState(null, null, '/hassio/store');
     this.fire('location-changed');
     ev.target.blur();
   }
-});
+}
+
+customElements.define(HassioAddons.is, HassioAddons);
 </script>

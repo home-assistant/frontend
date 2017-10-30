@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 
@@ -32,31 +32,35 @@
 </dom-module>
 <script>
 
-Polymer({
-  is: 'ozw-log',
+class OzwLog extends Polymer.Element {
+  static get is() { return 'ozw-log'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    isWide: {
-      type: Boolean,
-      value: false,
-    },
+      isWide: {
+        type: Boolean,
+        value: false,
+      },
 
-    ozwLogs: {
-      type: String,
-      value: 'Refresh to pull log'
-    },
-  },
+      ozwLogs: {
+        type: String,
+        value: 'Refresh to pull log'
+      },
+    };
+  }
 
-  refreshLog: function () {
+  refreshLog() {
     this.ozwLogs = 'Loading ozw log...';
     this.hass.callApi('GET', 'zwave/ozwlog')
       .then((info) => {
         this.ozwLogs = info;
       });
-  },
-});
+  }
+}
+
+customElements.define(OzwLog.is, OzwLog);
 </script>

@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
@@ -120,106 +120,109 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'zwave-node-config',
+class ZwaveNodeConfig extends Polymer.Element {
+  static get is() { return 'zwave-node-config'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    nodes: {
-      type: Array,
-      observer: 'nodesChanged'
-    },
+      nodes: {
+        type: Array,
+        observer: 'nodesChanged'
+      },
 
-    selectedNode: {
-      type: Number,
-      value: -1,
-      observer: 'nodesChanged'
-    },
+      selectedNode: {
+        type: Number,
+        value: -1,
+        observer: 'nodesChanged'
+      },
 
-    config: {
-      type: Array,
-      value: function () {
-        return [];
-      }
-    },
+      config: {
+        type: Array,
+        value: function () {
+          return [];
+        }
+      },
 
-    selectedConfigParameter: {
-      type: Number,
-      value: -1,
-      observer: 'selectedConfigParameterChanged'
-    },
+      selectedConfigParameter: {
+        type: Number,
+        value: -1,
+        observer: 'selectedConfigParameterChanged'
+      },
 
-    configParameterMax: {
-      type: Number,
-      value: -1
-    },
+      configParameterMax: {
+        type: Number,
+        value: -1
+      },
 
-    configParameterMin: {
-      type: Number,
-      value: -1
-    },
+      configParameterMin: {
+        type: Number,
+        value: -1
+      },
 
-    configValueHelpText: {
-      type: String,
-      value: '',
-      computed: 'computeConfigValueHelp(selectedConfigParameter)'
-    },
+      configValueHelpText: {
+        type: String,
+        value: '',
+        computed: 'computeConfigValueHelp(selectedConfigParameter)'
+      },
 
-    selectedConfigParameterType: {
-      type: String,
-      value: ''
-    },
+      selectedConfigParameterType: {
+        type: String,
+        value: ''
+      },
 
-    selectedConfigValue: {
-      type: Number,
-      value: -1,
-      observer: 'computeSetConfigParameterServiceData'
-    },
+      selectedConfigValue: {
+        type: Number,
+        value: -1,
+        observer: 'computeSetConfigParameterServiceData'
+      },
 
-    selectedConfigParameterValues: {
-      type: Array,
-      value: function () {
-        return [];
-      }
-    },
+      selectedConfigParameterValues: {
+        type: Array,
+        value: function () {
+          return [];
+        }
+      },
 
-    selectedConfigParameterNumValues: {
-      type: String,
-      value: ''
-    },
+      selectedConfigParameterNumValues: {
+        type: String,
+        value: ''
+      },
 
-    loadedConfigValue: {
-      type: Number,
-      value: -1
-    },
+      loadedConfigValue: {
+        type: Number,
+        value: -1
+      },
 
-    wakeupInput: {
-      type: Number,
-    },
+      wakeupInput: {
+        type: Number,
+      },
 
-    wakeupNode: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      wakeupNode: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  listeners: {
-    'hass-service-called': 'serviceCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+  }
 
-  serviceCalled: function (ev) {
+  serviceCalled(ev) {
     if (ev.detail.success) {
       var foo = this;
       setTimeout(function () {
         foo.refreshConfig(foo.selectedNode);
       }, 5000);
     }
-  },
+  }
 
-  nodesChanged: function () {
+  nodesChanged() {
     if (!this.nodes) return;
     this.wakeupNode = (this.nodes[this.selectedNode].attributes.wake_up_interval === 0 ||
       this.nodes[this.selectedNode].attributes.wake_up_interval);
@@ -227,29 +230,29 @@ Polymer({
       if (this.nodes[this.selectedNode].attributes.wake_up_interval === 0) this.wakeupInput = '';
       else this.wakeupInput = this.nodes[this.selectedNode].attributes.wake_up_interval;
     }
-  },
+  }
 
-  computeGetWakeupValue: function (selectedNode) {
+  computeGetWakeupValue(selectedNode) {
     if (this.selectedNode === -1 ||
       !this.nodes[selectedNode].attributes.wake_up_interval) return 'unknown';
     return (this.nodes[selectedNode].attributes.wake_up_interval);
-  },
+  }
 
-  computeWakeupServiceData: function (wakeupInput) {
+  computeWakeupServiceData(wakeupInput) {
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       value: wakeupInput
     };
-  },
+  }
 
-  computeConfigValueHelp: function (selectedConfigParameter) {
+  computeConfigValueHelp(selectedConfigParameter) {
     if (selectedConfigParameter === -1) return '';
     var helpText = this.config[selectedConfigParameter].value.help;
     if (!helpText) return ['No helptext available'];
     return helpText;
-  },
+  }
 
-  computeSetConfigParameterServiceData: function (selectedConfigValue) {
+  computeSetConfigParameterServiceData(selectedConfigValue) {
     if (this.selectedNode === -1 || this.selectedConfigParameter === -1) return -1;
     var valueData = null;
     if (('Short Byte Int').includes(this.selectedConfigParameterType)) {
@@ -264,9 +267,9 @@ Polymer({
       parameter: this.config[this.selectedConfigParameter].key,
       value: valueData
     };
-  },
+  }
 
-  selectedConfigParameterChanged: function (selectedConfigParameter) {
+  selectedConfigParameterChanged(selectedConfigParameter) {
     if (selectedConfigParameter === -1) return;
     this.selectedConfigValue = -1;
     this.loadedConfigValue = -1;
@@ -289,20 +292,20 @@ Polymer({
     if (('List').includes(this.selectedConfigParameterType)) {
       this.selectedConfigParameterValues = this.config[selectedConfigParameter].value.data_items;
     }
-  },
+  }
 
-  isConfigParameterSelected: function (selectedConfigParameter, type) {
+  isConfigParameterSelected(selectedConfigParameter, type) {
     if (selectedConfigParameter === -1) return false;
     if (this.config[selectedConfigParameter].value.type === type) return true;
     if (type.includes(this.config[selectedConfigParameter].value.type)) return true;
     return false;
-  },
+  }
 
-  computeSelectCaptionConfigParameter: function (stateObj) {
+  computeSelectCaptionConfigParameter(stateObj) {
     return (stateObj.key + ': ' + stateObj.value.label);
-  },
+  }
 
-  refreshConfig: function (selectedNode) {
+  refreshConfig(selectedNode) {
     var configData = [];
     this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then(function (config) {
       Object.keys(config).forEach(function (key) {
@@ -314,6 +317,8 @@ Polymer({
       this.config = configData;
       this.selectedConfigParameterChanged(this.selectedConfigParameter);
     }.bind(this));
-  },
-});
+  }
+}
+
+customElements.define(ZwaveNodeConfig.is, ZwaveNodeConfig);
 </script>

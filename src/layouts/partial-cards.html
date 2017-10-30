@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
@@ -12,6 +12,8 @@
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel='import' href='../../bower_components/app-route/app-route.html'>
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../components/ha-menu-button.html">
 <link rel="import" href="../components/ha-start-voice-button.html">
@@ -132,232 +134,257 @@
 </dom-module>
 
 <script>
-Polymer({
-  DEFAULT_VIEW_ENTITY_ID: 'group.default_view',
-  ALWAYS_SHOW_DOMAIN: ['persistent_notification', 'configurator'],
+{
+  const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
+  const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
 
-  is: 'partial-cards',
+  class PartialCards extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'partial-cards'; }
 
-  properties: {
-    hass: {
-      type: Object,
-      value: null,
-      observer: 'hassChanged'
-    },
+    static get properties() {
+      return {
 
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
+        hass: {
+          type: Object,
+          value: null,
+          observer: 'hassChanged'
+        },
 
-    showMenu: {
-      type: Boolean,
-      observer: 'handleWindowChange',
-    },
+        narrow: {
+          type: Boolean,
+          value: false,
+        },
 
-    panelVisible: {
-      type: Boolean,
-      value: false,
-    },
+        showMenu: {
+          type: Boolean,
+          observer: 'handleWindowChange',
+        },
 
-    route: Object,
-    routeData: Object,
-    routeMatch: Boolean,
+        panelVisible: {
+          type: Boolean,
+          value: false,
+        },
 
-    _columns: {
-      type: Number,
-      value: 1,
-    },
+        route: Object,
+        routeData: Object,
+        routeMatch: Boolean,
 
-    introductionLoaded: {
-      type: Boolean,
-      computed: 'computeIntroductionLoaded(hass)',
-    },
+        _columns: {
+          type: Number,
+          value: 1,
+        },
 
-    locationName: {
-      type: String,
-      value: '',
-      computed: 'computeLocationName(hass)',
-    },
+        introductionLoaded: {
+          type: Boolean,
+          computed: 'computeIntroductionLoaded(hass)',
+        },
 
-    currentView: {
-      type: String,
-      computed: '_computeCurrentView(routeMatch, routeData)',
-    },
+        locationName: {
+          type: String,
+          value: '',
+          computed: 'computeLocationName(hass)',
+        },
 
-    views: {
-      type: Array,
-    },
+        currentView: {
+          type: String,
+          computed: '_computeCurrentView(routeMatch, routeData)',
+        },
 
-    defaultView: {
-      type: Object,
-    },
+        views: {
+          type: Array,
+        },
 
-    viewStates: {
-      type: Object,
-      computed: 'computeViewStates(currentView, hass, defaultView)',
-    },
+        defaultView: {
+          type: Object,
+        },
 
-    orderedGroups: {
-      type: Array,
-      computed: 'computeOrderedGroups(currentView, hass, defaultView)',
-    },
+        viewStates: {
+          type: Object,
+          computed: 'computeViewStates(currentView, hass, defaultView)',
+        },
 
-    showTabs: {
-      type: Boolean,
-      value: false,
-    },
-  },
+        orderedGroups: {
+          type: Array,
+          computed: 'computeOrderedGroups(currentView, hass, defaultView)',
+        },
 
-  created: function () {
-    this.handleWindowChange = this.handleWindowChange.bind(this);
-    this.mqls = [300, 600, 900, 1200].map(function (width) {
-      var mql = window.matchMedia('(min-width: ' + width + 'px)');
-      mql.addListener(this.handleWindowChange);
-      return mql;
-    }.bind(this));
-  },
-
-  detached: function () {
-    this.mqls.forEach(function (mql) {
-      mql.removeListener(this.handleWindowChange);
-    });
-  },
-
-  handleWindowChange: function () {
-    var matchColumns = this.mqls.reduce(function (cols, mql) {
-      return cols + mql.matches;
-    }, 0);
-    // Do -1 column if the menu is docked and open
-    this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
-  },
-
-  areTabsHidden: function (views, showTabs) {
-    return !views || !views.length || !showTabs;
-  },
-
-  /**
-   * Scroll to a specific y coordinate.
-   *
-   * Copied from paper-scroll-header-panel.
-   *
-   * @method scroll
-   * @param {number} top The coordinate to scroll to, along the y-axis.
-   * @param {boolean} smooth true if the scroll position should be smoothly adjusted.
-   */
-  scrollToTop: function () {
-    // the scroll event will trigger _updateScrollState directly,
-    // However, _updateScrollState relies on the previous `scrollTop` to update the states.
-    // Calling _updateScrollState will ensure that the states are synced correctly.
-    var top = 0;
-    var scroller = this.$.layout.header.scrollTarget;
-    var easingFn = function easeOutQuad(t, b, c, d) {
-      /* eslint-disable no-param-reassign, space-infix-ops, no-mixed-operators */
-      t /= d;
-      return -c * t*(t-2) + b;
-      /* eslint-enable no-param-reassign, space-infix-ops, no-mixed-operators */
-    };
-    var animationId = Math.random();
-    var duration = 200;
-    var startTime = Date.now();
-    var currentScrollTop = scroller.scrollTop;
-    var deltaScrollTop = top - currentScrollTop;
-    this._currentAnimationId = animationId;
-    (function updateFrame() {
-      var now = Date.now();
-      var elapsedTime = now - startTime;
-      if (elapsedTime > duration) {
-        scroller.scrollTop = top;
-      } else if (this._currentAnimationId === animationId) {
-        scroller.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
-        requestAnimationFrame(updateFrame.bind(this));
-      }
-    }).call(this);
-  },
-
-  handleViewSelected: function (ev) {
-    var view = ev.detail.item.getAttribute('data-entity') || null;
-    var current = this.currentView;
-
-    if (view !== current) {
-      var path = '/states';
-      if (view) {
-        path += '/' + view;
-      }
-      history.pushState(null, null, path);
-      this.fire('location-changed');
-    }
-  },
-
-  _computeCurrentView: function (routeMatch, routeData) {
-    return routeMatch ? routeData.view : '';
-  },
-
-  computeTitle: function (views, locationName) {
-    return views && views.length > 0 ? 'Home Assistant' : locationName;
-  },
-
-  computeShowIntroduction: function (currentView, introductionLoaded, states) {
-    return currentView === '' && (introductionLoaded || Object.keys(states).length === 0);
-  },
-
-  computeStateName: function (stateObj) {
-    if (stateObj.entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
-      if (stateObj.attributes.friendly_name &&
-          stateObj.attributes.friendly_name !== 'default_view') {
-        return stateObj.attributes.friendly_name;
-      }
-      return this.computeLocationName(this.hass);
-    }
-    return window.hassUtil.computeStateName(stateObj);
-  },
-
-  computeLocationName: function (hass) {
-    return window.hassUtil.computeLocationName(hass);
-  },
-
-  computeIntroductionLoaded: function (hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'introduction');
-  },
-
-  hassChanged: function (hass) {
-    if (!hass) return;
-    var views = window.HAWS.extractViews(hass.states);
-    // If default view present, it's in first index.
-    if (views.length > 0 && views[0].entity_id === this.DEFAULT_VIEW_ENTITY_ID) {
-      this.defaultView = views.shift();
-    } else {
-      this.defaultView = null;
+        showTabs: {
+          type: Boolean,
+          value: false,
+        },
+      };
     }
 
-    this.views = views;
-  },
+    constructor() {
+      super();
+      this.handleWindowChange = this.handleWindowChange.bind(this);
+      this.mqls = [300, 600, 900, 1200].map(function (width) {
+        var mql = window.matchMedia('(min-width: ' + width + 'px)');
+        mql.addListener(this.handleWindowChange);
+        return mql;
+      }.bind(this));
+    }
 
-  isView: function (currentView, defaultView) {
-    return currentView || defaultView;
-  },
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this.mqls.forEach(function (mql) {
+        mql.removeListener(this.handleWindowChange);
+      });
+    }
 
-  /*
-    Compute the states to show for current view.
+    handleWindowChange() {
+      var matchColumns = this.mqls.reduce(function (cols, mql) {
+        return cols + mql.matches;
+      }, 0);
+      // Do -1 column if the menu is docked and open
+      this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
+    }
 
-    Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
-  */
-  computeViewStates: function (currentView, hass, defaultView) {
-    var i;
-    var entityId;
-    var state;
-    var states;
-    var entityIds = Object.keys(hass.states);
+    areTabsHidden(views, showTabs) {
+      return !views || !views.length || !showTabs;
+    }
 
-    // If we base off all entities, only have to filter out hidden
-    if (!this.isView(currentView, defaultView)) {
-      states = {};
+    /**
+     * Scroll to a specific y coordinate.
+     *
+     * Copied from paper-scroll-header-panel.
+     *
+     * @method scroll
+     * @param {number} top The coordinate to scroll to, along the y-axis.
+     * @param {boolean} smooth true if the scroll position should be smoothly adjusted.
+     */
+    scrollToTop() {
+      // the scroll event will trigger _updateScrollState directly,
+      // However, _updateScrollState relies on the previous `scrollTop` to update the states.
+      // Calling _updateScrollState will ensure that the states are synced correctly.
+      var top = 0;
+      var scroller = this.$.layout.header.scrollTarget;
+      var easingFn = function easeOutQuad(t, b, c, d) {
+        /* eslint-disable no-param-reassign, space-infix-ops, no-mixed-operators */
+        t /= d;
+        return -c * t*(t-2) + b;
+        /* eslint-enable no-param-reassign, space-infix-ops, no-mixed-operators */
+      };
+      var animationId = Math.random();
+      var duration = 200;
+      var startTime = Date.now();
+      var currentScrollTop = scroller.scrollTop;
+      var deltaScrollTop = top - currentScrollTop;
+      this._currentAnimationId = animationId;
+      (function updateFrame() {
+        var now = Date.now();
+        var elapsedTime = now - startTime;
+        if (elapsedTime > duration) {
+          scroller.scrollTop = top;
+        } else if (this._currentAnimationId === animationId) {
+          scroller.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
+          requestAnimationFrame(updateFrame.bind(this));
+        }
+      }).call(this);
+    }
+
+    handleViewSelected(ev) {
+      var view = ev.detail.item.getAttribute('data-entity') || null;
+      var current = this.currentView;
+
+      if (view !== current) {
+        var path = '/states';
+        if (view) {
+          path += '/' + view;
+        }
+        history.pushState(null, null, path);
+        this.fire('location-changed');
+      }
+    }
+
+    _computeCurrentView(routeMatch, routeData) {
+      return routeMatch ? routeData.view : '';
+    }
+
+    computeTitle(views, locationName) {
+      return views && views.length > 0 ? 'Home Assistant' : locationName;
+    }
+
+    computeShowIntroduction(currentView, introductionLoaded, states) {
+      return currentView === '' && (introductionLoaded || Object.keys(states).length === 0);
+    }
+
+    computeStateName(stateObj) {
+      if (stateObj.entity_id === DEFAULT_VIEW_ENTITY_ID) {
+        if (stateObj.attributes.friendly_name &&
+            stateObj.attributes.friendly_name !== 'default_view') {
+          return stateObj.attributes.friendly_name;
+        }
+        return this.computeLocationName(this.hass);
+      }
+      return window.hassUtil.computeStateName(stateObj);
+    }
+
+    computeLocationName(hass) {
+      return window.hassUtil.computeLocationName(hass);
+    }
+
+    computeIntroductionLoaded(hass) {
+      return window.hassUtil.isComponentLoaded(hass, 'introduction');
+    }
+
+    hassChanged(hass) {
+      if (!hass) return;
+      var views = window.HAWS.extractViews(hass.states);
+      // If default view present, it's in first index.
+      if (views.length > 0 && views[0].entity_id === DEFAULT_VIEW_ENTITY_ID) {
+        this.defaultView = views.shift();
+      } else {
+        this.defaultView = null;
+      }
+
+      this.views = views;
+    }
+
+    isView(currentView, defaultView) {
+      return currentView || defaultView;
+    }
+
+    /*
+      Compute the states to show for current view.
+
+      Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
+    */
+    computeViewStates(currentView, hass, defaultView) {
+      var i;
+      var entityId;
+      var state;
+      var states;
+      var entityIds = Object.keys(hass.states);
+
+      // If we base off all entities, only have to filter out hidden
+      if (!this.isView(currentView, defaultView)) {
+        states = {};
+        for (i = 0; i < entityIds.length; i++) {
+          entityId = entityIds[i];
+          state = hass.states[entityId];
+
+          // We can filter out hidden and domain at the same time.
+          if (!state.attributes.hidden) {
+            states[entityId] = state;
+          }
+        }
+
+        return states;
+      }
+
+      if (currentView) {
+        states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
+      } else {
+        states = window.HAWS.getViewEntities(hass.states, hass.states[DEFAULT_VIEW_ENTITY_ID]);
+      }
+
+      // Make sure certain domains are always shown.
       for (i = 0; i < entityIds.length; i++) {
         entityId = entityIds[i];
         state = hass.states[entityId];
 
-        // We can filter out hidden and domain at the same time.
-        if (!state.attributes.hidden) {
+        if (ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
           states[entityId] = state;
         }
       }
@@ -365,41 +392,25 @@ Polymer({
       return states;
     }
 
-    if (currentView) {
-      states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
-    } else {
-      states = window.HAWS.getViewEntities(hass.states, hass.states[this.DEFAULT_VIEW_ENTITY_ID]);
-    }
-
-    // Make sure certain domains are always shown.
-    for (i = 0; i < entityIds.length; i++) {
-      entityId = entityIds[i];
-      state = hass.states[entityId];
-
-      if (this.ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
-        states[entityId] = state;
+    /*
+      Compute the ordered list of groups for this view
+    */
+    computeOrderedGroups(currentView, hass, defaultView) {
+      if (!this.isView(currentView, defaultView)) {
+        return null;
       }
+
+      var orderedGroups = {};
+      var entitiesList = hass.states[currentView || DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
+
+      for (var i = 0; i < entitiesList.length; i++) {
+        orderedGroups[entitiesList[i]] = i;
+      }
+
+      return orderedGroups;
     }
+  }
 
-    return states;
-  },
-
-  /*
-    Compute the ordered list of groups for this view
-  */
-  computeOrderedGroups: function (currentView, hass, defaultView) {
-    if (!this.isView(currentView, defaultView)) {
-      return null;
-    }
-
-    var orderedGroups = {};
-    var entitiesList = hass.states[currentView || this.DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
-
-    for (var i = 0; i < entitiesList.length; i++) {
-      orderedGroups[entitiesList[i]] = i;
-    }
-
-    return orderedGroups;
-  },
-});
+  customElements.define(PartialCards.is, PartialCards);
+}
 </script>

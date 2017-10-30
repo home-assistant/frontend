@@ -91,7 +91,7 @@
           var name = lightOrShadow(si, '.name');
           assert.isOk(name);
           assert.equal(getComputedStyle(name).lineHeight, '20px');
-          var content = si.queryEffectiveChildren('my-elem');
+          var content = si.getElementsByTagName('my-elem')[0];
           assert.isOk(content);
           assert.equal(content.textContent, 'text');
           done();

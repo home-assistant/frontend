@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 
@@ -25,61 +25,68 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'notification-manager',
+class NotificationManager extends Polymer.Element {
+  static get is() { return 'notification-manager'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    isStreaming: {
-      type: Boolean,
-      computed: 'computeIsStreaming(hass)',
-    },
+      isStreaming: {
+        type: Boolean,
+        computed: 'computeIsStreaming(hass)',
+      },
 
-    _cancelOnOutsideClick: {
-      type: Boolean,
-      value: false,
-    },
+      _cancelOnOutsideClick: {
+        type: Boolean,
+        value: false,
+      },
 
-    _text: {
-      type: String,
-      readOnly: true,
-    },
+      _text: {
+        type: String,
+        readOnly: true,
+      },
 
-    toastClass: {
-      type: String,
-      value: '',
-    },
-  },
+      toastClass: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  computeIsStreaming: function (hass) {
+  computeIsStreaming(hass) {
     return !hass || hass.connected;
-  },
+  }
 
-  created: function () {
+  constructor() {
+    super();
     this.handleWindowChange = this.handleWindowChange.bind(this);
     this._mediaq = window.matchMedia('(max-width: 599px)');
     this._mediaq.addListener(this.handleWindowChange);
-  },
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     this.handleWindowChange(this._mediaq);
-  },
+  }
 
-  detached: function () {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     this._mediaq.removeListener(this.handleWindowChange);
-  },
+  }
 
-  handleWindowChange: function (ev) {
+  handleWindowChange(ev) {
     this.$.toast.classList.toggle('fit-bottom', ev.matches);
     this.$.connToast.classList.toggle('fit-bottom', ev.matches);
-  },
+  }
 
-  showNotification: function (message) {
+  showNotification(message) {
     this._set_text(message);
     this.$.toast.show();
-  },
-});
+  }
+}
+
+customElements.define(NotificationManager.is, NotificationManager);
 </script>

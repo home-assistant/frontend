@@ -1,5 +1,7 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id='ha-start-voice-button'>
   <template>
@@ -12,28 +14,32 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-start-voice-button',
+class HaStartVoiceButton extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-start-voice-button'; }
 
-  properties: {
-    hass: {
-      type: Object,
-      value: null,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+        value: null,
+      },
 
-    canListen: {
-      type: Boolean,
-      computed: 'computeCanListen(hass)',
-    },
-  },
+      canListen: {
+        type: Boolean,
+        computed: 'computeCanListen(hass)',
+      },
+    };
+  }
 
-  computeCanListen: function (hass) {
+  computeCanListen(hass) {
     return ('webkitSpeechRecognition' in window &&
             window.hassUtil.isComponentLoaded(hass, 'conversation'));
-  },
+  }
 
-  handleListenClick: function () {
+  handleListenClick() {
     this.fire('hass-start-voice');
-  },
-});
+  }
+}
+
+customElements.define(HaStartVoiceButton.is, HaStartVoiceButton);
 </script>

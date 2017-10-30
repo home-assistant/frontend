@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
@@ -68,59 +68,62 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'zwave-values',
+class ZwaveValues extends Polymer.Element {
+  static get is() { return 'zwave-values'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    nodes: {
-      type: Array,
-    },
+      nodes: {
+        type: Array,
+      },
 
-    values: {
-      type: Array,
-    },
+      values: {
+        type: Array,
+      },
 
-    selectedNode: {
-      type: Number,
-    },
+      selectedNode: {
+        type: Number,
+      },
 
-    selectedValue: {
-      type: Number,
-      value: -1,
-      observer: 'selectedValueChanged'
-    },
-  },
+      selectedValue: {
+        type: Number,
+        value: -1,
+        observer: 'selectedValueChanged'
+      },
+    };
+  }
 
-  listeners: {
-    'hass-service-called': 'serviceCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+  }
 
-  serviceCalled: function (ev) {
+  serviceCalled(ev) {
     var foo = this;
     if (ev.detail.success) {
       setTimeout(function () {
         foo.refreshValues(foo.selectedNode);
       }, 5000);
     }
-  },
+  }
 
-  computeSelectCaption: function (item) {
+  computeSelectCaption(item) {
     return item.value.label + ' (Instance: ' + item.value.instance + ', Index: ' + item.value.index + ')';
-  },
+  }
 
-  computeGetValueName: function (selectedValue) {
+  computeGetValueName(selectedValue) {
     return this.values[selectedValue].value.label;
-  },
+  }
 
-  computeIsValueSelected: function (selectedValue) {
+  computeIsValueSelected(selectedValue) {
     return (!this.nodes || this.selectedNode === -1 || selectedValue === -1);
-  },
+  }
 
-  refreshValues: function (selectedNode) {
+  refreshValues(selectedNode) {
     var valueData = [];
     this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(function (values) {
       Object.keys(values).forEach(function (key) {
@@ -132,18 +135,18 @@ Polymer({
       this.values = valueData;
       this.selectedValueChanged(this.selectedValue);
     }.bind(this));
-  },
+  }
 
-  computeValueNameServiceData: function (newValueNameInput) {
+  computeValueNameServiceData(newValueNameInput) {
     if (!this.selectedNode === -1 || this.selectedValue === -1) return -1;
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       value_id: this.values[this.selectedValue].key,
       name: newValueNameInput,
     };
-  },
+  }
 
-  selectedValueChanged: function (selectedValue) {
+  selectedValueChanged(selectedValue) {
     if (!this.selectedNode === -1 || this.selectedValue === -1) return;
     var el = this;
     this.hass.callApi('GET', 'config/zwave/device_config/' + this.values[selectedValue].value.entity_id)
@@ -151,7 +154,9 @@ Polymer({
         el.entityIgnored = data.ignored || false;
         el.entityPollingIntensity = el.values[selectedValue].value.poll_intensity;
       });
-  },
-});
+  }
+}
+
+customElements.define(ZwaveValues.is, ZwaveValues);
 </script>
 

@@ -1,11 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
+<link rel='import' href='../../src/util/hass-mixins.html'>
+
 <script>
 {
   /* eslint-disable no-console */
   const DEBUG = false;
 
-  class HaUrlSync extends Polymer.Element {
+  class HaUrlSync extends window.hassMixins.EventsMixin(Polymer.Element) {
     static get is() { return 'ha-url-sync'; }
 
     static get properties() {

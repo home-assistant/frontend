@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 
 <dom-module id='zwave-node-information'>
@@ -43,31 +43,33 @@
 </dom-module>
 <script>
 
-Polymer({
-  is: 'zwave-node-information',
+class ZwaveNodeInformation extends Polymer.Element {
+  static get is() { return 'zwave-node-information'; }
 
-  properties: {
-    nodes: {
-      type: Array,
-      observer: 'nodeChanged'
-    },
+  static get properties() {
+    return {
+      nodes: {
+        type: Array,
+        observer: 'nodeChanged'
+      },
 
-    selectedNode: {
-      type: Number,
-      value: -1,
-      observer: 'nodeChanged'
-    },
+      selectedNode: {
+        type: Number,
+        value: -1,
+        observer: 'nodeChanged'
+      },
 
-    selectedNodeAttrs: {
-      type: Array,
-    },
+      selectedNodeAttrs: {
+        type: Array,
+      },
 
-    nodeInfoActive: {
-      type: Boolean,
-    },
-  },
+      nodeInfoActive: {
+        type: Boolean,
+      },
+    };
+  }
 
-  nodeChanged: function (selectedNode) {
+  nodeChanged(selectedNode) {
     if (!this.nodes || selectedNode === -1) return;
     var nodeAttrs = this.nodes[this.selectedNode].attributes;
     var att = [];
@@ -75,6 +77,8 @@ Polymer({
       att.push(key + ': ' + nodeAttrs[key]);
     });
     this.selectedNodeAttrs = att.sort();
-  },
-});
+  }
+}
+
+customElements.define(ZwaveNodeInformation.is, ZwaveNodeInformation);
 </script>

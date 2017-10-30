@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -70,45 +70,48 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addon-view',
+class HassioAddonView extends Polymer.Element {
+  static get is() { return 'hassio-addon-view'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    route: Object,
-    _routeData: {
-      type: Object,
-      observer: '_routeDataChanged',
-    },
+      route: Object,
+      _routeData: {
+        type: Object,
+        observer: '_routeDataChanged',
+      },
 
-    supervisorInfo: {
-      type: Object,
-    },
+      supervisorInfo: {
+        type: Object,
+      },
 
-    addonInfo: {
-      type: Object,
-      computed: 'computeAddonInfo(supervisorInfo, _routeData.addon)',
-    },
+      addonInfo: {
+        type: Object,
+        computed: 'computeAddonInfo(supervisorInfo, _routeData.addon)',
+      },
 
-    addonState: {
-      type: Object,
-      value: null,
-    },
+      addonState: {
+        type: Object,
+        value: null,
+      },
 
-    addonLogs: {
-      type: String,
-      value: '',
-    },
-  },
+      addonLogs: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  listeners: {
-    'hass-api-called': 'apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
 
-  apiCalled: function (ev) {
+  apiCalled(ev) {
     var path = ev.detail.path;
 
     if (!path) return;
@@ -118,9 +121,9 @@ Polymer({
     } else {
       this._routeDataChanged(this._routeData);
     }
-  },
+  }
 
-  _routeDataChanged: function (routeData) {
+  _routeDataChanged(routeData) {
     if (!routeData || !routeData.addon) return;
     this.hass.callApi('get', 'hassio/addons/' + routeData.addon + '/info')
       .then(function (info) {
@@ -128,9 +131,9 @@ Polymer({
       }.bind(this), function () {
         this.addonState = null;
       }.bind(this));
-  },
+  }
 
-  computeAddonInfo: function (supervisorInfo, addon) {
+  computeAddonInfo(supervisorInfo, addon) {
     if (!supervisorInfo) return null;
 
     for (var i = 0; i < supervisorInfo.addons.length; i++) {
@@ -138,10 +141,12 @@ Polymer({
       if (addonInfo.slug === addon) return addonInfo;
     }
     return null;
-  },
+  }
 
-  backTapped: function () {
+  backTapped() {
     history.back();
-  },
-});
+  }
+}
+
+customElements.define(HassioAddonView.is, HassioAddonView);
 </script>

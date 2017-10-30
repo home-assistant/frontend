@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 <link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
@@ -6,6 +6,8 @@
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../bower_components/paper-toggle-button/paper-toggle-button.html'>
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../components/ha-attributes.html">
 
@@ -71,31 +73,33 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-fan',
+class MoreInfoFan extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'more-info-fan'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    stateObj: {
-      type: Object,
-      observer: 'stateObjChanged',
-    },
+      stateObj: {
+        type: Object,
+        observer: 'stateObjChanged',
+      },
 
-    speedIndex: {
-      type: Number,
-      value: -1,
-      observer: 'speedChanged',
-    },
+      speedIndex: {
+        type: Number,
+        value: -1,
+        observer: 'speedChanged',
+      },
 
-    oscillationToggleChecked: {
-      type: Boolean,
-    },
-  },
+      oscillationToggleChecked: {
+        type: Boolean,
+      },
+    };
+  }
 
-  stateObjChanged: function (newVal, oldVal) {
+  stateObjChanged(newVal, oldVal) {
     this.oscillationToggleChecked = newVal.attributes.oscillating;
 
     if (newVal.attributes.speed_list) {
@@ -105,17 +109,17 @@ Polymer({
     }
 
     if (oldVal) {
-      this.async(function () {
+      setTimeout(() => {
         this.fire('iron-resize');
-      }.bind(this), 500);
+      }, 500);
     }
-  },
+  }
 
-  computeClassNames: function (stateObj) {
+  computeClassNames(stateObj) {
     return 'more-info-fan ' + window.hassUtil.attributeClassNames(stateObj, ['oscillating', 'speed_list', 'direction']);
-  },
+  }
 
-  speedChanged: function (speedIndex) {
+  speedChanged(speedIndex) {
     var speedInput;
     // Selected Option will transition to '' before transitioning to new value
     if (speedIndex === '' || speedIndex === -1) return;
@@ -127,9 +131,9 @@ Polymer({
       entity_id: this.stateObj.entity_id,
       speed: speedInput,
     });
-  },
+  }
 
-  oscillationToggleChanged: function (ev) {
+  oscillationToggleChanged(ev) {
     var oldVal = this.stateObj.attributes.oscillating;
     var newVal = ev.target.checked;
 
@@ -139,29 +143,30 @@ Polymer({
       entity_id: this.stateObj.entity_id,
       oscillating: newVal,
     });
-  },
+  }
 
-  onDirectionLeft: function () {
+  onDirectionLeft() {
     this.hass.callService('fan', 'set_direction', {
       entity_id: this.stateObj.entity_id,
       direction: 'left'
     });
-  },
+  }
 
-  onDirectionRight: function () {
+  onDirectionRight() {
     this.hass.callService('fan', 'set_direction', {
       entity_id: this.stateObj.entity_id,
       direction: 'right'
     });
-  },
+  }
 
-  computeIsRotatingLeft: function (stateObj) {
+  computeIsRotatingLeft(stateObj) {
     return stateObj.attributes.direction === 'left';
-  },
+  }
 
-  computeIsRotatingRight: function (stateObj) {
+  computeIsRotatingRight(stateObj) {
     return stateObj.attributes.direction === 'right';
-  },
+  }
+}
 
-});
+customElements.define(MoreInfoFan.is, MoreInfoFan);
 </script>

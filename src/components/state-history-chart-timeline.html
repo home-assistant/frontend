@@ -24,7 +24,7 @@ class StateHistoryChartTimeline extends
     this._isAttached = true;
     this.drawChart();
     this.addEventListener('iron-resize', () => {
-      this.async(this.drawChart, 10);
+      setTimeout(() => this.drawChart(), 10);
     });
   }
 

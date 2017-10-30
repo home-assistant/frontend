@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -15,6 +15,8 @@
 <link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../ha-config-section.html">
 
@@ -108,80 +110,84 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-automation-editor',
+class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-automation-editor'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-    },
+      narrow: {
+        type: Boolean,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    errors: {
-      type: Object,
-      value: null,
-    },
+      errors: {
+        type: Object,
+        value: null,
+      },
 
-    dirty: {
-      type: Boolean,
-      value: false,
-    },
+      dirty: {
+        type: Boolean,
+        value: false,
+      },
 
-    config: {
-      type: Object,
-      value: null,
-    },
+      config: {
+        type: Object,
+        value: null,
+      },
 
-    automation: {
-      type: Object,
-      observer: 'automationChanged',
-    },
+      automation: {
+        type: Object,
+        observer: 'automationChanged',
+      },
 
-    creatingNew: {
-      type: Boolean,
-      observer: 'creatingNewChanged',
-    },
+      creatingNew: {
+        type: Boolean,
+        observer: 'creatingNewChanged',
+      },
 
-    name: {
-      type: String,
-      computed: 'computeName(automation)'
-    },
+      name: {
+        type: String,
+        computed: 'computeName(automation)'
+      },
 
-    isWide: {
-      type: Boolean,
-      observer: 'isWideChanged',
-    },
-  },
+      isWide: {
+        type: Boolean,
+        observer: 'isWideChanged',
+      },
+    };
+  }
 
-  created: function () {
+  constructor() {
+    super();
     this.configChanged = this.configChanged.bind(this);
     this._rendered = null;
-  },
+  }
 
-  detached: function () {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     if (this._rendered) {
       window.unmountPreact(this._rendered);
     }
-  },
+  }
 
-  configChanged: function (config) {
+  configChanged(config) {
     // onChange gets called a lot during initial rendering causing recursing calls.
     if (this._rendered === null) return;
     this.config = config;
     this.errors = null;
     this.dirty = true;
     this._updateComponent(config);
-  },
+  }
 
-  automationChanged: function (newVal, oldVal) {
+  automationChanged(newVal, oldVal) {
     if (!newVal) return;
     if (!this.hass) {
       setTimeout(this.automationChanged.bind(this, newVal, oldVal), 0);
@@ -204,9 +210,9 @@ Polymer({
         this.config = config;
         this._updateComponent();
       }.bind(this));
-  },
+  }
 
-  creatingNewChanged: function (newVal) {
+  creatingNewChanged(newVal) {
     if (!newVal) {
       return;
     }
@@ -222,31 +228,31 @@ Polymer({
       ],
     };
     this._updateComponent();
-  },
+  }
 
-  isWideChanged: function () {
+  isWideChanged() {
     if (this.config === null) return;
     this._updateComponent();
-  },
+  }
 
-  backTapped: function () {
+  backTapped() {
     if (this.dirty &&
         // eslint-disable-next-line
         !confirm('You have unsaved changes. Are you sure you want to leave?')) {
       return;
     }
     history.back();
-  },
+  }
 
-  _updateComponent: function () {
+  _updateComponent() {
     this._rendered = window.AutomationEditor(this.$.root, {
       automation: this.config,
       onChange: this.configChanged,
       isWide: this.isWide,
     }, this._rendered);
-  },
+  }
 
-  saveAutomation: function () {
+  saveAutomation() {
     var id = this.creatingNew ? '' + Date.now() : this.automation.attributes.id;
     this.hass.callApi('post', 'config/automation/config/' + id, this.config).then(function () {
       this.dirty = false;
@@ -259,10 +265,12 @@ Polymer({
       this.errors = errors.body.message;
       throw errors;
     }.bind(this));
-  },
+  }
 
-  computeName: function (automation) {
+  computeName(automation) {
     return automation && window.hassUtil.computeStateName(automation);
-  },
-});
+  }
+}
+
+customElements.define(HaAutomationEditor.is, HaAutomationEditor);
 </script>

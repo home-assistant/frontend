@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../src/components/ha-menu-button.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
@@ -319,101 +319,104 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-zwave',
+class HaConfigZwave extends Polymer.Element {
+  static get is() { return 'ha-config-zwave'; }
 
-  properties: {
-    hass: Object,
-    isWide: Boolean,
+  static get properties() {
+    return {
+      hass: Object,
+      isWide: Boolean,
 
-    nodes: {
-      type: Array,
-      computed: 'computeNodes(hass)'
-    },
-
-    selectedNode: {
-      type: Number,
-      value: -1,
-      observer: 'selectedNodeChanged'
-    },
-
-    config: {
-      type: Array,
-      value: function () {
-        return [];
-      }
-    },
-
-    entities: {
-      type: Array,
-      computed: 'computeEntities(selectedNode)',
-    },
-
-    entityInfoActive: {
-      type: Boolean,
-    },
-
-    selectedEntity: {
-      type: Number,
-      value: -1,
-      observer: 'selectedEntityChanged',
-    },
-
-    selectedEntityAttrs: {
-      type: Array,
-      computed: 'computeSelectedEntityAttrs(selectedEntity)'
-    },
-
-    values: {
-      type: Array,
-    },
-
-    groups: {
-      type: Array,
-    },
-
-    newNodeNameInput: {
-      type: String,
-    },
-
-    userCodes: {
-      type: Array,
-      value: function () {
-        return [];
+      nodes: {
+        type: Array,
+        computed: 'computeNodes(hass)'
       },
-    },
 
-    hasNodeUserCodes: {
-      type: Boolean,
-      value: false,
-    },
+      selectedNode: {
+        type: Number,
+        value: -1,
+        observer: 'selectedNodeChanged'
+      },
 
-    showHelp: {
-      type: Boolean,
-      value: false,
-    },
+      config: {
+        type: Array,
+        value: function () {
+          return [];
+        }
+      },
 
-    entityIgnored: {
-      type: Boolean,
-    },
+      entities: {
+        type: Array,
+        computed: 'computeEntities(selectedNode)',
+      },
 
-    entityPollingIntensity: {
-      type: Number,
-    },
-  },
+      entityInfoActive: {
+        type: Boolean,
+      },
 
-  listeners: {
-    'hass-service-called': 'serviceCalled',
-  },
+      selectedEntity: {
+        type: Number,
+        value: -1,
+        observer: 'selectedEntityChanged',
+      },
 
-  serviceCalled: function (ev) {
+      selectedEntityAttrs: {
+        type: Array,
+        computed: 'computeSelectedEntityAttrs(selectedEntity)'
+      },
+
+      values: {
+        type: Array,
+      },
+
+      groups: {
+        type: Array,
+      },
+
+      newNodeNameInput: {
+        type: String,
+      },
+
+      userCodes: {
+        type: Array,
+        value: function () {
+          return [];
+        },
+      },
+
+      hasNodeUserCodes: {
+        type: Boolean,
+        value: false,
+      },
+
+      showHelp: {
+        type: Boolean,
+        value: false,
+      },
+
+      entityIgnored: {
+        type: Boolean,
+      },
+
+      entityPollingIntensity: {
+        type: Number,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+  }
+
+  serviceCalled(ev) {
     var el = this;
     if ((ev.detail.success) && (ev.detail.service === 'set_poll_intensity')) {
       el.saveEntity();
     }
-  },
+  }
 
-  computeNodes: function (hass) {
+  computeNodes(hass) {
     return Object.keys(hass.states)
       .map(function (key) { return hass.states[key]; })
       .filter(function (ent) {
@@ -421,9 +424,9 @@ Polymer({
                 (ent.entity_id).match('zwave[.]'));
       })
       .sort(window.hassUtil.sortByName);
-  },
+  }
 
-  computeEntities: function (selectedNode) {
+  computeEntities(selectedNode) {
     if (!this.nodes || selectedNode === -1) return -1;
     var hass = this.hass;
     var nodeid = this.nodes[this.selectedNode].attributes.node_id;
@@ -439,9 +442,9 @@ Polymer({
                 (!(ent.entity_id).match('zwave[.]')));
       })
       .sort(window.hassUtil.sortByName);
-  },
+  }
 
-  selectedNodeChanged: function (selectedNode) {
+  selectedNodeChanged(selectedNode) {
     this.newNodeNameInput = '';
 
     if (selectedNode === -1) return;
@@ -468,9 +471,9 @@ Polymer({
       this.hasNodeUserCodes = this.userCodes.length > 0;
       this.notifyPath('hasNodeUserCodes');
     });
-  },
+  }
 
-  selectedEntityChanged: function (selectedEntity) {
+  selectedEntityChanged(selectedEntity) {
     if (selectedEntity === -1) return;
     var el = this;
     el.hass.callApi('GET', 'zwave/values/' + el.nodes[el.selectedNode].attributes.node_id).then((values) => {
@@ -485,9 +488,9 @@ Polymer({
         el.entityIgnored = data.ignored || false;
         el.entityPollingIntensity = el.values[valueIndex].value.poll_intensity;
       });
-  },
+  }
 
-  computeSelectedEntityAttrs: function (selectedEntity) {
+  computeSelectedEntityAttrs(selectedEntity) {
     if (selectedEntity === -1) return 'No entity selected';
     var entityAttrs = this.entities[selectedEntity].attributes;
     var att = [];
@@ -495,71 +498,71 @@ Polymer({
       att.push(key + ': ' + entityAttrs[key]);
     });
     return att.sort();
-  },
+  }
 
-  computeSelectCaption: function (stateObj) {
+  computeSelectCaption(stateObj) {
     return window.hassUtil.computeStateName(stateObj) + ' (Node:' +
       stateObj.attributes.node_id + ' ' +
       stateObj.attributes.query_stage + ')';
-  },
+  }
 
-  computeSelectCaptionEnt: function (stateObj) {
+  computeSelectCaptionEnt(stateObj) {
     return (window.hassUtil.computeDomain(stateObj) + '.'
             + window.hassUtil.computeStateName(stateObj));
-  },
+  }
 
-  computeIsNodeSelected: function () {
+  computeIsNodeSelected() {
     return (this.nodes && this.selectedNode !== -1);
-  },
+  }
 
-  computeIsEntitySelected: function (selectedEntity) {
+  computeIsEntitySelected(selectedEntity) {
     return (selectedEntity === -1);
-  },
+  }
 
-  computeNodeServiceData: function (selectedNode) {
+  computeNodeServiceData(selectedNode) {
     return { node_id: this.nodes[selectedNode].attributes.node_id };
-  },
+  }
 
-  computeGetNodeName: function (selectedNode) {
+  computeGetNodeName(selectedNode) {
     if (this.selectedNode === -1 ||
       !this.nodes[selectedNode].entity_id) return -1;
     return this.nodes[selectedNode].attributes.node_name;
-  },
+  }
 
-  computeNodeNameServiceData: function (newNodeNameInput) {
+  computeNodeNameServiceData(newNodeNameInput) {
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       name: newNodeNameInput
     };
-  },
+  }
 
-  computeRefreshEntityServiceData: function (selectedEntity) {
+  computeRefreshEntityServiceData(selectedEntity) {
     if (selectedEntity === -1) return -1;
     return { entity_id: this.entities[selectedEntity].entity_id };
-  },
+  }
 
-  computePollIntensityServiceData: function (entityPollingIntensity) {
+  computePollIntensityServiceData(entityPollingIntensity) {
     if (!this.selectedNode === -1 || this.selectedEntity === -1) return -1;
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       value_id: this.entities[this.selectedEntity].attributes.value_id,
       poll_intensity: parseInt(entityPollingIntensity),
     };
-  },
+  }
 
-  saveEntity: function () {
+  saveEntity() {
     var data = {
       ignored: this.entityIgnored,
       polling_intensity: parseInt(this.entityPollingIntensity),
     };
     return this.hass.callApi('POST', 'config/zwave/device_config/' + this.entities[this.selectedEntity].entity_id, data);
-  },
+  }
 
-  toggleHelp: function () {
+  toggleHelp() {
     this.showHelp = !this.showHelp;
-  },
+  }
 
-  _objToArray: function (obj) {
+  _objToArray(obj) {
     var array = [];
     Object.keys(obj).forEach(function (key) {
       array.push({
@@ -568,10 +571,12 @@ Polymer({
       });
     });
     return array;
-  },
+  }
 
-  _backTapped: function () {
+  _backTapped() {
     history.back();
-  },
-});
+  }
+}
+
+customElements.define(HaConfigZwave.is, HaConfigZwave);
 </script>

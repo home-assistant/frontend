@@ -1,60 +1,65 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <script>
-Polymer({
-  is: 'hassio-data',
+class HassioData extends Polymer.Element {
+  static get is() { return 'hassio-data'; }
 
-  properties: {
-    supervisor: {
-      type: Object,
-      value: {},
-      notify: true,
-    },
+  static get properties() {
+    return {
+      supervisor: {
+        type: Object,
+        value: {},
+        notify: true,
+      },
 
-    host: {
-      type: Object,
-      value: {},
-      notify: true,
-    },
+      host: {
+        type: Object,
+        value: {},
+        notify: true,
+      },
 
-    homeassistant: {
-      type: Object,
-      value: {},
-      notify: true,
-    },
-  },
+      homeassistant: {
+        type: Object,
+        value: {},
+        notify: true,
+      },
+    };
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     this.refresh();
-  },
+  }
 
-  refresh: function () {
+  refresh() {
     return Promise.all([
       this.fetchSupervisorInfo(),
       this.fetchHostInfo(),
       this.fetchHassInfo(),
     ]);
-  },
+  }
 
-  fetchSupervisorInfo: function () {
+  fetchSupervisorInfo() {
     return this.hass.callApi('get', 'hassio/supervisor/info')
       .then(function (info) {
         this.supervisor = info.data;
       }.bind(this));
-  },
+  }
 
-  fetchHostInfo: function () {
+  fetchHostInfo() {
     return this.hass.callApi('get', 'hassio/host/info')
       .then(function (info) {
         this.host = info.data;
       }.bind(this));
-  },
+  }
 
-  fetchHassInfo: function () {
+  fetchHassInfo() {
     return this.hass.callApi('get', 'hassio/homeassistant/info')
       .then(function (info) {
         this.homeassistant = info.data;
       }.bind(this));
-  },
-});
+  }
+}
+
+customElements.define(HassioData.is, HassioData);
 </script>

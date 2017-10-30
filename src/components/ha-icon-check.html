@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
 
 <dom-module id='ha-icon-check'>
@@ -37,10 +37,15 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-icon-check',
-  properties: {
-    checked: Boolean,
+class HaIconCheck extends Polymer.Element {
+  static get is() { return 'ha-icon-check'; }
+
+  static get properties() {
+    return {
+      checked: Boolean,
+    };
   }
-});
+}
+
+customElements.define(HaIconCheck.is, HaIconCheck);
 </script>

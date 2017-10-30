@@ -1,7 +1,9 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <dom-module id="hassio-addon-repository">
   <template>
@@ -41,35 +43,39 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addon-repository',
+class HassioAddonRepository extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-addon-repository'; }
 
-  properties: {
-    repo: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      repo: {
+        type: Object,
+      },
 
-    addons: {
-      type: Array,
-    },
-  },
+      addons: {
+        type: Array,
+      },
+    };
+  }
 
-  computeShowIntro: function (repo) {
+  computeShowIntro(repo) {
     return repo.url || repo.maintainer;
-  },
+  }
 
-  computeInstallStatus: function (addon) {
+  computeInstallStatus(addon) {
     if (!addon.installed) {
       return 'Not installed';
     } else if (addon.installed !== addon.version) {
       return addon.installed + ' (update available)';
     }
     return addon.installed;
-  },
+  }
 
-  addonTapped: function (ev) {
+  addonTapped(ev) {
     history.pushState(null, null, '/hassio/store/' + this.addons[ev.model.index].slug);
     this.fire('location-changed');
-  },
-});
+  }
+}
+
+customElements.define(HassioAddonRepository.is, HassioAddonRepository);
 </script>

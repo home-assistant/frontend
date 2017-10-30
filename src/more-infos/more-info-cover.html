@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
@@ -56,62 +56,66 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-cover',
-
-  properties: {
-    hass: {
-      type: Object,
-    },
-
-    stateObj: {
-      type: Object,
-      observer: 'stateObjChanged',
-    },
-
-    entityObj: {
-      type: Object,
-      computed: 'computeEntityObj(hass, stateObj)',
-    },
-
-    coverPositionSliderValue: {
-      type: Number,
-    },
-
-    coverTiltPositionSliderValue: {
-      type: Number,
-    },
-
-  },
-
-  computeEntityObj: function (hass, stateObj) {
-    return new window.CoverEntity(hass, stateObj);
-  },
-
-  stateObjChanged: function (newVal) {
-    this.coverPositionSliderValue = newVal.attributes.current_position;
-    this.coverTiltPositionSliderValue = newVal.attributes.current_tilt_position;
-  },
-
-  featureClassNames: {
+{
+  const FEATURE_CLASS_NAMES = {
     128: 'has-set_tilt_position',
-  },
+  };
+  class MoreInfoCover extends Polymer.Element {
+    static get is() { return 'more-info-cover'; }
 
-  computeClassNames: function (stateObj) {
-    var classes = [
-      window.hassUtil.attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
-      window.hassUtil.featureClassNames(stateObj, this.featureClassNames),
-    ];
-    return classes.join(' ');
-  },
+    static get properties() {
+      return {
+        hass: {
+          type: Object,
+        },
 
-  coverPositionSliderChanged: function (ev) {
-    this.entityObj.setCoverPosition(ev.target.value);
-  },
+        stateObj: {
+          type: Object,
+          observer: 'stateObjChanged',
+        },
 
-  coverTiltPositionSliderChanged: function (ev) {
-    this.entityObj.setCoverTiltPosition(ev.target.value);
-  },
+        entityObj: {
+          type: Object,
+          computed: 'computeEntityObj(hass, stateObj)',
+        },
 
-});
+        coverPositionSliderValue: {
+          type: Number,
+        },
+
+        coverTiltPositionSliderValue: {
+          type: Number,
+        },
+
+      };
+    }
+
+    computeEntityObj(hass, stateObj) {
+      return new window.CoverEntity(hass, stateObj);
+    }
+
+    stateObjChanged(newVal) {
+      this.coverPositionSliderValue = newVal.attributes.current_position;
+      this.coverTiltPositionSliderValue = newVal.attributes.current_tilt_position;
+    }
+
+    computeClassNames(stateObj) {
+      var classes = [
+        window.hassUtil.attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
+        window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES),
+      ];
+      return classes.join(' ');
+    }
+
+    coverPositionSliderChanged(ev) {
+      this.entityObj.setCoverPosition(ev.target.value);
+    }
+
+    coverTiltPositionSliderChanged(ev) {
+      this.entityObj.setCoverTiltPosition(ev.target.value);
+    }
+  }
+
+  customElements.define(MoreInfoCover.is, MoreInfoCover);
+}
 </script>

@@ -1,6 +1,8 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 
@@ -67,36 +69,38 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-addon-network',
+class HassioAddonNetwork extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-addon-network'; }
 
-  properties: {
-    hass: Object,
-    addon: String,
-    errors: {
-      type: String,
-      value: null,
-    },
-
-    _data: {
-      type: Object,
-      value: [],
-    },
-
-    addonState: {
-      type: Object,
-      observer: '_addonStateChanged',
-    },
-
-    _resetData: {
-      type: Object,
-      value: {
-        network: null,
+  static get properties() {
+    return {
+      hass: Object,
+      addon: String,
+      errors: {
+        type: String,
+        value: null,
       },
-    },
-  },
 
-  _addonStateChanged: function (addonState) {
+      _data: {
+        type: Object,
+        value: [],
+      },
+
+      addonState: {
+        type: Object,
+        observer: '_addonStateChanged',
+      },
+
+      _resetData: {
+        type: Object,
+        value: {
+          network: null,
+        },
+      },
+    };
+  }
+
+  _addonStateChanged(addonState) {
     if (!addonState) return;
 
     var network = addonState.network || {};
@@ -107,9 +111,9 @@ Polymer({
       };
     });
     this._data = items.sort(function (el1, el2) { return el1.host - el2.host; });
-  },
+  }
 
-  _saveTapped: function () {
+  _saveTapped() {
     this.errors = null;
     var toSend = {};
     this._data.forEach(function (item) {
@@ -124,10 +128,12 @@ Polymer({
     }.bind(this), function (resp) {
       this.errors = resp.body.message;
     }.bind(this));
-  },
+  }
 
-  _pathAddonOptions: function (addon) {
+  _pathAddonOptions(addon) {
     return 'hassio/addons/' + addon + '/options';
-  },
-});
+  }
+}
+
+customElements.define(HassioAddonNetwork.is, HassioAddonNetwork);
 </script>
