@@ -379,9 +379,7 @@
     handleVolumeWorker(service, obj, force) {
       if (force || (obj !== undefined && obj.pointerDown)) {
         this.callService(service);
-        this.async(function () {
-          this.handleVolumeWorker(service, obj, false);
-        }.bind(this), 500);
+        setTimeout(() => this.handleVolumeWorker(service, obj, false), 500);
       }
     }
 
