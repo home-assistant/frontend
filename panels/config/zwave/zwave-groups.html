@@ -36,7 +36,7 @@
     <paper-card class="content" heading='Node group associations'>
       <!--TODO make api for getting groups and members-->
       <div class='device-picker'>
-        <paper-dropdown-menu label="Group" class='flex'>
+        <paper-dropdown-menu label="Group" dynamic-align class='flex'>
           <paper-listbox
               slot="dropdown-content"
               selected='{{selectedGroup}}'>
@@ -48,7 +48,7 @@
       </div>
       <template is='dom-if' if='[[computeIsGroupSelected(selectedGroup)]]'>
         <div class='device-picker'>
-          <paper-dropdown-menu label="Node to control" class='flex'>
+          <paper-dropdown-menu label="Node to control" dynamic-align class='flex'>
             <paper-listbox
                 slot="dropdown-content"
                 selected='{{selectedTargetNode}}'>
