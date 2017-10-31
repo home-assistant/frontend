@@ -67,7 +67,7 @@
 
     <div hidden$='[[!supportsFanSpeed(stateObj)]]'>
       <div class='horizontal justified layout'>
-        <paper-dropdown-menu label-float label='Fan speed'>
+        <paper-dropdown-menu label-float dynamic-align label='Fan speed'>
           <paper-listbox slot="dropdown-content" selected='{{fanSpeedIndex}}'>
             <template is='dom-repeat'
                       items='[[stateObj.attributes.fan_speed_list]]'>

@@ -53,7 +53,7 @@
           </div>
         </template>
         <div class='device-picker'>
-        <paper-dropdown-menu label="Config parameter" class='flex'>
+        <paper-dropdown-menu label="Config parameter" dynamic-align class='flex'>
           <paper-listbox
             slot="dropdown-content"
             selected='{{selectedConfigParameter}}'>
@@ -65,7 +65,7 @@
         </div>
         <template is='dom-if' if="[[isConfigParameterSelected(selectedConfigParameter, 'List')]]">
           <div class='device-picker'>
-            <paper-dropdown-menu label="Config value" class='flex' placeholder='{{loadedConfigValue}}'>
+            <paper-dropdown-menu label="Config value" dynamic-align class='flex' placeholder='{{loadedConfigValue}}'>
               <paper-listbox
                 slot="dropdown-content"
                 selected='{{selectedConfigValue}}'>
@@ -90,7 +90,7 @@
         </template>
         <template is='dom-if' if="[[isConfigParameterSelected(selectedConfigParameter, 'Bool Button')]]">
           <div class='device-picker'>
-            <paper-dropdown-menu label="Config value" class='flex' placeholder='{{loadedConfigValue}}'>
+            <paper-dropdown-menu label="Config value" class='flex' dynamic-align placeholder='{{loadedConfigValue}}'>
               <paper-listbox
                 slot="dropdown-content"
                 selected='{{selectedConfigValue}}'>
