@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../state-summary/state-card-content.html">
 
@@ -24,29 +24,33 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-group',
+class MoreInfoGroup extends Polymer.Element {
+  static get is() { return 'more-info-group'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    stateObj: {
-      type: Object,
-    },
+      stateObj: {
+        type: Object,
+      },
 
-    states: {
-      type: Array,
-      computed: 'computeStates(stateObj, hass)',
-    },
-  },
+      states: {
+        type: Array,
+        computed: 'computeStates(stateObj, hass)',
+      },
+    };
+  }
 
-  observers: [
-    'statesChanged(stateObj, states)',
-  ],
+  static get observers() {
+    return [
+      'statesChanged(stateObj, states)',
+    ];
+  }
 
-  computeStates: function (stateObj, hass) {
+  computeStates(stateObj, hass) {
     var states = [];
     var entIds = stateObj.attributes.entity_id;
 
@@ -59,9 +63,9 @@ Polymer({
     }
 
     return states;
-  },
+  }
 
-  statesChanged: function (stateObj, states) {
+  statesChanged(stateObj, states) {
     var groupDomainStateObj = false;
     var baseStateObj;
     var i;
@@ -99,6 +103,8 @@ Polymer({
         { stateObj: groupDomainStateObj, hass: this.hass }
       );
     }
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoGroup.is, MoreInfoGroup);
 </script>

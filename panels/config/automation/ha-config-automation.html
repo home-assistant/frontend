@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel='import' href='../../../bower_components/app-route/app-route.html'>
 
 <link rel="import" href="./ha-automation-picker.html">
@@ -45,37 +45,39 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-automation',
+class HaConfigAutomation extends Polymer.Element {
+  static get is() { return 'ha-config-automation'; }
 
-  properties: {
-    hass: Object,
-    narrow: Boolean,
-    showMenu: Boolean,
-    route: Object,
-    isWide: Boolean,
-    _routeData: Object,
-    _routeMatches: Boolean,
-    _creatingNew: Boolean,
-    _edittingAutomation: Boolean,
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      route: Object,
+      isWide: Boolean,
+      _routeData: Object,
+      _routeMatches: Boolean,
+      _creatingNew: Boolean,
+      _edittingAutomation: Boolean,
 
-    automations: {
-      type: Array,
-      computed: 'computeAutomations(hass)',
-    },
+      automations: {
+        type: Array,
+        computed: 'computeAutomations(hass)',
+      },
 
-    automation: {
-      type: Object,
-      computed: 'computeAutomation(automations, _edittingAutomation, _routeData)',
-    },
+      automation: {
+        type: Object,
+        computed: 'computeAutomation(automations, _edittingAutomation, _routeData)',
+      },
 
-    showEditor: {
-      type: Boolean,
-      computed: 'computeShowEditor(_edittingAutomation, _creatingNew)',
-    }
-  },
+      showEditor: {
+        type: Boolean,
+        computed: 'computeShowEditor(_edittingAutomation, _creatingNew)',
+      }
+    };
+  }
 
-  computeAutomation: function (automations, edittingAddon, routeData) {
+  computeAutomation(automations, edittingAddon, routeData) {
     if (!automations || !edittingAddon) {
       return null;
     }
@@ -85,9 +87,9 @@ Polymer({
       }
     }
     return null;
-  },
+  }
 
-  computeAutomations: function (hass) {
+  computeAutomations(hass) {
     var automations = [];
 
     Object.keys(hass.states).forEach(function (key) {
@@ -113,10 +115,12 @@ Polymer({
       }
       return 0;
     });
-  },
+  }
 
-  computeShowEditor: function (_edittingAutomation, _creatingNew) {
+  computeShowEditor(_edittingAutomation, _creatingNew) {
     return _creatingNew || _edittingAutomation;
-  },
-});
+  }
+}
+
+customElements.define(HaConfigAutomation.is, HaConfigAutomation);
 </script>

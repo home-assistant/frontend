@@ -1,6 +1,8 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/iron-image/iron-image.html'>
 <link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id='ha-entity-marker'>
   <template>
@@ -36,45 +38,44 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-entity-marker',
+class HaEntityMarker extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-entity-marker'; }
 
-  hostAttributes: {
-    entityId: null,
-    entityName: null,
-    entityPicture: null,
-  },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+      entityId: {
+        type: String,
+        value: '',
+      },
 
-    entityId: {
-      type: String,
-      value: '',
-    },
+      entityName: {
+        type: String,
+        value: null,
+      },
 
-    entityName: {
-      type: String,
-      value: null,
-    },
+      entityPicture: {
+        type: String,
+        value: null,
+      }
+    };
+  }
 
-    entityPicture: {
-      type: String,
-      value: null,
-    }
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('tap', ev => this.badgeTap(ev));
+  }
 
-  listeners: {
-    tap: 'badgeTap',
-  },
-
-  badgeTap: function (ev) {
+  badgeTap(ev) {
     ev.stopPropagation();
     if (this.entityId) {
       this.fire('hass-more-info', { entityId: this.entityId });
     }
-  },
-});
+  }
+}
+
+customElements.define(HaEntityMarker.is, HaEntityMarker);
 </script>

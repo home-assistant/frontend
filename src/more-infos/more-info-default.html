@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../components/ha-attributes.html">
 
@@ -9,13 +9,17 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-default',
+class MoreInfoDefault extends Polymer.Element {
+  static get is() { return 'more-info-default'; }
 
-  properties: {
-    stateObj: {
-      type: Object,
-    },
-  },
-});
+  static get properties() {
+    return {
+      stateObj: {
+        type: Object,
+      },
+    };
+  }
+}
+
+customElements.define(MoreInfoDefault.is, MoreInfoDefault);
 </script>

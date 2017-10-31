@@ -87,7 +87,7 @@
 </dom-module>
 
 <script>
-(function () {
+{
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
 
   class HomeAssistantMain extends window.hassMixins.EventsMixin(Polymer.Element) {
@@ -147,7 +147,8 @@
       }
     }
 
-    attached() {
+    connectedCallback() {
+      super.connectedCallback();
       window.removeInitMsg();
       if (document.location.pathname === '/') {
         history.replaceState(null, null, '/states');
@@ -172,5 +173,5 @@
   }
 
   customElements.define(HomeAssistantMain.is, HomeAssistantMain);
-}());
+}
 </script>

@@ -3,6 +3,7 @@
     "de": "Deutsch"
   },
   "panel": {
+    "config": "Konfiguration",
     "states": "Übersicht",
     "map": "Karte",
     "logbook": "Logbuch",

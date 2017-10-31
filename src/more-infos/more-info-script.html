@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -16,13 +16,17 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-script',
+class MoreInfoScript extends Polymer.Element {
+  static get is() { return 'more-info-script'; }
 
-  properties: {
-    stateObj: {
-      type: Object,
-    },
-  },
-});
+  static get properties() {
+    return {
+      stateObj: {
+        type: Object,
+      },
+    };
+  }
+}
+
+customElements.define(MoreInfoScript.is, MoreInfoScript);
 </script>

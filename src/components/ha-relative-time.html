@@ -1,54 +1,61 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <script>
-Polymer({
-  is: 'ha-relative-time',
+class HaRelativeTime extends Polymer.Element {
+  static get is() { return 'ha-relative-time'; }
 
-  properties: {
-    datetime: {
-      type: String,
-      observer: 'datetimeChanged',
-    },
+  static get properties() {
+    return {
+      datetime: {
+        type: String,
+        observer: 'datetimeChanged',
+      },
 
-    datetimeObj: {
-      type: Object,
-      observer: 'datetimeObjChanged',
-    },
+      datetimeObj: {
+        type: Object,
+        observer: 'datetimeObjChanged',
+      },
 
-    parsedDateTime: {
-      type: Object,
-    },
-  },
+      parsedDateTime: {
+        type: Object,
+      },
+    };
+  }
 
-  created: function () {
+  constructor() {
+    super();
     this.updateRelative = this.updateRelative.bind(this);
-  },
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     // update every 60 seconds
     this.updateInterval = setInterval(this.updateRelative, 60000);
-  },
+  }
 
-  detached: function () {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     clearInterval(this.updateInterval);
-  },
+  }
 
-  datetimeChanged: function (newVal) {
+  datetimeChanged(newVal) {
     this.parsedDateTime = newVal ? new Date(newVal) : null;
 
     this.updateRelative();
-  },
+  }
 
-  datetimeObjChanged: function (newVal) {
+  datetimeObjChanged(newVal) {
     this.parsedDateTime = newVal;
 
     this.updateRelative();
-  },
+  }
 
-  updateRelative: function () {
+  updateRelative() {
     var root = Polymer.dom(this);
     root.innerHTML = this.parsedDateTime ?
       window.hassUtil.relativeTime(this.parsedDateTime) : 'never';
-  },
-});
+  }
+}
+
+customElements.define(HaRelativeTime.is, HaRelativeTime);
 </script>

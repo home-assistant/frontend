@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel='import' href='../../bower_components/iron-input/iron-input.html'>
 <link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
@@ -94,45 +94,47 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-configurator',
+class MoreInfoConfigurator extends Polymer.Element {
+  static get is() { return 'more-info-configurator'; }
 
-  properties: {
-    stateObj: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      stateObj: {
+        type: Object,
+      },
 
-    action: {
-      type: String,
-      value: 'display',
-    },
+      action: {
+        type: String,
+        value: 'display',
+      },
 
-    isConfigurable: {
-      type: Boolean,
-      computed: 'computeIsConfigurable(stateObj)',
-    },
+      isConfigurable: {
+        type: Boolean,
+        computed: 'computeIsConfigurable(stateObj)',
+      },
 
-    isConfiguring: {
-      type: Boolean,
-      value: false,
-    },
+      isConfiguring: {
+        type: Boolean,
+        value: false,
+      },
 
-    fieldInput: {
-      type: Object,
-      value: function () { return {}; },
-    },
-  },
+      fieldInput: {
+        type: Object,
+        value: function () { return {}; },
+      },
+    };
+  }
 
-  computeIsConfigurable: function (stateObj) {
+  computeIsConfigurable(stateObj) {
     return stateObj.state === 'configure';
-  },
+  }
 
-  fieldChanged: function (ev) {
+  fieldChanged(ev) {
     var el = ev.target;
     this.fieldInput[el.name] = el.value;
-  },
+  }
 
-  submitClicked: function () {
+  submitClicked() {
     var data = {
       configure_id: this.stateObj.attributes.configure_id,
       fields: this.fieldInput,
@@ -148,6 +150,8 @@ Polymer({
         this.isConfiguring = false;
       }.bind(this)
     );
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoConfigurator.is, MoreInfoConfigurator);
 </script>

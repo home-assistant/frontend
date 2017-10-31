@@ -1,5 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id="events-list">
   <template>
@@ -31,10 +32,11 @@
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'events-list',
+class EventsList extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'events-list'; }
 
-    properties: {
+  static get properties() {
+    return {
       hass: {
         type: Object,
       },
@@ -42,17 +44,21 @@
       events: {
         type: Array,
       },
-    },
+    };
+  }
 
-    attached: function () {
-      this.hass.callApi('GET', 'events').then(function (events) {
-        this.events = events;
-      }.bind(this));
-    },
+  connectedCallback() {
+    super.connectedCallback();
+    this.hass.callApi('GET', 'events').then(function (events) {
+      this.events = events;
+    }.bind(this));
+  }
 
-    eventSelected: function (ev) {
-      ev.preventDefault();
-      this.fire('event-selected', { eventType: ev.model.event.event });
-    },
-  });
+  eventSelected(ev) {
+    ev.preventDefault();
+    this.fire('event-selected', { eventType: ev.model.event.event });
+  }
+}
+
+customElements.define(EventsList.is, EventsList);
 </script>
