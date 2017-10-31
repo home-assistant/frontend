@@ -35,7 +35,7 @@
     <div class='content'>
       <paper-card heading='Node Values'>
         <div class='device-picker'>
-        <paper-dropdown-menu label="Value" class='flex'>
+        <paper-dropdown-menu label="Value" dynamic-align class='flex'>
           <paper-listbox
             slot="dropdown-content"
             selected='{{selectedValue}}'>
@@ -159,4 +159,3 @@ class ZwaveValues extends Polymer.Element {
 
 customElements.define(ZwaveValues.is, ZwaveValues);
 </script>
-

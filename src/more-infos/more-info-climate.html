@@ -124,7 +124,7 @@
 
       <div class='container-operation_list'>
         <div class='controls'>
-          <paper-dropdown-menu label-float label='Operation'>
+          <paper-dropdown-menu label-float dynamic-align label='Operation'>
             <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
               <template is='dom-repeat'
                         items='[[stateObj.attributes.operation_list]]'>
@@ -136,7 +136,7 @@
       </div>
 
       <div class='container-fan_list'>
-        <paper-dropdown-menu label-float label='Fan Mode'>
+        <paper-dropdown-menu label-float dynamic-align label='Fan Mode'>
           <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.fan_list]]'>
@@ -147,7 +147,7 @@
       </div>
 
       <div class='container-swing_list'>
-        <paper-dropdown-menu label-float label='Swing Mode'>
+        <paper-dropdown-menu label-float dynamic-align label='Swing Mode'>
           <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
             <template is='dom-repeat'
                       items='[[stateObj.attributes.swing_list]]'>

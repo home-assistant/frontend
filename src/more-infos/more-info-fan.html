@@ -35,7 +35,7 @@
     <div class$='[[computeClassNames(stateObj)]]'>
 
       <div class="container-speed_list">
-        <paper-dropdown-menu label-float label='Speed'>
+        <paper-dropdown-menu label-float dynamic-align label='Speed'>
           <paper-listbox slot="dropdown-content" selected='{{speedIndex}}'>
             <template is='dom-repeat'
                       items='[[stateObj.attributes.speed_list]]'>
