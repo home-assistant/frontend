@@ -105,13 +105,11 @@
 
         <paper-card class="content">
           <div class='device-picker'>
-            <paper-dropdown-menu label="Nodes" class="flex">
-              <paper-listbox
-                slot="dropdown-content"
-                selected='{{selectedNode}}'>
-              <template is='dom-repeat' items='[[nodes]]' as='state'>
-                <paper-item>[[computeSelectCaption(state)]]</paper-item>
-              </template>
+            <paper-dropdown-menu dynamic-align label="Nodes" class="flex">
+              <paper-listbox slot="dropdown-content" selected='{{selectedNode}}'>
+                <template is='dom-repeat' items='[[nodes]]' as='state'>
+                  <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                </template>
               </paper-listbox>
             </paper-dropdown-menu>
           </div>
@@ -198,7 +196,7 @@
            </div>
 
            <div class='device-picker'>
-            <paper-dropdown-menu label="Entities of this node" class="flex">
+            <paper-dropdown-menu label="Entities of this node" dynamic-align class="flex">
               <paper-listbox
                 slot="dropdown-content"
                 selected='{{selectedEntity}}'>
