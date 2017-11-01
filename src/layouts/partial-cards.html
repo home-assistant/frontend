@@ -108,7 +108,6 @@
       >
         <ha-cards
           data-view=''
-          show-introduction='[[computeShowIntroduction(currentView, introductionLoaded, viewStates)]]'
           states='[[viewStates]]'
           columns='[[_columns]]'
           hass='[[hass]]'
@@ -172,11 +171,6 @@
         _columns: {
           type: Number,
           value: 1,
-        },
-
-        introductionLoaded: {
-          type: Boolean,
-          computed: 'computeIntroductionLoaded(hass)',
         },
 
         locationName: {
@@ -305,10 +299,6 @@
       return views && views.length > 0 ? 'Home Assistant' : locationName;
     }
 
-    computeShowIntroduction(currentView, introductionLoaded, states) {
-      return currentView === '' && (introductionLoaded || Object.keys(states).length === 0);
-    }
-
     computeStateName(stateObj) {
       if (stateObj.entity_id === DEFAULT_VIEW_ENTITY_ID) {
         if (stateObj.attributes.friendly_name &&
@@ -322,10 +312,6 @@
 
     computeLocationName(hass) {
       return window.hassUtil.computeLocationName(hass);
-    }
-
-    computeIntroductionLoaded(hass) {
-      return window.hassUtil.isComponentLoaded(hass, 'introduction');
     }
 
     hassChanged(hass) {

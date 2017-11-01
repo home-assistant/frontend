@@ -10,10 +10,16 @@
         @apply(--paper-font-body1);
       }
       .content {
-        padding: 0 16px 16px;
+        padding: 0 16px;
         -ms-user-select: initial;
         -webkit-user-select: initial;
         -moz-user-select: initial;
+      }
+      .content p:first-child {
+        margin-top: 0;
+      }
+      .content p:last-child {
+        margin-bottom: 0;
       }
       paper-button {
         margin: 8px;
