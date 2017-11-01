@@ -26,13 +26,7 @@ const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 var rootDir = 'hass_frontend';
 var panelDir = path.resolve(rootDir, 'panels');
 
-var dynamicUrlToDependencies = {
-  '/': [
-    rootDir + '/frontend.html',
-    rootDir + '/core.js',
-    rootDir + '/compatibility.js',
-  ],
-};
+var dynamicUrlToDependencies = {};
 
 var staticFingerprinted = [
   'frontend.html',
@@ -76,10 +70,11 @@ gulp.task('gen-service-worker', () => {
       var url = '/static/panels/ha-panel-' + panel + '-' + hash + '.html';
       dynamicUrlToDependencies[url] = [fpath];
     });
+    var fallbackList = '(?!(?:static|api|local|service_worker.js|manifest.json))';
 
     var options = {
       navigateFallback: '/',
-      navigateFallbackWhitelist: [/^((?!(static|api|local|service_worker.js|manifest.json)).)*$/],
+      navigateFallbackWhitelist: [RegExp('^(?:' + fallbackList + '.)*$'],
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
         rootDir + '/icons/favicon.ico',
@@ -94,6 +89,9 @@ gulp.task('gen-service-worker', () => {
       runtimeCaching: [{
         urlPattern: /\/static\/translations\//,
         handler: 'cacheFirst',
+      }, {
+        urlPattern: RegExp('^[^/]*/' + fallbackList + '.'),
+        handler: 'fastest',
       }],
       stripPrefix: 'hass_frontend',
       replacePrefix: 'static',
