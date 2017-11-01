@@ -1,0 +1,48 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+
+<script>
+class HaMarkdown extends Polymer.Element {
+  static get is() { return 'ha-markdown'; }
+
+  static get properties() {
+    return {
+      content: {
+        type: String,
+      },
+
+      scriptLoaded: {
+        type: Number,
+        // 0 = not loaded, 1 = success, 2 = error
+        value: 0,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'updateContent(content, scriptLoaded)',
+    ];
+  }
+
+  updateContent(content, scriptLoaded) {
+    if (scriptLoaded === 1) {
+      const converter = window.Markdown.getSanitizingConverter();
+      this.innerHTML = converter.makeHtml(content);
+    } else if (scriptLoaded === 2) {
+      this.innerText = content;
+    }
+  }
+
+  ready() {
+    super.ready();
+
+    Polymer.importHref(
+      '/static/pagedown-js.html',
+      () => { this.scriptLoaded = 1; },
+      () => { this.scriptLoaded = 2; },
+    );
+  }
+}
+
+customElements.define(HaMarkdown.is, HaMarkdown);
+</script>
