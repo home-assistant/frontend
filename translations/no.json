@@ -3,11 +3,13 @@
     "no": "Norsk"
   },
   "panel": {
+    "config": "Innstillinger",
     "states": "Oversikt",
     "map": "Kart",
     "logbook": "Loggbok",
     "history": "Historie",
     "log_out": "Logg av",
-    "configuration": "Innstillinger"
+    "mailbox": "Postboks",
+    "shopping_list": "Handleliste"
   }
 }
