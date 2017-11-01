@@ -2,6 +2,7 @@
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 
 <link rel='import' href='../components/ha-card.html'>
+<link rel='import' href='../components/ha-markdown.html'>
 
 <dom-module id='ha-persistent_notification-card'>
   <template>
@@ -9,16 +10,17 @@
       :host {
         @apply(--paper-font-body1);
       }
-      .content {
+      ha-markdown {
+        display: block;
         padding: 0 16px;
         -ms-user-select: initial;
         -webkit-user-select: initial;
         -moz-user-select: initial;
       }
-      .content p:first-child {
+      ha-markdown p:first-child {
         margin-top: 0;
       }
-      .content p:last-child {
+      ha-markdown p:last-child {
         margin-bottom: 0;
       }
       paper-button {
@@ -28,7 +30,7 @@
     </style>
 
     <ha-card header='[[computeTitle(stateObj)]]'>
-      <div id='pnContent' class='content'></div>
+      <ha-markdown content='[[stateObj.attributes.message]]'></ha-markdown>
       <paper-button on-tap='dismissTap'>DISMISS</paper-button>
     </ha-card>
   </template>
@@ -41,42 +43,12 @@ class HaPersistentNotificationCard extends Polymer.Element {
     return {
       hass: Object,
       stateObj: Object,
-      scriptLoaded: {
-        type: Number,
-        // 0 = not loaded, 1 = success, 2 = error
-        value: 0,
-      }
     };
-  }
-
-  static get observers() {
-    return [
-      'computeContent(stateObj, scriptLoaded)',
-    ];
   }
 
   computeTitle(stateObj) {
     return (stateObj.attributes.title ||
             window.hassUtil.computeStateName(stateObj));
-  }
-
-  computeContent(stateObj, scriptLoaded) {
-    if (scriptLoaded === 1) {
-      const converter = window.Markdown.getSanitizingConverter();
-      this.$.pnContent.innerHTML = converter.makeHtml(stateObj.attributes.message);
-    } else if (scriptLoaded === 2) {
-      this.$.pnContent.innerText = stateObj.attributes.message;
-    }
-  }
-
-  ready() {
-    super.ready();
-
-    Polymer.importHref(
-      '/static/pagedown-js.html',
-      () => { this.scriptLoaded = 1; },
-      () => { this.scriptLoaded = 2; },
-    );
   }
 
   dismissTap(ev) {
