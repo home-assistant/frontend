@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='../../bower_components/paper-card/paper-card.html'>
 <link rel='import' href='../../bower_components/paper-item/paper-item.html'>
@@ -56,75 +56,80 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-calendar',
-  properties: {
-    hass: {
-      type: Object,
-    },
+class HaPanelCalendar extends Polymer.Element {
+  static get is() { return 'ha-panel-calendar'; }
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    _platforms: {
-      type: Array,
-      notify: true,
-      reflectToAttribute: true
-    },
+      _platforms: {
+        type: Array,
+        notify: true,
+        reflectToAttribute: true
+      },
 
-    _events: {
-      type: Object,
-    },
-  },
+      _events: {
+        type: Object,
+      },
+    };
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     this.hassChanged = this.hassChanged.bind(this);
-    this.computePlatforms().then(function(platforms) {
-      this._platforms = platforms.map(function(platform) {
+    this.fetchPlatforms().then(function (platforms) {
+      this._platforms = platforms.map(function (platform) {
         return { name: platform };
-      }.bind(this));
+      });
 
       this.hassChanged();
     }.bind(this));
-  },
+  }
 
-  hassChanged: function() {
-    if(this._platforms) {
-      this._platforms.forEach(function(platform, index) {
-        this.computeEvents(platform.name).then(function(events) {
+  hassChanged() {
+    if (this._platforms) {
+      this._platforms.forEach(function (platform, index) {
+        this.fetchEvents(platform.name).then(function (events) {
           platform.events = events;
           this.notifyPath('_platforms.' + index + '.events');
         }.bind(this));
-       }.bind(this));
+      }.bind(this));
     }
-  },
-
-  computePlatforms: function () {
-     return this.hass.callApi('GET', 'calendar/platforms');
-  },
-
-  computeEvents: function (platform) {
-    return this.hass.callApi('GET', 'calendar/events/' + platform);
-  },
-
-  sortEvents: function(a, b) {
-    return new Date(a.start) - new Date(b.start);    
-  },
-
-  eventPassed: function(event) {
-    return (new Date(event.start) < new Date() && new Date(event.end) < new Date());
-  },
-
-  checkActive: function(event) {
-    return (new Date(event.start) < new Date() && new Date(event.end) > new Date()) ? 'event-active': '';
   }
-});
+
+  fetchPlatforms() {
+    return this.hass.callApi('GET', 'calendar/platforms');
+  }
+
+  fetchEvents(platform) {
+    return this.hass.callApi('GET', 'calendar/events/' + platform);
+  }
+
+  sortEvents(a, b) {
+    return new Date(a.start) - new Date(b.start);
+  }
+
+  eventPassed(event) {
+    return (new Date(event.start) < new Date() && new Date(event.end) < new Date());
+  }
+
+  checkActive(event) {
+    return (new Date(event.start) < new Date() && new Date(event.end) > new Date()) ? 'event-active' : '';
+  }
+}
+
+customElements.define(HaPanelCalendar.is, HaPanelCalendar);
 
 </script>
