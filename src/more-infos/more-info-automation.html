@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -28,23 +28,27 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-automation',
+class MoreInfoAutomation extends Polymer.Element {
+  static get is() { return 'more-info-automation'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    stateObj: {
-      type: Object,
-    },
-  },
+      stateObj: {
+        type: Object,
+      },
+    };
+  }
 
-  handleTriggerTapped: function () {
+  handleTriggerTapped() {
     this.hass.callService('automation', 'trigger', {
       entity_id: this.stateObj.entity_id,
     });
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoAutomation.is, MoreInfoAutomation);
 </script>

@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./ha-progress-button.html">
 
 <dom-module id='ha-call-api-button'>
@@ -13,40 +13,42 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-call-api-button',
+class HaCallApiButton extends Polymer.Element {
+  static get is() { return 'ha-call-api-button'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    progress: {
-      type: Boolean,
-      value: false,
-    },
+      progress: {
+        type: Boolean,
+        value: false,
+      },
 
-    path: {
-      type: String,
-    },
+      path: {
+        type: String,
+      },
 
-    method: {
-      type: String,
-      value: 'POST',
-    },
+      method: {
+        type: String,
+        value: 'POST',
+      },
 
-    data: {
-      type: Object,
-      value: {},
-    },
+      data: {
+        type: Object,
+        value: {},
+      },
 
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  buttonTapped: function () {
+  buttonTapped() {
     this.progress = true;
     var el = this;
     var eventData = {
@@ -70,5 +72,7 @@ Polymer({
         el.fire('hass-api-called', eventData);
       });
   }
-});
+}
+
+customElements.define(HaCallApiButton.is, HaCallApiButton);
 </script>

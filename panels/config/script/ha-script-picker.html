@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -7,6 +7,8 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../ha-config-section.html">
 
@@ -88,54 +90,58 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-script-picker',
+class HaScriptPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-script-picker'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-    },
+      narrow: {
+        type: Boolean,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    scripts: {
-      type: Array,
-    },
+      scripts: {
+        type: Array,
+      },
 
-    isWide: {
-      type: Boolean,
-    },
-  },
+      isWide: {
+        type: Boolean,
+      },
+    };
+  }
 
-  scriptTapped: function (ev) {
+  scriptTapped(ev) {
     history.pushState(null, null, '/config/script/edit/' + this.scripts[ev.model.index].entity_id);
     this.fire('location-changed');
-  },
+  }
 
-  addScript: function () {
+  addScript() {
     history.pushState(null, null, '/config/script/new');
     this.fire('location-changed');
-  },
+  }
 
-  computeName: function (script) {
+  computeName(script) {
     return window.hassUtil.computeStateName(script);
-  },
+  }
 
   // Still thinking of something to add here.
   // eslint-disable-next-line
-  computeDescription: function (script) {
+  computeDescription(script) {
     return '';
-  },
+  }
 
-  _backTapped: function () {
+  _backTapped() {
     history.back();
-  },
-});
+  }
+}
+
+customElements.define(HaScriptPicker.is, HaScriptPicker);
 </script>

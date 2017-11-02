@@ -8,6 +8,8 @@
     "map": "Map",
     "logbook": "Logbook",
     "history": "History",
-    "log_out": "Log Out"
+    "log_out": "Log Out",
+    "mailbox": "Mailbox",
+    "shopping_list": "Shopping List"
   }
 }

@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
@@ -22,41 +22,46 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-lock',
-  properties: {
-    hass: {
-      type: Object,
-    },
+class MoreInfoLock extends Polymer.Element {
+  static get is() { return 'more-info-lock'; }
 
-    stateObj: {
-      type: Object,
-      observer: 'stateObjChanged',
-    },
-    enteredCode: {
-      type: String,
-      value: '',
-    },
-  },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-  handleUnlockTap: function () {
+      stateObj: {
+        type: Object,
+        observer: 'stateObjChanged',
+      },
+      enteredCode: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  handleUnlockTap() {
     this.callService('unlock', { code: this.enteredCode });
-  },
+  }
 
-  handleLockTap: function () {
+  handleLockTap() {
     this.callService('lock', { code: this.enteredCode });
-  },
+  }
 
-  stateObjChanged: function (newVal) {
+  stateObjChanged(newVal) {
     if (newVal) {
       this.isLocked = newVal.state === 'locked';
     }
-  },
+  }
 
-  callService: function (service, data) {
+  callService(service, data) {
     var serviceData = data || {};
     serviceData.entity_id = this.stateObj.entity_id;
     this.hass.callService('lock', service, serviceData);
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoLock.is, MoreInfoLock);
 </script>

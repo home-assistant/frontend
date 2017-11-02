@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../src/resources/ha-style.html">
 
 <dom-module id="ha-config-section">
@@ -67,39 +67,43 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-config-section',
+class HaConfigSection extends Polymer.Element {
+  static get is() { return 'ha-config-section'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-    },
+      narrow: {
+        type: Boolean,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    isWide: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      isWide: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  computeContentClasses: function (isWide) {
+  computeContentClasses(isWide) {
     var classes = 'content ';
 
     return isWide ? classes : classes + 'narrow';
-  },
+  }
 
-  computeClasses: function (isWide) {
+  computeClasses(isWide) {
     var classes = 'together layout ';
 
     return classes + (isWide ? 'horizontal' : 'vertical narrow');
-  },
-});
+  }
+}
+
+customElements.define(HaConfigSection.is, HaConfigSection);
 </script>

@@ -1,4 +1,4 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='./ha-label-badge.html'>
 
@@ -19,7 +19,9 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-demo-badge',
-});
+class HaDemoBadge extends Polymer.Element {
+  static get is() { return 'ha-demo-badge'; }
+}
+
+customElements.define(HaDemoBadge.is, HaDemoBadge);
 </script>

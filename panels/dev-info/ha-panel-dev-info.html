@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
@@ -103,40 +103,43 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-dev-info',
+class HaPanelDevInfo extends Polymer.Element {
+  static get is() { return 'ha-panel-dev-info'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
 
-    polymerVersion: {
-      type: String,
-      value: Polymer.version,
-    },
+      polymerVersion: {
+        type: String,
+        value: Polymer.version,
+      },
 
-    errorLog: {
-      type: String,
-      value: '',
-    },
-  },
+      errorLog: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     this.refreshErrorLog();
-  },
+  }
 
-  refreshErrorLog: function (ev) {
+  refreshErrorLog(ev) {
     if (ev) ev.preventDefault();
 
     this.errorLog = 'Loading error log…';
@@ -144,6 +147,8 @@ Polymer({
     this.hass.callApi('GET', 'error_log').then(function (log) {
       this.errorLog = log || 'No errors have been reported.';
     }.bind(this));
-  },
-});
+  }
+}
+
+customElements.define(HaPanelDevInfo.is, HaPanelDevInfo);
 </script>

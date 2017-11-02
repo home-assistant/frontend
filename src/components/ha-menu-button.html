@@ -1,5 +1,7 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id='ha-menu-button'>
   <template>
@@ -17,28 +19,32 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-menu-button',
+class HaMenuButton extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-menu-button'; }
 
-  properties: {
-    narrow: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
 
-    showMenu: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  computeMenuButtonClass: function (narrow, showMenu) {
+  computeMenuButtonClass(narrow, showMenu) {
     return !narrow && showMenu ? 'invisible' : '';
-  },
+  }
 
-  toggleMenu: function (ev) {
+  toggleMenu(ev) {
     ev.stopPropagation();
     this.fire('hass-open-menu');
-  },
-});
+  }
+}
+
+customElements.define(HaMenuButton.is, HaMenuButton);
 </script>

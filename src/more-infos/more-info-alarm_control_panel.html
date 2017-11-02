@@ -1,9 +1,11 @@
-<link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id='more-info-alarm_control_panel'>
   <template>
@@ -38,61 +40,63 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-alarm_control_panel',
+class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'more-info-alarm_control_panel'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    stateObj: {
-      type: Object,
-      observer: 'stateObjChanged',
-    },
-    enteredCode: {
-      type: String,
-      value: '',
-    },
-    disarmButtonVisible: {
-      type: Boolean,
-      value: false,
-    },
-    armHomeButtonVisible: {
-      type: Boolean,
-      value: false,
-    },
-    armAwayButtonVisible: {
-      type: Boolean,
-      value: false,
-    },
-    codeInputVisible: {
-      type: Boolean,
-      value: false,
-    },
-    codeInputEnabled: {
-      type: Boolean,
-      value: false,
-    },
-    codeFormat: {
-      type: String,
-      value: '',
-    },
-    codeValid: {
-      type: Boolean,
-      computed: 'validateCode(enteredCode, codeFormat)',
-    },
-  },
+      stateObj: {
+        type: Object,
+        observer: 'stateObjChanged',
+      },
+      enteredCode: {
+        type: String,
+        value: '',
+      },
+      disarmButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
+      armHomeButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
+      armAwayButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
+      codeInputVisible: {
+        type: Boolean,
+        value: false,
+      },
+      codeInputEnabled: {
+        type: Boolean,
+        value: false,
+      },
+      codeFormat: {
+        type: String,
+        value: '',
+      },
+      codeValid: {
+        type: Boolean,
+        computed: 'validateCode(enteredCode, codeFormat)',
+      },
+    };
+  }
 
-  validateCode: function (code, format) {
+  validateCode(code, format) {
     var re = new RegExp(format);
     if (format === null) {
       return true;
     }
     return re.test(code);
-  },
+  }
 
-  stateObjChanged: function (newVal, oldVal) {
+  stateObjChanged(newVal, oldVal) {
     if (newVal) {
       this.codeFormat = newVal.attributes.code_format;
       this.codeInputVisible = this.codeFormat !== null;
@@ -111,31 +115,33 @@ Polymer({
       this.armAwayButtonVisible = newVal.state === 'disarmed';
     }
     if (oldVal) {
-      this.async(function () {
+      setTimeout(() => {
         this.fire('iron-resize');
-      }.bind(this), 500);
+      }, 500);
     }
-  },
+  }
 
-  handleDisarmTap: function () {
+  handleDisarmTap() {
     this.callService('alarm_disarm', { code: this.enteredCode });
-  },
+  }
 
-  handleHomeTap: function () {
+  handleHomeTap() {
     this.callService('alarm_arm_home', { code: this.enteredCode });
-  },
+  }
 
-  handleAwayTap: function () {
+  handleAwayTap() {
     this.callService('alarm_arm_away', { code: this.enteredCode });
-  },
+  }
 
-  callService: function (service, data) {
+  callService(service, data) {
     var serviceData = data || {};
     serviceData.entity_id = this.stateObj.entity_id;
     this.hass.callService('alarm_control_panel', service, serviceData)
       .then(function () {
         this.enteredCode = '';
       }.bind(this));
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoAlarmControlPanel.is, MoreInfoAlarmControlPanel);
 </script>

@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
@@ -34,39 +34,43 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-repositories-editor',
+class HassioRepositoriesEditor extends Polymer.Element {
+  static get is() { return 'hassio-repositories-editor'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    options: {
-      type: String,
-      value: '',
-    },
+      options: {
+        type: String,
+        value: '',
+      },
 
-    repos: {
-      type: Array,
-      observer: 'reposChanged',
-    },
-  },
+      repos: {
+        type: Array,
+        observer: 'reposChanged',
+      },
+    };
+  }
 
-  reposChanged: function (repos) {
+  reposChanged(repos) {
     this.options = repos
       .filter(function (el) { return el.source !== null; })
       .map(function (el) { return el.source; })
       .join('\n');
-  },
+  }
 
-  computeOptionsData: function (options) {
+  computeOptionsData(options) {
     var parsed = options.trim();
     parsed = parsed ?
       parsed.split('\n').map(function (ent) { return ent.trim(); }) : [];
     return {
       addons_repositories: parsed,
     };
-  },
-});
+  }
+}
+
+customElements.define(HassioRepositoriesEditor.is, HassioRepositoriesEditor);
 </script>

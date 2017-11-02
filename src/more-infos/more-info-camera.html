@@ -1,4 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id='more-info-camera'>
   <template>
@@ -18,33 +20,35 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'more-info-camera',
+class MoreInfoCamera extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'more-info-camera'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    stateObj: {
-      type: Object,
-    },
+      stateObj: {
+        type: Object,
+      },
 
-    isVisible: {
-      type: Boolean,
-      value: true,
-    },
-  },
+      isVisible: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
 
-  imageLoaded: function () {
+  imageLoaded() {
     this.fire('iron-resize');
-  },
+  }
 
-  computeStateName: function (stateObj) {
+  computeStateName(stateObj) {
     return window.hassUtil.computeStateName(stateObj);
-  },
+  }
 
-  computeCameraImageUrl: function (hass, stateObj, isVisible) {
+  computeCameraImageUrl(hass, stateObj, isVisible) {
     if (hass.demo) {
       return '/demo/webcam.jpg';
     } else if (stateObj && isVisible) {
@@ -53,6 +57,8 @@ Polymer({
     }
     // Return an empty image if no stateObj (= dialog not open) or in cleanup mode.
     return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
-  },
-});
+  }
+}
+
+customElements.define(MoreInfoCamera.is, MoreInfoCamera);
 </script>

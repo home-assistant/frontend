@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -32,37 +32,39 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'zwave-node-options',
+class ZwaveNodeOptions extends Polymer.Element {
+  static get is() { return 'zwave-node-options'; }
 
-  properties: {
-    hass: {
-      type: Object,
-    },
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
 
-    isWide: {
-      type: Boolean,
-      value: false,
-    },
+      isWide: {
+        type: Boolean,
+        value: false,
+      },
 
-    entities: {
-      type: Array,
-      computed: 'computeEntities(hass)',
-    },
+      entities: {
+        type: Array,
+        computed: 'computeEntities(hass)',
+      },
 
-    entityConfig: {
-      type: Object,
-      value: {
-        component: 'ha-form-zwave-device',
-        computeSelectCaption: function (stateObj) {
-          return window.hassUtil.computeStateName(stateObj) +
-            ' (' + window.hassUtil.computeDomain(stateObj) + ')';
-        },
+      entityConfig: {
+        type: Object,
+        value: {
+          component: 'ha-form-zwave-device',
+          computeSelectCaption: function (stateObj) {
+            return window.hassUtil.computeStateName(stateObj) +
+              ' (' + window.hassUtil.computeDomain(stateObj) + ')';
+          },
+        }
       }
-    }
-  },
+    };
+  }
 
-  computeEntities: function (hass) {
+  computeEntities(hass) {
     return Object.keys(hass.states)
       .map(function (key) { return hass.states[key]; })
       .filter(function (ent) {
@@ -70,6 +72,8 @@ Polymer({
                 'node_id' in ent.attributes);
       })
       .sort(window.hassUtil.sortByName);
-  },
-});
+  }
+}
+
+customElements.define(ZwaveNodeOptions.is, ZwaveNodeOptions);
 </script>

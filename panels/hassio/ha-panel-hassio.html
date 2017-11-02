@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./hassio-main.html">
 
 <dom-module id="ha-panel-hassio">
@@ -19,28 +19,33 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-panel-hassio',
+class HaPanelHassio extends Polymer.Element {
+  static get is() { return 'ha-panel-hassio'; }
 
-  properties: {
-    hass: Object,
-    narrow: Boolean,
-    showMenu: Boolean,
-    route: Object,
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      route: Object,
 
-    loaded: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      loaded: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  attached: function () {
+  connectedCallback() {
+    super.connectedCallback();
     if (!window.HASS_DEV) {
-      this.importHref('/api/hassio/panel', null, function () {
+      Polymer.importHref('/api/hassio/panel', null, () => {
         // eslint-disable-next-line
         alert('Failed to load the Hass.io panel from supervisor.');
       });
     }
-  },
-});
+  }
+}
+
+customElements.define(HaPanelHassio.is, HaPanelHassio);
 </script>

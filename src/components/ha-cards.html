@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -148,11 +149,6 @@
       return {
         hass: Object,
 
-        showIntroduction: {
-          type: Boolean,
-          value: false,
-        },
-
         columns: {
           type: Number,
           value: 2,
@@ -174,14 +170,13 @@
 
     static get observers() {
       return [
-        'updateCards(columns, states, showIntroduction, panelVisible, viewVisible, orderedGroups)',
+        'updateCards(columns, states, panelVisible, viewVisible, orderedGroups)',
       ];
     }
 
     updateCards(
       columns,
       states,
-      showIntroduction,
       panelVisible,
       viewVisible,
       orderedGroups
@@ -195,13 +190,13 @@
         () => {
           // Things might have changed since it got scheduled.
           if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(columns, states, showIntroduction, orderedGroups);
+            this.cards = this.computeCards(columns, states, orderedGroups);
           }
         }
       );
     }
 
-    computeCards(columns, states, showIntroduction, orderedGroups) {
+    computeCards(columns, states, orderedGroups) {
       const hass = this.hass;
 
       const cards = {
@@ -231,14 +226,6 @@
         entityCount[minIndex] += size;
 
         return minIndex;
-      }
-
-      if (showIntroduction) {
-        cards.columns[getIndex(5)].push({
-          hass: hass,
-          cardType: 'introduction',
-          showHideInstruction: Object.keys(states).length > 0 && !window.HASS_DEMO,
-        });
       }
 
       function addEntitiesCard(name, entities, groupEntity) {

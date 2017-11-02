@@ -1,4 +1,4 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <dom-module id='ha-push-notifications-toggle'>
@@ -13,31 +13,36 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'ha-push-notifications-toggle',
-  properties: {
-    hass: { type: Object, value: null },
-    pushSupported: {
-      type: Boolean,
-      readOnly: true,
-      notify: true,
-      value: (
-        'PushManager' in window &&
-          (document.location.protocol === 'https:' ||
-            document.location.hostname === 'localhost' ||
-            document.location.hostname === '127.0.0.1')
-      )
-    },
-    pushActive: {
-      type: Boolean,
-      value: 'Notification' in window && Notification.permission === 'granted'
-    },
-    loading: {
-      type: Boolean,
-      value: true,
-    }
-  },
-  attached: function () {
+class HaPushNotificationsToggle extends Polymer.Element {
+  static get is() { return 'ha-push-notifications-toggle'; }
+
+  static get properties() {
+    return {
+      hass: { type: Object, value: null },
+      pushSupported: {
+        type: Boolean,
+        readOnly: true,
+        notify: true,
+        value: (
+          'PushManager' in window &&
+            (document.location.protocol === 'https:' ||
+              document.location.hostname === 'localhost' ||
+              document.location.hostname === '127.0.0.1')
+        )
+      },
+      pushActive: {
+        type: Boolean,
+        value: 'Notification' in window && Notification.permission === 'granted'
+      },
+      loading: {
+        type: Boolean,
+        value: true,
+      }
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
     if (!this.pushSupported) return;
 
     var el = this;
@@ -54,15 +59,15 @@ Polymer({
         el._setPushSupported(false);
       }
     );
-  },
-  handlePushChange: function (ev) {
+  }
+  handlePushChange(ev) {
     if (ev.target.checked) {
       this.subscribePushNotifications();
     } else {
       this.unsubscribePushNotifications();
     }
-  },
-  subscribePushNotifications: function () {
+  }
+  subscribePushNotifications() {
     var el = this;
 
     navigator.serviceWorker.ready
@@ -101,8 +106,8 @@ Polymer({
           el.pushActive = false;
         }
       );
-  },
-  unsubscribePushNotifications: function () {
+  }
+  unsubscribePushNotifications() {
     var el = this;
 
     navigator.serviceWorker.ready
@@ -131,5 +136,7 @@ Polymer({
         });
       });
   }
-});
+}
+
+customElements.define(HaPushNotificationsToggle.is, HaPushNotificationsToggle);
 </script>

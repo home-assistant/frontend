@@ -1,4 +1,4 @@
-<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -6,6 +6,8 @@
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../../../src/components/ha-menu-button.html">
 <link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
@@ -98,50 +100,53 @@
 </dom-module>
 
 <script>
-Polymer({
-  is: 'hassio-snapshot',
+class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-snapshot'; }
 
-  properties: {
-    hass: Object,
-    visible: {
-      type: Boolean,
-      observer: '_visibleChanged',
-    },
-    _snapshotName: String,
-    _creatingSnapshot: Boolean,
-    _error: Object,
-    _data: {
-      type: Array,
-      value: [],
-    },
-  },
+  static get properties() {
+    return {
+      hass: Object,
+      visible: {
+        type: Boolean,
+        observer: '_visibleChanged',
+      },
+      _snapshotName: String,
+      _creatingSnapshot: Boolean,
+      _error: Object,
+      _data: {
+        type: Array,
+        value: [],
+      },
+    };
+  }
 
-  listeners: {
-    'hass-api-called': '_apiCalled',
-  },
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
 
-  _visibleChanged: function (visible) {
+  _visibleChanged(visible) {
     if (visible) {
       this._updateData();
     }
-  },
+  }
 
-  _apiCalled: function (ev) {
+  _apiCalled(ev) {
     if (ev.detail.success) {
       this._updateData();
     }
-  },
+  }
 
-  _updateData: function () {
+  _updateData() {
     this.hass.callApi('get', 'hassio/snapshots')
       .then(function (result) {
         this._data = result.data.snapshots;
       }.bind(this), function (error) {
         this._error = error.message;
       }.bind(this));
-  },
+  }
 
-  _createSnapshot: function () {
+  _createSnapshot() {
     this._creatingSnapshot = true;
     this.hass.callApi('post', 'hassio/snapshots/new/full', {
       name: this._snapshotName,
@@ -156,21 +161,23 @@ Polymer({
         this._creatingSnapshot = false;
         this._error = error.message;
       }.bind(this));
-  },
+  }
 
-  _computeRestorePath: function (snapshot) {
+  _computeRestorePath(snapshot) {
     return 'hassio/snapshots/' + snapshot.slug + '/restore/full';
-  },
+  }
 
-  _backTapped: function () {
+  _backTapped() {
     history.back();
-  },
+  }
 
-  _refreshTapped: function () {
+  _refreshTapped() {
     this.hass.callApi('post', 'hassio/snapshots/reload')
       .then(function () {
         this._updateData();
       }.bind(this));
-  },
-});
+  }
+}
+
+customElements.define(HassioSnapshot.is, HassioSnapshot);
 </script>
