@@ -16,6 +16,8 @@
       }
       .state {
         padding: 4px 16px;
+      }
+      .has-more-card {
         cursor: pointer;
       }
       .header {
@@ -51,8 +53,8 @@
         </template>
       </div>
       <div class='states'>
-        <template is='dom-repeat' items="[[states]]">
-          <div class='state' on-tap='entityTapped'>
+        <template is='dom-repeat' items="[[states]]" on-dom-change="addTapEvents">
+          <div class$='[[computeStateClass(item)]]'>
             <state-card-content
               hass='[[hass]]'
               class="state-card"
@@ -90,8 +92,25 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
     return classes;
   }
+  computeTitleClass: function (groupEntity) {
+    var classes = 'header horizontal layout center ';
+    if (groupEntity) {
+      classes += 'header-more-info';
+    } else {
+      classes += 'domain';
+    }
+    return classes;
+  },
+
+  addTapEvents() {
+    var cards = this.root.querySelectorAll('.has-more-card');
+    for (var i of cards) {
+      i.addEventListener('tap', this.entityTapped);
+    }
+  },
 
   entityTapped(ev) {
+    alert(ev.target.nodeName + "\n" + ev.model);
     var entityId;
     if (ev.target.nodeName === 'STATE-CARD-INPUT_TEXT' ||
         (!ev.model && !this.groupEntity)) {
