@@ -92,21 +92,16 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
     return classes;
   }
-  computeTitleClass: function (groupEntity) {
-    var classes = 'header horizontal layout center ';
-    if (groupEntity) {
-      classes += 'header-more-info';
-    } else {
-      classes += 'domain';
-    }
-    return classes;
-  },
 
   addTapEvents() {
     var cards = this.root.querySelectorAll('.has-more-card');
     for (var i of cards) {
       i.addEventListener('tap', this.entityTapped);
     }
+  },
+
+  computeStateClass(stateObj) {
+    return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state has-more-card' : 'state');
   },
 
   entityTapped(ev) {
