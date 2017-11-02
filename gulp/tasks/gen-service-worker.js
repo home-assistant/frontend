@@ -74,7 +74,7 @@ gulp.task('gen-service-worker', () => {
 
     var options = {
       navigateFallback: '/',
-      navigateFallbackWhitelist: [RegExp('^(?:' + fallbackList + '.)*$'],
+      navigateFallbackWhitelist: [RegExp('^(?:' + fallbackList + '.)*$')],
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
         rootDir + '/icons/favicon.ico',
