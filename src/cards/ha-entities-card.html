@@ -16,6 +16,8 @@
       }
       .state {
         padding: 4px 16px;
+      }
+      .has-more-info-card {
         cursor: pointer;
       }
       .header {
@@ -52,7 +54,7 @@
       </div>
       <div class='states'>
         <template is='dom-repeat' items="[[states]]">
-          <div class='state' on-tap='entityTapped'>
+          <div class$='[[computeStateClass(item)]]'>
             <state-card-content
               hass='[[hass]]'
               class="state-card"
@@ -89,6 +91,10 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
       classes += 'domain';
     }
     return classes;
+  }
+
+  computeStateClass(stateObj) {
+    return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state has-more-info-card' : 'state');
   }
 
   entityTapped(ev) {
@@ -128,6 +134,15 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
 
     return canToggleCount > 1;
+  }
+
+  ready() {
+    //super.ready();
+    var CardsWithMore = this.$.querySelectorAll('.state .has-more-info-card');
+    alert(CardsWithMore.length);
+    for (var i = 0; i < CardsWithMore.length; i++) {
+      CardsWithMore[i].addEventListener('on-tap', e => this.entityTapped(e));
+    }
   }
 }
 customElements.define(HaEntitiesCard.is, HaEntitiesCard);
