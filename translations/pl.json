@@ -3,10 +3,13 @@
     "pl": "Polski"
   },
   "panel": {
+    "config": "Konfiguracja",
     "states": "Stany",
     "map": "Mapa",
     "logbook": "Dziennik",
     "history": "Historia",
-    "log_out": "Wyloguj"
+    "log_out": "Wyloguj",
+    "mailbox": "Skrzynka pocztowa",
+    "shopping_list": "Lista zakupów"
   }
 }
