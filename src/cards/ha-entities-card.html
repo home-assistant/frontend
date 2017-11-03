@@ -53,12 +53,12 @@
         </template>
       </div>
       <div class='states'>
-        <template is='dom-repeat' items="[[states]]" on-dom-change="addTapEvents">
+        <template is='dom-repeat' items='[[states]]' on-dom-change='addTapEvents'>
           <div class$='[[computeStateClass(item)]]'>
             <state-card-content
               hass='[[hass]]'
-              class="state-card"
-              state-obj="[[item]]"></state-card-content>
+              class='state-card'
+              state-obj='[[item]]'></state-card-content>
           </div>
         </template>
       </div>
@@ -94,27 +94,26 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   addTapEvents() {
-    var cards = this.root.querySelectorAll('.has-more-card');
-    for (var i of cards) {
-      i.addEventListener('tap', this.entityTapped);
-    }
-  },
-
-  computeStateClass(stateObj) {
-    return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state has-more-card' : 'state');
-  },
-
+     var cards = this.root.querySelectorAll('.has-more-card');
+     for (var i of cards) {
+       i.addEventListener('tap', this.entityTapped.bind(this));
+     }
+   }
+ 
+   computeStateClass(stateObj) {
+     return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state has-more-card' : 'state');
+   }
+ 
   entityTapped(ev) {
-    alert(ev.target.nodeName + "\n" + ev.model);
+    var item = this.root.querySelector('dom-repeat').itemForElement(ev.target);
     var entityId;
-    if (ev.target.nodeName === 'STATE-CARD-INPUT_TEXT' ||
-        (!ev.model && !this.groupEntity)) {
+    if (!item && !this.groupEntity) {
       return;
     }
     ev.stopPropagation();
 
-    if (ev.model) {
-      entityId = ev.model.item.entity_id;
+    if (item) {
+      entityId = item.entity_id;
     } else {
       entityId = this.groupEntity.entity_id;
     }
