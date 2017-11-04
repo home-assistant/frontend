@@ -44,12 +44,23 @@ gulp.task(taskName, function () {
         src.push(inDir + '/' + lang + '.json');
       }
       return gulp.src(src)
-        .pipe(merge({
-          fileName: tr + '.json',
-        }))
         .pipe(transform(function(data, file) {
           // Polymer.AppLocalizeBehavior requires flattened json
           return flatten(data);
+        }))
+        .pipe(transform(function(data, file) {
+          // Filter out empty strings or other falsey values before merging
+          return Object.keys(data)
+            .filter(key => {
+              return Boolean(data[key]);
+            })
+            .reduce((obj, key) => {
+              obj[key] = data[key];
+              return obj;
+            }, {});
+        }))
+        .pipe(merge({
+          fileName: tr + '.json',
         }))
         .pipe(minify())
         .pipe(gulp.dest(outDir));
