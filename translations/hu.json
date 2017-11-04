@@ -5,8 +5,6 @@
         "map": "Térkép",
         "logbook": "Napló",
         "history": "Előzmények",
-        "log_out": "Kilépés",
-        "mailbox": "",
-        "shopping_list": ""
+        "log_out": "Kilépés"
     }
 }

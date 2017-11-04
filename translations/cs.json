@@ -5,8 +5,6 @@
         "map": "Mapa",
         "logbook": "Deník",
         "history": "Historie",
-        "log_out": "Odhlásit se",
-        "mailbox": "",
-        "shopping_list": ""
+        "log_out": "Odhlásit se"
     }
 }

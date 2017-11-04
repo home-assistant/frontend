@@ -1,12 +1,9 @@
 {
     "panel": {
-        "config": "",
         "states": "Състояние",
         "map": "Карта",
         "logbook": "Дневник",
         "history": "История",
-        "log_out": "Излез",
-        "mailbox": "",
-        "shopping_list": ""
+        "log_out": "Излез"
     }
 }

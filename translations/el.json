@@ -5,8 +5,6 @@
         "map": "Χάρτης",
         "logbook": "Αρχείο Συμβάντων",
         "history": "Ιστορικό",
-        "log_out": "Αποσύνδεση",
-        "mailbox": "",
-        "shopping_list": ""
+        "log_out": "Αποσύνδεση"
     }
 }

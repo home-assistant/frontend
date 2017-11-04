@@ -5,8 +5,6 @@
         "map": "地图",
         "logbook": "日志",
         "history": "历史",
-        "log_out": "退出",
-        "mailbox": "",
-        "shopping_list": ""
+        "log_out": "退出"
     }
 }

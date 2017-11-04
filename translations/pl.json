@@ -1,12 +1,9 @@
 {
     "panel": {
-        "config": "",
         "states": "Stany",
         "map": "Mapa",
         "logbook": "Dziennik",
         "history": "Historia",
-        "log_out": "Wyloguj",
-        "mailbox": "",
-        "shopping_list": ""
+        "log_out": "Wyloguj"
     }
 }

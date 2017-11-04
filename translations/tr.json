@@ -5,8 +5,6 @@
         "map": "Harita",
         "logbook": "Kayıt Defteri",
         "history": "Geçmiş",
-        "log_out": "Çıkış Yap",
-        "mailbox": "",
-        "shopping_list": ""
+        "log_out": "Çıkış Yap"
     }
 }

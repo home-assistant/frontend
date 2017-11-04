@@ -31,6 +31,7 @@ docker run \
      lokalise/lokalise-cli lokalise \
      --token ${API_TOKEN} \
      export ${PROJECT_ID} \
+     --export_empty skip \
      --type json \
      --dest /opt/dest
 
