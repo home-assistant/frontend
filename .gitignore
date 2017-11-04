@@ -19,3 +19,6 @@ venv
 lib
 bin
 dist
+
+# Secrets
+.lokalise_token
