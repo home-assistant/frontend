@@ -29,22 +29,6 @@ function flatten (data) {
   return recursive_flatten('', data);
 }
 
-var taskName = 'build-translation-native-names';
-gulp.task(taskName, function() {
-  return gulp.src(inDir + '/*.json')
-    .pipe(transform(function(data, file) {
-      // Look up the native name for each language and generate a json
-      // object with all available languages and native names
-      const lang = path.basename(file.relative, '.json');
-      return {[lang]: {nativeName: data.language[lang]}};
-    }))
-    .pipe(merge({
-      fileName: 'translationNativeNames.json',
-    }))
-    .pipe(gulp.dest('build-temp'));
-});
-tasks.push(taskName);
-
 var taskName = 'build-merged-translations';
 gulp.task(taskName, function () {
   return gulp.src(inDir + '/*.json')
@@ -62,13 +46,6 @@ gulp.task(taskName, function () {
       return gulp.src(src)
         .pipe(merge({
           fileName: tr + '.json',
-        }))
-        .pipe(transform(function(data, file) {
-          // For now, language strings are only used for the native names list. We're deleting
-          // them from the rolled up translation files for now until we have a more robust
-          // system for splitting translation strings into multiple resource files.
-          delete data['language'];
-          return data;
         }))
         .pipe(transform(function(data, file) {
           // Polymer.AppLocalizeBehavior requires flattened json
@@ -103,10 +80,10 @@ gulp.task(taskName, ['build-merged-translations'], function() {
 tasks.push(taskName);
 
 var taskName = 'build-translations';
-gulp.task(taskName, ['build-translation-fingerprints', 'build-translation-native-names'], function() {
+gulp.task(taskName, ['build-translation-fingerprints'], function() {
   return gulp.src([
+      'src/translations/translationMetadata.json',
       'build-temp/translationFingerprints.json',
-      'build-temp/translationNativeNames.json',
     ])
     .pipe(merge({}))
     .pipe(transform(function(data, file) {

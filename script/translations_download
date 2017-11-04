@@ -21,7 +21,7 @@ LOCAL_DIR="$(pwd)/translations"
 DOWNLOAD_FILE="${LOCAL_DIR}/Home_Assistant_-_Polymer_frontend-locale.zip"
 FILE_FORMAT=json
 
-rm -rf ${LOCAL_DIR}
+rm -f ${LOCAL_DIR}/*.json
 mkdir -p ${LOCAL_DIR}
 
 docker run \
