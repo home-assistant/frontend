@@ -64,6 +64,13 @@ gulp.task(taskName, function () {
           fileName: tr + '.json',
         }))
         .pipe(transform(function(data, file) {
+          // For now, language strings are only used for the native names list. We're deleting
+          // them from the rolled up translation files for now until we have a more robust
+          // system for splitting translation strings into multiple resource files.
+          delete data['language'];
+          return data;
+        }))
+        .pipe(transform(function(data, file) {
           // Polymer.AppLocalizeBehavior requires flattened json
           return flatten(data);
         }))
@@ -102,6 +109,20 @@ gulp.task(taskName, ['build-translation-fingerprints', 'build-translation-native
       'build-temp/translationNativeNames.json',
     ])
     .pipe(merge({}))
+    .pipe(transform(function(data, file) {
+      return Object.keys(data)
+        .filter(key => {
+          if (!data[key]['nativeName']) {
+            console.warn(`Skipping language ${key}. Native name was not translated.`);
+            return false;
+          }
+          return true;
+        })
+        .reduce((obj, key) => {
+          obj[key] = data[key];
+          return obj;
+        }, {});
+    }))
     .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
     .pipe(gulp.dest('build-temp'));
