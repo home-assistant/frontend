@@ -11,10 +11,6 @@ OUTPUT_DIR=hass_frontend
 rm -rf $OUTPUT_DIR
 cp -r public $OUTPUT_DIR
 
-# Download latest translations
-echo "Downloading translations from Lokalise"
-script/translations_download
-
 # Build frontend
 BUILD_DEV=0 ./node_modules/.bin/gulp
 

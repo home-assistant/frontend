@@ -1,0 +1,11 @@
+{
+    "panel": {
+        "config": "Asetukset",
+        "states": "Yleisnäkymä",
+        "map": "Kartta",
+        "logbook": "Lokikirja",
+        "history": "Historia",
+        "log_out": "Kirjaudu ulos",
+        "shopping_list": "Ostoslista"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "panel": {
+        "config": "Nastavení",
+        "states": "Stavy",
+        "map": "Mapa",
+        "logbook": "Deník",
+        "history": "Historie",
+        "log_out": "Odhlásit se"
+    }
+}

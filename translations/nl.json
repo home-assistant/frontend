@@ -1,0 +1,10 @@
+{
+    "panel": {
+        "config": "Instellingen",
+        "states": "Overzicht",
+        "map": "Kaart",
+        "logbook": "Logboek",
+        "history": "Geschiedenis",
+        "log_out": "Uitloggen"
+    }
+}
