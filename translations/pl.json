@@ -1,0 +1,9 @@
+{
+    "panel": {
+        "states": "Stany",
+        "map": "Mapa",
+        "logbook": "Dziennik",
+        "history": "Historia",
+        "log_out": "Wyloguj"
+    }
+}

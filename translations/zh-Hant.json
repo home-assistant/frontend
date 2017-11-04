@@ -1,0 +1,10 @@
+{
+    "panel": {
+        "config": "設定",
+        "states": "概覽",
+        "map": "地圖",
+        "logbook": "日誌",
+        "history": "歷史",
+        "log_out": "登出"
+    }
+}
