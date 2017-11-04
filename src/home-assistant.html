@@ -39,7 +39,7 @@
       <login-form
         hass='[[hass]]'
         connection-promise='{{connectionPromise}}'
-        show-loading='[[computeShowLoading(connectionPromise, hass, iconsLoaded)]]'>
+        show-loading='[[computeShowLoading(connectionPromise, hass)]]'>
       </login-form>
     </template>
   </template>
@@ -72,16 +72,9 @@ class HomeAssistant extends Polymer.Element {
         type: Object,
         value: null,
       },
-      icons: {
-        type: String,
-      },
-      iconsLoaded: {
-        type: Boolean,
-        value: false,
-      },
       showMain: {
         type: Boolean,
-        computed: 'computeShowMain(hass, iconsLoaded)',
+        computed: 'computeShowMain(hass)',
       },
     };
   }
@@ -90,33 +83,16 @@ class HomeAssistant extends Polymer.Element {
     super.ready();
     this.addEventListener('settheme', e => this.setTheme(e));
     this.addEventListener('hass-language-select', e => this.selectLanguage(e));
-    this.loadIcons();
     this.loadResources();
   }
 
-  computeShowMain(hass, iconsLoaded) {
-    return hass && hass.states && hass.config && iconsLoaded;
+  computeShowMain(hass) {
+    return hass && hass.states && hass.config;
   }
 
-  computeShowLoading(connectionPromise, hass, iconsLoaded) {
+  computeShowLoading(connectionPromise, hass) {
     // Show loading when connecting or when connected but not all pieces loaded yet
-    return (connectionPromise != null ||
-            (hass && (!hass.states || !hass.config || !iconsLoaded)));
-  }
-
-  loadIcons() {
-    // If the import fails, we'll try to import again, must be a server glitch
-    // Since HTML imports only resolve once, in prod mode we import another url.
-    const success = () => {
-      this.iconsLoaded = true;
-    };
-
-    Polymer.importHref(
-      '/static/mdi' + this.icons + '.html',
-      success,
-      () => Polymer.importHref('/static/mdi.html', success, success),
-      true /* true for async */
-    );
+    return (connectionPromise != null || (hass && (!hass.states || !hass.config)));
   }
 
   loadResources() {
