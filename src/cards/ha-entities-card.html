@@ -17,9 +17,6 @@
       .state {
         padding: 4px 16px;
       }
-      .has-more-card {
-        cursor: pointer;
-      }
       .header {
         @apply(--paper-font-headline);
         /* overwriting line-height +8 because entity-toggle can be 40px height,
@@ -38,7 +35,7 @@
       ha-entity-toggle {
         margin-left: 16px;
       }
-      .header-more-info {
+      .more-info {
         cursor: pointer;
       }
     </style>
@@ -86,24 +83,25 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   computeTitleClass(groupEntity) {
     var classes = 'header horizontal layout center ';
     if (groupEntity) {
-      classes += 'header-more-info';
+      classes += 'more-info';
     } else {
       classes += 'domain';
     }
     return classes;
   }
 
+  computeStateClass(stateObj) {
+    return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state');
+  }
+
   addTapEvents() {
-    var cards = this.root.querySelectorAll('.has-more-card');
+    var cards = this.root.querySelectorAll('.state.more-info');
+    /* eslint-disable no-undef */
     for (var i of cards) {
       i.addEventListener('tap', this.entityTapped.bind(this));
     }
   }
- 
-  computeStateClass(stateObj) {
-    return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state has-more-card' : 'state');
-  }
- 
+
   entityTapped(ev) {
     var item = this.root.querySelector('dom-repeat').itemForElement(ev.target);
     var entityId;
