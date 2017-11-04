@@ -1,0 +1,12 @@
+{
+    "panel": {
+        "config": "",
+        "states": "Valdymas",
+        "map": "Žemėlapis",
+        "logbook": "Veiksmų žurnalas",
+        "history": "Istorija",
+        "log_out": "Atsijungti",
+        "mailbox": "",
+        "shopping_list": ""
+    }
+}

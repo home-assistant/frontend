@@ -1,0 +1,12 @@
+{
+    "panel": {
+        "config": "",
+        "states": "ภาพรวม",
+        "map": "แผนที่",
+        "logbook": "สมุดบันทึก",
+        "history": "ประวัติ",
+        "log_out": "ลงชื่อออก",
+        "mailbox": "",
+        "shopping_list": ""
+    }
+}

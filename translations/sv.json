@@ -1,0 +1,12 @@
+{
+    "panel": {
+        "config": "",
+        "states": "Översikt",
+        "map": "Karta",
+        "logbook": "Loggbok",
+        "history": "Historik",
+        "log_out": "Logga Ut",
+        "mailbox": "",
+        "shopping_list": ""
+    }
+}

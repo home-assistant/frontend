@@ -1,0 +1,12 @@
+{
+    "panel": {
+        "config": "Configurazione",
+        "states": "Stati",
+        "map": "Mappa",
+        "logbook": "Registro",
+        "history": "Storico",
+        "log_out": "Esci",
+        "mailbox": "Messaggi",
+        "shopping_list": "Lista della spesa"
+    }
+}

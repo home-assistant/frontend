@@ -11,7 +11,9 @@ cd "$(dirname "$0")/.."
 if [ ! -f .lokalise_token ] ; then
     echo "Lokalise API token is required to download the latest set of" \
         "translations. Please create an account by using the following link:" \
-        "https://lokalise.co/signup/3420425759f6d6d241f598.13594006/all/"
+        "https://lokalise.co/signup/3420425759f6d6d241f598.13594006/all/" \
+        "Place your token in a new file \".lokalise_token\" in the repo" \
+        "root directory."
     exit 1
 fi
 
