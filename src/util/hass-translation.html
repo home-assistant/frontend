@@ -7,19 +7,16 @@ function getActiveTranslation() {
   const lookup = {};
   /* eslint-disable no-undef */
   Object.keys(window.translationMetadata).forEach((tr) => {
-    lookup[tr.toLowerCase()] = tr;
+    lookup[tr] = tr;
   });
 
-  // Search for a matching translation from most specific to general
   function languageGetTranslation(language) {
-    const subtags = language.toLowerCase().split('-');
-
-    for (let i = subtags.length; i >= 1; i--) {
-      const lang = subtags.slice(0, i).join('-');
-
-      if (lookup[lang]) {
-        return lookup[lang];
-      }
+    if (lookup[language]) {
+      return lookup[language];
+    }
+    if (language.substring(0, 2) === 'zh') {
+      if (language === 'zh-CN' || language === 'zh-SG') return 'zh-Hans';
+      return 'zh-Hant';
     }
     return null;
   }
