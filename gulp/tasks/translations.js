@@ -44,12 +44,20 @@ gulp.task(taskName, function () {
         src.push(inDir + '/' + lang + '.json');
       }
       return gulp.src(src)
-        .pipe(merge({
-          fileName: tr + '.json',
-        }))
         .pipe(transform(function(data, file) {
           // Polymer.AppLocalizeBehavior requires flattened json
           return flatten(data);
+        }))
+        .pipe(transform(function(data, file) {
+          const new_data = {};
+          Object.entries(data).forEach(([key, value]) => {
+            // Filter out empty strings or other falsey values before merging
+            if (data[key]) new_data[key] = value;
+          });
+          return new_data;
+        }))
+        .pipe(merge({
+          fileName: tr + '.json',
         }))
         .pipe(minify())
         .pipe(gulp.dest(outDir));
@@ -87,18 +95,17 @@ gulp.task(taskName, ['build-translation-fingerprints'], function() {
     ])
     .pipe(merge({}))
     .pipe(transform(function(data, file) {
-      return Object.keys(data)
-        .filter(key => {
-          if (!data[key]['nativeName']) {
+      const new_data = {};
+      Object.entries(data).forEach(([key, value]) => {
+        // Filter out empty strings or other falsey values before merging
+        if (data[key]['nativeName']) {
+          new_data[key] = data[key];
+        } else {
             console.warn(`Skipping language ${key}. Native name was not translated.`);
-            return false;
-          }
-          return true;
-        })
-        .reduce((obj, key) => {
-          obj[key] = data[key];
-          return obj;
-        }, {});
+        }
+        if (data[key]) new_data[key] = value;
+      });
+      return new_data;
     }))
     .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))

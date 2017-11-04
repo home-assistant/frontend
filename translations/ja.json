@@ -1,0 +1,9 @@
+{
+    "panel": {
+        "states": "状態",
+        "map": "地図",
+        "logbook": "ログブック",
+        "history": "履歴",
+        "log_out": "ログアウト"
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "panel": {
+        "states": "Översikt",
+        "map": "Karta",
+        "logbook": "Loggbok",
+        "history": "Historik",
+        "log_out": "Logga Ut"
+    }
+}
