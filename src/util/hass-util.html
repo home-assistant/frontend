@@ -26,7 +26,7 @@ window.hassUtil.DOMAINS_WITH_CARD = [
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
   'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
   'cover', 'fan', 'group', 'history_graph', 'light', 'lock', 'media_player', 'script',
-  'sun', 'updater', 'vacuum', 'input_datetime',
+  'sun', 'updater', 'vacuum', 'input_datetime', 'plug',
 ];
 
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'history_graph', 'scene'];
@@ -385,6 +385,8 @@ window.hassUtil.binarySensorIcon = function (state) {
     case 'safety':
     case 'smoke':
       return activated ? 'mdi:verified' : 'mdi:alert';
+    case 'plug':
+      return activated ? 'mdi:power-plug-off' : 'mdi:power-plug';
     default:
       return activated ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
   }
@@ -497,6 +499,7 @@ window.hassUtil.computeStateState = function (stateObj) {
         case 'light':
         case 'moving':
         case 'power':
+        case 'plug':
         default:
       }
     } else if (domain === 'input_datetime') {
