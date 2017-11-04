@@ -96,9 +96,8 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   addTapEvents() {
     var cards = this.root.querySelectorAll('.state.more-info');
-    /* eslint-disable no-undef */
-    for (var i of cards) {
-      i.addEventListener('tap', this.entityTapped.bind(this));
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].addEventListener('tap', this.entityTapped.bind(this));
     }
   }
 
