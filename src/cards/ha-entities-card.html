@@ -91,7 +91,7 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeStateClass(stateObj) {
-    return (window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state');
+    return window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state';
   }
 
   addTapEvents() {
