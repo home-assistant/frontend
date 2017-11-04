@@ -79,6 +79,10 @@ class HomeAssistant extends Polymer.Element {
         type: Boolean,
         value: false,
       },
+      language: {
+        type: Object,
+        value: null,
+      },
       showMain: {
         type: Boolean,
         computed: 'computeShowMain(hass, iconsLoaded)',
@@ -121,7 +125,7 @@ class HomeAssistant extends Polymer.Element {
 
   loadResources() {
     window.getTranslation().then((result) => {
-      this._updateHass({
+      this._updateLanguage({
         language: result.language,
         resources: result.resources,
       });
@@ -178,7 +182,7 @@ class HomeAssistant extends Polymer.Element {
         var auth = conn.options.authToken ? conn.options : {};
         return window.hassCallApi(host, auth, method, path, parameters);
       },
-    }, this.$.storage.getStoredState());
+    }, this.language, this.$.storage.getStoredState());
 
     var reconnected = () => {
       this._updateHass({ connected: true });
@@ -276,13 +280,18 @@ class HomeAssistant extends Polymer.Element {
   }
 
   selectLanguage(event) {
-    this._updateHass({ selectedLanguage: event.detail.language });
+    this._updateLanguage({ selectedLanguage: event.detail.language });
     this.$.storage.storeState();
     this.loadResources();
   }
 
   _updateHass(obj) {
     this.hass = Object.assign({}, this.hass, obj);
+  }
+
+  _updateLanguage(obj) {
+    this.language = Object.assign({}, this.language, obj);
+    if (this.hass) this._updateHass(obj);
   }
 }
 
