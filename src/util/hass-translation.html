@@ -12,7 +12,7 @@ function getActiveTranslation() {
 
   function languageGetTranslation(language) {
     if (lookup[language]) {
-      return lookup[language];
+      return language;
     }
     if (language.substring(0, 2) === 'zh') {
       if (language === 'zh-CN' || language === 'zh-SG') return 'zh-Hans';
