@@ -3,8 +3,7 @@ Generate a caching service worker for HA
 
 Will be called as part of build_frontend.
 
-Expects home-assistant-polymer repo as submodule of HA repo.
-Creates a caching service worker based on the CURRENT content of HA repo.
+Creates a caching service worker based on the built content of the repo in hass_frontend.
 Output service worker to build/service_worker.js
 
 TODO:
@@ -70,11 +69,11 @@ gulp.task('gen-service-worker', () => {
       var url = '/static/panels/ha-panel-' + panel + '-' + hash + '.html';
       dynamicUrlToDependencies[url] = [fpath];
     });
-    var fallbackList = '(?!(?:static|api|local|service_worker.js|manifest.json))';
 
     var options = {
       navigateFallback: '/',
-      navigateFallbackWhitelist: [RegExp('^(?:' + fallbackList + '.)*$')],
+      navigateFallbackWhitelist:
+          [/^(?:(?!(?:static|api|local|service_worker.js|manifest.json)).)*$/],
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
         rootDir + '/icons/favicon.ico',
@@ -86,13 +85,29 @@ gulp.task('gen-service-worker', () => {
         rootDir + '/fonts/roboto/Roboto-Bold.ttf',
         rootDir + '/images/card_media_player_bg.png',
       ],
-      runtimeCaching: [{
-        urlPattern: /\/static\/translations\//,
+      // Rules are proceeded in order and negative per-domain rules are not supported.
+      runtimeCaching: [
+        { // Cache translations on first access
+          urlPattern: '/static/translations/*',
         handler: 'cacheFirst',
-      }, {
-        urlPattern: RegExp('^[^/]*/' + fallbackList + '.'),
+        },
+        { // Get static, api, and local (and home-assistant-polymer in dev mode) from network.
+          // Use cache only if Home Assistant server is unreachable.
+          urlPattern: '/(home-assistant-polymer|static|api|local)/*',
+          handler: 'networkFirst',
+        },
+        { // Get manifest and service worker from network.
+          // Use cache only if Home Assistant server is unreachable.
+          urlPattern: '/(service_worker.js|manifest.json)',
+          handler: 'networkFirst',
+        },
+        { // For rest of the files (on Home Assistant domain only) try both cache and network/
+          // First access might bring stale data from cache, but a single refresh will bring updated
+          // file.
+          urlPattern: '*',
         handler: 'fastest',
-      }],
+        }
+      ],
       stripPrefix: 'hass_frontend',
       replacePrefix: 'static',
       verbose: true,
