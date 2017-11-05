@@ -94,12 +94,12 @@ gulp.task('gen-service-worker', () => {
         { // Get static, api, and local (and home-assistant-polymer in dev mode) from network.
           // Use cache only if Home Assistant server is unreachable.
           urlPattern: '/(home-assistant-polymer|static|api|local)/*',
-          handler: 'networkFirst',
+          handler: 'networkOnly',
         },
         { // Get manifest and service worker from network.
           // Use cache only if Home Assistant server is unreachable.
           urlPattern: '/(service_worker.js|manifest.json)',
-          handler: 'networkFirst',
+          handler: 'networkOnly',
         },
         { // For rest of the files (on Home Assistant domain only) try both cache and network/
           // First access might bring stale data from cache, but a single refresh will bring updated
