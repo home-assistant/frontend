@@ -1,13 +1,12 @@
 {
-  "language": {
-    "en": "English"
-  },
-  "panel": {
-    "config": "Configuration",
-    "states": "Overview",
-    "map": "Map",
-    "logbook": "Logbook",
-    "history": "History",
-    "log_out": "Log Out"
-  }
+    "panel": {
+        "config": "Configuration",
+        "states": "Overview",
+        "map": "Map",
+        "logbook": "Logbook",
+        "history": "History",
+        "log_out": "Log Out",
+        "mailbox": "Mailbox",
+        "shopping_list": "Shopping List"
+    }
 }

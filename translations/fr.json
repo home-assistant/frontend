@@ -1,13 +1,11 @@
 {
-  "language": {
-    "fr": "Français"
-  },
-  "panel": {
-    "config": "Configuration",
-    "states": "États",
-    "map": "Carte",
-    "logbook": "Journal",
-    "history": "Historique",
-    "log_out": "Déconnexion"
-  }
+    "panel": {
+        "config": "Configuration",
+        "states": "États",
+        "map": "Carte",
+        "logbook": "Journal",
+        "history": "Historique",
+        "log_out": "Déconnexion",
+        "shopping_list": "Liste de courses"
+    }
 }

@@ -1,12 +1,9 @@
 {
-  "language": {
-    "fa": "فارسی"
-  },
-  "panel": {
-    "states": "وضعیت",
-    "map": "نقشه",
-    "logbook": "گزارش روزانه",
-    "history": "تاریخچه",
-    "log_out": "خروج"
-  }
+    "panel": {
+        "states": "وضعیت",
+        "map": "نقشه",
+        "logbook": "گزارش روزانه",
+        "history": "تاریخچه",
+        "log_out": "خروج"
+    }
 }

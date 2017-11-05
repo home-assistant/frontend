@@ -1,12 +1,9 @@
 {
-  "language": {
-    "pt": "Português"
-  },
-  "panel": {
-    "states": "Estados",
-    "map": "Mapa",
-    "logbook": "Eventos",
-    "history": "Histórico",
-    "log_out": "Desconectar"
-  }
+    "panel": {
+        "states": "Estados",
+        "map": "Mapa",
+        "logbook": "Eventos",
+        "history": "Histórico",
+        "log_out": "Desconectar"
+    }
 }

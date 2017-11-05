@@ -1,13 +1,10 @@
 {
-  "language": {
-    "tr": "Türkçe"
-  },
-  "panel": {
-    "config": "Ayarlar",
-    "states": "Durum",
-    "map": "Harita",
-    "logbook": "Kayıt Defteri",
-    "history": "Geçmiş",
-    "log_out": "Çıkış Yap"
-  }
+    "panel": {
+        "config": "Ayarlar",
+        "states": "Durum",
+        "map": "Harita",
+        "logbook": "Kayıt Defteri",
+        "history": "Geçmiş",
+        "log_out": "Çıkış Yap"
+    }
 }

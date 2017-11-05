@@ -1,13 +1,11 @@
 {
-  "language": {
-    "da": "Dansk"
-  },
-  "panel": {
-    "states": "Oversigt",
-    "map": "Kort",
-    "logbook": "Logbog",
-    "history": "Historik",
-    "log_out": "Log af",
-    "config": "Indstillinger"
-  }
+    "panel": {
+        "config": "Indstillinger",
+        "states": "Oversigt",
+        "map": "Kort",
+        "logbook": "Logbog",
+        "history": "Historik",
+        "log_out": "Log af",
+        "shopping_list": "Indkøbsliste"
+    }
 }
