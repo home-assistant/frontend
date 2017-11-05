@@ -172,7 +172,32 @@
               service='print_node'
               hidden$='[[!showHelp]]'
             ></ha-service-description>
+            
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='heal_node'
+              service-data=[[computeHealNodeServiceData(selectedNode)]]
+            >Heal Node</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='heal_node'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
 
+            <ha-call-service-button
+              hass='[[hass]]'
+              domain='zwave'
+              service='test_node'
+              service-data=[[computeNodeServiceData(selectedNode)]]
+            >Test Node</ha-call-service-button>
+            <ha-service-description
+              hass='[[hass]]'
+              domain='zwave'
+              service='test_node'
+              hidden$='[[!showHelp]]'
+            ></ha-service-description>
           </div>
           <div class='card-actions'>
             <paper-input
@@ -519,6 +544,13 @@ class HaConfigZwave extends Polymer.Element {
 
   computeNodeServiceData(selectedNode) {
     return { node_id: this.nodes[selectedNode].attributes.node_id };
+  }
+
+  computeHealNodeServiceData(selectedNode) {
+    return {
+      node_id: this.nodes[selectedNode].attributes.node_id,
+      return_routes: true
+    };
   }
 
   computeGetNodeName(selectedNode) {
