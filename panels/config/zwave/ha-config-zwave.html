@@ -547,8 +547,10 @@ class HaConfigZwave extends Polymer.Element {
   }
 
   computeHealNodeServiceData(selectedNode) {
-    return { node_id: this.nodes[selectedNode].attributes.node_id,
-             return_routes: true };
+    return {
+      node_id: this.nodes[selectedNode].attributes.node_id,
+      return_routes: true
+    };
   }
 
   computeGetNodeName(selectedNode) {
