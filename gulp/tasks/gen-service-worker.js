@@ -87,12 +87,12 @@ gulp.task('gen-service-worker', () => {
       ],
       // Rules are proceeded in order and negative per-domain rules are not supported.
       runtimeCaching: [
-        { // Cache translations on first access
-          urlPattern: '/static/translations/*',
-        handler: 'cacheFirst',
+        { // Cache static content (including translations) on first access.
+          urlPattern: '/static/*',
+          handler: 'cacheFirst',
         },
-        { // Get static, api, and local (and home-assistant-polymer in dev mode) from network.
-          urlPattern: '/(home-assistant-polymer|static|api|local)/*',
+        { // Get api (and home-assistant-polymer in dev mode) from network.
+          urlPattern: '/(home-assistant-polymer|api)/*',
           handler: 'networkOnly',
         },
         { // Get manifest and service worker from network.
@@ -100,10 +100,11 @@ gulp.task('gen-service-worker', () => {
           handler: 'networkOnly',
         },
         { // For rest of the files (on Home Assistant domain only) try both cache and network/
+          // This includes the root "/" or "/states" response and user files from ""/local".
           // First access might bring stale data from cache, but a single refresh will bring updated
           // file.
           urlPattern: '*',
-        handler: 'fastest',
+          handler: 'fastest',
         }
       ],
       stripPrefix: 'hass_frontend',
