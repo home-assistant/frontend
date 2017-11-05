@@ -385,6 +385,8 @@ window.hassUtil.binarySensorIcon = function (state) {
     case 'safety':
     case 'smoke':
       return activated ? 'mdi:verified' : 'mdi:alert';
+    case 'plug':
+      return activated ? 'mdi:power-plug-off' : 'mdi:power-plug';
     default:
       return activated ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
   }
@@ -497,6 +499,7 @@ window.hassUtil.computeStateState = function (stateObj) {
         case 'light':
         case 'moving':
         case 'power':
+        case 'plug':
         default:
       }
     } else if (domain === 'input_datetime') {
