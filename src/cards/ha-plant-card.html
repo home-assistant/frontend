@@ -1,0 +1,143 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../components/ha-card.html'>
+<link rel='import' href='../util/hass-mixins.html'>
+
+<dom-module id="ha-plant-card">
+  <template>
+    <style>
+      :host {
+        @apply(--paper-font-body1);
+        line-height: 1.5;
+      }
+      .header-more-info {
+        cursor: pointer;
+      }
+      .content {
+        padding: 0 32px 16px 32px;
+      }
+      iron-icon {
+        color: var(--paper-item-icon-color);
+      }
+      iron-icon[disabled] {
+        color: var(--disabled-text-color);
+      }
+      table {
+        width: 100%
+      }
+      th {
+        width: 20%;
+      }
+      td {
+        text-align: center;
+        color: var(--primary-text-color);
+      }
+      td.problem {
+        color: var(--label-badge-red);
+        font-weight: bold;
+      }
+      td.missing {
+        color: var(--disabled-text-color);
+      }
+    </style>
+
+    <ha-card class='header-more-info' header='[[computeTitle(stateObj)]]'>
+      <div class='content'>
+          <table>
+            <tr>
+              <template is='dom-repeat' items='{{sensors}}'>
+                <th>
+                  <iron-icon
+                    id='[[item]]'
+                    icon='[[computeIcon(stateObj, item)]]'
+                    disabled$='[[computeDisabled(stateObj, item)]]'>
+                  </iron-icon>
+                </th>
+              </template>
+            </tr><tr>
+              <template is='dom-repeat' items='{{sensors}}'>
+                <td class$='[[computeClass(stateObj, item)]]'>
+                  [[computeValue(stateObj, item)]]<br>
+                  [[computeUOM(stateObj, item)]]
+                </td>
+              </template>
+            </tr>
+          </table>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+
+<script>
+{
+  var _SENSORS = ['temperature', 'moisture', 'brightness', 'conductivity', 'battery'];
+  var _CONFIG = {
+    temperature: { icon: 'mdi:thermometer', uom: '°C' },
+    moisture: { icon: 'mdi:water', uom: '%' },
+    brightness: { icon: 'mdi:white-balance-sunny', uom: 'lx' },
+    conductivity: { icon: 'mdi:emoticon-poop', uom: 'µS/cm' },
+    battery: { icon: 'mdi:battery', uom: '%' }
+  };
+
+  class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'ha-plant-card'; }
+    static get properties() {
+      return {
+        hass: Object,
+        stateObj: Object
+      };
+    }
+
+    ready() {
+      super.ready();
+      this.addEventListener('tap', () => this.showMoreInfo());
+      this.sensors = _SENSORS;
+    }
+
+    computeTitle(stateObj) {
+      return window.hassUtil.computeStateName(stateObj);
+    }
+
+    computeClass(stateObj, sensor) {
+      if (typeof stateObj.attributes[sensor] === 'undefined') {
+        return 'missing';
+      }
+      var prob = stateObj.attributes.problem;
+      return (prob.indexOf(sensor) === -1) ? 'ok' : 'problem';
+    }
+
+    computeIcon(stateObj, sensor) {
+      var icon = _CONFIG[sensor].icon;
+      if (sensor === 'battery') {
+        var level = stateObj.attributes.battery;
+        if (level <= 5) {
+          icon += '-alert';
+        } else if (level < 95) {
+          icon += '-' + (Math.round((level / 10) - 0.01) * 10).toString();
+        }
+      }
+      return icon;
+    }
+
+    computeValue(stateObj, sensor) {
+      if (typeof stateObj.attributes[sensor] === 'undefined') {
+        return '-';
+      }
+      return stateObj.attributes[sensor];
+    }
+
+    computeUOM(stateObj, sensor) {
+      return _CONFIG[sensor].uom;
+    }
+
+    computeDisabled(stateObj, sensor) {
+      return (typeof stateObj.attributes[sensor] === 'undefined');
+    }
+
+    showMoreInfo() {
+      this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    }
+  }
+
+  customElements.define(HaPlantCard.is, HaPlantCard);
+}
+</script>
