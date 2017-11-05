@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
+<link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id="ha-climate-control">
   <template>
@@ -42,7 +43,7 @@
   </template>
 </dom-module>
 <script>
-class HaClimateControl extends Polymer.Element {
+class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-climate-control'; }
 
   static get properties() {
@@ -85,7 +86,7 @@ class HaClimateControl extends Polymer.Element {
     }
   }
   valueChanged() {
-    // when the value is changed, trigger a potential even fire in
+    // when the value is changed, trigger a potential event fire in
     // the future, as long as last changed is far enough in the
     // past.
     //
@@ -94,13 +95,13 @@ class HaClimateControl extends Polymer.Element {
     // (like set to red), then animate back to black when the
     // change event is fired, and the signal sent to home-assistant.
     if (this.last_changed) {
-      window.setTimeout(function (val) {
+      window.setTimeout(() => {
         var now = Date.now();
-        if (now - val.last_changed >= 2000) {
-          val.fire('change');
-          val.last_changed = null;
+        if (now - this.last_changed >= 2000) {
+          this.fire('change');
+          this.last_changed = null;
         }
-      }, 2010, this);
+      }, 2010);
     }
   }
 }

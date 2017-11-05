@@ -1,6 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="./ha-progress-button.html">
 
+<link rel='import' href='../util/hass-mixins.html'>
+
 <dom-module id='ha-call-service-button'>
   <template>
     <ha-progress-button
@@ -12,7 +14,7 @@
 </dom-module>
 
 <script>
-class HaCallServiceButton extends Polymer.Element {
+class HaCallServiceButton extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-call-service-button'; }
 
   static get properties() {
