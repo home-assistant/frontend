@@ -39,8 +39,8 @@ function getActiveTranslation() {
     if (translation) {
       return translation;
     }
-    if (navigator.language.length > 2) {
-      translation = languageGetTranslation(navigator.language.substring(0, 2));
+    if (navigator.language.includes('-')) {
+      translation = languageGetTranslation(navigator.language.split('-')[0]);
       if (translation) {
         return translation;
       }
