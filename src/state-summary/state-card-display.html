@@ -26,7 +26,7 @@
 </dom-module>
 
 <script>
-class StateCardDisplay extends window.hassMixins.StatesMixin(Polymer.Element) {
+class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-card-display'; }
 
   static get properties() {
@@ -41,7 +41,63 @@ class StateCardDisplay extends window.hassMixins.StatesMixin(Polymer.Element) {
   }
 
   computeStateDisplay(stateObj) {
-    return this.computeStateState(stateObj);
+    if (!stateObj._stateDisplay) {
+      const domain = window.hassUtil.computeDomain(stateObj);
+      if (domain === 'binary_sensor') {
+        var stateText = stateObj.state;
+        switch (stateObj.attributes.device_class) {
+          case 'moisture':
+            stateText = (stateObj.state === 'off') ? 'dry' : 'wet';
+            break;
+          case 'gas':
+          case 'motion':
+          case 'occupancy':
+          case 'smoke':
+          case 'sound':
+          case 'vibration':
+            stateText = (stateObj.state === 'off') ? 'clear' : 'detected';
+            break;
+          case 'opening':
+            stateText = (stateObj.state === 'off') ? 'closed' : 'open';
+            break;
+          case 'safety':
+            stateText = (stateObj.state === 'off') ? 'safe' : 'unsafe';
+            break;
+          default:
+        }
+        stateObj._stateDisplay = this.localize('state', stateText);
+      } else if (stateObj.attributes.unit_of_measurement) {
+        stateObj._stateDisplay = stateObj.state + ' ' + stateObj.attributes.unit_of_measurement;
+      } else if (domain === 'input_datetime') {
+        let date;
+        if (!stateObj.attributes.has_time) {
+          date = new Date(
+            stateObj.attributes.year,
+            stateObj.attributes.month - 1,
+            stateObj.attributes.day
+          );
+          stateObj._stateDisplay = window.hassUtil.formatDate(date);
+        } else if (!stateObj.attributes.has_date) {
+          date = new Date(
+            1970, 0, 1,
+            stateObj.attributes.hour,
+            stateObj.attributes.minute
+          );
+          stateObj._stateDisplay = window.hassUtil.formatTime(date);
+        } else {
+          date = new Date(
+            stateObj.attributes.year, stateObj.attributes.month - 1,
+            stateObj.attributes.day, stateObj.attributes.hour,
+            stateObj.attributes.minute
+          );
+          stateObj._stateDisplay = window.hassUtil.formatDateTime(date);
+        }
+      } else {
+        stateObj._stateDisplay = this.localize('state', stateObj.state);
+      }
+    }
+
+    return stateObj._stateDisplay;
   }
 }
 customElements.define(StateCardDisplay.is, StateCardDisplay);
