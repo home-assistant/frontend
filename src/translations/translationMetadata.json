@@ -2,6 +2,9 @@
 	"bg": {
 		"nativeName": "Български"
 	},
+	"bn": {
+		"nativeName": "বাংলা"
+	},
 	"cs": {
 		"nativeName": "Čeština"
 	},
@@ -28,6 +31,12 @@
 	},
 	"fr": {
 		"nativeName": "Français"
+	},
+	"he": {
+		"nativeName": "עברית"
+	},
+	"hi": {
+		"nativeName": "हिन्दी"
 	},
 	"hu": {
 		"nativeName": "Magyar"
@@ -56,8 +65,14 @@
 	"ru": {
 		"nativeName": "Русский"
 	},
+	"sl": {
+		"nativeName": "Slovenščina"
+	},
 	"sv": {
 		"nativeName": "Svenska"
+	},
+	"te": {
+		"nativeName": "తెలుగు"
 	},
 	"th": {
 		"nativeName": "ภาษาไทย"
