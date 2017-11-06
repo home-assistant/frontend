@@ -102,9 +102,9 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
       return hass && hass.resources;
     }
 
-    localize(namespace, message, fallback = true, ...args) {
-      return super.localize(namespace + '.' + message, ...args)
-        || (fallback === true ? message : null);
+    localize(namespace, message, ...args) {
+      // Return the input message if no translation is found
+      return super.localize(namespace + '.' + message, ...args) || message;
     }
   });
 
