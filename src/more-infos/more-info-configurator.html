@@ -65,12 +65,24 @@
         </p>
 
         <template is='dom-repeat' items='[[stateObj.attributes.fields]]'>
-          <paper-input
-            label='[[item.name]]'
-            name='[[item.id]]'
-            type='[[item.type]]'
-            on-change='fieldChanged'
-          ></paper-input>
+          <template is='dom-if' if='[[fieldIsCheckbox(item.type)]]'>
+            <paper-checkbox
+              label='[[item.name]]'
+              name='[[item.id]]'
+              type='[[item.type]]'
+              on-change='fieldChanged'
+            >
+              [[item.name]]
+            </paper-input>
+          </template>
+          <template is='dom-if' if='[[fieldIsString(item.type)]]'>
+            <paper-input
+              label='[[item.name]]'
+              name='[[item.id]]'
+              type='[[item.type]]'
+              on-change='fieldChanged'
+            ></paper-input>
+          </template>
         </template>
 
         <p class='submit' hidden$='[[!stateObj.attributes.submit_caption]]'>
@@ -132,6 +144,16 @@ class MoreInfoConfigurator extends Polymer.Element {
   fieldChanged(ev) {
     var el = ev.target;
     this.fieldInput[el.name] = el.value;
+  }
+
+  fieldIsCheckbox(type) {
+    var checkbox_types = ['checkbox', 'boolean', 'toggle']
+    return (checkbox_types.indexOf(type) > -1)
+  }
+
+  fieldIsString(type) {
+    var non_string_types = ['checkbox', 'boolean', 'toggle']
+    return !(non_string_types.indexOf(type) > -1)
   }
 
   submitClicked() {
