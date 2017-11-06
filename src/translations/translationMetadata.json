@@ -29,6 +29,9 @@
 	"fr": {
 		"nativeName": "Français"
 	},
+	"he": {
+		"nativeName": "עברית"
+	},
 	"hu": {
 		"nativeName": "Magyar"
 	},
@@ -55,6 +58,9 @@
 	},
 	"ru": {
 		"nativeName": "Русский"
+	},
+	"sl": {
+		"nativeName": "Slovenščina"
 	},
 	"sv": {
 		"nativeName": "Svenska"
