@@ -134,13 +134,6 @@ window.hassMixins.StatesMixin = Polymer.dedupingMixin(superClass =>
             case 'safety':
               stateText = (stateObj.state === 'off') ? 'safe' : 'unsafe';
               break;
-            case 'cold':
-            case 'connectivity':
-            case 'heat':
-            case 'light':
-            case 'moving':
-            case 'power':
-            case 'plug':
             default:
           }
           stateObj._stateDisplay = this.localize('state', stateText);
