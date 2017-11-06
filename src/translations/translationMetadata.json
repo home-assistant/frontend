@@ -2,6 +2,9 @@
 	"bg": {
 		"nativeName": "Български"
 	},
+	"bn": {
+		"nativeName": "বাংলা"
+	},
 	"cs": {
 		"nativeName": "Čeština"
 	},
@@ -31,6 +34,9 @@
 	},
 	"he": {
 		"nativeName": "עברית"
+	},
+	"hi": {
+		"nativeName": "हिन्दी"
 	},
 	"hu": {
 		"nativeName": "Magyar"
@@ -67,6 +73,9 @@
 	},
 	"th": {
 		"nativeName": "ภาษาไทย"
+	},
+	"te": {
+		"nativeName": "తెలుగు"
 	},
 	"tr": {
 		"nativeName": "Türkçe"
