@@ -153,13 +153,13 @@ class MoreInfoConfigurator extends Polymer.Element {
   }
 
   fieldIsCheckbox(type) {
-    var checkbox_types = ['checkbox', 'boolean', 'toggle']
-    return (checkbox_types.indexOf(type) > -1)
+    var checkboxTypes = ['checkbox', 'boolean', 'toggle'];
+    return (checkboxTypes.indexOf(type) > -1)
   }
 
   fieldIsString(type) {
-    var non_string_types = ['checkbox', 'boolean', 'toggle']
-    return !(non_string_types.indexOf(type) > -1)
+    var nonStringTypes = ['checkbox', 'boolean', 'toggle'];
+    return !(nonStringTypes.indexOf(type) > -1)
   }
 
   submitClicked() {
