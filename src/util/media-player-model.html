@@ -109,32 +109,6 @@
 
   /* eslint-enable no-bitwise */
 
-  addGetter('primaryText', function () {
-    return this.stateObj.attributes.media_title ||
-           window.hassUtil.computeStateState(this.stateObj);
-  });
-
-  addGetter('secondaryText', function () {
-    if (this.isMusic) {
-      return this.stateObj.attributes.media_artist;
-    } else if (this.isTVShow) {
-      var text = this.stateObj.attributes.media_series_title;
-
-      if (this.stateObj.attributes.media_season) {
-        text += ' S' + this.stateObj.attributes.media_season;
-
-        if (this.stateObj.attributes.media_episode) {
-          text += 'E' + this.stateObj.attributes.media_episode;
-        }
-      }
-
-      return text;
-    } else if (this.stateObj.attributes.app_name) {
-      return this.stateObj.attributes.app_name;
-    }
-    return '';
-  });
-
   Object.assign(window.MediaPlayerEntity.prototype, {
     mediaPlayPause: function () {
       this.callService('media_play_pause');

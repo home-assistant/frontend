@@ -153,8 +153,8 @@
 
       <div class='caption'>
         [[computeStateName(stateObj)]]
-        <div class='title'>[[playerObj.primaryText]]</div>
-        [[playerObj.secondaryText]]<br />
+        <div class='title'>[[primaryText]]</div>
+        [[secondaryText]]<br />
       </div>
     </div>
 
@@ -206,7 +206,8 @@
 </dom-module>
 
 <script>
-class HaMediaPlayerCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HaMediaPlayerCard extends
+  window.hassMixins.MediaPlayerMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-media_player-card'; }
   static get properties() {
     return {

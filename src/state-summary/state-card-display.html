@@ -26,11 +26,12 @@
 </dom-module>
 
 <script>
-class StateCardDisplay extends Polymer.Element {
+class StateCardDisplay extends window.hassMixins.StatesMixin(Polymer.Element) {
   static get is() { return 'state-card-display'; }
 
   static get properties() {
     return {
+      hass: Object,
       stateObj: Object,
       inDialog: {
         type: Boolean,
@@ -40,7 +41,7 @@ class StateCardDisplay extends Polymer.Element {
   }
 
   computeStateDisplay(stateObj) {
-    return window.hassUtil.computeStateState(stateObj);
+    return this.computeStateState(stateObj);
   }
 }
 customElements.define(StateCardDisplay.is, StateCardDisplay);

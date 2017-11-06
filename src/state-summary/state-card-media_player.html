@@ -38,15 +38,15 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
-        <div class='main-text' take-height$='[[!playerObj.secondaryText]]'>[[playerObj.primaryText]]</div>
-        <div class='secondary-text'>[[playerObj.secondaryText]]</div>
+        <div class='main-text' take-height$='[[!secondaryText]]'>[[primaryText]]</div>
+        <div class='secondary-text'>[[secondaryText]]</div>
       </div>
     </div>
   </template>
 </dom-module>
 
 <script>
-class StateCardMediaPlayer extends Polymer.Element {
+class StateCardMediaPlayer extends window.hassMixins.MediaPlayerMixin(Polymer.Element) {
   static get is() { return 'state-card-media_player'; }
 
   static get properties() {
