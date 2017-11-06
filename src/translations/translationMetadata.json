@@ -71,11 +71,11 @@
 	"sv": {
 		"nativeName": "Svenska"
 	},
-	"th": {
-		"nativeName": "ภาษาไทย"
-	},
 	"te": {
 		"nativeName": "తెలుగు"
+	},
+	"th": {
+		"nativeName": "ภาษาไทย"
 	},
 	"tr": {
 		"nativeName": "Türkçe"
