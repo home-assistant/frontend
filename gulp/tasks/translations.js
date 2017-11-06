@@ -38,7 +38,7 @@ gulp.task(taskName, function () {
       // file for each specific subtag
       const tr = path.basename(file.history[0], '.json');
       const subtags = tr.split('-');
-      const src = [inDir + '/en.json']; // Start with en as a fallback for missing translations
+      const src = ['src/translations/en.json']; // Start with en as a fallback for missing translations
       for (i = 1; i <= subtags.length; i++) {
         const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
