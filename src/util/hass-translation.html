@@ -35,9 +35,15 @@ function getActiveTranslation() {
       }
     }
   } else {
-    translation = languageGetTranslation(navigator.language || navigator.userLanguage);
+    translation = languageGetTranslation(navigator.language);
     if (translation) {
       return translation;
+    }
+    if (navigator.language.length > 2) {
+      translation = languageGetTranslation(navigator.language.substring(0, 2));
+      if (translation) {
+        return translation;
+      }
     }
   }
 
