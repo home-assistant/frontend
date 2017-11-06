@@ -5,6 +5,8 @@
         "map": "地圖",
         "logbook": "日誌",
         "history": "歷史",
-        "log_out": "登出"
+        "log_out": "登出",
+        "mailbox": "郵箱",
+        "shopping_list": "購物清單"
     }
 }
