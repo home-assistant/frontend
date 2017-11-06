@@ -531,6 +531,11 @@ window.hassUtil.computeStateState = function (stateObj) {
         );
         stateObj._stateDisplay = window.hassUtil.formatDateTime(date);
       }
+    } else if (domain === 'zwave') {
+      if (['initializing', 'dead'].includes(stateObj.state) && stateObj.attributes && 'query_stage' in stateObj.attributes) {
+        return stateObj._stateDisplay + ' (' + stateObj.attributes.query_stage + ')';
+      }
+      return stateObj._stateDisplay;
     }
   }
 
