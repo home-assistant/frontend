@@ -40,7 +40,15 @@ class StateCardDisplay extends Polymer.Element {
   }
 
   computeStateDisplay(stateObj) {
-    return window.hassUtil.computeStateState(stateObj);
+    switch (window.hassUtil.computeDomain(stateObj)) {
+      case 'zwave':
+        if (['initializing', 'dead'].includes(stateObj.state) && stateObj.attributes && 'query_stage' in stateObj.attributes) {
+          return window.hassUtil.computeStateState(stateObj) + ' (' + stateObj.attributes.query_stage + ')';
+        }
+        return window.hassUtil.computeStateState(stateObj);
+      default:
+        return window.hassUtil.computeStateState(stateObj);
+    }
   }
 }
 customElements.define(StateCardDisplay.is, StateCardDisplay);
