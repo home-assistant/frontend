@@ -45,5 +45,20 @@
     "open": "Open",
     "safe": "Safe",
     "unsafe": "Unsafe"
+  },
+  "state_badge": {
+    "home": "Home",
+    "not_home": "Away",
+    "unknown": "Unk",
+    "armed": "Armed",
+    "disarmed": "Disarm",
+    "armed_home": "Armed",
+    "armed_away": "Armed",
+    "armed_night": "Armed",
+    "pending": "Pend",
+    "arming": "Arming",
+    "disarming": "Disarm",
+    "triggered": "Trig",
+    "unavailable": "Unavai"
   }
 }

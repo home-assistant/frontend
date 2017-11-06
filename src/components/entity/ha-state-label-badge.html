@@ -139,7 +139,10 @@
     computeLabel(state) {
       if (state.state === 'unavailable' ||
           STATE_LABEL_DOMAINS.includes(window.hassUtil.computeDomain(state))) {
-        return this.localize('state', state.state);
+        // Localize the state with a special state_badge namespace, which has variations of
+        // the state translations that are truncated to fit within the badge label. Translations
+        // are only added for domains in STATE_LABEL_DOMAINS.
+        return this.localize('state_badge', state.state);
       }
       return state.attributes.unit_of_measurement || null;
     }
