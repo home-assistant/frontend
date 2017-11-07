@@ -347,11 +347,16 @@ window.hassUtil.domainIcon = function (domain, state) {
       return 'mdi:open-in-new';
 
     case 'zwave':
-      if (state) {
-        if (state.indexOf('Dead') !== -1) return 'mdi:emoticon-dead';
-        if (state.indexOf('Sleeping') !== -1) return 'mdi:sleep';
+      switch (state) {
+        case 'dead':
+          return 'mdi:emoticon-dead';
+        case 'sleeping':
+          return 'mdi:sleep';
+        case 'initializing':
+          return 'mdi:timer-sand';
+        default:
+          return 'mdi:nfc';
       }
-      return 'mdi:nfc';
 
     default:
       /* eslint-disable no-console */
@@ -526,6 +531,11 @@ window.hassUtil.computeStateState = function (stateObj) {
         );
         stateObj._stateDisplay = window.hassUtil.formatDateTime(date);
       }
+    } else if (domain === 'zwave') {
+      if (['initializing', 'dead'].includes(stateObj.state) && stateObj.attributes && 'query_stage' in stateObj.attributes) {
+        return stateObj._stateDisplay + ' (' + stateObj.attributes.query_stage + ')';
+      }
+      return stateObj._stateDisplay;
     }
   }
 
