@@ -2,6 +2,7 @@
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
+<link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
 <link rel="import" href="../../../src/components/ha-service-description.html">
 
 <link rel="import" href="../ha-config-section.html">
@@ -161,6 +162,10 @@
             service='test_network'
             hidden$='[[!showDescription]]'
           ></ha-service-description>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="zwave/saveconfig"
+          >Save Config</ha-call-api-button>
 
         </div>
       </paper-card>
