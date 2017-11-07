@@ -26,6 +26,9 @@
 	"en": {
 		"nativeName": "English"
 	},
+	"en-US": {
+		"nativeName": "English (US)"
+	},
 	"es": {
 		"nativeName": "Español"
 	},
