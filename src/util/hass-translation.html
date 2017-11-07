@@ -6,7 +6,7 @@ function getActiveTranslation() {
     if (window.translationMetadata[language]) {
       return language;
     }
-    if (language.substring(0, 2) === 'zh') {
+    if (language.split('-')[0] === 'zh') {
       if (language === 'zh-CN' || language === 'zh-SG') return 'zh-Hans';
       return 'zh-Hant';
     }
