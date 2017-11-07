@@ -77,7 +77,7 @@
               name='[[item.id]]'
               type='[[item.type]]'
               checked='[[item.checked]]'
-              on-change='fieldChanged'
+              on-change='checkboxChanged'
             >
               [[item.name]]
             </paper-input>
@@ -152,6 +152,12 @@ class MoreInfoConfigurator extends Polymer.Element {
     var el = ev.target;
     this.fieldInput[el.name] = el.value;
   }
+
+  checkboxChanged(ev) {
+    var el = ev.target;
+    this.fieldInput[el.name] = el.checked;
+  }
+
 
   fieldIsCheckbox(type) {
     var checkboxTypes = ['checkbox', 'boolean', 'toggle'];
