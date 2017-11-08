@@ -1,67 +1,44 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../components/ha-card.html'>
 <link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id="ha-plant-card">
   <template>
     <style>
-      :host {
-        @apply(--paper-font-body1);
-        line-height: 1.5;
-      }
-      .header-more-info {
-        cursor: pointer;
-      }
       .content {
-        padding: 0 32px 16px 32px;
+        display: grid;
+        grid-template: repeat(2, auto) / repeat(5, 1fr);
+        grid-auto-flow: column;
+        justify-items: center;
+        text-align: center;
+        padding: 0 32px 24px 32px;
       }
-      iron-icon {
+      paper-icon-button {
         color: var(--paper-item-icon-color);
       }
-      iron-icon[disabled] {
+      paper-icon-button[disabled], .missing {
         color: var(--disabled-text-color);
       }
-      table {
-        width: 100%
-      }
-      th {
-        width: 20%;
-      }
-      td {
-        text-align: center;
-        color: var(--primary-text-color);
-      }
-      td.problem {
+      .problem {
         color: var(--label-badge-red);
         font-weight: bold;
       }
-      td.missing {
-        color: var(--disabled-text-color);
-      }
     </style>
 
-    <ha-card class='header-more-info' header='[[computeTitle(stateObj)]]'>
+    <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-          <table>
-            <tr>
-              <template is='dom-repeat' items='{{sensors}}'>
-                <th>
-                  <iron-icon
-                    id='[[item]]'
-                    icon='[[computeIcon(stateObj, item)]]'
-                    disabled$='[[computeDisabled(stateObj, item)]]'>
-                  </iron-icon>
-                </th>
-              </template>
-            </tr><tr>
-              <template is='dom-repeat' items='{{sensors}}'>
-                <td class$='[[computeClass(stateObj, item)]]'>
-                  [[computeValue(stateObj, item)]]<br>
-                  [[computeUOM(stateObj, item)]]
-                </td>
-              </template>
-            </tr>
-          </table>
+        <template is='dom-repeat' items='{{sensors}}'>
+          <paper-icon-button
+            disabled$='[[computeDisabled(stateObj, item)]]'
+            icon='[[computeIcon(stateObj, item)]]'
+            on-tap='showSensorHistory'>
+          </paper-icon-button>
+          <div class$='[[computeClass(stateObj, item)]]'>
+            [[computeValue(stateObj, item)]]<br>
+            [[computeUOM(stateObj, item)]]
+          </div>
+        </template>
       </div>
     </ha-card>
   </template>
@@ -69,10 +46,10 @@
 
 <script>
 {
-  var _SENSORS = ['temperature', 'moisture', 'brightness', 'conductivity', 'battery'];
+  var _SENSORS = ['moisture', 'temperature', 'brightness', 'conductivity', 'battery'];
   var _CONFIG = {
-    temperature: { icon: 'mdi:thermometer', uom: '°C' },
     moisture: { icon: 'mdi:water', uom: '%' },
+    temperature: { icon: 'mdi:thermometer', uom: '°C' },
     brightness: { icon: 'mdi:white-balance-sunny', uom: 'lx' },
     conductivity: { icon: 'mdi:emoticon-poop', uom: 'µS/cm' },
     battery: { icon: 'mdi:battery', uom: '%' }
@@ -83,14 +60,9 @@
     static get properties() {
       return {
         hass: Object,
-        stateObj: Object
+        stateObj: Object,
+        sensors: { type: Object, value: _SENSORS }
       };
-    }
-
-    ready() {
-      super.ready();
-      this.addEventListener('tap', () => this.showMoreInfo());
-      this.sensors = _SENSORS;
     }
 
     computeTitle(stateObj) {
@@ -107,7 +79,7 @@
 
     computeIcon(stateObj, sensor) {
       var icon = _CONFIG[sensor].icon;
-      if (sensor === 'battery') {
+      if (sensor === 'battery' && typeof stateObj.attributes.battery !== 'undefined') {
         var level = stateObj.attributes.battery;
         if (level <= 5) {
           icon += '-alert';
@@ -133,8 +105,10 @@
       return (typeof stateObj.attributes[sensor] === 'undefined');
     }
 
-    showMoreInfo() {
-      this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    showSensorHistory(ev) {
+      ev.stopPropagation();
+      var sensorId = this.stateObj.attributes.sensors[ev.model.item];
+      this.fire('hass-more-info', { entityId: sensorId });
     }
   }
 
