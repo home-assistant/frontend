@@ -5,9 +5,6 @@
 	"bg": {
 		"nativeName": "Български"
 	},
-	"bn": {
-		"nativeName": "বাংলা"
-	},
 	"ca": {
 		"nativeName": "Català"
 	},
@@ -28,6 +25,9 @@
 	},
 	"es": {
 		"nativeName": "Español"
+	},
+	"es-419": {
+		"nativeName": "Español (Latin America)"
 	},
 	"et": {
 		"nativeName": "Eesti"
