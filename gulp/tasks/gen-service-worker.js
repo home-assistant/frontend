@@ -3,31 +3,32 @@ Generate a caching service worker for HA
 
 Will be called as part of build_frontend.
 
-Creates a caching service worker based on the built content of the repo in hass_frontend.
-Output service worker to build/service_worker.js
+Creates a caching service worker based on the built content of the repo in
+{hass_frontend, hass_frontend_es6}.
+Output service worker to {build, build-es6}/service_worker.js
 
 TODO:
  - Use gulp streams
  - Fix minifying the stream
 */
-var gulp = require('gulp');
-var crypto = require('crypto');
-var file = require('gulp-file');
-var fs = require('fs');
-var path = require('path');
-var swPrecache = require('sw-precache');
-var uglifyJS = require('uglify-js');
-
-const config = require('../config');
+const gulp = require('gulp');
+const crypto = require('crypto');
+const file = require('gulp-file');
+const fs = require('fs');
+const path = require('path');
+const swPrecache = require('sw-precache');
+// var uglifyJS = require('uglify-js');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 
-var rootDir = 'hass_frontend';
-var panelDir = path.resolve(rootDir, 'panels');
+const dynamicUrlToDependencies = {};
 
-var dynamicUrlToDependencies = {};
+const staticFingerprintedEs6 = [
+  'frontend.html',
+  'core.js',
+];
 
-var staticFingerprinted = [
+const staticFingerprinted = [
   'frontend.html',
   'mdi.html',
   'core.js',
@@ -37,7 +38,7 @@ var staticFingerprinted = [
 
 // These panels will always be registered inside HA and thus can
 // be safely assumed to be able to preload.
-var panelsFingerprinted = [
+const panelsFingerprinted = [
   'dev-event', 'dev-info', 'dev-service', 'dev-state', 'dev-template',
   'dev-mqtt', 'kiosk',
 ];
@@ -47,30 +48,33 @@ function md5(filename) {
     .update(fs.readFileSync(filename)).digest('hex');
 }
 
-gulp.task('gen-service-worker', () => {
-  var genPromise = null;
+function generateServiceWorker(es6) {
+  let genPromise = null;
+  const rootDir = es6 ? 'hass_frontend_es6' : 'hass_frontend';
+  const panelDir = path.resolve(rootDir, 'panels');
+
   if (DEV) {
-    var devBase = 'console.warn("Service worker caching disabled in development")';
-    genPromise = Promise.resolve(devBase);
+    genPromise = Promise.resolve(
+      fs.readFileSync(path.resolve(__dirname, '../service-worker-dev.js.tmpl'), 'UTF-8'));
   } else {
     // Create fingerprinted versions of our dependencies.
-    staticFingerprinted.forEach(fn => {
-      var parts = path.parse(fn);
-      var base = parts.dir.length > 0 ? parts.dir + '/' + parts.name : parts.name;
-      var hash = md5(rootDir + '/' + base + parts.ext);
-      var url = '/static/' + base + '-' + hash + parts.ext;
-      var fpath = rootDir + '/' + base + parts.ext;
+    (es6 ? staticFingerprintedEs6 : staticFingerprinted).forEach((fn) => {
+      const parts = path.parse(fn);
+      const base = parts.dir.length > 0 ? parts.dir + '/' + parts.name : parts.name;
+      const hash = md5(rootDir + '/' + base + parts.ext);
+      const url = '/static/' + base + '-' + hash + parts.ext;
+      const fpath = rootDir + '/' + base + parts.ext;
       dynamicUrlToDependencies[url] = [fpath];
     });
 
-    panelsFingerprinted.forEach(panel => {
-      var fpath = panelDir + '/ha-panel-' + panel + '.html';
-      var hash = md5(fpath);
-      var url = '/static/panels/ha-panel-' + panel + '-' + hash + '.html';
+    panelsFingerprinted.forEach((panel) => {
+      const fpath = panelDir + '/ha-panel-' + panel + '.html';
+      const hash = md5(fpath);
+      const url = '/static/panels/ha-panel-' + panel + '-' + hash + '.html';
       dynamicUrlToDependencies[url] = [fpath];
     });
 
-    var options = {
+    const options = {
       navigateFallback: '/',
       navigateFallbackWhitelist:
           [/^(?:(?!(?:static|api|local|service_worker.js|manifest.json)).)*$/],
@@ -107,7 +111,7 @@ gulp.task('gen-service-worker', () => {
           handler: 'fastest',
         }
       ],
-      stripPrefix: 'hass_frontend',
+      stripPrefix: rootDir,
       replacePrefix: 'static',
       verbose: true,
       // Allow our users to refresh to get latest version.
@@ -117,7 +121,7 @@ gulp.task('gen-service-worker', () => {
     genPromise = swPrecache.generate(options);
   }
 
-  var swHass = fs.readFileSync(path.resolve(__dirname, '../service-worker.js.tmpl'), 'UTF-8');
+  const swHass = fs.readFileSync(path.resolve(__dirname, '../service-worker.js.tmpl'), 'UTF-8');
 
   // Fix this
   // if (!DEV) {
@@ -125,7 +129,10 @@ gulp.task('gen-service-worker', () => {
   //     swString => uglifyJS.minify(swString, { fromString: true }).code);
   // }
 
-  return genPromise.then(swString => swString + '\n' + swHass)
+  return genPromise.then(swString => swString + '\n' + swHass + '\n' + (es6 ? '//es6' : '//es5'))
     .then(swString => file('service_worker.js', swString)
-      .pipe(gulp.dest(config.build_dir)));
-});
+      .pipe(gulp.dest(es6 ? 'build-es6' : 'build')));
+}
+
+gulp.task('gen-service-worker', generateServiceWorker.bind(null, /* es6= */ false));
+gulp.task('gen-service-worker-es6', generateServiceWorker.bind(null, /* es6= */ true));
