@@ -196,16 +196,18 @@ class HaPanelDevState extends Polymer.Element {
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
     return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
-      .filter(function(value, index, arrayObject) {
-        if (!value.entity_id.includes(_entityFilter.toLowerCase()))
+      .filter(function (value) {
+        if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
           return false;
+        }
 
-        if (!value.state.includes(_stateFilter.toLowerCase()))
+        if (!value.state.includes(_stateFilter.toLowerCase())) {
           return false;
+        }
 
         if (_attributeFilter !== '') {
           var attributeFilter = _attributeFilter.toLowerCase();
-          var colonIndex = attributeFilter.indexOf(":");
+          var colonIndex = attributeFilter.indexOf(':');
           var multiMode = colonIndex !== -1;
 
           var keyFilter = attributeFilter;
@@ -217,31 +219,29 @@ class HaPanelDevState extends Polymer.Element {
             valueFilter = attributeFilter.substring(colonIndex + 1).trim();
           }
 
-          for (const key of Object.keys(value.attributes)) {
-            if (key.includes(keyFilter) && !multiMode)
+          var attributeKeys = Object.keys(value.attributes);
+
+          for (var i = 0; i < attributeKeys.length; i++) {
+            var key = attributeKeys[i];
+
+            if (key.includes(keyFilter) && !multiMode) {
               return true; // in single mode we're already satisfied with this match
-            else if (!key.includes(keyFilter) && multiMode)
-              continue; // key does not match, we're not interested in the value
+            } else if (!key.includes(keyFilter) && multiMode) {
+              continue;
+            }
 
             var attributeValue = value.attributes[key];
 
-            if (attributeValue === null)
-              continue;
-
-            if (Array.isArray(attributeValue)) {
-              if (attributeValue.join("").toLowerCase().includes(valueFilter))
-                return true;
-            }
-
-            if (value.attributes[key].toString().toLowerCase().includes(valueFilter)) {
+            if (attributeValue !== null
+                && JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)) {
               return true;
-            }              
+            }
           }
 
           // there are no attributes where the key and/or value can be matched
           return false;
         }
-        
+
         return true;
       })
       .sort(function (entityA, entityB) {
