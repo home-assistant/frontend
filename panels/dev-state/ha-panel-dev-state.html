@@ -85,7 +85,7 @@
           <tr>
             <th><paper-input label="Filter entities" type="search" value='{{_entityFilter}}'></paper-input></th>
             <th><paper-input label="Filter states" type="search" value='{{_stateFilter}}'></paper-input></th>
-            <th hidden$='[[!_showAttributes]]'><paper-input label="Filter attributes" type="search" value='{{_attributeFilter}}'></paper-input></th>
+            <th hidden$='[[!computeShowAttributes(narrow, _showAttributes)]]'><paper-input label="Filter attributes" type="search" value='{{_attributeFilter}}'></paper-input></th>
           </tr>
           <tr hidden$='[[!computeShowEntitiesPlaceholder(_entities)]]'>
             <td colspan="3">No entities</td>
