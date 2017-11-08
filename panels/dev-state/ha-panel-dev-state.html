@@ -82,6 +82,14 @@
               <paper-checkbox checked='{{_showAttributes}}'></paper-checkbox>
             </th>
           </tr>
+          <tr>
+            <th><paper-input label="Filter entities" type="search" value='{{_entityFilter}}'></paper-input></th>
+            <th><paper-input label="Filter states" type="search" value='{{_stateFilter}}'></paper-input></th>
+            <th hidden$='[[!_showAttributes]]'><paper-input label="Filter attributes" type="search" value='{{_attributeFilter}}'></paper-input></th>
+          </tr>
+          <tr hidden$='[[!computeShowEntitiesPlaceholder(_entities)]]'>
+            <td colspan="3">No entities</td>
+          </tr>
           <template is='dom-repeat' items='[[_entities]]' as='entity'>
             <tr>
               <td><a href='#' on-tap='entitySelected'>[[entity.entity_id]]</a></td>
@@ -122,6 +130,21 @@ class HaPanelDevState extends Polymer.Element {
         value: '',
       },
 
+      _entityFilter: {
+        type: String,
+        value: '',
+      },
+
+      _stateFilter: {
+        type: String,
+        value: '',
+      },
+
+      _attributeFilter: {
+        type: String,
+        value: '',
+      },
+
       _state: {
         type: String,
         value: '',
@@ -139,7 +162,7 @@ class HaPanelDevState extends Polymer.Element {
 
       _entities: {
         type: Array,
-        computed: 'computeEntities(hass)',
+        computed: 'computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter)',
       },
     };
   }
@@ -171,8 +194,16 @@ class HaPanelDevState extends Polymer.Element {
     });
   }
 
-  computeEntities(hass) {
+  computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
     return Object.keys(hass.states).map(function (key) { return hass.states[key]; })
+      .filter(function(value, index, arrayObject) {
+        // entities and states are simple string contains checks
+        var entityHit = _entityFilter === '' || value.entity_id.includes(_entityFilter);
+        var stateHit = _stateFilter === '' || value.state.includes(_stateFilter);
+        var attributesHit = _attributeFilter === '';
+
+        return entityHit && stateHit && attributesHit;
+      })
       .sort(function (entityA, entityB) {
         if (entityA.entity_id < entityB.entity_id) {
           return -1;
@@ -182,6 +213,10 @@ class HaPanelDevState extends Polymer.Element {
         }
         return 0;
       });
+  }
+
+  computeShowEntitiesPlaceholder(_entities) {
+    return _entities.length === 0;
   }
 
   computeShowAttributes(narrow, _showAttributes) {
