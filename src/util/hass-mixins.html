@@ -107,13 +107,7 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
     }
 
     _computeLocalize(localize) {
-      return (namespace, message, args = {}) => {
-        const messageArgs = [];
-        Object.keys(args).forEach((key) => {
-          messageArgs.push(key, args[key]);
-        });
-        return localize(namespace + '.' + message, ...messageArgs);
-      };
+      return (namespace, message, ...args) => localize(namespace + '.' + message, ...args);
     }
   });
 
