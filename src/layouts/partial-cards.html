@@ -296,7 +296,7 @@
     }
 
     computeTitle(locationName) {
-      return locationName ? locationName : 'Home Assistant';
+      return locationName || 'Home Assistant';
     }
 
     computeStateName(stateObj) {
