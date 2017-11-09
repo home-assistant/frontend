@@ -13,12 +13,12 @@ module.exports.minifyStream = function (stream, es6) {
   return pump([
     stream,
     sourcesHtmlSplitter.split(),
-    gulpif(/[^app]\.js$/, babel({
+    gulpif(!es6, gulpif(/[^app]\.js$/, babel({
       sourceType: 'script',
       presets: [
-        es6 ? ['es2016'] : ['es2015', { modules: false }]
+        ['es2015', { modules: false }]
       ]
-    })),
+    }))),
     gulpif(/\.js$/, composer(es6 ? uglifyes : uglifyjs, console)({ sourceMap: false })),
     gulpif(/\.css$/, cssSlam()),
     gulpif(/\.html$/, cssSlam()),

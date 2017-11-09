@@ -17,23 +17,25 @@ const file = require('gulp-file');
 const fs = require('fs');
 const path = require('path');
 const swPrecache = require('sw-precache');
-// var uglifyJS = require('uglify-js');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 
 const dynamicUrlToDependencies = {};
 
-const staticFingerprintedEs6 = [
-  'frontend.html',
-  'core.js',
+const staticFingerprinted = [
+  'mdi.html',
+  'translations/en.json',
 ];
 
-const staticFingerprinted = [
-  'frontend.html',
-  'mdi.html',
+const staticFingerprintedEs6 = [
   'core.js',
+  'frontend.html',
+];
+
+const staticFingerprintedEs5 = [
   'compatibility.js',
-  'translations/en.json',
+  'core.js',
+  'frontend.html',
 ];
 
 // These panels will always be registered inside HA and thus can
@@ -48,9 +50,19 @@ function md5(filename) {
     .update(fs.readFileSync(filename)).digest('hex');
 }
 
+function processStatic(fn, rootDir) {
+  const parts = path.parse(fn);
+  const base = parts.dir.length > 0 ? parts.dir + '/' + parts.name : parts.name;
+  const hash = md5(rootDir + '/' + base + parts.ext);
+  const url = '/static/' + base + '-' + hash + parts.ext;
+  const fpath = rootDir + '/' + base + parts.ext;
+  dynamicUrlToDependencies[url] = [fpath];
+}
+
 function generateServiceWorker(es6) {
   let genPromise = null;
-  const rootDir = es6 ? 'hass_frontend_es6' : 'hass_frontend';
+  const baseRootDir = 'hass_frontend';
+  const rootDir = es6 ? baseRootDir : 'hass_frontend_es5';
   const panelDir = path.resolve(rootDir, 'panels');
 
   if (DEV) {
@@ -58,19 +70,14 @@ function generateServiceWorker(es6) {
       fs.readFileSync(path.resolve(__dirname, '../service-worker-dev.js.tmpl'), 'UTF-8'));
   } else {
     // Create fingerprinted versions of our dependencies.
-    (es6 ? staticFingerprintedEs6 : staticFingerprinted).forEach((fn) => {
-      const parts = path.parse(fn);
-      const base = parts.dir.length > 0 ? parts.dir + '/' + parts.name : parts.name;
-      const hash = md5(rootDir + '/' + base + parts.ext);
-      const url = '/static/' + base + '-' + hash + parts.ext;
-      const fpath = rootDir + '/' + base + parts.ext;
-      dynamicUrlToDependencies[url] = [fpath];
-    });
+    (es6 ? staticFingerprintedEs6 : staticFingerprintedEs5).forEach(
+      fn => processStatic(fn, rootDir));
+    staticFingerprinted.forEach(fn => processStatic(fn, baseRootDir));
 
     panelsFingerprinted.forEach((panel) => {
       const fpath = panelDir + '/ha-panel-' + panel + '.html';
       const hash = md5(fpath);
-      const url = '/static/panels/ha-panel-' + panel + '-' + hash + '.html';
+      const url = '/frontend/panels/ha-panel-' + panel + '-' + hash + '.html';
       dynamicUrlToDependencies[url] = [fpath];
     });
 
@@ -80,14 +87,14 @@ function generateServiceWorker(es6) {
           [/^(?:(?!(?:static|api|local|service_worker.js|manifest.json)).)*$/],
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
-        rootDir + '/icons/favicon.ico',
-        rootDir + '/icons/favicon-192x192.png',
-        rootDir + '/webcomponents-lite.min.js',
-        rootDir + '/fonts/roboto/Roboto-Light.ttf',
-        rootDir + '/fonts/roboto/Roboto-Medium.ttf',
-        rootDir + '/fonts/roboto/Roboto-Regular.ttf',
-        rootDir + '/fonts/roboto/Roboto-Bold.ttf',
-        rootDir + '/images/card_media_player_bg.png',
+        baseRootDir + '/icons/favicon.ico',
+        baseRootDir + '/icons/favicon-192x192.png',
+        baseRootDir + '/webcomponents-lite.min.js',
+        baseRootDir + '/fonts/roboto/Roboto-Light.ttf',
+        baseRootDir + '/fonts/roboto/Roboto-Medium.ttf',
+        baseRootDir + '/fonts/roboto/Roboto-Regular.ttf',
+        baseRootDir + '/fonts/roboto/Roboto-Bold.ttf',
+        baseRootDir + '/images/card_media_player_bg.png',
       ],
       // Rules are proceeded in order and negative per-domain rules are not supported.
       runtimeCaching: [
@@ -111,7 +118,7 @@ function generateServiceWorker(es6) {
           handler: 'fastest',
         }
       ],
-      stripPrefix: rootDir,
+      stripPrefix: baseRootDir,
       replacePrefix: 'static',
       verbose: true,
       // Allow our users to refresh to get latest version.
@@ -131,8 +138,8 @@ function generateServiceWorker(es6) {
 
   return genPromise.then(swString => swString + '\n' + swHass + '\n' + (es6 ? '//es6' : '//es5'))
     .then(swString => file('service_worker.js', swString)
-      .pipe(gulp.dest(es6 ? 'build-es6' : 'build')));
+      .pipe(gulp.dest(es6 ? 'build' : 'build-es5')));
 }
 
-gulp.task('gen-service-worker', generateServiceWorker.bind(null, /* es6= */ false));
-gulp.task('gen-service-worker-es6', generateServiceWorker.bind(null, /* es6= */ true));
+gulp.task('gen-service-worker-es5', generateServiceWorker.bind(null, /* es6= */ false));
+gulp.task('gen-service-worker', generateServiceWorker.bind(null, /* es6= */ true));

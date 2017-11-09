@@ -4,7 +4,7 @@ const runSequence = require('run-sequence');
 gulp.task('default', () => {
   return runSequence.use(gulp)(
     'clean',
+    'build_es5',
     'build',
-    'build_es6'
   );
 });

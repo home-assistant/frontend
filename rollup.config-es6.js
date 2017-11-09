@@ -1,4 +1,3 @@
-const commonjs = require('rollup-plugin-commonjs');
 const nodeResolve = require('rollup-plugin-node-resolve');
 const replace = require('rollup-plugin-replace');
 const babel = require('rollup-plugin-babel');
@@ -11,11 +10,6 @@ const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
 const plugins = [
   babel({
     babelrc: false,
-    presets: [
-      [
-        'es2016',
-      ]
-    ],
     plugins: [
       'external-helpers',
       'transform-object-rest-spread',
@@ -32,8 +26,6 @@ const plugins = [
     jsnext: true,
     main: true,
   }),
-
-  commonjs(),
 
   replace({
     values: {

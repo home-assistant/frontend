@@ -43,5 +43,5 @@ async function buildHassioPanel(es6) {
       .pipe(gulp.dest('build-temp'));
 }
 
-gulp.task('hassio-panel', buildHassioPanel.bind(null, /* es6= */ false));
-gulp.task('hassio-panel-es6', buildHassioPanel.bind(null, /* es6= */ true));
+gulp.task('hassio-panel-es5', buildHassioPanel.bind(null, /* es6= */ false));
+gulp.task('hassio-panel', buildHassioPanel.bind(null, /* es6= */ true));
