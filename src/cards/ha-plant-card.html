@@ -7,20 +7,22 @@
   <template>
     <style>
       .content {
-        display: grid;
-        grid-template: repeat(2, auto) / repeat(5, 1fr);
-        grid-auto-flow: column;
-        justify-items: center;
-        text-align: center;
         padding: 0 32px 24px 32px;
       }
       paper-icon-button {
         color: var(--paper-item-icon-color);
       }
-      paper-icon-button[disabled], .missing {
+      paper-icon-button[disabled], td.missing {
         color: var(--disabled-text-color);
       }
-      .problem {
+      th {
+        width: 20%;
+      }
+      td {
+        text-align: center;
+        color: var(--primary-text-color);
+      }
+      td.problem {
         color: var(--label-badge-red);
         font-weight: bold;
       }
@@ -28,17 +30,26 @@
 
     <ha-card header='[[computeTitle(stateObj)]]'>
       <div class='content'>
-        <template is='dom-repeat' items='{{sensors}}'>
-          <paper-icon-button
-            disabled$='[[computeDisabled(stateObj, item)]]'
-            icon='[[computeIcon(stateObj, item)]]'
-            on-tap='showSensorHistory'>
-          </paper-icon-button>
-          <div class$='[[computeClass(stateObj, item)]]'>
-            [[computeValue(stateObj, item)]]<br>
-            [[computeUOM(stateObj, item)]]
-          </div>
-        </template>
+          <table style='width:100%'>
+            <tr>
+              <template is='dom-repeat' items='{{sensors}}'>
+                <th>
+                  <paper-icon-button
+                    disabled$='[[computeDisabled(stateObj, item)]]'
+                    icon='[[computeIcon(stateObj, item)]]'
+                    on-tap='showSensorHistory'>
+                  </paper-icon-button>
+                </th>
+              </template>
+            </tr><tr>
+              <template is='dom-repeat' items='{{sensors}}'>
+                <td class$='[[computeClass(stateObj, item)]]'>
+                  [[computeValue(stateObj, item)]]<br>
+                  [[computeUOM(stateObj, item)]]
+                </td>
+              </template>
+            </tr>
+          </table>
       </div>
     </ha-card>
   </template>
