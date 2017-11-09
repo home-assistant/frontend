@@ -108,48 +108,4 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
     }
   });
 
-/* @polymerMixin */
-window.hassMixins.MediaPlayerMixin = Polymer.dedupingMixin(superClass =>
-  class extends window.hassMixins.LocalizeMixin(superClass) {
-    static get properties() {
-      return {
-        playerObj: Object,
-        primaryText: {
-          type: String,
-          computed: 'computePrimaryText(playerObj)',
-        },
-        secondaryText: {
-          type: String,
-          computed: 'computeSecondaryText(playerObj)',
-        },
-      };
-    }
-
-    computePrimaryText(playerObj) {
-      return playerObj.stateObj.attributes.media_title ||
-             this.localize('state', playerObj.stateObj.state);
-    }
-
-    computeSecondaryText(playerObj) {
-      if (playerObj.isMusic) {
-        return playerObj.stateObj.attributes.media_artist;
-      } else if (playerObj.isTVShow) {
-        var text = playerObj.stateObj.attributes.media_series_title;
-
-        if (playerObj.stateObj.attributes.media_season) {
-          text += ' S' + playerObj.stateObj.attributes.media_season;
-
-          if (playerObj.stateObj.attributes.media_episode) {
-            text += 'E' + playerObj.stateObj.attributes.media_episode;
-          }
-        }
-
-        return text;
-      } else if (playerObj.stateObj.attributes.app_name) {
-        return playerObj.stateObj.attributes.app_name;
-      }
-      return '';
-    }
-  });
-
 </script>

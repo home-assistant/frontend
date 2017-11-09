@@ -153,8 +153,8 @@
 
       <div class='caption'>
         [[computeStateName(stateObj)]]
-        <div class='title'>[[primaryText]]</div>
-        [[secondaryText]]<br />
+        <div class='title'>[[computePrimaryText(playerObj)]]</div>
+        [[computeSecondaryText(playerObj)]]<br />
       </div>
     </div>
 
@@ -207,7 +207,7 @@
 
 <script>
 class HaMediaPlayerCard extends
-  window.hassMixins.MediaPlayerMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-media_player-card'; }
   static get properties() {
     return {
@@ -308,6 +308,14 @@ class HaMediaPlayerCard extends
 
   computePlayerObj(hass, stateObj) {
     return new window.MediaPlayerEntity(hass, stateObj);
+  }
+
+  computePrimaryText(playerObj) {
+    return playerObj.primaryTitle || this.localize('state', playerObj.stateObj.state);
+  }
+
+  computeSecondaryText(playerObj) {
+    return playerObj.secondaryTitle;
   }
 
   computePlaybackControlIcon(playerObj) {
