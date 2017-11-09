@@ -48,7 +48,7 @@
       <app-header effects="waterfall" condenses fixed slot="header">
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[locationName]]</div>
+          <div main-title>[[computeTitle(locationName)]]</div>
           <ha-start-voice-button hass='[[hass]]'></ha-start-voice-button>
         </app-toolbar>
 
@@ -293,6 +293,10 @@
 
     _computeCurrentView(routeMatch, routeData) {
       return routeMatch ? routeData.view : '';
+    }
+
+    computeTitle(locationName) {
+      return locationName ? locationName : 'Home Assistant';
     }
 
     computeStateName(stateObj) {
