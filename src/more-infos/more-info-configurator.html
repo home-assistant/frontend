@@ -80,7 +80,7 @@
               on-change='checkboxChanged'
             >
               [[item.name]]
-            </paper-input>
+            </paper-checkbox>
           </template>
           <template is='dom-if' if='[[fieldIsString(item.type)]]'>
             <paper-input
@@ -114,6 +114,10 @@
 </dom-module>
 
 <script>
+
+const CHECKBOX_TYPES = ['checkbox', 'boolean', 'toggle'];
+const NON_STRING_TYPES = CHECKBOX_TYPES;
+
 class MoreInfoConfigurator extends Polymer.Element {
   static get is() { return 'more-info-configurator'; }
 
@@ -172,13 +176,11 @@ class MoreInfoConfigurator extends Polymer.Element {
 
 
   fieldIsCheckbox(type) {
-    var checkboxTypes = ['checkbox', 'boolean', 'toggle'];
-    return (checkboxTypes.indexOf(type) > -1);
+    return (CHECKBOX_TYPES.includes(type));
   }
 
   fieldIsString(type) {
-    var nonStringTypes = ['checkbox', 'boolean', 'toggle'];
-    return !(nonStringTypes.indexOf(type) > -1);
+    return !(NON_STRING_TYPES.includes(type));
   }
 
   submitClicked() {
