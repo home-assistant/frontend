@@ -115,7 +115,7 @@ class MoreInfoConfigurator extends Polymer.Element {
 
       isConfiguring: {
         type: Boolean,
-        value: false,
+        computed: 'computeIsConfiguring(stateObj)',
       },
 
       fieldInput: {
@@ -129,6 +129,10 @@ class MoreInfoConfigurator extends Polymer.Element {
     return stateObj.state === 'configure';
   }
 
+  computeIsConfiguring(stateObj) {
+    return stateObj.attributes.is_configuring;
+  }
+
   fieldChanged(ev) {
     var el = ev.target;
     this.fieldInput[el.name] = el.value;
@@ -140,14 +144,14 @@ class MoreInfoConfigurator extends Polymer.Element {
       fields: this.fieldInput,
     };
 
-    this.isConfiguring = true;
+    this.attributes.is_configuring = true;
 
     this.hass.callService('configurator', 'configure', data).then(
       function () {
-        this.isConfiguring = false;
+        this.attributes.is_configuring = false;
       }.bind(this),
       function () {
-        this.isConfiguring = false;
+        this.attributes.is_configuring = false;
       }.bind(this)
     );
   }
