@@ -313,7 +313,7 @@ class HaMediaPlayerCard extends
   computePrimaryText(haLocalize, playerObj) {
     return playerObj.primaryTitle
       || haLocalize('state.media_player', playerObj.stateObj.state)
-      || haLocalize('state.default', playerObj.stateObj.state);
+      || haLocalize('state.default', playerObj.stateObj.state) || playerObj.stateObj.state;
   }
 
   computePlaybackControlIcon(playerObj) {

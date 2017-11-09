@@ -140,7 +140,7 @@ class HaStateLabelBadge extends
       // Localize the state with a special state_badge namespace, which has variations of
       // the state translations that are truncated to fit within the badge label. Translations
       // are only added for device_tracker and alarm_control_panel.
-      return haLocalize(`state_badge.${domain}`, state.state) || haLocalize('state_badge.default', state.state);
+      return haLocalize(`state_badge.${domain}`, state.state) || haLocalize('state_badge.default', state.state) || state.state;
     }
     return state.attributes.unit_of_measurement || null;
   }
