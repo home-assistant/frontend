@@ -8,7 +8,7 @@ set -eu -o pipefail
 
 cd "$(dirname "$0")/.."
 
-if [ ! -f .lokalise_token ] ; then
+if [ -z "${LOKALISE_TOKEN-}" ] && [ ! -f .lokalise_token ] ; then
     echo "Lokalise API token is required to download the latest set of" \
         "translations. Please create an account by using the following link:" \
         "https://lokalise.co/signup/3420425759f6d6d241f598.13594006/all/" \
@@ -17,7 +17,9 @@ if [ ! -f .lokalise_token ] ; then
     exit 1
 fi
 
-API_TOKEN="$(<.lokalise_token)"
+# Load token from file if not already in the environment
+[ -z "${LOKALISE_TOKEN-}" ] && LOKALISE_TOKEN="$(<.lokalise_token)"
+
 PROJECT_ID="3420425759f6d6d241f598.13594006"
 LOCAL_FILE="$(pwd)/src/translations/en.json"
 LANG_ISO=en
@@ -33,7 +35,7 @@ fi
 docker run \
     -v ${LOCAL_FILE}:/opt/src/${LOCAL_FILE} \
     lokalise/lokalise-cli lokalise \
-    --token ${API_TOKEN} \
+    --token ${LOKALISE_TOKEN} \
     import ${PROJECT_ID} \
     --file /opt/src/${LOCAL_FILE} \
     --lang_iso ${LANG_ISO}
