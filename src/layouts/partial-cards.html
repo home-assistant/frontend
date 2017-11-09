@@ -63,6 +63,9 @@
               data-entity=''
               on-tap='scrollToTop'
             >
+              <template is='dom-if' if='[[!defaultView]]'>
+                [[locationName]]
+              </template>
               <template is='dom-if' if='[[defaultView]]'>
                 <template
                   is='dom-if'
