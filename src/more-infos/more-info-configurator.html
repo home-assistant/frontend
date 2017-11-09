@@ -130,7 +130,7 @@ class MoreInfoConfigurator extends Polymer.Element {
   }
 
   computeIsConfiguring(stateObj) {
-    return stateObj.attributes.is_configuring;
+    return Boolean(stateObj.attributes.is_configuring);
   }
 
   fieldChanged(ev) {
