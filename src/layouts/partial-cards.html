@@ -63,9 +63,6 @@
               data-entity=''
               on-tap='scrollToTop'
             >
-              <template is='dom-if' if='[[!defaultView]]'>
-                [[locationName]]
-              </template>
               <template is='dom-if' if='[[defaultView]]'>
                 <template
                   is='dom-if'
@@ -305,7 +302,7 @@
             stateObj.attributes.friendly_name !== 'default_view') {
           return stateObj.attributes.friendly_name;
         }
-        return this.computeLocationName(this.hass);
+        return 'Home';
       }
       return window.hassUtil.computeStateName(stateObj);
     }
