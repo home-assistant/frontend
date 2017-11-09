@@ -93,7 +93,7 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
         },
         haLocalize: {
           type: Function,
-          computed: '_computeLocalize(localize)',
+          computed: 'computeHaLocalize(localize)',
         },
       };
     }
@@ -106,7 +106,7 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
       return hass && hass.resources;
     }
 
-    _computeLocalize(localize) {
+    computeHaLocalize(localize) {
       return (namespace, message, ...args) => localize(namespace + '.' + message, ...args);
     }
   });
