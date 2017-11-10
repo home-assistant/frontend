@@ -53,53 +53,53 @@
         </app-toolbar>
 
         <div sticky hidden$='[[areTabsHidden(views, showTabs)]]'>
-            <paper-tabs
-              scrollable
-              selected='[[currentView]]'
-              attr-for-selected='data-entity'
-              on-iron-activate='handleViewSelected'
+          <paper-tabs
+            scrollable
+            selected='[[currentView]]'
+            attr-for-selected='data-entity'
+            on-iron-activate='handleViewSelected'
+          >
+            <paper-tab
+              data-entity=''
+              on-tap='scrollToTop'
             >
+              <template is='dom-if' if='[[!defaultView]]'>
+                default_view
+              </template>
+              <template is='dom-if' if='[[defaultView]]'>
+                <template
+                  is='dom-if'
+                  if='[[defaultView.attributes.icon]]'
+                >
+                  <iron-icon
+                    title$='[[computeStateName(defaultView)]]'
+                    icon='[[defaultView.attributes.icon]]'
+                  ></iron-icon>
+                </template>
+                <template
+                  is='dom-if'
+                  if='[[!defaultView.attributes.icon]]'
+                >
+                  [[computeStateName(defaultView)]]
+                </template>
+              </template>
+            </paper-tab>
+            <template is='dom-repeat' items='[[views]]'>
               <paper-tab
-                data-entity=''
+                data-entity$='[[item.entity_id]]'
                 on-tap='scrollToTop'
               >
-                <template is='dom-if' if='[[!defaultView]]'>
-                  default_view
+                <template is='dom-if' if='[[item.attributes.icon]]'>
+                  <iron-icon title$='[[computeStateName(item)]]' icon='[[item.attributes.icon]]'></iron-icon>
                 </template>
-                <template is='dom-if' if='[[defaultView]]'>
-                  <template
-                    is='dom-if'
-                    if='[[defaultView.attributes.icon]]'
-                  >
-                    <iron-icon
-                      title$='[[computeStateName(defaultView)]]'
-                      icon='[[defaultView.attributes.icon]]'
-                    ></iron-icon>
-                  </template>
-                  <template
-                    is='dom-if'
-                    if='[[!defaultView.attributes.icon]]'
-                  >
-                    [[computeStateName(defaultView)]]
-                  </template>
+                <template is='dom-if' if='[[!item.attributes.icon]]'>
+                  [[computeStateName(item)]]
                 </template>
               </paper-tab>
-              <template is='dom-repeat' items='[[views]]'>
-                <paper-tab
-                  data-entity$='[[item.entity_id]]'
-                  on-tap='scrollToTop'
-                >
-                  <template is='dom-if' if='[[item.attributes.icon]]'>
-                    <iron-icon title$='[[computeStateName(item)]]' icon='[[item.attributes.icon]]'></iron-icon>
-                  </template>
-                  <template is='dom-if' if='[[!item.attributes.icon]]'>
-                    [[computeStateName(item)]]
-                  </template>
-                </paper-tab>
-              </template>
-            </paper-tabs>
-          </div>
-        </app-header>
+            </template>
+          </paper-tabs>
+        </div>
+      </app-header>
 
       <iron-pages
         attr-for-selected='data-view'
