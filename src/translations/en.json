@@ -11,6 +11,8 @@
   },
   "state": {
     "default": {
+      "off": "Off",
+      "on": "On",
       "unknown": "Unknown",
       "unavailable": "Unavailable"
     },
@@ -26,13 +28,13 @@
       "triggered": "Triggered"
     },
     "automation": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "binary_sensor": {
       "default": {
-        "off": "Off",
-        "on": "On"
+        "off": "[%key:state::default::off%]",
+        "on": "[%key:state::default::on%]"
       },
       "moisture": {
         "off": "Dry",
@@ -43,24 +45,24 @@
         "on": "Detected"
       },
       "motion": {
-        "off": "Clear",
-        "on": "Detected"
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "occupancy": {
-        "off": "Clear",
-        "on": "Detected"
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "smoke": {
-        "off": "Clear",
-        "on": "Detected"
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "sound": {
-        "off": "Clear",
-        "on": "Detected"
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "vibration": {
-        "off": "Clear",
-        "on": "Detected"
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "opening": {
         "off": "Closed",
@@ -72,8 +74,8 @@
       }
     },
     "calendar": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "camera": {
       "recording": "Recording",
@@ -81,8 +83,8 @@
       "idle": "Idle"
     },
     "climate": {
-      "off": "Off",
-      "on": "On",
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]",
       "heat": "Heat",
       "cool": "Cool",
       "idle": "Idle",
@@ -112,27 +114,39 @@
       "not_home": "Away"
     },
     "fan": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "group": {
-      "TODO": "TODO"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]",
+      "home": "[%key:state::device_tracker::home%]",
+      "not_home": "[%key:state::device_tracker::not_home%]",
+      "open": "[%key:state::cover::open%]",
+      "opening": "[%key:state::cover::opening%]",
+      "closed": "[%key:state::cover::closed%]",
+      "closing": "[%key:state::cover::closing%]",
+      "stopped": "[%key:state::cover::stopped%]",
+      "locked": "[%key:state::lock::locked%]",
+      "unlocked": "[%key:state::lock::unlocked%]",
+      "ok": "[%key:state::plant::ok%]",
+      "problem": "[%key:state::plant::problem%]"
     },
     "input_boolean": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "light": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "lock": {
       "locked": "Locked",
       "unlocked": "Unlocked"
     },
     "media_player": {
-      "off": "Off",
-      "on": "On",
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]",
       "playing": "Playing",
       "paused": "Paused",
       "idle": "Idle",
@@ -143,27 +157,27 @@
       "problem": "Problem"
     },
     "remote": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "scene": {
       "scening": "Scening"
     },
     "script": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "sensor": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "sun": {
       "above_horizon": "Above horizon",
       "below_horizon": "Below horizon"
     },
     "switch": {
-      "off": "Off",
-      "on": "On"
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]"
     },
     "zwave": {
       "initializing": "Initializing ({query_stage})",
@@ -189,8 +203,8 @@
       "triggered": "Trig"
     },
     "device_tracker": {
-      "home": "Home",
-      "not_home": "Away"
+      "home": "[%key:state::device_tracker::home%]",
+      "not_home": "[%key:state::device_tracker::not_home%]"
     }
   }
 }
