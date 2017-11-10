@@ -30,7 +30,7 @@ function renamePanel(path) {
   }
 }
 
-gulp.task('build', ['ru_all', 'build-translations'], () => {
+function build(es6) {
   const strategy = composeStrategies([
     generateShellMergeStrategy(polymerConfig.shell),
     stripImportsStrategy([
@@ -41,8 +41,8 @@ gulp.task('build', ['ru_all', 'build-translations'], () => {
   ]);
   const project = new PolymerProject(polymerConfig);
 
-  return mergeStream(minifyStream(project.sources()),
-              minifyStream(project.dependencies()))
+  return mergeStream(minifyStream(project.sources(), es6),
+              minifyStream(project.dependencies(), es6))
     .pipe(project.bundler({
       strategy,
       strip: true,
@@ -54,5 +54,7 @@ gulp.task('build', ['ru_all', 'build-translations'], () => {
     }))
     .pipe(rename(renamePanel))
     .pipe(filter(['**', '!src/entrypoint.html']))
-    .pipe(gulp.dest('build/'));
-});
+    .pipe(gulp.dest(es6 ? 'build' : 'build-es5'));
+}
+gulp.task('build_es5', ['ru_all_es5', 'build-translations'], () => build(/* es6= */ false));
+gulp.task('build', ['ru_all', 'build-translations'], () => build(/* es6= */ true));
