@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Safe bash settings
+# -e            Exit on command fail
+# -u            Exit on unset variable
+# -o pipefail   Exit if piped command has error code
+set -eu -o pipefail
+
+cd "$(dirname "$0")/.."
+
+if git diff "${TRAVIS_COMMIT_RANGE}" --name-only | grep -Fxq "src/translations/en.json" ; then
+    script/translations_upload_base
+else
+    echo "No changes to src/translations/en.json. Skipping translation upload."
+fi
