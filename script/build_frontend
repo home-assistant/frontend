@@ -7,30 +7,36 @@ set -e
 cd "$(dirname "$0")/.."
 
 OUTPUT_DIR=hass_frontend
+OUTPUT_DIR_ES5=hass_frontend_es5
 
-rm -rf $OUTPUT_DIR
+rm -rf $OUTPUT_DIR $OUTPUT_DIR_ES5
 cp -r public $OUTPUT_DIR
+mkdir $OUTPUT_DIR_ES5
+cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 # Build frontend
 BUILD_DEV=0 ./node_modules/.bin/gulp
 
 # Entry points
 cp build/*.js build/*.html $OUTPUT_DIR
+cp build-es5/*.js build-es5/*.html $OUTPUT_DIR_ES5
 
 # Panels
 mkdir $OUTPUT_DIR/panels
 cp build/panels/*.html $OUTPUT_DIR/panels
+mkdir $OUTPUT_DIR_ES5/panels
+cp build-es5/panels/*.html $OUTPUT_DIR_ES5/panels
 
-# Panels
+# Translations
 mkdir $OUTPUT_DIR/translations
-cp build/translations/*.json $OUTPUT_DIR/translations
+cp build-translations/*.json $OUTPUT_DIR/translations
 
 # Local Roboto
 cp -r bower_components/font-roboto-local/fonts $OUTPUT_DIR
 
 # Polyfill web components
 cp bower_components/webcomponentsjs/webcomponents-lite.js $OUTPUT_DIR
-cp bower_components/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR
+cp bower_components/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
 
 # Icons
 script/update_mdi.py
@@ -41,6 +47,8 @@ cp bower_components/leaflet/dist/leaflet.css $OUTPUT_DIR/images/leaflet
 cp -r bower_components/leaflet/dist/images $OUTPUT_DIR/images/leaflet/
 
 # Generate service worker
+BUILD_DEV=0 ./node_modules/.bin/gulp gen-service-worker-es5
+cp build-es5/service_worker.js $OUTPUT_DIR_ES5
 BUILD_DEV=0 ./node_modules/.bin/gulp gen-service-worker
 cp build/service_worker.js $OUTPUT_DIR
 
@@ -55,10 +63,19 @@ gzip -f -n -k -9 \
     ./fonts/roboto/*.ttf \
     ./fonts/robotomono/*.ttf
 cd ..
+cd $OUTPUT_DIR_ES5
+gzip -f -n -k -9 \
+    *.html \
+    *.js \
+    ./panels/*.html
+cd ..
 
 # Generate the __init__ file
 echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR/__init__.py
 echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR/__init__.py
+echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR_ES5/__init__.py
+echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR_ES5/__init__.py
 
 # Generate the MD5 hash of the new frontend
-script/fingerprint_frontend.py
+script/fingerprint_frontend.py --base_dir $OUTPUT_DIR
+script/fingerprint_frontend.py --base_dir $OUTPUT_DIR_ES5

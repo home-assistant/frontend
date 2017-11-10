@@ -5,9 +5,14 @@ from collections import OrderedDict
 import glob
 import hashlib
 import json
+import argparse
+from os import path
 
-fingerprint_file = './hass_frontend/__init__.py'
-base_dir = 'hass_frontend/'
+parser = argparse.ArgumentParser(description='Generate fingerprints of frontend files.')
+parser.add_argument('--base_dir', type=str, help='Base dir to look for files.', default='hass_frontend')
+args = parser.parse_args()
+base_dir = args.base_dir + '/'
+fingerprint_file = path.join(base_dir, '__init__.py')
 
 
 def fingerprint():
