@@ -8,8 +8,8 @@ const minify = require('gulp-jsonminify');
 const rename = require('gulp-rename');
 const transform = require('gulp-json-transform');
 
-const inDir = 'translations'
-const outDir = 'build/translations';
+const inDir = 'translations';
+const outDir = 'build-translations';
 
 const tasks = [];
 
@@ -22,7 +22,7 @@ function recursive_flatten (prefix, data) {
       output[prefix + key] = data[key];
     }
   });
-  return output
+  return output;
 }
 
 function flatten (data) {
@@ -39,7 +39,7 @@ gulp.task(taskName, function () {
       const tr = path.basename(file.history[0], '.json');
       const subtags = tr.split('-');
       const src = [inDir + '/en.json']; // Start with en as a fallback for missing translations
-      for (i = 1; i <= subtags.length; i++) {
+      for (let i = 1; i <= subtags.length; i++) {
         const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
       }
@@ -67,7 +67,7 @@ tasks.push(taskName);
 
 var taskName = 'build-translation-fingerprints';
 gulp.task(taskName, ['build-merged-translations'], function() {
-  return gulp.src(outDir + '/*.json')
+  return gulp.src(outDir + '/!(translationFingerprints).json')
     .pipe(rename({
       extname: "",
     }))
@@ -83,7 +83,7 @@ gulp.task(taskName, ['build-merged-translations'], function() {
       });
       return data;
     }))
-    .pipe(gulp.dest('build-temp'));
+    .pipe(gulp.dest(outDir));
 });
 tasks.push(taskName);
 
@@ -91,7 +91,7 @@ var taskName = 'build-translations';
 gulp.task(taskName, ['build-translation-fingerprints'], function() {
   return gulp.src([
       'src/translations/translationMetadata.json',
-      'build-temp/translationFingerprints.json',
+      outDir + '/translationFingerprints.json',
     ])
     .pipe(merge({}))
     .pipe(transform(function(data, file) {
@@ -109,7 +109,7 @@ gulp.task(taskName, ['build-translation-fingerprints'], function() {
     }))
     .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
-    .pipe(gulp.dest('build-temp'));
+    .pipe(gulp.dest(outDir));
 });
 tasks.push(taskName);
 

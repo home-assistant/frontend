@@ -6,7 +6,7 @@ window.HASS_DEV = __DEV__;
 
 const init = window.createHassConnection = function (password) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const url = `${proto}://${window.location.host}/api/websocket`;
+  const url = `${proto}://${window.location.host}/api/websocket${window.location.search}`;
   const options = {
     setupRetry: 10,
   };
@@ -28,10 +28,4 @@ if (window.noAuth) {
   window.hassConnection = init(window.localStorage.authToken);
 } else {
   window.hassConnection = null;
-}
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('/service_worker.js');
-  });
 }
