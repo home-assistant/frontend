@@ -53,53 +53,53 @@
         </app-toolbar>
 
         <div sticky hidden$='[[areTabsHidden(views, showTabs)]]'>
-          <paper-tabs
-            scrollable
-            selected='[[currentView]]'
-            attr-for-selected='data-entity'
-            on-iron-activate='handleViewSelected'
-          >
-            <paper-tab
-              data-entity=''
-              on-tap='scrollToTop'
+            <paper-tabs
+              scrollable
+              selected='[[currentView]]'
+              attr-for-selected='data-entity'
+              on-iron-activate='handleViewSelected'
             >
-              <template is='dom-if' if='[[!defaultView]]'>
-                [[locationName]]
-              </template>
-              <template is='dom-if' if='[[defaultView]]'>
-                <template
-                  is='dom-if'
-                  if='[[defaultView.attributes.icon]]'
-                >
-                  <iron-icon
-                    title$='[[computeStateName(defaultView)]]'
-                    icon='[[defaultView.attributes.icon]]'
-                  ></iron-icon>
-                </template>
-                <template
-                  is='dom-if'
-                  if='[[!defaultView.attributes.icon]]'
-                >
-                  [[computeStateName(defaultView)]]
-                </template>
-              </template>
-            </paper-tab>
-            <template is='dom-repeat' items='[[views]]'>
               <paper-tab
-                data-entity$='[[item.entity_id]]'
+                data-entity=''
                 on-tap='scrollToTop'
               >
-                <template is='dom-if' if='[[item.attributes.icon]]'>
-                  <iron-icon title$='[[computeStateName(item)]]' icon='[[item.attributes.icon]]'></iron-icon>
+                <template is='dom-if' if='[[!defaultView]]'>
+                  default_view
                 </template>
-                <template is='dom-if' if='[[!item.attributes.icon]]'>
-                  [[computeStateName(item)]]
+                <template is='dom-if' if='[[defaultView]]'>
+                  <template
+                    is='dom-if'
+                    if='[[defaultView.attributes.icon]]'
+                  >
+                    <iron-icon
+                      title$='[[computeStateName(defaultView)]]'
+                      icon='[[defaultView.attributes.icon]]'
+                    ></iron-icon>
+                  </template>
+                  <template
+                    is='dom-if'
+                    if='[[!defaultView.attributes.icon]]'
+                  >
+                    [[computeStateName(defaultView)]]
+                  </template>
                 </template>
               </paper-tab>
-            </template>
-          </paper-tabs>
-        </div>
-      </app-header>
+              <template is='dom-repeat' items='[[views]]'>
+                <paper-tab
+                  data-entity$='[[item.entity_id]]'
+                  on-tap='scrollToTop'
+                >
+                  <template is='dom-if' if='[[item.attributes.icon]]'>
+                    <iron-icon title$='[[computeStateName(item)]]' icon='[[item.attributes.icon]]'></iron-icon>
+                  </template>
+                  <template is='dom-if' if='[[!item.attributes.icon]]'>
+                    [[computeStateName(item)]]
+                  </template>
+                </paper-tab>
+              </template>
+            </paper-tabs>
+          </div>
+        </app-header>
 
       <iron-pages
         attr-for-selected='data-view'
@@ -300,14 +300,7 @@
     }
 
     computeStateName(stateObj) {
-      if (stateObj.entity_id === DEFAULT_VIEW_ENTITY_ID) {
-        if (stateObj.attributes.friendly_name &&
-            stateObj.attributes.friendly_name !== 'default_view') {
-          return stateObj.attributes.friendly_name;
-        }
-        return 'Home';
-      }
-      return window.hassUtil.computeStateName(stateObj);
+      return stateObj.attributes.friendly_name;
     }
 
     computeLocationName(hass) {
