@@ -38,7 +38,7 @@ async function buildHassioPanel(es6) {
 
   return minifyStream(stream, es6)
     .pipe(rename('hassio-main.html'))
-    .pipe(gulp.dest('build-temp'));
+    .pipe(gulp.dest(es6 ? 'build-temp' : 'build-temp-es5'));
 }
 
 gulp.task('hassio-panel-es5', buildHassioPanel.bind(null, /* es6= */ false));

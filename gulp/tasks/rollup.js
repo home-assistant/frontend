@@ -11,7 +11,7 @@ gulp.task('run_rollup_es5', () => gulp.src([
   'demo_data/demo_data.js',
 ])
   .pipe(rollupEach(rollupConfig, rollupConfig))
-  .pipe(gulp.dest('build-temp')));
+  .pipe(gulp.dest('build-temp-es5')));
 
 gulp.task('run_rollup', () => gulp.src([
   'js/core.js',
@@ -24,8 +24,8 @@ gulp.task('run_rollup', () => gulp.src([
 
 gulp.task('ru_all_es5', ['run_rollup_es5'], () => {
   gulp.src([
-    'build-temp/core.js',
-    'build-temp/compatibility.js',
+    'build-temp-es5/core.js',
+    'build-temp-es5/compatibility.js',
   ])
     .pipe(gulp.dest('build-es5/'));
 });
