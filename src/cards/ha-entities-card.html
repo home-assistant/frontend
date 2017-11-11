@@ -16,7 +16,6 @@
       }
       .state {
         padding: 4px 16px;
-        cursor: pointer;
       }
       .header {
         @apply(--paper-font-headline);
@@ -36,7 +35,7 @@
       ha-entity-toggle {
         margin-left: 16px;
       }
-      .header-more-info {
+      .more-info {
         cursor: pointer;
       }
     </style>
@@ -51,12 +50,12 @@
         </template>
       </div>
       <div class='states'>
-        <template is='dom-repeat' items="[[states]]">
-          <div class='state' on-tap='entityTapped'>
+        <template is='dom-repeat' items='[[states]]' on-dom-change='addTapEvents'>
+          <div class$='[[computeStateClass(item)]]'>
             <state-card-content
               hass='[[hass]]'
-              class="state-card"
-              state-obj="[[item]]"></state-card-content>
+              class='state-card'
+              state-obj='[[item]]'></state-card-content>
           </div>
         </template>
       </div>
@@ -84,23 +83,34 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   computeTitleClass(groupEntity) {
     var classes = 'header horizontal layout center ';
     if (groupEntity) {
-      classes += 'header-more-info';
+      classes += 'more-info';
     } else {
       classes += 'domain';
     }
     return classes;
   }
 
+  computeStateClass(stateObj) {
+    return window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state';
+  }
+
+  addTapEvents() {
+    var cards = this.root.querySelectorAll('.state.more-info');
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].addEventListener('tap', this.entityTapped.bind(this));
+    }
+  }
+
   entityTapped(ev) {
+    var item = this.root.querySelector('dom-repeat').itemForElement(ev.target);
     var entityId;
-    if (ev.target.nodeName === 'STATE-CARD-INPUT_TEXT' ||
-        (!ev.model && !this.groupEntity)) {
+    if (!item && !this.groupEntity) {
       return;
     }
     ev.stopPropagation();
 
-    if (ev.model) {
-      entityId = ev.model.item.entity_id;
+    if (item) {
+      entityId = item.entity_id;
     } else {
       entityId = this.groupEntity.entity_id;
     }
