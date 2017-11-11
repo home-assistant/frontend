@@ -2874,7 +2874,7 @@ etag@~1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
 
-event-stream@^3.0.20, event-stream@^3.3.1:
+event-stream@^3.0.20, event-stream@^3.3.1, event-stream@latest:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/event-stream/-/event-stream-3.3.4.tgz#4ab4c9a0f5a54db9338b4c34d86bfce8f4b35571"
   dependencies:
@@ -3656,6 +3656,12 @@ gulp-babel@^7.0.0:
     replace-ext "0.0.1"
     through2 "^2.0.0"
     vinyl-sourcemaps-apply "^0.2.0"
+
+gulp-batch-replace@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-batch-replace/-/gulp-batch-replace-0.0.0.tgz#7e9826ad928862722c1eacb4421b4127bffd643e"
+  dependencies:
+    event-stream latest
 
 gulp-file@^0.3.0:
   version "0.3.0"

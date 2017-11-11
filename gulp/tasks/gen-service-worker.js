@@ -12,11 +12,11 @@ TODO:
  - Fix minifying the stream
 */
 const gulp = require('gulp');
-const crypto = require('crypto');
 const file = require('gulp-file');
 const fs = require('fs');
 const path = require('path');
 const swPrecache = require('sw-precache');
+const md5 = require('../common/md5.js');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 
@@ -44,11 +44,6 @@ const panelsFingerprinted = [
   'dev-event', 'dev-info', 'dev-service', 'dev-state', 'dev-template',
   'dev-mqtt', 'kiosk',
 ];
-
-function md5(filename) {
-  return crypto.createHash('md5')
-    .update(fs.readFileSync(filename)).digest('hex');
-}
 
 function processStatic(fn, rootDir, urlDir) {
   const parts = path.parse(fn);
@@ -117,7 +112,7 @@ function generateServiceWorker(es6) {
         }
       ],
       stripPrefix: baseRootDir,
-      replacePrefix: 'static',
+      replacePrefix: '/static',
       verbose: true,
       // Allow our users to refresh to get latest version.
       clientsClaim: true,
