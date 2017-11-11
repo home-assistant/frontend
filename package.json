@@ -38,6 +38,7 @@
     "eslint-plugin-react": "^7.0.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.0",
+    "gulp-batch-replace": "^0.0.0",
     "gulp-file": "^0.3.0",
     "gulp-filter": "^5.0.1",
     "gulp-foreach": "^0.1.0",
