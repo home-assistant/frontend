@@ -1,10 +1,1 @@
-{
-    "panel": {
-        "config": "Настройки",
-        "states": "Обзор",
-        "map": "Карта",
-        "logbook": "Журнал",
-        "history": "История",
-        "log_out": "Выход"
-    }
-}
+{"panel":{"config":"Настройки","states":"Обзор","map":"Карта","logbook":"Журнал","history":"История","log_out":"Выход","mailbox":"Почтовый ящик","shopping_list":"Список покупок"}}

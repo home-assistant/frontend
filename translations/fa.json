@@ -1,9 +1,1 @@
-{
-    "panel": {
-        "states": "وضعیت",
-        "map": "نقشه",
-        "logbook": "گزارش روزانه",
-        "history": "تاریخچه",
-        "log_out": "خروج"
-    }
-}
+{"panel":{"config":"پیکربندی","states":"وضعیت","map":"نقشه","logbook":"گزارش روزانه","history":"تاریخچه","log_out":"خروج","mailbox":"صندوق پستی","shopping_list":"لیست خرید"}}

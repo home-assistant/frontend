@@ -1,9 +1,1 @@
-{
-    "panel": {
-        "states": "Estados",
-        "map": "Mapa",
-        "logbook": "Eventos",
-        "history": "Histórico",
-        "log_out": "Desconectar"
-    }
-}
+{"panel":{"config":"Configuração","states":"Visão Geral","map":"Mapa","logbook":"Eventos","history":"Histórico","log_out":"Sair","mailbox":"Correio","shopping_list":"Lista de compras"}}
