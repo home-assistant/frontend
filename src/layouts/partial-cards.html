@@ -48,7 +48,7 @@
       <app-header effects="waterfall" condenses fixed slot="header">
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[computeTitle(locationName)]]</div>
+          <div main-title>[[computeTitle(views, locationName)]]</div>
           <ha-start-voice-button hass='[[hass]]'></ha-start-voice-button>
         </app-toolbar>
 
@@ -64,7 +64,7 @@
               on-tap='scrollToTop'
             >
               <template is='dom-if' if='[[!defaultView]]'>
-                Default view
+                Home
               </template>
               <template is='dom-if' if='[[defaultView]]'>
                 <template
@@ -295,8 +295,8 @@
       return routeMatch ? routeData.view : '';
     }
 
-    computeTitle(locationName) {
-      return locationName || 'Home Assistant';
+    computeTitle(views, locationName) {
+      return views && views.length > 0 && locationName === 'Home' ? 'Home Assistant' : locationName;
     }
 
     computeStateName(stateObj) {
