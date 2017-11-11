@@ -1,10 +1,1 @@
-{
-    "panel": {
-        "config": "Nastavení",
-        "states": "Stavy",
-        "map": "Mapa",
-        "logbook": "Deník",
-        "history": "Historie",
-        "log_out": "Odhlásit se"
-    }
-}
+{"panel":{"config":"Nastavení","states":"Přehled","map":"Mapa","logbook":"Záznamy","history":"Historie","log_out":"Odhlásit se","mailbox":"Schránka","shopping_list":"Nákupní seznam"}}

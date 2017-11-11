@@ -1,10 +1,1 @@
-{
-    "panel": {
-        "config": "Ayarlar",
-        "states": "Durum",
-        "map": "Harita",
-        "logbook": "Kayıt Defteri",
-        "history": "Geçmiş",
-        "log_out": "Çıkış Yap"
-    }
-}
+{"panel":{"config":"Ayarlar","states":"Genel durum","map":"Harita","logbook":"Kayıt defteri","history":"Geçmiş","log_out":"Çıkış yap","mailbox":"Posta kutusu","shopping_list":"Alışveriş listesi"}}

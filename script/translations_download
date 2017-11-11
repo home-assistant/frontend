@@ -21,11 +21,9 @@ fi
 [ -z "${LOKALISE_TOKEN-}" ] && LOKALISE_TOKEN="$(<.lokalise_token)"
 
 PROJECT_ID="3420425759f6d6d241f598.13594006"
-LOCAL_DIR="$(pwd)/translations"
-DOWNLOAD_FILE="${LOCAL_DIR}/Home_Assistant_-_Polymer_frontend-locale.zip"
+LOCAL_DIR="$(pwd)/build-temp"
 FILE_FORMAT=json
 
-rm -f ${LOCAL_DIR}/*.json
 mkdir -p ${LOCAL_DIR}
 
 docker run \
@@ -37,6 +35,5 @@ docker run \
      --type json \
      --dest /opt/dest
 
-# Extract and delete downloaded zip bundle
-unzip -j "${DOWNLOAD_FILE}" locale/* -d "${LOCAL_DIR}"
-rm -f "${DOWNLOAD_FILE}"
+# Extract and and minify the downloaded translations
+./node_modules/.bin/gulp translations-extract

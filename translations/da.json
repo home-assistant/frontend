@@ -1,11 +1,1 @@
-{
-    "panel": {
-        "config": "Indstillinger",
-        "states": "Oversigt",
-        "map": "Kort",
-        "logbook": "Logbog",
-        "history": "Historik",
-        "log_out": "Log af",
-        "shopping_list": "Indkøbsliste"
-    }
-}
+{"panel":{"config":"Indstillinger","states":"Oversigt","map":"Kort","logbook":"Logbog","history":"Historik","log_out":"Log af","mailbox":"Postkasse","shopping_list":"Indkøbsliste"}}

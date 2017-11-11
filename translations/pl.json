@@ -1,9 +1,1 @@
-{
-    "panel": {
-        "states": "Stany",
-        "map": "Mapa",
-        "logbook": "Dziennik",
-        "history": "Historia",
-        "log_out": "Wyloguj"
-    }
-}
+{"panel":{"config":"Ustawienia","states":"Przegląd","map":"Mapa","logbook":"Dziennik","history":"Historia","log_out":"Wyloguj","mailbox":"Poczta","shopping_list":"Lista zakupów"}}

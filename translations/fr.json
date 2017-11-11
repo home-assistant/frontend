@@ -1,11 +1,1 @@
-{
-    "panel": {
-        "config": "Configuration",
-        "states": "États",
-        "map": "Carte",
-        "logbook": "Journal",
-        "history": "Historique",
-        "log_out": "Déconnexion",
-        "shopping_list": "Liste de courses"
-    }
-}
+{"panel":{"config":"Configuration","states":"Aperçu","map":"Carte","logbook":"Journal","history":"Historique","log_out":"Déconnexion","mailbox":"Boîtes aux lettres","shopping_list":"Liste de courses"}}
