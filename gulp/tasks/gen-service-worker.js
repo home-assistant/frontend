@@ -50,11 +50,11 @@ function md5(filename) {
     .update(fs.readFileSync(filename)).digest('hex');
 }
 
-function processStatic(fn, rootDir) {
+function processStatic(fn, rootDir, urlDir) {
   const parts = path.parse(fn);
   const base = parts.dir.length > 0 ? parts.dir + '/' + parts.name : parts.name;
   const hash = md5(rootDir + '/' + base + parts.ext);
-  const url = '/static/' + base + '-' + hash + parts.ext;
+  const url = '/' + urlDir + '/' + base + '-' + hash + parts.ext;
   const fpath = rootDir + '/' + base + parts.ext;
   dynamicUrlToDependencies[url] = [fpath];
 }
@@ -71,20 +71,20 @@ function generateServiceWorker(es6) {
   } else {
     // Create fingerprinted versions of our dependencies.
     (es6 ? staticFingerprintedEs6 : staticFingerprintedEs5).forEach(
-      fn => processStatic(fn, rootDir));
-    staticFingerprinted.forEach(fn => processStatic(fn, baseRootDir));
+      fn => processStatic(fn, rootDir, es6? 'frontend_latest' : 'frontend_es5'));
+    staticFingerprinted.forEach(fn => processStatic(fn, baseRootDir, 'static'));
 
     panelsFingerprinted.forEach((panel) => {
       const fpath = panelDir + '/ha-panel-' + panel + '.html';
       const hash = md5(fpath);
-      const url = '/frontend/panels/ha-panel-' + panel + '-' + hash + '.html';
+      const url = '/' + (es6 ? 'frontend_latest' : 'frontend_es5') + '/panels/ha-panel-' + panel + '-' + hash + '.html';
       dynamicUrlToDependencies[url] = [fpath];
     });
 
     const options = {
       navigateFallback: '/',
       navigateFallbackWhitelist:
-          [/^(?:(?!(?:static|api|local|service_worker.js|manifest.json)).)*$/],
+          [/^(?:(?!(?:static|api|frontend_latest|frontend_es5|local|service_worker.js|manifest.json)).)*$/],
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
         baseRootDir + '/icons/favicon.ico',
@@ -99,7 +99,7 @@ function generateServiceWorker(es6) {
       // Rules are proceeded in order and negative per-domain rules are not supported.
       runtimeCaching: [
         { // Cache static content (including translations) on first access.
-          urlPattern: '/static/*',
+          urlPattern: '/(static|frontend_latest|frontend_es5)/*',
           handler: 'cacheFirst',
         },
         { // Get api (and home-assistant-polymer in dev mode) from network.
