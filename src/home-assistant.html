@@ -92,7 +92,7 @@ class HomeAssistant extends Polymer.Element {
 
   computeShowLoading(connectionPromise, hass) {
     // Show loading when connecting or when connected but not all pieces loaded yet
-    return (connectionPromise != null || (hass && (!hass.states || !hass.config)));
+    return (connectionPromise != null || (hass && hass.connection && (!hass.states || !hass.config)));
   }
 
   loadResources() {
@@ -110,7 +110,17 @@ class HomeAssistant extends Polymer.Element {
       this.unsubConnection = null;
     }
     if (!conn) {
-      this.hass = null;
+      this._updateHass({
+        connection: null,
+        connected: false,
+        states: null,
+        config: null,
+        themes: null,
+        dockedSidebar: false,
+        moreInfoEntityId: null,
+        callService: null,
+        callApi: null,
+      });
       return;
     }
     var notifications = this.$.notifications;

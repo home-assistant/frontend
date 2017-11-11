@@ -19,7 +19,7 @@
       id='connToast'
       duration='0'
       text='Connection lost. Reconnecting…'
-      opened='[[!isStreaming]]'
+      opened='[[connectionLost]]'
     ></paper-toast>
   </template>
 </dom-module>
@@ -32,11 +32,17 @@ class NotificationManager extends Polymer.Element {
     return {
       hass: {
         type: Object,
+        observer: 'hassChanged',
       },
 
-      isStreaming: {
+      wasConnected: {
         type: Boolean,
-        computed: 'computeIsStreaming(hass)',
+        value: false,
+      },
+
+      connectionLost: {
+        type: Boolean,
+        computed: 'computeConnectionLost(wasConnected, hass)',
       },
 
       _cancelOnOutsideClick: {
@@ -56,8 +62,19 @@ class NotificationManager extends Polymer.Element {
     };
   }
 
-  computeIsStreaming(hass) {
-    return !hass || hass.connected;
+  hassChanged(hass) {
+    if (hass && hass.connected) {
+      // Once the connetion is established, set wasConnected to true
+      this.wasConnected = true;
+    }
+    if (!hass || !hass.connection) {
+      // If the users logs out, reset wasConnected
+      this.wasConnected = false;
+    }
+  }
+
+  computeConnectionLost(wasConnected, hass) {
+    return wasConnected && hass && !hass.connected;
   }
 
   constructor() {
