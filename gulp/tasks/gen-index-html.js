@@ -17,7 +17,7 @@ function generateIndex(es6) {
   const toReplace = [
     ['/home-assistant-polymer/hass_frontend/mdi.html',
       `/static/mdi-${md5(path.resolve(config.output, 'mdi.html'))}.html`],
-    ['/home-assistant-polymer/build-temp/compatibility.js',
+    ['/home-assistant-polymer/build-temp-es5/compatibility.js',
       `/static/compatibility-${md5(path.resolve(config.output_es5, 'compatibility.js'))}.js`],
   ];
 
