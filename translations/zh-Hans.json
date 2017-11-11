@@ -1,10 +1,1 @@
-{
-    "panel": {
-        "config": "配置",
-        "states": "概览",
-        "map": "地图",
-        "logbook": "日志",
-        "history": "历史",
-        "log_out": "退出"
-    }
-}
+{"panel":{"config":"配置","states":"概览","map":"地图","logbook":"日志","history":"历史","log_out":"退出","mailbox":"邮箱","shopping_list":"购物清单"}}

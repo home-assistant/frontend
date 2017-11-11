@@ -1,10 +1,1 @@
-{
-    "panel": {
-        "config": "Cấu hình",
-        "states": "Tổng quan",
-        "map": "Bản đồ",
-        "logbook": "Nhật ký",
-        "history": "Lịch sử",
-        "log_out": "Đăng xuất"
-    }
-}
+{"panel":{"config":"Cấu hình","states":"Tổng quan","map":"Bản đồ","logbook":"Nhật ký","history":"Lịch sử","log_out":"Đăng xuất","mailbox":"Hộp thư","shopping_list":"Danh sách mua sắm"}}
