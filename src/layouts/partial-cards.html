@@ -221,7 +221,7 @@
 
     disconnectedCallback() {
       super.disconnectedCallback();
-      this.mqls.forEach(function (mql) {
+      this.mqls.forEach((mql) => {
         mql.removeListener(this.handleWindowChange);
       });
     }
