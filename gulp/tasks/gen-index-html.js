@@ -5,10 +5,10 @@ const url = require('url');
 const config = require('../config');
 const md5 = require('../common/md5.js');
 
-const buildReplaces = [
-  '/home-assistant-polymer/build/core.js',
-  '/home-assistant-polymer/build/frontend.html',
-];
+const buildReplaces = {
+  '/home-assistant-polymer/build/core.js': 'core.js',
+  '/home-assistant-polymer/src/home-assistant.html': 'frontend.html',
+};
 
 function generateIndex(es6) {
   const targetPath = es6 ? config.output : config.output_es5;
@@ -23,13 +23,13 @@ function generateIndex(es6) {
       es6 ? './service_worker.js' : './service_worker_es5.js'],
   ];
 
-  buildReplaces.forEach((source) => {
-    const parsed = path.parse(source);
-    const hash = md5(path.resolve(targetPath, parsed.base));
+  for (const [replaceSearch, filename] of Object.entries(buildReplaces)) {
+    const parsed = path.parse(filename);
+    const hash = md5(path.resolve(targetPath, filename));
     toReplace.push([
-      source,
+      replaceSearch,
       url.resolve(targetUrl, `${parsed.name}-${hash}${parsed.ext}`)]);
-  });
+  }
 
   gulp.src(path.resolve(config.polymer_dir, 'index.html'))
     .pipe(replace(toReplace))
