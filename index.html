@@ -9,12 +9,9 @@
     <link rel='apple-touch-icon' sizes='180x180'
           href='/static/icons/favicon-apple-180x180.png'>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#3fbbf4">
-    {% if not dev_mode %}
-      <link rel='preload' href='/home-assistant-polymer/build/core.js' as='script'/>
-      {% for panel in panels.values() -%}
-        <link rel='prefetch' href='{{ panel.webcomponent_url }}'>
-      {% endfor -%}
-    {% endif %}
+    <link rel='preload' href='/home-assistant-polymer/build/core.js' as='script'/>
+    <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
+    <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
     <meta name='apple-mobile-web-app-capable' content='yes'>
     <meta name="msapplication-square70x70logo" content="/static/icons/tile-win-70x70.png"/>
     <meta name="msapplication-square150x150logo" content="/static/icons/tile-win-150x150.png"/>
