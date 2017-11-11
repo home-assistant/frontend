@@ -20,7 +20,8 @@
   ],
   "sources": [
     "src/**/*",
-    "panels/**/*"
+    "panels/**/*",
+    "!src/translations/*"
   ],
   "lint": {
     "rules": ["polymer-2"]
