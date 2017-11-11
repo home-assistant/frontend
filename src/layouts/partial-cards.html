@@ -64,7 +64,7 @@
               on-tap='scrollToTop'
             >
               <template is='dom-if' if='[[!defaultView]]'>
-                default_view
+                Default view
               </template>
               <template is='dom-if' if='[[defaultView]]'>
                 <template
@@ -300,7 +300,7 @@
     }
 
     computeStateName(stateObj) {
-      return stateObj.attributes.friendly_name;
+      return window.hassUtil.computeStateName(stateObj);
     }
 
     computeLocationName(hass) {
