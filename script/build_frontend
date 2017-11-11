@@ -79,3 +79,5 @@ echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR_ES5/__init__.py
 # Generate the MD5 hash of the new frontend
 script/fingerprint_frontend.py --base_dir $OUTPUT_DIR
 script/fingerprint_frontend.py --base_dir $OUTPUT_DIR_ES5
+gulp gen-index-html
+gulp gen-index-html-es5
