@@ -105,8 +105,7 @@
       }
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
-          navigator.serviceWorker.register(
-            '/home-assistant-polymer/build/service_worker.js');
+          navigator.serviceWorker.register('{{ service_worker_url }}');
         });
       }
     </script>
