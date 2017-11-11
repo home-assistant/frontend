@@ -296,7 +296,7 @@
     }
 
     computeTitle(views, defaultView, locationName) {
-      return views && views.length > 0 && !defaultView && locationName === 'Home' ? 'Home Assistant' : locationName;
+      return (views && views.length > 0 && !defaultView && locationName === 'Home') || !locationName ? 'Home Assistant' : locationName;
     }
 
     computeStateName(stateObj) {
