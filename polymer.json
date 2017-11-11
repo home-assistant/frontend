@@ -23,7 +23,7 @@
     "panels/**/*"
   ],
   "lint": {
-    "rules": ["polymer-2-hybrid"]
+    "rules": ["polymer-2"]
   },
   "builds": [
     {

@@ -66,12 +66,10 @@ function generateServiceWorker(es6) {
   const panelDir = path.resolve(rootDir, 'panels');
 
   if (DEV) {
-    genPromise = Promise.resolve(
-      fs.readFileSync(path.resolve(__dirname, '../service-worker-dev.js.tmpl'), 'UTF-8'));
+    genPromise = Promise.resolve(fs.readFileSync(path.resolve(__dirname, '../service-worker-dev.js.tmpl'), 'UTF-8'));
   } else {
     // Create fingerprinted versions of our dependencies.
-    (es6 ? staticFingerprintedEs6 : staticFingerprintedEs5).forEach(
-      fn => processStatic(fn, rootDir, es6? 'frontend_latest' : 'frontend_es5'));
+    (es6 ? staticFingerprintedEs6 : staticFingerprintedEs5).forEach(fn => processStatic(fn, rootDir, es6 ? 'frontend_latest' : 'frontend_es5'));
     staticFingerprinted.forEach(fn => processStatic(fn, baseRootDir, 'static'));
 
     panelsFingerprinted.forEach((panel) => {
