@@ -32,15 +32,13 @@ async function buildHassioPanel(es6) {
     }
   }
 
-  const stream = await bundledStreamFromHTML(
-    'panels/hassio/hassio-main.html', {
-      strategy: stripImportsStrategy(toStrip)
-    }
-  );
+  const stream = await bundledStreamFromHTML('panels/hassio/hassio-main.html', {
+    strategy: stripImportsStrategy(toStrip)
+  });
 
   return minifyStream(stream, es6)
-      .pipe(rename('hassio-main.html'))
-      .pipe(gulp.dest('build-temp'));
+    .pipe(rename('hassio-main.html'))
+    .pipe(gulp.dest('build-temp'));
 }
 
 gulp.task('hassio-panel-es5', buildHassioPanel.bind(null, /* es6= */ false));

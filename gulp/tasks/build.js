@@ -41,8 +41,10 @@ function build(es6) {
   ]);
   const project = new PolymerProject(polymerConfig);
 
-  return mergeStream(minifyStream(project.sources(), es6),
-              minifyStream(project.dependencies(), es6))
+  return mergeStream(
+    minifyStream(project.sources(), es6),
+    minifyStream(project.dependencies(), es6)
+  )
     .pipe(project.bundler({
       strategy,
       strip: true,
