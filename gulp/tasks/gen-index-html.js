@@ -19,9 +19,13 @@ function generateIndex(es6) {
       `/static/mdi-${md5(path.resolve(config.output, 'mdi.html'))}.html`],
     ['/home-assistant-polymer/build-temp/compatibility.js',
       `/static/compatibility-${md5(path.resolve(config.output_es5, 'compatibility.js'))}.js`],
-    ['/home-assistant-polymer/build/service_worker.js',
-      es6 ? './service_worker.js' : './service_worker_es5.js'],
   ];
+
+  if (!es6) {
+    toReplace.push([
+      '/service_worker.js', '/service_worker_es5.js'
+    ]);
+  }
 
   for (const [replaceSearch, filename] of Object.entries(buildReplaces)) {
     const parsed = path.parse(filename);
