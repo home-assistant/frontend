@@ -11,6 +11,9 @@
 <dom-module id="ha-config-cloud-register">
   <template>
     <style include="iron-flex ha-style">
+      a {
+        color: var(--primary-color);
+      }
       paper-card {
         display: block;
       }
@@ -43,7 +46,7 @@
         >
           <span slot='header'>Register with the Home Assistant Cloud</span>
           <span slot='introduction'>
-            Register today to easily connect your Home Assistant to cloud-only services.
+            Register today to easily connect with the Home Assistant Cloud. This will allow you to unlock great new services and functionality, like Amazon Alexa integration.
 
             <p>
               By registering an account you agree to the following terms and conditions.
@@ -52,10 +55,6 @@
                 <li><a href='https://home-assistant.io/privacy/' target='_blank'>Privacy Policy</a></li>
               </ul>
             </p>
-
-            <p><i>
-              Home Assistant will never share information with our cloud without your prior permission.
-            </i></p>
           </span>
 
           <template is='dom-if' if='[[!_hasConfirmationCode]]'>
