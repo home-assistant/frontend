@@ -48,8 +48,7 @@ function lokalise_transform (data, original) {
       output[key] = value.replace(re_key_reference, (match, key) => {
         const replace = key.split('::').reduce((tr, k) => tr[k], original);
         if (typeof replace !== 'string') {
-          console.error(`Invalid key placeholder ${key} in src/translations/en.json`);
-          return process.exit(1);
+          throw Error(`Invalid key placeholder ${key} in src/translations/en.json`);
         }
         return replace;
       });
