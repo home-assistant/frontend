@@ -14,7 +14,7 @@ const outDir = 'build-translations';
 const tasks = [];
 
 function recursiveFlatten(prefix, data) {
-  var output = {};
+  let output = {};
   Object.keys(data).forEach(function (key) {
     if (typeof (data[key]) === 'object') {
       output = Object.assign({}, output, recursiveFlatten(prefix + key + '.', data[key]));
@@ -67,18 +67,18 @@ function lokalise_transform (data, original) {
  * project is buildable immediately after merging new translation keys, since
  * the Lokalise update to translations/en.json will not happen immediately.
  */
-var taskName = 'build-master-translation';
+let taskName = 'build-master-translation';
 gulp.task(taskName, function () {
   return gulp.src('src/translations/en.json')
     .pipe(transform(function(data, file) {
       return lokalise_transform(data, data);
     }))
     .pipe(rename('translation-master.json'))
-    .pipe(gulp.dest('build-temp'));
+    .pipe(gulp.dest(outDir));
 });
 tasks.push(taskName);
 
-var taskName = 'build-merged-translations';
+taskName = 'build-merged-translations';
 gulp.task(taskName, ['build-master-translation'], function () {
   return gulp.src(inDir + '/*.json')
     .pipe(foreach(function(stream, file) {
@@ -91,7 +91,7 @@ gulp.task(taskName, ['build-master-translation'], function () {
       //       than a base translation + region.
       const tr = path.basename(file.history[0], '.json');
       const subtags = tr.split('-');
-      const src = ['build-temp/translation-master.json'];
+      const src = [outDir + '/translation-master.json'];
       for (let i = 1; i <= subtags.length; i++) {
         const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
