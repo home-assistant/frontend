@@ -13,8 +13,7 @@ async function bundledStreamFromHTML(path, bundlerOptions = {}) {
   const bundler = new Bundler(bundlerOptions);
   const manifest = await bundler.generateManifest([path]);
   const result = await bundler.bundle(manifest);
-  return streamFromString(
-    path, parse5.serialize(result.documents.get(path).ast));
+  return streamFromString(path, parse5.serialize(result.documents.get(path).ast));
 }
 
 async function analyze(root, paths) {

@@ -1,10 +1,13 @@
 build/*
 build-temp/*
+build-es5/*
+build-translations/*
 node_modules/*
 bower_components/*
 npm-debug.log
 .DS_Store
 hass_frontend/*
+hass_frontend_es5/*
 
 # Python stuff
 *.py[cod]

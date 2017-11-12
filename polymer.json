@@ -20,10 +20,11 @@
   ],
   "sources": [
     "src/**/*",
-    "panels/**/*"
+    "panels/**/*",
+    "!src/translations/*"
   ],
   "lint": {
-    "rules": ["polymer-2-hybrid"]
+    "rules": ["polymer-2"]
   },
   "builds": [
     {

@@ -1,9 +1,1 @@
-{
-    "panel": {
-        "states": "状態",
-        "map": "地図",
-        "logbook": "ログブック",
-        "history": "履歴",
-        "log_out": "ログアウト"
-    }
-}
+{"panel":{"config":"設定","states":"状態","map":"地図","logbook":"ログブック","history":"履歴","log_out":"ログアウト","mailbox":"メールボックス","shopping_list":"買い物リスト"}}

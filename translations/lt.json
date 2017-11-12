@@ -1,9 +1,1 @@
-{
-    "panel": {
-        "states": "Valdymas",
-        "map": "Žemėlapis",
-        "logbook": "Veiksmų žurnalas",
-        "history": "Istorija",
-        "log_out": "Atsijungti"
-    }
-}
+{"panel":{"config":"Konfigūracija","states":"Valdymas","map":"Žemėlapis","logbook":"Veiksmų žurnalas","history":"Istorija","log_out":"Atsijungti","mailbox":"Pašto dėžutė","shopping_list":"Pirkinių sąrašas"}}

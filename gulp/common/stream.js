@@ -9,7 +9,7 @@ function streamFromString(filename, string) {
       cwd: '',
       base: '',
       path: filename,
-      contents: new Buffer(string)
+      contents: Buffer.from(string)
     }));
     this.push(null);
   };

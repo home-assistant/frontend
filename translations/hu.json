@@ -1,10 +1,1 @@
-{
-    "panel": {
-        "config": "Konfiguráció",
-        "states": "Áttekintés",
-        "map": "Térkép",
-        "logbook": "Napló",
-        "history": "Előzmények",
-        "log_out": "Kilépés"
-    }
-}
+{"panel":{"config":"Konfiguráció","states":"Áttekintés","map":"Térkép","logbook":"Napló","history":"Előzmények","log_out":"Kilépés","mailbox":"Postafiók","shopping_list":"Bevásárló lista"}}

@@ -1,10 +1,1 @@
-{
-    "panel": {
-        "config": "Instellingen",
-        "states": "Overzicht",
-        "map": "Kaart",
-        "logbook": "Logboek",
-        "history": "Geschiedenis",
-        "log_out": "Uitloggen"
-    }
-}
+{"panel":{"config":"Instellingen","states":"Overzicht","map":"Kaart","logbook":"Logboek","history":"Geschiedenis","log_out":"Uitloggen","mailbox":"Postvak","shopping_list":"Boodschappenlijst"}}

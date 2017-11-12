@@ -8,25 +8,25 @@ const minify = require('gulp-jsonminify');
 const rename = require('gulp-rename');
 const transform = require('gulp-json-transform');
 
-const inDir = 'translations'
-const outDir = 'build/translations';
+const inDir = 'translations';
+const outDir = 'build-translations';
 
 const tasks = [];
 
-function recursive_flatten (prefix, data) {
+function recursiveFlatten(prefix, data) {
   var output = {};
   Object.keys(data).forEach(function (key) {
-    if (typeof(data[key]) === 'object') {
-      output = Object.assign({}, output, recursive_flatten(prefix + key + '.', data[key]));
+    if (typeof (data[key]) === 'object') {
+      output = Object.assign({}, output, recursiveFlatten(prefix + key + '.', data[key]));
     } else {
       output[prefix + key] = data[key];
     }
   });
-  return output
+  return output;
 }
 
-function flatten (data) {
-  return recursive_flatten('', data);
+function flatten(data) {
+  return recursiveFlatten('', data);
 }
 
 /**
@@ -92,22 +92,22 @@ gulp.task(taskName, ['build-master-translation'], function () {
       const tr = path.basename(file.history[0], '.json');
       const subtags = tr.split('-');
       const src = ['build-temp/translation-master.json'];
-      for (i = 1; i <= subtags.length; i++) {
+      for (let i = 1; i <= subtags.length; i++) {
         const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
       }
       return gulp.src(src)
-        .pipe(transform(function(data, file) {
+        .pipe(transform(function (data) {
           // Polymer.AppLocalizeBehavior requires flattened json
           return flatten(data);
         }))
-        .pipe(transform(function(data, file) {
-          const new_data = {};
+        .pipe(transform(function (data) {
+          const newData = {};
           Object.entries(data).forEach(([key, value]) => {
             // Filter out empty strings or other falsey values before merging
-            if (data[key]) new_data[key] = value;
+            if (data[key]) newData[key] = value;
           });
-          return new_data;
+          return newData;
         }))
         .pipe(merge({
           fileName: tr + '.json',
@@ -118,11 +118,11 @@ gulp.task(taskName, ['build-master-translation'], function () {
 });
 tasks.push(taskName);
 
-var taskName = 'build-translation-fingerprints';
-gulp.task(taskName, ['build-merged-translations'], function() {
-  return gulp.src(outDir + '/*.json')
+taskName = 'build-translation-fingerprints';
+gulp.task(taskName, ['build-merged-translations'], function () {
+  return gulp.src(outDir + '/!(translationFingerprints).json')
     .pipe(rename({
-      extname: "",
+      extname: '',
     }))
     .pipe(hash({
       algorithm: 'md5',
@@ -130,39 +130,39 @@ gulp.task(taskName, ['build-merged-translations'], function() {
       template: '<%= name %>-<%= hash %>.json',
     }))
     .pipe(hash.manifest('translationFingerprints.json'))
-    .pipe(transform(function(data, file) {
-      Object.keys(data).map(function(key, index) {
-        data[key] = {fingerprint: data[key]};
+    .pipe(transform(function (data) {
+      Object.keys(data).forEach((key) => {
+        data[key] = { fingerprint: data[key] };
       });
       return data;
     }))
-    .pipe(gulp.dest('build-temp'));
+    .pipe(gulp.dest(outDir));
 });
 tasks.push(taskName);
 
-var taskName = 'build-translations';
-gulp.task(taskName, ['build-translation-fingerprints'], function() {
+taskName = 'build-translations';
+gulp.task(taskName, ['build-translation-fingerprints'], function () {
   return gulp.src([
-      'src/translations/translationMetadata.json',
-      'build-temp/translationFingerprints.json',
-    ])
+    'src/translations/translationMetadata.json',
+    outDir + '/translationFingerprints.json',
+  ])
     .pipe(merge({}))
-    .pipe(transform(function(data, file) {
-      const new_data = {};
+    .pipe(transform(function (data) {
+      const newData = {};
       Object.entries(data).forEach(([key, value]) => {
         // Filter out empty strings or other falsey values before merging
-        if (data[key]['nativeName']) {
-          new_data[key] = data[key];
+        if (data[key].nativeName) {
+          newData[key] = data[key];
         } else {
-            console.warn(`Skipping language ${key}. Native name was not translated.`);
+          console.warn(`Skipping language ${key}. Native name was not translated.`);
         }
-        if (data[key]) new_data[key] = value;
+        if (data[key]) newData[key] = value;
       });
-      return new_data;
+      return newData;
     }))
     .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
-    .pipe(gulp.dest('build-temp'));
+    .pipe(gulp.dest(outDir));
 });
 tasks.push(taskName);
 
