@@ -16,7 +16,7 @@
       paper-card {
         display: block;
       }
-      .account {
+      .account-row {
         display: flex;
         padding: 0 16px;
       }
@@ -28,6 +28,19 @@
         margin-top: 24px;
         text-align: center;
       }
+      .nowrap {
+        white-space: nowrap;;
+      }
+      .wrap {
+        white-space: normal;
+      }
+      .status {
+        padding: 16px;
+      }
+      paper-button {
+        color: var(--primary-color);
+        font-weight: 500;
+      }
     </style>
     <hass-subpage title='Cloud Account'>
       <div class='content'>
@@ -36,22 +49,28 @@
         >
           <span slot='header'>Home Assistant Cloud</span>
           <span slot='introduction'>
-            The Home Assistant Cloud allows you to opt-in to functions that will bring your Home Assistant experience to the next level.
-
-            <p><i>
-              Home Assistant will never share information with our cloud without your prior permission.
-            </i></p>
+            Thank you for supporting Home Assistant. It's because of people like you that we are able to run this project and make a great home automation experience for everyone. Thank you!
           </span>
 
           <paper-card>
-            <div class='account'>
-              <paper-item-body>
+            <div class='account-row'>
+              <paper-item-body two-line>
                 [[account.email]]
+                <div secondary class='wrap'>
+                  <span class='nowrap'>Subscription expires on </span>
+                  <span class='nowrap'>[[_formatExpiration(account.sub_exp)]]</span>
+                </div>
               </paper-item-body>
               <paper-button
-                class='warning'
                 on-tap='handleLogout'
               >Sign out</paper-button>
+            </div>
+
+            <div class='account-row'>
+              <paper-item-body>
+                Cloud connection status
+              </paper-item-body>
+              <div class='status'>[[account.cloud]]</div>
             </div>
           </paper-card>
 
@@ -75,6 +94,10 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(Polymer.Element
 
   handleLogout() {
     this.hass.callApi('post', 'cloud/logout').then(() => this.fire('ha-account-refreshed', { account: null }));
+  }
+
+  _formatExpiration(date) {
+    return window.hassUtil.formatDateTime(new Date(date));
   }
 }
 
