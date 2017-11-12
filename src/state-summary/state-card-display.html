@@ -75,9 +75,9 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) 
           stateObj._stateDisplay = window.hassUtil.formatDateTime(date);
         }
       } else if (domain === 'zwave' && ['initializing', 'dead'].includes(stateObj.state)) {
-        stateObj._stateDisplay = haLocalize(`state.${domain}`, stateObj.state, 'query_stage', stateObj.attributes.query_stage);
+        stateObj._stateDisplay = haLocalize(`state.${domain}.query_stage`, stateObj.state, 'query_stage', stateObj.attributes.query_stage);
       } else {
-        stateObj._stateDisplay = haLocalize(`state.${domain}`, stateObj.state);
+        stateObj._stateDisplay = haLocalize(`state.${domain}.default`, stateObj.state);
       }
       // Fall back to default or raw state if nothing else matches.
       stateObj._stateDisplay = stateObj._stateDisplay

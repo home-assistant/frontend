@@ -180,10 +180,16 @@
       "on": "[%key:state::default::on%]"
     },
     "zwave": {
-      "initializing": "Initializing ({query_stage})",
-      "dead": "Dead ({query_stage})",
-      "sleeping": "Sleeping",
-      "ready": "Ready"
+      "default": {
+        "initializing": "Initializing",
+        "dead": "Dead",
+        "sleeping": "Sleeping",
+        "ready": "Ready"
+      },
+      "query_stage": {
+        "initializing": "[%key:state::zwave::default::initializing%] ({query_stage})",
+        "dead": "[%key:state::zwave::default::dead%] ({query_stage})"
+      }
     }
   },
   "state_badge": {
