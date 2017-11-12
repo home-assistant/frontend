@@ -49,9 +49,9 @@
 
     _fetchData: function () {
       this.hass.callApi('get', 'dominos')
-      .then(function (items) {
-        this.items = items;
-      }.bind(this));
+        .then(function (items) {
+          this.items = items;
+        }.bind(this));
     },
 
   });
