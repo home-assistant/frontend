@@ -109,12 +109,11 @@
 
   /* eslint-enable no-bitwise */
 
-  addGetter('primaryText', function () {
-    return this.stateObj.attributes.media_title ||
-           window.hassUtil.computeStateState(this.stateObj);
+  addGetter('primaryTitle', function () {
+    return this.stateObj.attributes.media_title;
   });
 
-  addGetter('secondaryText', function () {
+  addGetter('secondaryTitle', function () {
     if (this.isMusic) {
       return this.stateObj.attributes.media_artist;
     } else if (this.isTVShow) {

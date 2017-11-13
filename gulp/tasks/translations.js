@@ -14,10 +14,10 @@ const outDir = 'build-translations';
 const tasks = [];
 
 function recursiveFlatten(prefix, data) {
-  var output = {};
+  let output = {};
   Object.keys(data).forEach(function (key) {
     if (typeof (data[key]) === 'object') {
-      output = Object.assign({}, output, recursiveFlatten(key + '.', data[key]));
+      output = Object.assign({}, output, recursiveFlatten(prefix + key + '.', data[key]));
     } else {
       output[prefix + key] = data[key];
     }
@@ -29,16 +29,68 @@ function flatten(data) {
   return recursiveFlatten('', data);
 }
 
-let taskName = 'build-merged-translations';
+/**
+ * Replace Lokalise key placeholders with their actual values.
+ *
+ * We duplicate the behavior of Lokalise here so that placeholders can
+ * be included in src/translations/en.json, but still be usable while
+ * developing locally.
+ *
+ * @link https://docs.lokalise.co/article/KO5SZWLLsy-key-referencing
+ */
+const re_key_reference = /\[%key:([^%]+)%\]/;
+function lokalise_transform (data, original) {
+  const output = {};
+  Object.entries(data).forEach(([key, value]) => {
+    if (value instanceof Object) {
+      output[key] = lokalise_transform(value, original);
+    } else {
+      output[key] = value.replace(re_key_reference, (match, key) => {
+        const replace = key.split('::').reduce((tr, k) => tr[k], original);
+        if (typeof replace !== 'string') {
+          throw Error(`Invalid key placeholder ${key} in src/translations/en.json`);
+        }
+        return replace;
+      });
+    }
+  });
+  return output;
+}
+
+/**
+ * This task will build a master translation file, to be used as the base for
+ * all languages. This starts with src/translations/en.json, and replaces all
+ * Lokalise key placeholders with their target values. Under normal circumstances,
+ * this will be the same as translations/en.json However, we build it here to
+ * facilitate both making changes in development mode, and to ensure that the
+ * project is buildable immediately after merging new translation keys, since
+ * the Lokalise update to translations/en.json will not happen immediately.
+ */
+let taskName = 'build-master-translation';
 gulp.task(taskName, function () {
+  return gulp.src('src/translations/en.json')
+    .pipe(transform(function(data, file) {
+      return lokalise_transform(data, data);
+    }))
+    .pipe(rename('translation-master.json'))
+    .pipe(gulp.dest(outDir));
+});
+tasks.push(taskName);
+
+taskName = 'build-merged-translations';
+gulp.task(taskName, ['build-master-translation'], function () {
   return gulp.src(inDir + '/*.json')
-    .pipe(foreach(function (stream, file) {
-      // For each language generate a merged json file. It begins with en.json as
-      // a failsafe for untranslated strings, and merges all parent tags into one
-      // file for each specific subtag
+    .pipe(foreach(function(stream, file) {
+      // For each language generate a merged json file. It begins with the master
+      // translation as a failsafe for untranslated strings, and merges all parent
+      // tags into one file for each specific subtag
+      //
+      // TODO: This is a naive interpretation of BCP47 that should be improved.
+      //       Will be OK for now as long as we don't have anything more complicated
+      //       than a base translation + region.
       const tr = path.basename(file.history[0], '.json');
       const subtags = tr.split('-');
-      const src = [inDir + '/en.json']; // Start with en as a fallback for missing translations
+      const src = [outDir + '/translation-master.json'];
       for (let i = 1; i <= subtags.length; i++) {
         const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
