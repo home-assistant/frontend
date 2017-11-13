@@ -118,6 +118,11 @@ class MoreInfoConfigurator extends Polymer.Element {
         computed: 'computeIsConfiguring(stateObj)',
       },
 
+      isConfiguringOverride: {
+        type: Boolean,
+        value: false,
+      },
+
       fieldInput: {
         type: Object,
         value: function () { return {}; },
@@ -130,7 +135,7 @@ class MoreInfoConfigurator extends Polymer.Element {
   }
 
   computeIsConfiguring(stateObj) {
-    return Boolean(stateObj.attributes.is_configuring);
+    return stateObj.attributes.is_configuring || this.isConfiguringOverride;
   }
 
   fieldChanged(ev) {
@@ -144,14 +149,14 @@ class MoreInfoConfigurator extends Polymer.Element {
       fields: this.fieldInput,
     };
 
-    this.attributes.is_configuring = true;
+    this.isConfiguringOverride = true;
 
     this.hass.callService('configurator', 'configure', data).then(
       function () {
-        this.attributes.is_configuring = false;
+        this.isConfiguringOverride = false;
       }.bind(this),
       function () {
-        this.attributes.is_configuring = false;
+        this.isConfiguringOverride = false;
       }.bind(this)
     );
   }
