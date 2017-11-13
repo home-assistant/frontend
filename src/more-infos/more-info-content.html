@@ -25,15 +25,15 @@ class MoreInfoContent extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      stateObj: {
-        type: Object,
-        observer: 'stateObjChanged',
-      },
+      hass: Object,
+      stateObj: Object,
     };
+  }
+
+  static get observers() {
+    return [
+      'stateObjChanged(stateObj, hass)',
+    ];
   }
 
   constructor() {
@@ -41,18 +41,16 @@ class MoreInfoContent extends Polymer.Element {
     this.style.display = 'block';
   }
 
-  stateObjChanged(stateObj) {
-    var rootEl;
-    if (!stateObj) {
+  stateObjChanged(stateObj, hass) {
+    if (!stateObj || !hass) {
       // If root has lastChild, set 'isVisible' attribute of that child to false.
-      rootEl = Polymer.dom(this);
-      if (rootEl.lastChild) {
-        rootEl.lastChild.isVisible = false;
+      if (this.lastChild) {
+        this.lastChild.isVisible = false;
       }
     } else {
       window.hassUtil.dynamicContentUpdater(
         this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
-        { hass: this.hass, stateObj: stateObj, isVisible: true }
+        { hass: hass, stateObj: stateObj, isVisible: true }
       );
     }
   }
