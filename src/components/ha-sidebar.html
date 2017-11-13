@@ -106,19 +106,19 @@
     <paper-listbox attr-for-selected='data-panel' selected='[[route.panel]]'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
-        <span class='item-text'>{{localize('panel', 'states')}}</span>
+        <span class='item-text'>[[haLocalize('panel', 'states')]]</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
         <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_path]]'>
           <iron-icon slot="item-icon" icon='[[item.icon]]'></iron-icon>
-          <span class='item-text'>{{localize('panel', item.title)}}</span>
+          <span class='item-text'>[[computePanelName(haLocalize, item)]]</span>
         </paper-icon-item>
       </template>
 
       <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
         <iron-icon slot="item-icon" icon='mdi:exit-to-app'></iron-icon>
-        <span class='item-text'>{{localize('panel', 'log_out')}}</span>
+        <span class='item-text'>[[haLocalize('panel', 'log_out')]]</span>
       </paper-icon-item>
     </paper-listbox>
 
@@ -212,6 +212,10 @@ class HaSidebar extends
 
   _mqttLoaded(hass) {
     return hass.config.core.components.indexOf('mqtt') !== -1;
+  }
+
+  computePanelName(haLocalize, panel) {
+    return haLocalize('panel', panel.title) || panel.title;
   }
 
   computePanels(hass) {
