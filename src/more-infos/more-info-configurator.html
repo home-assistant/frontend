@@ -144,24 +144,13 @@ class MoreInfoConfigurator extends Polymer.Element {
 
       fieldInput: {
         type: Object,
-        computed: 'setDefaultFieldInputs(stateObj)',
+        value: function () { return {}; },
       },
     };
   }
 
   computeIsConfigurable(stateObj) {
     return stateObj.state === 'configure';
-  }
-
-  setDefaultFieldInputs(stateObj) {
-    var values = {};
-    stateObj.attributes.fields.forEach(function (field) {
-      if (typeof field.value === 'undefined') {
-        return; // skip if no default value
-      }
-      values[field.id] = field.value;
-    });
-    return values;
   }
 
   fieldChanged(ev) {
