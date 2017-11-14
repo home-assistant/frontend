@@ -9,6 +9,7 @@
     "panels/dev-service/ha-panel-dev-service.html",
     "panels/dev-state/ha-panel-dev-state.html",
     "panels/dev-template/ha-panel-dev-template.html",
+    "panels/dominos/ha-panel-dominos.html",
     "panels/hassio/ha-panel-hassio.html",
     "panels/history/ha-panel-history.html",
     "panels/iframe/ha-panel-iframe.html",

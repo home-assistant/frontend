@@ -1,0 +1,63 @@
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+
+<dom-module id='ha-panel-dominos'>
+  <template>
+    <style>
+    p {
+      font-weight: bold;
+    }
+    .product-group {
+      padding: 1em;
+    }
+  </style>
+  <app-header-layout has-scrolling-region>
+    <app-header slot="header" fixed>
+      <app-toolbar>
+        <div main-title>Nearest Store Product List</div>
+      </app-toolbar>
+    </app-header>
+
+    <div class='content'>
+      <template is='dom-repeat' items='[[items]]'>
+        <div class="product-group">
+          <h3>{{item.name}}</h3>
+          <div>Variants: {{item.variants}}</div>
+        </div>
+      </template>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+
+  Polymer({
+    is: 'ha-panel-dominos',
+
+    properties: {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      items: {
+        type: Array,
+        value: [],
+      },
+    },
+
+    attached: function () {
+      this._fetchData = this._fetchData.bind(this);
+
+      this._fetchData();
+    },
+
+    _fetchData: function () {
+      this.hass.callApi('get', 'dominos')
+        .then(function (items) {
+          this.items = items;
+        }.bind(this));
+    },
+
+  });
+
+</script>
