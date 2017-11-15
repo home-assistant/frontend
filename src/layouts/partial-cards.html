@@ -7,7 +7,6 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../bower_components/app-layout/app-scroll-effects/effects/waterfall.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -19,6 +18,8 @@
 <link rel="import" href="../components/ha-start-voice-button.html">
 <link rel="import" href="../components/ha-cards.html">
 
+<link rel="import" href="./ha-app-layout.html">
+
 <dom-module id="partial-cards">
   <template>
     <style include="iron-flex iron-positioning ha-style">
@@ -28,7 +29,7 @@
         -moz-user-select: none;
       }
 
-      app-header-layout {
+      ha-app-layout {
         background-color: var(--secondary-background-color, #E5E5E5);
       }
 
@@ -44,7 +45,7 @@
       data="{{routeData}}"
       active="{{routeMatch}}"
     ></app-route>
-    <app-header-layout has-scrolling-region id='layout'>
+    <ha-app-layout has-scrolling-region id='layout'>
       <app-header effects="waterfall" condenses fixed slot="header">
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
@@ -127,7 +128,7 @@
         </template>
 
       </iron-pages>
-    </app-header-layout>
+    </ha-app-layout>
   </template>
 
 </dom-module>
