@@ -37,7 +37,7 @@ async function buildHassioPanel(es6) {
   });
 
   return minifyStream(stream, es6)
-    .pipe(rename('hassio-main.html'))
+    .pipe(rename(`hassio-main-${es6 ? 'latest' : 'es5'}.html`))
     .pipe(gulp.dest('build-temp'));
 }
 
