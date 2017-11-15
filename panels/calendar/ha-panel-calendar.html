@@ -33,13 +33,13 @@
           <paper-card heading='[[platform.name]]'>
             <div class='card-content'>
               <template is='dom-if' if='[[!platform.events]]'>
-                No Events?
+                Calendar has no events
               </template>
-              <template is='dom-repeat'items='[[platform.events]]' as='event' sort="sortEvents">
+              <template is='dom-repeat' items='[[platform.events]]' as='event' sort="sortEvents">
                 <paper-item disabled='[[eventPassed(event)]]' class$="[[checkActive(event)]]">
                   <paper-item-body style="width:100%" two-line>
                     <div class="row">
-                      <div>[[event.text]]</div>
+                      <div>[[event.message]]</div>
                     </div>
                     <div secondary>
                       <span class="date">[[event.start]] - [[event.end]]</span>
