@@ -79,7 +79,7 @@
       }
 
       if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(this);
+        this.chartEngine = new window.google.visualization.ComboChart(this);
       }
 
       if (deviceStates.length === 0) {
@@ -105,6 +105,12 @@
           axis: 'horizontal',
           maxZoomIn: 0.1,
         },
+        seriesType: 'line',
+        // The "heating" series uses steppedArea to shade the area below the current
+        // temperature when the thermostat is calling for heat. It would be nice to
+        // apply this config in a more direct way than by column index, but it
+        // doesn't seem to be possible.
+        series: { 1: { type: 'steppedArea' } }
       };
 
       if (this.isSingleDevice) {
@@ -146,6 +152,7 @@
         var hasTargetRange;
         var processState;
         var noInterpolations;
+        var series;
         dataTable.addColumn({ type: 'datetime', id: 'Time' });
 
         function pushData(values, noInterpolationValues) {
@@ -175,33 +182,41 @@
           }, false);
 
           dataTable.addColumn('number', name + ' current temperature');
-
+          dataTable.addColumn('number', name + ' heating');
           if (hasTargetRange) {
             dataTable.addColumn('number', name + ' target temperature high');
             dataTable.addColumn('number', name + ' target temperature low');
-
-            noInterpolations = [false, true, true];
-
-            processState = function (state) {
-              var curTemp = saveParseFloat(state.attributes.current_temperature);
-              var targetHigh = saveParseFloat(state.attributes.target_temp_high);
-              var targetLow = saveParseFloat(state.attributes.target_temp_low);
-              pushData(
-                [new Date(state.last_changed), curTemp, targetHigh, targetLow],
-                noInterpolations
-              );
-            };
           } else {
             dataTable.addColumn('number', name + ' target temperature');
+          }
 
+          processState = function (state) {
+            var curTemp = saveParseFloat(state.attributes.current_temperature);
+            // Drawing the 'heating' area up to the current temp should keep it from
+            // overlapping but avoid any weird gaps or range mismatches
+            var heating = state.attributes.operation === 'heat' ? curTemp : null;
+
+            series = [curTemp, heating];
             noInterpolations = [false, true];
 
-            processState = function (state) {
-              var curTemp = saveParseFloat(state.attributes.current_temperature);
+            if (hasTargetRange) {
+              var targetHigh = saveParseFloat(state.attributes.target_temp_high);
+              var targetLow = saveParseFloat(state.attributes.target_temp_low);
+
+              series = series.concat([targetHigh, targetLow]);
+              noInterpolations = noInterpolations.concat([true, true]);
+            } else {
               var target = saveParseFloat(state.attributes.temperature);
-              pushData([new Date(state.last_changed), curTemp, target], noInterpolations);
-            };
-          }
+
+              series.push(target);
+              noInterpolations.push(true);
+            }
+
+            pushData(
+              [new Date(state.last_changed)].concat(series),
+              noInterpolations
+            );
+          };
 
           states.states.forEach(processState);
         } else {
