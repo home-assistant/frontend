@@ -42,7 +42,7 @@ window.hassUtil.attributeClassNames = function (stateObj, attributes) {
   if (!stateObj) return '';
   return attributes.map(function (attribute) {
     return attribute in stateObj.attributes ? 'has-' + attribute : '';
-  }).join(' ');
+  }).filter(attr => attr !== '').join(' ');
 };
 
 // Expects featureClassNames to be an object mapping feature-bit -> className
