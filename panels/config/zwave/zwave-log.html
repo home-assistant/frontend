@@ -40,9 +40,7 @@
         <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
       </div>
       <div class='help-text'>
-        <template is='dom-repeat' items='[[ozwLogs]]' as='state'>
-             <pre>[[state]]</pre>
-        </template>
+        <pre>[[ozwLogs]]</pre>
       </div>
       </paper-card>
     </ha-config-section>
@@ -65,8 +63,8 @@ class OzwLog extends Polymer.Element {
       },
 
       ozwLogs: {
-        type: Array,
-        value: ['Refresh to pull log']
+        type: String,
+        value: 'Refresh to pull log'
       },
 
       numLogLines: {
@@ -77,7 +75,7 @@ class OzwLog extends Polymer.Element {
   }
 
   refreshLog() {
-    this.ozwLogs = ['Loading ozw log...'];
+    this.ozwLogs = 'Loading ozw log...';
     this.hass.callApi('GET', 'zwave/ozwlog/' + this.numLogLines)
       .then((info) => {
         this.ozwLogs = info;
