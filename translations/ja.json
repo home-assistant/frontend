@@ -1,1 +1,1 @@
-{"panel":{"config":"設定","states":"状態","map":"地図","logbook":"ログブック","history":"履歴","log_out":"ログアウト","mailbox":"メールボックス","shopping_list":"買い物リスト"}}
+{"panel":{"config":"設定","states":"状態","map":"地図","logbook":"ログブック","history":"履歴","log_out":"ログアウト","mailbox":"メールボックス","shopping_list":"買い物リスト"},"state":{"default":{"unknown":"不明","unavailable":"利用不可"},"alarm_control_panel":{"triggered":"トリガー"},"media_player":{"idle":"アイドル"}}}
