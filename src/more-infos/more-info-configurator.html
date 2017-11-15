@@ -71,23 +71,23 @@
         </p>
 
         <template is='dom-repeat' items='[[stateObj.attributes.fields]]'>
-          <template is='dom-if' if='[[fieldIsCheckbox(item.type)]]'>
+
+          <template is='dom-if' if='[[fieldIs(item.type, "checkbox")]]'>
             <paper-checkbox
               label='[[item.name]]'
               name='[[item.id]]'
-              type='[[item.type]]'
-              checked='[[item.value]]'
+              value='[[item.value]]'
               on-change='checkboxChanged'
             >
               [[item.name]]
             </paper-checkbox>
           </template>
-          <template is='dom-if' if='[[fieldIsString(item.type)]]'>
+
+          <template is='dom-if' if='[[fieldIs(item.type, "string")]]'>
             <paper-input
               label='[[item.name]]'
               name='[[item.id]]'
               type='[[item.type]]'
-              value='[[item.value]]'
               on-change='fieldChanged'
             ></paper-input>
           </template>
@@ -115,8 +115,7 @@
 
 <script>
 
-const CHECKBOX_TYPES = ['checkbox', 'boolean', 'toggle'];
-const NON_STRING_TYPES = CHECKBOX_TYPES;
+const NON_STRING_FIELD_TYPES = ['checkbox'];
 
 class MoreInfoConfigurator extends Polymer.Element {
   static get is() { return 'more-info-configurator'; }
@@ -163,13 +162,13 @@ class MoreInfoConfigurator extends Polymer.Element {
     this.fieldInput[el.name] = el.checked;
   }
 
-
-  fieldIsCheckbox(type) {
-    return (CHECKBOX_TYPES.includes(type));
-  }
-
-  fieldIsString(type) {
-    return !(NON_STRING_TYPES.includes(type));
+  fieldIs(type, condition) {
+    if (type === condition) {
+      return true;
+    } else if (condition === 'string') {
+      return !(NON_STRING_FIELD_TYPES.includes(type));
+    }
+    return false;
   }
 
   submitClicked() {
