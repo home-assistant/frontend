@@ -72,7 +72,7 @@ gulp.task(taskName, function () {
     .pipe(transform(function(data, file) {
       return lokalise_transform(data, data);
     }))
-    .pipe(rename('translation-master.json'))
+    .pipe(rename('translationMaster.json'))
     .pipe(gulp.dest(outDir));
 });
 tasks.push(taskName);
@@ -90,7 +90,7 @@ gulp.task(taskName, ['build-master-translation'], function () {
       //       than a base translation + region.
       const tr = path.basename(file.history[0], '.json');
       const subtags = tr.split('-');
-      const src = [outDir + '/translation-master.json'];
+      const src = [outDir + '/translationMaster.json'];
       for (let i = 1; i <= subtags.length; i++) {
         const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
@@ -119,7 +119,7 @@ tasks.push(taskName);
 
 taskName = 'build-translation-fingerprints';
 gulp.task(taskName, ['build-merged-translations'], function () {
-  return gulp.src(outDir + '/!(translationFingerprints).json')
+  return gulp.src(outDir + '/!(translationFingerprints|translationMaster).json')
     .pipe(rename({
       extname: '',
     }))
