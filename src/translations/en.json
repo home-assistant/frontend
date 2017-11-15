@@ -200,9 +200,9 @@
     "alarm_control_panel": {
       "armed": "Armed",
       "disarmed": "Disarm",
-      "armed_home": "Armed",
-      "armed_away": "Armed",
-      "armed_night": "Armed",
+      "armed_home": "[%key:state_badge::alarm_control_panel::armed%]",
+      "armed_away": "[%key:state_badge::alarm_control_panel::armed%]",
+      "armed_night": "[%key:state_badge::alarm_control_panel::armed%]",
       "pending": "Pend",
       "arming": "Arming",
       "disarming": "Disarm",
