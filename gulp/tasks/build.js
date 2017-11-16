@@ -58,7 +58,7 @@ function build(es6) {
     .pipe(filter(['**', '!src/entrypoint.html']))
     .pipe(gulp.dest(es6 ? 'build' : 'build-es5'));
 }
-gulp.task('build_es5', ['ru_all_es5', 'build-translations'], () => build(/* es6= */ false));
+gulp.task('build_es5', ['ru_all', 'ru_all_es5', 'build-translations'], () => build(/* es6= */ false));
 gulp.task('build_es6', ['ru_all', 'build-translations'], () => build(/* es6= */ true));
 
 gulp.task('build', ['build_es5', 'build_es6']);
