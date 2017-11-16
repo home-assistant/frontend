@@ -81,17 +81,17 @@
     }
 
     computeClass(stateObj, sensor) {
-      if (typeof stateObj.attributes[sensor] === 'undefined') {
-        return 'missing';
+      if (sensor in stateObj.attributes) {
+        const prob = stateObj.attributes.problem;
+        return (prob.indexOf(sensor) === -1) ? 'ok' : 'problem';
       }
-      var prob = stateObj.attributes.problem;
-      return (prob.indexOf(sensor) === -1) ? 'ok' : 'problem';
+      return 'missing';
     }
 
     computeIcon(stateObj, sensor) {
       var icon = _ICONS[sensor];
-      if (sensor === 'battery' && typeof stateObj.attributes.battery !== 'undefined') {
-        var level = stateObj.attributes.battery;
+      if ((sensor === 'battery') && (sensor in stateObj.attributes)) {
+        const level = stateObj.attributes.battery;
         if (level <= 5) {
           icon += '-alert';
         } else if (level < 95) {
@@ -102,21 +102,24 @@
     }
 
     computeValue(stateObj, sensor) {
-      if (typeof stateObj.attributes[sensor] === 'undefined') {
-        return '-';
+      if ((sensor === 'brightness') && ('max_brightness' in stateObj.attributes)) {
+        return stateObj.attributes.max_brightness;
       }
-      return stateObj.attributes[sensor];
+      if (sensor in stateObj.attributes) {
+        return stateObj.attributes[sensor];
+      }
+      return '-';
     }
 
     computeUOM(stateObj, sensor) {
-      if (typeof stateObj.attributes.unit_of_measurement[sensor] === 'undefined') {
-        return '';
+      if (sensor in stateObj.attributes.unit_of_measurement_dict) {
+        return stateObj.attributes.unit_of_measurement_dict[sensor];
       }
-      return stateObj.attributes.unit_of_measurement[sensor];
+      return '';
     }
 
     computeDisabled(stateObj, sensor) {
-      return (typeof stateObj.attributes[sensor] === 'undefined');
+      return (!(sensor in stateObj.attributes));
     }
 
     showSensorHistory(ev) {
