@@ -6,6 +6,7 @@ const rollupConfigEs6 = require('../../rollup.config-es6');
 gulp.task('run_rollup_es5', () => gulp.src([
   'js/core.js',
   'js/compatibility.js',
+  'js/util.js',
   'js/automation-editor/automation-editor.js',
   'js/script-editor/script-editor.js',
   'demo_data/demo_data.js',
@@ -16,6 +17,7 @@ gulp.task('run_rollup_es5', () => gulp.src([
 gulp.task('run_rollup', () => gulp.src([
   'js/core.js',
   'js/automation-editor/automation-editor.js',
+  'js/util.js',
   'js/script-editor/script-editor.js',
   'demo_data/demo_data.js',
 ])
