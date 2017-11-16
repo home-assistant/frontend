@@ -7,10 +7,11 @@
     <style>
       canvas {
         cursor: crosshair;
+        width: 100%;
       }
     </style>
 
-    <canvas width='[[width]]' height='[[height]]' id='canvas'></canvas>
+    <canvas id='canvas'></canvas>
   </template>
 </dom-module>
 
@@ -98,55 +99,138 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
         ev.clientY < rect.top || ev.clientY >= rect.top + rect.height) {
       return;
     }
+    // adjust for a resized canvas:
+    var elementX = ev.clientX - rect.left;
+    var canvasX = (500 / rect.width) * elementX;
+    var elementY = ev.clientY - rect.top;
+    var canvasY = (500 / rect.height) * elementY;
 
-    this.onColorSelect(ev.clientX - rect.left, ev.clientY - rect.top);
+    this.onColorSelect(canvasX, canvasY);
   }
 
   onColorSelect(x, y) {
-    var data = this.context.getImageData(x, y, 1, 1).data;
-
-    this.setColor({ r: data[0], g: data[1], b: data[2] });
+    var color = this.getColor(x, y);
+    console.log(color);
+    this.setColor(color);
   }
 
   setColor(rgb) {
     this.color = rgb;
-
     this.fire('colorselected', { rgb: this.color });
   }
 
+  getAngle(dX, dY) {
+    var radians = Math.atan2(-dY, -dX); // radians from the left edge, clockwise = positive
+    var degrees = Math.round((radians / Math.PI) * 180) + 180; // degrees, clockwise from right
+    return degrees;
+  }
+
+  getDistance(dX, dY) {
+    return Math.sqrt((dX * dX) + (dY * dY));
+  }
+
+  getColor(x, y) {
+    var width = 500;
+    var height = 500;
+    var cX = width / 2;
+    var cY = height / 2;
+    var dX = x - cX; // deltaX )
+    var dY = y - cY; // deltaY
+    var radius = (500 - 30) / 2;
+
+    var hue = this.getAngle(dX, dY); // degrees, clockwise from right
+    var relativeDistance = this.getDistance(dX, dY) / radius; // edge of radius = 1
+    var sat = Math.min(relativeDistance, 1); // Distance from center
+    return this.HSVtoRGB(hue, sat, 1);
+  }
+
+
   drawGradient() {
-    var style;
-    var width;
-    var height;
-    var colorGradient;
-    var bwGradient;
-    if (!this.width || !this.height) {
-      style = getComputedStyle(this);
+    var width = 500;
+    var height = 500;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    var context = this.context;
+    var x = width / 2;
+    var y = height / 2;
+    var radius = (Math.min(width, height) - 30) / 2;
+    var counterClockwise = false;
+
+    function drawCircle() {
+      for (var angle = 0; angle <= 360; angle += 1) {
+        var startAngle = (angle - 2) * (Math.PI / 180);
+        var endAngle = angle * (Math.PI / 180);
+        context.beginPath();
+        context.moveTo(x, y);
+        context.arc(x, y, radius, startAngle, endAngle, counterClockwise);
+        context.closePath();
+        var gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+        gradient.addColorStop(0.1, 'hsl(' + angle + ', 100%, 100%)');
+        gradient.addColorStop(0.55, 'hsl(' + angle + ', 100%, 80%)');
+        gradient.addColorStop(0.95, 'hsl(' + angle + ', 100%, 51%)');
+        context.fillStyle = gradient;
+        context.fill();
+      }
     }
-    width = this.width || parseInt(style.width, 10);
-    height = this.height || parseInt(style.height, 10);
 
-    colorGradient = this.context.createLinearGradient(0, 0, width, 0);
-    colorGradient.addColorStop(0, 'rgb(255,0,0)');
-    colorGradient.addColorStop(0.16, 'rgb(255,0,255)');
-    colorGradient.addColorStop(0.32, 'rgb(0,0,255)');
-    colorGradient.addColorStop(0.48, 'rgb(0,255,255)');
-    colorGradient.addColorStop(0.64, 'rgb(0,255,0)');
-    colorGradient.addColorStop(0.80, 'rgb(255,255,0)');
-    colorGradient.addColorStop(1, 'rgb(255,0,0)');
-    this.context.fillStyle = colorGradient;
-    this.context.fillRect(0, 0, width, height);
+    function drawShadow() {
+      context.save();
+      context.beginPath();
+      context.arc(x, y, radius, 0, 2 * Math.PI, false);
+      context.shadowOffsetX = 3;
+      context.shadowOffsetY = 3;
+      context.shadowBlur = 14;
+      context.shadowColor = 'grey';
+      context.fillStyle = 'white';
+      context.fill();
+      context.restore();
+    }
 
-    bwGradient = this.context.createLinearGradient(0, 0, 0, height);
-    bwGradient.addColorStop(0, 'rgba(255,255,255,1)');
-    bwGradient.addColorStop(0.5, 'rgba(255,255,255,0)');
-    bwGradient.addColorStop(0.5, 'rgba(0,0,0,0)');
-    bwGradient.addColorStop(1, 'rgba(0,0,0,1)');
+    function drawBorder() {
+      context.beginPath();
+      context.arc(x, y, radius, 0, 2 * Math.PI, false);
+      context.lineWidth = 6;
+      context.strokeStyle = 'white';
+      context.stroke();
+    }
+    drawShadow();
+    drawCircle();
+    drawBorder();
+  }
 
-    this.context.fillStyle = bwGradient;
-    this.context.fillRect(0, 0, width, height);
+  /**
+  * modified from:
+  * http://axonflux.com/handy-rgb-to-hsl-and-rgb-to-hsv-color-model-c
+  * this takes h = hue (0-360), s = saturation (0-1), v = value (0-1)
+  */
+
+  /* eslint-disable one-var, no-mixed-operators, one-var-declaration-per-line */
+  HSVtoRGB(h, s, v) {
+    var r, g, b, i, f, p, q, t;
+    // if (arguments.length === 1) {
+    //   s = h.s; v = h.v; h = h.h;
+    // }
+    h = h / 360;
+    i = Math.floor(h * 6);
+    f = h * 6 - i;
+    p = v * (1 - s);
+    q = v * (1 - f * s);
+    t = v * (1 - (1 - f) * s);
+    /* eslint-disable default-case, no-sequences, no-unused-expressions */
+    switch (i % 6) {
+      case 0: r = v, g = t, b = p; break;
+      case 1: r = q, g = v, b = p; break;
+      case 2: r = p, g = v, b = t; break;
+      case 3: r = p, g = q, b = v; break;
+      case 4: r = t, g = p, b = v; break;
+      case 5: r = v, g = p, b = q; break;
+    }
+    return {
+      r: Math.round(r * 255),
+      g: Math.round(g * 255),
+      b: Math.round(b * 255)
+    };
   }
 }
-
 customElements.define(HaColorPicker.is, HaColorPicker);
 </script>

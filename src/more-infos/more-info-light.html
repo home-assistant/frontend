@@ -31,7 +31,7 @@
 
       ha-color-picker {
         display: block;
-        width: 250px;
+        width: 100%;
 
         max-height: 0px;
         overflow: hidden;
@@ -46,7 +46,7 @@
       }
 
       .has-rgb_color ha-color-picker {
-        max-height: 200px;
+        max-height: 500px;
       }
 
       paper-item {
@@ -89,7 +89,7 @@
           on-change='wvSliderChanged'></ha-labeled-slider>
       </div>
 
-      <ha-color-picker on-colorselected='colorPicked' height='200' width='250'>
+      <ha-color-picker on-colorselected='colorPicked' width='100%'>
       </ha-color-picker>
 
       <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
