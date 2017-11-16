@@ -17,7 +17,7 @@
     "dev-watch-es5": "npm run gulp watch_ru_all_es5 gen-service-worker-es5",
     "lint_js": "eslint src panels js --ext js,html",
     "lint_html": "ls -1 src/home-assistant.html panels/**/ha-panel-*.html | xargs polymer lint --input",
-    "mocha": "BABEL_ENV=mocha node_modules/.bin/mocha --recursive --compilers js:babel-core/register",
+    "mocha": "BABEL_ENV=mocha node_modules/.bin/mocha --recursive --compilers js:babel-core/register test-mocha",
     "test": "npm run lint_js && npm run lint_html && npm run mocha"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
