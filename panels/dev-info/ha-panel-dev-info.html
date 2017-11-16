@@ -2,6 +2,7 @@
 
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
@@ -24,7 +25,7 @@
       }
 
       .content {
-        padding: 16px;
+        padding: 16px 0px 16px 0;
       }
 
       .about {
@@ -45,8 +46,7 @@
       }
 
       .error-log-intro {
-        margin-top: 16px;
-        padding-top: 16px;
+        margin: 16px;
       }
 
       paper-icon-button {
@@ -87,7 +87,7 @@
         border-radius: 2px;
       }
 
-      @media all and (max-width: 450px) {
+      @media all and (max-width: 450px), all and (max-height: 500px) {
         paper-dialog {
           margin: 0;
           width: 100%;
@@ -193,14 +193,16 @@
     </app-header-layout>
 
     <paper-dialog with-backdrop id="showlog">
-      <h2>Log Details</h2>
-      <p>Timestamp: [[fullTimeStamp(selectedItem.timestamp)]]</p>
-      <template is='dom-if' if='[[selectedItem.message]]'>
-	<pre>[[selectedItem.message]]</pre>
-      </template>
-      <template is='dom-if' if='[[selectedItem.exception]]'>
-	<pre>[[selectedItem.exception]]</pre>
-      </template>
+      <paper-dialog-scrollable id="scrollable">
+        <h2>Log Details</h2>
+        <p>Timestamp: [[fullTimeStamp(selectedItem.timestamp)]]</p>
+        <template is='dom-if' if='[[selectedItem.message]]'>
+          <pre>[[selectedItem.message]]</pre>
+        </template>
+        <template is='dom-if' if='[[selectedItem.exception]]'>
+          <pre>[[selectedItem.exception]]</pre>
+        </template>
+      </paper-dialog-scrollable>
     </paper-dialog>
   </template>
 </dom-module>
@@ -253,6 +255,7 @@ class HaPanelDevInfo extends Polymer.Element {
 
   connectedCallback() {
     super.connectedCallback();
+    this.$.scrollable.dialogElement = this.$.showlog;
     this._fetchData();
   }
 
@@ -267,7 +270,7 @@ class HaPanelDevInfo extends Polymer.Element {
   }
 
   fullTimeStamp(date) {
-    return new Date(date*1000);
+    return new Date(date * 1000);
   }
 
   formatTime(date) {
