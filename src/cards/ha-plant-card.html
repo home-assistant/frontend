@@ -1,0 +1,128 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+<link rel='import' href='../components/ha-card.html'>
+<link rel='import' href='../util/hass-mixins.html'>
+
+<dom-module id="ha-plant-card">
+  <template>
+    <style>
+      .content {
+        padding: 0 32px 24px 32px;
+      }
+      paper-icon-button {
+        color: var(--paper-item-icon-color);
+      }
+      paper-icon-button[disabled], td.missing {
+        color: var(--disabled-text-color);
+      }
+      th {
+        width: 20%;
+      }
+      td {
+        text-align: center;
+        color: var(--primary-text-color);
+      }
+      td.problem {
+        color: var(--label-badge-red);
+        font-weight: bold;
+      }
+    </style>
+
+    <ha-card header='[[computeTitle(stateObj)]]'>
+      <div class='content'>
+          <table style='width:100%'>
+            <tr>
+              <template is='dom-repeat' items='{{sensors}}'>
+                <th>
+                  <paper-icon-button
+                    disabled$='[[computeDisabled(stateObj, item)]]'
+                    icon='[[computeIcon(stateObj, item)]]'
+                    on-tap='showSensorHistory'>
+                  </paper-icon-button>
+                </th>
+              </template>
+            </tr><tr>
+              <template is='dom-repeat' items='{{sensors}}'>
+                <td class$='[[computeClass(stateObj, item)]]'>
+                  [[computeValue(stateObj, item)]]<br>
+                  [[computeUOM(stateObj, item)]]
+                </td>
+              </template>
+            </tr>
+          </table>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+
+<script>
+{
+  var _SENSORS = ['moisture', 'temperature', 'brightness', 'conductivity', 'battery'];
+  var _CONFIG = {
+    moisture: { icon: 'mdi:water', uom: '%' },
+    temperature: { icon: 'mdi:thermometer', uom: '°C' },
+    brightness: { icon: 'mdi:white-balance-sunny', uom: 'lx' },
+    conductivity: { icon: 'mdi:emoticon-poop', uom: 'µS/cm' },
+    battery: { icon: 'mdi:battery', uom: '%' }
+  };
+
+  class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'ha-plant-card'; }
+    static get properties() {
+      return {
+        hass: Object,
+        stateObj: Object,
+        sensors: { type: Object, value: _SENSORS }
+      };
+    }
+
+    computeTitle(stateObj) {
+      return window.hassUtil.computeStateName(stateObj);
+    }
+
+    computeClass(stateObj, sensor) {
+      if (typeof stateObj.attributes[sensor] === 'undefined') {
+        return 'missing';
+      }
+      var prob = stateObj.attributes.problem;
+      return (prob.indexOf(sensor) === -1) ? 'ok' : 'problem';
+    }
+
+    computeIcon(stateObj, sensor) {
+      var icon = _CONFIG[sensor].icon;
+      if (sensor === 'battery' && typeof stateObj.attributes.battery !== 'undefined') {
+        var level = stateObj.attributes.battery;
+        if (level <= 5) {
+          icon += '-alert';
+        } else if (level < 95) {
+          icon += '-' + (Math.round((level / 10) - 0.01) * 10).toString();
+        }
+      }
+      return icon;
+    }
+
+    computeValue(stateObj, sensor) {
+      if (typeof stateObj.attributes[sensor] === 'undefined') {
+        return '-';
+      }
+      return stateObj.attributes[sensor];
+    }
+
+    computeUOM(stateObj, sensor) {
+      return _CONFIG[sensor].uom;
+    }
+
+    computeDisabled(stateObj, sensor) {
+      return (typeof stateObj.attributes[sensor] === 'undefined');
+    }
+
+    showSensorHistory(ev) {
+      ev.stopPropagation();
+      var sensorId = this.stateObj.attributes.sensors[ev.model.item];
+      this.fire('hass-more-info', { entityId: sensorId });
+    }
+  }
+
+  customElements.define(HaPlantCard.is, HaPlantCard);
+}
+</script>
