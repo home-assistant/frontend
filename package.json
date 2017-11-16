@@ -17,7 +17,7 @@
     "dev-watch-es5": "npm run gulp watch_ru_all_es5 gen-service-worker-es5",
     "lint_js": "eslint src panels js --ext js,html",
     "lint_html": "ls -1 src/home-assistant.html panels/**/ha-panel-*.html | xargs polymer lint --input",
-    "mocha": "BABEL_ENV=mocha node_modules/.bin/mocha --opts test-mocha/mocha.opts",
+    "mocha": "node_modules/.bin/mocha --opts test-mocha/mocha.opts",
     "test": "npm run lint_js && npm run lint_html && npm run mocha"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
@@ -67,6 +67,7 @@
     "polymer-cli": "^1.5.6",
     "preact": "^8.2.6",
     "pump": "^1.0.2",
+    "reify": "^0.12.3",
     "require-dir": "^0.3.2",
     "rollup": "^0.51.3",
     "rollup-plugin-babel": "^3.0.2",
@@ -82,12 +83,5 @@
   },
   "devDependencies": {
     "web-component-tester": "^6.4.0"
-  },
-  "babel": {
-    "env": {
-      "mocha": {
-        "presets": ["es2015"]
-      }
-    }
   }
 }
