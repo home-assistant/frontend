@@ -1,8 +1,10 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../../../src/resources/ha-style.html">
-<link rel="import" href="../../../src/resources/panel-imports.html">
+<link rel='import' href='../../../src/layouts/ha-app-layout.html'>
 
 <link rel="import" href="./ha-config-section-core.html">
 <!-- <link rel="import" href="./ha-config-section-group.html"> -->
@@ -28,7 +30,7 @@
       }
     </style>
 
-    <app-header-layout has-scrolling-region>
+    <ha-app-layout has-scrolling-region>
       <app-header slot="header" fixed>
         <app-toolbar>
           <paper-icon-button
@@ -78,7 +80,7 @@
           ></ha-config-section-hassbian>
         </template>
       </div>
-    </app-header-layout>
+    </ha-app-layout>
   </template>
 </dom-module>
 

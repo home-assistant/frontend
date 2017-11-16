@@ -1,5 +1,4 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
@@ -17,6 +16,7 @@
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
 <link rel='import' href='../../../src/util/hass-mixins.html'>
+<link rel='import' href='../../../src/layouts/ha-app-layout.html'>
 
 <link rel="import" href="../ha-config-section.html">
 
@@ -79,8 +79,7 @@
         margin-bottom: 0;
       }
     </style>
-
-    <app-header-layout has-scrolling-region>
+    <ha-app-layout has-scrolling-region>
       <app-header slot="header" fixed>
         <app-toolbar>
           <paper-icon-button
@@ -104,7 +103,7 @@
           on-tap='saveScript'
         ></paper-fab>
       </div>
-    </app-header-layout>
+    </ha-app-layout>
 
   </template>
 </dom-module>
