@@ -76,7 +76,7 @@ class OzwLog extends Polymer.Element {
 
   refreshLog() {
     this.ozwLogs = 'Loading ozw log...';
-    this.hass.callApi('GET', 'zwave/ozwlog/' + this.numLogLines)
+    this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this.numLogLines)
       .then((info) => {
         this.ozwLogs = info;
       });
