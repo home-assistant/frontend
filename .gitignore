@@ -1,6 +1,7 @@
 build/*
 build-temp/*
 build-es5/*
+build-temp-es5/*
 build-translations/*
 node_modules/*
 bower_components/*
