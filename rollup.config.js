@@ -41,6 +41,7 @@ const plugins = [
     values: {
       __DEV__: JSON.stringify(DEV),
       __DEMO__: JSON.stringify(DEMO),
+      __BUILD__: JSON.stringify('es5'),
     },
   }),
 ];

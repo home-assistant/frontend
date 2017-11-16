@@ -3,10 +3,11 @@ import * as HAWS from 'home-assistant-js-websocket';
 window.HAWS = HAWS;
 window.HASS_DEMO = __DEMO__;
 window.HASS_DEV = __DEV__;
+window.HASS_BUILD = __BUILD__;
 
 const init = window.createHassConnection = function (password) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const url = `${proto}://${window.location.host}/api/websocket${window.location.search}`;
+  const url = `${proto}://${window.location.host}/api/websocket?${window.HASS_BUILD}`;
   const options = {
     setupRetry: 10,
   };

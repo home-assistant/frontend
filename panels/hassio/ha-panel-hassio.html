@@ -39,7 +39,7 @@ class HaPanelHassio extends Polymer.Element {
   connectedCallback() {
     super.connectedCallback();
     if (!window.HASS_DEV) {
-      Polymer.importHref('/api/hassio/panel', null, () => {
+      Polymer.importHref(`/api/hassio/panel_${window.HASS_BUILD}`, null, () => {
         // eslint-disable-next-line
         alert('Failed to load the Hass.io panel from supervisor.');
       });
