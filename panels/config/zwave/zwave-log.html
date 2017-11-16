@@ -22,10 +22,6 @@
         padding-right: 24px;
         padding-bottom: 24px;
       }
-
-      .log-style {
-        line-height: 0.5;
-      }
     </style>
     <ha-config-section is-wide='[[isWide]]'>
       <span slot='header'>OZW Log</span>
@@ -43,10 +39,8 @@
       <div class="card-actions">
         <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
       </div>
-      <div class='log-style'>
-        <template is='dom-repeat' items='[[ozwLogs]]' as='state'>
-             <pre>[[state]]</pre>
-        </template>
+      <div class='help-text'>
+             <pre>[[ozwLogs]]</pre>
       </div>
       </paper-card>
     </ha-config-section>
@@ -69,8 +63,8 @@ class OzwLog extends Polymer.Element {
       },
 
       ozwLogs: {
-        type: Array,
-        value: ['Refresh to pull log']
+        type: String,
+        value: 'Refresh to pull log'
       },
 
       numLogLines: {
@@ -81,7 +75,7 @@ class OzwLog extends Polymer.Element {
   }
 
   refreshLog() {
-    this.ozwLogs = ['Loading ozw log...'];
+    this.ozwLogs = 'Loading ozw log...';
     this.hass.callApi('GET', 'zwave/ozwlog/' + this.numLogLines)
       .then((info) => {
         this.ozwLogs = info;
