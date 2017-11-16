@@ -99,12 +99,6 @@
         margin-left: 24px;
       }
 
-      app-header-layout > :not([slot]) {
-        /* app-header-layout creates a separate z-index stack for content.
-         * Using 'transform' will cause 'position: fixed' elements to reside
-         * in that stack too. */
-        transform: translate(0);
-      }
       h1 {
         @apply(--paper-font-title);
       }
