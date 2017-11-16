@@ -58,12 +58,12 @@
 <script>
 {
   var _SENSORS = ['moisture', 'temperature', 'brightness', 'conductivity', 'battery'];
-  var _CONFIG = {
-    moisture: { icon: 'mdi:water', uom: '%' },
-    temperature: { icon: 'mdi:thermometer', uom: '°C' },
-    brightness: { icon: 'mdi:white-balance-sunny', uom: 'lx' },
-    conductivity: { icon: 'mdi:emoticon-poop', uom: 'µS/cm' },
-    battery: { icon: 'mdi:battery', uom: '%' }
+  var _ICONS = {
+    moisture: 'mdi:water',
+    temperature: 'mdi:thermometer',
+    brightness: 'mdi:white-balance-sunny',
+    conductivity: 'mdi:emoticon-poop',
+    battery: 'mdi:battery'
   };
 
   class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
@@ -89,7 +89,7 @@
     }
 
     computeIcon(stateObj, sensor) {
-      var icon = _CONFIG[sensor].icon;
+      var icon = _ICONS[sensor];
       if (sensor === 'battery' && typeof stateObj.attributes.battery !== 'undefined') {
         var level = stateObj.attributes.battery;
         if (level <= 5) {
@@ -109,7 +109,10 @@
     }
 
     computeUOM(stateObj, sensor) {
-      return _CONFIG[sensor].uom;
+      if (typeof stateObj.attributes.unit_of_measurement[sensor] === 'undefined') {
+        return '';
+      }
+      return stateObj.attributes.unit_of_measurement[sensor];
     }
 
     computeDisabled(stateObj, sensor) {
