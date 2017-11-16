@@ -17,7 +17,8 @@
     "dev-watch-es5": "npm run gulp watch_ru_all_es5 gen-service-worker-es5",
     "lint_js": "eslint src panels js --ext js,html",
     "lint_html": "ls -1 src/home-assistant.html panels/**/ha-panel-*.html | xargs polymer lint --input",
-    "test": "npm run lint_js && npm run lint_html"
+    "mocha": "BABEL_ENV=mocha node_modules/.bin/mocha --recursive --compilers js:babel-core/register",
+    "test": "npm run lint_js && npm run lint_html && npm run mocha"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
@@ -58,6 +59,7 @@
     "home-assistant-js-websocket": "^1.1.2",
     "html-minifier": "^3.5.6",
     "merge-stream": "^1.0.1",
+    "mocha": "^4.0.1",
     "parse5": "^3.0.3",
     "polymer-analyzer": "^2.3.0",
     "polymer-build": "^2.1.0",
@@ -80,5 +82,12 @@
   },
   "devDependencies": {
     "web-component-tester": "^6.4.0"
+  },
+  "babel": {
+    "env": {
+      "mocha": {
+        "presets": ["es2015"]
+      }
+    }
   }
 }
