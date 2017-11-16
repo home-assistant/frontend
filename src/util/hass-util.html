@@ -1,4 +1,5 @@
 <script src='../../bower_components/fecha/fecha.min.js'></script>
+<script src='../../build-temp/util.js'></script>
 
 <!--
 collection of utility functions.
@@ -37,13 +38,6 @@ window.hassUtil.HIDE_MORE_INFO = [
 
 window.hassUtil.LANGUAGE = navigator.languages ?
   navigator.languages[0] : navigator.language || navigator.userLanguage;
-
-window.hassUtil.attributeClassNames = function (stateObj, attributes) {
-  if (!stateObj) return '';
-  return attributes.map(function (attribute) {
-    return attribute in stateObj.attributes ? 'has-' + attribute : '';
-  }).join(' ');
-};
 
 // Expects featureClassNames to be an object mapping feature-bit -> className
 window.hassUtil.featureClassNames = function (stateObj, featureClassNames) {
