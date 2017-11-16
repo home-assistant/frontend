@@ -1,0 +1,4 @@
+--recursive
+--compilers js:babel-core/register
+--timeout 10000
+test-mocha
