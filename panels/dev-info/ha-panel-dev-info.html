@@ -60,7 +60,7 @@
       }
 
       .system-log-intro {
-        margin-top: 16px;
+        margin: 16px;
         border-top: 1px solid var(--light-primary-color);
         padding-top: 16px;
       }
@@ -76,11 +76,6 @@
 
       .header {
         @apply(--paper-font-title);
-      }
-
-      .row {
-        display: flex;
-        justify-content: space-between;
       }
 
       paper-dialog {
@@ -165,7 +160,7 @@
                       [[item.message]]
                     </div>
                     <div secondary>
-                      [[formatTime(item.timestamp)]] Source: [[item.source]] ([[item.level]])
+                      [[formatTime(item.timestamp)]] [[item.source]] ([[item.level]])
                     </div>
                   </paper-item-body>
                 </paper-item>
@@ -193,9 +188,9 @@
     </app-header-layout>
 
     <paper-dialog with-backdrop id="showlog">
+      <h2>Log Details ([[selectedItem.level]])</h2>
       <paper-dialog-scrollable id="scrollable">
-        <h2>Log Details</h2>
-        <p>Timestamp: [[fullTimeStamp(selectedItem.timestamp)]]</p>
+	<p>[[fullTimeStamp(selectedItem.timestamp)]]</p>
         <template is='dom-if' if='[[selectedItem.message]]'>
           <pre>[[selectedItem.message]]</pre>
         </template>
@@ -274,7 +269,7 @@ class HaPanelDevInfo extends Polymer.Element {
   }
 
   formatTime(date) {
-    return window.hassUtil.formatTime(new Date(date));
+    return window.hassUtil.formatTime(new Date(date * 1000));
   }
 
   openLog() {
