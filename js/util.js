@@ -6,7 +6,7 @@
  * import these functions where we need them.
  */
 
-import { attributeClassNames } from './common/util/attribute_class_names';
+import attributeClassNames from './common/util/attribute_class_names';
 
 window.hassUtil = window.hassUtil || {};
 

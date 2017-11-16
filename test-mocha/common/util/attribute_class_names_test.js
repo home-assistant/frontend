@@ -1,4 +1,4 @@
-import { attributeClassNames } from '../../../js/common/util/attribute_class_names';
+import attributeClassNames from '../../../js/common/util/attribute_class_names';
 
 const assert = require('assert');
 
