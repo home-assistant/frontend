@@ -7,7 +7,7 @@
     "url": "https://github.com/home-assistant/home-assistant-polymer"
   },
   "scripts": {
-    "clean": "rm -rf build/* build-temp/* build-es5/* build-translations/*",
+    "clean": "rm -rf build/* build-temp/* build-es5/* build-temp-es5/* build-translations/*",
     "gulp": "gulp",
     "build": "BUILD_DEV=0 gulp",
     "build_demo": "BUILD_DEV=0 BUILD_DEMO=1 gulp",
