@@ -1,1 +1,1 @@
-{"state_badge":{"alarm_control_panel":{"triggered":"Ativado"}}}
+{"panel":{"config":"Configurações","states":"Visão geral","map":"Mapa","logbook":"Eventos","history":"Histórico"},"state":{"lock":{"locked":"Bloqueado","unlocked":"Desbloqueado"}},"state_badge":{"alarm_control_panel":{"triggered":"Ativado"},"device_tracker":{"home":"Presente","not_home":"Ausente"}}}
