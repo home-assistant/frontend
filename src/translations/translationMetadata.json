@@ -80,6 +80,9 @@
 	"pt": {
 		"nativeName": "Português"
 	},
+	"pt-BR": {
+		"nativeName": "Português (BR)"
+	},
 	"ro": {
 		"nativeName": "Română"
 	},
