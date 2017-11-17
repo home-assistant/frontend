@@ -16,16 +16,32 @@
         margin: 0 auto;
         max-width: 600px;
       }
+
+      .device-picker {
+        padding-left: 24px;
+        padding-right: 24px;
+        padding-bottom: 24px;
+      }
     </style>
     <ha-config-section is-wide='[[isWide]]'>
       <span slot='header'>OZW Log</span>
       <paper-card>
-        <div class='help-text'>
-          <pre>[[ozwLogs]]</pre>
-        </div>
-        <div class="card-actions">
-          <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
-        </div>
+      <div class='device-picker'>
+        <paper-input
+          label="Number of last log lines."
+          type=number
+          min=0
+          max=1000
+          step=10
+          value={{numLogLines}}>
+        </paper-input>
+      </div>
+      <div class="card-actions">
+        <paper-button raised on-tap='refreshLog'>Refresh</paper-button>
+      </div>
+      <div class='help-text'>
+             <pre>[[ozwLogs]]</pre>
+      </div>
       </paper-card>
     </ha-config-section>
   </template>
@@ -50,12 +66,17 @@ class OzwLog extends Polymer.Element {
         type: String,
         value: 'Refresh to pull log'
       },
+
+      numLogLines: {
+        type: Number,
+        value: 0
+      },
     };
   }
 
   refreshLog() {
     this.ozwLogs = 'Loading ozw log...';
-    this.hass.callApi('GET', 'zwave/ozwlog')
+    this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this.numLogLines)
       .then((info) => {
         this.ozwLogs = info;
       });
