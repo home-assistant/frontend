@@ -248,6 +248,21 @@ class HaPanelDevInfo extends Polymer.Element {
     };
   }
 
+  ready() {
+    super.ready();
+    this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+  }
+
+  serviceCalled(ev) {
+    // Check if this is for us
+    if (ev.detail.success && ev.detail.domain === 'system_log') {
+      // Do the right thing depending on service
+      if (ev.detail.service === 'clear') {
+        this.items = [];
+      }
+    }
+  }
+
   connectedCallback() {
     super.connectedCallback();
     this.$.scrollable.dialogElement = this.$.showlog;
