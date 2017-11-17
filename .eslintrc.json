@@ -16,7 +16,7 @@
     "__DEMO__": false,
     "__BUILD__": false,
     "Polymer": true,
-    "webkitSpeechRecognition": false,
+    "webkitSpeechRecognition": false
   },
   "env": {
     "browser": true
