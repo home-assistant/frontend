@@ -9,25 +9,43 @@
         position: relative;
         width: 100%;
         max-width: 330px;
+        user-select: none;
+        overflow: visible;
       }
       #canvas > * {
         display: block;
+        user-select: none;
       }
       #interactionLayer {
+        color: white;
         position: absolute;
         cursor: crosshair;
         width: 100%;
         height: 100%;
+        overflow: visible;
       }
       #wheel {
         width: 100%;
       }
 
       #marker {
-        fill: white;
+        fill: currentColor;;
         stroke: white;
         stroke-width: 4;
-        filter: url(#marker-shadow);
+        filter: url(#marker-shadow)
+      }
+      .dragging #marker {
+      }
+
+      #colorTooltip {
+        display: none;
+        fill: currentColor;
+        stroke: white;
+        stroke-width: 4;
+      }
+
+      .touch.dragging #colorTooltip {
+        display: inherit;
       }
 
     </style>
@@ -35,15 +53,12 @@
       <svg id='interactionLayer'>
         <defs>
           <filter id="marker-shadow" x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox">
-            <feOffset in="SourceAlpha" dx="2" dy="2"/>
-            <feGaussianBlur in="offset" stdDeviation="2"/>
-            <feComponentTransfer>
-              <feFuncA type="linear" slope="0.3"/>
-            </feComponentTransfer>
-            <feMerge>
-              <feMergeNode/>
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+             <feOffset result="offOut" in="SourceAlpha" dx="2" dy="2" />
+             <feGaussianBlur result="blurOut" in="offOut" stdDeviation="2" />
+             <feComponentTransfer in="blurOut" result="alphaOut">
+               <feFuncA type="linear" slope="0.3" />
+             </feComponentTransfer>
+             <feBlend in="SourceGraphic" in2="alphaOut" mode="normal" />
           </filter>
         </defs>
       </svg>
@@ -132,12 +147,14 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
     // a mousedown in wheel is always a color select action
     this.onColorSelect(cc.x, cc.y);
+    this.canvas.classList.add('mouse', 'dragging')
     // allow dragging
     this.addEventListener('mousemove', this.onMouseMove);
     this.addEventListener('mouseup', this.onMouseUp);
   }
 
   onMouseUp() {
+    this.canvas.classList.remove('mouse', 'dragging')
     this.removeEventListener('mousemove', this.onMouseMove);
   }
 
@@ -159,6 +176,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
     if (ev.target === this.marker) { // drag marker
       ev.preventDefault();
+      this.canvas.classList.add('touch', 'dragging');
       this.addEventListener('touchmove', this.onMarkerDrag);
       this.addEventListener('touchend', this.onDragEnd);
       return;
@@ -181,6 +199,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   onDragEnd() {
+    this.canvas.classList.remove('touch', 'dragging');
     this.removeEventListener('touchmove', this.onMarkerDrag);
   }
 
@@ -210,8 +229,11 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     var markerdX = -dist * Math.cos(theta);
     var markerdY = -dist * Math.sin(theta);
     // we're not really converitng hsv to hsl here, but we keep it cheap
-    this.marker.style.fill = `hsl(${hsv.h}, ${hsv.v * 100}%, ${100 - (hsv.s * 50)}%)`;
-    this.marker.setAttribute('transform', `translate(${markerdX},${markerdY})`);
+    // setting the color on the interactionLayer, the svg elements can inherit
+    this.interactionLayer.style.color = `hsl(${hsv.h}, ${hsv.v * 100}%, ${100 - (hsv.s * 50)}%)`;
+    var translateString = `translate(${markerdX},${markerdY})`
+    this.marker.setAttribute('transform', translateString);
+    this.tooltip.setAttribute('transform', translateString);
   }
 
   setColor(rgb) {
@@ -309,13 +331,26 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   drawMarker() {
     const svgElement = this.interactionLayer;
-    const markerradius = this.radius * 0.07;
+    const markerradius = this.radius * 0.08;
+    const tooltipradius = this.radius * 0.15;
+    const TooltipOffsetY = -(tooltipradius*2)
+    const TooltipOffsetX = 0
 
     svgElement.marker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     svgElement.marker.setAttribute('id', 'marker');
     svgElement.marker.setAttribute('r', markerradius);
     this.marker = svgElement.marker;
     svgElement.appendChild(svgElement.marker);
+
+    svgElement.tooltip = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    svgElement.tooltip.setAttribute('id', 'colorTooltip');
+    svgElement.tooltip.setAttribute('r', tooltipradius);
+    svgElement.tooltip.setAttribute('cx', TooltipOffsetX);
+    svgElement.tooltip.setAttribute('cy', TooltipOffsetY);
+
+
+    this.tooltip = svgElement.tooltip;
+    svgElement.appendChild(svgElement.tooltip);
   }
 
   /**
