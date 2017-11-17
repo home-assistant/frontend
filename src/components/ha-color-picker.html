@@ -86,12 +86,12 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
 
       radius: {
         type: Number,
-        value: 230,
+        value: 225,
       },
 
       borderWidth: {
         type: Number,
-        value: 4,
+        value: 5,
       },
 
       borderColor: {
@@ -109,8 +109,8 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.drawColorWheel();
     this.drawMarker();
 
-    this.addEventListener('mousedown', ev => this.onMouseDown(ev));
-    this.addEventListener('touchstart', ev => this.onTouchStart(ev), {passive: true});
+    this.interactionLayer.addEventListener('mousedown', ev => this.onMouseDown(ev));
+    this.interactionLayer.addEventListener('touchstart', ev => this.onTouchStart(ev));
   }
 
   // converts browser coordinates to canvas canvas coordinates
@@ -151,28 +151,23 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   onTouchStart(ev) {
-    // return if we're not on the wheel
     var touch = ev.changedTouches[0];
     const cc = this.convertToCanvasCoordinates(touch.clientX, touch.clientY);
+    // return if we're not on the wheel
     if (!this.inWheel(cc.x, cc.y)) {
       return;
     }
-    // if tap is on marker, go dragging
-    if (false) {
+    if (ev.target === this.marker) { // drag marker
       ev.preventDefault();
-      this.onMarkerDrag(ev);
       this.addEventListener('touchmove', this.onMarkerDrag);
-      return
+      this.addEventListener('touchend', this.onDragEnd);
+      return;
     }
     // don't fire color selection immediately,
     // wait for touchend and invalidate when we scroll
     this.tapBecameDrag = false;
     this.addEventListener('touchend', this.onTap);
     this.addEventListener('touchmove', () => { this.tapBecameDrag = true; }, { passive: true });
-
-
-    // else only do lisen for touchend
-    //this.onTouchMove(ev);
   }
 
   onTap(ev) {
@@ -185,17 +180,17 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.onColorSelect(cc.x, cc.y);
   }
 
-  onTouchEnd() {
-    this.removeEventListener('touchmove', this.onTouchMove);
+  onDragEnd() {
+    this.removeEventListener('touchmove', this.onMarkerDrag);
   }
 
-  onTouchMove(ev) {
+  onMarkerDrag(ev) {
     if (!this.dragIsThrottled) {
       return;
     }
     this.dragIsThrottled = false;
     this.processColorSelect(ev.touches[0]);
-    setTimeout(() => { this.dragIsThrottled = true; }, 100);
+    setTimeout(() => { this.dragIsThrottled = true; }, 20);
   }
 
   processColorSelect(ev) {
@@ -214,10 +209,8 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     var theta = ((hsv.h - 180) / 180) * Math.PI;
     var markerdX = -dist * Math.cos(theta);
     var markerdY = -dist * Math.sin(theta);
-
-    this.marker.style.fill = `hsl(${hsv.h}, ${hsv.v*100}%, ${100-(hsv.s*50)}%)`;
-    this.marker.setAttribute('fillStule', `blue`);
-    //this.marker.setAttribute('fill', `hsl(${hsv.h}, ${hsv.s}, ${hsv.v})`);
+    // we're not really converitng hsv to hsl here, but we keep it cheap
+    this.marker.style.fill = `hsl(${hsv.h}, ${hsv.v * 100}%, ${100 - (hsv.s * 50)}%)`;
     this.marker.setAttribute('transform', `translate(${markerdX},${markerdY})`);
   }
 
@@ -270,6 +263,8 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     const counterClockwise = false;
     const borderWidth = this.borderWidth;
     const borderColor = this.borderColor;
+    const borderRadius = radius + (borderWidth / 2);
+    const wheelRadius = borderRadius - 1;
 
     function drawCircle() {
       for (var angle = 0; angle <= 360; angle += 1) {
@@ -277,19 +272,14 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
         var endAngle = angle * (Math.PI / 180);
         context.beginPath();
         context.moveTo(cX, cY);
-        context.arc(cX, cY, radius, startAngle, endAngle, counterClockwise);
+        context.arc(cX, cY, wheelRadius, startAngle, endAngle, counterClockwise);
         context.closePath();
-        var gradient = context.createRadialGradient(cX, cY, 0, cX, cY, radius);
+        var gradient = context.createRadialGradient(cX, cY, 0, cX, cY, wheelRadius);
         gradient.addColorStop(0.1, 'hsl(' + angle + ', 100%, 100%)');
         gradient.addColorStop(0.95, 'hsl(' + angle + ', 100%, 50%)');
         context.fillStyle = gradient;
         context.fill();
       }
-      context.beginPath();
-      context.arc(cX, cY, 2, 0, 2 * Math.PI, false);
-      context.lineWidth = '1';
-      context.strokeStyle = 'black';
-      context.stroke();
     }
 
     function drawShadow() {
@@ -307,7 +297,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
 
     function drawBorder() {
       context.beginPath();
-      context.arc(cX, cY, radius, 0, 2 * Math.PI, false);
+      context.arc(cX, cY, borderRadius, 0, 2 * Math.PI, false);
       context.lineWidth = borderWidth;
       context.strokeStyle = borderColor;
       context.stroke();
