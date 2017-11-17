@@ -258,7 +258,7 @@ class HaPanelDevInfo extends Polymer.Element {
     if (ev.detail.success && ev.detail.domain === 'system_log') {
       // Do the right thing depending on service
       if (ev.detail.service === 'clear') {
-        this._fetchData();
+        this.items = [];
       }
     }
   }
