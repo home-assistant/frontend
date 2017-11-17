@@ -109,15 +109,13 @@
     mailbox: 7,
   };
 
-  function getPriority(domain) {
-    return (domain in PRIORITY) ? PRIORITY[domain] : 100;
-  }
+  const getPriority = domain =>
+    ((domain in PRIORITY) ? PRIORITY[domain] : 100);
 
-  function sortPriority(domainA, domainB) {
-    return domainA.priority - domainB.priority;
-  }
+  const sortPriority = (domainA, domainB) =>
+    domainA.priority - domainB.priority;
 
-  function entitySortBy(entityA, entityB) {
+  const entitySortBy = (entityA, entityB) => {
     const nameA = (entityA.attributes.friendly_name ||
                  entityA.entity_id).toLowerCase();
     const nameB = (entityB.attributes.friendly_name ||
@@ -130,9 +128,9 @@
       return 1;
     }
     return 0;
-  }
+  };
 
-  function iterateDomainSorted(collection, func) {
+  const iterateDomainSorted = (collection, func) => {
     Object.keys(collection)
       .map(key => collection[key])
       .sort(sortPriority)
@@ -140,7 +138,7 @@
         domain.states.sort(entitySortBy);
         func(domain);
       });
-  }
+  };
 
   const computeDomain = window.hassUtil.computeDomain;
 
