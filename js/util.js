@@ -7,7 +7,20 @@
  */
 
 import attributeClassNames from './common/util/attribute_class_names';
+import computeDomain from './common/util/compute_domain';
+import formatDateTime from './common/util/format_date_time';
+import formatDate from './common/util/format_date';
+import formatTime from './common/util/format_time';
 
 window.hassUtil = window.hassUtil || {};
 
+window.hassUtil.LANGUAGE = navigator.languages ?
+  navigator.languages[0] : navigator.language || navigator.userLanguage;
+
+window.fecha.masks.haDateTime = window.fecha.masks.shortTime + ' ' + window.fecha.masks.mediumDate;
+
 window.hassUtil.attributeClassNames = attributeClassNames;
+window.hassUtil.computeDomain = computeDomain;
+window.hassUtil.formatDateTime = dateObj => formatDateTime(dateObj, window.hassUtil.LANGUAGE);
+window.hassUtil.formatDate = dateObj => formatDate(dateObj, window.hassUtil.LANGUAGE);
+window.hassUtil.formatTime = dateObj => formatTime(dateObj, window.hassUtil.LANGUAGE);
