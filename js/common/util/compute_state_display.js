@@ -4,6 +4,10 @@ import formatDate from './format_date';
 import formatTime from './format_time';
 
 export default function computeStateDisplay(haLocalize, stateObj, language) {
+  if (!haLocalize || !stateObj || !language) {
+    return null;
+  }
+
   let stateDisplay = null;
 
   const domain = computeDomain(stateObj);

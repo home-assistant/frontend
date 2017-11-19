@@ -8,6 +8,10 @@ describe('computeStateDisplay', function() {
     return namespace + '.' + message + (args.length ? ': ' + args.join(',') : '');
   };
 
+  it('Returns null with null stateObj', function() {
+    assert.strictEqual(computeStateDisplay(haLocalize, null, 'en'), null);
+  });
+
   it('Localizes binary sensor defaults', function() {
     const stateObj = {
       entity_id: 'binary_sensor.test',
