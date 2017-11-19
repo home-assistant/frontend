@@ -15,7 +15,7 @@ import formatTime from './common/util/format_time';
 
 window.hassUtil = window.hassUtil || {};
 
-window.hassUtil.LANGUAGE = navigator.languages ?
+const language = navigator.languages ?
   navigator.languages[0] : navigator.language || navigator.userLanguage;
 
 window.fecha.masks.haDateTime = window.fecha.masks.shortTime + ' ' + window.fecha.masks.mediumDate;
@@ -23,6 +23,6 @@ window.fecha.masks.haDateTime = window.fecha.masks.shortTime + ' ' + window.fech
 window.hassUtil.attributeClassNames = attributeClassNames;
 window.hassUtil.computeDomain = computeDomain;
 window.hassUtil.computeStateDisplay = computeStateDisplay;
-window.hassUtil.formatDate = dateObj => formatDate(dateObj, window.hassUtil.LANGUAGE);
-window.hassUtil.formatDateTime = dateObj => formatDateTime(dateObj, window.hassUtil.LANGUAGE);
-window.hassUtil.formatTime = dateObj => formatTime(dateObj, window.hassUtil.LANGUAGE);
+window.hassUtil.formatDate = dateObj => formatDate(dateObj, language);
+window.hassUtil.formatDateTime = dateObj => formatDateTime(dateObj, language);
+window.hassUtil.formatTime = dateObj => formatTime(dateObj, language);
