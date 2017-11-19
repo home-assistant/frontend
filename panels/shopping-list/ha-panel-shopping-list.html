@@ -112,17 +112,12 @@
                   tabindex='0'
                 ></paper-checkbox>
               <paper-item-body>
-                <!-- <template is='dom-if' if='[[!_computeIsEditting(_editIndex, index)]]'>
-                  [[item.name]]
-                </template>
-                <template is='dom-if' if='[[_computeIsEditting(_editIndex, index)]]'> -->
-                  <paper-input
-                    id='editBox'
-                    no-label-float
-                    value='[[item.name]]'
-                    on-change='_saveEdit'
-                  ></paper-input>
-                <!-- </template> -->
+                <paper-input
+                  id='editBox'
+                  no-label-float
+                  value='[[item.name]]'
+                  on-change='_saveEdit'
+                ></paper-input>
               </paper-item-body>
             </paper-icon-item>
           </template>
@@ -149,18 +144,6 @@ class HaPanelShoppingList extends Polymer.Element {
         type: Array,
         value: [],
       },
-      _editIndex: {
-        type: Number,
-        value: -1,
-      },
-      _editValue: {
-        type: String,
-        value: '',
-      },
-      _editting: {
-        type: Object,
-        value: () => ({}),
-      }
     };
   }
 
@@ -184,10 +167,6 @@ class HaPanelShoppingList extends Polymer.Element {
         items.reverse();
         this.items = items;
       }.bind(this));
-  }
-
-  _computeIsEditting(editIndex, index) {
-    return editIndex === index;
   }
 
   _itemCompleteTapped(ev) {
@@ -216,9 +195,8 @@ class HaPanelShoppingList extends Polymer.Element {
   }
 
   _saveEdit(ev) {
-    const index = ev.model.index;
+    const { index, item } = ev.model;
     const name = ev.target.value;
-    const item = ev.model.item;
 
     if (name === item.name) {
       return;
