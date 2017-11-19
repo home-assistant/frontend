@@ -8,8 +8,9 @@
 
 import attributeClassNames from './common/util/attribute_class_names';
 import computeDomain from './common/util/compute_domain';
-import formatDateTime from './common/util/format_date_time';
+import computeStateDisplay from './common/util/compute_state_display';
 import formatDate from './common/util/format_date';
+import formatDateTime from './common/util/format_date_time';
 import formatTime from './common/util/format_time';
 
 window.hassUtil = window.hassUtil || {};
@@ -21,6 +22,7 @@ window.fecha.masks.haDateTime = window.fecha.masks.shortTime + ' ' + window.fech
 
 window.hassUtil.attributeClassNames = attributeClassNames;
 window.hassUtil.computeDomain = computeDomain;
-window.hassUtil.formatDateTime = dateObj => formatDateTime(dateObj, window.hassUtil.LANGUAGE);
+window.hassUtil.computeStateDisplay = computeStateDisplay;
 window.hassUtil.formatDate = dateObj => formatDate(dateObj, window.hassUtil.LANGUAGE);
+window.hassUtil.formatDateTime = dateObj => formatDateTime(dateObj, window.hassUtil.LANGUAGE);
 window.hassUtil.formatTime = dateObj => formatTime(dateObj, window.hassUtil.LANGUAGE);
