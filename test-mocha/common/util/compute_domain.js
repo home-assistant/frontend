@@ -9,4 +9,8 @@ describe('computeDomain', function() {
     };
     assert.strictEqual(computeDomain(stateObj), 'sensor');
   });
+
+  it('Handles null state object', function() {
+    assert.strictEqual(computeDomain(null), null);
+  });
 });

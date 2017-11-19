@@ -1,5 +1,6 @@
-import { extractDomain } from 'home-assistant-js-websocket';
-
 export default function computeDomain(stateObj) {
-  return extractDomain(stateObj.entity_id);
+  if (!stateObj || !stateObj.entity_id) {
+    return null;
+  }
+  return stateObj.entity_id.substr(0, stateObj.entity_id.indexOf('.'));
 }
