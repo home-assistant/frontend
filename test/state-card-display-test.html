@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <!--
+    Temporarily load core.js here so window.HAWS is available. We can remove
+    this once hass-util includes the helper function directly.
+  -->
+  <script src="../build/core.js"></script>
+  <link rel="import" href="../src/state-summary/state-card-display.html">
+</head>
+<body>
+  <test-fixture id="stateCardDisplay">
+    <template>
+      <state-card-display><state-card-display>
+    </template>
+  </test-fixture>
+
+  <script>
+    function lightOrShadow(elem, selector) {
+      return elem.shadowRoot ?
+          elem.shadowRoot.querySelector(selector) :
+          elem.querySelector(selector);
+    }
+
+    suite('state-card-display', function() {
+      let si;
+
+      setup(function() {
+        si = fixture('stateCardDisplay');
+      });
+
+      test('state display text', function(done) {
+        si.stateObj = {
+          entity_id: 'binary_sensor.demo',
+          state: 'off',
+          attributes: {
+            device_class: 'moisture',
+          },
+        };
+        si.hass = {
+          language: 'en',
+          resources: {
+            'en': {
+              'state.binary_sensor.moisture.off': 'Mock Off Text',
+            },
+          },
+        };
+        flush(function() {
+          var stateDiv = lightOrShadow(si, '.state');
+          assert.isOk(stateDiv);
+          assert.deepEqual(stateDiv.innerText, 'Mock Off Text');
+          done();
+        });
+      });
+    });
+  </script>
+</body>
+</html>
