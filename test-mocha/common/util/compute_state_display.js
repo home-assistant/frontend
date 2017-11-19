@@ -71,9 +71,6 @@ describe('computeStateDisplay', function() {
       },
     };
     assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'November 18, 2017, 11:12 AM');
-
-    // Test changing locales
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'de'), '2017 M11 18 11:12');
   });
 
   it('Localizes input_datetime with date', function() {
@@ -170,5 +167,18 @@ describe('computeStateDisplay', function() {
       },
     };
     assert.strictEqual(computeStateDisplay(altHaLocalize, stateObj, 'en'), 'My Custom State');
+  });
+
+  it('Only calculates state display once per immutable state object', function() {
+    const stateObj = {
+      entity_id: 'cover.test',
+      state: 'open',
+      attributes: {
+      },
+    };
+    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.cover.open');
+
+    stateObj.state = 'closing';
+    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.cover.open');
   });
 });
