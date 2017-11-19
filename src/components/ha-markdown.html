@@ -31,8 +31,7 @@ class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
       const converter = window.Markdown.getSanitizingConverter();
       this.innerHTML = converter.makeHtml(content);
 
-      const walker = document.createTreeWalker(
-        this, 1 /* SHOW_ELEMENT */, null, false)
+      const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
 
       while (walker.nextNode()) {
         const node = walker.currentNode;
@@ -44,7 +43,6 @@ class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
 
         // Fire a resize event when images loaded to notify content resized
         } else if (node.tagName === 'IMG') {
-          console.log('attaching', node, this.resize)
           node.addEventListener('load', this.resize);
         }
       }
