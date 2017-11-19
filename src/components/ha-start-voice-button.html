@@ -27,6 +27,7 @@ class HaStartVoiceButton extends window.hassMixins.EventsMixin(Polymer.Element) 
       canListen: {
         type: Boolean,
         computed: 'computeCanListen(hass)',
+        notify: true,
       },
     };
   }
