@@ -5,6 +5,9 @@
 	"bg": {
 		"nativeName": "Български"
 	},
+	"bs": {
+		"nativeName": "Bosanski"
+	},
 	"ca": {
 		"nativeName": "Català"
 	},
@@ -61,6 +64,9 @@
 	},
 	"ja": {
 		"nativeName": "日本語"
+	},
+	"ko": {
+		"nativeName": "한국어"
 	},
 	"lb": {
 		"nativeName": "Lëtzebuergesch"
