@@ -14,7 +14,7 @@
 <body>
   <test-fixture id="stateCardDisplay">
     <template>
-      <state-card-display><state-card-display>
+      <div />
     </template>
   </test-fixture>
 
@@ -26,21 +26,20 @@
     }
 
     suite('state-card-display', function() {
-      let si;
+      let wrapper;
+      let card;
 
       setup(function() {
-        si = fixture('stateCardDisplay');
-      });
-
-      test('state display text', function(done) {
-        si.stateObj = {
+        wrapper = fixture('stateCardDisplay');
+        card = new StateCardDisplay();
+        card.stateObj = {
           entity_id: 'binary_sensor.demo',
           state: 'off',
           attributes: {
             device_class: 'moisture',
           },
         };
-        si.hass = {
+        card.hass = {
           language: 'en',
           resources: {
             'en': {
@@ -48,8 +47,12 @@
             },
           },
         };
+        wrapper.appendChild(card);
+      });
+
+      test('state display text', function(done) {
         flush(function() {
-          var stateDiv = lightOrShadow(si, '.state');
+          const stateDiv = lightOrShadow(card, '.state');
           assert.isOk(stateDiv);
           assert.deepEqual(stateDiv.innerText, 'Mock Off Text');
           done();
