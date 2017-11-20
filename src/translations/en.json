@@ -68,6 +68,10 @@
         "off": "Closed",
         "on": "Open"
       },
+      "presence": {
+        "off": "Away",
+        "on": "Home"
+      },
       "safety": {
         "off": "Safe",
         "on": "Unsafe"
