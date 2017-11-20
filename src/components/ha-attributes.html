@@ -18,7 +18,7 @@
     </style>
 
     <div class='layout vertical'>
-      <template is='dom-repeat' items="[[computeDisplayAttributes(stateObj, filtersArray)]]" as="attribute">
+      <template is='dom-repeat' items="[[computeDisplayAttributes(stateObj, filtersArray, whitelistArray, whitelist)]]" as="attribute">
         <div class='data-entry layout justified horizontal'>
           <div class='key'>[[formatAttribute(attribute)]]</div>
           <div class='value'>[[formatAttributeValue(stateObj, attribute)]]</div>
@@ -46,17 +46,40 @@ class HaAttributes extends Polymer.Element {
         type: Array,
         computed: 'computeFiltersArray(extraFilters)',
       },
+      whitelistArray: {
+        type: Array,
+        computed: 'computeWhitelistArray(stateObj)',
+      },
+      whitelist: {
+        type: Boolean,
+        value: false
+      },
     };
+  }
+
+  computeWhitelistArray(stateObj) {
+    if ((!stateObj) || (!stateObj.attributes.display_attributes)) {
+      return [];
+    }
+
+    return stateObj.attributes.display_attributes.split(',');
   }
 
   computeFiltersArray(extraFilters) {
     return Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(extraFilters ? extraFilters.split(',') : []);
   }
 
-  computeDisplayAttributes(stateObj, filtersArray) {
+  computeDisplayAttributes(stateObj, filtersArray, whitelistArray, whitelist) {
     if (!stateObj) {
       return [];
     }
+
+    if (whitelist) {
+      return Object.keys(stateObj.attributes).filter(function (key) {
+        return whitelistArray.indexOf(key) !== -1;
+      });
+    }
+
     return Object.keys(stateObj.attributes).filter(function (key) {
       return filtersArray.indexOf(key) === -1;
     });
