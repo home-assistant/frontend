@@ -34,7 +34,7 @@
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>
+      <div class='state vertical layout center-justified'>
         <div class='target'>
           <span class="operation-mode">
             [[stateObj.attributes.operation_mode]]
@@ -43,8 +43,7 @@
             [[computeTargetTemperature(stateObj)]]
           </span>
         </div>
-
-        <div class='current'>
+        <div class='current' hidden$='[[!hasCurrentTemperature(stateObj)]]'>
           <span>Currently: </span>
           <span>[[stateObj.attributes.current_temperature]]</span>
           <span> </span>
@@ -67,6 +66,10 @@ class StateCardClimate extends Polymer.Element {
         value: false,
       },
     };
+  }
+
+  hasCurrentTemperature(stateObj) {
+    return (!isNaN(parseFloat(stateObj.attributes.current_temperature)));
   }
 
   computeTargetTemperature(stateObj) {
