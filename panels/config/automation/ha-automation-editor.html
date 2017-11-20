@@ -165,8 +165,8 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     };
   }
 
-  constructor() {
-    super();
+  ready() {
+    super.ready();
     this.configChanged = this.configChanged.bind(this);
     this._rendered = null;
   }
