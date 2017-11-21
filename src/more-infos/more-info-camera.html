@@ -16,6 +16,8 @@
 
     <img class='camera-image' src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]"
          on-load='imageLoaded' alt='[[computeStateName(stateObj)]]' />
+    
+    <ha-attributes state-obj="[[stateObj]]" whitelist></ha-attributes>
   </template>
 </dom-module>
 
