@@ -5,12 +5,18 @@
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
 
+<link rel='import' href='../components/ha-markdown.html'>
+
 <dom-module id='more-info-configurator'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
       p {
         margin: 8px 0;
+      }
+
+      a {
+        color: var(--primary-color);
       }
 
       p > img {
@@ -43,25 +49,10 @@
 
     <div class='layout vertical'>
       <template is='dom-if' if='[[isConfigurable]]'>
-
-        <p hidden$='[[!stateObj.attributes.description]]'>
-          [[stateObj.attributes.description]]
-          <p hidden$='[[!stateObj.attributes.link_url]]'>
-            <a
-              href='[[stateObj.attributes.link_url]]'
-              target='_blank'
-            >
-              [[stateObj.attributes.link_name]]
-            </a>
-          </p>
-        </p>
+        <ha-markdown content='[[stateObj.attributes.description]]'></ha-markdown>
 
         <p class='error' hidden$='[[!stateObj.attributes.errors]]'>
           [[stateObj.attributes.errors]]
-        </p>
-
-        <p class='center' hidden$='[[!stateObj.attributes.description_image]]'>
-          <img src='[[stateObj.attributes.description_image]]' />
         </p>
 
         <template is='dom-repeat' items='[[stateObj.attributes.fields]]'>

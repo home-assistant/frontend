@@ -30,8 +30,12 @@
 
       if (newHass.moreInfoEntityId) {
         if (DEBUG) console.log('pushing state');
+        // We keep track of where we opened moreInfo from so that we don't
+        // pop the state when we close the modal if the modal has navigated
+        // us away.
+        this.moreInfoOpenedFromPath = window.location.pathname;
         history.pushState(null, null, window.location.pathname);
-      } else {
+      } else if (window.location.pathname === this.moreInfoOpenedFromPath) {
         if (DEBUG) console.log('history back');
         this.ignoreNextPopstate = true;
         history.back();
