@@ -79,7 +79,8 @@
     "run-sequence": "^2.2.0",
     "sw-precache": "^5.2.0",
     "uglify-es": "^3.1.9",
-    "uglify-js": "^3.1.9"
+    "uglify-js": "^3.1.9",
+    "unfetch": "^3.0.0"
   },
   "devDependencies": {
     "web-component-tester": "^6.4.0"
