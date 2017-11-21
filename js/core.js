@@ -23,7 +23,7 @@ const init = window.createHassConnection = function (password) {
     });
 };
 
-if (window.noAuth) {
+if (window.noAuth === '1') {
   window.hassConnection = init();
 } else if (window.localStorage.authToken) {
   window.hassConnection = init(window.localStorage.authToken);

@@ -58,7 +58,7 @@
       function initError() {
         document.getElementById('ha-init-skeleton').classList.add('error');
       };
-      window.noAuth = {{ no_auth }};
+      window.noAuth = '{{ no_auth }}';
       window.Polymer = {
         lazyRegister: true,
         useNativeCSSProperties: true,
@@ -76,22 +76,9 @@
       </div>
     </div>
     <home-assistant></home-assistant>
-    {# <script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script> -#}
-    {% if not latest -%}
-    <script>
-      var compatibilityRequired = (typeof Object.assign != 'function');
-      if (compatibilityRequired) {
-        var e = document.createElement('script');
-        e.onerror = initError;
-        e.src = '/home-assistant-polymer/build-temp-es5/compatibility.js';
-        document.head.appendChild(e);
-      }
-    </script>
-    {% endif -%}
+    <!--<script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script>-->
+    <!--EXTRA_SCRIPTS-->
     <script src='/home-assistant-polymer/build/core.js'></script>
-    {% if not dev_mode and not latest -%}
-    <script src='/frontend_es5/custom-elements-es5-adapter.js'></script>
-    {% endif -%}
     <script>
       var webComponentsSupported = (
         'customElements' in window &&
@@ -111,7 +98,7 @@
     </script>
     <link rel='import' href='/home-assistant-polymer/src/home-assistant.html' onerror='initError()'>
     {% if panel_url -%}
-      <link rel='import' href='{{ panel_url }}' onerror='initError()' async>
+      <link rel='import' href='{{ panel_url }}' async>
     {% endif -%}
     <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
     {% for extra_url in extra_urls -%}
