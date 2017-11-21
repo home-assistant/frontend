@@ -29,10 +29,6 @@
 
       setup(function() {
         si = fixture('stateInfo');
-        window.HAWS = {};
-        window.HAWS.extractDomain = function (entityId) {
-          return entityId.substr(0, entityId.indexOf('.'));
-        };
       });
       
       test('default values', function() {
