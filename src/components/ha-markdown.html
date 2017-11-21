@@ -1,7 +1,9 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 
+<link rel='import' href='../util/hass-mixins.html'>
+
 <script>
-class HaMarkdown extends Polymer.Element {
+class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-markdown'; }
 
   static get properties() {
@@ -28,6 +30,22 @@ class HaMarkdown extends Polymer.Element {
     if (scriptLoaded === 1) {
       const converter = window.Markdown.getSanitizingConverter();
       this.innerHTML = converter.makeHtml(content);
+
+      const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
+
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+
+        // Open external links in a new window
+        if (node.tagName === 'A' &&
+            node.host !== document.location.host) {
+          node.target = '_blank';
+
+        // Fire a resize event when images loaded to notify content resized
+        } else if (node.tagName === 'IMG') {
+          node.addEventListener('load', this.resize);
+        }
+      }
     } else if (scriptLoaded === 2) {
       this.innerText = content;
     }
@@ -35,6 +53,7 @@ class HaMarkdown extends Polymer.Element {
 
   ready() {
     super.ready();
+    this.resize = () => this.fire('iron-resize');
 
     Polymer.importHref(
       '/static/pagedown-js.html',
