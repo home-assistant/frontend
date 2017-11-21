@@ -36,9 +36,6 @@ window.hassUtil.HIDE_MORE_INFO = [
   'input_select', 'scene', 'input_number', 'input_text'
 ];
 
-window.hassUtil.LANGUAGE = navigator.languages ?
-  navigator.languages[0] : navigator.language || navigator.userLanguage;
-
 // Expects featureClassNames to be an object mapping feature-bit -> className
 window.hassUtil.featureClassNames = function (stateObj, featureClassNames) {
   if (!stateObj || !stateObj.attributes.supported_features) return '';
@@ -106,77 +103,6 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
     rootEl.appendChild(customEl);
   }
 };
-
-// Check for support of native locale string options
-function toLocaleStringSupportsOptions() {
-  try {
-    new Date().toLocaleString('i');
-  } catch (e) {
-    return e.name === 'RangeError';
-  }
-  return false;
-}
-function toLocaleDateStringSupportsOptions() {
-  try {
-    new Date().toLocaleDateString('i');
-  } catch (e) {
-    return e.name === 'RangeError';
-  }
-  return false;
-}
-function toLocaleTimeStringSupportsOptions() {
-  try {
-    new Date().toLocaleTimeString('i');
-  } catch (e) {
-    return e.name === 'RangeError';
-  }
-  return false;
-}
-
-window.fecha.masks.haDateTime = (window.fecha.masks.shortTime + ' ' +
-                                 window.fecha.masks.mediumDate);
-
-if (toLocaleStringSupportsOptions()) {
-  window.hassUtil.formatDateTime = function (dateObj) {
-    return dateObj.toLocaleString(window.hassUtil.LANGUAGE, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  };
-} else {
-  window.hassUtil.formatDateTime = function (dateObj) {
-    return window.fecha.format(dateObj, 'haDateTime');
-  };
-}
-
-if (toLocaleDateStringSupportsOptions()) {
-  window.hassUtil.formatDate = function (dateObj) {
-    return dateObj.toLocaleDateString(
-      window.hassUtil.LANGUAGE,
-      { year: 'numeric', month: 'long', day: 'numeric' }
-    );
-  };
-} else {
-  window.hassUtil.formatDate = function (dateObj) {
-    return window.fecha.format(dateObj, 'mediumDate');
-  };
-}
-
-if (toLocaleTimeStringSupportsOptions()) {
-  window.hassUtil.formatTime = function (dateObj) {
-    return dateObj.toLocaleTimeString(
-      window.hassUtil.LANGUAGE,
-      { hour: 'numeric', minute: '2-digit' }
-    );
-  };
-} else {
-  window.hassUtil.formatTime = function (dateObj) {
-    return window.fecha.format(dateObj, 'shortTime');
-  };
-}
 
 window.hassUtil.relativeTime = function (dateObj) {
   var delta = Math.abs(new Date() - dateObj) / 1000;
@@ -435,14 +361,6 @@ window.hassUtil.stateIcon = function (state) {
   }
 
   return window.hassUtil.domainIcon(domain, state.state);
-};
-
-window.hassUtil.computeDomain = function (stateObj) {
-  if (!stateObj._domain) {
-    stateObj._domain = window.HAWS.extractDomain(stateObj.entity_id);
-  }
-
-  return stateObj._domain;
 };
 
 window.hassUtil.computeObjectId = function (stateObj) {

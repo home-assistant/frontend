@@ -5,14 +5,14 @@ const assert = require('assert');
 describe('attributeClassNames', function() {
   const attrs = ['mock_attr1', 'mock_attr2'];
 
-  it('null state', function() {
+  it('Skips null states', function() {
     const stateObj = null;
     assert.strictEqual(
       attributeClassNames(stateObj, attrs),
       '');
   });
 
-  it('matches no attrbutes', function() {
+  it('Matches no attrbutes', function() {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
@@ -24,7 +24,7 @@ describe('attributeClassNames', function() {
       '');
   });
 
-  it('matches one attrbute', function() {
+  it('Matches one attrbute', function() {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
@@ -37,7 +37,7 @@ describe('attributeClassNames', function() {
       'has-mock_attr1');
   });
 
-  it('matches two attrbutes', function() {
+  it('Matches two attrbutes', function() {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
