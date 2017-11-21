@@ -285,6 +285,9 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'input_boolean':
       return 'mdi:drawing';
 
+    case 'input_datetime':
+      return 'mdi:calendar-clock';
+
     case 'input_select':
       return 'mdi:format-list-bulleted';
 
@@ -421,6 +424,12 @@ window.hassUtil.stateIcon = function (state) {
     return window.hassUtil.binarySensorIcon(state);
   } else if (domain === 'cover') {
     return window.hassUtil.coverIcon(state);
+  } else if (domain === 'input_datetime') {
+    if (!state.attributes.has_date) {
+      return 'mdi:clock';
+    } else if (!state.attributes.has_time) {
+      return 'mdi:calendar';
+    }
   }
 
   return window.hassUtil.domainIcon(domain, state.state);
