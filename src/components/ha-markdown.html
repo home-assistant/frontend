@@ -1,65 +1,59 @@
-<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
-
 <link rel='import' href='../util/hass-mixins.html'>
 
 <script>
-class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
   static get is() { return 'ha-markdown'; }
 
-  static get properties() {
-    return {
-      content: {
-        type: String,
-      },
-
-      scriptLoaded: {
-        type: Number,
-        // 0 = not loaded, 1 = success, 2 = error
-        value: 0,
-      },
-    };
-  }
-
-  static get observers() {
-    return [
-      'updateContent(content, scriptLoaded)',
-    ];
-  }
-
-  updateContent(content, scriptLoaded) {
-    if (scriptLoaded === 1) {
-      const converter = window.Markdown.getSanitizingConverter();
-      this.innerHTML = converter.makeHtml(content);
-
-      const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
-
-      while (walker.nextNode()) {
-        const node = walker.currentNode;
-
-        // Open external links in a new window
-        if (node.tagName === 'A' &&
-            node.host !== document.location.host) {
-          node.target = '_blank';
-
-        // Fire a resize event when images loaded to notify content resized
-        } else if (node.tagName === 'IMG') {
-          node.addEventListener('load', this.resize);
-        }
-      }
-    } else if (scriptLoaded === 2) {
-      this.innerText = content;
-    }
-  }
-
-  ready() {
-    super.ready();
-    this.resize = () => this.fire('iron-resize');
+  connectedCallback() {
+    // 0 = not loaded, 1 = success, 2 = error
+    this._scriptLoaded = 0;
+    this._renderScheduled = false;
+    this._resize = () => this.fire('iron-resize');
 
     Polymer.importHref(
       '/static/pagedown-js.html',
-      () => { this.scriptLoaded = 1; },
-      () => { this.scriptLoaded = 2; },
+      () => { this._scriptLoaded = 1; this._render(); },
+      () => { this._scriptLoaded = 2; this._render(); },
     );
+  }
+
+  set content(value) {
+    this._content = value;
+    this._render();
+  }
+
+  _render() {
+    if (this._scriptLoaded === 0 || this._renderScheduled) return;
+
+    this._renderScheduled = true;
+
+    // debounce it to next microtask.
+    Promise.resolve().then(() => {
+      this._renderScheduled = false;
+
+      if (this._scriptLoaded === 1) {
+        const converter = window.Markdown.getSanitizingConverter();
+        this.innerHTML = converter.makeHtml(this._content);
+
+        const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
+
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+
+          // Open external links in a new window
+          if (node.tagName === 'A' &&
+              node.host !== document.location.host) {
+            node.target = '_blank';
+
+          // Fire a resize event when images loaded to notify content resized
+          } else if (node.tagName === 'IMG') {
+            node.addEventListener('load', this._resize);
+          }
+        }
+      } else if (this._scriptLoaded === 2) {
+        this.innerText = this._content;
+      }
+    });
   }
 }
 
