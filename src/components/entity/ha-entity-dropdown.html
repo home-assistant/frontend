@@ -55,7 +55,7 @@ class HaEntityDropdown extends Polymer.Element {
   }
 
   computeStates(hass) {
-    return Object.keys(hass.states).sort().map(key => hass.states[key])
+    return Object.keys(hass.states).sort().map(key => hass.states[key]);
   }
 
   computeStateName(state) {
