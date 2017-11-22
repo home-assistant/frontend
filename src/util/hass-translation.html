@@ -74,7 +74,7 @@ window.getTranslation = function (translationInput) {
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {
     translations[translationFingerprint] =
-      fetch(`/static/translations/${translationFingerprint}`)
+      fetch(`/static/translations/${translationFingerprint}`, { credentials: 'include' })
         .then(response => response.json()).then(data => ({
           language: translation,
           resources: {
