@@ -2,8 +2,8 @@ import computeDomain from '../../../js/common/util/compute_domain';
 
 const assert = require('assert');
 
-describe('computeDomain', function() {
-  it('Detects sensor domain', function() {
+describe('computeDomain', () => {
+  it('Detects sensor domain', () => {
     const stateObj = {
       entity_id: 'sensor.test',
     };
