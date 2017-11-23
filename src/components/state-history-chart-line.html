@@ -106,11 +106,6 @@
           maxZoomIn: 0.1,
         },
         seriesType: 'line',
-        // The "heating" series uses steppedArea to shade the area below the current
-        // temperature when the thermostat is calling for heat. It would be nice to
-        // apply this config in a more direct way than by column index, but it
-        // doesn't seem to be possible.
-        series: { 1: { type: 'steppedArea' } }
       };
 
       if (this.isSingleDevice) {
@@ -183,6 +178,15 @@
 
           dataTable.addColumn('number', name + ' current temperature');
           dataTable.addColumn('number', name + ' heating');
+          // The "heating" series uses steppedArea to shade the area below the current
+          // temperature when the thermostat is calling for heat.
+          // Its series index is 2 less than its column number--1 because
+          // zero-based and 1 because the first becomes the horizontal axis.
+          var seriesIndex = dataTable.getNumberOfColumns() - 2;
+          // Get existing series config, if there is any, rather than clobbering
+          options.series = Object.assign({}, options.series);
+          options.series[seriesIndex] = { type: 'steppedArea' };
+
           if (hasTargetRange) {
             dataTable.addColumn('number', name + ' target temperature high');
             dataTable.addColumn('number', name + ' target temperature low');
