@@ -19,7 +19,8 @@
     "webkitSpeechRecognition": false
   },
   "env": {
-    "browser": true
+    "browser": true,
+    "mocha": true
   },
   "rules": {
     "class-methods-use-this": 0,
