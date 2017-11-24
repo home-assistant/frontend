@@ -1,6 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
-<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box-light.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
 
@@ -8,19 +7,45 @@
 
 <dom-module id="ha-entity-dropdown">
   <template>
-    <vaadin-combo-box
-      autofocus="[[autofocus]]"
-      label="[[label]]"
+    <style>
+      paper-input > paper-icon-button {
+        width: 24px;
+        height: 24px;
+        padding: 2px;
+        color: var(--secondary-text-color);
+      }
+    </style>
+    <vaadin-combo-box-light
       items='[[computeStates(_hass)]]'
       item-value-path='entity_id'
       item-label-path='entity_id'
       value='{{value}}'
       opened='{{opened}}'
+      allow-custom-value='[[allowCustomEntity]]'
+      pattern="(\w|\d)+\.(\w|\d)+"
+      prevent-invalid-input
     >
+      <paper-input
+        autofocus="[[autofocus]]"
+        label="[[label]]"
+        class="input"
+      >
+        <paper-icon-button
+          slot="suffix"
+          class="clear-button"
+          icon="mdi:close"
+          no-ripple
+        >Clear</paper-icon-button>
+        <paper-icon-button
+          slot="suffix"
+          class="toggle-button"
+          icon='[[_computeToggleIcon(opened)]]'
+        >Toggle</paper-icon-button>
+      </paper-input>
       <template>
         <style>
           paper-icon-item {
-            margin: -13px -16px;
+            margin: -10px;
           }
         </style>
         <paper-icon-item>
@@ -31,8 +56,7 @@
           </paper-item-body>
         </paper-icon-item>
       </template>
-    </vaadin-combo-box>
-
+    </vaadin-combo-box-light>
   </template>
 </dom-module>
 
@@ -42,6 +66,10 @@ class HaEntityDropdown extends Polymer.Element {
 
   static get properties() {
     return {
+      allowCustomEntity: {
+        type: Boolean,
+        value: false,
+      },
       hass: {
         type: Object,
         observer: '_hassChanged',
@@ -82,6 +110,10 @@ class HaEntityDropdown extends Polymer.Element {
     if (!this.opened) {
       this._hass = newVal;
     }
+  }
+
+  _computeToggleIcon(opened) {
+    return opened ? 'mdi:menu-up' : 'mdi:menu-down';
   }
 }
 
