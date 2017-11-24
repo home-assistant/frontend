@@ -11,10 +11,11 @@
     <vaadin-combo-box
       autofocus="[[autofocus]]"
       label="[[label]]"
-      items='[[computeStates(hass)]]'
+      items='[[computeStates(_hass)]]'
       item-value-path='entity_id'
       item-label-path='entity_id'
       value='{{value}}'
+      opened='{{opened}}'
     >
       <template>
         <style>
@@ -41,7 +42,11 @@ class HaEntityDropdown extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: Object,
+      hass: {
+        type: Object,
+        observer: '_hassChanged',
+      },
+      _hass: Object,
       autofocus: Boolean,
       label: {
         type: String,
@@ -50,7 +55,12 @@ class HaEntityDropdown extends Polymer.Element {
       value: {
         type: String,
         notify: true,
-      }
+      },
+      opened: {
+        type: Boolean,
+        value: false,
+        observer: '_openedChanged',
+      },
     };
   }
 
@@ -60,6 +70,18 @@ class HaEntityDropdown extends Polymer.Element {
 
   computeStateName(state) {
     return window.hassUtil.computeStateName(state);
+  }
+
+  _openedChanged(newVal) {
+    if (!newVal) {
+      this._hass = this.hass;
+    }
+  }
+
+  _hassChanged(newVal) {
+    if (!this.opened) {
+      this._hass = newVal;
+    }
   }
 }
 
