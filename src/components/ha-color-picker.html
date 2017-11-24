@@ -145,7 +145,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
 
       // set to true to make the segments purely esthetical
       // this allows selection off all collors, also
-      // inbetween the segments
+      // interpolated between the segments
       ignoreSegments: {
         type: Boolean,
         value: false
@@ -155,7 +155,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
       // value is timeout in milliseconds
       throttle: {
         type: Number,
-        value: 1000,
+        value: 500,
       }
     };
   }
@@ -370,8 +370,12 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   applySegmentFilter(hsv) {
     // apply hue segment steps
     if (this.hueSegments) {
-      const rest = hsv.h % (360 / this.hueSegments);
-      hsv.h -= rest - (360 / this.hueSegments);
+      const angleStep = 360 / this.hueSegments;
+      const halfAngleStep = angleStep / 2;
+      hsv.h -= halfAngleStep; // take the 'centered segemnts' into account
+      if (hsv.h < 0) { hsv.h += 360; } // don't end up below 0
+      const rest = hsv.h % angleStep;
+      hsv.h -= rest - angleStep;
     }
 
     // apply saturation segment steps
@@ -437,15 +441,16 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     function drawCircle(hueSegments, saturationSegments) {
       hueSegments = hueSegments || 360; // reset 0 segments to 360
       const angleStep = 360 / hueSegments;
+      const halfAngleStep = angleStep / 2; // center segments on color
       for (var angle = 0; angle <= 360; angle += angleStep) {
-        var startAngle = ((angle - angleStep) - 1) * (Math.PI / 180);
-        var endAngle = (angle) * (Math.PI / 180);
+        var startAngle = ((angle - halfAngleStep)) * (Math.PI / 180);
+        var endAngle = ((angle + halfAngleStep) + 1) * (Math.PI / 180);
         context.beginPath();
         context.moveTo(cX, cY);
         context.arc(cX, cY, wheelRadius, startAngle, endAngle, counterClockwise);
         context.closePath();
-        var gradient = context.createRadialGradient(cX, cY, 0, cX, cY, wheelRadius);
         // gradient
+        var gradient = context.createRadialGradient(cX, cY, 0, cX, cY, wheelRadius);
         let lightness = 100;
         // first gradient stop
         gradient.addColorStop(0, `hsl(${angle}, 100%, ${lightness}%)`);
@@ -477,7 +482,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
       context.shadowOffsetX = shadowOffsetX;
       context.shadowOffsetY = shadowOffsetY;
       context.shadowBlur = shadowBlur;
-      context.fillStyle = shadowColor;
+      context.fillStyle = 'white';
       context.fill();
       context.restore();
     }
