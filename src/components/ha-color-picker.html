@@ -6,16 +6,18 @@
 <dom-module id='ha-color-picker'>
   <template>
     <style>
+      :host {
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
       #canvas {
         position: relative;
         width: 100%;
         max-width: 330px;
-        user-select: none;
-        overflow: visible;
       }
       #canvas > * {
         display: block;
-        user-select: none;
       }
       #interactionLayer {
         color: white;
