@@ -89,7 +89,7 @@
           on-change='wvSliderChanged'></ha-labeled-slider>
       </div>
 
-      <ha-color-picker on-colorselected='colorPicked' borderWidth=100 borderColor="black">
+      <ha-color-picker on-colorselected='colorPicked' desired-rgb-color='{{colorPickerColor}}' hue-segments=10 saturation-segments=5 ignore-segments throttle=500>
       </ha-color-picker>
 
       <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
@@ -136,6 +136,10 @@
           type: Number,
           value: 0,
         },
+
+        colorPickerColor: {
+          type: Object,
+        }
       };
     }
 
@@ -144,6 +148,7 @@
         this.brightnessSliderValue = newVal.attributes.brightness;
         this.ctSliderValue = newVal.attributes.color_temp;
         this.wvSliderValue = newVal.attributes.white_value;
+        this.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
 
         if (newVal.attributes.effect_list) {
           this.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
@@ -237,29 +242,17 @@
       });
     }
 
+    rgbArrToObj(rgbArr) {
+      return { r: rgbArr[0], g: rgbArr[1], b: rgbArr[2] };
+    }
+
     /**
-     * Called when a new color has been picked. We will not respond to every
-     * color pick event but have a pause between requests.
+     * Called when a new color has been picked.
+     * should be throttled with the 'throttle=' attribute of the color picker
      */
     colorPicked(ev) {
-      if (this.skipColorPicked) {
-        this.colorChanged = true;
-        return;
-      }
-
       this.color = ev.detail.rgb;
-
       this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
-
-      this.colorChanged = false;
-      this.skipColorPicked = true;
-
-      this.colorDebounce = setTimeout(function () {
-        if (this.colorChanged) {
-          this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
-        }
-        this.skipColorPicked = false;
-      }.bind(this), 500);
     }
   }
 

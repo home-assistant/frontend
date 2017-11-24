@@ -1,4 +1,5 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
 
@@ -24,12 +25,19 @@
         height: 100%;
         overflow: visible;
       }
-      #wheel {
+      #backgroundLayer {
         width: 100%;
+        overflow: visible;
+      }
+
+      #wheel {
+        stroke: white;
+        stroke-width: 3;
+        box-shadow: 4px 4px 10px darkgrey;
       }
 
       #marker {
-        fill: currentColor;;
+        fill: currentColor;
         stroke: white;
         stroke-width: 4;
         filter: url(#marker-shadow)
@@ -62,7 +70,9 @@
           </filter>
         </defs>
       </svg>
-      <canvas id='wheel'></canvas>
+      <canvas id='backgroundLayer'></canvas>
+      <!-- this is a hidden element from which we take css styles to apply to canvas drawing -->
+      <div id='wheel' style='display: none'></div>
     </div>
   </template>
 </dom-module>
@@ -70,25 +80,37 @@
 <script>
 /**
  * Color-picker custom element
- * Originally created by bbrewer97202 (Ben Brewer). MIT Licensed.
- * https://github.com/bbrewer97202/color-picker-element
- *
- * Adapted to work with Polymer.
  */
 class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-color-picker'; }
 
   static get properties() {
     return {
-      color: {
-        type: Object,
-      },
-
       hsvColor: {
         type: Object,
-        observer: 'setMarkerOnColor'
       },
 
+      rgbColor: {
+        type: Object,
+      },
+
+      // use these properties to update the state via attributes
+      desiredHsvColor: {
+        type: Object,
+        observer: 'applyHsvColor'
+      },
+
+      desiredRgbColor: {
+        type: Object,
+        observer: 'applyRgbColor'
+      },
+
+
+      // width, height and radius apply to the coordinates of
+      // of the canvas.
+      // border width are relative to these numbers
+      // the onscreen displayed size should be controlled with css
+      // and should be the same or smaller
       width: {
         type: Number,
         value: 500,
@@ -104,22 +126,43 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
         value: 225,
       },
 
-      borderWidth: {
+      // the amount segments for the hue
+      // 0 = continious gradient
+      // other than 0 gives 'pie-pieces'
+      hueSegments: {
         type: Number,
-        value: 5,
+        value: 0,
       },
 
-      borderColor: {
-        type: String,
-        value: 'white',
+      // the amount segments for the hue
+      // 0 = continious gradient
+      // 1 = only fully saturated
+      // > 1 = segments from white to fully saturated
+      saturationSegments: {
+        type: Number,
+        value: 0,
       },
+
+      // set to true to make the segments purely esthetical
+      // this allows selection off all collors, also
+      // inbetween the segments
+      ignoreSegments: {
+        type: Boolean,
+        value: false
+      },
+
+      // throttle te amount of 'colorselected' events fired
+      // value is timeout in milliseconds
+      throttle: {
+        type: Number,
+        value: 1000,
+      }
     };
   }
 
   ready() {
     super.ready();
-    this.setColor = this.setColor.bind(this);
-    this.dragIsThrottled = true;
+    this.applyRgbColor = this.applyRgbColor.bind(this);
     this.setupLayers();
     this.drawColorWheel();
     this.drawMarker();
@@ -139,107 +182,168 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     return { x: cc.x, y: cc.y };
   }
 
+  // Mouse events
+
   onMouseDown(ev) {
     const cc = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
     // return if we're not on the wheel
-    if (!this.inWheel(cc.x, cc.y)) {
+    if (!this.isInWheel(cc.x, cc.y)) {
       return;
     }
     // a mousedown in wheel is always a color select action
-    this.onColorSelect(cc.x, cc.y);
-    this.canvas.classList.add('mouse', 'dragging')
+    this.onMouseSelect(ev);
     // allow dragging
-    this.addEventListener('mousemove', this.onMouseMove);
+    this.canvas.classList.add('mouse', 'dragging');
+    this.addEventListener('mousemove', this.onMouseSelect);
     this.addEventListener('mouseup', this.onMouseUp);
   }
 
   onMouseUp() {
-    this.canvas.classList.remove('mouse', 'dragging')
-    this.removeEventListener('mousemove', this.onMouseMove);
+    this.canvas.classList.remove('mouse', 'dragging');
+    this.removeEventListener('mousemove', this.onMouseSelect);
   }
 
-  onMouseMove(ev) {
-    if (!this.dragIsThrottled) {
-      return;
-    }
-    this.dragIsThrottled = false;
-    this.processColorSelect(ev);
-    setTimeout(() => { this.dragIsThrottled = true; }, 15);
+  onMouseSelect(ev) {
+    requestAnimationFrame(() => this.processUserSelect(ev));
   }
+
+  // Touch events
 
   onTouchStart(ev) {
     var touch = ev.changedTouches[0];
     const cc = this.convertToCanvasCoordinates(touch.clientX, touch.clientY);
     // return if we're not on the wheel
-    if (!this.inWheel(cc.x, cc.y)) {
+    if (!this.isInWheel(cc.x, cc.y)) {
       return;
     }
     if (ev.target === this.marker) { // drag marker
       ev.preventDefault();
       this.canvas.classList.add('touch', 'dragging');
-      this.addEventListener('touchmove', this.onMarkerDrag);
-      this.addEventListener('touchend', this.onDragEnd);
+      this.addEventListener('touchmove', this.onTouchSelect);
+      this.addEventListener('touchend', this.onTouchEnd);
       return;
     }
     // don't fire color selection immediately,
     // wait for touchend and invalidate when we scroll
-    this.tapBecameDrag = false;
+    this.tapBecameScroll = false;
     this.addEventListener('touchend', this.onTap);
-    this.addEventListener('touchmove', () => { this.tapBecameDrag = true; }, { passive: true });
+    this.addEventListener('touchmove', () => { this.tapBecameScroll = true; }, { passive: true });
   }
 
   onTap(ev) {
-    if (this.tapBecameDrag) {
+    if (this.tapBecameScroll) {
       return;
     }
     ev.preventDefault();
-    var touch = ev.changedTouches[0];
-    const cc = this.convertToCanvasCoordinates(touch.clientX, touch.clientY);
-    this.onColorSelect(cc.x, cc.y);
+    this.onTouchSelect(ev);
   }
 
-  onDragEnd() {
+  onTouchEnd() {
     this.canvas.classList.remove('touch', 'dragging');
-    this.removeEventListener('touchmove', this.onMarkerDrag);
+    this.removeEventListener('touchmove', this.onTouchSelect);
   }
 
-  onMarkerDrag(ev) {
-    if (!this.dragIsThrottled) {
+  onTouchSelect(ev) {
+    requestAnimationFrame(() => this.processUserSelect(ev.changedTouches[0]));
+  }
+
+  // Process user input to color
+  processUserSelect(ev) {
+    var canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
+    var hsv = this.getColor(canvasXY.x, canvasXY.y);
+    this.onColorSelect(hsv);
+  }
+
+  // apply color to marker position and canvas
+  onColorSelect(hsv) {
+    this.setMarkerOnColor(hsv); // marker always follows mounse 'raw' hsv value (= mouse position)
+    if (!this.ignoreSegments) { // apply segments if needed
+      hsv = this.applySegmentFilter(hsv);
+    }
+    // always apply the new color to the interface / canvas
+    this.applyColorToCanvas(hsv);
+    // throttling is applied to updating the exposed colors (properties)
+    // and firing of events
+    if (this.colorSelectIsThrottled) {
+      // make sure we apply the last selected color
+      // eventually after throttle limit has passed
+      clearTimeout(this.ensureFinalSelect);
+      this.ensureFinalSelect = setTimeout(() => {
+        this.fireColorSelected(hsv); // do it for the final time
+      }, this.throttle);
       return;
     }
-    this.dragIsThrottled = false;
-    this.processColorSelect(ev.touches[0]);
-    setTimeout(() => { this.dragIsThrottled = true; }, 20);
+    this.fireColorSelected(hsv); // do it
+    this.colorSelectIsThrottled = true;
+    setTimeout(() => {
+      this.colorSelectIsThrottled = false;
+    }, this.throttle);
   }
 
-  processColorSelect(ev) {
-    var canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
-    this.onColorSelect(canvasXY.x, canvasXY.y);
+  fireColorSelected(hsv) {
+    this.hsvColor = hsv;
+    this.rgbColor = this.HSVtoRGB(this.hsvColor);
+    this.fire('colorselected', { rgb: this.rgbColor, hsv: this.hsvColor });
   }
 
-  onColorSelect(x, y) {
-    this.hsvColor = this.getColor(x, y);
-    this.color = this.HSVtoRGB(this.hsvColor);
-    this.fire('colorselected', { rgb: this.color });
-  }
 
+  // set marker position to the given color
   setMarkerOnColor(hsv) {
     var dist = hsv.s * this.radius;
     var theta = ((hsv.h - 180) / 180) * Math.PI;
     var markerdX = -dist * Math.cos(theta);
     var markerdY = -dist * Math.sin(theta);
-    // we're not really converitng hsv to hsl here, but we keep it cheap
-    // setting the color on the interactionLayer, the svg elements can inherit
-    this.interactionLayer.style.color = `hsl(${hsv.h}, ${hsv.v * 100}%, ${100 - (hsv.s * 50)}%)`;
-    var translateString = `translate(${markerdX},${markerdY})`
+    var translateString = `translate(${markerdX},${markerdY})`;
     this.marker.setAttribute('transform', translateString);
     this.tooltip.setAttribute('transform', translateString);
   }
 
-  setColor(rgb) {
-    this.color = rgb;
-    this.hsvColor = this.RGBtoHSV(rgb);
+  // apply given color to interface elements
+  applyColorToCanvas(hsv) {
+    // we're not really converting hsv to hsl here, but we keep it cheap
+    // setting the color on the interactionLayer, the svg elements can inherit
+    this.interactionLayer.style.color = `hsl(${hsv.h}, ${hsv.v * 100}%, ${100 - (hsv.s * 50)}%)`;
   }
+
+  /*
+  * applyRgbColor and applyHsvColor are used for external updates
+  * (to prevent observer loops on this.hsvColor and this.rgbColor)
+  */
+
+  applyRgbColor(rgb) {
+    // do nothing is we already have the same color
+    if (this.rgbColor &&
+        this.rgbColor.r === rgb.r &&
+        this.rgbColor.g === rgb.g &&
+        this.rgbColor.b === rgb.b) {
+      return;
+    }
+    var hsv = this.RGBtoHSV(rgb);
+    this.applyHsvColor(hsv); // marker is always set on 'raw' hsv position
+  }
+
+  applyHsvColor(hsv) {
+    // do nothing is we already have the same color
+    if (this.hsvColor &&
+        this.hsvColor.h === hsv.h &&
+        this.hsvColor.s === hsv.s &&
+        this.hsvColor.v === hsv.v) {
+      return;
+    }
+    this.setMarkerOnColor(hsv); // marker is always set on 'raw' hsv position
+    if (!this.ignoreSegments) { // apply segments if needed
+      hsv = this.applySegmentFilter(hsv);
+    }
+    this.hsvColor = hsv;
+    this.rgbColor = this.HSVtoRGB(hsv);
+    // always apply the new color to the interface / canvas
+    this.applyColorToCanvas(hsv);
+  }
+
+
+  /*
+  * input processing helpers
+  */
 
   getAngle(dX, dY) {
     var theta = Math.atan2(-dY, -dX); // radians from the left edge, clockwise = positive
@@ -247,7 +351,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     return angle;
   }
 
-  inWheel(x, y) {
+  isInWheel(x, y) {
     return this.getDistance(x, y) <= 1;
   }
 
@@ -263,42 +367,103 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     return { h: hue, s: sat, v: 1 };
   }
 
+  applySegmentFilter(hsv) {
+    // apply hue segment steps
+    if (this.hueSegments) {
+      const rest = hsv.h % (360 / this.hueSegments);
+      hsv.h -= rest - (360 / this.hueSegments);
+    }
+
+    // apply saturation segment steps
+    if (this.saturationSegments) {
+      if (this.saturationSegments === 1) {
+        hsv.s = 1;
+      } else {
+        var segmentSize = 1 / this.saturationSegments;
+        var saturationStep = 1 / (this.saturationSegments - 1);
+        var calculatedSat = Math.floor(hsv.s / segmentSize) * saturationStep;
+        hsv.s = Math.min(calculatedSat, 1);
+      }
+    }
+    return hsv;
+  }
+
+  // the canvas and svg elements can be scaled
+  // so they have a seperate coordinate system
   setupLayers() {
     this.canvas = this.$.canvas;
-    this.backgroundLayer = this.$.wheel;
+    this.backgroundLayer = this.$.backgroundLayer;
     this.interactionLayer = this.$.interactionLayer;
 
+    // coordinate origin position (center of the wheel)
     this.originX = this.width / 2;
     this.originY = this.originX;
 
+    // synchronise with/height coordinates
     this.backgroundLayer.width = this.width;
     this.backgroundLayer.height = this.height;
-
     this.interactionLayer.setAttribute('viewBox', `${-this.originX} ${-this.originY} ${this.width} ${this.height}`);
   }
 
   drawColorWheel() {
+    let shadowColor;
+    let shadowOffsetX;
+    let shadowOffsetY;
+    let shadowBlur;
     const context = this.backgroundLayer.getContext('2d');
+    // postioning and sizing
     const cX = this.originX;
     const cY = this.originY;
     const radius = this.radius;
     const counterClockwise = false;
-    const borderWidth = this.borderWidth;
-    const borderColor = this.borderColor;
+    // styling of the wheel
+    const wheelStyle = computeStyleFrom(this.$.wheel);
+    const borderWidth = parseInt(wheelStyle.borderWidth, 10);
+    const borderColor = wheelStyle.borderColor;
+    // extract shadow properties from computed CCS style
+    // both Webkit and Firefox return computed box-shadow as: "rgb(15, 15, 15) 10px 5px 5px 0px"
+    if (wheelStyle.shadow !== 'none') {
+      const pattern = /^(.*?\))\s(.*)/g;
+      const match = pattern.exec(wheelStyle.shadow);
+      const offsets = match[2].split(' ');
+      shadowColor = match[1];
+      shadowOffsetX = parseInt(offsets[0], 10);
+      shadowOffsetY = parseInt(offsets[1], 10);
+      shadowBlur = parseInt(offsets[2], 10) || 0;
+    }
     const borderRadius = radius + (borderWidth / 2);
-    const wheelRadius = borderRadius - 1;
+    const wheelRadius = radius;
 
-    function drawCircle() {
-      for (var angle = 0; angle <= 360; angle += 1) {
-        var startAngle = (angle - 2) * (Math.PI / 180);
-        var endAngle = angle * (Math.PI / 180);
+    function drawCircle(hueSegments, saturationSegments) {
+      hueSegments = hueSegments || 360; // reset 0 segments to 360
+      const angleStep = 360 / hueSegments;
+      for (var angle = 0; angle <= 360; angle += angleStep) {
+        var startAngle = ((angle - angleStep) - 1) * (Math.PI / 180);
+        var endAngle = (angle) * (Math.PI / 180);
         context.beginPath();
         context.moveTo(cX, cY);
         context.arc(cX, cY, wheelRadius, startAngle, endAngle, counterClockwise);
         context.closePath();
         var gradient = context.createRadialGradient(cX, cY, 0, cX, cY, wheelRadius);
-        gradient.addColorStop(0.1, 'hsl(' + angle + ', 100%, 100%)');
-        gradient.addColorStop(0.95, 'hsl(' + angle + ', 100%, 50%)');
+        // gradient
+        let lightness = 100;
+        // first gradient stop
+        gradient.addColorStop(0, `hsl(${angle}, 100%, ${lightness}%)`);
+        if (saturationSegments > 0) {
+          const ratioStep = 1 / saturationSegments;
+          let ratio = 0;
+          for (var stop = 1; stop < saturationSegments; stop += 1) {
+            var prevLighness = lightness;
+            ratio = stop * ratioStep;
+            lightness = 100 - (50 * ratio);
+            gradient.addColorStop(ratio, `hsl(${angle}, 100%, ${prevLighness}%)`);
+            gradient.addColorStop(ratio, `hsl(${angle}, 100%, ${lightness}%)`);
+          }
+          gradient.addColorStop(ratio, `hsl(${angle}, 100%, 50%)`);
+        }
+        // last gradient stop
+        gradient.addColorStop(1, `hsl(${angle}, 100%, 50%)`);
+
         context.fillStyle = gradient;
         context.fill();
       }
@@ -307,12 +472,12 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     function drawShadow() {
       context.save();
       context.beginPath();
-      context.arc(cX, cY, radius, 0, 2 * Math.PI, false);
-      context.shadowOffsetX = 3;
-      context.shadowOffsetY = 3;
-      context.shadowBlur = 14;
-      context.shadowColor = 'grey';
-      context.fillStyle = 'white';
+      context.arc(cX, cY, borderRadius, 0, 2 * Math.PI, false);
+      context.shadowColor = shadowColor;
+      context.shadowOffsetX = shadowOffsetX;
+      context.shadowOffsetY = shadowOffsetY;
+      context.shadowBlur = shadowBlur;
+      context.fillStyle = shadowColor;
       context.fill();
       context.restore();
     }
@@ -324,17 +489,40 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
       context.strokeStyle = borderColor;
       context.stroke();
     }
-    drawShadow();
-    drawCircle();
-    drawBorder();
+
+    function computeStyleFrom(element) {
+      var styleReference = window.getComputedStyle(element, null);
+      // Get needed stuff from the dom and put it in the cache
+      // P.S. Didn't test if canvas names are the same as css names.
+      // If not you'll have to translate itgetPropertyValue('box-shadow')
+      var elementStyle = {
+        borderWidth: styleReference.getPropertyValue('stroke-width'),
+        borderColor: styleReference.getPropertyValue('stroke'),
+        shadow: styleReference.getPropertyValue('box-shadow')
+      };
+
+      // Remove the element from the dom again
+      // parentElement.removeChild(shadowElement);
+
+      return elementStyle;
+    }
+
+    if (wheelStyle.shadow !== 'none') {
+      drawShadow();
+    }
+    drawCircle(this.hueSegments, this.saturationSegments);
+
+    if (borderWidth > 0) {
+      drawBorder();
+    }
   }
 
   drawMarker() {
     const svgElement = this.interactionLayer;
     const markerradius = this.radius * 0.08;
     const tooltipradius = this.radius * 0.15;
-    const TooltipOffsetY = -(tooltipradius*2)
-    const TooltipOffsetX = 0
+    const TooltipOffsetY = -(tooltipradius * 2);
+    const TooltipOffsetX = 0;
 
     svgElement.marker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     svgElement.marker.setAttribute('id', 'marker');
@@ -402,7 +590,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
         case g: h = (b - r) / d + 2; break;
         case b: h = (r - g) / d + 4; break;
       }
-      h /= 6;
+      h *= 60; // hue values 0-360
     }
     return {
       h: h,
