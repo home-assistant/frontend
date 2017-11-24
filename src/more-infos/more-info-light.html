@@ -47,6 +47,11 @@
 
       .has-rgb_color ha-color-picker {
         max-height: 500px;
+        --ha-color-picker-wheel-borderwith: 5;
+        --ha-color-picker-wheel-bordercolor: white;
+        --ha-color-picker-wheel-shadow: none;
+        --ha-color-picker-marker-borderwith: 2;
+        --ha-color-picker-marker-bordercolor: white;
       }
 
       paper-item {
@@ -89,7 +94,14 @@
           on-change='wvSliderChanged'></ha-labeled-slider>
       </div>
 
-      <ha-color-picker on-colorselected='colorPicked' desired-rgb-color='{{colorPickerColor}}' hue-segments=10 saturation-segments=5 ignore-segments throttle=500>
+      <ha-color-picker
+        on-colorselected='colorPicked'
+        desired-rgb-color='{{colorPickerColor}}'
+        throttle=500
+        hue-segments=30
+        saturation-segments=10
+        ignore-segments
+      >
       </ha-color-picker>
 
       <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>

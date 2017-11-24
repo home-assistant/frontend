@@ -31,15 +31,15 @@
       }
 
       #wheel {
-        stroke: white;
-        stroke-width: 3;
-        box-shadow: 4px 4px 10px darkgrey;
+        stroke: var(--ha-color-picker-wheel-bordercolor, white);
+        stroke-width: var(--ha-color-picker-wheel-borderwith, 3);
+        box-shadow: var(--ha-color-picker-wheel-shadow, 4px 4px 10px darkgrey);
       }
 
       #marker {
         fill: currentColor;
-        stroke: white;
-        stroke-width: 4;
+        stroke: var(--ha-color-picker-marker-bordercolor, white);
+        stroke-width: var(--ha-color-picker-marker-borderwith, 3);
         filter: url(#marker-shadow)
       }
       .dragging #marker {
@@ -48,8 +48,8 @@
       #colorTooltip {
         display: none;
         fill: currentColor;
-        stroke: white;
-        stroke-width: 4;
+        stroke: var(--ha-color-picker-tooltip-bordercolor, white);
+        stroke-width: var(--ha-color-picker-tooltip-borderwith, 3);
       }
 
       .touch.dragging #colorTooltip {
@@ -437,6 +437,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
     const borderRadius = radius + (borderWidth / 2);
     const wheelRadius = radius;
+    const shadowRadius = radius + borderWidth;
 
     function drawCircle(hueSegments, saturationSegments) {
       hueSegments = hueSegments || 360; // reset 0 segments to 360
@@ -477,7 +478,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     function drawShadow() {
       context.save();
       context.beginPath();
-      context.arc(cX, cY, borderRadius, 0, 2 * Math.PI, false);
+      context.arc(cX, cY, shadowRadius, 0, 2 * Math.PI, false);
       context.shadowColor = shadowColor;
       context.shadowOffsetX = shadowOffsetX;
       context.shadowOffsetY = shadowOffsetY;
