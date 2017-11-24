@@ -42,7 +42,7 @@ export default class Action extends Component {
     }
   }
 
-  render({ index, action, onChange }) {
+  render({ index, action, onChange, hass }) {
     const type = getType(action);
     const Comp = type && TYPES[type];
     const selected = OPTIONS.indexOf(type);
@@ -70,6 +70,7 @@ export default class Action extends Component {
           index={index}
           action={action}
           onChange={onChange}
+          hass={hass}
         />
       </div>
     );

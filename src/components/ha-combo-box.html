@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box-light.html">
-<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <dom-module id="ha-combo-box">
   <template>
@@ -11,6 +11,9 @@
         padding: 2px;
         color: var(--secondary-text-color);
       }
+      [hidden] {
+        display: none;
+      }
     </style>
     <vaadin-combo-box-light
       items='[[items]]'
@@ -19,8 +22,6 @@
       value='{{value}}'
       opened='{{opened}}'
       allow-custom-value='[[allowCustomValue]]'
-      pattern="[[pattern]]"
-      prevent-invalid-input="[[preventInvalidInput]]"
     >
       <paper-input
         autofocus="[[autofocus]]"
@@ -31,12 +32,14 @@
           slot="suffix"
           class="clear-button"
           icon="mdi:close"
+          hidden$='[[!value]]'
         >Clear</paper-icon-button>
         <paper-icon-button
           slot="suffix"
           class="toggle-button"
           icon='[[_computeToggleIcon(opened)]]'
-        >Toggle</paper-icon-button>
+          hidden$='[[!items.length]]'
+          >Toggle</paper-icon-button>
       </paper-input>
       <template>
         <style>
@@ -71,8 +74,6 @@ class HaComboBox extends Polymer.Element {
         value: false,
         observer: '_openedChanged',
       },
-      pattern: String,
-      preventInvalidInput: Boolean,
       value: {
         type: String,
         notify: true,

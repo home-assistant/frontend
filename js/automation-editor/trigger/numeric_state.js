@@ -7,20 +7,29 @@ export default class NumericStateTrigger extends Component {
     super();
 
     this.onChange = onChangeEvent.bind(this, 'trigger');
+    this.entityPicked = this.entityPicked.bind(this);
+  }
+
+  entityPicked(ev) {
+    this.props.onChange(this.props.index, {
+      ...this.props.trigger,
+      entity_id: ev.target.value,
+    });
   }
 
   /* eslint-disable camelcase */
-  render({ trigger }) {
+  render({ trigger, hass }) {
     const {
       value_template, entity_id, below, above
     } = trigger;
+
     return (
       <div>
-        <paper-input
-          label="Entity Id"
-          name="entity_id"
+        <ha-entity-picker
           value={entity_id}
-          onChange={this.onChange}
+          onChange={this.entityPicked}
+          hass={hass}
+          allowCustomEntity
         />
         <paper-input
           label="Above"

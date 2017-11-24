@@ -7,20 +7,28 @@ export default class NumericStateCondition extends Component {
     super();
 
     this.onChange = onChangeEvent.bind(this, 'condition');
+    this.entityPicked = this.entityPicked.bind(this);
+  }
+
+  entityPicked(ev) {
+    this.props.onChange(this.props.index, {
+      ...this.props.condition,
+      entity_id: ev.target.value,
+    });
   }
 
   /* eslint-disable camelcase */
-  render({ condition }) {
+  render({ condition, hass }) {
     const {
       value_template, entity_id, below, above
     } = condition;
     return (
       <div>
-        <paper-input
-          label="Entity Id"
-          name="entity_id"
+        <ha-entity-picker
           value={entity_id}
-          onChange={this.onChange}
+          onChange={this.entityPicked}
+          hass={hass}
+          allowCustomEntity
         />
         <paper-input
           label="Above"
