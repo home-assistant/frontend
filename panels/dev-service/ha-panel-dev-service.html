@@ -168,143 +168,142 @@
 
 <script>
 {
-const ERROR_SENTINEL = {};
-class HaPanelDevService extends Polymer.Element {
-  static get is() { return 'ha-panel-dev-service'; }
+  const ERROR_SENTINEL = {};
+  class HaPanelDevService extends Polymer.Element {
+    static get is() { return 'ha-panel-dev-service'; }
 
-  static get properties() {
-    return {
-      hass: {
-        type: Object,
-      },
+    static get properties() {
+      return {
+        hass: {
+          type: Object,
+        },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
+        narrow: {
+          type: Boolean,
+          value: false,
+        },
 
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
+        showMenu: {
+          type: Boolean,
+          value: false,
+        },
 
-      domainService: {
-        type: String,
-        observer: '_domainServiceChanged',
-      },
+        domainService: {
+          type: String,
+          observer: '_domainServiceChanged',
+        },
 
-      _domain: {
-        type: String,
-        computed: '_computeDomain(domainService)',
-      },
+        _domain: {
+          type: String,
+          computed: '_computeDomain(domainService)',
+        },
 
-      _service: {
-        type: String,
-        computed: '_computeService(domainService)',
-      },
+        _service: {
+          type: String,
+          computed: '_computeService(domainService)',
+        },
 
-      serviceData: {
-        type: String,
-        value: '',
-      },
+        serviceData: {
+          type: String,
+          value: '',
+        },
 
-      parsedJSON: {
-        type: Object,
-        computed: '_computeParsedServiceData(serviceData)'
-      },
+        parsedJSON: {
+          type: Object,
+          computed: '_computeParsedServiceData(serviceData)'
+        },
 
-      validJSON: {
-        type: Boolean,
-        computed: '_computeValidJSON(parsedJSON)',
-      },
+        validJSON: {
+          type: Boolean,
+          computed: '_computeValidJSON(parsedJSON)',
+        },
 
-      _attributes: {
-        type: Array,
-        computed: '_computeAttributesArray(hass, _domain, _service)',
-      },
+        _attributes: {
+          type: Array,
+          computed: '_computeAttributesArray(hass, _domain, _service)',
+        },
 
-      _description: {
-        type: String,
-        computed: '_computeDescription(hass, _domain, _service)',
-      },
-    };
-  }
-
-  _domainServiceChanged() {
-    this.serviceData = '';
-  }
-
-  _computeAttributesArray(hass, domain, service) {
-    const serviceDomains = hass.config.services;
-    if (!(domain in serviceDomains)) return [];
-    if (!(service in serviceDomains[domain])) return [];
-
-    const fields = serviceDomains[domain][service].fields;
-    return Object.keys(fields).map(function (field) {
-      return Object.assign({ key: field }, fields[field]);
-    });
-  }
-
-  _computeDescription(hass, domain, service) {
-    const serviceDomains = hass.config.services;
-    if (!(domain in serviceDomains)) return undefined;
-    if (!(service in serviceDomains[domain])) return undefined;
-    return serviceDomains[domain][service].description;
-  }
-
-  _computeServicedataKey(domainService) {
-    return 'panel-dev-service-state-servicedata.${domainService}';
-  }
-
-  _computeDomain(domainService) {
-    return domainService.split('.', 1)[0]
-  }
-
-  _computeService(domainService) {
-    return domainService.split('.', 2)[1] || null;
-  }
-
-  _computeParsedServiceData(serviceData) {
-    try {
-      return this.serviceData ? JSON.parse(this.serviceData) : {};
-    } catch (err) {
-      return ERROR_SENTINEL;
-    }
-  }
-
-  _computeValidJSON(parsedJSON) {
-    return parsedJSON !== ERROR_SENTINEL;
-  }
-
-  _computeHasEntity(attributes) {
-    return attributes.some(attr => attr.key === 'entity_id');
-  }
-
-  _computeEntityValue(parsedJSON) {
-    return parsedJSON === ERROR_SENTINEL ? '' : parsedJSON.entity_id;
-  }
-
-  _computeEntityDomainFilter(domain) {
-    return domain === 'homeassistant' ? null : domain;
-  }
-
-  _callService() {
-    if (this.parsedJSON === ERROR_SENTINEL) {
-      // eslint-disable-next-line
-      alert(`Error parsing JSON: ${this.serviceData}`);
+        _description: {
+          type: String,
+          computed: '_computeDescription(hass, _domain, _service)',
+        },
+      };
     }
 
-    this.hass.callService(this.domain, this.service, this.parsedJSON);
-  }
+    _domainServiceChanged() {
+      this.serviceData = '';
+    }
 
-  _entityPicked(ev) {
-    this.serviceData = JSON.stringify(
-      Object.assign({}, this.parsedJSON, {
+    _computeAttributesArray(hass, domain, service) {
+      const serviceDomains = hass.config.services;
+      if (!(domain in serviceDomains)) return [];
+      if (!(service in serviceDomains[domain])) return [];
+
+      const fields = serviceDomains[domain][service].fields;
+      return Object.keys(fields).map(function (field) {
+        return Object.assign({ key: field }, fields[field]);
+      });
+    }
+
+    _computeDescription(hass, domain, service) {
+      const serviceDomains = hass.config.services;
+      if (!(domain in serviceDomains)) return undefined;
+      if (!(service in serviceDomains[domain])) return undefined;
+      return serviceDomains[domain][service].description;
+    }
+
+    _computeServicedataKey(domainService) {
+      return `panel-dev-service-state-servicedata.${domainService}`;
+    }
+
+    _computeDomain(domainService) {
+      return domainService.split('.', 1)[0];
+    }
+
+    _computeService(domainService) {
+      return domainService.split('.', 2)[1] || null;
+    }
+
+    _computeParsedServiceData(serviceData) {
+      try {
+        return serviceData ? JSON.parse(serviceData) : {};
+      } catch (err) {
+        return ERROR_SENTINEL;
+      }
+    }
+
+    _computeValidJSON(parsedJSON) {
+      return parsedJSON !== ERROR_SENTINEL;
+    }
+
+    _computeHasEntity(attributes) {
+      return attributes.some(attr => attr.key === 'entity_id');
+    }
+
+    _computeEntityValue(parsedJSON) {
+      return parsedJSON === ERROR_SENTINEL ? '' : parsedJSON.entity_id;
+    }
+
+    _computeEntityDomainFilter(domain) {
+      return domain === 'homeassistant' ? null : domain;
+    }
+
+    _callService() {
+      if (this.parsedJSON === ERROR_SENTINEL) {
+        // eslint-disable-next-line
+        alert(`Error parsing JSON: ${this.serviceData}`);
+      }
+
+      this.hass.callService(this.domain, this.service, this.parsedJSON);
+    }
+
+    _entityPicked(ev) {
+      this.serviceData = JSON.stringify(Object.assign({}, this.parsedJSON, {
         entity_id: ev.target.value
       }), null, 2);
+    }
   }
-}
 
-customElements.define(HaPanelDevService.is, HaPanelDevService);
+  customElements.define(HaPanelDevService.is, HaPanelDevService);
 }
 </script>

@@ -45,6 +45,7 @@
     "no-restricted-globals": 0,
     "prefer-promise-reject-errors": 0,
     "import/prefer-default-export": 0,
+    "object-curly-newline": 0,
     "react/jsx-no-bind": [2, { "ignoreRefs": true }],
     "react/jsx-no-duplicate-props": 2,
     "react/self-closing-comp": 2,

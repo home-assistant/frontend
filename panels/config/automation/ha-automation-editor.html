@@ -187,7 +187,6 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     // onChange gets called a lot during initial rendering causing recursing calls.
     if (this._rendered === null) return;
     this.config = config;
-    console.log("NEW CONFIG", config)
     this.errors = null;
     this.dirty = true;
     this._updateComponent();

@@ -115,8 +115,7 @@ class HaEntityPicker extends Polymer.Element {
     let entityIds = Object.keys(hass.states);
 
     if (domainFilter) {
-      entityIds = entityIds.filter(
-        ent_id => ent_id.substr(0, ent_id.indexOf('.')) === domainFilter)
+      entityIds = entityIds.filter(eid => eid.substr(0, eid.indexOf('.')) === domainFilter);
     }
 
     let entities = entityIds.sort().map(key => hass.states[key]);
