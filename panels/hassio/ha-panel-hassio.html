@@ -1,25 +1,25 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="./hassio-main.html">
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id="ha-panel-hassio">
   <template>
     <style>
-      [hidden] {
-        display: none !important;
+      iframe {
+        border: 0;
+        width: 100%;
+        height: 100%;
       }
     </style>
-
-    <hassio-main
-      hass='[[hass]]'
-      narrow='[[narrow]]'
-      show-menu='[[showMenu]]'
-      route='[[route]]'
-    ></hassio-main>
+    <iframe
+      id='iframe'
+      src="[[iframeUrl]]"
+    ></iframe>
   </template>
 </dom-module>
 
 <script>
-class HaPanelHassio extends Polymer.Element {
+class HaPanelHassio extends
+  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-panel-hassio'; }
 
   static get properties() {
@@ -29,21 +29,50 @@ class HaPanelHassio extends Polymer.Element {
       showMenu: Boolean,
       route: Object,
 
-      loaded: {
-        type: Boolean,
-        value: false,
-      },
+      iframeUrl: {
+        type: String,
+        value: window.HASS_DEV ?
+          '/home-assistant-polymer/hassio/index.html' : '/api/hassio/iframe',
+      }
     };
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    if (!window.HASS_DEV) {
-      Polymer.importHref(`/api/hassio/panel_${window.HASS_BUILD}`, null, () => {
-        // eslint-disable-next-line
-        alert('Failed to load the Hass.io panel from supervisor.');
-      });
+  static get observers() {
+    return [
+      '_dataChanged(hass, narrow, showMenu, route)'
+    ];
+  }
+
+  ready() {
+    super.ready();
+    // Make it available for the iframe to interact
+    window.hassioPanel = this;
+  }
+
+  _dataChanged(hass, narrow, showMenu, route) {
+    this._updateProperties({ hass, narrow, showMenu, route });
+  }
+
+  _updateProperties(data) {
+    const setProperties = this.$.iframe.contentWindow.setProperties;
+
+    // Delay calling setProperties until iframe loaded
+    if (!setProperties) {
+      // Check if we already have a setTimeout scheduled
+      const needTimeout = !this._dataToSet;
+      this._dataToSet = data;
+
+      if (needTimeout) {
+        setTimeout(() => {
+          const dataToSet = this._dataToSet;
+          this._dataToSet = null;
+          this._updateProperties(dataToSet);
+        }, 100);
+      }
+      return;
     }
+
+    setProperties(data);
   }
 }
 

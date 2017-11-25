@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hass.io</title>
+    <meta name='viewport' content='width=device-width, user-scalable=no'>
+    <style>
+      body {
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <hassio-app></hassio-app>
+    <script>
+      var webComponentsSupported = (
+        'customElements' in window &&
+        'import' in document.createElement('link') &&
+        'content' in document.createElement('template'));
+      if (!webComponentsSupported) {
+        var e = document.createElement('script');
+        e.src = '/static/webcomponents-lite.js';
+        document.head.appendChild(e);
+      }
+    </script>
+    <link rel='import' href='./hassio-app.html'>
+    <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
+  </body>
+</html>
