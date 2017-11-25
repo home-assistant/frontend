@@ -1,7 +1,10 @@
+const del = require('del');
 const fs = require('fs');
 const gulp = require('gulp');
 const rename = require('gulp-rename');
-const textTransformation = require('gulp-text-simple');
+const gzip = require('gulp-gzip');
+const path = require('path');
+const runSequence = require('run-sequence');
 
 const {
   stripImportsStrategy,
@@ -11,36 +14,42 @@ const {
   bundledStreamFromHTML,
 } = require('../common/html');
 
+const OUTPUT_DIR = 'build-hassio/'
+
 const DEPS_TO_STRIP = [
   'bower_components/font-roboto/roboto.html',
   'bower_components/paper-styles/color.html',
 ];
 
-// Throw exception if source cannot be found.
-function replaceFail(source, find, replace) {
-  if (source.indexOf(find) === -1) {
-    throw Error(`Unable to find ${find}`);
-  }
-  return source.replace(find, replace);
-}
-
-const wrapInIndex = textTransformation((panel) => {
-  panel = replaceFail(panel, '<html><head></head><body><div hidden="" by-polymer-bundler="">', '');
-  panel = replaceFail(panel, '</body></html>', '');
-  const index = fs.readFileSync('hassio/index.html', 'UTF-8');
-  return replaceFail(index, "<link rel='import' href='./hassio-app.html'>", panel);
-});
-
-async function buildHassioPanel(es6) {
+async function buildHassioPanel() {
   const stream = await bundledStreamFromHTML('hassio/hassio-app.html', {
     strategy: stripImportsStrategy(DEPS_TO_STRIP)
   });
 
-  return minifyStream(stream, es6)
-    .pipe(rename('hassio.html'))
-    .pipe(wrapInIndex())
-    .pipe(gulp.dest(es6 ? 'build-temp' : 'build-temp-es5'));
+  return minifyStream(stream, /* es6= */ false)
+    .pipe(rename('hassio-app.html'))
+    .pipe(gulp.dest(OUTPUT_DIR));
 }
 
-gulp.task('hassio-panel-es5', buildHassioPanel.bind(null, /* es6= */ false));
-// gulp.task('hassio-panel', buildHassioPanel.bind(null, /* es6= */ true));
+function copyHassioIndex() {
+  return gulp.src('hassio/index.html')
+    .pipe(gulp.dest(OUTPUT_DIR));
+}
+
+function gzipOutput() {
+  return gulp.src(path.resolve(OUTPUT_DIR, '*.html'))
+    .pipe(gzip({ skipGrowingFiles: true }))
+    .pipe(gulp.dest(OUTPUT_DIR));
+}
+
+gulp.task('hassio-clean', () => del([OUTPUT_DIR]));
+gulp.task('hassio-panel-es5', buildHassioPanel);
+gulp.task('hassio-index-es5', copyHassioIndex);
+gulp.task('hassio-gzip-es5', gzipOutput);
+
+gulp.task('hassio-es5', () => runSequence.use(gulp)(
+  'hassio-clean',
+  'hassio-panel-es5',
+  'hassio-index-es5',
+  'hassio-gzip-es5',
+));
