@@ -1,7 +1,7 @@
 import { h, Component } from 'preact';
 
-import TriggerRow from './trigger_row';
-import StateTrigger from './state';
+import TriggerRow from './trigger_row.js';
+import StateTrigger from './state.js';
 
 export default class Trigger extends Component {
   constructor() {

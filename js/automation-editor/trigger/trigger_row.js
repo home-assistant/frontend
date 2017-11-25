@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import TriggerEdit from './trigger_edit';
+import TriggerEdit from './trigger_edit.js';
 
 export default class TriggerRow extends Component {
   constructor() {
