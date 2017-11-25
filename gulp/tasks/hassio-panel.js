@@ -27,9 +27,9 @@ function replaceFail(source, find, replace) {
 const wrapInIndex = textTransformation((panel) => {
   panel = replaceFail(panel, '<html><head></head><body><div hidden="" by-polymer-bundler="">', '');
   panel = replaceFail(panel, '</body></html>', '');
-  const index = fs.readFileSync('hassio/index.html', 'UTF-8')
+  const index = fs.readFileSync('hassio/index.html', 'UTF-8');
   return replaceFail(index, "<link rel='import' href='./hassio-app.html'>", panel);
-})
+});
 
 async function buildHassioPanel(es6) {
   const stream = await bundledStreamFromHTML('hassio/hassio-app.html', {
