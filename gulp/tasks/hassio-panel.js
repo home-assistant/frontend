@@ -1,5 +1,4 @@
 const del = require('del');
-const fs = require('fs');
 const gulp = require('gulp');
 const rename = require('gulp-rename');
 const gzip = require('gulp-gzip');
@@ -14,7 +13,7 @@ const {
   bundledStreamFromHTML,
 } = require('../common/html');
 
-const OUTPUT_DIR = 'build-hassio/'
+const OUTPUT_DIR = 'build-hassio/';
 
 const DEPS_TO_STRIP = [
   'bower_components/font-roboto/roboto.html',
