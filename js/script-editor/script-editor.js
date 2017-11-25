@@ -1,5 +1,5 @@
 import { h, render } from 'preact';
-import Script from './script';
+import Script from './script.js';
 
 window.ScriptEditor = function (mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);

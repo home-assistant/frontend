@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import ConditionEdit from './condition_edit';
+import ConditionEdit from './condition_edit.js';
 
 export default class ConditionRow extends Component {
   constructor() {

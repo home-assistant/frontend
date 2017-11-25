@@ -46,6 +46,8 @@
     "no-restricted-globals": 0,
     "prefer-promise-reject-errors": 0,
     "import/prefer-default-export": 0,
+    "import/no-unresolved": 0,
+    "import/extensions": [2, "ignorePackages"],
     "react/jsx-no-bind": [2, { "ignoreRefs": true }],
     "react/jsx-no-duplicate-props": 2,
     "react/self-closing-comp": 2,

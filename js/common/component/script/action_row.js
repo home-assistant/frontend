@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import ActionEdit from './action_edit';
+import ActionEdit from './action_edit.js';
 
 export default class Action extends Component {
   constructor() {
