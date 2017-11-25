@@ -1,11 +1,11 @@
-import computeDomain from './compute_domain';
-import formatDateTime from './format_date_time';
-import formatDate from './format_date';
-import formatTime from './format_time';
+import computeStateDomain from './compute_state_domain.js';
+import formatDateTime from './format_date_time.js';
+import formatDate from './format_date.js';
+import formatTime from './format_time.js';
 
 export default function computeStateDisplay(haLocalize, stateObj, language) {
   if (!stateObj._stateDisplay) {
-    const domain = computeDomain(stateObj);
+    const domain = computeStateDomain(stateObj);
     if (domain === 'binary_sensor') {
       // Try device class translation, then default binary sensor translation
       if (stateObj.attributes.device_class) {

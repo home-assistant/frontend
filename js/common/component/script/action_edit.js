@@ -1,10 +1,10 @@
 import { h, Component } from 'preact';
 
-import CallServiceAction from './call_service';
-import ConditionAction from './condition';
-import DelayAction from './delay';
-import EventAction from './event';
-import WaitAction from './wait';
+import CallServiceAction from './call_service.js';
+import ConditionAction from './condition.js';
+import DelayAction from './delay.js';
+import EventAction from './event.js';
+import WaitAction from './wait.js';
 
 const TYPES = {
   'Call Service': CallServiceAction,

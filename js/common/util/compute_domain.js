@@ -1,7 +1,3 @@
-export default function computeDomain(stateObj) {
-  if (!stateObj._domain) {
-    stateObj._domain = stateObj.entity_id.substr(0, stateObj.entity_id.indexOf('.'));
-  }
-
-  return stateObj._domain;
+export default function computeDomain(entityId) {
+  return entityId.substr(0, entityId.indexOf('.'));
 }

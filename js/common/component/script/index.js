@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import ActionRow from './action_row';
+import ActionRow from './action_row.js';
 
 export default class Script extends Component {
   constructor() {
