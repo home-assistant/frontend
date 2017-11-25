@@ -3,5 +3,8 @@
   "plugins": [
     "html",
     "react"
-  ]
+  ],
+  "env": {
+    "browser": true
+  }
 }

@@ -2,17 +2,18 @@ import attributeClassNames from '../../../js/common/util/attribute_class_names';
 
 const assert = require('assert');
 
-describe('attributeClassNames', function() {
+describe('attributeClassNames', () => {
   const attrs = ['mock_attr1', 'mock_attr2'];
 
-  it('Skips null states', function() {
+  it('Skips null states', () => {
     const stateObj = null;
     assert.strictEqual(
       attributeClassNames(stateObj, attrs),
-      '');
+      ''
+    );
   });
 
-  it('Matches no attrbutes', function() {
+  it('Matches no attrbutes', () => {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
@@ -21,10 +22,11 @@ describe('attributeClassNames', function() {
     };
     assert.strictEqual(
       attributeClassNames(stateObj, attrs),
-      '');
+      ''
+    );
   });
 
-  it('Matches one attrbute', function() {
+  it('Matches one attrbute', () => {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
@@ -34,10 +36,11 @@ describe('attributeClassNames', function() {
     };
     assert.strictEqual(
       attributeClassNames(stateObj, attrs),
-      'has-mock_attr1');
+      'has-mock_attr1'
+    );
   });
 
-  it('Matches two attrbutes', function() {
+  it('Matches two attrbutes', () => {
     const stateObj = {
       attributes: {
         other_attr_1: 1,
@@ -48,6 +51,7 @@ describe('attributeClassNames', function() {
     };
     assert.strictEqual(
       attributeClassNames(stateObj, attrs),
-      'has-mock_attr1 has-mock_attr2');
+      'has-mock_attr1 has-mock_attr2'
+    );
   });
 });
