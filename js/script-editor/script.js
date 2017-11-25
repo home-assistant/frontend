@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import Script from '../common/component/script';
+import Script from '../common/component/script/index.js';
 
 export default class ScriptEditor extends Component {
   constructor() {

@@ -1,11 +1,11 @@
 import { h, Component } from 'preact';
 
-import NumericStateCondition from './numeric_state';
-import StateCondition from './state';
-import SunCondition from './sun';
-import TemplateCondition from './template';
-import TimeCondition from './time';
-import ZoneCondition from './zone';
+import NumericStateCondition from './numeric_state.js';
+import StateCondition from './state.js';
+import SunCondition from './sun.js';
+import TemplateCondition from './template.js';
+import TimeCondition from './time.js';
+import ZoneCondition from './zone.js';
 
 const TYPES = {
   state: StateCondition,
