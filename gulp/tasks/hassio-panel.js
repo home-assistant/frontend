@@ -1,5 +1,7 @@
+const fs = require('fs');
 const gulp = require('gulp');
 const rename = require('gulp-rename');
+const textTransformation = require('gulp-text-simple');
 
 const {
   stripImportsStrategy,
@@ -7,39 +9,38 @@ const {
 const minifyStream = require('../common/transform').minifyStream;
 const {
   bundledStreamFromHTML,
-  findDependencies
 } = require('../common/html');
-
-const { polymer_dir } = require('../config');
 
 const DEPS_TO_STRIP = [
   'bower_components/font-roboto/roboto.html',
   'bower_components/paper-styles/color.html',
-  'bower_components/iron-meta/iron-meta.html',
 ];
-const DEPS_TO_STRIP_RECURSIVELY = [
-  'bower_components/polymer/polymer.html',
-];
+
+// Throw exception if source cannot be found.
+function replaceFail(source, find, replace) {
+  if (source.indexOf(find) === -1) {
+    throw Error(`Unable to find ${find}`);
+  }
+  return source.replace(find, replace);
+}
+
+const wrapInIndex = textTransformation((panel) => {
+  panel = replaceFail(panel, '<html><head></head><body><div hidden="" by-polymer-bundler="">', '');
+  panel = replaceFail(panel, '</body></html>', '');
+  const index = fs.readFileSync('hassio/index.html', 'UTF-8')
+  return replaceFail(index, "<link rel='import' href='./hassio-app.html'>", panel);
+})
 
 async function buildHassioPanel(es6) {
-  const toStrip = [...DEPS_TO_STRIP];
-
-  for (const dep of DEPS_TO_STRIP_RECURSIVELY) {
-    toStrip.push(dep);
-    const deps = await findDependencies(polymer_dir, dep);
-    for (const importUrl of deps) {
-      toStrip.push(importUrl);
-    }
-  }
-
-  const stream = await bundledStreamFromHTML('panels/hassio/hassio-main.html', {
-    strategy: stripImportsStrategy(toStrip)
+  const stream = await bundledStreamFromHTML('hassio/hassio-app.html', {
+    strategy: stripImportsStrategy(DEPS_TO_STRIP)
   });
 
   return minifyStream(stream, es6)
-    .pipe(rename('hassio-main.html'))
+    .pipe(rename('hassio.html'))
+    .pipe(wrapInIndex())
     .pipe(gulp.dest(es6 ? 'build-temp' : 'build-temp-es5'));
 }
 
 gulp.task('hassio-panel-es5', buildHassioPanel.bind(null, /* es6= */ false));
-gulp.task('hassio-panel', buildHassioPanel.bind(null, /* es6= */ true));
+// gulp.task('hassio-panel', buildHassioPanel.bind(null, /* es6= */ true));

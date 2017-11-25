@@ -54,6 +54,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-rollup-each": "^2.0.0",
     "gulp-streamify": "^1.0.2",
+    "gulp-text-simple": "^0.4.1",
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
     "gulp-vinyl-zip": "^2.1.0",

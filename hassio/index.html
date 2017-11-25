@@ -15,17 +15,23 @@
   <body>
     <hassio-app></hassio-app>
     <script>
+      function addScript(src) {
+        var e = document.createElement('script');
+        e.src = src;
+        document.head.appendChild(e);
+      }
+      if (!window.parent.HASS_DEV) {
+        addScript('/frontend_es5/custom-elements-es5-adapter.js');
+      }
       var webComponentsSupported = (
         'customElements' in window &&
         'import' in document.createElement('link') &&
         'content' in document.createElement('template'));
       if (!webComponentsSupported) {
-        var e = document.createElement('script');
-        e.src = '/static/webcomponents-lite.js';
-        document.head.appendChild(e);
+        addScript('/static/webcomponents-lite.js')
       }
     </script>
     <link rel='import' href='./hassio-app.html'>
-    <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
+    <link rel='import' href='/static/mdi.html' async>
   </body>
 </html>
