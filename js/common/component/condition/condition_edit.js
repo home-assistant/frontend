@@ -36,7 +36,7 @@ export default class ConditionRow extends Component {
     }
   }
 
-  render({ index, condition, onChange }) {
+  render({ index, condition, onChange, hass }) {
     const Comp = TYPES[condition.condition];
     const selected = OPTIONS.indexOf(condition.condition);
 
@@ -64,6 +64,7 @@ export default class ConditionRow extends Component {
           index={index}
           condition={condition}
           onChange={onChange}
+          hass={hass}
         />
       </div>
     );

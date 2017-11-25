@@ -26,9 +26,9 @@
         padding: 16px;
       }
 
-      ha-entity-picker {
+      ha-entity-picker, .state-input, paper-textarea {
         display: block;
-        max-width: 300px;
+        max-width: 400px;
       }
 
       .entities th {
@@ -78,7 +78,12 @@
             value="{{_entityId}}"
             allow-custom-entity
           ></ha-entity-picker>
-          <paper-input label="State" required value='{{_state}}'></paper-input>
+          <paper-input
+            label="State"
+            required
+            value='{{_state}}'
+            class='state-input'
+          ></paper-input>
           <paper-textarea label="State attributes (JSON, optional)" value='{{_stateAttributes}}'></paper-textarea>
           <paper-button on-tap='handleSetState' raised>Set State</paper-button>
         </div>

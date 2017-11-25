@@ -42,7 +42,7 @@ export default class TriggerEdit extends Component {
     }
   }
 
-  render({ index, trigger, onChange }) {
+  render({ index, trigger, onChange, hass }) {
     const Comp = TYPES[trigger.platform];
     const selected = OPTIONS.indexOf(trigger.platform);
 
@@ -69,6 +69,7 @@ export default class TriggerEdit extends Component {
           index={index}
           trigger={trigger}
           onChange={onChange}
+          hass={hass}
         />
       </div>
     );

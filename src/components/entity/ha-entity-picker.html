@@ -14,32 +14,36 @@
         padding: 2px;
         color: var(--secondary-text-color);
       }
+      [hidden] {
+        display: none;
+      }
     </style>
     <vaadin-combo-box-light
-      items='[[computeStates(_hass)]]'
+      items='[[_states]]'
       item-value-path='entity_id'
       item-label-path='entity_id'
       value='{{value}}'
       opened='{{opened}}'
       allow-custom-value='[[allowCustomEntity]]'
-      pattern="(\w|\d)+\.(\w|\d)+"
-      prevent-invalid-input
     >
       <paper-input
         autofocus="[[autofocus]]"
         label="[[label]]"
         class="input"
+        disabled='[[disabled]]'
       >
         <paper-icon-button
           slot="suffix"
           class="clear-button"
           icon="mdi:close"
           no-ripple
+          hidden$='[[!value]]'
         >Clear</paper-icon-button>
         <paper-icon-button
           slot="suffix"
           class="toggle-button"
           icon='[[_computeToggleIcon(opened)]]'
+          hidden='[[!_states.length]]'
         >Toggle</paper-icon-button>
       </paper-input>
       <template>
@@ -75,6 +79,10 @@ class HaEntityPicker extends Polymer.Element {
         observer: '_hassChanged',
       },
       _hass: Object,
+      _states: {
+        type: Array,
+        computed: '_computeStates(_hass, domainFilter, entityFilter)',
+      },
       autofocus: Boolean,
       label: {
         type: String,
@@ -89,11 +97,34 @@ class HaEntityPicker extends Polymer.Element {
         value: false,
         observer: '_openedChanged',
       },
+      domainFilter: {
+        type: String,
+        value: null,
+      },
+      entityFilter: {
+        type: Function,
+        value: null,
+      },
+      disabled: Boolean,
     };
   }
 
-  computeStates(hass) {
-    return Object.keys(hass.states).sort().map(key => hass.states[key]);
+  _computeStates(hass, domainFilter, entityFilter) {
+    if (!hass) return [];
+
+    let entityIds = Object.keys(hass.states);
+
+    if (domainFilter) {
+      entityIds = entityIds.filter(eid => eid.substr(0, eid.indexOf('.')) === domainFilter);
+    }
+
+    let entities = entityIds.sort().map(key => hass.states[key]);
+
+    if (entityFilter) {
+      entities = entities.filter(entityFilter);
+    }
+
+    return entities;
   }
 
   computeStateName(state) {
