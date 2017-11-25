@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../../util/event';
+import { onChangeEvent } from '../../util/event.js';
 
 export default class TimeCondition extends Component {
   constructor() {

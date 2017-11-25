@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../../common/util/event';
+import { onChangeEvent } from '../../common/util/event.js';
 
 export default class MQTTTrigger extends Component {
   constructor() {

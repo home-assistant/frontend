@@ -1,8 +1,7 @@
 import { h, Component } from 'preact';
 
-import JSONTextArea from '../../common/component/json_textarea';
-
-import { onChangeEvent } from '../../common/util/event';
+import JSONTextArea from '../../common/component/json_textarea.js';
+import { onChangeEvent } from '../../common/util/event.js';
 
 export default class EventTrigger extends Component {
   constructor() {
