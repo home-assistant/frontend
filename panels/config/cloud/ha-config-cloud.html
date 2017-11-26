@@ -18,7 +18,7 @@
     </style>
     <app-route
       route='[[route]]'
-      pattern='/:page'
+      pattern='/cloud/:page'
       data="{{_routeData}}"
       tail="{{_routeTail}}"
     ></app-route>
@@ -32,7 +32,7 @@
     </template>
 
     <template is='dom-if' if='[[!account]]' restamp>
-      <template is='dom-if' if='[[_isLoginPage(_routeData.page)]]' restamp>
+      <template is='dom-if' if='[[_equals(_routeData.page, "login")]]' restamp>
         <ha-config-cloud-login
           page-name='login'
           hass='[[hass]]'
@@ -41,7 +41,7 @@
         ></ha-config-cloud-login>
       </template>
 
-      <template is='dom-if' if='[[_isRegisterPage(_routeData.page)]]' restamp>
+      <template is='dom-if' if='[[_equals(_routeData.page, "register")]]' restamp>
         <ha-config-cloud-register
           page-name='register'
           hass='[[hass]]'
@@ -50,7 +50,7 @@
         ></ha-config-cloud-register>
       </template>
 
-      <template is='dom-if' if='[[_isForgotPasswordPage(_routeData.page)]]' restamp>
+      <template is='dom-if' if='[[_equals(_routeData.page, "forgot-password")]]' restamp>
         <ha-config-cloud-forgot-password
           page-name='forgot-password'
           hass='[[hass]]'
@@ -63,51 +63,53 @@
 </dom-module>
 
 <script>
-class HaConfigCloud extends window.hassMixins.NavigateMixin(Polymer.Element) {
-  static get is() { return 'ha-config-cloud'; }
+{
+  class HaConfigCloud extends window.hassMixins.NavigateMixin(Polymer.Element) {
+    static get is() { return 'ha-config-cloud'; }
 
-  static get properties() {
-    return {
-      hass: Object,
-      isWide: Boolean,
-      loadingAccount: {
-        type: Boolean,
-        value: false
-      },
-      account: {
-        type: Object,
-        value: null,
-      },
+    static get properties() {
+      return {
+        hass: Object,
+        isWide: Boolean,
+        loadingAccount: {
+          type: Boolean,
+          value: false
+        },
+        account: {
+          type: Object,
+          value: null,
+        },
 
-      route: Object,
+        route: Object,
 
-      _routeData: Object,
-      _routeTail: Object,
-      _loginEmail: String,
-    };
-  }
+        _routeData: Object,
+        _routeTail: Object,
+        _loginEmail: String,
+      };
+    }
 
-  static get observers() {
-    return [
-      '_checkRoute(route, account)'
-    ];
-  }
+    static get observers() {
+      return [
+        '_checkRoute(route, account)'
+      ];
+    }
 
-  _checkRoute(route, account) {
-    if (!route || route.prefix !== '/config/cloud') return;
+    _checkRoute(route, account) {
+      if (!route || route.path.substr(0, 6) !== '/cloud') return;
 
-    if (!account && ['/forgot-password', '/register'].indexOf(route.path) === -1) {
-      this.navigate('/config/cloud/login', true);
-    } else if (account &&
-               ['/login', '/register', '/forgot-password'].indexOf(route.path) !== -1) {
-      this.navigate('/config/cloud/account', true);
+      if (!account && ['/cloud/forgot-password', '/cloud/register'].indexOf(route.path) === -1) {
+        this.navigate('/config/cloud/login', true);
+      } else if (account &&
+                 ['/cloud/login', '/cloud/register', '/cloud/forgot-password'].indexOf(route.path) !== -1) {
+        this.navigate('/config/cloud/account', true);
+      }
+    }
+
+    _equals(a, b) {
+      return a === b;
     }
   }
 
-  _isRegisterPage(page) { return page === 'register'; }
-  _isForgotPasswordPage(page) { return page === 'forgot-password'; }
-  _isLoginPage(page) { return page === 'login'; }
+  customElements.define(HaConfigCloud.is, HaConfigCloud);
 }
-
-customElements.define(HaConfigCloud.is, HaConfigCloud);
 </script>
