@@ -1,6 +1,12 @@
 import { h, Component } from 'preact';
 
 import { onChangeEvent } from '../../common/util/event.js';
+import { hasLocation } from '../../common/util/location.js';
+import computeDomain from '../../common/util/compute_domain.js';
+
+function zoneAndLocationFilter(stateObj) {
+  return hasLocation(stateObj) && computeDomain(stateObj) !== 'zone';
+}
 
 export default class ZoneTrigger extends Component {
   constructor() {
@@ -8,6 +14,22 @@ export default class ZoneTrigger extends Component {
 
     this.onChange = onChangeEvent.bind(this, 'trigger');
     this.radioGroupPicked = this.radioGroupPicked.bind(this);
+    this.entityPicked = this.entityPicked.bind(this);
+    this.zonePicked = this.zonePicked.bind(this);
+  }
+
+  entityPicked(ev) {
+    this.props.onChange(this.props.index, {
+      ...this.props.trigger,
+      entity_id: ev.target.value,
+    });
+  }
+
+  zonePicked(ev) {
+    this.props.onChange(this.props.index, {
+      ...this.props.trigger,
+      zone: ev.target.value,
+    });
   }
 
   radioGroupPicked(ev) {
@@ -18,21 +40,25 @@ export default class ZoneTrigger extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ trigger }) {
+  render({ trigger, hass }) {
     const { entity_id, zone, event } = trigger;
     return (
       <div>
-        <paper-input
-          label="Entity Id"
-          name="entity_id"
+        <ha-entity-picker
+          label='Entity with location'
           value={entity_id}
-          onChange={this.onChange}
+          onChange={this.entityPicked}
+          hass={hass}
+          allowCustomEntity
+          entityFilter={zoneAndLocationFilter}
         />
-        <paper-input
-          label="Zone"
-          name="zone"
+        <ha-entity-picker
+          label='Zone'
           value={zone}
-          onChange={this.onChange}
+          onChange={this.zonePicked}
+          hass={hass}
+          allowCustomEntity
+          domainFilter='zone'
         />
         <label id="eventlabel">Event:</label>
         <paper-radio-group
