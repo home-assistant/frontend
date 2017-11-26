@@ -318,18 +318,20 @@
             config='[[config]]'
           ></zwave-node-config>
         </template>
+
+        <!--User Codes-->
+        <template is='dom-if' if='{{hasNodeUserCodes}}'>
+          <zwave-usercodes
+            id='zwave-usercodes'
+            hass='[[hass]]'
+            nodes='[[nodes]]'
+            user-codes='[[userCodes]]'
+            selected-node='[[selectedNode]]'
+          ></zwave-usercodes>
+      </template>
       </ha-config-section>
 
-      <!--User Codes-->
-      <template is='dom-if' if='{{hasNodeUserCodes}}'>
-        <zwave-usercodes
-          id='zwave-usercodes'
-          hass='[[hass]]'
-          nodes='[[nodes]]'
-          user-codes='[[userCodes]]'
-          selected-node='[[selectedNode]]'
-        ></zwave-usercodes>
-      </template>
+
 
       <!--Ozw log-->
       <ozw-log
