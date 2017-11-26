@@ -6,7 +6,7 @@
   <template>
     <ha-combo-box
       label='Service'
-      items='[[_computeServices(hass)]]'
+      items='[[_services]]'
       value='{{value}}'
       allow-custom-value
     ></ha-combo-box>
@@ -19,7 +19,11 @@ class HaServicePicker extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: Object,
+      hass: {
+        type: Object,
+        observer: '_hassChanged',
+      },
+      _services: Array,
       value: {
         type: String,
         notify: true,
@@ -27,10 +31,13 @@ class HaServicePicker extends Polymer.Element {
     };
   }
 
-  _computeServices(hass) {
+  _hassChanged(hass, oldHass) {
+    if (!hass) {
+      this._services = [];
+    } else if (oldHass && hass.config.services === oldHass.config.services) {
+      return;
+    }
     const result = [];
-
-    if (!hass) return result;
 
     Object.keys(hass.config.services).sort().forEach((domain) => {
       const services = Object.keys(hass.config.services[domain]).sort();
@@ -40,7 +47,7 @@ class HaServicePicker extends Polymer.Element {
       }
     });
 
-    return result;
+    this._services = result;
   }
 }
 
