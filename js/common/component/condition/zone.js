@@ -2,10 +2,10 @@ import { h, Component } from 'preact';
 
 import { onChangeEvent } from '../../util/event.js';
 import { hasLocation } from '../../util/location.js';
-import computeDomain from '../../util/compute_domain.js';
+import computeStateDomain from '../../util/compute_state_domain.js';
 
 function zoneAndLocationFilter(stateObj) {
-  return hasLocation(stateObj) && computeDomain(stateObj) !== 'zone';
+  return hasLocation(stateObj) && computeStateDomain(stateObj) !== 'zone';
 }
 
 export default class ZoneCondition extends Component {

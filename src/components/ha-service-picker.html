@@ -30,6 +30,8 @@ class HaServicePicker extends Polymer.Element {
   _computeServices(hass) {
     const result = [];
 
+    if (!hass) return result;
+
     Object.keys(hass.config.services).sort().forEach((domain) => {
       const services = Object.keys(hass.config.services[domain]).sort();
 
