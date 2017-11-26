@@ -28,8 +28,7 @@ mkdir $OUTPUT_DIR_ES5/panels
 cp build-es5/panels/*.html $OUTPUT_DIR_ES5/panels
 
 # Translations
-mkdir $OUTPUT_DIR/translations
-cp build-translations/*.json $OUTPUT_DIR/translations
+cp -r build-translations/output $OUTPUT_DIR/translations
 
 # Local Roboto
 cp -r bower_components/font-roboto-local/fonts $OUTPUT_DIR
@@ -60,6 +59,7 @@ gzip -f -n -k -9 \
     *.js \
     ./panels/*.html \
     ./translations/*.json \
+    ./translations/*/*.json \
     ./fonts/roboto/*.ttf \
     ./fonts/robotomono/*.ttf
 cd ..

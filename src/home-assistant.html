@@ -97,10 +97,21 @@ class HomeAssistant extends Polymer.Element {
 
   loadResources() {
     window.getTranslation().then((result) => {
-      this._updateHass({
-        language: result.language,
-        resources: result.resources,
-      });
+      this._updateResources(result.language, result.data);
+    });
+  }
+
+  _updateResources(language, data) {
+    // Update the language in hass, and update the resources with the newly
+    // loaded resources. This merges the new data on top of the old data for
+    // this language, so that the full translation set can be loaded across
+    // multiple fragments.
+    this._updateHass({
+      language: language,
+      resources: {
+        [language]: Object.assign({}, this.hass
+          && this.hass.resources && this.hass.resources[language], data),
+      },
     });
   }
 
