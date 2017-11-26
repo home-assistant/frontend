@@ -42,7 +42,7 @@ export default class Automation extends Component {
     });
   }
 
-  render({ automation, isWide }) {
+  render({ automation, isWide, hass }) {
     const {
       alias, trigger, condition, action
     } = automation;
@@ -77,7 +77,11 @@ export default class Automation extends Component {
               Learn more about triggers.
             </a></p>
           </span>
-          <Trigger trigger={trigger} onChange={this.triggerChanged} />
+          <Trigger
+            trigger={trigger}
+            onChange={this.triggerChanged}
+            hass={hass}
+          />
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
@@ -93,7 +97,11 @@ export default class Automation extends Component {
               Learn more about conditions.
             </a></p>
           </span>
-          <Condition condition={condition || []} onChange={this.conditionChanged} />
+          <Condition
+            condition={condition || []}
+            onChange={this.conditionChanged}
+            hass={hass}
+          />
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
@@ -104,7 +112,11 @@ export default class Automation extends Component {
               Learn more about actions.
             </a></p>
           </span>
-          <Script script={action} onChange={this.actionChanged} />
+          <Script
+            script={action}
+            onChange={this.actionChanged}
+            hass={hass}
+          />
         </ha-config-section>
       </div>
     );

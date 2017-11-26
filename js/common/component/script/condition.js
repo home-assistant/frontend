@@ -5,12 +5,13 @@ import ConditionEdit from '../condition/condition_edit.js';
 
 export default class ConditionAction extends Component {
   // eslint-disable-next-line
-  render({ action, index, onChange }) {
+  render({ action, index, onChange, hass }) {
     return (
       <ConditionEdit
         condition={action}
         onChange={onChange}
         index={index}
+        hass={hass}
       />
     );
   }

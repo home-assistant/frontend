@@ -8,9 +8,9 @@
 <link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 <link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
 
-<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
-
 <link rel='import' href='../../src/components/ha-menu-button.html'>
+<link rel='import' href='../../src/components/entity/ha-entity-picker.html'>
+<link rel='import' href='../../src/components/ha-service-picker.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
 
 <dom-module id='ha-panel-dev-service'>
@@ -28,7 +28,7 @@
 
       .ha-form {
         margin-right: 16px;
-        max-width: 500px;
+        max-width: 400px;
       }
 
       .description {
@@ -68,6 +68,14 @@
       h1 {
         white-space: normal;
       }
+
+      td {
+        padding: 4px;
+      }
+
+      .error {
+        color: var(--google-red-500);
+      }
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -79,69 +87,77 @@
       </app-header>
 
       <app-localstorage-document
-        key='panel-dev-service-state-domain'
-        data='{{domain}}'>
+        key='panel-dev-service-state-domain-service'
+        data='{{domainService}}'>
       </app-localstorage-document>
       <app-localstorage-document
-        key='[[computeServiceKey(domain)]]'
-        data='{{service}}'>
-      </app-localstorage-document>
-      <app-localstorage-document
-        key='[[computeServicedataKey(domain, service)]]'
+        key='[[_computeServicedataKey(domainService)]]'
         data='{{serviceData}}'>
       </app-localstorage-document>
 
       <div class='content'>
         <p>
-          Call a service from a component.
+          The service dev tool allows you to call any available service in Home Assistant.
         </p>
 
         <div class='ha-form'>
-          <vaadin-combo-box label='Domain' items='[[computeDomains(serviceDomains)]]' value='{{domain}}'></vaadin-combo-box>
-          <vaadin-combo-box label='Service' items='[[computeServices(serviceDomains, domain)]]' value='{{service}}'></vaadin-combo-box>
+          <ha-service-picker
+            hass='[[hass]]'
+            value='{{domainService}}'
+          ></ha-service-picker>
+          <template is='dom-if' if='[[_computeHasEntity(_attributes)]]'>
+            <ha-entity-picker
+              hass='[[hass]]'
+              value='[[_computeEntityValue(parsedJSON)]]'
+              on-change='_entityPicked'
+              disabled='[[!validJSON]]'
+              domain-filter='[[_computeEntityDomainFilter(_domain)]]'
+              allow-custom-entity
+            ></ha-entity-picker>
+          </template>
           <paper-textarea
             always-float-label
             label='Service Data (JSON, optional)'
             value='{{serviceData}}'
           ></paper-textarea>
-          <paper-button on-tap='callService' raised>Call Service</paper-button>
+          <paper-button
+            on-tap='_callService'
+            raised
+            disabled='[[!validJSON]]'
+          >Call Service</paper-button>
+          <template is='dom-if' if='[[!validJSON]]'>
+              <span class='error'>Invalid JSON</span>
+          </template>
         </div>
 
-        <template is='dom-if' if='[[!domain]]'>
-          <h1>Select a domain and service to see the description</h1>
+        <template is='dom-if' if='[[!domainService]]'>
+          <h1>Select a service to see the description</h1>
         </template>
 
-        <template is='dom-if' if='[[domain]]'>
-          <template is='dom-if' if='[[!service]]'>
-            <h1>Select a service to see the description</h1>
+        <template is='dom-if' if='[[domainService]]'>
+          <template is='dom-if' if='[[!_description]]'>
+            <h1>No description is available</h1>
           </template>
-        </template>
+          <template is='dom-if' if='[[_description]]'>
+            <h3>[[_description]]</h3>
 
-        <template is='dom-if' if='[[domain]]'>
-          <template is='dom-if' if='[[service]]'>
-            <template is='dom-if' if='[[!_description]]'>
-              <h1>No description is available</h1>
-            </template>
-            <template is='dom-if' if='[[_description]]'>
-              <h3>[[_description]]</h3>
-            </template>
-            <template is='dom-if' if='[[_attributes.length]]'>
-              <h1>Valid Parameters</h1>
-              <table class='attributes'>
+            <table class='attributes'>
+              <tr>
+                <th>Parameter</th>
+                <th>Description</th>
+                <th>Example</th>
+              </tr>
+              <template is='dom-if' if='[[!_attributes.length]]'>
+                <tr><td colspan='3'>This service takes no parameters.</td></tr>
+              </template>
+              <template is='dom-repeat' items='[[_attributes]]' as='attribute'>
                 <tr>
-                  <th>Parameter</th>
-                  <th>Description</th>
-                  <th>Example</th>
+                  <td><pre>[[attribute.key]]</pre></td>
+                  <td>[[attribute.description]]</td>
+                  <td>[[attribute.example]]</td>
                 </tr>
-                <template is='dom-repeat' items='[[_attributes]]' as='attribute'>
-                  <tr>
-                    <td><pre>[[attribute.key]]</pre></td>
-                    <td>[[attribute.description]]</td>
-                    <td>[[attribute.example]]</td>
-                  </tr>
-                </template>
-              </table>
-            </template>
+              </template>
+            </table>
           </template>
         </template>
       </div>
@@ -151,128 +167,143 @@
 </dom-module>
 
 <script>
-class HaPanelDevService extends Polymer.Element {
-  static get is() { return 'ha-panel-dev-service'; }
+{
+  const ERROR_SENTINEL = {};
+  class HaPanelDevService extends Polymer.Element {
+    static get is() { return 'ha-panel-dev-service'; }
 
-  static get properties() {
-    return {
-      hass: {
-        type: Object,
-      },
+    static get properties() {
+      return {
+        hass: {
+          type: Object,
+        },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
+        narrow: {
+          type: Boolean,
+          value: false,
+        },
 
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
+        showMenu: {
+          type: Boolean,
+          value: false,
+        },
 
-      domain: {
-        type: String,
-        value: '',
-        observer: 'domainChanged',
-      },
+        domainService: {
+          type: String,
+          observer: '_domainServiceChanged',
+        },
 
-      service: {
-        type: String,
-        value: '',
-        observer: 'serviceChanged',
-      },
+        _domain: {
+          type: String,
+          computed: '_computeDomain(domainService)',
+        },
 
-      serviceData: {
-        type: String,
-        value: '',
-      },
+        _service: {
+          type: String,
+          computed: '_computeService(domainService)',
+        },
 
-      _attributes: {
-        type: Array,
-        computed: 'computeAttributesArray(serviceDomains, domain, service)',
-      },
+        serviceData: {
+          type: String,
+          value: '',
+        },
 
-      _description: {
-        type: String,
-        computed: 'computeDescription(serviceDomains, domain, service)',
-      },
+        parsedJSON: {
+          type: Object,
+          computed: '_computeParsedServiceData(serviceData)'
+        },
 
-      serviceDomains: {
-        type: Object,
-        computed: 'computeServiceDomains(hass)',
-      },
-    };
-  }
+        validJSON: {
+          type: Boolean,
+          computed: '_computeValidJSON(parsedJSON)',
+        },
 
-  computeServiceDomains(hass) {
-    return hass.config.services;
-  }
+        _attributes: {
+          type: Array,
+          computed: '_computeAttributesArray(hass, _domain, _service)',
+        },
 
-  computeAttributesArray(serviceDomains, domain, service) {
-    if (!serviceDomains) return [];
-    if (!(domain in serviceDomains)) return [];
-    if (!(service in serviceDomains[domain])) return [];
-
-    var fields = serviceDomains[domain][service].fields;
-    return Object.keys(fields).map(function (field) {
-      return Object.assign({}, fields[field], { key: field });
-    });
-  }
-
-  computeDescription(serviceDomains, domain, service) {
-    if (!serviceDomains) return undefined;
-    if (!(domain in serviceDomains)) return undefined;
-    if (!(service in serviceDomains[domain])) return undefined;
-    return serviceDomains[domain][service].description;
-  }
-
-  computeDomains(serviceDomains) {
-    return Object.keys(serviceDomains).sort();
-  }
-
-  computeServices(serviceDomains, domain) {
-    if (!(domain in serviceDomains)) return [];
-
-    return Object.keys(serviceDomains[domain]).sort();
-  }
-
-  computeServiceKey(domain) {
-    if (!domain) {
-      return 'panel-dev-service-state-service';
-    }
-    return 'panel-dev-service-state-service.' + domain;
-  }
-
-  computeServicedataKey(domain, service) {
-    if (!domain || !service) {
-      return 'panel-dev-service-state-servicedata';
-    }
-    return 'panel-dev-service-state-servicedata.' + domain + '.' + service;
-  }
-
-  domainChanged() {
-    this.service = '';
-    this.serviceData = '';
-  }
-
-  serviceChanged() {
-    this.serviceData = '';
-  }
-
-  callService() {
-    var serviceData;
-    try {
-      serviceData = this.serviceData ? JSON.parse(this.serviceData) : {};
-    } catch (err) {
-      /* eslint-disable no-alert */
-      alert('Error parsing JSON: ' + err);
-      /* eslint-enable no-alert */
-      return;
+        _description: {
+          type: String,
+          computed: '_computeDescription(hass, _domain, _service)',
+        },
+      };
     }
 
-    this.hass.callService(this.domain, this.service, serviceData);
+    _domainServiceChanged() {
+      this.serviceData = '';
+    }
+
+    _computeAttributesArray(hass, domain, service) {
+      const serviceDomains = hass.config.services;
+      if (!(domain in serviceDomains)) return [];
+      if (!(service in serviceDomains[domain])) return [];
+
+      const fields = serviceDomains[domain][service].fields;
+      return Object.keys(fields).map(function (field) {
+        return Object.assign({ key: field }, fields[field]);
+      });
+    }
+
+    _computeDescription(hass, domain, service) {
+      const serviceDomains = hass.config.services;
+      if (!(domain in serviceDomains)) return undefined;
+      if (!(service in serviceDomains[domain])) return undefined;
+      return serviceDomains[domain][service].description;
+    }
+
+    _computeServicedataKey(domainService) {
+      return `panel-dev-service-state-servicedata.${domainService}`;
+    }
+
+    _computeDomain(domainService) {
+      return domainService.split('.', 1)[0];
+    }
+
+    _computeService(domainService) {
+      return domainService.split('.', 2)[1] || null;
+    }
+
+    _computeParsedServiceData(serviceData) {
+      try {
+        return serviceData ? JSON.parse(serviceData) : {};
+      } catch (err) {
+        return ERROR_SENTINEL;
+      }
+    }
+
+    _computeValidJSON(parsedJSON) {
+      return parsedJSON !== ERROR_SENTINEL;
+    }
+
+    _computeHasEntity(attributes) {
+      return attributes.some(attr => attr.key === 'entity_id');
+    }
+
+    _computeEntityValue(parsedJSON) {
+      return parsedJSON === ERROR_SENTINEL ? '' : parsedJSON.entity_id;
+    }
+
+    _computeEntityDomainFilter(domain) {
+      return domain === 'homeassistant' ? null : domain;
+    }
+
+    _callService() {
+      if (this.parsedJSON === ERROR_SENTINEL) {
+        // eslint-disable-next-line
+        alert(`Error parsing JSON: ${this.serviceData}`);
+      }
+
+      this.hass.callService(this.domain, this.service, this.parsedJSON);
+    }
+
+    _entityPicked(ev) {
+      this.serviceData = JSON.stringify(Object.assign({}, this.parsedJSON, {
+        entity_id: ev.target.value
+      }), null, 2);
+    }
   }
+
+  customElements.define(HaPanelDevService.is, HaPanelDevService);
 }
-
-customElements.define(HaPanelDevService.is, HaPanelDevService);
 </script>

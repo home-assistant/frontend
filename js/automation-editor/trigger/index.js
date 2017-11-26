@@ -32,7 +32,7 @@ export default class Trigger extends Component {
     this.props.onChange(trigger);
   }
 
-  render({ trigger }) {
+  render({ trigger, hass }) {
     return (
       <div class="triggers">
         {trigger.map((trg, idx) => (
@@ -40,6 +40,7 @@ export default class Trigger extends Component {
             index={idx}
             trigger={trg}
             onChange={this.triggerChanged}
+            hass={hass}
           />))}
         <paper-card>
           <div class='card-actions add-card'>
