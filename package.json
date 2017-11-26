@@ -83,6 +83,6 @@
     "unfetch": "^3.0.0"
   },
   "devDependencies": {
-    "web-component-tester": "^6.4.1"
+    "web-component-tester": "^6.4.0"
   }
 }
