@@ -18,13 +18,13 @@ export default class TimeCondition extends Component {
           label="After"
           name="after"
           value={after}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         <paper-input
           label="Before"
           name="before"
           value={before}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );

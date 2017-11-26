@@ -27,7 +27,7 @@ export default class EventTrigger extends Component {
           label="Event Type"
           name="event_type"
           value={event_type}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         <JSONTextArea
           label="Event Data"

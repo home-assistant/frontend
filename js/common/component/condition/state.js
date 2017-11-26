@@ -33,7 +33,7 @@ export default class StateCondition extends Component {
           label="State"
           name="state"
           value={state}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         {cndFor && <pre>For: {JSON.stringify(cndFor, null, 2)}</pre>}
       </div>
