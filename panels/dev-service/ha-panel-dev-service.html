@@ -294,7 +294,7 @@
         alert(`Error parsing JSON: ${this.serviceData}`);
       }
 
-      this.hass.callService(this.domain, this.service, this.parsedJSON);
+      this.hass.callService(this._domain, this._service, this.parsedJSON);
     }
 
     _entityPicked(ev) {
