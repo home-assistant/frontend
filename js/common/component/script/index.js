@@ -30,7 +30,7 @@ export default class Script extends Component {
     this.props.onChange(script);
   }
 
-  render({ script }) {
+  render({ script, hass }) {
     return (
       <div class="script">
         {script.map((act, idx) => (
@@ -38,6 +38,7 @@ export default class Script extends Component {
             index={idx}
             action={act}
             onChange={this.actionChanged}
+            hass={hass}
           />))}
         <paper-card>
           <div class='card-actions add-card'>
