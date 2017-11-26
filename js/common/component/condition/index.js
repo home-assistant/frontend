@@ -30,7 +30,7 @@ export default class Condition extends Component {
     this.props.onChange(condition);
   }
 
-  render({ condition }) {
+  render({ condition, hass }) {
     return (
       <div class="triggers">
         {condition.map((cnd, idx) => (
@@ -38,6 +38,7 @@ export default class Condition extends Component {
             index={idx}
             condition={cnd}
             onChange={this.conditionChanged}
+            hass={hass}
           />))}
         <paper-card>
           <div class='card-actions add-card'>

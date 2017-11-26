@@ -10,7 +10,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/components/entity/ha-entity-dropdown.html">
+<link rel="import" href="../../src/components/entity/ha-entity-picker.html">
 <link rel="import" href="../../src/resources/ha-style.html">
 
 <dom-module id="ha-panel-dev-state">
@@ -26,9 +26,9 @@
         padding: 16px;
       }
 
-      ha-entity-dropdown {
+      ha-entity-picker, .state-input, paper-textarea {
         display: block;
-        max-width: 300px;
+        max-width: 400px;
       }
 
       .entities th {
@@ -72,12 +72,18 @@
             This will not communicate with the actual device.
           </p>
 
-          <ha-entity-dropdown
+          <ha-entity-picker
             autofocus
             hass="[[hass]]"
             value="{{_entityId}}"
-          ></ha-entity-dropdown>
-          <paper-input label="State" required value='{{_state}}'></paper-input>
+            allow-custom-entity
+          ></ha-entity-picker>
+          <paper-input
+            label="State"
+            required
+            value='{{_state}}'
+            class='state-input'
+          ></paper-input>
           <paper-textarea label="State attributes (JSON, optional)" value='{{_stateAttributes}}'></paper-textarea>
           <paper-button on-tap='handleSetState' raised>Set State</paper-button>
         </div>

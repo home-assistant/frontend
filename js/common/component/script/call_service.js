@@ -1,14 +1,20 @@
 import { h, Component } from 'preact';
 
 import JSONTextArea from '../json_textarea.js';
-import { onChangeEvent } from '../../util/event.js';
 
 export default class CallServiceAction extends Component {
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, 'action');
+    this.serviceChanged = this.serviceChanged.bind(this);
     this.serviceDataChanged = this.serviceDataChanged.bind(this);
+  }
+
+  serviceChanged(ev) {
+    this.props.onChange(this.props.index, {
+      ...this.props.action,
+      service: ev.target.value,
+    });
   }
 
   serviceDataChanged(data) {
@@ -18,21 +24,15 @@ export default class CallServiceAction extends Component {
     });
   }
 
-  render({ action }) {
-    const { alias, service, data } = action;
+  render({ action, hass }) {
+    const { service, data } = action;
+
     return (
       <div>
-        <paper-input
-          label="Alias"
-          name="alias"
-          value={alias}
-          onChange={this.onChange}
-        />
-        <paper-input
-          label="Service"
-          name="service"
+        <ha-service-picker
+          hass={hass}
           value={service}
-          onChange={this.onChange}
+          onChange={this.serviceChanged}
         />
         <JSONTextArea
           label="Service Data"

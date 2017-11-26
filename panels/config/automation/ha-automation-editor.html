@@ -16,6 +16,9 @@
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
+<link rel='import' href='../../../src/components/entity/ha-entity-picker.html'>
+<link rel='import' href='../../../src/components/ha-combo-box.html'>
+<link rel='import' href='../../../src/components/ha-service-picker.html'>
 <link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../ha-config-section.html">
@@ -117,6 +120,7 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     return {
       hass: {
         type: Object,
+        observer: '_updateComponent',
       },
 
       narrow: {
@@ -160,7 +164,7 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
 
       isWide: {
         type: Boolean,
-        observer: 'isWideChanged',
+        observer: '_updateComponent',
       },
     };
   }
@@ -169,6 +173,7 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     super.ready();
     this.configChanged = this.configChanged.bind(this);
     this._rendered = null;
+    this._renderScheduled = false;
   }
 
   disconnectedCallback() {
@@ -184,13 +189,13 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     this.config = config;
     this.errors = null;
     this.dirty = true;
-    this._updateComponent(config);
+    this._updateComponent();
   }
 
   automationChanged(newVal, oldVal) {
     if (!newVal) return;
     if (!this.hass) {
-      setTimeout(this.automationChanged.bind(this, newVal, oldVal), 0);
+      setTimeout(() => this.automationChanged(newVal, oldVal), 0);
       return;
     }
     if (oldVal && oldVal.attributes.id === newVal.attributes.id) {
@@ -230,11 +235,6 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     this._updateComponent();
   }
 
-  isWideChanged() {
-    if (this.config === null) return;
-    this._updateComponent();
-  }
-
   backTapped() {
     if (this.dirty &&
         // eslint-disable-next-line
@@ -245,11 +245,17 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
   }
 
   _updateComponent() {
-    this._rendered = window.AutomationEditor(this.$.root, {
-      automation: this.config,
-      onChange: this.configChanged,
-      isWide: this.isWide,
-    }, this._rendered);
+    if (this._renderScheduled || !this.hass || !this.config) return;
+    this._renderScheduled = true;
+    Promise.resolve().then(() => {
+      this._rendered = window.AutomationEditor(this.$.root, {
+        automation: this.config,
+        onChange: this.configChanged,
+        isWide: this.isWide,
+        hass: this.hass,
+      }, this._rendered);
+      this._renderScheduled = false;
+    });
   }
 
   saveAutomation() {
