@@ -29,6 +29,20 @@ function flatten(data) {
   return recursiveFlatten('', data);
 }
 
+function emptyFilter(data) {
+  const newData = {};
+  Object.keys(data).forEach(key => {
+    if (data[key]) {
+      if (typeof (data[key]) === 'object') {
+        newData[key] = emptyFilter(data[key]);
+      } else {
+        newData[key] = data[key];
+      }
+    }
+  });
+  return newData;
+}
+
 /**
  * Replace Lokalise key placeholders with their actual values.
  *
@@ -96,29 +110,29 @@ gulp.task(taskName, ['build-master-translation'], function () {
         src.push(inDir + '/' + lang + '.json');
       }
       return gulp.src(src)
-        .pipe(transform(function (data) {
-          // Polymer.AppLocalizeBehavior requires flattened json
-          return flatten(data);
-        }))
-        .pipe(transform(function (data) {
-          const newData = {};
-          Object.entries(data).forEach(([key, value]) => {
-            // Filter out empty strings or other falsey values before merging
-            if (data[key]) newData[key] = value;
-          });
-          return newData;
-        }))
+        .pipe(transform(data => emptyFilter(data)))
         .pipe(merge({
           fileName: tr + '.json',
         }))
-        .pipe(minify())
         .pipe(gulp.dest(outDir));
     }));
 });
 tasks.push(taskName);
 
-taskName = 'build-translation-fingerprints';
+taskName = 'build-flattened-translations';
 gulp.task(taskName, ['build-merged-translations'], function () {
+  return gulp.src(outDir + '/!(translationFingerprints|translationMaster).json')
+    .pipe(transform(function (data) {
+      // Polymer.AppLocalizeBehavior requires flattened json
+      return flatten(data);
+    }))
+    .pipe(minify())
+    .pipe(gulp.dest(outDir));
+});
+tasks.push(taskName);
+
+taskName = 'build-translation-fingerprints';
+gulp.task(taskName, ['build-flattened-translations'], function () {
   return gulp.src(outDir + '/!(translationFingerprints|translationMaster).json')
     .pipe(rename({
       extname: '',
@@ -149,7 +163,7 @@ gulp.task(taskName, ['build-translation-fingerprints'], function () {
     .pipe(transform(function (data) {
       const newData = {};
       Object.entries(data).forEach(([key, value]) => {
-        // Filter out empty strings or other falsey values before merging
+        // Filter out translations without native name.
         if (data[key].nativeName) {
           newData[key] = data[key];
         } else {
