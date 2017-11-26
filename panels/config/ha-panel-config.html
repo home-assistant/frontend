@@ -25,7 +25,6 @@
       route='[[route]]'
       pattern='/:page'
       data="{{_routeData}}"
-      tail="{{_routeTail}}"
     ></app-route>
 
     <iron-media-query query="(min-width: 1040px)" query-matches="{{wide}}">
@@ -47,7 +46,7 @@
 
       <ha-config-cloud
         page-name='cloud'
-        route='[[_routeTail]]'
+        route='[[route]]'
         hass='[[hass]]'
         is-wide='[[isWide]]'
         account='[[account]]'
@@ -64,14 +63,14 @@
 
       <ha-config-automation
         page-name='automation'
-        route='[[_routeTail]]'
+        route='[[route]]'
         hass='[[hass]]'
         is-wide='[[isWide]]'
       ></ha-config-automation>
 
       <ha-config-script
         page-name='script'
-        route='[[_routeTail]]'
+        route='[[route]]'
         hass='[[hass]]'
         is-wide='[[isWide]]'
       ></ha-config-script>
@@ -117,7 +116,6 @@ class HaPanelConfig extends window.hassMixins.EventsMixin(Polymer.Element) {
       },
 
       _routeData: Object,
-      _routeTail: Object,
 
       wide: Boolean,
       wideSidebar: Boolean,
