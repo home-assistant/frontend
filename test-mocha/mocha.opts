@@ -1,4 +1,4 @@
 --recursive
---require reify babel-core/register
+--require reify
 --timeout 10000
 test-mocha
