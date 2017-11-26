@@ -146,7 +146,7 @@ class ZwaveUsercodes extends Polymer.Element {
     var value = this.userCodes[selectedUserCode].value.code;
     this.userCodeMaxLen = (this.userCodes[selectedUserCode].value.length * 4);
     this.selectedUserCodeValue = this.a2hex(value);
-    this.computedCodeOutput = this.hex2a(this.selectedUserCodeValue);
+    this.computedCodeOutput = '[' + this.hex2a(this.selectedUserCodeValue) + ']';
   }
 
   computeUserCodeServiceData(selectedUserCodeValue, type) {
@@ -155,7 +155,7 @@ class ZwaveUsercodes extends Polymer.Element {
     var valueData = null;
     if (type === 'Add') {
       valueData = this.hex2a(selectedUserCodeValue);
-      this.computedCodeOutput = valueData;
+      this.computedCodeOutput = '[' + valueData + ']';
       serviceData = {
         node_id: this.nodes[this.selectedNode].attributes.node_id,
         code_slot: this.selectedUserCode,
