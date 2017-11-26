@@ -240,6 +240,11 @@ gulp.task(taskName, ['build-translation-fingerprints'], function () {
       });
       return newData;
     }))
+    .pipe(transform(data => ({
+        fragments: TRANSLATION_FRAGMENTS,
+        translations: data,
+      })
+    ))
     .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
     .pipe(gulp.dest(workDir));

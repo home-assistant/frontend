@@ -9,7 +9,7 @@
 <!--polyfill for paper-dropdown-->
 <link rel="import" href="../bower_components/neon-animation/web-animations.html">
 
-
+<link rel='import' href='../build-translations/translationMetadata.html' />
 <link rel='import' href='./util/hass-translation.html'>
 <link rel='import' href='./util/hass-util.html'>
 <link rel='import' href='./util/ha-pref-storage.html'>
@@ -31,6 +31,7 @@
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
         hass='[[hass]]'
+        panel='{{panel}}'
       ></home-assistant-main>
     </template>
 
@@ -75,6 +76,10 @@ class HomeAssistant extends Polymer.Element {
         type: Boolean,
         computed: 'computeShowMain(hass)',
       },
+      panel: {
+        type: Object,
+        observer: 'loadTranslationFragment',
+      },
     };
   }
 
@@ -95,8 +100,8 @@ class HomeAssistant extends Polymer.Element {
       || (hass && hass.connection && (!hass.states || !hass.config)));
   }
 
-  loadResources() {
-    window.getTranslation().then((result) => {
+  loadResources(fragment) {
+    window.getTranslation(fragment).then((result) => {
       this._updateResources(result.language, result.data);
     });
   }
@@ -279,6 +284,17 @@ class HomeAssistant extends Polymer.Element {
     this._updateHass({ selectedLanguage: event.detail.language });
     this.$.storage.storeState();
     this.loadResources();
+    this.loadTranslationFragment(this.panel);
+  }
+
+  loadTranslationFragment(panel) {
+    if (!panel) { return; }
+
+    const fragment = panel.component_name;
+    if (this.hass.translationMetadata
+      && this.hass.translationMetadata.fragments.includes(fragment)) {
+      this.loadResources(fragment);
+    }
   }
 
   _updateHass(obj) {

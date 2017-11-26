@@ -109,7 +109,7 @@ class HaConfigCore extends Polymer.Element {
 
   computeIsTranslationLoaded(hass) {
     return hass.translationMetadata &&
-      Object.keys(hass.translationMetadata).length;
+      Object.keys(hass.translationMetadata.translations).length;
   }
 
   computeIsThemesLoaded(hass) {

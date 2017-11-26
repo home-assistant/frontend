@@ -78,6 +78,7 @@
           hass='[[hass]]'
           route='[[route]]'
           show-menu='[[dockedSidebar]]'
+          panel='{{panel}}'
         ></partial-panel-resolver>
 
       </iron-pages>
@@ -98,6 +99,11 @@
         hass: Object,
 
         narrow: Boolean,
+
+        panel: {
+          type: Object,
+          notify: true,
+        },
 
         route: {
           type: Object,

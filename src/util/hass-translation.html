@@ -6,7 +6,7 @@ function getActiveTranslation() {
   // report languages with specific cases.
   const lookup = {};
   /* eslint-disable no-undef */
-  Object.keys(window.translationMetadata).forEach((tr) => {
+  Object.keys(window.translationMetadata.translations).forEach((tr) => {
     lookup[tr.toLowerCase()] = tr;
   });
 
@@ -60,16 +60,18 @@ function getActiveTranslation() {
 // when DOM is created in Polymer. Even a cache lookup creates noticable latency.
 const translations = {};
 
-window.getTranslation = function (translationInput) {
+window.getTranslation = function (fragment, translationInput) {
   const translation = translationInput || getActiveTranslation();
-  const metadata = window.translationMetadata[translation];
+  const metadata = window.translationMetadata.translations[translation];
   if (!metadata) {
     if (translationInput !== 'en') {
-      return window.getTranslation('en');
+      return window.getTranslation(fragment, 'en');
     }
     return Promise.reject(new Error('Language en not found in metadata'));
   }
-  const translationFingerprint = metadata.fingerprints[translation];
+  const translationFingerprint = metadata.fingerprints[
+    fragment ? `${fragment}/${translation}` : translation
+  ];
 
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {
@@ -83,7 +85,7 @@ window.getTranslation = function (translationInput) {
           delete translations[translationFingerprint];
           if (translationInput !== 'en') {
             // Couldn't load selected translation. Try a fall back to en before failing.
-            return window.getTranslation('en');
+            return window.getTranslation(fragment, 'en');
           }
           return Promise.reject(error);
         });
