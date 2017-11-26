@@ -41,7 +41,7 @@ function flatten(data) {
 
 function emptyFilter(data) {
   const newData = {};
-  Object.keys(data).forEach(key => {
+  Object.keys(data).forEach((key) => {
     if (data[key]) {
       if (typeof (data[key]) === 'object') {
         newData[key] = emptyFilter(data[key]);
@@ -129,7 +129,7 @@ gulp.task(taskName, ['build-master-translation'], function () {
 });
 tasks.push(taskName);
 
-const splitTasks = []
+const splitTasks = [];
 TRANSLATION_FRAGMENTS.forEach((fragment) => {
   taskName = 'build-translation-fragment-' + fragment;
   gulp.task(taskName, ['build-merged-translations'], function () {
@@ -142,7 +142,7 @@ TRANSLATION_FRAGMENTS.forEach((fragment) => {
           },
         },
       })))
-      .pipe(gulp.dest(workDir + "/" + fragment));
+      .pipe(gulp.dest(workDir + '/' + fragment));
   });
   tasks.push(taskName);
   splitTasks.push(taskName);
@@ -166,9 +166,9 @@ splitTasks.push(taskName);
 taskName = 'build-flattened-translations';
 gulp.task(taskName, splitTasks, function () {
   // Flatten the split versions of our translations, and move them into outDir
-  return gulp.src(TRANSLATION_FRAGMENTS.map(fragment =>
-    workDir + "/" + fragment + "/*.json")
-    .concat(coreDir + '/*.json'),
+  return gulp.src(
+    TRANSLATION_FRAGMENTS.map(fragment => workDir + '/' + fragment + '/*.json')
+      .concat(coreDir + '/*.json'),
     { base: workDir },
   )
     .pipe(transform(function (data) {
@@ -176,9 +176,9 @@ gulp.task(taskName, splitTasks, function () {
       return flatten(data);
     }))
     .pipe(minify())
-    .pipe(rename((path) => {
-      if (path.dirname === 'core') {
-        path.dirname = '';
+    .pipe(rename((filePath) => {
+      if (filePath.dirname === 'core') {
+        filePath.dirname = '';
       }
     }))
     .pipe(gulp.dest(outDir));
@@ -241,10 +241,9 @@ gulp.task(taskName, ['build-translation-fingerprints'], function () {
       return newData;
     }))
     .pipe(transform(data => ({
-        fragments: TRANSLATION_FRAGMENTS,
-        translations: data,
-      })
-    ))
+      fragments: TRANSLATION_FRAGMENTS,
+      translations: data,
+    })))
     .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
     .pipe(gulp.dest(workDir));
