@@ -27,7 +27,7 @@ export default class EventAction extends Component {
           label="Event"
           name="event"
           value={event}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         <JSONTextArea
           label="Service Data"

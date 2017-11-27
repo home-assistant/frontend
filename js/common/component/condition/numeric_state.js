@@ -34,13 +34,13 @@ export default class NumericStateCondition extends Component {
           label="Above"
           name="above"
           value={above}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         <paper-input
           label="Below"
           name="below"
           value={below}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         <paper-textarea
           label="Value template (optional)"
