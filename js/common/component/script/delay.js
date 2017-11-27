@@ -16,7 +16,7 @@ export default class DelayAction extends Component {
           label="Delay"
           name="delay"
           value={delay}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );

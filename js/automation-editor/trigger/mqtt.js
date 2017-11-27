@@ -18,13 +18,13 @@ export default class MQTTTrigger extends Component {
           label="Topic"
           name="topic"
           value={topic}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         <paper-input
           label="Payload (Optional)"
           name="payload"
           value={payload}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );

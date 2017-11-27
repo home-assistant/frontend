@@ -18,7 +18,7 @@ export default class TimeTrigger extends Component {
           label="At"
           name="at"
           value={at}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );

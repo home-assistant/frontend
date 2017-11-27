@@ -36,7 +36,7 @@ export default class SunTrigger extends Component {
           label="Offset (optional)"
           name="offset"
           value={offset}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );
