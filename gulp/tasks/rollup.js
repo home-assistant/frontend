@@ -74,7 +74,6 @@ gulp.task('run_rollup', () => gulp.src([
   'js/core.js',
   'js/automation-editor/automation-editor.js',
   'js/util.js',
-  'js/script-editor/script-editor.js',
   'demo_data/demo_data.js',
 ])
   .pipe(rollupEach(getRollupInputOptions(/* es6= */ true), rollupOutputOptions))
