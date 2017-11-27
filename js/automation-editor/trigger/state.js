@@ -34,13 +34,13 @@ export default class StateTrigger extends Component {
           label="From"
           name="from"
           value={trgFrom}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         <paper-input
           label="To"
           name="to"
           value={to}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
         {trgFor && <pre>For: {JSON.stringify(trgFor, null, 2)}</pre>}
       </div>

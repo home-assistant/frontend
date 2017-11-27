@@ -33,7 +33,7 @@ export default class WaitAction extends Component {
           label="Timeout (Optional)"
           name="timeout"
           value={timeout}
-          onChange={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );
