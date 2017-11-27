@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import { onChangeEvent } from '../../util/event.js';
+import { onChangeEvent } from '../../common/util/event.js';
 
 export default class WaitAction extends Component {
   constructor() {

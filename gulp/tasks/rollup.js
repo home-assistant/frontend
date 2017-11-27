@@ -68,15 +68,17 @@ gulp.task('run_rollup_es5', () => gulp.src([
   'demo_data/demo_data.js',
 ])
   .pipe(rollupEach(getRollupInputOptions(/* es6= */ false), rollupOutputOptions))
+  .on('error', err => console.error(err.message))
   .pipe(gulp.dest('build-temp-es5')));
 
 gulp.task('run_rollup', () => gulp.src([
   'js/core.js',
-  'js/automation-editor/automation-editor.js',
+  'js/panel-config/panel-config.js',
   'js/util.js',
   'demo_data/demo_data.js',
 ])
   .pipe(rollupEach(getRollupInputOptions(/* es6= */ true), rollupOutputOptions))
+  .on('error', err => console.error(err.message))
   .pipe(gulp.dest('build-temp')));
 
 gulp.task('ru_all_es5', ['run_rollup_es5'], () => {
