@@ -1,6 +1,6 @@
 const gulpif = require('gulp-if');
 const babel = require('gulp-babel');
-const uglify = require('../common/gulp-uglify.js');
+const uglify = require('./gulp-uglify.js');
 const { gulp: cssSlam } = require('css-slam');
 const htmlMinifier = require('gulp-html-minifier');
 const { HtmlSplitter } = require('polymer-build');
