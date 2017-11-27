@@ -60,7 +60,7 @@ export default class Automation extends Component {
                 label="Name"
                 name="alias"
                 value={alias}
-                onChange={this.onChange}
+                onvalue-changed={this.onChange}
               />
             </div>
           </paper-card>
