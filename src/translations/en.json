@@ -32,6 +32,10 @@
       "on": "[%key:state::default::on%]"
     },
     "binary_sensor": {
+      "battery": {
+        "off": "Normal",
+        "on": "Low"
+      },
       "default": {
         "off": "[%key:state::default::off%]",
         "on": "[%key:state::default::on%]"
