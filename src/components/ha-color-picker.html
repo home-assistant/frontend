@@ -29,6 +29,9 @@
       #backgroundLayer {
         width: 100%;
         overflow: visible;
+        --wheel-bordercolor: var(--ha-color-picker-wheel-bordercolor, white);
+        --wheel-borderwidth: var(--ha-color-picker-wheel-borderwith, 3);
+        --wheel-shadow: var(--ha-color-picker-wheel-shadow, rgb(15, 15, 15) 10px 5px 5px 0px);
       }
 
       #wheel {
@@ -72,8 +75,6 @@
         </defs>
       </svg>
       <canvas id='backgroundLayer'></canvas>
-      <!-- this is a hidden element from which we take css styles to apply to canvas drawing -->
-      <div id='wheel' style='display: none'></div>
     </div>
   </template>
 </dom-module>
@@ -431,17 +432,6 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
 
 
   drawColorWheel() {
-    // Helper function to get needed styles from an element
-    function computeStyleFrom(element) {
-      var styleReference = window.getComputedStyle(element, null);
-      var elementStyle = {
-        borderWidth: styleReference.getPropertyValue('stroke-width'),
-        borderColor: styleReference.getPropertyValue('stroke'),
-        shadow: styleReference.getPropertyValue('box-shadow')
-      };
-      return elementStyle;
-    }
-
     /*
     *  Setting up all paremeters
     */
@@ -456,19 +446,18 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     const radius = this.radius;
     const counterClockwise = false;
     // styling of the wheel
-    const wheelStyle = computeStyleFrom(this.$.wheel);
-    const borderWidth = parseInt(wheelStyle.borderWidth, 10);
-    const borderColor = wheelStyle.borderColor;
-    // extract shadow properties from computed CCS style
-    // both Webkit and Firefox return computed box-shadow as: "rgb(15, 15, 15) 10px 5px 5px 0px"
-    if (wheelStyle.shadow !== 'none') {
-      const pattern = /^(.*?\))\s(.*)/g;
-      const match = pattern.exec(wheelStyle.shadow);
-      const offsets = match[2].split(' ');
-      shadowColor = match[1];
-      shadowOffsetX = parseInt(offsets[0], 10);
-      shadowOffsetY = parseInt(offsets[1], 10);
-      shadowBlur = parseInt(offsets[2], 10) || 0;
+    const wheelStyle = window.getComputedStyle(this.backgroundLayer, null);
+    const borderWidth = parseInt(wheelStyle.getPropertyValue('--wheel-borderwidth'), 10);
+    const borderColor = wheelStyle.getPropertyValue('--wheel-bordercolor').trim();
+    const wheelShadow = wheelStyle.getPropertyValue('--wheel-shadow').trim();
+    // extract shadow properties from  CCS variable
+    // the shadow should be defined as: "10px 5px 5px 0px COLOR"
+    if (wheelShadow !== 'none') {
+      const values = wheelShadow.split('px ');
+      shadowColor = values.pop();
+      shadowOffsetX = parseInt(values[0], 10);
+      shadowOffsetY = parseInt(values[1], 10);
+      shadowBlur = parseInt(values[2], 10) || 0;
     }
     const borderRadius = radius + (borderWidth / 2);
     const wheelRadius = radius;
@@ -568,8 +557,6 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     svgElement.tooltip.setAttribute('r', tooltipradius);
     svgElement.tooltip.setAttribute('cx', TooltipOffsetX);
     svgElement.tooltip.setAttribute('cy', TooltipOffsetY);
-
-
     this.tooltip = svgElement.tooltip;
     svgElement.appendChild(svgElement.tooltip);
   }
