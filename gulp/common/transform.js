@@ -1,8 +1,6 @@
 const gulpif = require('gulp-if');
-const uglifyjs = require('uglify-js');
-const uglifyes = require('uglify-es');
 const babel = require('gulp-babel');
-const composer = require('gulp-uglify/composer');
+const uglify = require('./gulp-uglify.js');
 const { gulp: cssSlam } = require('css-slam');
 const htmlMinifier = require('gulp-html-minifier');
 const { HtmlSplitter } = require('polymer-build');
@@ -19,7 +17,7 @@ module.exports.minifyStream = function (stream, es6) {
         ['es2015', { modules: false }]
       ]
     }))),
-    gulpif(/\.js$/, composer(es6 ? uglifyes : uglifyjs, console)({ sourceMap: false })),
+    gulpif(/\.js$/, uglify(es6, { sourceMap: false })),
     gulpif(/\.css$/, cssSlam()),
     gulpif(/\.html$/, cssSlam()),
     gulpif(/\.html$/, htmlMinifier({
