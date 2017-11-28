@@ -38,18 +38,19 @@
     .label-badge .label {
       position: absolute;
       bottom: -1em;
-      left: 0;
-      right: 0;
+      /* Make the label as wide as container+border. */
+      left: -0.1em;
+      right: -0.1em;
       line-height: 1em;
       font-size: 0.5em;
     }
     .label-badge .label span {
-      max-width: calc(100% - 1.6em);
+      max-width: 68%; /* Parent width minus two times 16% padding */
       display: inline-block;
       background-color: var(--ha-label-badge-color, --primary-color);
       color: white;
       border-radius: 1em;
-      padding: 0.4em 0.8em;
+      padding: 8% 16%;
       font-weight: 500;
       text-transform: uppercase;
       overflow: hidden;
