@@ -30,14 +30,14 @@
         width: 100%;
         overflow: visible;
         --wheel-bordercolor: var(--ha-color-picker-wheel-bordercolor, white);
-        --wheel-borderwidth: var(--ha-color-picker-wheel-borderwith, 3);
+        --wheel-borderwidth: var(--ha-color-picker-wheel-borderwidth, 3);
         --wheel-shadow: var(--ha-color-picker-wheel-shadow, rgb(15, 15, 15) 10px 5px 5px 0px);
       }
 
       #marker {
         fill: currentColor;
         stroke: var(--ha-color-picker-marker-bordercolor, white);
-        stroke-width: var(--ha-color-picker-marker-borderwith, 3);
+        stroke-width: var(--ha-color-picker-marker-borderwidth, 3);
         filter: url(#marker-shadow)
       }
       .dragging #marker {
@@ -47,7 +47,7 @@
         display: none;
         fill: currentColor;
         stroke: var(--ha-color-picker-tooltip-bordercolor, white);
-        stroke-width: var(--ha-color-picker-tooltip-borderwith, 3);
+        stroke-width: var(--ha-color-picker-tooltip-borderwidth, 3);
       }
 
       .touch.dragging #colorTooltip {
@@ -418,7 +418,7 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.originX = this.width / 2;
     this.originY = this.originX;
 
-    // synchronise with/height coordinates
+    // synchronise width/height coordinates
     this.backgroundLayer.width = this.width;
     this.backgroundLayer.height = this.height;
     this.interactionLayer.setAttribute('viewBox', `${-this.originX} ${-this.originY} ${this.width} ${this.height}`);
