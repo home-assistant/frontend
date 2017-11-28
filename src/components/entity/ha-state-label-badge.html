@@ -112,6 +112,10 @@ class HaStateLabelBadge extends
           return 'mdi:nature';
         } else if (state.state === 'armed_home') {
           return 'mdi:home-variant';
+        } else if (state.state === 'armed_night') {
+          return 'mdi:weather-night';
+        } else if (state.state === 'armed_custom_bypass') {
+          return 'mdi:security-home';
         } else if (state.state === 'triggered') {
           return 'mdi:alert-circle';
         }

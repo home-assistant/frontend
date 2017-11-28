@@ -103,12 +103,16 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
       this.codeInputEnabled = (
         newVal.state === 'armed_home' ||
         newVal.state === 'armed_away' ||
+        newVal.state === 'armed_night' ||
+        newVal.state === 'armed_custom_bypass' ||
         newVal.state === 'disarmed' ||
         newVal.state === 'pending' ||
         newVal.state === 'triggered');
       this.disarmButtonVisible = (
         newVal.state === 'armed_home' ||
         newVal.state === 'armed_away' ||
+        newVal.state === 'armed_night' ||
+        newVal.state === 'armed_custom_bypass' ||
         newVal.state === 'pending' ||
         newVal.state === 'triggered');
       this.armHomeButtonVisible = newVal.state === 'disarmed';
