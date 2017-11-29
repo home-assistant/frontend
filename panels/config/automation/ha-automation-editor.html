@@ -166,20 +166,29 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
         type: Boolean,
         observer: '_updateComponent',
       },
+
+      _rendered: {
+        type: Object,
+        value: null,
+      },
+
+      _renderScheduled: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   ready() {
-    super.ready();
     this.configChanged = this.configChanged.bind(this);
-    this._rendered = null;
-    this._renderScheduled = false;
+    super.ready(); // This call will initialize preact.
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this._rendered) {
       window.unmountPreact(this._rendered);
+      this._rendered = null;
     }
   }
 
