@@ -38,23 +38,27 @@
     .label-badge .label {
       position: absolute;
       bottom: -1em;
-      left: 0;
-      right: 0;
+      /* Make the label as wide as container+border. */
+      left: -0.1em;
+      right: -0.1em;
       line-height: 1em;
       font-size: 0.5em;
     }
     .label-badge .label span {
-      max-width: 80%;
+      max-width: 68%; /* Parent width minus two times 16% padding */
       display: inline-block;
       background-color: var(--ha-label-badge-color, --primary-color);
       color: white;
       border-radius: 1em;
-      padding: 4px 8px;
+      padding: 8% 16%;
       font-weight: 500;
       text-transform: uppercase;
       overflow: hidden;
       text-overflow: ellipsis;
       transition: background-color .3s ease-in-out;
+    }
+    .label-badge .label.big span {
+      font-size: 90%;
     }
     .badge-container .title {
       margin-top: 1em;
@@ -73,11 +77,13 @@
 
     <div class='badge-container'>
       <div class='label-badge' id='badge'>
-        <div class$='[[computeClasses(value)]]'>
+        <div class$='[[computeValueClasses(value)]]'>
           <iron-icon icon='[[icon]]' hidden$='[[computeHideIcon(icon, value, image)]]'></iron-icon>
           <span hidden$='[[computeHideValue(value, image)]]'>[[value]]</span>
         </div>
-        <div class='label' hidden$='[[!label]]'><span>[[label]]</span></div>
+        <div hidden$='[[!label]]' class$='[[computeLabelClasses(label)]]'>
+          <span>[[label]]</span>
+        </div>
       </div>
       <div class='title' hidden$='[[!description]]'>[[description]]</div>
     </div>
@@ -101,8 +107,12 @@ class HaLabelBadge extends Polymer.Element {
     };
   }
 
-  computeClasses(value) {
+  computeValueClasses(value) {
     return value && value.length > 4 ? 'value big' : 'value';
+  }
+
+  computeLabelClasses(label) {
+    return label && label.length > 5 ? 'label big' : 'label';
   }
 
   computeHideIcon(icon, value, image) {
