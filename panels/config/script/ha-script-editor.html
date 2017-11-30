@@ -15,12 +15,14 @@
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
-<link rel='import' href='../../../src/util/hass-mixins.html'>
+<link rel='import' href='../../../src/components/entity/ha-entity-picker.html'>
+<link rel='import' href='../../../src/components/ha-combo-box.html'>
 <link rel='import' href='../../../src/layouts/ha-app-layout.html'>
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../ha-config-section.html">
 
-<script src='../../../build-temp/script-editor.js'></script>
+<link rel="import" href="../ha-config-js.html">
 
 <dom-module id="ha-script-editor">
   <template>
@@ -159,12 +161,17 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
 
       isWide: {
         type: Boolean,
-        observer: 'isWideChanged',
+        observer: '_updateComponent',
       },
 
       _rendered: {
         type: Object,
         value: null,
+      },
+
+      _renderScheduled: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -194,7 +201,7 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
   scriptChanged(newVal, oldVal) {
     if (!newVal) return;
     if (!this.hass) {
-      setTimeout(this.scriptChanged.bind(this, newVal, oldVal), 0);
+      setTimeout(() => this.scriptChanged(newVal, oldVal), 0);
       return;
     }
     if (oldVal && oldVal.entity_id === newVal.entity_id) {
@@ -229,11 +236,6 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
     this._updateComponent();
   }
 
-  isWideChanged() {
-    if (this.config === null) return;
-    this._updateComponent();
-  }
-
   backTapped() {
     if (this.dirty &&
         // eslint-disable-next-line
@@ -244,11 +246,17 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _updateComponent() {
-    this._rendered = window.ScriptEditor(this.$.root, {
-      script: this.config,
-      onChange: this.configChanged,
-      isWide: this.isWide,
-    }, this._rendered);
+    if (this._renderScheduled || !this.hass || !this.config) return;
+    this._renderScheduled = true;
+    Promise.resolve().then(() => {
+      this._rendered = window.ScriptEditor(this.$.root, {
+        script: this.config,
+        onChange: this.configChanged,
+        isWide: this.isWide,
+        hass: this.hass,
+      }, this._rendered);
+      this._renderScheduled = false;
+    });
   }
 
   saveScript() {

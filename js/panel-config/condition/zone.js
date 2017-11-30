@@ -1,8 +1,8 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../../util/event.js';
-import { hasLocation } from '../../util/location.js';
-import computeStateDomain from '../../util/compute_state_domain.js';
+import { onChangeEvent } from '../../common/util/event.js';
+import { hasLocation } from '../../common/util/location.js';
+import computeStateDomain from '../../common/util/compute_state_domain.js';
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== 'zone';
