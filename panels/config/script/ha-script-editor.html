@@ -161,19 +161,24 @@ class HaScriptEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
         type: Boolean,
         observer: 'isWideChanged',
       },
+
+      _rendered: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
   ready() {
-    super.ready();
     this.configChanged = this.configChanged.bind(this);
-    this._rendered = null;
+    super.ready(); // This call will initialize preact.
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this._rendered) {
       window.unmountPreact(this._rendered);
+      this._rendered = null;
     }
   }
 
