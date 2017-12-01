@@ -51,28 +51,24 @@ class PartialPanelResolver extends Polymer.Element {
         value: false,
         observer: 'updateAttributes',
       },
-
       route: Object,
-
       routeData: Object,
-
       routeTail: {
         type: Object,
         observer: 'updateAttributes',
       },
-
       resolved: {
         type: Boolean,
         value: false,
       },
-
       errorLoading: {
         type: Boolean,
         value: false,
       },
-
+      panelUrl: String,
       panel: {
         type: Object,
+        computed: 'computeCurrentPanel(hass, panelUrl)',
         observer: 'panelChanged',
       },
     };
@@ -118,6 +114,10 @@ class PartialPanelResolver extends Polymer.Element {
     customEl.narrow = this.narrow;
     customEl.showMenu = this.showMenu;
     customEl.route = this.routeTail;
+  }
+
+  computeCurrentPanel(hass, panelUrl) {
+    return hass.config.panels[panelUrl];
   }
 }
 

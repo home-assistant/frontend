@@ -25,12 +25,6 @@
     <ha-url-sync hass='[[hass]]'></ha-url-sync>
     <app-route
       route="{{route}}"
-      pattern="/:panel"
-      data="{{routeData}}"
-      tail="{{routeTail}}"
-    ></app-route>
-    <app-route
-      route="{{route}}"
       pattern="/states"
       tail="{{statesRouteTail}}"
     ></app-route>
@@ -43,20 +37,19 @@
 
     <paper-drawer-panel id='drawer'
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
-      responsive-width='0' disable-swipe='[[_computeDisableSwipe(routeData)]]'
-      disable-edge-swipe='[[_computeDisableSwipe(routeData)]]'>
+      responsive-width='0' disable-swipe='[[_computeDisableSwipe(panelUrl)]]'
+      disable-edge-swipe='[[_computeDisableSwipe(panelUrl)]]'>
       <ha-sidebar
         slot="drawer"
         narrow='[[narrow]]'
         hass='[[hass]]'
-        route='[[routeData]]'
       ></ha-sidebar>
 
       <iron-pages
         slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
-        selected='[[_computeSelected(routeData)]]'
+        selected='[[panelUrl]]'
         selected-attribute='panel-visible'
       >
         <partial-cards
@@ -74,7 +67,7 @@
           hass='[[hass]]'
           route='[[route]]'
           show-menu='[[dockedSidebar]]'
-          panel='[[panel]]'
+          panel-url='[[panelUrl]]'
         ></partial-panel-resolver>
 
       </iron-pages>
@@ -94,15 +87,12 @@
       return {
         hass: Object,
         narrow: Boolean,
-        panel: Object,
+        panelUrl: String,
         route: {
           type: Object,
           observer: '_routeChanged',
         },
-        routeData: Object,
-        routeTail: Object,
         statesRouteTail: Object,
-
         dockedSidebar: {
           type: Boolean,
           computed: 'computeDockedSidebar(hass)',
@@ -159,12 +149,8 @@
       return hass.dockedSidebar;
     }
 
-    _computeSelected(routeData) {
-      return routeData.panel || 'states';
-    }
-
-    _computeDisableSwipe(routeData) {
-      return NON_SWIPABLE_PANELS.indexOf(routeData.panel) !== -1;
+    _computeDisableSwipe(panelUrl) {
+      return NON_SWIPABLE_PANELS.indexOf(panelUrl) !== -1;
     }
   }
 

@@ -39,7 +39,7 @@
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
         hass='[[hass]]'
-        panel='[[panel]]'
+        panel-url='[[panelUrl]]'
         route='{{route}}'
       ></home-assistant-main>
     </template>
@@ -87,10 +87,9 @@ class HomeAssistant extends Polymer.Element {
       },
       route: Object,
       routeData: Object,
-      panel: {
-        type: Object,
-        computed: 'computeCurrentPanel(hass, routeData)',
-        observer: 'loadTranslationFragment',
+      panelUrl: {
+        type: String,
+        computed: 'computePanelUrl(routeData)',
       },
     };
   }
@@ -247,8 +246,8 @@ class HomeAssistant extends Polymer.Element {
     };
   }
 
-  computeCurrentPanel(hass, routeData) {
-    return routeData && hass && hass.config && hass.config.panels[routeData.panel];
+  computePanelUrl(routeData) {
+    return (routeData && routeData.panel) || 'states';
   }
 
   handleConnectionPromise(prom) {
@@ -300,16 +299,13 @@ class HomeAssistant extends Polymer.Element {
     this._updateHass({ selectedLanguage: event.detail.language });
     this.$.storage.storeState();
     this.loadResources();
-    this.loadTranslationFragment(this.panel);
+    this.loadTranslationFragment(this.panelUrl);
   }
 
-  loadTranslationFragment(panel) {
-    if (!panel) { return; }
-
-    const fragment = panel.component_name;
+  loadTranslationFragment(panelUrl) {
     if (this.hass.translationMetadata
-      && this.hass.translationMetadata.fragments.includes(fragment)) {
-      this.loadResources(fragment);
+      && this.hass.translationMetadata.fragments.includes(panelUrl)) {
+      this.loadResources(panelUrl);
     }
   }
 
