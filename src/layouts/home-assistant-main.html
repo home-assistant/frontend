@@ -74,7 +74,7 @@
           hass='[[hass]]'
           route='[[route]]'
           show-menu='[[dockedSidebar]]'
-          panel='{{panel}}'
+          panel='[[panel]]'
         ></partial-panel-resolver>
 
       </iron-pages>
@@ -93,14 +93,8 @@
     static get properties() {
       return {
         hass: Object,
-
         narrow: Boolean,
-
-        panel: {
-          type: Object,
-          notify: true,
-        },
-
+        panel: Object,
         route: {
           type: Object,
           observer: '_routeChanged',

@@ -5,6 +5,7 @@
 <link rel='import' href='./util/roboto.html'>
 <link rel='import' href='../bower_components/paper-styles/typography.html'>
 <link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
+<link rel='import' href='../bower_components/app-route/app-route.html'>
 <link rel='import' href='../bower_components/app-route/app-location.html'>
 
 <!--polyfill for paper-dropdown-->
@@ -26,6 +27,11 @@
     <ha-pref-storage hass='[[hass]]' id='storage'></ha-pref-storage>
     <notification-manager id='notifications' hass='[[hass]]'></notification-manager>
     <app-location route="{{route}}"></app-location>
+    <app-route
+      route="{{route}}"
+      pattern="/:panel"
+      data="{{routeData}}"
+    ></app-route>
     <template is='dom-if' if='[[showMain]]' restamp>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
@@ -33,7 +39,7 @@
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
         hass='[[hass]]'
-        panel='{{panel}}'
+        panel='[[panel]]'
         route='{{route}}'
       ></home-assistant-main>
     </template>
@@ -80,8 +86,10 @@ class HomeAssistant extends Polymer.Element {
         computed: 'computeShowMain(hass)',
       },
       route: Object,
+      routeData: Object,
       panel: {
         type: Object,
+        computed: 'computeCurrentPanel(hass, routeData)',
         observer: 'loadTranslationFragment',
       },
     };
@@ -237,6 +245,10 @@ class HomeAssistant extends Polymer.Element {
       unsubConfig();
       unsubThemes();
     };
+  }
+
+  computeCurrentPanel(hass, routeData) {
+    return routeData && hass && hass.config && hass.config.panels[routeData.panel];
   }
 
   handleConnectionPromise(prom) {

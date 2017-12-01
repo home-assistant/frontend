@@ -73,16 +73,9 @@ class PartialPanelResolver extends Polymer.Element {
 
       panel: {
         type: Object,
-        computed: 'computeCurrentPanel(hass, routeData)',
         observer: 'panelChanged',
-        notify: true,
-        readOnly: true,
       },
     };
-  }
-
-  computeCurrentPanel(hass, routeData) {
-    return routeData ? hass.config.panels[routeData.panel] : null;
   }
 
   panelChanged(panel) {
