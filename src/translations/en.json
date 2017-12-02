@@ -42,28 +42,28 @@
         "on": "Wet"
       },
       "gas": {
-        "off": "Clear",
-        "on": "Detected"
+        "off": "Nothing",
+        "on": "Gas detected"
       },
       "motion": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
+        "off": "Nothing",
+        "on": "Motion detected"
       },
       "occupancy": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
+        "off": "Free",
+        "on": "Occupied"
       },
       "smoke": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
+        "off": "Nothing",
+        "on": "Smoke detected"
       },
       "sound": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
+        "off": "Nothing",
+        "on": "Sound detected"
       },
       "vibration": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
+        "off": "Nothing",
+        "on": "Vibration detected"
       },
       "opening": {
         "off": "Closed",
