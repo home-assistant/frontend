@@ -158,6 +158,7 @@ class HomeAssistant extends Polymer.Element {
       config: null,
       themes: null,
       panelUrl: this.panelUrl,
+      panel: null,
 
       // If language and resources are already loaded, don't discard them
       language: (this.hass && this.hass.language) || null,
@@ -220,7 +221,10 @@ class HomeAssistant extends Polymer.Element {
     var unsubConfig;
 
     window.HAWS.subscribeConfig(conn, (config) => {
-      this._updateHass({ config: config });
+      this._updateHass({
+        config: config,
+        panel: config.panels[this.panelUrl],
+      });
     }).then(function (unsub) {
       unsubConfig = unsub;
     });
@@ -252,7 +256,10 @@ class HomeAssistant extends Polymer.Element {
   }
 
   panelUrlChanged(newPanelUrl) {
-    this._updateHass({ panelUrl: newPanelUrl });
+    this._updateHass({
+      panelUrl: newPanelUrl,
+      panel: (this.hass && this.hass.config && this.hass.config.panels[newPanelUrl]) || null,
+    });
     this.loadTranslationFragment(newPanelUrl);
   }
 
