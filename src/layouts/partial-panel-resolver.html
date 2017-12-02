@@ -116,7 +116,7 @@ class PartialPanelResolver extends Polymer.Element {
   }
 
   computeCurrentPanel(hass) {
-    return hass.panel;
+    return hass.config.panels[hass.panelUrl];
   }
 }
 
