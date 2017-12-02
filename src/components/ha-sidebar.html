@@ -103,7 +103,7 @@
       <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
     </app-toolbar>
 
-    <paper-listbox attr-for-selected='data-panel' selected='[[panelUrl]]'>
+    <paper-listbox attr-for-selected='data-panel' selected='[[hass.panelUrl]]'>
       <paper-icon-item on-tap='menuClicked' data-panel='states'>
         <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
         <span class='item-text'>[[haLocalize('panel', 'states')]]</span>
@@ -192,11 +192,6 @@ class HaSidebar extends
         type: String,
       },
       narrow: Boolean,
-      panelUrl: String,
-      panel: {
-        type: Object,
-        computed: 'computeCurrentPanel(hass, panelUrl)',
-      },
       panels: {
         type: Array,
         computed: 'computePanels(hass)',
@@ -210,10 +205,6 @@ class HaSidebar extends
 
   _mqttLoaded(hass) {
     return hass.config.core.components.indexOf('mqtt') !== -1;
-  }
-
-  computeCurrentPanel(hass, panelUrl) {
-    return hass.config.panels[panelUrl];
   }
 
   computePanelName(haLocalize, panel) {

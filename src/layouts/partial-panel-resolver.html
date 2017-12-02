@@ -65,10 +65,9 @@ class PartialPanelResolver extends Polymer.Element {
         type: Boolean,
         value: false,
       },
-      panelUrl: String,
       panel: {
         type: Object,
-        computed: 'computeCurrentPanel(hass, panelUrl)',
+        computed: 'computeCurrentPanel(hass)',
         observer: 'panelChanged',
       },
     };
@@ -116,8 +115,8 @@ class PartialPanelResolver extends Polymer.Element {
     customEl.route = this.routeTail;
   }
 
-  computeCurrentPanel(hass, panelUrl) {
-    return hass.config.panels[panelUrl];
+  computeCurrentPanel(hass) {
+    return hass.config.panels[hass.panelUrl];
   }
 }
 

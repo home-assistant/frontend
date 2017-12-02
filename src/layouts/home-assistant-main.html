@@ -37,8 +37,8 @@
 
     <paper-drawer-panel id='drawer'
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
-      responsive-width='0' disable-swipe='[[_computeDisableSwipe(panelUrl)]]'
-      disable-edge-swipe='[[_computeDisableSwipe(panelUrl)]]'>
+      responsive-width='0' disable-swipe='[[_computeDisableSwipe(hass)]]'
+      disable-edge-swipe='[[_computeDisableSwipe(hass)]]'>
       <ha-sidebar
         slot="drawer"
         narrow='[[narrow]]'
@@ -49,7 +49,7 @@
         slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
-        selected='[[panelUrl]]'
+        selected='[[hass.panelUrl]]'
         selected-attribute='panel-visible'
       >
         <partial-cards
@@ -67,7 +67,6 @@
           hass='[[hass]]'
           route='[[route]]'
           show-menu='[[dockedSidebar]]'
-          panel-url='[[panelUrl]]'
         ></partial-panel-resolver>
 
       </iron-pages>
@@ -87,7 +86,6 @@
       return {
         hass: Object,
         narrow: Boolean,
-        panelUrl: String,
         route: {
           type: Object,
           observer: '_routeChanged',
@@ -149,8 +147,8 @@
       return hass.dockedSidebar;
     }
 
-    _computeDisableSwipe(panelUrl) {
-      return NON_SWIPABLE_PANELS.indexOf(panelUrl) !== -1;
+    _computeDisableSwipe(hass) {
+      return NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
     }
   }
 

@@ -39,7 +39,6 @@
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
         hass='[[hass]]'
-        panel-url='[[panelUrl]]'
         route='{{route}}'
       ></home-assistant-main>
     </template>
@@ -90,6 +89,7 @@ class HomeAssistant extends Polymer.Element {
       panelUrl: {
         type: String,
         computed: 'computePanelUrl(routeData)',
+        observer: 'panelUrlChanged',
       },
     };
   }
@@ -157,6 +157,7 @@ class HomeAssistant extends Polymer.Element {
       states: null,
       config: null,
       themes: null,
+      panelUrl: this.panelUrl,
 
       // If language and resources are already loaded, don't discard them
       language: (this.hass && this.hass.language) || null,
@@ -248,6 +249,11 @@ class HomeAssistant extends Polymer.Element {
 
   computePanelUrl(routeData) {
     return (routeData && routeData.panel) || 'states';
+  }
+
+  panelUrlChanged(newPanelUrl) {
+    this._updateHass({ panelUrl: newPanelUrl });
+    this.loadTranslationFragment(newPanelUrl);
   }
 
   handleConnectionPromise(prom) {
