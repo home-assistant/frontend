@@ -34,6 +34,7 @@ class HaServicePicker extends Polymer.Element {
   _hassChanged(hass, oldHass) {
     if (!hass) {
       this._services = [];
+      return;
     } else if (oldHass && hass.config.services === oldHass.config.services) {
       return;
     }
