@@ -36,15 +36,6 @@ window.hassUtil.HIDE_MORE_INFO = [
   'input_select', 'scene', 'input_number', 'input_text'
 ];
 
-window.hassUtil.canToggleState = function (hass, stateObj) {
-  var domain = window.hassUtil.computeDomain(stateObj);
-  if (domain === 'group') {
-    return stateObj.state === 'on' || stateObj.state === 'off';
-  }
-
-  return window.hassUtil.canToggleDomain(hass, domain);
-};
-
 // Update root's child element to be newElementTag replacing another existing child if any.
 // Copy attributes into the child element.
 window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attributes) {
