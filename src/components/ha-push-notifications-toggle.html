@@ -8,8 +8,7 @@
     <paper-toggle-button
       hidden$='[[!pushSupported]]'
       disabled='[[loading]]'
-      on-change='handlePushChange'
-      checked='[[pushActive]]'
+      checked='{{pushChecked}}'
     ></paper-toggle-button>
   </template>
 </dom-module>
@@ -32,9 +31,10 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(Polymer.El
               document.location.hostname === '127.0.0.1')
         )
       },
-      pushActive: {
+      pushChecked: {
         type: Boolean,
-        value: 'Notification' in window && Notification.permission === 'granted'
+        value: 'Notification' in window && Notification.permission === 'granted',
+        observer: 'handlePushChange',
       },
       loading: {
         type: Boolean,
@@ -47,53 +47,45 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(Polymer.El
     super.connectedCallback();
     if (!this.pushSupported) return;
 
-    var el = this;
-
     navigator.serviceWorker.ready.then(
-      function (reg) {
-        reg.pushManager.getSubscription().then(function (subscription) {
-          el.loading = false;
-          el.pushActive = !!subscription;
+      (reg) => {
+        reg.pushManager.getSubscription().then((subscription) => {
+          this.loading = false;
+          this.pushChecked = !!subscription;
         });
       },
-      function () {
+      () => {
         // no service worker.
-        el._setPushSupported(false);
+        this._setPushSupported(false);
       }
     );
   }
-  handlePushChange(ev) {
-    if (ev.target.checked) {
+  handlePushChange(pushChecked) {
+    if (pushChecked) {
       this.subscribePushNotifications();
     } else {
       this.unsubscribePushNotifications();
     }
   }
   subscribePushNotifications() {
-    var el = this;
-
     navigator.serviceWorker.ready
-      .then(function (reg) {
-        return reg.pushManager.subscribe({ userVisibleOnly: true });
-      })
+      .then(reg => reg.pushManager.subscribe({ userVisibleOnly: true }))
       .then(
-        function (sub) {
-          var browserName;
+        (sub) => {
+          let browserName;
           if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
             browserName = 'firefox';
           } else {
             browserName = 'chrome';
           }
 
-          return el.hass.callApi('POST', 'notify.html5', {
+          return this.hass.callApi('POST', 'notify.html5', {
             subscription: sub,
             browser: browserName
-          }).then(function () {
-            el.pushActive = true;
           });
         },
-        function (err) {
-          var message;
+        (err) => {
+          let message;
           if (err.message && err.message.indexOf('gcm_sender_id') !== -1) {
             message = 'Please setup the notify.html5 platform.';
           } else {
@@ -104,36 +96,29 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(Polymer.El
           console.error(err);
           /* eslint-enable no-console */
 
-          el.fire('hass-notification', { message: message });
-          el.pushActive = false;
+          this.fire('hass-notification', { message: message });
+          this.pushChecked = false;
         }
       );
   }
   unsubscribePushNotifications() {
-    var el = this;
-
     navigator.serviceWorker.ready
-      .then(function (reg) {
-        return reg.pushManager.getSubscription();
-      })
-      .then(function (sub) {
+      .then(reg => reg.pushManager.getSubscription())
+      .then((sub) => {
         if (!sub) return Promise.resolve();
 
-        return el.hass
+        return this.hass
           .callApi('DELETE', 'notify.html5', { subscription: sub })
-          .then(function () {
+          .then(() => {
             sub.unsubscribe();
           });
       })
-      .then(function () {
-        el.pushActive = false;
-      })
-      .catch(function (err) {
+      .catch((err) => {
         /* eslint-disable no-console */
         console.error('Error in unsub push', err);
         /* eslint-enable no-console */
 
-        el.fire('hass-notification', {
+        this.fire('hass-notification', {
           message: 'Failed unsubscribing for push notifications.'
         });
       });
