@@ -37,7 +37,7 @@
         "on": "[%key:state::default::on%]"
       },
       "battery": {
-        "off": "Normal",
+        "off": "[%key:state::plant::ok%]",
         "on": "Low"
       },
       "moisture": {
