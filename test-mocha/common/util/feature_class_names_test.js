@@ -1,6 +1,6 @@
-import featureClassNames from '../../../js/common/util/feature_class_names';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import featureClassNames from '../../../js/common/util/feature_class_names';
 
 describe('featureClassNames', () => {
   const classNames = {

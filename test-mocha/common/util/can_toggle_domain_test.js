@@ -1,6 +1,6 @@
-import canToggleDomain from '../../../js/common/util/can_toggle_domain';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import canToggleDomain from '../../../js/common/util/can_toggle_domain';
 
 describe('canToggleDomain', () => {
   const hass = {
@@ -22,18 +22,18 @@ describe('canToggleDomain', () => {
   };
 
   it('Detects lights toggle', () => {
-    assert.strictEqual(canToggleDomain(hass, 'light'), true);
+    assert.isTrue(canToggleDomain(hass, 'light'));
   });
 
   it('Detects locks toggle', () => {
-    assert.strictEqual(canToggleDomain(hass, 'lock'), true);
+    assert.isTrue(canToggleDomain(hass, 'lock'));
   });
 
   it('Detects sensors do not toggle', () => {
-    assert.strictEqual(canToggleDomain(hass, 'sensor'), false);
+    assert.isFalse(canToggleDomain(hass, 'sensor'));
   });
 
   it('Detects binary sensors do not toggle', () => {
-    assert.strictEqual(canToggleDomain(hass, 'binary_sensor'), false);
+    assert.isFalse(canToggleDomain(hass, 'binary_sensor'));
   });
 });
