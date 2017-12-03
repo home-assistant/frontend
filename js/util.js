@@ -7,6 +7,7 @@
  */
 
 import attributeClassNames from './common/util/attribute_class_names.js';
+import canToggleDomain from './common/util/can_toggle_domain.js';
 import computeStateDomain from './common/util/compute_state_domain.js';
 import computeStateDisplay from './common/util/compute_state_display.js';
 import featureClassNames from './common/util/feature_class_names.js';
@@ -22,6 +23,7 @@ const language = navigator.languages ?
 window.fecha.masks.haDateTime = window.fecha.masks.shortTime + ' ' + window.fecha.masks.mediumDate;
 
 window.hassUtil.attributeClassNames = attributeClassNames;
+window.hassUtil.canToggleDomain = canToggleDomain;
 window.hassUtil.computeDomain = computeStateDomain;
 window.hassUtil.computeStateDisplay = computeStateDisplay;
 window.hassUtil.featureClassNames = featureClassNames;

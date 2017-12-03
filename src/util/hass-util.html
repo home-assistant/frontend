@@ -45,21 +45,6 @@ window.hassUtil.canToggleState = function (hass, stateObj) {
   return window.hassUtil.canToggleDomain(hass, domain);
 };
 
-window.hassUtil.canToggleDomain = function (hass, domain) {
-  var turnOnService;
-  var services = hass.config.services[domain];
-
-  if (domain === 'lock') {
-    turnOnService = 'lock';
-  } else if (domain === 'cover') {
-    turnOnService = 'open_cover';
-  } else {
-    turnOnService = 'turn_on';
-  }
-
-  return services && turnOnService in services;
-};
-
 // Update root's child element to be newElementTag replacing another existing child if any.
 // Copy attributes into the child element.
 window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attributes) {
