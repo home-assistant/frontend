@@ -156,7 +156,7 @@ describe('computeStateDisplay', () => {
   });
 
   it('Localizes custom state', () => {
-    const altHaLocalize = function (namespace, message, ...args) {
+    const altHaLocalize = function () {
       // No matches can be found
       return null;
     };
