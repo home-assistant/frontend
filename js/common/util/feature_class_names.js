@@ -6,5 +6,5 @@ export default function featureClassNames(stateObj, classNames) {
 
   return Object.keys(classNames).map(feature => (
     (features & feature) !== 0 ? classNames[feature] : ''
-  )).join(' ');
+  )).filter(attr => attr !== '').join(' ');
 }

@@ -26,7 +26,7 @@ describe('featureClassNames', () => {
     };
     assert.strictEqual(
       featureClassNames(stateObj, classNames),
-      '   '
+      ''
     );
   });
 
@@ -38,7 +38,7 @@ describe('featureClassNames', () => {
     };
     assert.strictEqual(
       featureClassNames(stateObj, classNames),
-      '   has-feature_d'
+      'has-feature_d'
     );
   });
 
@@ -50,7 +50,7 @@ describe('featureClassNames', () => {
     };
     assert.strictEqual(
       featureClassNames(stateObj, classNames),
-      'has-feature_a   has-feature_d'
+      'has-feature_a has-feature_d'
     );
   });
 });
