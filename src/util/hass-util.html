@@ -11,17 +11,7 @@ window.hassUtil.DEFAULT_ICON = 'mdi:bookmark';
 
 window.hassUtil.OFF_STATES = ['off', 'closed', 'unlocked'];
 
-window.hassUtil.DOMAINS_WITH_MORE_INFO = [
-  'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
-  'cover', 'fan', 'group', 'history_graph', 'light', 'lock', 'media_player', 'script',
-  'sun', 'updater', 'vacuum', 'input_datetime',
-];
-
 window.hassUtil.DOMAINS_WITH_NO_HISTORY = ['camera', 'configurator', 'history_graph', 'scene'];
-
-window.hassUtil.HIDE_MORE_INFO = [
-  'input_select', 'scene', 'input_number', 'input_text'
-];
 
 // Update root's child element to be newElementTag replacing another existing child if any.
 // Copy attributes into the child element.
@@ -83,18 +73,6 @@ window.hassUtil.relativeTime.tests = [
   24, 'hour',
   7, 'day',
 ];
-
-window.hassUtil.stateMoreInfoType = function (stateObj) {
-  var domain = window.hassUtil.computeDomain(stateObj);
-
-  if (window.hassUtil.DOMAINS_WITH_MORE_INFO.indexOf(domain) !== -1) {
-    return domain;
-  }
-  if (window.hassUtil.HIDE_MORE_INFO.indexOf(domain) !== -1) {
-    return 'hidden';
-  }
-  return 'default';
-};
 
 window.hassUtil.domainIcon = function (domain, state) {
   switch (domain) {

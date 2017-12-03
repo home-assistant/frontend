@@ -16,6 +16,7 @@ import formatDate from './common/util/format_date.js';
 import formatDateTime from './common/util/format_date_time.js';
 import formatTime from './common/util/format_time.js';
 import stateCardType from './common/util/state_card_type.js';
+import stateMoreInfoType from './common/util/state_more_info_type.js';
 
 window.hassUtil = window.hassUtil || {};
 
@@ -34,3 +35,4 @@ window.hassUtil.formatDate = dateObj => formatDate(dateObj, language);
 window.hassUtil.formatDateTime = dateObj => formatDateTime(dateObj, language);
 window.hassUtil.formatTime = dateObj => formatTime(dateObj, language);
 window.hassUtil.stateCardType = stateCardType;
+window.hassUtil.stateMoreInfoType = stateMoreInfoType;
