@@ -11,19 +11,6 @@ window.hassUtil.DEFAULT_ICON = 'mdi:bookmark';
 
 window.hassUtil.OFF_STATES = ['off', 'closed', 'unlocked'];
 
-window.hassUtil.DOMAINS_WITH_CARD = [
-  'climate',
-  'cover',
-  'configurator',
-  'input_select',
-  'input_number',
-  'input_text',
-  'media_player',
-  'scene',
-  'script',
-  'weblink',
-];
-
 window.hassUtil.DOMAINS_WITH_MORE_INFO = [
   'alarm_control_panel', 'automation', 'camera', 'climate', 'configurator',
   'cover', 'fan', 'group', 'history_graph', 'light', 'lock', 'media_player', 'script',
@@ -96,22 +83,6 @@ window.hassUtil.relativeTime.tests = [
   24, 'hour',
   7, 'day',
 ];
-
-window.hassUtil.stateCardType = function (hass, stateObj) {
-  if (stateObj.state === 'unavailable') {
-    return 'display';
-  }
-
-  var domain = window.hassUtil.computeDomain(stateObj);
-
-  if (window.hassUtil.DOMAINS_WITH_CARD.indexOf(domain) !== -1) {
-    return domain;
-  } else if (window.hassUtil.canToggleState(hass, stateObj) &&
-             stateObj.attributes.control !== 'hidden') {
-    return 'toggle';
-  }
-  return 'display';
-};
 
 window.hassUtil.stateMoreInfoType = function (stateObj) {
   var domain = window.hassUtil.computeDomain(stateObj);
