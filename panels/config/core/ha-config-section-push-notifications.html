@@ -1,0 +1,53 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/iron-label/iron-label.html">
+<link rel="import" href="../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
+<link rel="import" href="../ha-config-section.html">
+<link rel='import' href='../../../src/components/ha-push-notifications-toggle.html'>
+
+
+<dom-module id="ha-config-section-push-notifications">
+  <template>
+    <style include="iron-flex iron-flex-alignment iron-positioning">
+      ha-push-notifications-toggle {
+        margin-left: 16px;
+      }
+    </style>
+    <ha-config-section is-wide='[[isWide]]'>
+      <span slot='header'>Enable Push Notifications</span>
+      <span slot='introduction'>
+        Enable this setting to receive push notifications on this device
+      </span>
+
+      <paper-card>
+        <div class='card-content'>
+          <iron-label class='horizontal layout'>            
+            Push Notifications
+            <ha-push-notifications-toggle
+              hass='[[hass]]'
+              push-supported='{{pushSupported}}'
+            ></ha-push-notifications-toggle>
+          </iron-label>
+        </div>
+      </paper-card>
+    </ha-config-section>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigSectionPushNotifications extends Polymer.Element {
+  static get is() { return 'ha-config-section-push-notifications'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      isWide: Boolean,
+      pushSupported: Boolean,
+    };
+  }
+}
+
+customElements.define(HaConfigSectionPushNotifications.is, HaConfigSectionPushNotifications);
+</script>
