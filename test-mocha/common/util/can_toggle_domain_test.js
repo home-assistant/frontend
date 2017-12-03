@@ -34,6 +34,6 @@ describe('canToggleDomain', () => {
   });
 
   it('Detects binary sensors do not toggle', () => {
-    assert.strictEqual(canToggleDomain(hass, 'binary_sensor'), undefined);
+    assert.strictEqual(canToggleDomain(hass, 'binary_sensor'), false);
   });
 });
