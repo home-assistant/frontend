@@ -11,8 +11,6 @@
 <link rel='import' href='../util/hass-mixins.html'>
 <link rel='import' href='../util/hass-translation.html'>
 
-<link rel='import' href='./ha-push-notifications-toggle.html'>
-
 <dom-module id='ha-sidebar'>
   <template>
     <style include="iron-flex iron-flex-alignment iron-positioning">
@@ -123,18 +121,6 @@
     </paper-listbox>
 
     <div>
-      <template is='dom-if' if='[[pushSupported]]'>
-        <div class='divider'></div>
-
-        <paper-item class='horizontal layout justified'>
-          <div class='setting'>Push Notifications</div>
-          <ha-push-notifications-toggle
-            hass='[[hass]]'
-            push-supported='{{pushSupported}}'
-          ></ha-push-notifications-toggle>
-        </paper-item>
-      </template>
-
       <div class='divider'></div>
 
       <div class='subheader'>Developer Tools</div>
@@ -201,11 +187,6 @@ class HaSidebar extends
       panels: {
         type: Array,
         computed: 'computePanels(hass)',
-      },
-
-      pushSupported: {
-        type: Boolean,
-        value: true,
       },
     };
   }
