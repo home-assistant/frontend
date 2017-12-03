@@ -9,6 +9,7 @@
 import attributeClassNames from './common/util/attribute_class_names.js';
 import computeStateDomain from './common/util/compute_state_domain.js';
 import computeStateDisplay from './common/util/compute_state_display.js';
+import featureClassNames from './common/util/feature_class_names.js';
 import formatDate from './common/util/format_date.js';
 import formatDateTime from './common/util/format_date_time.js';
 import formatTime from './common/util/format_time.js';
@@ -23,6 +24,7 @@ window.fecha.masks.haDateTime = window.fecha.masks.shortTime + ' ' + window.fech
 window.hassUtil.attributeClassNames = attributeClassNames;
 window.hassUtil.computeDomain = computeStateDomain;
 window.hassUtil.computeStateDisplay = computeStateDisplay;
+window.hassUtil.featureClassNames = featureClassNames;
 window.hassUtil.formatDate = dateObj => formatDate(dateObj, language);
 window.hassUtil.formatDateTime = dateObj => formatDateTime(dateObj, language);
 window.hassUtil.formatTime = dateObj => formatTime(dateObj, language);
