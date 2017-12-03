@@ -9,6 +9,7 @@
 <link rel="import" href="./ha-config-section-core.html">
 <!-- <link rel="import" href="./ha-config-section-group.html"> -->
 <link rel="import" href="./ha-config-section-hassbian.html">
+<link rel="import" href="./ha-config-section-push-notifications.html">
 <link rel="import" href="./ha-config-section-translation.html">
 <link rel="import" href="./ha-config-section-themes.html">
 
@@ -56,6 +57,14 @@
           hass='[[hass]]'
         ></ha-config-section-core>
 
+        <template is='dom-if' if='[[pushSupported]]'>
+          <div class='border'></div>
+          <ha-config-section-push-notifications
+            is-wide='[[isWide]]'
+            hass='[[hass]]'
+            push-supported='{{pushSupported}}'
+          ></ha-config-section-push-notifications>
+        </template>
         <template is='dom-if' if='[[computeIsTranslationLoaded(hass)]]'>
           <div class='border'></div>
           <ha-config-section-translation
@@ -92,6 +101,10 @@ class HaConfigCore extends Polymer.Element {
     return {
       hass: Object,
       isWide: Boolean,
+      pushSupported: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
