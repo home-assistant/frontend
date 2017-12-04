@@ -1,6 +1,6 @@
-import computeStateDomain from '../../../js/common/util/compute_state_domain.js';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import computeStateDomain from '../../../js/common/util/compute_state_domain.js';
 
 describe('computeStateDomain', () => {
   it('Detects sensor domain', () => {
