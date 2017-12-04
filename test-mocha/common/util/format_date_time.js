@@ -1,6 +1,6 @@
-import formatDateTime from '../../../js/common/util/format_date_time';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import formatDateTime from '../../../js/common/util/format_date_time';
 
 describe('formatDateTime', () => {
   const dateObj = new Date(

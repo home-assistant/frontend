@@ -1,6 +1,6 @@
-import computeDomain from '../../../js/common/util/compute_domain';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import computeDomain from '../../../js/common/util/compute_domain';
 
 describe('computeDomain', () => {
   it('Returns domains', () => {

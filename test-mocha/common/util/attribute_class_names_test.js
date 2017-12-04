@@ -1,6 +1,6 @@
-import attributeClassNames from '../../../js/common/util/attribute_class_names';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import attributeClassNames from '../../../js/common/util/attribute_class_names';
 
 describe('attributeClassNames', () => {
   const attrs = ['mock_attr1', 'mock_attr2'];
