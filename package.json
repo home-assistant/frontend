@@ -59,6 +59,7 @@
     "gulp-vinyl-zip": "^2.1.0",
     "home-assistant-js-websocket": "^1.1.2",
     "html-minifier": "^3.5.6",
+    "mdn-polyfills": "^5.5.0",
     "merge-stream": "^1.0.1",
     "mocha": "^4.0.1",
     "parse5": "^3.0.3",
