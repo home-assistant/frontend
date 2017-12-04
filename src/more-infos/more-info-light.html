@@ -34,8 +34,8 @@
         width: 100%;
 
         max-height: 0px;
-        overflow: visible;
-        transition: max-height .2s ease-in;
+        overflow: hidden;
+        transition: max-height .5s ease-in;
       }
 
       .has-effect_list .effect_list,
@@ -47,6 +47,7 @@
 
       .has-rgb_color ha-color-picker {
         max-height: 500px;
+        overflow: visible;
         --ha-color-picker-wheel-borderwidth: 5;
         --ha-color-picker-wheel-bordercolor: white;
         --ha-color-picker-wheel-shadow: none;
@@ -159,8 +160,9 @@
         this.brightnessSliderValue = newVal.attributes.brightness;
         this.ctSliderValue = newVal.attributes.color_temp;
         this.wvSliderValue = newVal.attributes.white_value;
-        this.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
-
+        if (newVal.attributes.rgb_color) {
+          this.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
+        }
         if (newVal.attributes.effect_list) {
           this.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
         } else {
