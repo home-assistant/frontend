@@ -22,6 +22,7 @@
     "iron-image": "PolymerElements/iron-image#^2.1.1",
     "iron-input": "PolymerElements/iron-input#^2.0.0",
     "iron-media-query": "PolymerElements/iron-media-query#^2.0.0",
+    "iron-label": "PolymerElements/iron-label#^2.0.0",
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
     "leaflet": "^1.0.2",
     "neon-animation": "PolymerElements/neon-animation#^2.0.1",
