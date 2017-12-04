@@ -1,6 +1,6 @@
-import computeStateDisplay from '../../../js/common/util/compute_state_display';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import computeStateDisplay from '../../../js/common/util/compute_state_display';
 
 describe('computeStateDisplay', () => {
   const haLocalize = function (namespace, message, ...args) {
@@ -156,7 +156,7 @@ describe('computeStateDisplay', () => {
   });
 
   it('Localizes custom state', () => {
-    const altHaLocalize = function (namespace, message, ...args) {
+    const altHaLocalize = function () {
       // No matches can be found
       return null;
     };

@@ -1,6 +1,6 @@
-import { hasLocation } from '../../../js/common/util/location';
+import { assert } from 'chai';
 
-const assert = require('assert');
+import { hasLocation } from '../../../js/common/util/location';
 
 describe('hasLocation', () => {
   it('flags states with location', () => {
