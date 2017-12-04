@@ -317,6 +317,9 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   */
 
   applyRgbColor(rgb) {
+    if (!rgb) {
+      return;
+    }
     // do nothing is we already have the same color
     if (this.rgbColor &&
         this.rgbColor.r === rgb.r &&
