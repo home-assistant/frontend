@@ -160,8 +160,9 @@
         this.brightnessSliderValue = newVal.attributes.brightness;
         this.ctSliderValue = newVal.attributes.color_temp;
         this.wvSliderValue = newVal.attributes.white_value;
-        this.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
-
+        if (newVal.attributes.rgb_color) {
+          this.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
+        }
         if (newVal.attributes.effect_list) {
           this.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
         } else {
