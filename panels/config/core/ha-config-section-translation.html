@@ -60,9 +60,9 @@ class HaConfigSectionTranslation extends
     if (!hass || !hass.translationMetadata) {
       return [];
     }
-    return Object.keys(hass.translationMetadata).map(key => ({
+    return Object.keys(hass.translationMetadata.translations).map(key => ({
       tag: key,
-      nativeName: hass.translationMetadata[key].nativeName,
+      nativeName: hass.translationMetadata.translations[key].nativeName,
     }));
   }
 

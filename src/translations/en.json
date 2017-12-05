@@ -218,5 +218,14 @@
       "home": "[%key:state::device_tracker::home%]",
       "not_home": "[%key:state::device_tracker::not_home%]"
     }
+  },
+  "ui": {
+    "panel": {
+      "shopping-list": {
+        "clear_completed": "Clear completed",
+        "add_item": "Add item",
+        "microphone_tip": "Tap the microphone on the top right and say “Add candy to my shopping list”"
+      }
+    }
   }
 }
