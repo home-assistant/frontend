@@ -9,7 +9,17 @@ const rename = require('gulp-rename');
 const transform = require('gulp-json-transform');
 
 const inDir = 'translations';
-const outDir = 'build-translations';
+const workDir = 'build-translations';
+const fullDir = workDir + '/full';
+const coreDir = workDir + '/core';
+const outDir = workDir + '/output';
+
+// Panel translations which should be split from the core translations. These
+// should mirror the fragment definitions in polymer.json, so that we load
+// additional resources at equivalent points.
+const TRANSLATION_FRAGMENTS = [
+  'shopping-list',
+];
 
 const tasks = [];
 
@@ -27,6 +37,20 @@ function recursiveFlatten(prefix, data) {
 
 function flatten(data) {
   return recursiveFlatten('', data);
+}
+
+function emptyFilter(data) {
+  const newData = {};
+  Object.keys(data).forEach((key) => {
+    if (data[key]) {
+      if (typeof (data[key]) === 'object') {
+        newData[key] = emptyFilter(data[key]);
+      } else {
+        newData[key] = data[key];
+      }
+    }
+  });
+  return newData;
 }
 
 /**
@@ -73,7 +97,7 @@ gulp.task(taskName, function () {
       return lokalise_transform(data, data);
     }))
     .pipe(rename('translationMaster.json'))
-    .pipe(gulp.dest(outDir));
+    .pipe(gulp.dest(workDir));
 });
 tasks.push(taskName);
 
@@ -90,36 +114,80 @@ gulp.task(taskName, ['build-master-translation'], function () {
       //       than a base translation + region.
       const tr = path.basename(file.history[0], '.json');
       const subtags = tr.split('-');
-      const src = [outDir + '/translationMaster.json'];
+      const src = [workDir + '/translationMaster.json'];
       for (let i = 1; i <= subtags.length; i++) {
         const lang = subtags.slice(0, i).join('-');
         src.push(inDir + '/' + lang + '.json');
       }
       return gulp.src(src)
-        .pipe(transform(function (data) {
-          // Polymer.AppLocalizeBehavior requires flattened json
-          return flatten(data);
-        }))
-        .pipe(transform(function (data) {
-          const newData = {};
-          Object.entries(data).forEach(([key, value]) => {
-            // Filter out empty strings or other falsey values before merging
-            if (data[key]) newData[key] = value;
-          });
-          return newData;
-        }))
+        .pipe(transform(data => emptyFilter(data)))
         .pipe(merge({
           fileName: tr + '.json',
         }))
-        .pipe(minify())
-        .pipe(gulp.dest(outDir));
+        .pipe(gulp.dest(fullDir));
     }));
 });
 tasks.push(taskName);
 
-taskName = 'build-translation-fingerprints';
+const splitTasks = [];
+TRANSLATION_FRAGMENTS.forEach((fragment) => {
+  taskName = 'build-translation-fragment-' + fragment;
+  gulp.task(taskName, ['build-merged-translations'], function () {
+    // Return only the translations for this fragment.
+    return gulp.src(fullDir + '/*.json')
+      .pipe(transform(data => ({
+        ui: {
+          panel: {
+            [fragment]: data.ui.panel[fragment],
+          },
+        },
+      })))
+      .pipe(gulp.dest(workDir + '/' + fragment));
+  });
+  tasks.push(taskName);
+  splitTasks.push(taskName);
+});
+
+taskName = 'build-translation-core';
 gulp.task(taskName, ['build-merged-translations'], function () {
-  return gulp.src(outDir + '/!(translationFingerprints|translationMaster).json')
+  // Remove the fragment translations from the core translation.
+  return gulp.src(fullDir + '/*.json')
+    .pipe(transform((data) => {
+      TRANSLATION_FRAGMENTS.forEach((fragment) => {
+        delete data.ui.panel[fragment];
+      });
+      return data;
+    }))
+    .pipe(gulp.dest(coreDir));
+});
+tasks.push(taskName);
+splitTasks.push(taskName);
+
+taskName = 'build-flattened-translations';
+gulp.task(taskName, splitTasks, function () {
+  // Flatten the split versions of our translations, and move them into outDir
+  return gulp.src(
+    TRANSLATION_FRAGMENTS.map(fragment => workDir + '/' + fragment + '/*.json')
+      .concat(coreDir + '/*.json'),
+    { base: workDir },
+  )
+    .pipe(transform(function (data) {
+      // Polymer.AppLocalizeBehavior requires flattened json
+      return flatten(data);
+    }))
+    .pipe(minify())
+    .pipe(rename((filePath) => {
+      if (filePath.dirname === 'core') {
+        filePath.dirname = '';
+      }
+    }))
+    .pipe(gulp.dest(outDir));
+});
+tasks.push(taskName);
+
+taskName = 'build-translation-fingerprints';
+gulp.task(taskName, ['build-flattened-translations'], function () {
+  return gulp.src(outDir + '/**/*.json')
     .pipe(rename({
       extname: '',
     }))
@@ -130,12 +198,25 @@ gulp.task(taskName, ['build-merged-translations'], function () {
     }))
     .pipe(hash.manifest('translationFingerprints.json'))
     .pipe(transform(function (data) {
-      Object.keys(data).forEach((key) => {
-        data[key] = { fingerprint: data[key] };
+      // After generating fingerprints of our translation files, consolidate
+      // all translation fragment fingerprints under the translation name key
+      const newData = {};
+      Object.entries(data).forEach(([key, value]) => {
+        const parts = key.split('/');
+        let translation = key;
+        if (parts.length === 2) {
+          translation = parts[1];
+        }
+        if (!(translation in newData)) {
+          newData[translation] = {
+            fingerprints: {},
+          };
+        }
+        newData[translation].fingerprints[key] = value;
       });
-      return data;
+      return newData;
     }))
-    .pipe(gulp.dest(outDir));
+    .pipe(gulp.dest(workDir));
 });
 tasks.push(taskName);
 
@@ -143,13 +224,13 @@ taskName = 'build-translations';
 gulp.task(taskName, ['build-translation-fingerprints'], function () {
   return gulp.src([
     'src/translations/translationMetadata.json',
-    outDir + '/translationFingerprints.json',
+    workDir + '/translationFingerprints.json',
   ])
     .pipe(merge({}))
     .pipe(transform(function (data) {
       const newData = {};
       Object.entries(data).forEach(([key, value]) => {
-        // Filter out empty strings or other falsey values before merging
+        // Filter out translations without native name.
         if (data[key].nativeName) {
           newData[key] = data[key];
         } else {
@@ -159,9 +240,13 @@ gulp.task(taskName, ['build-translation-fingerprints'], function () {
       });
       return newData;
     }))
+    .pipe(transform(data => ({
+      fragments: TRANSLATION_FRAGMENTS,
+      translations: data,
+    })))
     .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
     .pipe(rename('translationMetadata.html'))
-    .pipe(gulp.dest(outDir));
+    .pipe(gulp.dest(workDir));
 });
 tasks.push(taskName);
 

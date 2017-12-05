@@ -5,11 +5,13 @@
 <link rel='import' href='./util/roboto.html'>
 <link rel='import' href='../bower_components/paper-styles/typography.html'>
 <link rel='import' href='../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
+<link rel='import' href='../bower_components/app-route/app-route.html'>
+<link rel='import' href='../bower_components/app-route/app-location.html'>
 
 <!--polyfill for paper-dropdown-->
 <link rel="import" href="../bower_components/neon-animation/web-animations.html">
 
-
+<link rel='import' href='../build-translations/translationMetadata.html' />
 <link rel='import' href='./util/hass-translation.html'>
 <link rel='import' href='./util/hass-util.html'>
 <link rel='import' href='./util/ha-pref-storage.html'>
@@ -24,6 +26,12 @@
   <template>
     <ha-pref-storage hass='[[hass]]' id='storage'></ha-pref-storage>
     <notification-manager id='notifications' hass='[[hass]]'></notification-manager>
+    <app-location route="{{route}}"></app-location>
+    <app-route
+      route="{{route}}"
+      pattern="/:panel"
+      data="{{routeData}}"
+    ></app-route>
     <template is='dom-if' if='[[showMain]]' restamp>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
@@ -31,6 +39,7 @@
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
         hass='[[hass]]'
+        route='{{route}}'
       ></home-assistant-main>
     </template>
 
@@ -75,6 +84,13 @@ class HomeAssistant extends Polymer.Element {
         type: Boolean,
         computed: 'computeShowMain(hass)',
       },
+      route: Object,
+      routeData: Object,
+      panelUrl: {
+        type: String,
+        computed: 'computePanelUrl(routeData)',
+        observer: 'panelUrlChanged',
+      },
     };
   }
 
@@ -95,12 +111,23 @@ class HomeAssistant extends Polymer.Element {
       || (hass && hass.connection && (!hass.states || !hass.config)));
   }
 
-  loadResources() {
-    window.getTranslation().then((result) => {
-      this._updateHass({
-        language: result.language,
-        resources: result.resources,
-      });
+  loadResources(fragment) {
+    window.getTranslation(fragment).then((result) => {
+      this._updateResources(result.language, result.data);
+    });
+  }
+
+  _updateResources(language, data) {
+    // Update the language in hass, and update the resources with the newly
+    // loaded resources. This merges the new data on top of the old data for
+    // this language, so that the full translation set can be loaded across
+    // multiple fragments.
+    this._updateHass({
+      language: language,
+      resources: {
+        [language]: Object.assign({}, this.hass
+          && this.hass.resources && this.hass.resources[language], data),
+      },
     });
   }
 
@@ -130,6 +157,7 @@ class HomeAssistant extends Polymer.Element {
       states: null,
       config: null,
       themes: null,
+      panelUrl: this.panelUrl,
 
       // If language and resources are already loaded, don't discard them
       language: (this.hass && this.hass.language) || null,
@@ -219,6 +247,15 @@ class HomeAssistant extends Polymer.Element {
     };
   }
 
+  computePanelUrl(routeData) {
+    return (routeData && routeData.panel) || 'states';
+  }
+
+  panelUrlChanged(newPanelUrl) {
+    this._updateHass({ panelUrl: newPanelUrl });
+    this.loadTranslationFragment(newPanelUrl);
+  }
+
   handleConnectionPromise(prom) {
     if (!prom) return;
 
@@ -268,6 +305,14 @@ class HomeAssistant extends Polymer.Element {
     this._updateHass({ selectedLanguage: event.detail.language });
     this.$.storage.storeState();
     this.loadResources();
+    this.loadTranslationFragment(this.panelUrl);
+  }
+
+  loadTranslationFragment(panelUrl) {
+    if (this.hass.translationMetadata
+      && this.hass.translationMetadata.fragments.includes(panelUrl)) {
+      this.loadResources(panelUrl);
+    }
   }
 
   _updateHass(obj) {

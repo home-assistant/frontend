@@ -1,6 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/app-route/app-route.html'>
 
+<link rel='import' href='../util/hass-mixins.html'>
 <link rel="import" href="./hass-loading-screen.html">
 
 <dom-module id='partial-panel-resolver'>
@@ -50,36 +51,26 @@ class PartialPanelResolver extends Polymer.Element {
         value: false,
         observer: 'updateAttributes',
       },
-
       route: Object,
-
       routeData: Object,
-
       routeTail: {
         type: Object,
         observer: 'updateAttributes',
       },
-
       resolved: {
         type: Boolean,
         value: false,
       },
-
       errorLoading: {
         type: Boolean,
         value: false,
       },
-
       panel: {
         type: Object,
-        computed: 'computeCurrentPanel(hass, routeData)',
+        computed: 'computeCurrentPanel(hass)',
         observer: 'panelChanged',
       },
     };
-  }
-
-  computeCurrentPanel(hass, routeData) {
-    return routeData ? hass.config.panels[routeData.panel] : null;
   }
 
   panelChanged(panel) {
@@ -122,6 +113,10 @@ class PartialPanelResolver extends Polymer.Element {
     customEl.narrow = this.narrow;
     customEl.showMenu = this.showMenu;
     customEl.route = this.routeTail;
+  }
+
+  computeCurrentPanel(hass) {
+    return hass.config.panels[hass.panelUrl];
   }
 }
 
