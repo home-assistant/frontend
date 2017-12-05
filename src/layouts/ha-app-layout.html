@@ -56,10 +56,12 @@ transform: translate(0) is added.
       #contentContainer {
         /* Create a stacking context here so that all children appear below the header. */
         position: relative;
+        z-index: 0;
+      }
+      .scroll-limiter {
         /* Using 'transform' will cause 'position: fixed' elements to behave like
            'position: absolute' relative to this element. */
         transform: translate(0);
-        z-index: 0;
       }
       :host([has-scrolling-region]) .scroll-limiter {
         overflow-y: auto;
