@@ -144,7 +144,7 @@
       this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
       this.windBearing = this.windBearingToText(this.attr.wind_bearing);
 
-      if (!window.google.visualization) {
+      if (!window.google || !window.google.visualization) {
         return;
       }
 
