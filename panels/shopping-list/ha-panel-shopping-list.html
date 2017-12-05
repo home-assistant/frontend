@@ -12,6 +12,7 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
+<link rel='import' href='../..//src/util/hass-mixins.html'>
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/components/ha-start-voice-button.html">
 
@@ -65,7 +66,7 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Shopping List</div>
+          <div main-title>[[haLocalize('panel', 'shopping_list')]]</div>
           <ha-start-voice-button hass='[[hass]]' can-listen='{{canListen}}'></ha-start-voice-button>
           <paper-menu-button
             horizontal-align="right"
@@ -79,7 +80,7 @@
             <paper-listbox slot="dropdown-content">
               <paper-item
                 on-tap="_clearCompleted"
-              >Clear completed</paper-item>
+              >[[haLocalize('ui.panel.shopping-list', 'clear_completed')]]</paper-item>
             </paper-listbox>
           </paper-menu-button>
         </app-toolbar>
@@ -96,7 +97,7 @@
             <paper-item-body>
               <paper-input
                 id='addBox'
-                placeholder="Add item"
+                placeholder="[[haLocalize('ui.panel.shopping-list', 'add_item')]]"
                 on-keydown='_addKeyPress'
                 no-label-float
               ></paper-input>
@@ -123,7 +124,7 @@
           </template>
         </paper-card>
         <div class='tip' hidden$='[[!canListen]]'>
-          Tap the microphone on the top right and say "Add candy to my shopping list"
+          [[haLocalize('ui.panel.shopping-list', 'microphone_tip')]]
         </div>
       </div>
     </app-header-layout>
@@ -131,7 +132,10 @@
 </dom-module>
 
 <script>
-class HaPanelShoppingList extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-panel-shopping-list'; }
 
   static get properties() {

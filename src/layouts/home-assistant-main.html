@@ -2,10 +2,7 @@
 <link rel='import' href='../../bower_components/paper-drawer-panel/paper-drawer-panel.html'>
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel='import' href='../../bower_components/iron-pages/iron-pages.html'>
-
 <link rel='import' href='../../bower_components/app-route/app-route.html'>
-<link rel='import' href='../../bower_components/app-route/app-location.html'>
-
 
 <link rel='import' href='../layouts/partial-cards.html'>
 <link rel='import' href='../layouts/partial-panel-resolver.html'>
@@ -26,13 +23,6 @@
     </style>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
     <ha-url-sync hass='[[hass]]'></ha-url-sync>
-    <app-location route="{{route}}"></app-location>
-    <app-route
-      route="{{route}}"
-      pattern="/:panel"
-      data="{{routeData}}"
-      tail="{{routeTail}}"
-    ></app-route>
     <app-route
       route="{{route}}"
       pattern="/states"
@@ -47,20 +37,19 @@
 
     <paper-drawer-panel id='drawer'
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
-      responsive-width='0' disable-swipe='[[_computeDisableSwipe(routeData)]]'
-      disable-edge-swipe='[[_computeDisableSwipe(routeData)]]'>
+      responsive-width='0' disable-swipe='[[_computeDisableSwipe(hass)]]'
+      disable-edge-swipe='[[_computeDisableSwipe(hass)]]'>
       <ha-sidebar
         slot="drawer"
         narrow='[[narrow]]'
         hass='[[hass]]'
-        route='[[routeData]]'
       ></ha-sidebar>
 
       <iron-pages
         slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
-        selected='[[_computeSelected(routeData)]]'
+        selected='[[hass.panelUrl]]'
         selected-attribute='panel-visible'
       >
         <partial-cards
@@ -96,17 +85,12 @@
     static get properties() {
       return {
         hass: Object,
-
         narrow: Boolean,
-
         route: {
           type: Object,
           observer: '_routeChanged',
         },
-        routeData: Object,
-        routeTail: Object,
         statesRouteTail: Object,
-
         dockedSidebar: {
           type: Boolean,
           computed: 'computeDockedSidebar(hass)',
@@ -163,12 +147,8 @@
       return hass.dockedSidebar;
     }
 
-    _computeSelected(routeData) {
-      return routeData.panel || 'states';
-    }
-
-    _computeDisableSwipe(routeData) {
-      return NON_SWIPABLE_PANELS.indexOf(routeData.panel) !== -1;
+    _computeDisableSwipe(hass) {
+      return NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
     }
   }
 
