@@ -11,8 +11,8 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      .states {
-        padding-bottom: 16px;
+      ha-card {
+        padding: 16px 0;
       }
       .state {
         padding: 4px 16px;
@@ -23,7 +23,7 @@
            compensating this with reduced padding */
         line-height: 40px;
         color: var(--primary-text-color);
-        padding: 20px 16px 12px;
+        padding: 4px 16px 12px;
       }
       .header .name {
         @apply(--paper-font-common-nowrap);
@@ -41,14 +41,16 @@
     </style>
 
     <ha-card>
-      <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
-        <div class='flex name'>[[computeTitle(states, groupEntity)]]</div>
-        <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
-          <ha-entity-toggle
-            hass='[[hass]]'
-            state-obj='[[groupEntity]]'></ha-entity-toggle>
-        </template>
-      </div>
+      <template is='dom-if' if='[[title]]'>
+        <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
+          <div class='flex name'>[[title]]</div>
+          <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
+            <ha-entity-toggle
+              hass='[[hass]]'
+              state-obj='[[groupEntity]]'></ha-entity-toggle>
+          </template>
+        </div>
+      </template>
       <div class='states'>
         <template is='dom-repeat' items='[[states]]' on-dom-change='addTapEvents'>
           <div class$='[[computeStateClass(item)]]'>
@@ -71,17 +73,21 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
       hass: Object,
       states: Array,
       groupEntity: Object,
+      title: {
+        type: String,
+        computed: 'computeTitle(states, groupEntity)',
+      },
     };
   }
 
   computeTitle(states, groupEntity) {
     return groupEntity ?
-      window.hassUtil.computeStateName(groupEntity) :
+      window.hassUtil.computeStateName(groupEntity).trim() :
       window.hassUtil.computeDomain(states[0]).replace(/_/g, ' ');
   }
 
   computeTitleClass(groupEntity) {
-    var classes = 'header horizontal layout center ';
+    let classes = 'header horizontal layout center ';
     if (groupEntity) {
       classes += 'more-info';
     } else {
@@ -95,15 +101,15 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   addTapEvents() {
-    var cards = this.root.querySelectorAll('.state.more-info');
-    for (let i = 0; i < cards.length; i++) {
-      cards[i].addEventListener('tap', this.entityTapped.bind(this));
-    }
+    const cards = this.root.querySelectorAll('.state.more-info');
+    cards.forEach((card) => {
+      card.addEventListener('tap', this.entityTapped.bind(this));
+    });
   }
 
   entityTapped(ev) {
-    var item = this.root.querySelector('dom-repeat').itemForElement(ev.target);
-    var entityId;
+    const item = this.root.querySelector('dom-repeat').itemForElement(ev.target);
+    let entityId;
     if (!item && !this.groupEntity) {
       return;
     }
@@ -123,9 +129,9 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
       return false;
     }
 
-    // only show if we can toggle 2+ entities in group
-    var canToggleCount = 0;
-    for (var i = 0; i < states.length; i++) {
+    // Only show if we can toggle 2+ entities in group
+    let canToggleCount = 0;
+    for (let i = 0; i < states.length; i++) {
       if (!window.hassUtil.canToggleState(this.hass, states[i])) {
         continue;
       }
