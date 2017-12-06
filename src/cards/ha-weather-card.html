@@ -48,7 +48,7 @@
           <div class='cond condtemp'>[[attr.temperature]]°</div>
           <div class='cond conddetails'>
             <div class="condsmall" hidden$="[[!attr.wind_speed]]">
-              Wind: 
+              Wind:
               <span hidden$="[[!attr.wind_speed]]">
                 [[attr.wind_speed]]
               </span>
@@ -144,7 +144,7 @@
       this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
       this.windBearing = this.windBearingToText(this.attr.wind_bearing);
 
-      if (!window.google) {
+      if (!window.google || !window.google.visualization) {
         return;
       }
 
