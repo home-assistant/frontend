@@ -37,31 +37,23 @@
         "off": "[%key:state::default::off%]",
         "on": "[%key:state::default::on%]"
       },
-      "moisture": {
-        "off": "Dry",
-        "on": "Wet"
+      "battery": {
+        "off": "Normal",
+        "on": "Low"
       },
       "gas": {
         "off": "Clear",
         "on": "Detected"
+      },
+      "moisture": {
+        "off": "Dry",
+        "on": "Wet"
       },
       "motion": {
         "off": "[%key:state::binary_sensor::gas::off%]",
         "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "occupancy": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "smoke": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "sound": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "vibration": {
         "off": "[%key:state::binary_sensor::gas::off%]",
         "on": "[%key:state::binary_sensor::gas::on%]"
       },
@@ -76,6 +68,18 @@
       "safety": {
         "off": "Safe",
         "on": "Unsafe"
+      },
+      "smoke": {
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
+      },
+      "sound": {
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
+      },
+      "vibration": {
+        "off": "[%key:state::binary_sensor::gas::off%]",
+        "on": "[%key:state::binary_sensor::gas::on%]"
       }
     },
     "calendar": {
