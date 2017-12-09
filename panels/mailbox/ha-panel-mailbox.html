@@ -53,6 +53,11 @@
       paper-dialog {
         border-radius: 2px;
       }
+      paper-tabs {
+        margin-left: 12px;
+        --paper-tabs-selection-bar-color: #FFF;
+        text-transform: uppercase;
+      }
 
       #mp3dialog paper-icon-button {
         float: right;
@@ -97,14 +102,11 @@
         <div sticky hidden$='[[areTabsHidden(platforms)]]'>
           <paper-tabs
             scrollable
-            selected='[[currentMailbox]]'
-            attr-for-selected='data-entity'
+            selected='[[currentPlatform]]'
             on-iron-activate='handlePlatformSelected'
           >
             <template is='dom-repeat' items='[[platforms]]'>
-              <paper-tab
-                data-entity='[[item]]'
-              >
+              <paper-tab>
                 [[getPlatformName(item)]]
               </paper-tab>
             </template>
@@ -205,7 +207,7 @@ class HaPanelMailbox extends Polymer.Element {
   }
 
   areTabsHidden(platforms) {
-    return !platforms || platforms.length < 2
+    return !platforms || platforms.length < 2;
   }
 
   connectedCallback() {
@@ -243,17 +245,17 @@ class HaPanelMailbox extends Polymer.Element {
     this.$.mp3dialog.open();
     this.$.transcribe.innerText = event.model.item.message;
     if (platform.can_delete) {
-        this.$.delete.style.display = 'initial'
+      this.$.delete.style.display = 'initial';
     } else {
-        this.$.delete.style.display = 'none'
+      this.$.delete.style.display = 'none';
     }
     if (platform.has_media) {
-        this.$.mp3.style.display = 'initial'
-        this.$.mp3src.src = '/api/mailbox/media/' + platform.name + '/' + event.model.item.sha;
-        this.$.mp3.load();
-        this.$.mp3.play();
+      this.$.mp3.style.display = 'initial';
+      this.$.mp3src.src = '/api/mailbox/media/' + platform.name + '/' + event.model.item.sha;
+      this.$.mp3.load();
+      this.$.mp3.play();
     } else {
-        this.$.mp3.style.display = 'none'
+      this.$.mp3.style.display = 'none';
     }
   }
 
@@ -293,7 +295,7 @@ class HaPanelMailbox extends Polymer.Element {
       var arrayLength = items.length;
       var final = [];
       for (var i = 0; i < arrayLength; i++) {
-        final[i] = platformItems[i]
+        final[i] = platformItems[i];
         final[i].sort(function (a, b) {
           return new Date(b.timestamp) - new Date(a.timestamp);
         });
@@ -307,20 +309,18 @@ class HaPanelMailbox extends Polymer.Element {
   }
 
   handlePlatformSelected(ev) {
-    var newPlatform = ev.detail.selected
-    var idx = this.platforms.indexOf(newPlatform)
-    if (idx != this.currentPlatform) {
-        this.currentPlatform = idx
-        this._platformMessages = this._messages[idx]
+    var idx = ev.detail.selected;
+    if (idx !== this.currentPlatform) {
+      this.currentPlatform = idx;
+      this._platformMessages = this._messages[idx];
     }
   }
 
   getPlatformName(item) {
-      var entity = 'mailbox.' + item.name
-      var stateObj = this.hass.states[entity.toLowerCase()];
-      return window.hassUtil.computeStateName(stateObj);
+    var entity = 'mailbox.' + item.name;
+    var stateObj = this.hass.states[entity.toLowerCase()];
+    return window.hassUtil.computeStateName(stateObj);
   }
-
 }
 
 customElements.define(HaPanelMailbox.is, HaPanelMailbox);
