@@ -116,41 +116,41 @@
 
       <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
         <iron-icon slot="item-icon" icon='mdi:exit-to-app'></iron-icon>
-        <span class='item-text'>[[haLocalize('panel', 'log_out')]]</span>
+        <span class='item-text'>[[haLocalize('ui.sidebar', 'log_out')]]</span>
       </paper-icon-item>
     </paper-listbox>
 
     <div>
       <div class='divider'></div>
 
-      <div class='subheader'>Developer Tools</div>
+      <div class='subheader'>[[haLocalize('ui.sidebar', 'developer_tools')]]</div>
 
       <div class='dev-tools layout horizontal justified'>
         <paper-icon-button
           icon='mdi:remote' data-panel='dev-service'
-          alt="Services" title="Services"
+          alt="[[haLocalize('panel', 'dev-services')]]" title="[[haLocalize('panel', 'dev-services')]]"
           on-tap='menuClicked'></paper-icon-button>
         <paper-icon-button
           icon='mdi:code-tags' data-panel='dev-state'
-          alt="States" title="States"
+          alt="[[haLocalize('panel', 'dev-states')]]" title="[[haLocalize('panel', 'dev-states')]]"
           on-tap='menuClicked'></paper-icon-button>
         <paper-icon-button
           icon='mdi:radio-tower' data-panel='dev-event'
-          alt="Events" title="Events"
+          alt="[[haLocalize('panel', 'dev-events')]]" title="[[haLocalize('panel', 'dev-events')]]"
           on-tap='menuClicked'></paper-icon-button>
         <paper-icon-button
           icon='mdi:file-xml' data-panel='dev-template'
-          alt="Templates" title="Templates"
+          alt="[[haLocalize('panel', 'dev-templates')]]" title="[[haLocalize('panel', 'dev-templates')]]"
           on-tap='menuClicked'></paper-icon-button>
         <template is='dom-if' if='[[_mqttLoaded(hass)]]'>
           <paper-icon-button
             icon='mdi:altimeter' data-panel='dev-mqtt'
-            alt="MQTT" title="MQTT"
+            alt="[[haLocalize('panel', 'dev-mqtt')]]" title="[[haLocalize('panel', 'dev-mqtt')]]"
             on-tap='menuClicked'></paper-icon-button>
         </template>
         <paper-icon-button
           icon='mdi:information-outline' data-panel='dev-info'
-          alt="Info" title="Info"
+          alt="[[haLocalize('panel', 'dev-info')]]" title="[[haLocalize('panel', 'dev-info')]]"
           on-tap='menuClicked'></paper-icon-button>
       </div>
     </div>
