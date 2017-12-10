@@ -28,10 +28,6 @@
       .header .name {
         @apply(--paper-font-common-nowrap);
       }
-      .header.domain .name {
-        /* Capitalize cards titles for default domain groups. */
-        text-transform: capitalize;
-      }
       ha-entity-toggle {
         margin-left: 16px;
       }
@@ -66,7 +62,8 @@
 </dom-module>
 
 <script>
-class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HaEntitiesCard extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-entities-card'; }
   static get properties() {
     return {
@@ -75,23 +72,23 @@ class HaEntitiesCard extends window.hassMixins.EventsMixin(Polymer.Element) {
       groupEntity: Object,
       title: {
         type: String,
-        computed: 'computeTitle(states, groupEntity)',
+        computed: 'computeTitle(states, groupEntity, haLocalize)',
       },
     };
   }
 
-  computeTitle(states, groupEntity) {
-    return groupEntity ?
-      window.hassUtil.computeStateName(groupEntity).trim() :
-      window.hassUtil.computeDomain(states[0]).replace(/_/g, ' ');
+  computeTitle(states, groupEntity, haLocalize) {
+    if (groupEntity) {
+      return window.hassUtil.computeStateName(groupEntity).trim();
+    }
+    const domain = window.hassUtil.computeDomain(states[0]);
+    return (haLocalize && haLocalize('domain', domain)) || domain.replace(/_/g, ' ');
   }
 
   computeTitleClass(groupEntity) {
     let classes = 'header horizontal layout center ';
     if (groupEntity) {
       classes += 'more-info';
-    } else {
-      classes += 'domain';
     }
     return classes;
   }
