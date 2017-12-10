@@ -5,9 +5,14 @@
     "map": "Map",
     "logbook": "Logbook",
     "history": "History",
-    "log_out": "Log out",
     "mailbox": "Mailbox",
-    "shopping_list": "Shopping list"
+    "shopping_list": "Shopping list",
+    "dev-services": "Services",
+    "dev-states": "States",
+    "dev-events": "Events",
+    "dev-templates": "Templates",
+    "dev-mqtt": "MQTT",
+    "dev-info": "Info"
   },
   "state": {
     "default": {
@@ -224,6 +229,10 @@
     }
   },
   "ui": {
+    "sidebar": {
+      "developer_tools": "Developer tools",
+      "log_out": "Log out"
+    },
     "panel": {
       "shopping-list": {
         "clear_completed": "Clear completed",
