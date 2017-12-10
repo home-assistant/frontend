@@ -44,7 +44,10 @@ class HaConfigSectionPushNotifications extends Polymer.Element {
     return {
       hass: Object,
       isWide: Boolean,
-      pushSupported: Boolean,
+      pushSupported: {
+        type: Boolean,
+        notify: true,
+      },
     };
   }
 }
