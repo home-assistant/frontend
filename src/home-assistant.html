@@ -309,8 +309,7 @@ class HomeAssistant extends Polymer.Element {
   }
 
   loadTranslationFragment(panelUrl) {
-    if (this.hass.translationMetadata
-      && this.hass.translationMetadata.fragments.includes(panelUrl)) {
+    if (window.translationMetadata.fragments.includes(panelUrl)) {
       this.loadResources(panelUrl);
     }
   }
