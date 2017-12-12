@@ -107,6 +107,10 @@
         "off": "[%key:state::device_tracker::not_home%]",
         "on": "[%key:state::device_tracker::home%]"
       },
+      "problem": {
+        "off": "[%key:state::plant::ok%]",
+        "on": "[%key:state::plant::problem%]"
+      },
       "safety": {
         "off": "Safe",
         "on": "Unsafe"
