@@ -76,9 +76,6 @@
       </div>
     </div>
     <home-assistant></home-assistant>
-    <!--<script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script>-->
-    <!--EXTRA_SCRIPTS-->
-    <script src='/home-assistant-polymer/build/core.js'></script>
     <script>
       var webComponentsSupported = (
         'customElements' in window &&
@@ -96,6 +93,9 @@
         });
       }
     </script>
+    <!--<script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script>-->
+    <!--EXTRA_SCRIPTS-->
+    <script src='/home-assistant-polymer/build/core.js'></script>
     <link rel='import' href='/home-assistant-polymer/src/home-assistant.html' onerror='initError()'>
     {% if panel_url -%}
       <link rel='import' href='{{ panel_url }}' async>
