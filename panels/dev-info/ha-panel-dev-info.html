@@ -287,7 +287,7 @@ class HaPanelDevInfo extends Polymer.Element {
     return window.hassUtil.formatTime(new Date(date * 1000));
   }
 
-  openLog() {
+  openLog(event) {
     this.selectedItem = event.model.item;
     this.$.showlog.open();
   }
