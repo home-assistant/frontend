@@ -188,8 +188,7 @@
       // Lights that do shades of white can still have an rgb color
       // In that case we don't want the color picker to show.
       if (stateObj.attributes.supported_features &&
-          (stateObj.attributes.supported_features & 16) !== 0 &&
-          stateObj.attributes.rgb_color) {
+          (stateObj.attributes.supported_features & 16) !== 0) {
         classes.push('has-rgb_color');
       }
       return classes.join(' ');
