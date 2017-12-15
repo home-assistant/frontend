@@ -12,6 +12,9 @@
 <link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 <link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
 
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+
 <link rel='import' href='../../src/components/ha-menu-button.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
 
@@ -49,6 +52,11 @@
       }
       paper-dialog {
         border-radius: 2px;
+      }
+      paper-tabs {
+        margin-left: 12px;
+        --paper-tabs-selection-bar-color: #FFF;
+        text-transform: uppercase;
       }
 
       #mp3dialog paper-icon-button {
@@ -91,15 +99,27 @@
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>Mailbox</div>
         </app-toolbar>
+        <div sticky hidden$='[[areTabsHidden(platforms)]]'>
+          <paper-tabs
+            scrollable
+            selected='[[currentPlatform]]'
+            on-iron-activate='handlePlatformSelected'
+          >
+            <template is='dom-repeat' items='[[platforms]]'>
+              <paper-tab>
+                [[getPlatformName(item)]]
+              </paper-tab>
+            </template>
+          </paper-tabs>
       </app-header>
       <div class='content'>
         <paper-card>
-          <template is='dom-if' if='[[!_messages.length]]'>
+          <template is='dom-if' if='[[!_platformMessages.length]]'>
             <div class='card-content'>
               You do not have any messages.
             </div>
           </template>
-          <template is='dom-repeat' items='[[_messages]]'>
+          <template is='dom-repeat' items='[[_platformMessages]]'>
             <paper-item on-tap='openMP3Dialog'>
               <paper-item-body style="width:100%" two-line>
                 <div class="row">
@@ -120,12 +140,13 @@
       <h2>
         Message Playback
         <paper-icon-button
+          id="delete"
           on-tap='openDeleteDialog'
           icon='mdi:delete'
         ></paper-icon-button>
       </h2>
       <div id="transcribe">text</div>
-      <div>
+      <div id="stream">
         <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
       </div>
     </paper-dialog>
@@ -168,11 +189,25 @@ class HaPanelMailbox extends Polymer.Element {
       _messages: {
         type: Array,
       },
+      _platformMessages: {
+        type: Array,
+      },
 
+      currentPlatform: {
+        type: Number,
+        value: 0
+      },
+      mailboxes: {
+        type: Array,
+      },
       currentMessage: {
         type: Object,
       },
     };
+  }
+
+  areTabsHidden(platforms) {
+    return !platforms || platforms.length < 2;
   }
 
   connectedCallback() {
@@ -197,6 +232,10 @@ class HaPanelMailbox extends Polymer.Element {
     }
     this.getMessages().then(function (items) {
       this._messages = items;
+      if (this._messages.length <= this.currentPlatform) {
+        this.currentPlatform = 0;
+      }
+      this._platformMessages = this._messages[this.currentPlatform];
     }.bind(this));
   }
 
@@ -204,10 +243,20 @@ class HaPanelMailbox extends Polymer.Element {
     var platform = event.model.item.platform;
     this.currentMessage = event.model.item;
     this.$.mp3dialog.open();
-    this.$.mp3src.src = '/api/mailbox/media/' + platform + '/' + event.model.item.sha;
     this.$.transcribe.innerText = event.model.item.message;
-    this.$.mp3.load();
-    this.$.mp3.play();
+    if (platform.can_delete) {
+      this.$.delete.style.display = 'initial';
+    } else {
+      this.$.delete.style.display = 'none';
+    }
+    if (platform.has_media) {
+      this.$.mp3.style.display = 'initial';
+      this.$.mp3src.src = '/api/mailbox/media/' + platform.name + '/' + event.model.item.sha;
+      this.$.mp3.load();
+      this.$.mp3.play();
+    } else {
+      this.$.mp3.style.display = 'none';
+    }
   }
 
   _mp3Closed() {
@@ -220,12 +269,12 @@ class HaPanelMailbox extends Polymer.Element {
 
   deleteSelected() {
     var msg = this.currentMessage;
-    this.hass.callApi('DELETE', 'mailbox/delete/' + msg.platform + '/' + msg.sha);
+    this.hass.callApi('DELETE', 'mailbox/delete/' + msg.platform.name + '/' + msg.sha);
     this.$.mp3dialog.close();
   }
   getMessages() {
     const items = this.platforms.map(function (platform) {
-      return this.hass.callApi('GET', 'mailbox/messages/' + platform).then(function (values) {
+      return this.hass.callApi('GET', 'mailbox/messages/' + platform.name).then(function (values) {
         var platformItems = [];
         var arrayLength = values.length;
         for (var i = 0; i < arrayLength; i++) {
@@ -246,17 +295,31 @@ class HaPanelMailbox extends Polymer.Element {
       var arrayLength = items.length;
       var final = [];
       for (var i = 0; i < arrayLength; i++) {
-        final = final.concat(platformItems[i]);
+        final[i] = platformItems[i];
+        final[i].sort(function (a, b) {
+          return new Date(b.timestamp) - new Date(a.timestamp);
+        });
       }
-      final.sort(function (a, b) {
-        return new Date(b.timestamp) - new Date(a.timestamp);
-      });
       return final;
     });
   }
 
   computePlatforms() {
     return this.hass.callApi('GET', 'mailbox/platforms');
+  }
+
+  handlePlatformSelected(ev) {
+    var idx = ev.detail.selected;
+    if (idx !== this.currentPlatform) {
+      this.currentPlatform = idx;
+      this._platformMessages = this._messages[idx];
+    }
+  }
+
+  getPlatformName(item) {
+    var entity = 'mailbox.' + item.name;
+    var stateObj = this.hass.states[entity.toLowerCase()];
+    return window.hassUtil.computeStateName(stateObj);
   }
 }
 
