@@ -1,265 +1,233 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="./entity/ha-chart-base.html">
 
+<dom-module id='state-history-chart-line'>
+  <template>
+      <ha-chart-base publish data="[[chartData]]"></ha-chart-base>
+  </template>
+</dom-module>
 <script>
-{
-  function range(start, end) {
-    var result = [];
-    var i;
+'use strict';
 
-    for (i = start; i < end; i++) {
-      result.push(i);
-    }
+class StateHistoryChartLine extends Polymer.Element {
+  static get is() { return 'state-history-chart-line'; }
+  static get properties() {
+    return {
+      data: {
+        type: Object,
+      },
 
-    return result;
+      unit: {
+        type: String,
+      },
+
+      isSingleDevice: {
+        type: Boolean,
+        value: false,
+      },
+
+      endTime: {
+        type: Object,
+      },
+    };
+  }
+  static get observers() {
+    return ['dataChanged(data, endTime)'];
   }
 
-  function saveParseFloat(value) {
-    var parsed = parseFloat(value);
-    return !isNaN(parsed) && isFinite(parsed) ? parsed : null;
+  connectedCallback() {
+    super.connectedCallback();
+    this._isAttached = true;
+    this.drawChart();
+    // this.addEventListener('iron-resize', () => {
+    //   this.async(this.drawChart, 10);
+    // });
   }
 
-  class StateHistoryChartLine extends
-    Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
-    static get is() { return 'state-history-chart-line'; }
-    static get properties() {
-      return {
-        data: {
-          type: Object,
-        },
+  dataChanged() {
+    this.drawChart();
+  }
 
-        unit: {
-          type: String,
-        },
+  drawChart() {
+    var unit = this.unit;
+    var deviceStates = this.data;
+    var options;
+    var startTime;
+    var endTime;
+    var dataTables;
+    var daysDelta;
+    var xs;
+    var xt;
 
-        isSingleDevice: {
-          type: Boolean,
-          value: false,
-        },
-
-        endTime: {
-          type: Object,
-        },
-
-        chartEngine: {
-          type: Object,
-        },
-      };
+    if (!this._isAttached) {
+      return;
     }
 
-    static get observers() {
-      return ['dataChanged(data, endTime)'];
+    if (deviceStates.length === 0) {
+      return;
     }
 
-    connectedCallback() {
-      super.connectedCallback();
-      this._isAttached = true;
-      this.drawChart();
-      this.addEventListener('iron-resize', () => {
-        setTimeout(() => this.drawChart(), 10);
-      });
+    function safeParseFloat(value) {
+      var parsed = parseFloat(value);
+      // isFinite(NaN) === False
+      return isFinite(parsed) ? parsed : null;
     }
 
-    dataChanged() {
-      this.drawChart();
+    options = {
+      backgroundColor: '#fafafa',
+      legend: { position: 'top' },
+      interpolateNulls: true,
+      titlePosition: 'none',
+      vAxes: {
+        // Adds units to the left hand side of the graph
+        0: { title: unit },
+      },
+      hAxis: {
+        format: 'H:mm',
+      },
+      chartArea: { left: '60', width: '95%' },
+      explorer: {
+        actions: ['dragToZoom', 'rightClickToReset', 'dragToPan'],
+        keepInBounds: true,
+        axis: 'horizontal',
+        maxZoomIn: 0.1,
+      },
+    };
+
+    if (this.isSingleDevice) {
+      options.legend.position = 'none';
+      options.vAxes[0].title = null;
+      options.chartArea.left = 40;
+      options.chartArea.height = '80%';
+      options.chartArea.top = 5;
     }
 
-    drawChart() {
-      var unit = this.unit;
-      var deviceStates = this.data;
-      var options;
-      var startTime;
-      var endTime;
-      var dataTables;
-      var finalDataTable;
-      var daysDelta;
+    startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
+      return new Date(states.states[0].last_changed);
+    })));
 
-      if (!this._isAttached) {
-        return;
-      }
+    endTime = this.endTime ||
+      new Date(Math.max.apply(null, deviceStates.map(states =>
+        new Date(states.states[states.states.length - 1].last_changed))));
+    if (endTime > new Date()) {
+      endTime = new Date();
+    }
 
-      if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.ComboChart(this);
-      }
+    daysDelta = (endTime - startTime) / (24 * 3600 * 1000);
+    // Avoid rounding up when the API returns a few extra seconds.
+    if (daysDelta > 30.1) {
+      options.hAxis.format = 'MMM d';
+    } else if (daysDelta > 3.1) {
+      options.hAxis.format = 'EEE, MMM d';
+    } else if (daysDelta > 1.1) {
+      options.hAxis.format = 'EEE, MMM d, H:mm';
+    }
 
-      if (deviceStates.length === 0) {
-        return;
-      }
+    dataTables = [];
+    xs = {};
+    xt = {};
 
-      options = {
-        backgroundColor: '#fafafa',
-        legend: { position: 'top' },
-        interpolateNulls: true,
-        titlePosition: 'none',
-        vAxes: {
-          // Adds units to the left hand side of the graph
-          0: { title: unit },
-        },
-        hAxis: {
-          format: 'H:mm',
-        },
-        chartArea: { left: '60', width: '95%' },
-        explorer: {
-          actions: ['dragToZoom', 'rightClickToReset', 'dragToPan'],
-          keepInBounds: true,
-          axis: 'horizontal',
-          maxZoomIn: 0.1,
-        },
-        seriesType: 'line',
-      };
+    deviceStates.forEach(function (states) {
+      var domain = states.domain;
+      var name = states.name;
+      // array containing [value1, value2, etc]
+      var prevValues;
+      // var prevTime;
+      var hasTargetRange;
+      var processState;
+      var noInterpolations;
+      var data = [];
+      var nameX = name + '__x';
+      var dataX = [nameX];
 
-      if (this.isSingleDevice) {
-        options.legend.position = 'none';
-        options.vAxes[0].title = null;
-        options.chartArea.left = 40;
-        options.chartArea.height = '80%';
-        options.chartArea.top = 5;
-      }
 
-      startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
-        return new Date(states.states[0].last_changed);
-      })));
-
-      endTime = this.endTime ||
-        new Date(Math.max.apply(null, deviceStates.map(states =>
-          new Date(states.states[states.states.length - 1].last_changed))));
-      if (endTime > new Date()) {
-        endTime = new Date();
-      }
-
-      daysDelta = (endTime - startTime) / (24 * 3600 * 1000);
-      // Avoid rounding up when the API returns a few extra seconds.
-      if (daysDelta > 30.1) {
-        options.hAxis.format = 'MMM d';
-      } else if (daysDelta > 3.1) {
-        options.hAxis.format = 'EEE, MMM d';
-      } else if (daysDelta > 1.1) {
-        options.hAxis.format = 'EEE, MMM d, H:mm';
-      }
-
-      dataTables = deviceStates.map(function (states) {
-        var domain = states.domain;
-        var name = states.name;
-        var data = [];
-        var dataTable = new window.google.visualization.DataTable();
-        // array containing [time, value1, value2, etc]
-        var prevValues;
-        var hasTargetRange;
-        var processState;
-        var noInterpolations;
-        var series;
-        dataTable.addColumn({ type: 'datetime', id: 'Time' });
-
-        function pushData(values, noInterpolationValues) {
-          var timestamp = values[0];
-          if (timestamp > endTime) {
-            // Drop datapoints that are after the requested endTime. This could happen if
-            // endTime is "now" and client time is not in sync with server time.
-            return;
-          }
-          if (prevValues && noInterpolationValues) {
-            // if we have to prevent interpolation, we add an old value for each
-            // value that should not be interpolated at the same time that our new
-            // line will be published.
-            data.push([timestamp].concat(prevValues.slice(1).map(function (val, index) {
-              return noInterpolationValues[index] ? val : null;
-            })));
-          }
-          data.push(values);
-          prevValues = values;
+      function pushData(timestamp, values) {
+        if (timestamp > endTime) {
+          // Drop datapoints that are after the requested endTime. This could happen if
+          // endTime is "now" and client time is not in sync with server time.
+          return;
         }
+        data.forEach(function (d, i) { d.push(values[i]); });
+        dataX.push(timestamp);
+        prevValues = values;
+        // prevTime = timestamp;
+      }
 
-        if (domain === 'thermostat' || domain === 'climate') {
-          // We differentiate between thermostats that have a target temperature
-          // range versus ones that have just a target temperature
-          hasTargetRange = states.states.reduce(function (cum, cur) {
-            return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
-          }, false);
+      function addColumn(nameY, type) {
+        if (!type) {
+          type = 'line';
+        }
+        xs[nameY] = nameX;
+        xt[nameY] = type;
+        data.push([nameY]);
+      }
 
-          dataTable.addColumn('number', name + ' current temperature');
-          dataTable.addColumn('number', name + ' heating');
-          // The "heating" series uses steppedArea to shade the area below the current
-          // temperature when the thermostat is calling for heat.
-          // Its series index is 2 less than its column number--1 because
-          // zero-based and 1 because the first becomes the horizontal axis.
-          var seriesIndex = dataTable.getNumberOfColumns() - 2;
-          // Get existing series config, if there is any, rather than clobbering
-          options.series = Object.assign({}, options.series);
-          options.series[seriesIndex] = { type: 'steppedArea' };
+      if (domain === 'thermostat' || domain === 'climate') {
+        // We differentiate between thermostats that have a target temperature
+        // range versus ones that have just a target temperature
 
-          if (hasTargetRange) {
-            dataTable.addColumn('number', name + ' target temperature high');
-            dataTable.addColumn('number', name + ' target temperature low');
-          } else {
-            dataTable.addColumn('number', name + ' target temperature');
-          }
+        // Using step chart by step-after so manually interpolation not needed.
+        hasTargetRange = states.states.reduce(function (cum, cur) {
+          return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
+        }, false);
 
-          processState = function (state) {
-            var curTemp = saveParseFloat(state.attributes.current_temperature);
-            // Drawing the 'heating' area up to the current temp should keep it from
-            // overlapping but avoid any weird gaps or range mismatches
-            var heating = state.attributes.operation === 'heat' ? curTemp : null;
+        addColumn(name + ' current temperature', 'line');
+        addColumn(name + ' heating', 'area');
 
-            series = [curTemp, heating];
-            noInterpolations = [false, true];
+        if (hasTargetRange) {
+          addColumn(name + ' target temperature high', 'step');
+          addColumn(name + ' target temperature low', 'step');
 
-            if (hasTargetRange) {
-              var targetHigh = saveParseFloat(state.attributes.target_temp_high);
-              var targetLow = saveParseFloat(state.attributes.target_temp_low);
-
-              series = series.concat([targetHigh, targetLow]);
-              noInterpolations = noInterpolations.concat([true, true]);
-            } else {
-              var target = saveParseFloat(state.attributes.temperature);
-
-              series.push(target);
-              noInterpolations.push(true);
-            }
-
-            pushData(
-              [new Date(state.last_changed)].concat(series),
-              noInterpolations
-            );
-          };
-
-          states.states.forEach(processState);
+          noInterpolations = [false, true, true];
         } else {
-          dataTable.addColumn('number', name);
-
-          // Only disable interpolation for sensors
-          noInterpolations = domain !== 'sensor' && [true];
-
-          states.states.forEach(function (state) {
-            var value = saveParseFloat(state.state);
-            pushData([new Date(state.last_changed), value], noInterpolations);
-          });
+          addColumn(name + ' target temperature', 'step');
         }
-
-        // Add an entry for final values
-        pushData([endTime].concat(prevValues.slice(1)), false);
-
-        dataTable.addRows(data);
-        return dataTable;
-      });
-
-      if (dataTables.length === 1) {
-        finalDataTable = dataTables[0];
-      } else {
-        finalDataTable = dataTables.slice(1).reduce(
-          function (tot, cur) {
-            return window.google.visualization.data.join(
-              tot, cur, 'full', [[0, 0]],
-              range(1, tot.getNumberOfColumns()),
-              range(1, cur.getNumberOfColumns())
+        processState = function (state) {
+          var curTemp = safeParseFloat(state.attributes.current_temperature);
+          var heating = state.state === 'heat' ? curTemp : null;
+          if (hasTargetRange) {
+            var targetHigh = safeParseFloat(state.attributes.target_temp_high);
+            var targetLow = safeParseFloat(state.attributes.target_temp_low);
+            pushData(
+              new Date(state.last_changed),
+              [curTemp, heating, targetHigh, targetLow]
             );
-          },
-          dataTables[0]
-        );
+          } else {
+            var target = safeParseFloat(state.attributes.temperature);
+            pushData(new Date(state.last_changed), [curTemp, heating, target]);
+          }
+        };
+
+        states.states.forEach(processState);
+      } else {
+        addColumn(name);
+
+        // Only disable interpolation for sensors
+        noInterpolations = domain !== 'sensor' && [true];
+
+        states.states.forEach(function (state) {
+          var value = safeParseFloat(state.state);
+          pushData(new Date(state.last_changed), [value], noInterpolations);
+        });
       }
 
-      this.chartEngine.draw(finalDataTable, options);
-    }
+      // Add an entry for final values
+      pushData(endTime, prevValues, false);
+
+      // Concat two arrays
+      Array.prototype.push.apply(dataTables, data);
+      dataTables.push(dataX);
+    });
+    var chartData = {
+      xs: xs,
+      data: dataTables,
+      type: 'line',
+      types: xt,
+      title: unit
+    };
+
+    this.chartData = chartData;
   }
-  customElements.define(StateHistoryChartLine.is, StateHistoryChartLine);
 }
+customElements.define(StateHistoryChartLine.is, StateHistoryChartLine);
 </script>

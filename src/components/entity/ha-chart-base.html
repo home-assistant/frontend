@@ -1,0 +1,88 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+
+<dom-module id="ha-chart-base">
+  <template>
+    <div id="chartTarget" style="position: relative; height:40vh; width:100%">
+      <canvas id="chartCanvas"></canvas>
+    </div>
+  </template>
+</dom-module>
+<script src="../../../bower_components/moment/moment.js"></script>
+<script src="../../../bower_components/chart.js/dist/Chart.js"></script>
+<script src="timeline.js"></script>
+<script>
+/* global Chart moment */
+class HaChartBase extends
+    Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+  get chart() {
+    return this._chart;
+  }
+  static get is() { return 'ha-chart-base'; }
+  static get properties() {
+    return {
+      publish: {
+        type: Boolean,
+        observer: 'onPropsChange'
+      },
+      data: {
+        type: Object,
+        observer: 'onPropsChange'
+      },
+      selectedElement: {
+        type: Object,
+        readOnly: true,
+        notify: true,
+      },
+      connected: {
+        type: Object,
+        readOnly: false,
+        observer: 'onPropsChange'
+      },
+    };
+  }
+  connectedCallback() {
+    this.connected = true;
+    this.addEventListener('iron-resize', () => {
+      this.async(this.resizeChart, 10);
+    });
+  }
+  onPropsChange() {
+    if (!this.connected || !this.publish || !this.data || !this.data.data
+    || !this.data.data.dataSets || !this.data.data.labels) {
+      return;
+    }
+    this.drawChart();
+  }
+  drawChart() {
+    var data = this.data.data;
+    var ctx = this.$.chartCanvas;
+    var chartOptions = {
+      type: 'timeLine',
+      options: {
+        responsive: true,
+        colorFunction: getColorFunc(),
+        maintainAspectRatio: false,
+      },
+      data: data
+    };
+    if (this._chart) {
+      this._chart.resize();
+      if (this._chart.data !== data) {
+        this._chart.data = {
+          labels: data.labels,
+          datasets: data.dataSets
+        };
+        this._chart.update({ duration: 0 });
+      } else {
+        // this._chart.render({ duration: 0 });
+      }
+    } else {
+      this._chart = new Chart(ctx, chartOptions);
+    }
+  }
+  resizeChart() {
+    this._chart.resize();
+  }
+}
+customElements.define(HaChartBase.is, HaChartBase);
+</script>
