@@ -88,7 +88,10 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(Polymer.Element
   static get properties() {
     return {
       hass: Object,
-      account: Object,
+      account: {
+        type: Object,
+        observer: '_accountChanged',
+      },
     };
   }
 
@@ -98,6 +101,23 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(Polymer.Element
 
   _formatExpiration(date) {
     return window.hassUtil.formatDateTime(new Date(date));
+  }
+
+  _accountChanged(newAccount) {
+    if (newAccount.cloud !== 'connecting') {
+      if (this._accountUpdater) {
+        clearTimeout(this._accountUpdater);
+        this._accountUpdater = null;
+      }
+      return;
+    } else if (this._accountUpdater) {
+      return;
+    }
+    setTimeout(() => {
+      this._accountUpdater = null;
+      this.hass.callApi('get', 'cloud/account')
+        .then(account => this.fire('ha-account-refreshed', { account }));
+    }, 5000);
   }
 }
 
