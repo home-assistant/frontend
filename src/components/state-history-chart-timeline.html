@@ -39,6 +39,29 @@ class StateHistoryChartTimeline extends Polymer.Element {
   }
 
   drawChart() {
+    var getColorFunc = function () {
+      var colorArray = ['red', 'blue', 'green', 'navy', 'grey', 'purple', 'orange'];
+      var colorTable = {
+        'on': 'green',
+        'off': 'red',
+        'idle': 'blue',
+      };
+      var colors = 3;
+      return function colorFunction(data) {
+        var dataLabel = data[2];
+        var x;
+        if (dataLabel) {
+          x = colorTable[dataLabel];
+          if (!x) {
+            x = colorArray[colors++];
+            colorTable[dataLabel] = x;
+          }
+        } else {
+          x = colorArray[Math.floor(Math.random() * colorArray.length)];
+        }
+        return x;
+      };
+    };
     var stateHistory = this.data;
     var dataTable;
     var startTime;
@@ -72,7 +95,7 @@ class StateHistoryChartTimeline extends Polymer.Element {
     }
 
     var labels = [];
-    var dataSets = [];
+    var datasets = [];
     // stateHistory is a list of lists of sorted state objects
     stateHistory.forEach(function (stateInfo) {
       var entityDisplay;
@@ -106,11 +129,23 @@ class StateHistoryChartTimeline extends Polymer.Element {
       });
 
       dataRow.push([prevLastChanged, endTime, prevState]);
-      dataSets.push({ data: dataRow });
+      datasets.push({ data: dataRow });
       labels.push(entityDisplay);
     });
 
-    this.chartData = { data: { labels: labels, dataSets: dataSets }, type: 'timeline' };
+    var chartOptions = {
+      type: 'timeline',
+      options: {
+        responsive: true,
+        colorFunction: getColorFunc(),
+        maintainAspectRatio: false,
+      },
+      data: {
+        labels: labels,
+        datasets: datasets
+      }
+    };
+    this.chartData = chartOptions;
   }
 }
 customElements.define(StateHistoryChartTimeline.is, StateHistoryChartTimeline);

@@ -54,10 +54,8 @@ class StateHistoryChartLine extends Polymer.Element {
     var options;
     var startTime;
     var endTime;
-    var dataTables;
+    var datasets;
     var daysDelta;
-    var xs;
-    var xt;
 
     if (!this._isAttached) {
       return;
@@ -123,9 +121,7 @@ class StateHistoryChartLine extends Polymer.Element {
       options.hAxis.format = 'EEE, MMM d, H:mm';
     }
 
-    dataTables = [];
-    xs = {};
-    xt = {};
+    datasets = [];
 
     deviceStates.forEach(function (states) {
       var domain = states.domain;
@@ -137,29 +133,40 @@ class StateHistoryChartLine extends Polymer.Element {
       var processState;
       var noInterpolations;
       var data = [];
-      var nameX = name + '__x';
-      var dataX = [nameX];
 
 
-      function pushData(timestamp, values) {
+      function pushData(timestamp, datavalues) {
+        if (!datavalues) return;
         if (timestamp > endTime) {
           // Drop datapoints that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
-        data.forEach(function (d, i) { d.push(values[i]); });
-        dataX.push(timestamp);
-        prevValues = values;
+        data.forEach(function (d, i) {
+          d.data.push({ x: timestamp, y: datavalues[i] });
+        });
+        prevValues = datavalues;
         // prevTime = timestamp;
       }
 
       function addColumn(nameY, type) {
+        var fill = false;
+        var step = false;
         if (!type) {
           type = 'line';
         }
-        xs[nameY] = nameX;
-        xt[nameY] = type;
-        data.push([nameY]);
+        if (type === 'area') {
+          fill = true;
+        } else if (type === 'step') {
+          step = 'after';
+        }
+        data.push({
+          label: nameY,
+          fill: fill,
+          steppedLine: step,
+          pointRadius: 0,
+          data: [],
+        });
       }
 
       if (domain === 'thermostat' || domain === 'climate') {
@@ -215,18 +222,63 @@ class StateHistoryChartLine extends Polymer.Element {
       pushData(endTime, prevValues, false);
 
       // Concat two arrays
-      Array.prototype.push.apply(dataTables, data);
-      dataTables.push(dataX);
+      Array.prototype.push.apply(datasets, data);
     });
-    var chartData = {
-      xs: xs,
-      data: dataTables,
-      type: 'line',
-      types: xt,
-      title: unit
-    };
 
-    this.chartData = chartData;
+    var chartOptions = {
+      type: 'line',
+      options: {
+        responsive: true,
+        title: {
+          display: true,
+          text: "Chart.js Time Point Data"
+        },
+        scales: {
+          xAxes: [{
+            type: "time",
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'Date'
+            },
+            ticks: {
+              major: {
+                fontStyle: "bold",
+                fontColor: "#600000"
+              }
+            }
+          }],
+          yAxes: [{
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'value'
+            }
+          }]
+        },
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0,
+        },
+        hover: {
+          animationDuration: 0,
+        },
+        responsiveAnimationDuration: 0,
+        elements: {
+          line: {
+            tension: 0, // disables bezier curves
+            pointRadius: 0,
+          }
+        },
+        legend: {
+          display: false,
+        }
+      },
+      data: {
+        datasets: datasets
+      }
+    };
+    this.chartData = chartOptions;
   }
 }
 customElements.define(StateHistoryChartLine.is, StateHistoryChartLine);

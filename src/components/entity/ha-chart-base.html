@@ -2,14 +2,15 @@
 
 <dom-module id="ha-chart-base">
   <template>
-    <div id="chartTarget" style="position: relative; height:40vh; width:100%">
+    <div id="chartTarget" style="position: relative; height:200px; width:100%">
       <canvas id="chartCanvas"></canvas>
     </div>
   </template>
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
 <script src="../../../bower_components/chart.js/dist/Chart.js"></script>
-<script src="timeline.js"></script>
+<script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
+<!--script src="../../../../chartjs-chart-timeline/timeline.js"></script-->
 <script>
 /* global Chart moment */
 class HaChartBase extends
@@ -47,37 +48,46 @@ class HaChartBase extends
     });
   }
   onPropsChange() {
-    if (!this.connected || !this.publish || !this.data || !this.data.data
-    || !this.data.data.dataSets || !this.data.data.labels) {
+    if (!this.connected || !this.publish || !this.data || !this.data.data) {
       return;
     }
     this.drawChart();
   }
   drawChart() {
-    var data = this.data.data;
+    var options = this.data;
+    var data = options.data;
     var ctx = this.$.chartCanvas;
-    var chartOptions = {
-      type: 'timeLine',
-      options: {
-        responsive: true,
-        colorFunction: getColorFunc(),
-        maintainAspectRatio: false,
-      },
-      data: data
-    };
+
+    var chartTarget = this.$.chartTarget;
     if (this._chart) {
+      if (options.type === 'timeline') {
+        var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
+        if (axis && axis.height > 0) {
+          var cnt = data.labels.length;
+          var targetHeight = ((30 * cnt) + axis.height) + 'px';
+          if (chartTarget.style.height !== targetHeight) {
+            chartTarget.style.height = targetHeight;
+            chartTarget.height = targetHeight;
+          }
+        }
+      }
       this._chart.resize();
       if (this._chart.data !== data) {
-        this._chart.data = {
-          labels: data.labels,
-          datasets: data.dataSets
-        };
+        if (!data.datasets) {
+          return;
+        }
+        this._chart.data = data;
         this._chart.update({ duration: 0 });
       } else {
         // this._chart.render({ duration: 0 });
       }
     } else {
-      this._chart = new Chart(ctx, chartOptions);
+      if (!data.datasets) {
+        return;
+      }
+      // chartTarget.style.height = targetHeight;
+      // chartTarget.height = targetHeight;
+      this._chart = new Chart(ctx, options);
     }
   }
   resizeChart() {
