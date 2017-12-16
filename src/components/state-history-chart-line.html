@@ -49,6 +49,11 @@ class StateHistoryChartLine extends Polymer.Element {
   }
 
   drawChart() {
+    var colorArray = ['red', 'blue', 'green', 'navy', 'grey', 'purple', 'orange'];
+    var colorId = 0;
+    var getColor = function () {
+      return colorArray[colorId++];
+    };
     var unit = this.unit;
     var deviceStates = this.data;
     var options;
@@ -156,13 +161,16 @@ class StateHistoryChartLine extends Polymer.Element {
           type = 'line';
         }
         if (type === 'area') {
-          fill = true;
+          fill = 'origin';
         } else if (type === 'step') {
           step = 'after';
         }
+        var color = getColor();
         data.push({
           label: nameY,
           fill: fill,
+          backgroundColor: color,
+          borderColor: color,
           steppedLine: step,
           pointRadius: 0,
           data: [],
@@ -184,8 +192,6 @@ class StateHistoryChartLine extends Polymer.Element {
         if (hasTargetRange) {
           addColumn(name + ' target temperature high', 'step');
           addColumn(name + ' target temperature low', 'step');
-
-          noInterpolations = [false, true, true];
         } else {
           addColumn(name + ' target temperature', 'step');
         }
@@ -231,30 +237,17 @@ class StateHistoryChartLine extends Polymer.Element {
         responsive: true,
         title: {
           display: true,
-          text: "Chart.js Time Point Data"
+          text: unit
         },
         scales: {
           xAxes: [{
-            type: "time",
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'Date'
-            },
+            type: 'time',
             ticks: {
               major: {
-                fontStyle: "bold",
-                fontColor: "#600000"
+                fontStyle: 'bold',
               }
             }
           }],
-          yAxes: [{
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'value'
-            }
-          }]
         },
         maintainAspectRatio: false,
         animation: {
@@ -266,15 +259,30 @@ class StateHistoryChartLine extends Polymer.Element {
         responsiveAnimationDuration: 0,
         elements: {
           line: {
-            tension: 0, // disables bezier curves
+            tension: 0.1,
             pointRadius: 0,
+            borderWidth: 1.2,
+            // pointHoverRadius: 6,
+          },
+          point: {
+            hitRadius: 6,
           }
         },
         legend: {
           display: false,
-        }
+        },
+        tooltips: {
+          mode: 'index',
+
+        },
+        plugins: {
+          filler: {
+            propagate: true,
+          }
+        },
       },
       data: {
+        labels: [],
         datasets: datasets
       }
     };
