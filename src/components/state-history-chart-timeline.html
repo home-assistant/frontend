@@ -45,6 +45,7 @@ class StateHistoryChartTimeline extends Polymer.Element {
         'on': 'green',
         'off': 'red',
         'idle': 'blue',
+        'unavailable': 'lightgrey'
       };
       var colors = 3;
       return function colorFunction(data) {
@@ -104,7 +105,7 @@ class StateHistoryChartTimeline extends Polymer.Element {
       var prevLastChanged = null;
       var dataRow = [];
 
-      if (stateInfo.data.length === 0) return;
+      // if (stateInfo.data.length === 0) return;
 
       entityDisplay = stateInfo.name;
 

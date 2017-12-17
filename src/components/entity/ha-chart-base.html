@@ -58,22 +58,14 @@ class HaChartBase extends
     var data = options.data;
     var ctx = this.$.chartCanvas;
 
-    var chartTarget = this.$.chartTarget;
+    if ((!data.datasets || !data.datasets.length) && !this._chart) {
+      return;
+    }
+
     if (this._chart) {
-      if (options.type === 'timeline') {
-        var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
-        if (axis && axis.height > 0) {
-          var cnt = data.labels.length;
-          var targetHeight = ((30 * cnt) + axis.height) + 'px';
-          if (chartTarget.style.height !== targetHeight) {
-            chartTarget.style.height = targetHeight;
-            chartTarget.height = targetHeight;
-          }
-        }
-      }
-      this._chart.resize();
       this._chart.data = data;
       this._chart.update({ duration: 0 });
+      this.resizeChart();
     } else {
       if (!data.datasets) {
         return;
@@ -81,10 +73,36 @@ class HaChartBase extends
       // chartTarget.style.height = targetHeight;
       // chartTarget.height = targetHeight;
       this._chart = new Chart(ctx, options);
+      this.resizeChart();
     }
   }
   resizeChart() {
-    this._chart.resize();
+    var options = this.data;
+    var data = options.data;
+
+    var chartTarget = this.$.chartTarget;
+
+    if (options.type === 'timeline') {
+      if (data.datasets.length === 0) {
+        chartTarget.style.height = '0px';
+        chartTarget.height = '0px';
+        this._chart.resize();
+      } else {
+        var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
+        if (axis && axis.height > 0) {
+          this._axisHeight = axis.height;
+        }
+        if (this._axisHeight) {
+          var cnt = data.datasets.length;
+          var targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
+          if (chartTarget.style.height !== targetHeight) {
+            chartTarget.style.height = targetHeight;
+            chartTarget.height = targetHeight;
+          }
+          this._chart.resize();
+        }
+      }
+    }
   }
 }
 customElements.define(HaChartBase.is, HaChartBase);
