@@ -75,9 +75,9 @@ function generateServiceWorker(es6) {
     });
 
     const options = {
-      navigateFallback: '/',
+      navigateFallback: '/states',
       navigateFallbackWhitelist:
-          [/^(?:(?!(?:static|api|frontend_latest|frontend_es5|local|service_worker.js|manifest.json)).)*$/],
+          [/^(?:(?!(?:static|api|frontend_latest|frontend_es5|local|service_worker.js|service_worker_es5.js|manifest.json)).)*$/],
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
         baseRootDir + '/icons/favicon.ico',
@@ -100,7 +100,7 @@ function generateServiceWorker(es6) {
           handler: 'networkOnly',
         },
         { // Get manifest and service worker from network.
-          urlPattern: '/(service_worker.js|manifest.json)',
+          urlPattern: '/(service_worker.js|service_worker_es5.js|manifest.json)',
           handler: 'networkOnly',
         },
         { // For rest of the files (on Home Assistant domain only) try both cache and network.
