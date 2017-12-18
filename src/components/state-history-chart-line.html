@@ -153,9 +153,8 @@ class StateHistoryChartLine extends Polymer.Element {
         // range versus ones that have just a target temperature
 
         // Using step chart by step-after so manually interpolation not needed.
-        hasTargetRange = states.states.reduce(function (cum, cur) {
-          return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
-        }, false);
+        hasTargetRange = states.states.some(state => state.attributes &&
+        state.attributes.target_temp_high !== state.attributes.target_temp_low);
 
         addColumn(name + ' current temperature', 'line');
         addColumn(name + ' heating', 'area');
@@ -167,6 +166,7 @@ class StateHistoryChartLine extends Polymer.Element {
           addColumn(name + ' target temperature', 'step');
         }
         processState = function (state) {
+          if (!state.attributes) return;
           var curTemp = safeParseFloat(state.attributes.current_temperature);
           var heating = state.state === 'heat' ? curTemp : null;
           if (hasTargetRange) {
