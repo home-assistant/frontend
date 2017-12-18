@@ -83,6 +83,10 @@
         "off": "Normal",
         "on": "Low"
       },
+      "connectivity": {
+        "off": "Offline",
+        "on": "Online"
+      },
       "gas": {
         "off": "Clear",
         "on": "Detected"
