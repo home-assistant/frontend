@@ -42,10 +42,10 @@ class StateHistoryChartTimeline extends Polymer.Element {
     var getColorFunc = function () {
       var colorArray = ['red', 'blue', 'green', 'navy', 'grey', 'purple', 'orange'];
       var colorTable = {
-        'on': 'green',
-        'off': 'red',
-        'idle': 'blue',
-        'unavailable': 'lightgrey'
+        on: 'green',
+        off: 'red',
+        idle: 'blue',
+        unavailable: 'lightgrey',
       };
       var colors = 3;
       return function colorFunction(data) {
@@ -64,7 +64,6 @@ class StateHistoryChartTimeline extends Polymer.Element {
       };
     };
     var stateHistory = this.data;
-    var dataTable;
     var startTime;
     var endTime;
 
@@ -77,19 +76,18 @@ class StateHistoryChartTimeline extends Polymer.Element {
       stateHistory = [];
     }
 
-    startTime = new Date(
-      stateHistory.reduce(
-        function (minTime, stateInfo) {
-          return Math.min(minTime, new Date(stateInfo.data[0].last_changed));
-        }, new Date()));
+    startTime = new Date(stateHistory.reduce(function (minTime, stateInfo) {
+      return Math.min(minTime, new Date(stateInfo.data[0].last_changed));
+    }, new Date()));
 
     // end time is Math.max(startTime, last_event)
-    endTime = this.endTime || new Date(
-      stateHistory.reduce(
-        function (maxTime, stateInfo) {
-          return Math.max(maxTime,
-            new Date(stateInfo.data[stateInfo.data.length - 1].last_changed));
-        }, startTime));
+    endTime = this.endTime ||
+      new Date(stateHistory.reduce(function (maxTime, stateInfo) {
+        return Math.max(
+          maxTime,
+          new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
+        );
+      }, startTime));
 
     if (endTime > new Date()) {
       endTime = new Date();

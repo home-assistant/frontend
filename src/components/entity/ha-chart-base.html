@@ -40,9 +40,9 @@
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <!--script src="../../../../chartjs-chart-timeline/timeline.js"></script-->
 <script>
-/* global Chart moment */
+/* global Chart moment */// eslint-disable-line no-unused-vars
 class HaChartBase extends
-    Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+  Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
   get chart() {
     return this._chart;
   }
@@ -199,6 +199,16 @@ class HaChartBase extends
         if (axis && axis.height > 0) {
           this._axisHeight = axis.height;
         }
+        if (!this._axisHeight) {
+          chartTarget.style.height = '100px';
+          chartTarget.height = '100px';
+          this._chart.resize();
+          axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
+          if (axis && axis.height > 0) {
+            this._axisHeight = axis.height;
+            this.resizeChart();
+          }
+        }
         if (this._axisHeight) {
           var cnt = data.datasets.length;
           var targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
@@ -207,16 +217,10 @@ class HaChartBase extends
             chartTarget.height = targetHeight;
           }
           this._chart.resize();
-        } else {
-          chartTarget.style.height = '100px';
-          chartTarget.height = '100px';
-          this._chart.resize();
-          if (axis && axis.height > 0) {
-            this._axisHeight = axis.height;
-            this.resizeChart();
-          }
         }
       }
+    } else {
+      this._chart.resize();
     }
   }
 }
