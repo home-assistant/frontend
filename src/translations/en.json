@@ -84,8 +84,8 @@
         "on": "Low"
       },
       "connectivity": {
-        "off": "Offline",
-        "on": "Online"
+        "off": "Disconnected",
+        "on": "Connected"
       },
       "gas": {
         "off": "Clear",
