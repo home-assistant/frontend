@@ -70,9 +70,10 @@ class HaChartBase extends
     };
   }
   connectedCallback() {
+    super.connectedCallback();
     this.connected = true;
     this.addEventListener('iron-resize', () => {
-      this.async(this.resizeChart, 10);
+      setTimeout(this.resizeChart.bind(this), 1);
     });
   }
   onPropsChange() {
@@ -137,6 +138,49 @@ class HaChartBase extends
     var data = this.data.data;
     var ctx = this.$.chartCanvas;
 
+    if (!Chart.Interaction.modes.neareach) {
+      var me = this;
+      Chart.Interaction.modes.neareach = function (chart, e, opt) {
+        var position;
+        if (e.native) {
+          position = {
+            x: e.x,
+            y: e.y
+          };
+        } else {
+          position = Chart.helpers.getRelativePosition(e, chart);
+        }
+        var elements = [];
+        var elementsRange = [];
+        var datasets = chart.data.datasets;
+        var meta;
+        var positionX = position.x;
+
+        for (var i = 0, ilen = datasets.length; i < ilen; ++i) {
+          if (!chart.isDatasetVisible(i)) {
+            continue;
+          }
+
+          meta = chart.getDatasetMeta(i);
+          for (var j = 0, jlen = meta.data.length; j < jlen; ++j) {
+            var element = meta.data[j];
+            if (!element._view.skip) {
+              var datasetIndex = element._datasetIndex;
+              var vm = element._view;
+              var xRange = Math.abs(vm.x - positionX);
+              var oldX = elementsRange[datasetIndex];
+              if (xRange < vm.radius + vm.hitRadius && (
+                oldX === undefined || oldX > xRange)) {
+                elementsRange[datasetIndex] = xRange;
+                elements[datasetIndex] = element;
+              }
+            }
+          }
+        }
+        return elements.filter(function (n) { return n !== undefined; });
+      };
+    }
+
     if ((!data.datasets || !data.datasets.length) && !this._chart) {
       return;
     }
@@ -184,6 +228,7 @@ class HaChartBase extends
     }
   }
   resizeChart() {
+    if (!this._chart) return;
     var options = this.data;
     var data = options.data;
 

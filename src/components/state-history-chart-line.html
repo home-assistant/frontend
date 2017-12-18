@@ -49,7 +49,7 @@ class StateHistoryChartLine extends Polymer.Element {
   }
 
   drawChart() {
-    var colorArray = ['red', 'blue', 'green', 'navy', 'grey', 'purple', 'orange'];
+    var colorArray = ['red', 'blue', 'green', 'navy', 'purple', 'orange'];
     var colorId = 0;
     var getColor = function () {
       return colorArray[colorId++];
@@ -89,13 +89,13 @@ class StateHistoryChartLine extends Polymer.Element {
 
     daysDelta = (endTime - startTime) / (24 * 3600 * 1000);
     // Avoid rounding up when the API returns a few extra seconds.
-    if (daysDelta > 30.1) {
-      options.hAxis.format = 'MMM d';
-    } else if (daysDelta > 3.1) {
-      options.hAxis.format = 'EEE, MMM d';
-    } else if (daysDelta > 1.1) {
-      options.hAxis.format = 'EEE, MMM d, H:mm';
-    }
+    // if (daysDelta > 30.1) {
+    //   options.hAxis.format = 'MMM d';
+    // } else if (daysDelta > 3.1) {
+    //   options.hAxis.format = 'EEE, MMM d';
+    // } else if (daysDelta > 1.1) {
+    //   options.hAxis.format = 'EEE, MMM d, H:mm';
+    // }
 
     datasets = [];
 
@@ -107,7 +107,6 @@ class StateHistoryChartLine extends Polymer.Element {
       // var prevTime;
       var hasTargetRange;
       var processState;
-      var noInterpolations;
       var data = [];
 
 
@@ -187,11 +186,12 @@ class StateHistoryChartLine extends Polymer.Element {
         addColumn(name);
 
         // Only disable interpolation for sensors
-        noInterpolations = domain !== 'sensor' && [true];
+        var columnStyle = domain !== 'sensor' ? 'line' : 'step';
+        addColumn(name, columnStyle);
 
         states.states.forEach(function (state) {
           var value = safeParseFloat(state.state);
-          pushData(new Date(state.last_changed), [value], noInterpolations);
+          pushData(new Date(state.last_changed), [value]);
         });
       }
 
@@ -201,6 +201,10 @@ class StateHistoryChartLine extends Polymer.Element {
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);
     });
+
+    function tooltopFilter() {
+      
+    }
 
     var chartOptions = {
       type: 'line',
@@ -219,14 +223,27 @@ class StateHistoryChartLine extends Polymer.Element {
             },
           }],
           yAxes: [{
-            offset: true,
+            // offset: true,
             ticks: {
-              padding: 10,
+              maxTicksLimit: 7,
+              // padding: 10,
+            },
+            // Add space to prevent cut-off.
+            afterDataLimits: function (axis) {
+              var min = axis.min;
+              var max = axis.max;
+              if (isFinite(min) && isFinite(max)) {
+                var padding = (max - min) * 0.05;
+                axis.min -= padding;
+                axis.max += padding;
+              }
             },
           }],
         },
+        // Need more invastigate to tooltip point choose.
         tooltips: {
-          mode: 'index',
+          mode: 'neareach',
+          // filter: 
         },
         elements: {
           line: {
