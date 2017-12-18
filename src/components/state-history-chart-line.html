@@ -154,7 +154,7 @@ class StateHistoryChartLine extends Polymer.Element {
 
         // Using step chart by step-after so manually interpolation not needed.
         hasTargetRange = states.states.some(state => state.attributes &&
-        state.attributes.target_temp_high !== state.attributes.target_temp_low);
+          state.attributes.target_temp_high !== state.attributes.target_temp_low);
 
         addColumn(name + ' current temperature', 'line');
         addColumn(name + ' heating', 'area');

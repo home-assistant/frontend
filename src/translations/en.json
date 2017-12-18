@@ -107,6 +107,10 @@
         "off": "[%key:state::device_tracker::not_home%]",
         "on": "[%key:state::device_tracker::home%]"
       },
+      "problem": {
+        "off": "OK",
+        "on": "Problem"
+      },
       "safety": {
         "off": "Safe",
         "on": "Unsafe"
@@ -180,8 +184,8 @@
       "stopped": "[%key:state::cover::stopped%]",
       "locked": "[%key:state::lock::locked%]",
       "unlocked": "[%key:state::lock::unlocked%]",
-      "ok": "[%key:state::plant::ok%]",
-      "problem": "[%key:state::plant::problem%]"
+      "ok": "[%key:state::binary_sensor::problem::off%]",
+      "problem": "[%key:state::binary_sensor::problem::on%]"
     },
     "input_boolean": {
       "off": "[%key:state::default::off%]",
@@ -204,8 +208,8 @@
       "standby": "Standby"
     },
     "plant": {
-      "ok": "OK",
-      "problem": "Problem"
+      "ok": "[%key:state::binary_sensor::problem::off%]",
+      "problem": "[%key:state::binary_sensor::problem::on%]"
     },
     "remote": {
       "off": "[%key:state::default::off%]",
