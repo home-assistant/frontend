@@ -172,9 +172,8 @@
         if (domain === 'thermostat' || domain === 'climate') {
           // We differentiate between thermostats that have a target temperature
           // range versus ones that have just a target temperature
-          hasTargetRange = states.states.reduce(function (cum, cur) {
-            return cum || cur.attributes.target_temp_high !== cur.attributes.target_temp_low;
-          }, false);
+          hasTargetRange = states.states.some(state => state.attributes &&
+            state.attributes.target_temp_high !== state.attributes.target_temp_low);
 
           dataTable.addColumn('number', name + ' current temperature');
           dataTable.addColumn('number', name + ' heating');
@@ -195,6 +194,7 @@
           }
 
           processState = function (state) {
+            if (!state.attributes) return;
             var curTemp = saveParseFloat(state.attributes.current_temperature);
             // Drawing the 'heating' area up to the current temp should keep it from
             // overlapping but avoid any weird gaps or range mismatches
