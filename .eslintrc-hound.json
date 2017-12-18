@@ -43,7 +43,7 @@
     "radix": 0,
     "no-alert": 0,
     "prefer-destructuring": 0,
-    "no-restricted-globals": 0,
+    "no-restricted-globals": [2, "event"],
     "prefer-promise-reject-errors": 0,
     "import/prefer-default-export": 0,
     "import/no-unresolved": 0,
