@@ -137,9 +137,10 @@ class StateHistoryChartTimeline extends Polymer.Element {
     var chartOptions = {
       type: 'timeline',
       options: {
-        responsive: true,
         colorFunction: getColorFunc(),
-        maintainAspectRatio: false,
+        tooltips: {
+          mode: 'nearest',
+        }
       },
       data: {
         labels: labels,

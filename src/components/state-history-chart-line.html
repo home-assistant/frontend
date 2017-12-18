@@ -76,35 +76,6 @@ class StateHistoryChartLine extends Polymer.Element {
       return isFinite(parsed) ? parsed : null;
     }
 
-    options = {
-      backgroundColor: '#fafafa',
-      legend: { position: 'top' },
-      interpolateNulls: true,
-      titlePosition: 'none',
-      vAxes: {
-        // Adds units to the left hand side of the graph
-        0: { title: unit },
-      },
-      hAxis: {
-        format: 'H:mm',
-      },
-      chartArea: { left: '60', width: '95%' },
-      explorer: {
-        actions: ['dragToZoom', 'rightClickToReset', 'dragToPan'],
-        keepInBounds: true,
-        axis: 'horizontal',
-        maxZoomIn: 0.1,
-      },
-    };
-
-    if (this.isSingleDevice) {
-      options.legend.position = 'none';
-      options.vAxes[0].title = null;
-      options.chartArea.left = 40;
-      options.chartArea.height = '80%';
-      options.chartArea.top = 5;
-    }
-
     startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
       return new Date(states.states[0].last_changed);
     })));
@@ -234,9 +205,8 @@ class StateHistoryChartLine extends Polymer.Element {
     var chartOptions = {
       type: 'line',
       options: {
-        responsive: true,
         title: {
-          display: true,
+          display: false,
           text: unit
         },
         scales: {
@@ -245,18 +215,19 @@ class StateHistoryChartLine extends Polymer.Element {
             ticks: {
               major: {
                 fontStyle: 'bold',
-              }
-            }
+              },
+            },
+          }],
+          yAxes: [{
+            offset: true,
+            ticks: {
+              padding: 10,
+            },
           }],
         },
-        maintainAspectRatio: false,
-        animation: {
-          duration: 0,
+        tooltips: {
+          mode: 'index',
         },
-        hover: {
-          animationDuration: 0,
-        },
-        responsiveAnimationDuration: 0,
         elements: {
           line: {
             tension: 0.1,
@@ -265,15 +236,8 @@ class StateHistoryChartLine extends Polymer.Element {
             // pointHoverRadius: 6,
           },
           point: {
-            hitRadius: 6,
+            hitRadius: 5,
           }
-        },
-        legend: {
-          display: false,
-        },
-        tooltips: {
-          mode: 'index',
-
         },
         plugins: {
           filler: {

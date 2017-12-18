@@ -2,8 +2,36 @@
 
 <dom-module id="ha-chart-base">
   <template>
+    <style>
+      canvas{
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+      #chartTooltip {
+        opacity: 1;
+        position: absolute;
+        background: rgba(0, 0, 0, .7);
+        color: white;
+        border-radius: 3px;
+        -webkit-transition: all .1s ease;
+        transition: all .1s ease;
+        pointer-events: none;
+        -webkit-transform: translate(-50%, 0);
+        transform: translate(-50%, 0);
+      }
+      .chartjs-tooltip-key {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 10px;
+      }
+    </style>
     <div id="chartTarget" style="position: relative; height:200px; width:100%">
       <canvas id="chartCanvas"></canvas>
+      <div id="chartTooltip">
+        <table></table>
+      </div>
     </div>
   </template>
 </dom-module>
@@ -53,9 +81,60 @@ class HaChartBase extends
     }
     this.drawChart();
   }
+
+  _customTooltips(tooltip) {
+    // Tooltip Element
+    var tooltipEl = this._tooltipEl;
+    // console.log(tooltip);
+    // Hide if no tooltip
+    if (tooltip.opacity === 0) {
+      tooltipEl.style.opacity = 0;
+      return;
+    }
+    // Set caret Position
+    tooltipEl.classList.remove('above', 'below', 'no-transform');
+    if (tooltip.yAlign) {
+      tooltipEl.classList.add(tooltip.yAlign);
+    } else {
+      tooltipEl.classList.add('no-transform');
+    }
+    function getBody(bodyItem) {
+      return bodyItem.lines;
+    }
+    // Set Text
+    if (tooltip.body) {
+      var titleLines = tooltip.title || [];
+      var bodyLines = tooltip.body.map(getBody);
+      var innerHtml = '<thead>';
+      titleLines.forEach(function (title) {
+        innerHtml += '<tr><th>' + title + '</th></tr>';
+      });
+      innerHtml += '</thead><tbody>';
+      bodyLines.forEach(function (body, i) {
+        var colors = tooltip.labelColors[i];
+        var style = 'background:' + colors.backgroundColor;
+        style += '; border-color:' + colors.borderColor;
+        style += '; border-width: 2px';
+        var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
+        innerHtml += '<tr><td>' + span + body + '</td></tr>';
+      });
+      innerHtml += '</tbody>';
+      var tableRoot = tooltipEl.querySelector('table');
+      tableRoot.innerHTML = innerHtml;
+    }
+    var positionY = this._chart.canvas.offsetTop;
+    var positionX = this._chart.canvas.offsetLeft;
+    // Display, position, and set styles for font
+    tooltipEl.style.opacity = 1;
+    tooltipEl.style.left = positionX + tooltip.caretX + 'px';
+    tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+    tooltipEl.style.fontFamily = tooltip._fontFamily;
+    tooltipEl.style.fontSize = tooltip.fontSize;
+    tooltipEl.style.fontStyle = tooltip._fontStyle;
+    tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+  }
   drawChart() {
-    var options = this.data;
-    var data = options.data;
+    var data = this.data.data;
     var ctx = this.$.chartCanvas;
 
     if ((!data.datasets || !data.datasets.length) && !this._chart) {
@@ -63,6 +142,7 @@ class HaChartBase extends
     }
 
     if (this._chart) {
+      this._customTooltips({ opacity: 0 });
       this._chart.data = data;
       this._chart.update({ duration: 0 });
       this.resizeChart();
@@ -72,7 +152,34 @@ class HaChartBase extends
       }
       // chartTarget.style.height = targetHeight;
       // chartTarget.height = targetHeight;
-      this._chart = new Chart(ctx, options);
+      this._tooltipEl = this.$.chartTooltip;
+      var options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 0,
+        },
+        hover: {
+          animationDuration: 0,
+        },
+        responsiveAnimationDuration: 0,
+        tooltips: {
+          enabled: false,
+          custom: this._customTooltips.bind(this),
+        },
+        legend: {
+          display: false,
+        },
+      };
+      options = Chart.helpers.configMerge(options, this.data.options);
+      if (this.data.type === 'timeline') {
+        this._isTimeline = true;
+      }
+      this._chart = new Chart(ctx, {
+        type: this.data.type,
+        data: this.data.data,
+        options: options
+      });
       this.resizeChart();
     }
   }
@@ -82,7 +189,7 @@ class HaChartBase extends
 
     var chartTarget = this.$.chartTarget;
 
-    if (options.type === 'timeline') {
+    if (this._isTimeline) {
       if (data.datasets.length === 0) {
         chartTarget.style.height = '0px';
         chartTarget.height = '0px';
@@ -100,6 +207,14 @@ class HaChartBase extends
             chartTarget.height = targetHeight;
           }
           this._chart.resize();
+        } else {
+          chartTarget.style.height = '100px';
+          chartTarget.height = '100px';
+          this._chart.resize();
+          if (axis && axis.height > 0) {
+            this._axisHeight = axis.height;
+            this.resizeChart();
+          }
         }
       }
     }
