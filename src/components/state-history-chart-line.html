@@ -54,9 +54,12 @@ class StateHistoryChartLine extends Polymer.Element {
     var getColor = function () {
       return colorArray[colorId++];
     };
+    function getColorAlpha(str, alpha) {
+      return Color(str).alpha(1 - alpha).rgbaString();
+    }
     var unit = this.unit;
     var deviceStates = this.data;
-    var options;
+    // var options;
     var startTime;
     var endTime;
     var datasets;
@@ -127,23 +130,26 @@ class StateHistoryChartLine extends Polymer.Element {
       function addColumn(nameY, type) {
         var fill = false;
         var step = false;
+        var color = getColor();
+        var bgColor = color;
         if (!type) {
           type = 'line';
         }
         if (type === 'area') {
           fill = 'origin';
+          bgColor = getColorAlpha(color, 0.65);
         } else if (type === 'step') {
           step = 'after';
         }
-        var color = getColor();
         data.push({
           label: nameY,
           fill: fill,
-          backgroundColor: color,
+          backgroundColor: bgColor,
           borderColor: color,
           steppedLine: step,
           pointRadius: 0,
           data: [],
+          unitText: unit
         });
       }
 
@@ -202,10 +208,6 @@ class StateHistoryChartLine extends Polymer.Element {
       Array.prototype.push.apply(datasets, data);
     });
 
-    function tooltopFilter() {
-      
-    }
-
     var chartOptions = {
       type: 'line',
       options: {
@@ -242,8 +244,12 @@ class StateHistoryChartLine extends Polymer.Element {
         },
         // Need more invastigate to tooltip point choose.
         tooltips: {
+          // mode: 'index',
           mode: 'neareach',
           // filter: 
+        },
+        hover: {
+          mode: 'neareach',
         },
         elements: {
           line: {

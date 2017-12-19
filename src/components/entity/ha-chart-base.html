@@ -19,6 +19,8 @@
         pointer-events: none;
         -webkit-transform: translate(-50%, 0);
         transform: translate(-50%, 0);
+        z-index: 10;
+        width: 200px;
       }
       .chartjs-tooltip-key {
         display: inline-block;
@@ -27,8 +29,8 @@
         margin-right: 10px;
       }
     </style>
-    <div id="chartTarget" style="position: relative; height:200px; width:100%">
-      <canvas id="chartCanvas"></canvas>
+    <div id="chartTarget" style="position: relative; height:0; width:100%">
+      <canvas id="chartCanvas" style=""></canvas>
       <div id="chartTooltip">
         <table></table>
       </div>
@@ -37,6 +39,8 @@
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
 <script src="../../../bower_components/chart.js/dist/Chart.js"></script>
+<!--script src="../../../bower_components/common-js/common.js"></script>
+<script src="../../../bower_components/chart.js/src/chart.js"></script-->
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <!--script src="../../../../chartjs-chart-timeline/timeline.js"></script-->
 <script>
@@ -57,16 +61,6 @@ class HaChartBase extends
         type: Object,
         observer: 'onPropsChange'
       },
-      selectedElement: {
-        type: Object,
-        readOnly: true,
-        notify: true,
-      },
-      connected: {
-        type: Object,
-        readOnly: false,
-        observer: 'onPropsChange'
-      },
     };
   }
   connectedCallback() {
@@ -75,9 +69,13 @@ class HaChartBase extends
     this.addEventListener('iron-resize', () => {
       setTimeout(this.resizeChart.bind(this), 1);
     });
+    if (!this._chart) {
+      this.onPropsChange();
+    }
+    // setTimeout(this.resizeChart.bind(this), 1);
   }
   onPropsChange() {
-    if (!this.connected || !this.publish || !this.data || !this.data.data) {
+    if (!this.connected || !this.publish || !this.data) {
       return;
     }
     this.drawChart();
@@ -108,7 +106,15 @@ class HaChartBase extends
       var bodyLines = tooltip.body.map(getBody);
       var innerHtml = '<thead>';
       titleLines.forEach(function (title) {
-        innerHtml += '<tr><th>' + title + '</th></tr>';
+        var str1;
+        if (title instanceof Date) {
+          str1 = moment(title).format('L LTS');
+        } else if (title instanceof moment) {
+          str1 = title.format('L LTS');
+        } else {
+          str1 = title;
+        }
+        innerHtml += '<tr><th>' + str1 + '</th></tr>';
       });
       innerHtml += '</thead><tbody>';
       bodyLines.forEach(function (body, i) {
@@ -117,18 +123,27 @@ class HaChartBase extends
         style += '; border-color:' + colors.borderColor;
         style += '; border-width: 2px';
         var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
-        innerHtml += '<tr><td>' + span + body + '</td></tr>';
+        innerHtml += '<tr><td>' + span + body.join('<br />') + '</td></tr>';
       });
       innerHtml += '</tbody>';
       var tableRoot = tooltipEl.querySelector('table');
       tableRoot.innerHTML = innerHtml;
     }
-    var positionY = this._chart.canvas.offsetTop;
-    var positionX = this._chart.canvas.offsetLeft;
+    var positionX = this._chart.canvas.offsetLeft + tooltip.caretX;
+    var positionY = this._chart.canvas.offsetTop + tooltip.caretY;
+    var parentWidth = this.$.chartTarget.clientWidth;
+    if (positionX + 100 > parentWidth) {
+      positionX = parentWidth - 100;
+      // tooltipEl.style.left = 'unset';
+    } else if (positionX < 100) {
+      positionX = 100;
+      // tooltipEl.style.left = positionX + 'px';
+      // tooltipEl.style.right = 'unset';
+    }
     // Display, position, and set styles for font
     tooltipEl.style.opacity = 1;
-    tooltipEl.style.left = positionX + tooltip.caretX + 'px';
-    tooltipEl.style.top = positionY + tooltip.caretY + 'px';
+    tooltipEl.style.top = positionY + 'px';
+    tooltipEl.style.left = positionX + 'px';
     tooltipEl.style.fontFamily = tooltip._fontFamily;
     tooltipEl.style.fontSize = tooltip.fontSize;
     tooltipEl.style.fontStyle = tooltip._fontStyle;
@@ -139,8 +154,17 @@ class HaChartBase extends
     var ctx = this.$.chartCanvas;
 
     if (!Chart.Interaction.modes.neareach) {
-      var me = this;
-      Chart.Interaction.modes.neareach = function (chart, e, opt) {
+      var getRange = {
+        x: (a, b) => Math.abs(a.x - b.x),
+        y: (a, b) => Math.abs(a.y - b.y),
+        xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
+      };
+      var getRangeMax = {
+        x: r => r,
+        y: r => r,
+        xy: r => r * r,
+      };
+      Chart.Interaction.modes.neareach = function (chart, e, options) {
         var position;
         if (e.native) {
           position = {
@@ -154,7 +178,9 @@ class HaChartBase extends
         var elementsRange = [];
         var datasets = chart.data.datasets;
         var meta;
-        var positionX = position.x;
+        options.axis = options.axis || 'xy';
+        var rangeFunc = getRange[options.axis];
+        var rangeMaxFunc = getRangeMax[options.axis];
 
         for (var i = 0, ilen = datasets.length; i < ilen; ++i) {
           if (!chart.isDatasetVisible(i)) {
@@ -165,19 +191,20 @@ class HaChartBase extends
           for (var j = 0, jlen = meta.data.length; j < jlen; ++j) {
             var element = meta.data[j];
             if (!element._view.skip) {
-              var datasetIndex = element._datasetIndex;
               var vm = element._view;
-              var xRange = Math.abs(vm.x - positionX);
-              var oldX = elementsRange[datasetIndex];
-              if (xRange < vm.radius + vm.hitRadius && (
-                oldX === undefined || oldX > xRange)) {
-                elementsRange[datasetIndex] = xRange;
-                elements[datasetIndex] = element;
+              var range = rangeFunc(vm, position);
+              var oldRange = elementsRange[i];
+              if (range < rangeMaxFunc(vm.radius + vm.hitRadius)) {
+                if (oldRange === undefined || oldRange > range) {
+                  elementsRange[i] = range;
+                  elements[i] = element;
+                }
               }
             }
           }
         }
-        return elements.filter(function (n) { return n !== undefined; });
+        var ret = elements.filter(function (n) { return n !== undefined; });
+        return ret;
       };
     }
 
@@ -200,6 +227,10 @@ class HaChartBase extends
       var options = {
         responsive: true,
         maintainAspectRatio: false,
+        scales: {
+          xAxes: [{
+          }]
+        },
         animation: {
           duration: 0,
         },
@@ -215,16 +246,28 @@ class HaChartBase extends
           display: false,
         },
       };
-      options = Chart.helpers.configMerge(options, this.data.options);
+      options = Chart.helpers.merge(options, this.data.options);
+      options.scales = options.scales || {};
+      options.scales.xAxes = options.scales.xAxes || [];
+      options.scales.xAxes[0] = options.scales.xAxes[0] || {};
+      options.scales.xAxes[0].time = options.scales.xAxes[0].time || {};
+      options.scales.xAxes[0].time.displayFormats = {
+        day: 'MMM d',
+        hour: 'HH:mm',
+        minute: 'HH:mm'
+      };
       if (this.data.type === 'timeline') {
         this._isTimeline = true;
       }
+      this.$.chartTarget.style.height = '200px';
+      this.$.chartTarget.height = '200px';
       this._chart = new Chart(ctx, {
         type: this.data.type,
         data: this.data.data,
         options: options
       });
-      this.resizeChart();
+      // Resize after dom update
+      setTimeout(this.resizeChart.bind(this), 1);
     }
   }
   resizeChart() {
@@ -251,7 +294,7 @@ class HaChartBase extends
           axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
           if (axis && axis.height > 0) {
             this._axisHeight = axis.height;
-            this.resizeChart();
+            // this.resizeChart();
           }
         }
         if (this._axisHeight) {
