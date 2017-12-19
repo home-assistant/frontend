@@ -79,7 +79,10 @@ window.hassMixins.NavigateMixin = Polymer.dedupingMixin(superClass =>
     }
   });
 
-/* @polymerMixin */
+/**
+ * @polymerMixin
+ * @appliesMixin Polymer.AppLocalizeBehavior
+ */
 window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
   class extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], superClass) {
     static get properties() {
@@ -93,10 +96,6 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
           type: Object,
           computed: 'computeResources(hass)',
         },
-        haLocalize: {
-          type: Function,
-          computed: 'computeHaLocalize(localize)',
-        },
       };
     }
 
@@ -106,10 +105,6 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
 
     computeResources(hass) {
       return hass && hass.resources;
-    }
-
-    computeHaLocalize(localize) {
-      return (namespace, message, ...args) => localize(namespace + '.' + message, ...args);
     }
   });
 
