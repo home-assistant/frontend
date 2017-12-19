@@ -153,7 +153,7 @@
 
       <div class='caption'>
         [[computeStateName(stateObj)]]
-        <div class='title'>[[computePrimaryText(haLocalize, playerObj)]]</div>
+        <div class='title'>[[computePrimaryText(localize, playerObj)]]</div>
         [[playerObj.secondaryTitle]]<br />
       </div>
     </div>
@@ -310,10 +310,10 @@ class HaMediaPlayerCard extends
     return new window.MediaPlayerEntity(hass, stateObj);
   }
 
-  computePrimaryText(haLocalize, playerObj) {
+  computePrimaryText(localize, playerObj) {
     return playerObj.primaryTitle
-      || haLocalize('state.media_player', playerObj.stateObj.state)
-      || haLocalize('state.default', playerObj.stateObj.state) || playerObj.stateObj.state;
+      || localize(`state.media_player.${playerObj.stateObj.state}`)
+      || localize(`state.default.${playerObj.stateObj.state}`) || playerObj.stateObj.state;
   }
 
   computePlaybackControlIcon(playerObj) {

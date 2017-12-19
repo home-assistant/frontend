@@ -3,9 +3,9 @@ import { assert } from 'chai';
 import computeStateDisplay from '../../../js/common/util/compute_state_display';
 
 describe('computeStateDisplay', () => {
-  const haLocalize = function (namespace, message, ...args) {
+  const localize = function (message, ...args) {
     // Mock Localize function for testing
-    return namespace + '.' + message + (args.length ? ': ' + args.join(',') : '');
+    return message + (args.length ? ': ' + args.join(',') : '');
   };
 
   it('Localizes binary sensor defaults', () => {
@@ -15,7 +15,7 @@ describe('computeStateDisplay', () => {
       attributes: {
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.binary_sensor.default.off');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'state.binary_sensor.default.off');
   });
 
   it('Localizes binary sensor device class', () => {
@@ -26,13 +26,13 @@ describe('computeStateDisplay', () => {
         device_class: 'moisture',
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.binary_sensor.moisture.off');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'state.binary_sensor.moisture.off');
   });
 
   it('Localizes binary sensor invalid device class', () => {
-    const altHaLocalize = function (namespace, message, ...args) {
-      if (namespace === 'state.binary_sensor.invalid_device_class') return null;
-      return haLocalize(namespace, message, ...args);
+    const altLocalize = function (message, ...args) {
+      if (message === 'state.binary_sensor.invalid_device_class.off') return null;
+      return localize(message, ...args);
     };
     const stateObj = {
       entity_id: 'binary_sensor.test',
@@ -41,7 +41,7 @@ describe('computeStateDisplay', () => {
         device_class: 'invalid_device_class',
       },
     };
-    assert.strictEqual(computeStateDisplay(altHaLocalize, stateObj, 'en'), 'state.binary_sensor.default.off');
+    assert.strictEqual(computeStateDisplay(altLocalize, stateObj, 'en'), 'state.binary_sensor.default.off');
   });
 
   it('Localizes sensor value with units', () => {
@@ -52,7 +52,7 @@ describe('computeStateDisplay', () => {
         unit_of_measurement: 'm',
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), '123 m');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), '123 m');
   });
 
   it('Localizes input_datetime with full date time', () => {
@@ -70,7 +70,7 @@ describe('computeStateDisplay', () => {
         second: 13,
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'November 18, 2017, 11:12 AM');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'November 18, 2017, 11:12 AM');
   });
 
   it('Localizes input_datetime with date', () => {
@@ -88,7 +88,7 @@ describe('computeStateDisplay', () => {
         second: 13,
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'November 18, 2017');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'November 18, 2017');
   });
 
   it('Localizes input_datetime with time', () => {
@@ -106,7 +106,7 @@ describe('computeStateDisplay', () => {
         second: 13,
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), '11:12 AM');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), '11:12 AM');
   });
 
   it('Localizes zwave ready', () => {
@@ -117,7 +117,7 @@ describe('computeStateDisplay', () => {
         query_stage: 'Complete',
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.zwave.default.ready');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'state.zwave.default.ready');
   });
 
   it('Localizes zwave initializing', () => {
@@ -128,7 +128,7 @@ describe('computeStateDisplay', () => {
         query_stage: 'Probe',
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.zwave.query_stage.initializing: query_stage,Probe');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'state.zwave.query_stage.initializing: query_stage,Probe');
   });
 
   it('Localizes cover open', () => {
@@ -138,13 +138,13 @@ describe('computeStateDisplay', () => {
       attributes: {
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.cover.open');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'state.cover.open');
   });
 
   it('Localizes unavailable', () => {
-    const altHaLocalize = function (namespace, message, ...args) {
-      if (namespace === 'state.sensor') return null;
-      return haLocalize(namespace, message, ...args);
+    const altLocalize = function (message, ...args) {
+      if (message === 'state.sensor.unavailable') return null;
+      return localize(message, ...args);
     };
     const stateObj = {
       entity_id: 'sensor.test',
@@ -152,11 +152,11 @@ describe('computeStateDisplay', () => {
       attributes: {
       },
     };
-    assert.strictEqual(computeStateDisplay(altHaLocalize, stateObj, 'en'), 'state.default.unavailable');
+    assert.strictEqual(computeStateDisplay(altLocalize, stateObj, 'en'), 'state.default.unavailable');
   });
 
   it('Localizes custom state', () => {
-    const altHaLocalize = function () {
+    const altLocalize = function () {
       // No matches can be found
       return null;
     };
@@ -166,7 +166,7 @@ describe('computeStateDisplay', () => {
       attributes: {
       },
     };
-    assert.strictEqual(computeStateDisplay(altHaLocalize, stateObj, 'en'), 'My Custom State');
+    assert.strictEqual(computeStateDisplay(altLocalize, stateObj, 'en'), 'My Custom State');
   });
 
   it('Only calculates state display once per immutable state object', () => {
@@ -176,9 +176,9 @@ describe('computeStateDisplay', () => {
       attributes: {
       },
     };
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.cover.open');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'state.cover.open');
 
     stateObj.state = 'closing';
-    assert.strictEqual(computeStateDisplay(haLocalize, stateObj, 'en'), 'state.cover.open');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), 'state.cover.open');
   });
 });
