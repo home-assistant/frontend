@@ -38,7 +38,7 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
-        <div class='main-text' take-height$='[[!playerObj.secondaryTitle]]'>[[computePrimaryText(haLocalize, playerObj)]]</div>
+        <div class='main-text' take-height$='[[!playerObj.secondaryTitle]]'>[[computePrimaryText(localize, playerObj)]]</div>
         <div class='secondary-text'>[[playerObj.secondaryTitle]]</div>
       </div>
     </div>
@@ -68,10 +68,10 @@ class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(Polymer.Eleme
     return new window.MediaPlayerEntity(hass, stateObj);
   }
 
-  computePrimaryText(haLocalize, playerObj) {
+  computePrimaryText(localize, playerObj) {
     return playerObj.primaryTitle
-      || haLocalize('state.media_player', playerObj.stateObj.state)
-      || haLocalize('state.default', playerObj.stateObj.state) || playerObj.stateObj.state;
+      || localize(`state.media_player.${playerObj.stateObj.state}`)
+      || localize(`state.default.${playerObj.stateObj.state}`) || playerObj.stateObj.state;
   }
 }
 customElements.define(StateCardMediaPlayer.is, StateCardMediaPlayer);
