@@ -72,17 +72,17 @@ class HaEntitiesCard extends
       groupEntity: Object,
       title: {
         type: String,
-        computed: 'computeTitle(states, groupEntity, haLocalize)',
+        computed: 'computeTitle(states, groupEntity, localize)',
       },
     };
   }
 
-  computeTitle(states, groupEntity, haLocalize) {
+  computeTitle(states, groupEntity, localize) {
     if (groupEntity) {
       return window.hassUtil.computeStateName(groupEntity).trim();
     }
     const domain = window.hassUtil.computeDomain(states[0]);
-    return (haLocalize && haLocalize('domain', domain)) || domain.replace(/_/g, ' ');
+    return (localize && localize(`domain.${domain}`)) || domain.replace(/_/g, ' ');
   }
 
   computeTitleClass(groupEntity) {
