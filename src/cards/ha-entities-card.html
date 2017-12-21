@@ -79,6 +79,8 @@ class HaEntitiesCard extends
 
   constructor() {
     super();
+    // We need to save a single bound function reference to ensure the event listener
+    // can identify it properly.
     this.entityTapped = this.entityTapped.bind(this);
   }
 
