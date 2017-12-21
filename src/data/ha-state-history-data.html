@@ -58,7 +58,7 @@
               state: state.state,
               last_changed: state.last_changed,
             };
-            if (DOMAINS_USE_LAST_UPDATED.indexOf(domain) !== -1) {
+            if (DOMAINS_USE_LAST_UPDATED.includes(domain)) {
               result.last_changed = state.last_updated;
             }
             LINE_ATTRIBUTES_TO_KEEP.forEach((attr) => {
@@ -68,6 +68,17 @@
               }
             });
             return result;
+          }).filter((element, index, arr) => {
+            // Remove data point if it is equal to previous point and next point.
+            if (index === 0 || index === (arr.length - 1)) return true;
+            function compare(obj1, obj2) {
+              if (obj1.state !== obj2.state) return false;
+              if (!obj1.attributes && !obj2.attributes) return true;
+              if (!obj1.attributes || !obj2.attributes) return false;
+              return LINE_ATTRIBUTES_TO_KEEP.every(attr =>
+                obj1.attributes[attr] === obj2.attributes[attr]);
+            }
+            return !compare(element, arr[index - 1]) || !compare(element, arr[index + 1]);
           })
         };
       }),
@@ -191,7 +202,7 @@
             const oldEntity =
                 oldLine.data.find(cacheEntity => entity.entity_id === cacheEntity.entity_id);
             if (oldEntity) {
-              oldEntity.states = oldEntity.state.concat(entity.states);
+              oldEntity.states = oldEntity.states.concat(entity.states);
             } else {
               oldLine.data.push(entity);
             }
