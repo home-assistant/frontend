@@ -54,7 +54,7 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[haLocalize('panel', 'logbook')]]</div>
+          <div main-title>[[localize('panel.logbook')]]</div>
         </app-toolbar>
       </app-header>
 
@@ -62,13 +62,13 @@
         <paper-spinner
           active='[[isLoading]]'
           hidden$='[[!isLoading]]'
-          alt="[[haLocalize('ui.common', 'loading')]]"
+          alt="[[localize('ui.common.loading')]]"
         ></paper-spinner>
 
         <vaadin-date-picker
           id='picker'
           value='{{_currentDate}}'
-          label="[[haLocalize('ui.panel.logbook', 'showing_entries')]]"
+          label="[[localize('ui.panel.logbook.showing_entries')]]"
           disabled='[[isLoading]]'
         ></vaadin-date-picker>
 

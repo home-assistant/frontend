@@ -53,7 +53,7 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[haLocalize('panel', 'history')]]</div>
+          <div main-title>[[localize('panel.history')]]</div>
         </app-toolbar>
       </app-header>
 
@@ -62,22 +62,22 @@
           <vaadin-date-picker
             id='picker'
             value='{{_currentDate}}'
-            label="[[haLocalize('ui.panel.history', 'showing_entries')]]"
+            label="[[localize('ui.panel.history.showing_entries')]]"
             disabled='[[isLoadingData]]'
           ></vaadin-date-picker>
 
           <paper-dropdown-menu
             label-float
-            label="[[haLocalize('ui.panel.history', 'period')]]"
+            label="[[localize('ui.panel.history.period')]]"
             disabled='[[isLoadingData]]'
           >
             <paper-listbox
               slot="dropdown-content"
               selected="{{_periodIndex}}"
             >
-              <paper-item>[[haLocalize('ui.panel.history.periods', 'day', 'count', 1)]]</paper-item>
-              <paper-item>[[haLocalize('ui.panel.history.periods', 'day', 'count', 3)]]</paper-item>
-              <paper-item>[[haLocalize('ui.panel.history.periods', 'week', 'count', 1)]]</paper-item>
+              <paper-item>[[localize('ui.panel.history.periods.day', 'count', 1)]]</paper-item>
+              <paper-item>[[localize('ui.panel.history.periods.day', 'count', 3)]]</paper-item>
+              <paper-item>[[localize('ui.panel.history.periods.week', 'count', 1)]]</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
