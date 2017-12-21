@@ -66,7 +66,7 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[haLocalize('panel', 'shopping_list')]]</div>
+          <div main-title>[[localize('panel.shopping_list')]]</div>
           <ha-start-voice-button hass='[[hass]]' can-listen='{{canListen}}'></ha-start-voice-button>
           <paper-menu-button
             horizontal-align="right"
@@ -80,7 +80,7 @@
             <paper-listbox slot="dropdown-content">
               <paper-item
                 on-tap="_clearCompleted"
-              >[[haLocalize('ui.panel.shopping-list', 'clear_completed')]]</paper-item>
+              >[[localize('ui.panel.shopping-list.clear_completed')]]</paper-item>
             </paper-listbox>
           </paper-menu-button>
         </app-toolbar>
@@ -97,7 +97,7 @@
             <paper-item-body>
               <paper-input
                 id='addBox'
-                placeholder="[[haLocalize('ui.panel.shopping-list', 'add_item')]]"
+                placeholder="[[localize('ui.panel.shopping-list.add_item')]]"
                 on-keydown='_addKeyPress'
                 no-label-float
               ></paper-input>
@@ -124,7 +124,7 @@
           </template>
         </paper-card>
         <div class='tip' hidden$='[[!canListen]]'>
-          [[haLocalize('ui.panel.shopping-list', 'microphone_tip')]]
+          [[localize('ui.panel.shopping-list.microphone_tip')]]
         </div>
       </div>
     </app-header-layout>

@@ -22,7 +22,7 @@
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>[[computeStateDisplay(haLocalize, stateObj, language)]]</div>
+      <div class='state'>[[computeStateDisplay(localize, stateObj, language)]]</div>
     </div>
   </template>
 </dom-module>
@@ -42,8 +42,8 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) 
     };
   }
 
-  computeStateDisplay(haLocalize, stateObj, language) {
-    return window.hassUtil.computeStateDisplay(haLocalize, stateObj, language);
+  computeStateDisplay(localize, stateObj, language) {
+    return window.hassUtil.computeStateDisplay(localize, stateObj, language);
   }
 }
 customElements.define(StateCardDisplay.is, StateCardDisplay);
