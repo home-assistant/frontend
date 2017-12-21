@@ -20,6 +20,7 @@ const outDir = workDir + '/output';
 const TRANSLATION_FRAGMENTS = [
   'history',
   'logbook',
+  'mailbox',
   'shopping-list',
 ];
 
