@@ -85,8 +85,7 @@
         var e = document.createElement('script');
         e.onerror = initError;
         e.src = '/static/webcomponents-lite.js';
-        if (document.readyState === 'loading' &&
-          ('import' in document.createElement('link'))) {
+        if ('import' in document.createElement('link')) {
           document.write(e.outerHTML);
         } else {
           document.head.appendChild(e);
