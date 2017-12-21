@@ -2,13 +2,10 @@
 
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<!-- <link rel="import" href="../../bower_components/neon-animation/animations/slide-up-animation.html">
-<link rel="import" href="../../bower_components/neon-animation/animations/slide-down-animation.html">
- -->
-<link rel="import" href="../state-summary/state-card-content.html">
 <link rel="import" href="../components/state-history-charts.html">
-<link rel="import" href="../more-infos/more-info-content.html">
 <link rel="import" href="../data/ha-state-history-data.html">
+<link rel="import" href="../more-infos/more-info-content.html">
+<link rel="import" href="../state-summary/state-card-content.html">
 <link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id="more-info-dialog">
@@ -61,11 +58,6 @@
           width: 100%;
         }
       }
-
-      dom-if {
-        display: none;
-      }
-
     </style>
 
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
@@ -83,7 +75,7 @@
             entity-id='[[stateObj.entity_id]]'
             data='{{stateHistory}}'
             is-loading='{{stateHistoryLoading}}'
-            cache-config='[[computeCacheConfig(stateObj)]]'
+            cache-config='[[cacheConfig]]'
           ></ha-state-history-data>
           <state-history-charts
             history-data="[[stateHistory]]"
@@ -143,6 +135,15 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
         type: Boolean,
         value: false,
       },
+
+      cacheConfig: {
+        type: Object,
+        value: {
+          refresh: 60,
+          cacheKey: null,
+          hoursToShow: 24,
+        },
+      },
     };
   }
 
@@ -157,14 +158,6 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   computeStateObj(hass) {
     return hass.states[hass.moreInfoEntityId] || null;
-  }
-
-  computeCacheConfig(stateObj) {
-    return {
-      refresh: 60,
-      cacheKey: 'more_info.' + stateObj.entity_id,
-      hoursToShow: 24,
-    };
   }
 
   /**
@@ -198,6 +191,12 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
       // positioned correctly.
       this.dialogOpen = true;
     }, 10);
+    if (this.cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
+      this.cacheConfig = Object.assign(
+        {}, this.cacheConfig,
+        { cacheKey: `more_info.${newVal.entity_id}` }
+      );
+    }
   }
 
   dialogOpenChanged(newVal) {
