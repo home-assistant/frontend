@@ -3,7 +3,8 @@
 <dom-module id="ha-chart-base">
   <template>
     <style>
-      canvas{
+      #chartCanvas{
+        user-select: none;
         -moz-user-select: none;
         -webkit-user-select: none;
         -ms-user-select: none;
@@ -19,30 +20,31 @@
         pointer-events: none;
         -webkit-transform: translate(-50%, 0);
         transform: translate(-50%, 0);
-        z-index: 10;
+        z-index: 1000;
         width: 200px;
       }
-      .chartjs-tooltip-key {
+      #chartTooltip tr span{
         display: inline-block;
         width: 10px;
         height: 10px;
         margin-right: 10px;
+        border-width: 3px;
       }
     </style>
-    <div id="chartTarget" style="position: relative; height:0; width:100%">
-      <canvas id="chartCanvas" style=""></canvas>
-      <div id="chartTooltip">
-        <table></table>
+    <div id="chartTarget" style="height:0; width:100%">
+      <canvas id="chartCanvas"></canvas>
+      <div id="chartTooltip" style="opacity:0">
+        <table>
+          <thead><tr><th id="tooltipTitle"></th></tr></thead>
+          <tbody id="tooltipBody"></tbody>
+        </table>
       </div>
     </div>
   </template>
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
 <script src="../../../bower_components/chart.js/dist/Chart.js"></script>
-<!--script src="../../../bower_components/common-js/common.js"></script>
-<script src="../../../bower_components/chart.js/src/chart.js"></script-->
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
-<!--script src="../../../../chartjs-chart-timeline/timeline.js"></script-->
 <script>
 /* global Chart moment */// eslint-disable-line no-unused-vars
 class HaChartBase extends
@@ -80,11 +82,9 @@ class HaChartBase extends
     }
     this.drawChart();
   }
-
   _customTooltips(tooltip) {
     // Tooltip Element
     var tooltipEl = this._tooltipEl;
-    // console.log(tooltip);
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
       tooltipEl.style.opacity = 0;
@@ -104,7 +104,6 @@ class HaChartBase extends
     if (tooltip.body) {
       var titleLines = tooltip.title || [];
       var bodyLines = tooltip.body.map(getBody);
-      var innerHtml = '<thead>';
       titleLines.forEach(function (title) {
         var str1;
         if (title instanceof Date) {
@@ -114,99 +113,97 @@ class HaChartBase extends
         } else {
           str1 = title;
         }
-        innerHtml += '<tr><th>' + str1 + '</th></tr>';
-      });
-      innerHtml += '</thead><tbody>';
+        this.$.tooltipTitle.innerText = str1;
+      }, this);
+      var tBody = this.$.tooltipBody;
+      while (tBody.hasChildNodes()) {
+        tBody.removeChild(tBody.lastChild);
+      }
+      var ce = x => document.createElement(x);
       bodyLines.forEach(function (body, i) {
         var colors = tooltip.labelColors[i];
-        var style = 'background:' + colors.backgroundColor;
-        style += '; border-color:' + colors.borderColor;
-        style += '; border-width: 2px';
-        var span = '<span class="chartjs-tooltip-key" style="' + style + '"></span>';
-        innerHtml += '<tr><td>' + span + body.join('<br />') + '</td></tr>';
+        var span = ce('span');
+        span.style = ('background:' + colors.backgroundColor +
+          '; border-color:' + colors.borderColor);
+        var tableTr = ce('tr');
+        var tableTd = ce('td');
+        var tableText = document.createTextNode(body);
+        tableTr.appendChild(tableTd);
+        tableTd.appendChild(span);
+        tableTd.appendChild(tableText);
+        tBody.appendChild(tableTr);
       });
-      innerHtml += '</tbody>';
-      var tableRoot = tooltipEl.querySelector('table');
-      tableRoot.innerHTML = innerHtml;
     }
     var positionX = this._chart.canvas.offsetLeft + tooltip.caretX;
     var positionY = this._chart.canvas.offsetTop + tooltip.caretY;
     var parentWidth = this.$.chartTarget.clientWidth;
     if (positionX + 100 > parentWidth) {
       positionX = parentWidth - 100;
-      // tooltipEl.style.left = 'unset';
     } else if (positionX < 100) {
       positionX = 100;
-      // tooltipEl.style.left = positionX + 'px';
-      // tooltipEl.style.right = 'unset';
     }
     // Display, position, and set styles for font
     tooltipEl.style.opacity = 1;
     tooltipEl.style.top = positionY + 'px';
     tooltipEl.style.left = positionX + 'px';
-    tooltipEl.style.fontFamily = tooltip._fontFamily;
-    tooltipEl.style.fontSize = tooltip.fontSize;
-    tooltipEl.style.fontStyle = tooltip._fontStyle;
     tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+  }
+  _chartGetIntersection(chart, e, options) {
+    var getRange = {
+      x: (a, b) => Math.abs(a.x - b.x),
+      y: (a, b) => Math.abs(a.y - b.y),
+      xy: (a, b) => ((a.x - b.x) ** 2) + ((a.y - b.y) ** 2),
+    };
+    var getRangeMax = {
+      x: r => r,
+      y: r => r,
+      xy: r => r * r,
+    };
+    var position;
+    if (e.native) {
+      position = {
+        x: e.x,
+        y: e.y
+      };
+    } else {
+      position = Chart.helpers.getRelativePosition(e, chart);
+    }
+    var elements = [];
+    var elementsRange = [];
+    var datasets = chart.data.datasets;
+    var meta;
+    options.axis = options.axis || 'xy';
+    var rangeFunc = getRange[options.axis];
+    var rangeMaxFunc = getRangeMax[options.axis];
+
+    for (var i = 0, ilen = datasets.length; i < ilen; ++i) {
+      if (!chart.isDatasetVisible(i)) {
+        continue;
+      }
+
+      meta = chart.getDatasetMeta(i);
+      for (var j = 0, jlen = meta.data.length; j < jlen; ++j) {
+        var element = meta.data[j];
+        if (!element._view.skip) {
+          var vm = element._view;
+          var range = rangeFunc(vm, position);
+          var oldRange = elementsRange[i];
+          if (range < rangeMaxFunc(vm.radius + vm.hitRadius)) {
+            if (oldRange === undefined || oldRange > range) {
+              elementsRange[i] = range;
+              elements[i] = element;
+            }
+          }
+        }
+      }
+    }
+    var ret = elements.filter(function (n) { return n !== undefined; });
+    return ret;
   }
   drawChart() {
     var data = this.data.data;
     var ctx = this.$.chartCanvas;
 
-    if (!Chart.Interaction.modes.neareach) {
-      var getRange = {
-        x: (a, b) => Math.abs(a.x - b.x),
-        y: (a, b) => Math.abs(a.y - b.y),
-        xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
-      };
-      var getRangeMax = {
-        x: r => r,
-        y: r => r,
-        xy: r => r * r,
-      };
-      Chart.Interaction.modes.neareach = function (chart, e, options) {
-        var position;
-        if (e.native) {
-          position = {
-            x: e.x,
-            y: e.y
-          };
-        } else {
-          position = Chart.helpers.getRelativePosition(e, chart);
-        }
-        var elements = [];
-        var elementsRange = [];
-        var datasets = chart.data.datasets;
-        var meta;
-        options.axis = options.axis || 'xy';
-        var rangeFunc = getRange[options.axis];
-        var rangeMaxFunc = getRangeMax[options.axis];
-
-        for (var i = 0, ilen = datasets.length; i < ilen; ++i) {
-          if (!chart.isDatasetVisible(i)) {
-            continue;
-          }
-
-          meta = chart.getDatasetMeta(i);
-          for (var j = 0, jlen = meta.data.length; j < jlen; ++j) {
-            var element = meta.data[j];
-            if (!element._view.skip) {
-              var vm = element._view;
-              var range = rangeFunc(vm, position);
-              var oldRange = elementsRange[i];
-              if (range < rangeMaxFunc(vm.radius + vm.hitRadius)) {
-                if (oldRange === undefined || oldRange > range) {
-                  elementsRange[i] = range;
-                  elements[i] = element;
-                }
-              }
-            }
-          }
-        }
-        var ret = elements.filter(function (n) { return n !== undefined; });
-        return ret;
-      };
-    }
 
     if ((!data.datasets || !data.datasets.length) && !this._chart) {
       return;
@@ -221,9 +218,13 @@ class HaChartBase extends
       if (!data.datasets) {
         return;
       }
+      if (!Chart.Interaction.modes.neareach) {
+        Chart.Interaction.modes.neareach = this._chartGetIntersection.bind(this);
+      }
       // chartTarget.style.height = targetHeight;
       // chartTarget.height = targetHeight;
       this._tooltipEl = this.$.chartTooltip;
+      this._customTooltips({ opacity: 0 });
       var options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -247,15 +248,15 @@ class HaChartBase extends
         },
       };
       options = Chart.helpers.merge(options, this.data.options);
-      options.scales = options.scales || {};
-      options.scales.xAxes = options.scales.xAxes || [];
-      options.scales.xAxes[0] = options.scales.xAxes[0] || {};
-      options.scales.xAxes[0].time = options.scales.xAxes[0].time || {};
-      options.scales.xAxes[0].time.displayFormats = {
-        day: 'MMM d',
-        hour: 'HH:mm',
-        minute: 'HH:mm'
-      };
+      // options.scales = options.scales || {};
+      // options.scales.xAxes = options.scales.xAxes || [];
+      // options.scales.xAxes[0] = options.scales.xAxes[0] || {};
+      // options.scales.xAxes[0].time = options.scales.xAxes[0].time || {};
+      // options.scales.xAxes[0].time.displayFormats = {
+      //   day: 'MMM d',
+      //   hour: 'HH:mm',
+      //   minute: 'HH:mm'
+      // };
       if (this.data.type === 'timeline') {
         this._isTimeline = true;
       }
@@ -266,7 +267,7 @@ class HaChartBase extends
         data: this.data.data,
         options: options
       });
-      // Resize after dom update
+      // Async resize after dom update
       setTimeout(this.resizeChart.bind(this), 1);
     }
   }
@@ -294,7 +295,6 @@ class HaChartBase extends
           axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
           if (axis && axis.height > 0) {
             this._axisHeight = axis.height;
-            // this.resizeChart();
           }
         }
         if (this._axisHeight) {
