@@ -72,17 +72,24 @@ class HaEntitiesCard extends
       groupEntity: Object,
       title: {
         type: String,
-        computed: 'computeTitle(states, groupEntity, haLocalize)',
+        computed: 'computeTitle(states, groupEntity, localize)',
       },
     };
   }
 
-  computeTitle(states, groupEntity, haLocalize) {
+  constructor() {
+    super();
+    // We need to save a single bound function reference to ensure the event listener
+    // can identify it properly.
+    this.entityTapped = this.entityTapped.bind(this);
+  }
+
+  computeTitle(states, groupEntity, localize) {
     if (groupEntity) {
       return window.hassUtil.computeStateName(groupEntity).trim();
     }
     const domain = window.hassUtil.computeDomain(states[0]);
-    return (haLocalize && haLocalize('domain', domain)) || domain.replace(/_/g, ' ');
+    return (localize && localize(`domain.${domain}`)) || domain.replace(/_/g, ' ');
   }
 
   computeTitleClass(groupEntity) {
@@ -98,9 +105,13 @@ class HaEntitiesCard extends
   }
 
   addTapEvents() {
-    const cards = this.root.querySelectorAll('.state.more-info');
+    const cards = this.root.querySelectorAll('.state');
     cards.forEach((card) => {
-      card.addEventListener('tap', this.entityTapped.bind(this));
+      if (card.classList.contains('more-info')) {
+        card.addEventListener('tap', this.entityTapped);
+      } else {
+        card.removeEventListener('tap', this.entityTapped);
+      }
     });
   }
 

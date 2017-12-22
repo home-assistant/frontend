@@ -32,7 +32,7 @@
       entity-id='[[computeHistoryEntities(stateObj)]]'
       data='{{stateHistory}}'
       is-loading='{{stateHistoryLoading}}'
-      cache-config='[[computeCacheConfig(stateObj)]]'
+      cache-config='[[cacheConfig]]'
     ></ha-state-history-data>
     <paper-card dialog$='[[inDialog]]'
         on-tap='cardTapped'
@@ -56,14 +56,38 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(Polymer.Element) 
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object,
+      stateObj: {
+        type: Object,
+        observer: 'stateObjObserver',
+      },
       inDialog: {
         type: Boolean,
         value: false,
       },
       stateHistory: Object,
       stateHistoryLoading: Boolean,
+      cacheConfig: {
+        type: Object,
+        value: {
+          refresh: 0,
+          cacheKey: null,
+          hoursToShow: 24,
+        },
+      },
     };
+  }
+
+  stateObjObserver(stateObj) {
+    if (!stateObj) return;
+    if (this.cacheConfig.cacheKey !== stateObj.entity_id ||
+        this.cacheConfig.refresh !== (stateObj.attributes.refresh || 0) ||
+        this.cacheConfig.hoursToShow !== (stateObj.attributes.hours_to_show || 24)) {
+      this.cacheConfig = Object.assign({}, {
+        refresh: stateObj.attributes.refresh || 0,
+        cacheKey: stateObj.entity_id,
+        hoursToShow: stateObj.attributes.hours_to_show || 24
+      });
+    }
   }
 
   computeTitle(stateObj) {
@@ -76,14 +100,6 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(Polymer.Element) 
 
   computeHistoryEntities(stateObj) {
     return stateObj.attributes.entity_id;
-  }
-
-  computeCacheConfig(stateObj) {
-    return {
-      refresh: stateObj.attributes.refresh || 0,
-      cacheKey: stateObj.entity_id,
-      hoursToShow: (stateObj && stateObj.attributes.hours_to_show) || 24,
-    };
   }
 
   computeElevation(inDialog) {
