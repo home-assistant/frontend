@@ -152,7 +152,7 @@ class HaChartBase extends
     var getRange = {
       x: (a, b) => Math.abs(a.x - b.x),
       y: (a, b) => Math.abs(a.y - b.y),
-      xy: (a, b) => ((a.x - b.x) ** 2) + ((a.y - b.y) ** 2),
+      xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
     };
     var getRangeMax = {
       x: r => r,
