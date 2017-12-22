@@ -14,6 +14,7 @@
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/data/ha-state-history-data.html">
 <link rel="import" href="../../src/resources/ha-style.html">
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id="ha-panel-history">
   <template>
@@ -52,7 +53,7 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>History</div>
+          <div main-title>[[localize('panel.history')]]</div>
         </app-toolbar>
       </app-header>
 
@@ -61,22 +62,22 @@
           <vaadin-date-picker
             id='picker'
             value='{{_currentDate}}'
-            label='Showing entries for'
+            label="[[localize('ui.panel.history.showing_entries')]]"
             disabled='[[isLoadingData]]'
           ></vaadin-date-picker>
 
           <paper-dropdown-menu
             label-float
-            label='Period'
+            label="[[localize('ui.panel.history.period')]]"
             disabled='[[isLoadingData]]'
           >
             <paper-listbox
               slot="dropdown-content"
               selected="{{_periodIndex}}"
             >
-              <paper-item>1 day</paper-item>
-              <paper-item>3 days</paper-item>
-              <paper-item>1 week</paper-item>
+              <paper-item>[[localize('ui.duration.day', 'count', 1)]]</paper-item>
+              <paper-item>[[localize('ui.duration.day', 'count', 3)]]</paper-item>
+              <paper-item>[[localize('ui.duration.week', 'count', 1)]]</paper-item>
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -91,7 +92,10 @@
 </dom-module>
 
 <script>
-class HaPanelHistory extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelHistory extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-panel-history'; }
 
   static get properties() {

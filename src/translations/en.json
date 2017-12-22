@@ -274,11 +274,25 @@
     }
   },
   "ui": {
+    "common": {
+      "loading": "Loading"
+    },
+    "duration": {
+      "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+      "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+    },
     "sidebar": {
       "developer_tools": "Developer tools",
       "log_out": "Log out"
     },
     "panel": {
+      "history": {
+        "showing_entries": "Showing entries for",
+        "period": "Period"
+      },
+      "logbook": {
+        "showing_entries": "[%key:ui::panel::history::showing_entries%]"
+      },
       "shopping-list": {
         "clear_completed": "Clear completed",
         "add_item": "Add item",
