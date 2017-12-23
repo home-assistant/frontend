@@ -87,6 +87,14 @@
         "off": "Disconnected",
         "on": "Connected"
       },
+      "door": {
+        "off": "Closed",
+        "on": "Open"
+      },
+      "garage_door": {
+        "off": "[%key:state::binary_sensor::door::off%]",
+        "on": "[%key:state::binary_sensor::door::on%]"
+      },
       "gas": {
         "off": "Clear",
         "on": "Detected"
@@ -104,8 +112,8 @@
         "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "opening": {
-        "off": "Closed",
-        "on": "Open"
+        "off": "[%key:state::binary_sensor::door::off%]",
+        "on": "[%key:state::binary_sensor::door::on%]"
       },
       "presence": {
         "off": "[%key:state::device_tracker::not_home%]",
@@ -130,6 +138,10 @@
       "vibration": {
         "off": "[%key:state::binary_sensor::gas::off%]",
         "on": "[%key:state::binary_sensor::gas::on%]"
+      },
+      "window": {
+        "off": "[%key:state::binary_sensor::door::off%]",
+        "on": "[%key:state::binary_sensor::door::on%]"
       }
     },
     "calendar": {
