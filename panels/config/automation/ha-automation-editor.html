@@ -1,5 +1,4 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../../bower_components/paper-card/paper-card.html">
@@ -19,6 +18,7 @@
 <link rel='import' href='../../../src/components/entity/ha-entity-picker.html'>
 <link rel='import' href='../../../src/components/ha-combo-box.html'>
 <link rel='import' href='../../../src/components/ha-service-picker.html'>
+<link rel='import' href='../../../src/layouts/ha-app-layout.html'>
 <link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../ha-config-section.html">
@@ -82,7 +82,7 @@
       }
     </style>
 
-    <app-header-layout has-scrolling-region>
+    <ha-app-layout has-scrolling-region>
       <app-header slot="header" fixed>
         <app-toolbar>
           <paper-icon-button
@@ -98,15 +98,15 @@
           <div class='errors'>[[errors]]</div>
         </template>
         <div id='root'></div>
-        <paper-fab
-          is-wide$='[[isWide]]'
-          dirty$='[[dirty]]'
-          icon='mdi:content-save'
-          title='Save'
-          on-tap='saveAutomation'
-        ></paper-fab>
       </div>
-    </app-header-layout>
+      <paper-fab slot="fab"
+        is-wide$='[[isWide]]'
+        dirty$='[[dirty]]'
+        icon='mdi:content-save'
+        title='Save'
+        on-tap='saveAutomation'
+      ></paper-fab>
+    </ha-app-layout>
 
   </template>
 </dom-module>
