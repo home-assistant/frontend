@@ -83,6 +83,10 @@
         "off": "Normal",
         "on": "Low"
       },
+      "cold": {
+        "off": "[%key:state::binary_sensor::battery::off%]",
+        "on": "Cold"
+      },
       "connectivity": {
         "off": "Disconnected",
         "on": "Connected"
@@ -98,6 +102,10 @@
       "gas": {
         "off": "Clear",
         "on": "Detected"
+      },
+      "heat": {
+        "off": "[%key:state::binary_sensor::battery::off%]",
+        "on": "Hot"
       },
       "moisture": {
         "off": "Dry",
