@@ -5,6 +5,7 @@
 <script src="../../bower_components/leaflet/dist/leaflet.js"></script>
 
 <link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel='import' href='../../src/util/hass-mixins.html'>
 <link rel="import" href="./ha-entity-marker.html">
 
 <dom-module id="ha-panel-map">
@@ -19,7 +20,7 @@
 
     <app-toolbar>
       <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-      <div main-title>Map</div>
+      <div main-title>[[localize('panel.map')]]</div>
     </app-toolbar>
 
     <div id='map'></div>
@@ -29,7 +30,10 @@
 <script>
 window.L.Icon.Default.imagePath = '/static/images/leaflet';
 
-class HaPanelMap extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelMap extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-panel-map'; }
 
   static get properties() {
