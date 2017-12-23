@@ -91,20 +91,19 @@
           <div main-title>Script [[name]]</div>
         </app-toolbar>
       </app-header>
-
       <div class='content'>
         <template is='dom-if' if='[[errors]]'>
           <div class='errors'>[[errors]]</div>
         </template>
         <div id='root'></div>
-        <paper-fab
-          is-wide$='[[isWide]]'
-          dirty$='[[dirty]]'
-          icon='mdi:content-save'
-          title='Save'
-          on-tap='saveScript'
-        ></paper-fab>
       </div>
+      <paper-fab slot="fab"
+        is-wide$='[[isWide]]'
+        dirty$='[[dirty]]'
+        icon='mdi:content-save'
+        title='Save'
+        on-tap='saveScript'
+      ></paper-fab>
     </ha-app-layout>
 
   </template>
