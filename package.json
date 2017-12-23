@@ -57,6 +57,7 @@
     "gulp-uglify": "^3.0.0",
     "gulp-util": "^3.0.8",
     "gulp-vinyl-zip": "^2.1.0",
+    "gulp-zopfli": "^1.0.0",
     "home-assistant-js-websocket": "^1.1.2",
     "html-minifier": "^3.5.6",
     "mdn-polyfills": "^5.5.0",
