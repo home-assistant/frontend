@@ -161,6 +161,13 @@
             path="[[_pathStop(addonInfo.slug)]]"
           >Stop</ha-call-api-button>
         </template>
+        <template is='dom-if' if='[[addonState.build]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path="[[_pathRebuild(addonInfo.slug)]]"
+          >Rebuild</ha-call-api-button>
+        </template>
         <ha-call-api-button
           class='warning'
           hass='[[hass]]'
@@ -206,6 +213,10 @@ class HassioAddonInfo extends Polymer.Element {
 
   _pathRestart(addon) {
     return 'hassio/addons/' + addon + '/restart';
+  }
+
+  _pathRebuild(addon) {
+    return 'hassio/addons/' + addon + '/rebuild';
   }
 
   _pathUninstall(addon) {
