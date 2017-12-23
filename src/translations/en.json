@@ -275,9 +275,11 @@
   },
   "ui": {
     "common": {
-      "loading": "Loading"
+      "loading": "Loading",
+      "cancel": "Cancel"
     },
     "duration": {
+      "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
       "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
       "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
     },
@@ -292,6 +294,12 @@
       },
       "logbook": {
         "showing_entries": "[%key:ui::panel::history::showing_entries%]"
+      },
+      "mailbox": {
+        "empty": "You do not have any messages",
+        "playback_title": "Message playback",
+        "delete_prompt": "Delete this message?",
+        "delete_button": "Delete"
       },
       "shopping-list": {
         "clear_completed": "Clear completed",
