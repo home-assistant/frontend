@@ -283,6 +283,11 @@
       "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
       "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
     },
+    "login-form": {
+      "password": "Password",
+      "remember": "Remember",
+      "log_in": "Log in"
+    },
     "sidebar": {
       "developer_tools": "Developer tools",
       "log_out": "Log out"
