@@ -75,9 +75,7 @@ function generateServiceWorker(es6) {
     });
 
     const options = {
-      navigateFallback: '/states',
-      navigateFallbackWhitelist:
-          [/^(?:(?!(?:static|api|frontend_latest|frontend_es5|local|service_worker.js|service_worker_es5.js|manifest.json)).)*$/],
+      directoryIndex = '',
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
         baseRootDir + '/icons/favicon.ico',
