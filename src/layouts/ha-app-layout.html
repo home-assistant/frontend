@@ -30,58 +30,62 @@ transform: translate(0) is added.
         position: relative;
         z-index: 0;
       }
+
       #wrapper ::slotted([slot=header]) {
         @apply --layout-fixed-top;
         z-index: 1;
       }
+
       #wrapper.initializing ::slotted([slot=header]) {
         position: relative;
       }
+
       :host([has-scrolling-region]) {
         height: 100%;
       }
+
       :host([has-scrolling-region]) #wrapper ::slotted([slot=header]) {
         position: absolute;
       }
+
       :host([has-scrolling-region]) #wrapper.initializing ::slotted([slot=header]) {
         position: relative;
       }
+
       :host([has-scrolling-region]) #wrapper #contentContainer {
         @apply --layout-fit;
+        overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
+
       :host([has-scrolling-region]) #wrapper.initializing #contentContainer {
         position: relative;
       }
+
       #contentContainer {
         /* Create a stacking context here so that all children appear below the header. */
         position: relative;
         z-index: 0;
-      }
-      .scroll-limiter {
         /* Using 'transform' will cause 'position: fixed' elements to behave like
            'position: absolute' relative to this element. */
         transform: translate(0);
       }
-      :host([has-scrolling-region]) .scroll-limiter {
-        overflow-y: auto;
-        height: 100%
-      }
+
       @media print {
-        :host([has-scrolling-region]) .scroll-limiter {
+        :host([has-scrolling-region]) #wrapper #contentContainer {
           overflow-y: visible;
         }
       }
+
     </style>
 
     <div id="wrapper" class="initializing">
       <slot id="headerSlot" name="header"></slot>
 
       <div id="contentContainer">
-        <div class="scroll-limiter">
-          <slot></slot>
-        </div>
+        <slot></slot>
       </div>
+      <slot id="fab" name="fab"></slot>
     </div>
 
   </template>
