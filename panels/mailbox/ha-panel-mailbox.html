@@ -40,6 +40,11 @@
         cursor: pointer;
       }
 
+      .empty {
+        text-align: center;
+        color: var(--secondary-text-color);
+      }
+
       .header {
         @apply(--paper-font-title);
       }
@@ -99,7 +104,7 @@
       <div class='content'>
         <paper-card>
           <template is='dom-if' if='[[!_messages.length]]'>
-            <div class='card-content'>
+            <div class='card-content empty'>
               [[localize('ui.panel.mailbox.empty')]]
             </div>
           </template>
