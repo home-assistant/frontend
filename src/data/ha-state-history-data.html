@@ -1,5 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
+<link rel='import' href='../../src/util/hass-mixins.html'>
+<link rel='import' href='../../src/util/hass-util.html'>
+
 <script>
 {
   const RECENT_THRESHOLD = 60000; // 1 minute
@@ -8,7 +11,7 @@
   const LINE_ATTRIBUTES_TO_KEEP = ['temperature', 'current_temperature', 'target_temp_low', 'target_temp_high', 'operation'];
   window.stateHistoryCache = window.stateHistoryCache || {};
 
-  function computeHistory(stateHistory) {
+  function computeHistory(stateHistory, localize, language) {
     const lineChartDevices = {};
     const timelineDevices = [];
 
@@ -31,7 +34,10 @@
           name: window.hassUtil.computeStateName(stateInfo[0]),
           entity_id: stateInfo[0].entity_id,
           data: stateInfo
-            .map(state => ({ state: state.state, last_changed: state.last_changed }))
+            .map(state => ({
+              state: window.hassUtil.computeStateDisplay(localize, state, language),
+              last_changed: state.last_changed,
+            }))
             .filter((element, index, arr) => {
               if (index === 0) return true;
               return element.state !== arr[index - 1].state;
@@ -87,7 +93,10 @@
     return { line: unitStates, timeline: timelineDevices };
   }
 
-  class HaStateHistoryData extends Polymer.Element {
+  /*
+   * @appliesMixin window.hassMixins.LocalizeMixin
+   */
+  class HaStateHistoryData extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     static get is() { return 'ha-state-history-data'; }
     static get properties() {
       return {
@@ -123,7 +132,7 @@
 
     static get observers() {
       return [
-        'filterChanged(filterType, entityId, startTime, endTime, cacheConfig)',
+        'filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language)',
       ];
     }
 
@@ -144,20 +153,20 @@
       }
     }
 
-    filterChanged(filterType, entityId, startTime, endTime, cacheConfig) {
+    filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language) {
       if (!this.hass) return;
       this._madeFirstCall = true;
       let data;
 
       if (filterType === 'date') {
         if (!startTime || !endTime) return;
-        data = this.getDate(startTime, endTime);
+        data = this.getDate(startTime, endTime, localize, language);
       } else if (filterType === 'recent-entity') {
         if (!entityId) return;
         if (cacheConfig) {
-          data = this.getRecentWithCacheRefresh(entityId, cacheConfig);
+          data = this.getRecentWithCacheRefresh(entityId, cacheConfig, localize, language);
         } else {
-          data = this.getRecent(entityId, startTime, endTime);
+          data = this.getRecent(entityId, startTime, endTime, localize, language);
         }
       } else {
         return;
@@ -171,26 +180,27 @@
       });
     }
 
-    getEmptyCache() {
+    getEmptyCache(language) {
       return {
         prom: Promise.resolve({ line: [], timeline: [] }),
+        language: language,
         data: { line: [], timeline: [] },
       };
     }
 
-    getRecentWithCacheRefresh(entityId, cacheConfig) {
+    getRecentWithCacheRefresh(entityId, cacheConfig, localize, language) {
       if (this._refreshTimeoutId) {
         window.clearInterval(this._refreshTimeoutId);
       }
       if (cacheConfig.refresh) {
         this._refreshTimeoutId = window.setInterval(() => {
-          this.getRecentWithCache(entityId, cacheConfig)
+          this.getRecentWithCache(entityId, cacheConfig, localize, language)
             .then((stateHistory) => {
               this._setData(Object.assign({}, stateHistory));
             });
         }, cacheConfig.refresh * 1000);
       }
-      return this.getRecentWithCache(entityId, cacheConfig);
+      return this.getRecentWithCache(entityId, cacheConfig, localize, language);
     }
 
     mergeLine(historyLines, cacheLines) {
@@ -254,7 +264,7 @@
       });
     }
 
-    getRecentWithCache(entityId, cacheConfig) {
+    getRecentWithCache(entityId, cacheConfig, localize, language) {
       const cacheKey = cacheConfig.cacheKey;
       const endTime = new Date();
       const originalStartTime = new Date(endTime);
@@ -262,14 +272,15 @@
       let startTime = originalStartTime;
       let appendingToCache = false;
       let cache = window.stateHistoryCache[cacheKey];
-      if (cache && startTime >= cache.startTime && startTime <= cache.endTime) {
+      if (cache && startTime >= cache.startTime && startTime <= cache.endTime
+        && cache.language === language) {
         startTime = cache.endTime;
         appendingToCache = true;
         if (endTime <= cache.endTime) {
           return cache.prom;
         }
       } else {
-        cache = window.stateHistoryCache[cacheKey] = this.getEmptyCache();
+        cache = window.stateHistoryCache[cacheKey] = this.getEmptyCache(language);
       }
       // Use Promise.all in order to make sure the old and the new fetches have both completed.
       const prom = Promise.all([cache.prom,
@@ -277,7 +288,7 @@
         // Use only data from the new fetch. Old fetch is already stored in cache.data
         .then(oldAndNew => oldAndNew[1])
         // Convert data into format state-history-chart-* understands.
-        .then(stateHistory => computeHistory(stateHistory))
+        .then(stateHistory => computeHistory(stateHistory, localize, language))
         // Merge old and new.
         .then((stateHistory) => {
           this.mergeLine(stateHistory.line, cache.data.line);
@@ -296,16 +307,16 @@
       return prom;
     }
 
-    getRecent(entityId, startTime, endTime) {
+    getRecent(entityId, startTime, endTime, localize, language) {
       const cacheKey = entityId;
       const cache = RECENT_CACHE[cacheKey];
 
-      if (cache && Date.now() - cache.created < RECENT_THRESHOLD) {
+      if (cache && Date.now() - cache.created < RECENT_THRESHOLD && cache.language === language) {
         return cache.data;
       }
 
       const prom = this.fetchRecent(entityId, startTime, endTime).then(
-        stateHistory => computeHistory(stateHistory),
+        stateHistory => computeHistory(stateHistory, localize, language),
         () => {
           RECENT_CACHE[entityId] = false;
           return null;
@@ -314,6 +325,7 @@
 
       RECENT_CACHE[cacheKey] = {
         created: Date.now(),
+        language: language,
         data: prom,
       };
       return prom;
@@ -335,11 +347,11 @@
       return this.hass.callApi('GET', url);
     }
 
-    getDate(startTime, endTime) {
+    getDate(startTime, endTime, localize, language) {
       const filter = startTime.toISOString() + '?end_time=' + endTime.toISOString();
 
       const prom = this.hass.callApi('GET', 'history/period/' + filter).then(
-        stateHistory => computeHistory(stateHistory),
+        stateHistory => computeHistory(stateHistory, localize, language),
         () => null
       );
 
