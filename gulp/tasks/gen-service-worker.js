@@ -75,7 +75,7 @@ function generateServiceWorker(es6) {
     });
 
     const options = {
-      directoryIndex = '',
+      directoryIndex: '',
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
         baseRootDir + '/icons/favicon.ico',
