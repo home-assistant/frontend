@@ -306,7 +306,6 @@ class HomeAssistant extends Polymer.Element {
     this.$.storage.storeState();
     this.loadResources();
     this.loadTranslationFragment(this.panelUrl);
-    window.stateHistoryCache = {};
   }
 
   loadTranslationFragment(panelUrl) {

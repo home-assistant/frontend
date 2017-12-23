@@ -169,9 +169,10 @@
       });
     }
 
-    getEmptyCache() {
+    getEmptyCache(language) {
       return {
         prom: Promise.resolve({ line: [], timeline: [] }),
+        language: language,
         data: { line: [], timeline: [] },
       };
     }
@@ -260,14 +261,15 @@
       let startTime = originalStartTime;
       let appendingToCache = false;
       let cache = window.stateHistoryCache[cacheKey];
-      if (cache && startTime >= cache.startTime && startTime <= cache.endTime) {
+      if (cache && startTime >= cache.startTime && startTime <= cache.endTime
+        && cache.language === language) {
         startTime = cache.endTime;
         appendingToCache = true;
         if (endTime <= cache.endTime) {
           return cache.prom;
         }
       } else {
-        cache = window.stateHistoryCache[cacheKey] = this.getEmptyCache();
+        cache = window.stateHistoryCache[cacheKey] = this.getEmptyCache(language);
       }
       // Use Promise.all in order to make sure the old and the new fetches have both completed.
       const prom = Promise.all([cache.prom,
@@ -298,7 +300,7 @@
       const cacheKey = entityId;
       const cache = RECENT_CACHE[cacheKey];
 
-      if (cache && Date.now() - cache.created < RECENT_THRESHOLD) {
+      if (cache && Date.now() - cache.created < RECENT_THRESHOLD && cache.language === language) {
         return cache.data;
       }
 
@@ -312,6 +314,7 @@
 
       RECENT_CACHE[cacheKey] = {
         created: Date.now(),
+        language: language,
         data: prom,
       };
       return prom;
