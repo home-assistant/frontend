@@ -91,6 +91,22 @@ class HassioAddonStoreOverview extends window.hassMixins.EventsMixin(Polymer.Ele
   computeAddOns(repo) {
     return this.addons.filter(function (addon) {
       return addon.repository === repo;
+    }).sort(function (addonA, addonB) {
+      if (addonA.name < addonB.name) {
+        return -1;
+      }
+      if (addonA.name > addonB.name) {
+        return 1;
+      }
+      return 0;
+    }).sort(function (addonA, addonB) {
+      if (addonA.installed && !addonB.installed) {
+        return -1;
+      }
+      if (!addonA.installed && addonB.installed) {
+        return 1;
+      }
+      return 0;
     });
   }
 
