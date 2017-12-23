@@ -55,6 +55,36 @@ describe('computeStateDisplay', () => {
     assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), '123 m');
   });
 
+  it('Localizes unknown sensor value with units', () => {
+    const altLocalize = function (message, ...args) {
+      if (message === 'state.sensor.unknown') return null;
+      return localize(message, ...args);
+    };
+    const stateObj = {
+      entity_id: 'sensor.test',
+      state: 'unknown',
+      attributes: {
+        unit_of_measurement: 'm',
+      },
+    };
+    assert.strictEqual(computeStateDisplay(altLocalize, stateObj, 'en'), 'state.default.unknown');
+  });
+
+  it('Localizes unavailable sensor value with units', () => {
+    const altLocalize = function (message, ...args) {
+      if (message === 'state.sensor.unavailable') return null;
+      return localize(message, ...args);
+    };
+    const stateObj = {
+      entity_id: 'sensor.test',
+      state: 'unavailable',
+      attributes: {
+        unit_of_measurement: 'm',
+      },
+    };
+    assert.strictEqual(computeStateDisplay(altLocalize, stateObj, 'en'), 'state.default.unavailable');
+  });
+
   it('Localizes input_datetime with full date time', () => {
     const stateObj = {
       entity_id: 'input_datetime.test',
