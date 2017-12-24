@@ -284,7 +284,8 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   fireColorSelected(hsv) {
     this.hsvColor = hsv;
     this.rgbColor = this.HSVtoRGB(this.hsvColor);
-    this.fire('colorselected', { rgb: this.rgbColor, hsv: this.hsvColor });
+    const xyColor = this.RGBtoXY(this.rgbColor);
+    this.fire('colorselected', { rgb: this.rgbColor, hsv: this.hsvColor, xy: xyColor });
   }
 
 
@@ -611,6 +612,51 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
       h: h,
       s: s,
       v: v
+    };
+  }
+
+  RGBtoXY(rgb) {
+    if (rgb.r + rgb.g + rgb.b === 0) { return 0; }
+
+    let r = rgb.r / 255;
+    let g = rgb.g / 255;
+    let b = rgb.b / 255;
+
+    // Gamma correction
+    if (r > 0.04045) {
+      r = Math.pow((r + 0.055) / (1.0 + 0.055), 2.4);
+    } else {
+      r = r / 12.92
+    }
+    if (g > 0.04045) {
+      g = Math.pow((g + 0.055) / (1.0 + 0.055), 2.4);
+    } else {
+      g = g / 12.92
+    }
+    if (b > 0.04045) {
+      b = Math.pow((b + 0.055) / (1.0 + 0.055), 2.4);
+    } else {
+      b = b / 12.92
+    }
+
+    // Wide RGB D65 conversion formula
+    let tempX = r * 0.664511 + g * 0.154324 + b * 0.162028;
+    let tempY = r * 0.313881 + g * 0.668433 + b * 0.047685;
+    let tempZ = r * 0.000088 + g * 0.072310 + b * 0.986039;
+
+    // Convert XYZ to xy
+    let x = tempX / (tempX + tempY + tempZ);
+    let y = tempY / (tempX + tempY + tempZ);
+
+    // Brightness
+    y = Math.min(y, 1);
+
+    x = Math.round(x * 1000) / 1000;
+    y = Math.round(y * 1000) / 1000;
+
+    return {
+      x: x,
+      y: y,
     };
   }
   /* eslint-enable */
