@@ -35,6 +35,10 @@
         on-tap='handleAwayTap'
         hidden$='[[!armAwayButtonVisible]]'
         disabled='[[!codeValid]]'>Arm Away</paper-button>
+      <paper-button
+        on-tap='handleNightTap'
+        hidden$='[[!armNightButtonVisible]]'
+        disabled='[[!codeValid]]'>Arm Night</paper-button>
     </div>
   </template>
 </dom-module>
@@ -66,6 +70,10 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
         value: false,
       },
       armAwayButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
+      armNightButtonVisible: {
         type: Boolean,
         value: false,
       },
@@ -117,6 +125,7 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
         newVal.state === 'triggered');
       this.armHomeButtonVisible = newVal.state === 'disarmed';
       this.armAwayButtonVisible = newVal.state === 'disarmed';
+      this.armNightButtonVisible = newVal.state === 'disarmed';
     }
     if (oldVal) {
       setTimeout(() => {
@@ -135,6 +144,10 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
 
   handleAwayTap() {
     this.callService('alarm_arm_away', { code: this.enteredCode });
+  }
+
+  handleNightTap() {
+    this.callService('alarm_arm_night', { code: this.enteredCode });
   }
 
   callService(service, data) {
