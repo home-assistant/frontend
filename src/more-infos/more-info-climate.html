@@ -100,36 +100,37 @@
         <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target
             Temperature</div>
-          <ha-climate-control
-             value='[[stateObj.attributes.temperature]]'
-             units='[[stateObj.attributes.unit_of_measurement]]'
-             step='[[computeTemperatureStepSize(stateObj)]]'
-             min='[[stateObj.attributes.min_temp]]'
-             max='[[stateObj.attributes.max_temp]]'
-             hidden$='[[computeHideTempControl(stateObj)]]'
-             on-change='targetTemperatureChanged'
-             >
-          </ha-climate-control>
-          <ha-climate-control
-             value='[[stateObj.attributes.target_temp_low]]'
-             units='[[stateObj.attributes.unit_of_measurement]]'
-             step='[[computeTemperatureStepSize(stateObj)]]'
-             min='[[stateObj.attributes.min_temp]]'
-             max='[[stateObj.attributes.max_temp]]'
-             hidden$='[[computeHideTempRangeControl(stateObj)]]'
-             on-change='targetTemperatureLowChanged'
-             >
-          </ha-climate-control>
-          <ha-climate-control
-             value='[[stateObj.attributes.target_temp_high]]'
-             units='[[stateObj.attributes.unit_of_measurement]]'
-             step='[[computeTemperatureStepSize(stateObj)]]'
-             min='[[stateObj.attributes.min_temp]]'
-             max='[[stateObj.attributes.max_temp]]'
-             hidden$='[[computeHideTempRangeControl(stateObj)]]'
-             on-change='targetTemperatureHighChanged'
-             >
-          </ha-climate-control>
+          <template is='dom-if' if='[[computeIncludeTempControl(stateObj)]]'>
+            <ha-climate-control
+              value='[[stateObj.attributes.temperature]]'
+              units='[[stateObj.attributes.unit_of_measurement]]'
+              step='[[computeTemperatureStepSize(stateObj)]]'
+              min='[[stateObj.attributes.min_temp]]'
+              max='[[stateObj.attributes.max_temp]]'
+              on-change='targetTemperatureChanged'
+              >
+            </ha-climate-control>
+          </template>
+          <template is='dom-if' if='[[computeIncludeTempRangeControl(stateObj)]]'>
+            <ha-climate-control
+              value='[[stateObj.attributes.target_temp_low]]'
+              units='[[stateObj.attributes.unit_of_measurement]]'
+              step='[[computeTemperatureStepSize(stateObj)]]'
+              min='[[stateObj.attributes.min_temp]]'
+              max='[[stateObj.attributes.max_temp]]'
+              on-change='targetTemperatureLowChanged'
+              >
+            </ha-climate-control>
+            <ha-climate-control
+              value='[[stateObj.attributes.target_temp_high]]'
+              units='[[stateObj.attributes.unit_of_measurement]]'
+              step='[[computeTemperatureStepSize(stateObj)]]'
+              min='[[stateObj.attributes.min_temp]]'
+              max='[[stateObj.attributes.max_temp]]'
+              on-change='targetTemperatureHighChanged'
+              >
+            </ha-climate-control>
+          </template>
         </div>
       </div>
 
@@ -294,16 +295,13 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
         !stateObj.attributes.target_temp_high;
   }
 
-  computeHideTempRangeControl(stateObj) {
-    return (!stateObj.attributes.target_temp_low &&
-        !stateObj.attributes.target_temp_high) ||
-        (stateObj.attributes.operation_mode !== 'auto' && stateObj.attributes.temperature);
+  computeIncludeTempRangeControl(stateObj) {
+    return stateObj.attributes.target_temp_low ||
+        stateObj.attributes.target_temp_high;
   }
 
-  computeHideTempControl(stateObj) {
-    return !stateObj.attributes.temperature ||
-      (stateObj.attributes.operation_mode === 'auto' && stateObj.attributes.target_temp_low &&
-        stateObj.attributes.target_temp_high);
+  computeIncludeTempControl(stateObj) {
+    return stateObj.attributes.temperature;
   }
 
   computeClassNames(stateObj) {
