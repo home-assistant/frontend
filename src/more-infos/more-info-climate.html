@@ -90,6 +90,9 @@
       .capitalize {
         text-transform: capitalize;
       }
+      [hidden] {
+        display: none;
+      }
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
@@ -103,7 +106,28 @@
              step='[[computeTemperatureStepSize(stateObj)]]'
              min='[[stateObj.attributes.min_temp]]'
              max='[[stateObj.attributes.max_temp]]'
+             hidden$='[[computeHideTempControl(stateObj)]]'
              on-change='targetTemperatureChanged'
+             >
+          </ha-climate-control>
+          <ha-climate-control
+             value='[[stateObj.attributes.target_temp_low]]'
+             units='[[stateObj.attributes.unit_of_measurement]]'
+             step='[[computeTemperatureStepSize(stateObj)]]'
+             min='[[stateObj.attributes.min_temp]]'
+             max='[[stateObj.attributes.max_temp]]'
+             hidden$='[[computeHideTempRangeControl(stateObj)]]'
+             on-change='targetTemperatureLowChanged'
+             >
+          </ha-climate-control>
+          <ha-climate-control
+             value='[[stateObj.attributes.target_temp_high]]'
+             units='[[stateObj.attributes.unit_of_measurement]]'
+             step='[[computeTemperatureStepSize(stateObj)]]'
+             min='[[stateObj.attributes.min_temp]]'
+             max='[[stateObj.attributes.max_temp]]'
+             hidden$='[[computeHideTempRangeControl(stateObj)]]'
+             on-change='targetTemperatureHighChanged'
              >
           </ha-climate-control>
         </div>
@@ -270,13 +294,16 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
         !stateObj.attributes.target_temp_high;
   }
 
-  computeHideTempRangeSlider(stateObj) {
+  computeHideTempRangeControl(stateObj) {
     return !stateObj.attributes.target_temp_low &&
-        !stateObj.attributes.target_temp_high;
+        !stateObj.attributes.target_temp_high ||
+        (stateObj.attributes.operation_mode != "auto" && stateObj.attributes.temperature);
   }
 
-  computeHideTempSlider(stateObj) {
-    return !stateObj.attributes.temperature;
+  computeHideTempControl(stateObj) {
+    return !stateObj.attributes.temperature || 
+      (stateObj.attributes.operation_mode == "auto" && stateObj.attributes.target_temp_low &&
+        stateObj.attributes.target_temp_high);
   }
 
   computeClassNames(stateObj) {
@@ -314,9 +341,21 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.callServiceHelper('set_temperature', { temperature: temperature });
   }
 
-  targetTemperatureRangeSliderChanged(ev) {
-    var targetTempLow = ev.currentTarget.valueMin;
-    var targetTempHigh = ev.currentTarget.valueMax;
+  targetTemperatureLowChanged(ev) {
+    var targetTempLow = ev.currentTarget.value;
+    var targetTempHigh = this.stateObj.attributes.target_temp_high;
+
+    if (targetTempLow === this.stateObj.attributes.target_temp_low &&
+        targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+    this.callServiceHelper('set_temperature', {
+      target_temp_low: targetTempLow,
+      target_temp_high: targetTempHigh,
+    });
+  }
+
+  targetTemperatureHighChanged(ev) {
+    var targetTempLow = this.stateObj.attributes.target_temp_low;
+    var targetTempHigh = ev.currentTarget.value;
 
     if (targetTempLow === this.stateObj.attributes.target_temp_low &&
         targetTempHigh === this.stateObj.attributes.target_temp_high) return;
