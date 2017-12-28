@@ -77,7 +77,18 @@ window.hassUtil.relativeTime.tests = [
 window.hassUtil.domainIcon = function (domain, state) {
   switch (domain) {
     case 'alarm_control_panel':
-      return state && state === 'disarmed' ? 'mdi:bell-outline' : 'mdi:bell';
+      switch (state) {
+        case 'armed_home':
+          return 'mdi:bell-plus';
+        case 'armed_night':
+          return 'mdi:bell-sleep';
+        case 'disarmed':
+          return 'mdi:bell-outline';
+        case 'triggered':
+          return 'mdi:bell-ring';
+        default:
+          return 'mdi:bell';
+      }
 
     case 'automation':
       return 'mdi:playlist-play';
