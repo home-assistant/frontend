@@ -63,6 +63,17 @@
         width: 100%;
       }
 
+      ha-climate-control.range-control-left {
+        float: left;
+        width: 46%;
+        margin-right: 4%;
+      }
+      ha-climate-control.range-control-right {
+        float: left;
+        width: 46%;
+        margin-left: 4%;
+      }
+
       .auto paper-slider {
         --paper-slider-active-color: var(--paper-orange-400);
         --paper-slider-secondary-color: var(--paper-blue-400);
@@ -118,6 +129,7 @@
               step='[[computeTemperatureStepSize(stateObj)]]'
               min='[[stateObj.attributes.min_temp]]'
               max='[[stateObj.attributes.max_temp]]'
+              class='range-control-left'
               on-change='targetTemperatureLowChanged'
               >
             </ha-climate-control>
@@ -127,6 +139,7 @@
               step='[[computeTemperatureStepSize(stateObj)]]'
               min='[[stateObj.attributes.min_temp]]'
               max='[[stateObj.attributes.max_temp]]'
+              class='range-control-right'
               on-change='targetTemperatureHighChanged'
               >
             </ha-climate-control>
