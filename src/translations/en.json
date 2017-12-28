@@ -83,13 +83,29 @@
         "off": "Normal",
         "on": "Low"
       },
+      "cold": {
+        "off": "[%key:state::binary_sensor::battery::off%]",
+        "on": "Cold"
+      },
       "connectivity": {
         "off": "Disconnected",
         "on": "Connected"
       },
+      "door": {
+        "off": "[%key:state::binary_sensor::opening::off%]",
+        "on": "[%key:state::binary_sensor::opening::on%]"
+      },
+      "garage_door": {
+        "off": "[%key:state::binary_sensor::opening::off%]",
+        "on": "[%key:state::binary_sensor::opening::on%]"
+      },
       "gas": {
         "off": "Clear",
         "on": "Detected"
+      },
+      "heat": {
+        "off": "[%key:state::binary_sensor::battery::off%]",
+        "on": "Hot"
       },
       "moisture": {
         "off": "Dry",
@@ -130,6 +146,10 @@
       "vibration": {
         "off": "[%key:state::binary_sensor::gas::off%]",
         "on": "[%key:state::binary_sensor::gas::on%]"
+      },
+      "window": {
+        "off": "[%key:state::binary_sensor::opening::off%]",
+        "on": "[%key:state::binary_sensor::opening::on%]"
       }
     },
     "calendar": {
