@@ -26,7 +26,7 @@
         color: var(--secondary-text-color);
       }
 
-      .operation-mode {
+      .state-label {
         font-weight: bold;
         text-transform: capitalize;
       }
@@ -36,8 +36,8 @@
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
       <div class='state'>
         <div class='target'>
-          <span class="operation-mode">
-            [[stateObj.attributes.operation_mode]]
+          <span class="state-label">
+            [[stateObj.state]]
           </span>
           <span>
             [[computeTargetTemperature(stateObj)]]
