@@ -14,6 +14,7 @@
 
 <link rel='import' href='../../src/components/ha-menu-button.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 
 <dom-module id='ha-panel-mailbox'>
@@ -39,6 +40,11 @@
         cursor: pointer;
       }
 
+      .empty {
+        text-align: center;
+        color: var(--secondary-text-color);
+      }
+
       .header {
         @apply(--paper-font-title);
       }
@@ -49,6 +55,9 @@
       }
       paper-dialog {
         border-radius: 2px;
+      }
+      paper-dialog p {
+        color: var(--secondary-text-color);
       }
 
       #mp3dialog paper-icon-button {
@@ -89,14 +98,14 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Mailbox</div>
+          <div main-title>[[localize('panel.mailbox')]]</div>
         </app-toolbar>
       </app-header>
       <div class='content'>
         <paper-card>
           <template is='dom-if' if='[[!_messages.length]]'>
-            <div class='card-content'>
-              You do not have any messages.
+            <div class='card-content empty'>
+              [[localize('ui.panel.mailbox.empty')]]
             </div>
           </template>
           <template is='dom-repeat' items='[[_messages]]'>
@@ -104,7 +113,7 @@
               <paper-item-body style="width:100%" two-line>
                 <div class="row">
                   <div>[[item.caller]]</div>
-                  <div class="tip">[[item.duration]] secs</div>
+                  <div class="tip">[[localize('ui.duration.second', 'count', item.duration)]]</div>
                 </div>
                 <div secondary>
                   <span class="date">[[item.timestamp]]</span> - [[item.message]]
@@ -118,31 +127,33 @@
 
     <paper-dialog with-backdrop id="mp3dialog" on-iron-overlay-closed="_mp3Closed">
       <h2>
-        Message Playback
+        [[localize('ui.panel.mailbox.playback_title')]]
         <paper-icon-button
           on-tap='openDeleteDialog'
           icon='mdi:delete'
         ></paper-icon-button>
       </h2>
-      <div id="transcribe">text</div>
+      <div id="transcribe"></div>
       <div>
         <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
       </div>
     </paper-dialog>
 
     <paper-dialog with-backdrop id="confirmdel">
-      <h2>Delete Message</h2>
-      <p>Are you sure you want to delete this message?</p>
+      <p>[[localize('ui.panel.mailbox.delete_prompt')]]</p>
       <div class="buttons">
-        <paper-button dialog-dismiss>Decline</paper-button>
-        <paper-button dialog-confirm autofocus on-tap="deleteSelected">Accept</paper-button>
+        <paper-button dialog-dismiss>[[localize('ui.common.cancel')]]</paper-button>
+        <paper-button dialog-confirm autofocus on-tap="deleteSelected">[[localize('ui.panel.mailbox.delete_button')]]</paper-button>
       </div>
     </paper-dialog>
   </template>
 </dom-module>
 
 <script>
-class HaPanelMailbox extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelMailbox extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-panel-mailbox'; }
 
   static get properties() {

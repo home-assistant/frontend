@@ -274,11 +274,38 @@
     }
   },
   "ui": {
+    "common": {
+      "loading": "Loading",
+      "cancel": "Cancel"
+    },
+    "duration": {
+      "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+      "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+      "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+    },
+    "login-form": {
+      "password": "Password",
+      "remember": "Remember",
+      "log_in": "Log in"
+    },
     "sidebar": {
       "developer_tools": "Developer tools",
       "log_out": "Log out"
     },
     "panel": {
+      "history": {
+        "showing_entries": "Showing entries for",
+        "period": "Period"
+      },
+      "logbook": {
+        "showing_entries": "[%key:ui::panel::history::showing_entries%]"
+      },
+      "mailbox": {
+        "empty": "You do not have any messages",
+        "playback_title": "Message playback",
+        "delete_prompt": "Delete this message?",
+        "delete_button": "Delete"
+      },
       "shopping-list": {
         "clear_completed": "Clear completed",
         "add_item": "Add item",

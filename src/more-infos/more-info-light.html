@@ -38,14 +38,14 @@
         transition: max-height .5s ease-in;
       }
 
-      .has-effect_list .effect_list,
+      .has-effect_list.is-on .effect_list,
       .has-brightness .brightness,
-      .has-color_temp .color_temp,
-      .has-white_value .white_value {
+      .has-color_temp.is-on .color_temp,
+      .has-white_value.is-on .white_value {
         max-height: 84px;
       }
 
-      .has-rgb_color ha-color-picker {
+      .has-rgb_color.is-on ha-color-picker {
         max-height: 500px;
         overflow: visible;
         --ha-color-picker-wheel-borderwidth: 5;
@@ -113,6 +113,10 @@
 {
   const FEATURE_CLASS_NAMES = {
     1: 'has-brightness',
+    2: 'has-color_temp',
+    4: 'has-effect_list',
+    16: 'has-rgb_color',
+    128: 'has-white_value',
   };
   class MoreInfoLight extends window.hassMixins.EventsMixin(Polymer.Element) {
     static get is() { return 'more-info-light'; }
@@ -180,17 +184,9 @@
     }
 
     computeClassNames(stateObj) {
-      var classes = [
-        window.hassUtil.attributeClassNames(stateObj, ['color_temp', 'white_value', 'effect_list']),
-        window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES),
-      ];
-
-      // Lights that do shades of white can still have an rgb color
-      // In that case we don't want the color picker to show.
-      if (stateObj.attributes.supported_features &&
-          (stateObj.attributes.supported_features & 16) !== 0 &&
-          stateObj.attributes.rgb_color) {
-        classes.push('has-rgb_color');
+      const classes = [window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
+      if (stateObj && stateObj.state === 'on') {
+        classes.push('is-on');
       }
       return classes.join(' ');
     }

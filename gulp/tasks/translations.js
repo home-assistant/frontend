@@ -18,6 +18,9 @@ const outDir = workDir + '/output';
 // should mirror the fragment definitions in polymer.json, so that we load
 // additional resources at equivalent points.
 const TRANSLATION_FRAGMENTS = [
+  'history',
+  'logbook',
+  'mailbox',
   'shopping-list',
 ];
 
