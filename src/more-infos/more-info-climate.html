@@ -295,14 +295,14 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeHideTempRangeControl(stateObj) {
-    return !stateObj.attributes.target_temp_low &&
-        !stateObj.attributes.target_temp_high ||
-        (stateObj.attributes.operation_mode != "auto" && stateObj.attributes.temperature);
+    return (!stateObj.attributes.target_temp_low &&
+        !stateObj.attributes.target_temp_high) ||
+        (stateObj.attributes.operation_mode !== 'auto' && stateObj.attributes.temperature);
   }
 
   computeHideTempControl(stateObj) {
-    return !stateObj.attributes.temperature || 
-      (stateObj.attributes.operation_mode == "auto" && stateObj.attributes.target_temp_low &&
+    return !stateObj.attributes.temperature ||
+      (stateObj.attributes.operation_mode === 'auto' && stateObj.attributes.target_temp_low &&
         stateObj.attributes.target_temp_high);
   }
 
