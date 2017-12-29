@@ -46,7 +46,8 @@
 <script src="../../../bower_components/chart.js/dist/Chart.js"></script>
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <script>
-/* global Chart moment */// eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+/* global Chart moment Color */
 class HaChartBase extends
   Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
   get chart() {
@@ -85,6 +86,7 @@ class HaChartBase extends
   _customTooltips(tooltip) {
     // Tooltip Element
     var tooltipEl = this._tooltipEl;
+    var isTimeline = this._isTimeline;
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
       tooltipEl.style.opacity = 0;
@@ -127,12 +129,23 @@ class HaChartBase extends
           '; border-color:' + colors.borderColor);
         var tableTr = ce('tr');
         var tableTd = ce('td');
-        var tableText = document.createTextNode(body);
+        var tableText;
         tableTr.appendChild(tableTd);
         tableTd.appendChild(span);
-        tableTd.appendChild(tableText);
+        if (isTimeline) {
+          tableText = document.createTextNode(body[0]);
+          tableTd.appendChild(tableText);
+          for (var loopI = 1; loopI < body.length; loopI++) {
+            tableTd.appendChild(ce('br'));
+            tableText = document.createTextNode(body[loopI]);
+            tableTd.appendChild(tableText);
+          }
+        } else {
+          tableText = document.createTextNode(body);
+          tableTd.appendChild(tableText);
+        }
         tBody.appendChild(tableTr);
-      });
+      }, this);
     }
     var positionX = this._chart.canvas.offsetLeft + tooltip.caretX;
     var positionY = this._chart.canvas.offsetTop + tooltip.caretY;
@@ -152,7 +165,8 @@ class HaChartBase extends
     var getRange = {
       x: (a, b) => Math.abs(a.x - b.x),
       y: (a, b) => Math.abs(a.y - b.y),
-      xy: (a, b) => ((a.x - b.x) ** 2) + ((a.y - b.y) ** 2),
+      // eslint-disable-next-line no-restricted-properties
+      xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
     };
     var getRangeMax = {
       x: r => r,
@@ -208,6 +222,15 @@ class HaChartBase extends
     if ((!data.datasets || !data.datasets.length) && !this._chart) {
       return;
     }
+    if (this.data.type !== 'timeline' && data.datasets.length > 0) {
+      var cnt = 0;
+      cnt = data.datasets.length;
+      var colors = HaChartBase.getColorList(cnt);
+      for (var loopI = 0; loopI < cnt; loopI++) {
+        data.datasets[loopI].borderColor = colors[loopI].rgbString();
+        data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.65).rgbaString();
+      }
+    }
 
     if (this._chart) {
       this._customTooltips({ opacity: 0 });
@@ -221,6 +244,9 @@ class HaChartBase extends
       if (!Chart.Interaction.modes.neareach) {
         Chart.Interaction.modes.neareach = this._chartGetIntersection.bind(this);
       }
+      var colorList = this.data.colors ? this.data.colors.staticColors : undefined;
+      var colorIndex = this.data.colors ? this.data.colors.staticColorIndex : undefined;
+      this._colorFunc = HaChartBase.getColorGenerator(colorList, colorIndex);
       // chartTarget.style.height = targetHeight;
       // chartTarget.height = targetHeight;
       this._tooltipEl = this.$.chartTooltip;
@@ -228,10 +254,7 @@ class HaChartBase extends
       var options = {
         responsive: true,
         maintainAspectRatio: false,
-        scales: {
-          xAxes: [{
-          }]
-        },
+        colorFunction: this._colorFunc,
         animation: {
           duration: 0,
         },
@@ -248,15 +271,6 @@ class HaChartBase extends
         },
       };
       options = Chart.helpers.merge(options, this.data.options);
-      // options.scales = options.scales || {};
-      // options.scales.xAxes = options.scales.xAxes || [];
-      // options.scales.xAxes[0] = options.scales.xAxes[0] || {};
-      // options.scales.xAxes[0].time = options.scales.xAxes[0].time || {};
-      // options.scales.xAxes[0].time.displayFormats = {
-      //   day: 'MMM d',
-      //   hour: 'HH:mm',
-      //   minute: 'HH:mm'
-      // };
       if (this.data.type === 'timeline') {
         this._isTimeline = true;
       }
@@ -310,6 +324,86 @@ class HaChartBase extends
     } else {
       this._chart.resize();
     }
+  }
+  static getColorList(count) {
+    var processL = false;
+    if (count > 10) {
+      processL = true;
+      count = Math.ceil(count / 2);
+    }
+    var h1 = 360 / count;
+    var result = [];
+    for (var loopI = 0; loopI < count; loopI++) {
+      result[loopI] = Color().hsl(h1 * loopI, 80, 38);
+      if (processL) {
+        result[loopI + count] = Color().hsl(h1 * loopI, 80, 62);
+      }
+    }
+    return result;
+  }
+  static getColorGenerator(staticColors, startIndex) {
+    // Known colors for static data,
+    // should add for very common state string manually.
+    // Distribute the color data like complete binary tree
+    function getColorRange(x) {
+      if (x === 0) return 0;
+      if (x === 1) return 0.5;
+      var y = Math.floor(Math.log(x) / Math.LN2);
+      // eslint-disable-next-line no-restricted-properties
+      var e = Math.pow(2, y);
+      var n = x - e;
+      var a;
+      if (y % 2 === 1) {
+        if (n % 2 === 0) {
+          a = n + 1;
+        } else {
+          a = n + e;
+        }
+      } else {
+        // eslint-disable-next-line no-lonely-if
+        if (n % 2 === 0) {
+          a = e - n - 1;
+        } else {
+          a = (e + e) - n;
+        }
+      }
+      return a / (e + e);
+    }
+    function getColorIndex(idx) {
+      var hIndex = Math.floor(idx / 6);
+      var h1 = getColorRange(hIndex);
+      var c1 = (h1 + (idx % 3)) * 120;
+      var l1 = idx % 6 < 3 ? 62 : 38;
+      return Color().hsl(c1, 75, l1);
+    }
+    var colorDict = {};
+    var colorIndex = 0;
+    if (startIndex > 0) colorIndex = startIndex;
+    if (staticColors) {
+      Object.keys(staticColors).forEach(function (c) {
+        var c1 = staticColors[c];
+        if (isFinite(c1)) {
+          colorDict[c.toLowerCase()] = getColorIndex(c1);
+        } else {
+          colorDict[c.toLowerCase()] = Color(staticColors[c]);
+        }
+      });
+    }
+    // Custom color assign
+    function getColor(name) {
+      var ret;
+      var name1 = name.toLowerCase();
+      if (ret === undefined) {
+        ret = colorDict[name1];
+      }
+      if (ret === undefined) {
+        ret = getColorIndex(colorIndex);
+        colorIndex++;
+        colorDict[name1] = ret;
+      }
+      return ret;
+    }
+    return getColor;
   }
 }
 customElements.define(HaChartBase.is, HaChartBase);

@@ -7,6 +7,7 @@
   </template>
 </dom-module>
 <script>
+'use strict';
 
 class StateHistoryChartTimeline extends Polymer.Element {
   static get is() { return 'state-history-chart-timeline'; }
@@ -39,29 +40,12 @@ class StateHistoryChartTimeline extends Polymer.Element {
   }
 
   drawChart() {
-    var getColorFunc = function () {
-      var colorArray = ['red', 'blue', 'green', 'navy', 'grey', 'purple', 'orange'];
-      var colorTable = {
-        on: 'green',
-        off: 'red',
-        idle: 'blue',
-        unavailable: 'lightgrey',
-      };
-      var colors = 3;
-      return function colorFunction(data) {
-        var dataLabel = data[2];
-        var x;
-        if (dataLabel) {
-          x = colorTable[dataLabel];
-          if (!x) {
-            x = colorArray[colors++];
-            colorTable[dataLabel] = x;
-          }
-        } else {
-          x = colorArray[Math.floor(Math.random() * colorArray.length)];
-        }
-        return x;
-      };
+    var staticColor = {
+      on: 1,
+      off: 0,
+      unavailable: '#a0a0a0',
+      unknown: '#606060',
+      idle: 2
     };
     var stateHistory = this.data;
     var startTime;
@@ -135,14 +119,31 @@ class StateHistoryChartTimeline extends Polymer.Element {
     var chartOptions = {
       type: 'timeline',
       options: {
-        colorFunction: getColorFunc(),
         tooltips: {
           mode: 'nearest',
-        }
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              major: {
+                fontStyle: 'bold',
+              },
+            },
+          }],
+          yAxes: [{
+            afterSetDimensions: function (yaxe) {
+              yaxe.maxWidth = yaxe.chart.width * 0.18;
+            }
+          }],
+        },
       },
       data: {
         labels: labels,
         datasets: datasets
+      },
+      colors: {
+        staticColors: staticColor,
+        staticColorIndex: 3,
       }
     };
     this.chartData = chartOptions;

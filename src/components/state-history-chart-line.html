@@ -39,9 +39,6 @@ class StateHistoryChartLine extends Polymer.Element {
     super.connectedCallback();
     this._isAttached = true;
     this.drawChart();
-    // this.addEventListener('iron-resize', () => {
-    //   this.async(this.drawChart, 10);
-    // });
   }
 
   dataChanged() {
@@ -49,21 +46,12 @@ class StateHistoryChartLine extends Polymer.Element {
   }
 
   drawChart() {
-    var colorArray = ['red', 'blue', 'green', 'navy', 'purple', 'orange'];
-    var colorId = 0;
-    var getColor = function () {
-      return colorArray[colorId++];
-    };
-    function getColorAlpha(str, alpha) {
-      return Color(str).alpha(1 - alpha).rgbaString();
-    }
     var unit = this.unit;
     var deviceStates = this.data;
-    // var options;
-    var startTime;
+    // Comment out startTime might use future.
+    // var startTime;
     var endTime;
     var datasets;
-    var daysDelta;
 
     if (!this._isAttached) {
       return;
@@ -79,9 +67,9 @@ class StateHistoryChartLine extends Polymer.Element {
       return isFinite(parsed) ? parsed : null;
     }
 
-    startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
-      return new Date(states.states[0].last_changed);
-    })));
+    // startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
+    //   return new Date(states.states[0].last_changed);
+    // })));
 
     endTime = this.endTime ||
       new Date(Math.max.apply(null, deviceStates.map(states =>
@@ -90,16 +78,6 @@ class StateHistoryChartLine extends Polymer.Element {
       endTime = new Date();
     }
 
-    daysDelta = (endTime - startTime) / (24 * 3600 * 1000);
-    // Avoid rounding up when the API returns a few extra seconds.
-    // if (daysDelta > 30.1) {
-    //   options.hAxis.format = 'MMM d';
-    // } else if (daysDelta > 3.1) {
-    //   options.hAxis.format = 'EEE, MMM d';
-    // } else if (daysDelta > 1.1) {
-    //   options.hAxis.format = 'EEE, MMM d, H:mm';
-    // }
-
     datasets = [];
 
     deviceStates.forEach(function (states) {
@@ -107,7 +85,6 @@ class StateHistoryChartLine extends Polymer.Element {
       var name = states.name;
       // array containing [value1, value2, etc]
       var prevValues;
-      // var prevTime;
       var hasTargetRange;
       var processState;
       var data = [];
@@ -124,28 +101,23 @@ class StateHistoryChartLine extends Polymer.Element {
           d.data.push({ x: timestamp, y: datavalues[i] });
         });
         prevValues = datavalues;
-        // prevTime = timestamp;
       }
 
       function addColumn(nameY, type) {
         var fill = false;
         var step = false;
-        var color = getColor();
-        var bgColor = color;
         if (!type) {
           type = 'line';
         }
-        if (type === 'area') {
+        if (type.indexOf('area') !== -1) {
           fill = 'origin';
-          bgColor = getColorAlpha(color, 0.65);
-        } else if (type === 'step') {
-          step = 'after';
+        }
+        if (type.indexOf('step') !== -1) {
+          step = 'before';
         }
         data.push({
           label: nameY,
           fill: fill,
-          backgroundColor: bgColor,
-          borderColor: color,
           steppedLine: step,
           pointRadius: 0,
           data: [],
@@ -157,12 +129,12 @@ class StateHistoryChartLine extends Polymer.Element {
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
 
-        // Using step chart by step-after so manually interpolation not needed.
+        // Using step chart by step-before so manually interpolation not needed.
         hasTargetRange = states.states.some(state => state.attributes &&
           state.attributes.target_temp_high !== state.attributes.target_temp_low);
 
-        addColumn(name + ' current temperature', 'line');
-        addColumn(name + ' heating', 'area');
+        addColumn(name + ' current temperature', 'step');
+        addColumn(name + ' heating', 'step-area');
 
         if (hasTargetRange) {
           addColumn(name + ' target temperature high', 'step');
@@ -189,7 +161,7 @@ class StateHistoryChartLine extends Polymer.Element {
 
         states.states.forEach(processState);
       } else {
-        addColumn(name);
+        // addColumn(name);
 
         // Only disable interpolation for sensors
         var columnStyle = domain !== 'sensor' ? 'line' : 'step';
@@ -225,10 +197,8 @@ class StateHistoryChartLine extends Polymer.Element {
             },
           }],
           yAxes: [{
-            // offset: true,
             ticks: {
               maxTicksLimit: 7,
-              // padding: 10,
             },
             // Add space to prevent cut-off.
             afterDataLimits: function (axis) {
@@ -242,11 +212,8 @@ class StateHistoryChartLine extends Polymer.Element {
             },
           }],
         },
-        // Need more invastigate to tooltip point choose.
         tooltips: {
-          // mode: 'index',
           mode: 'neareach',
-          // filter: 
         },
         hover: {
           mode: 'neareach',
@@ -256,7 +223,6 @@ class StateHistoryChartLine extends Polymer.Element {
             tension: 0.1,
             pointRadius: 0,
             borderWidth: 1.5,
-            // pointHoverRadius: 6,
           },
           point: {
             hitRadius: 5,
