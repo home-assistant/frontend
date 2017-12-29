@@ -57,7 +57,7 @@
     "web-animations-js": "^2.2.5",
     "webcomponentsjs": "^1.0.10",
     "chart.js": "~2.7.1",
-    "chartjs-chart-timeline": "fanthos/chartjs-chart-timeline#^0.1.0"
+    "chartjs-chart-timeline": "fanthos/chartjs-chart-timeline#^0.1.1"
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"
