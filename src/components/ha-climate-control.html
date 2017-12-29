@@ -14,10 +14,10 @@
         @apply(--layout-horizontal);
         @apply(--layout-justified);
       }
-      .in-flux.target-temperature {
+      .in-flux#target_temperature {
         color: var(--google-red-500);
       }
-      .target-temperature {
+      #target_temperature {
         @apply(--layout-self-center);
         font-size: 200%;
       }
@@ -32,7 +32,7 @@
     </style>
 
     <!-- local DOM goes here -->
-    <div class="target-temperature">
+    <div id="target_temperature">
       [[value]] [[units]]
     </div>
     <div class="control-buttons">
@@ -51,9 +51,8 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   static get properties() {
     return {
-      last_changed: {
-        type: Number,
-        observer: 'valueChanged'
+      value: {
+        type: Number
       },
       units: {
         type: String,
@@ -71,12 +70,7 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
     };
   }
   temperatureStateInFlux(inFlux) {
-    var tempElement = this.root.querySelector('.target-temperature');
-    if (inFlux) {
-      tempElement.classList.add('in-flux');
-    } else {
-      tempElement.classList.remove('in-flux');
-    }
+    this.$.target_temperature.classList.toggle('in-flux', inFlux);
   }
   incrementValue() {
     var newval = this.value + this.step;
@@ -94,6 +88,7 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
       this.value = this.max;
     }
     this.temperatureStateInFlux(true);
+    this.valueChanged();
   }
   decrementValue() {
     var newval = this.value - this.step;
@@ -104,6 +99,7 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
       this.value = this.min;
     }
     this.temperatureStateInFlux(true);
+    this.valueChanged();
   }
   valueChanged() {
     // when the last_changed timestamp is changed,
