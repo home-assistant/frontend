@@ -122,6 +122,9 @@
                   on-tap='_handleVerifyEmail'
                   progress='[[_requestInProgress]]'
                 >Verify Email</ha-progress-button>
+                <paper-button
+                  on-tap='_handleResendVerifyEmail'
+                >Resend Verify Email</paper-button>
               </div>
             </paper-card>
           </template>
@@ -233,13 +236,31 @@ class HaConfigCloudRegister extends
       confirmation_code: this._confirmationCode,
     }).then(() => {
       // eslint-disable-next-line
-        alert('Confirmation successful. You can now login.');
+      alert('Confirmation successful. You can now login.');
       this.navigate('config/cloud/login');
     }, (err) => {
       this._confirmationCode = '';
       this._error = err && err.body && err.body.message ?
         err.body.message : 'Unknown error';
       this._requestInProgress = false;
+    });
+  }
+
+  _handleResendVerifyEmail() {
+    if (!this.email) {
+      this._error = 'Email is required.';
+    }
+
+    if (this._error) return;
+
+    this.hass.callApi('post', 'cloud/resend_confirm', {
+      email: this.email,
+    }).then(() => {
+      // eslint-disable-next-line
+      alert('Email resend.');
+    }, (err) => {
+      this._error = err && err.body && err.body.message ?
+        err.body.message : 'Unknown error';
     });
   }
 }
