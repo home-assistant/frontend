@@ -74,7 +74,7 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.$.target_temperature.classList.toggle('in-flux', inFlux);
   }
   incrementValue() {
-    var newval = this.value + this.step;
+    const newval = this.value + this.step;
     if (newval <= this.max) {
       // If no initial target_temp
       // this forces control to start
@@ -91,7 +91,7 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
   }
   decrementValue() {
-    var newval = this.value - this.step;
+    const newval = this.value - this.step;
     if (newval >= this.min) {
       this.last_changed = Date.now();
       this.temperatureStateInFlux(true);
@@ -107,7 +107,7 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
     // past.
     if (this.last_changed) {
       window.setTimeout(() => {
-        var now = Date.now();
+        const now = Date.now();
         if (now - this.last_changed >= 2000) {
           this.fire('change');
           this.temperatureStateInFlux(false);
