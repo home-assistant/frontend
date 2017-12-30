@@ -43,9 +43,10 @@
   </template>
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
-<script src="../../../bower_components/chart.js/dist/Chart.js"></script>
+<script src="../../../bower_components/chart.js/dist/Chart.min.js"></script>
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <script>
+// Use minified Chart.js to fix strange color after uglify
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
 class HaChartBase extends
@@ -75,7 +76,6 @@ class HaChartBase extends
     if (!this._chart) {
       this.onPropsChange();
     }
-    // setTimeout(this.resizeChart.bind(this), 1);
   }
   onPropsChange() {
     if (!this.connected || !this.publish || !this.data) {
@@ -228,7 +228,7 @@ class HaChartBase extends
       var colors = HaChartBase.getColorList(cnt);
       for (var loopI = 0; loopI < cnt; loopI++) {
         data.datasets[loopI].borderColor = colors[loopI].rgbString();
-        data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.65).rgbaString();
+        data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.6).rgbaString();
       }
     }
 
@@ -268,6 +268,9 @@ class HaChartBase extends
         },
         legend: {
           display: false,
+        },
+        line: {
+          spanGaps: true,
         },
       };
       options = Chart.helpers.merge(options, this.data.options);
@@ -392,6 +395,8 @@ class HaChartBase extends
     // Custom color assign
     function getColor(name) {
       var ret;
+      if (name === null) return Color().hsl(0, 40, 38);
+      if (name === undefined) return Color().hsl(120, 40, 38);
       var name1 = name.toLowerCase();
       if (ret === undefined) {
         ret = colorDict[name1];
