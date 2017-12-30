@@ -63,19 +63,16 @@
         width: 100%;
       }
 
-      .auto paper-slider {
-        --paper-slider-active-color: var(--paper-orange-400);
-        --paper-slider-secondary-color: var(--paper-blue-400);
+      ha-climate-control.range-control-left,
+      ha-climate-control.range-control-right {
+        float: left;
+        width: 46%;
       }
-
-      .heat paper-slider {
-        --paper-slider-active-color: var(--paper-orange-400);
-        --paper-slider-secondary-color: var(--paper-green-400);
+      ha-climate-control.range-control-left {
+        margin-right: 4%;
       }
-
-      .cool paper-slider {
-        --paper-slider-active-color: var(--paper-green-400);
-        --paper-slider-secondary-color: var(--paper-blue-400);
+      ha-climate-control.range-control-right {
+        margin-left: 4%;
       }
 
       .humidity {
@@ -97,15 +94,39 @@
         <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target
             Temperature</div>
-          <ha-climate-control
-             value='[[stateObj.attributes.temperature]]'
-             units='[[stateObj.attributes.unit_of_measurement]]'
-             step='[[computeTemperatureStepSize(stateObj)]]'
-             min='[[stateObj.attributes.min_temp]]'
-             max='[[stateObj.attributes.max_temp]]'
-             on-change='targetTemperatureChanged'
-             >
-          </ha-climate-control>
+          <template is='dom-if' if='[[computeIncludeTempControl(stateObj)]]'>
+            <ha-climate-control
+              value='[[stateObj.attributes.temperature]]'
+              units='[[stateObj.attributes.unit_of_measurement]]'
+              step='[[computeTemperatureStepSize(stateObj)]]'
+              min='[[stateObj.attributes.min_temp]]'
+              max='[[stateObj.attributes.max_temp]]'
+              on-change='targetTemperatureChanged'
+              >
+            </ha-climate-control>
+          </template>
+          <template is='dom-if' if='[[computeIncludeTempRangeControl(stateObj)]]'>
+            <ha-climate-control
+              value='[[stateObj.attributes.target_temp_low]]'
+              units='[[stateObj.attributes.unit_of_measurement]]'
+              step='[[computeTemperatureStepSize(stateObj)]]'
+              min='[[stateObj.attributes.min_temp]]'
+              max='[[stateObj.attributes.target_temp_high]]'
+              class='range-control-left'
+              on-change='targetTemperatureLowChanged'
+              >
+            </ha-climate-control>
+            <ha-climate-control
+              value='[[stateObj.attributes.target_temp_high]]'
+              units='[[stateObj.attributes.unit_of_measurement]]'
+              step='[[computeTemperatureStepSize(stateObj)]]'
+              min='[[stateObj.attributes.target_temp_low]]'
+              max='[[stateObj.attributes.max_temp]]'
+              class='range-control-right'
+              on-change='targetTemperatureHighChanged'
+              >
+            </ha-climate-control>
+          </template>
         </div>
       </div>
 
@@ -270,13 +291,13 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
         !stateObj.attributes.target_temp_high;
   }
 
-  computeHideTempRangeSlider(stateObj) {
-    return !stateObj.attributes.target_temp_low &&
-        !stateObj.attributes.target_temp_high;
+  computeIncludeTempRangeControl(stateObj) {
+    return stateObj.attributes.target_temp_low ||
+        stateObj.attributes.target_temp_high;
   }
 
-  computeHideTempSlider(stateObj) {
-    return !stateObj.attributes.temperature;
+  computeIncludeTempControl(stateObj) {
+    return stateObj.attributes.temperature;
   }
 
   computeClassNames(stateObj) {
@@ -307,81 +328,71 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   targetTemperatureChanged(ev) {
-    var temperature = ev.target.value;
-
+    const temperature = ev.target.value;
     if (temperature === this.stateObj.attributes.temperature) return;
-
     this.callServiceHelper('set_temperature', { temperature: temperature });
   }
 
-  targetTemperatureRangeSliderChanged(ev) {
-    var targetTempLow = ev.currentTarget.valueMin;
-    var targetTempHigh = ev.currentTarget.valueMax;
-
-    if (targetTempLow === this.stateObj.attributes.target_temp_low &&
-        targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+  targetTemperatureLowChanged(ev) {
+    const targetTempLow = ev.currentTarget.value;
+    if (targetTempLow === this.stateObj.attributes.target_temp_low) return;
     this.callServiceHelper('set_temperature', {
       target_temp_low: targetTempLow,
+      target_temp_high: this.stateObj.attributes.target_temp_high,
+    });
+  }
+
+  targetTemperatureHighChanged(ev) {
+    const targetTempHigh = ev.currentTarget.value;
+    if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+    this.callServiceHelper('set_temperature', {
+      target_temp_low: this.stateObj.attributes.target_temp_low,
       target_temp_high: targetTempHigh,
     });
   }
 
   targetHumiditySliderChanged(ev) {
-    var humidity = ev.target.value;
-
+    const humidity = ev.target.value;
     if (humidity === this.stateObj.attributes.humidity) return;
-
     this.callServiceHelper('set_humidity', { humidity: humidity });
   }
 
   awayToggleChanged(ev) {
-    var oldVal = this.stateObj.attributes.away_mode === 'on';
-    var newVal = ev.target.checked;
-
+    const oldVal = this.stateObj.attributes.away_mode === 'on';
+    const newVal = ev.target.checked;
     if (oldVal === newVal) return;
-
     this.callServiceHelper('set_away_mode', { away_mode: newVal });
   }
 
   auxToggleChanged(ev) {
-    var oldVal = this.stateObj.attributes.aux_heat === 'on';
-    var newVal = ev.target.checked;
-
+    const oldVal = this.stateObj.attributes.aux_heat === 'on';
+    const newVal = ev.target.checked;
     if (oldVal === newVal) return;
-
     this.callServiceHelper('set_aux_heat', { aux_heat: newVal });
   }
 
   handleFanmodeChanged(fanIndex) {
-    var fanInput;
     // Selected Option will transition to '' before transitioning to new value
     if (fanIndex === '' || fanIndex === -1) return;
-
-    fanInput = this.stateObj.attributes.fan_list[fanIndex];
+    const fanInput = this.stateObj.attributes.fan_list[fanIndex];
     if (fanInput === this.stateObj.attributes.fan_mode) return;
-
     this.callServiceHelper('set_fan_mode', { fan_mode: fanInput });
   }
 
   handleOperationmodeChanged(operationIndex) {
-    var operationInput;
     // Selected Option will transition to '' before transitioning to new value
     if (operationIndex === '' || operationIndex === -1) return;
-
-    operationInput = this.stateObj.attributes.operation_list[operationIndex];
+    const operationInput = this.stateObj.attributes.operation_list[operationIndex];
     if (operationInput === this.stateObj.attributes.operation_mode) return;
 
     this.callServiceHelper('set_operation_mode', { operation_mode: operationInput });
   }
 
   handleSwingmodeChanged(swingIndex) {
-    var swingInput;
     // Selected Option will transition to '' before transitioning to new value
     if (swingIndex === '' || swingIndex === -1) return;
-
-    swingInput = this.stateObj.attributes.swing_list[swingIndex];
+    const swingInput = this.stateObj.attributes.swing_list[swingIndex];
     if (swingInput === this.stateObj.attributes.swing_mode) return;
-
     this.callServiceHelper('set_swing_mode', { swing_mode: swingInput });
   }
 
