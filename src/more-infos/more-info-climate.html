@@ -63,14 +63,15 @@
         width: 100%;
       }
 
-      ha-climate-control.range-control-left {
-        float: left;
-        width: 46%;
-        margin-right: 4%;
-      }
+      ha-climate-control.range-control-left,
       ha-climate-control.range-control-right {
         float: left;
         width: 46%;
+      }
+        ha-climate-control.range-control-left {
+        margin-right: 4%;
+      }
+      ha-climate-control.range-control-right {
         margin-left: 4%;
       }
 
@@ -110,7 +111,7 @@
               units='[[stateObj.attributes.unit_of_measurement]]'
               step='[[computeTemperatureStepSize(stateObj)]]'
               min='[[stateObj.attributes.min_temp]]'
-              max='[[stateObj.attributes.max_temp]]'
+              max='[[stateObj.attributes.target_temp_high]]'
               class='range-control-left'
               on-change='targetTemperatureLowChanged'
               >
@@ -119,7 +120,7 @@
               value='[[stateObj.attributes.target_temp_high]]'
               units='[[stateObj.attributes.unit_of_measurement]]'
               step='[[computeTemperatureStepSize(stateObj)]]'
-              min='[[stateObj.attributes.min_temp]]'
+              min='[[stateObj.attributes.target_temp_low]]'
               max='[[stateObj.attributes.max_temp]]'
               class='range-control-right'
               on-change='targetTemperatureHighChanged'
@@ -327,39 +328,31 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   targetTemperatureChanged(ev) {
-    var temperature = ev.target.value;
-
+    let temperature = ev.target.value;
     if (temperature === this.stateObj.attributes.temperature) return;
-
     this.callServiceHelper('set_temperature', { temperature: temperature });
   }
 
   targetTemperatureLowChanged(ev) {
-    var targetTempLow = ev.currentTarget.value;
-    var targetTempHigh = this.stateObj.attributes.target_temp_high;
-
-    if (targetTempLow === this.stateObj.attributes.target_temp_low &&
-        targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+    let targetTempLow = ev.currentTarget.value;
+    if (targetTempLow === this.stateObj.attributes.target_temp_low ) return;
     this.callServiceHelper('set_temperature', {
       target_temp_low: targetTempLow,
-      target_temp_high: targetTempHigh,
+      target_temp_high: this.stateObj.attributes.target_temp_high,
     });
   }
 
   targetTemperatureHighChanged(ev) {
-    var targetTempLow = this.stateObj.attributes.target_temp_low;
-    var targetTempHigh = ev.currentTarget.value;
-
-    if (targetTempLow === this.stateObj.attributes.target_temp_low &&
-        targetTempHigh === this.stateObj.attributes.target_temp_high) return;
+    let targetTempHigh = ev.currentTarget.value;
+    if (targetTempHigh === this.stateObj.attributes.target_temp_high) return;
     this.callServiceHelper('set_temperature', {
-      target_temp_low: targetTempLow,
+      target_temp_low: this.stateObj.attributes.target_temp_low,
       target_temp_high: targetTempHigh,
     });
   }
 
   targetHumiditySliderChanged(ev) {
-    var humidity = ev.target.value;
+    let humidity = ev.target.value;
 
     if (humidity === this.stateObj.attributes.humidity) return;
 
