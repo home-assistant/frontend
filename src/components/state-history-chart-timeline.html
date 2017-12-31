@@ -126,7 +126,9 @@ class StateHistoryChartTimeline extends
         }
       });
 
-      addRow(entityDisplay, prevState, prevLastChanged, endTime);
+      if (prevState !== null) {
+        addRow(entityDisplay, prevState, prevLastChanged, endTime);
+      }
       numTimelines++;
     });
 
