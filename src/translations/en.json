@@ -92,12 +92,12 @@
         "on": "Connected"
       },
       "door": {
-        "off": "[%key:state::binary_sensor::opening::off%]",
-        "on": "[%key:state::binary_sensor::opening::on%]"
+        "off": "[%key:state::cover::closed%]",
+        "on": "[%key:state::cover::open%]"
       },
       "garage_door": {
-        "off": "[%key:state::binary_sensor::opening::off%]",
-        "on": "[%key:state::binary_sensor::opening::on%]"
+        "off": "[%key:state::cover::closed%]",
+        "on": "[%key:state::cover::open%]"
       },
       "gas": {
         "off": "Clear",
@@ -120,8 +120,8 @@
         "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "opening": {
-        "off": "Closed",
-        "on": "Open"
+        "off": "[%key:state::cover::closed%]",
+        "on": "[%key:state::cover::open%]"
       },
       "presence": {
         "off": "[%key:state::device_tracker::not_home%]",
@@ -148,8 +148,8 @@
         "on": "[%key:state::binary_sensor::gas::on%]"
       },
       "window": {
-        "off": "[%key:state::binary_sensor::opening::off%]",
-        "on": "[%key:state::binary_sensor::opening::on%]"
+        "off": "[%key:state::cover::closed%]",
+        "on": "[%key:state::cover::open%]"
       }
     },
     "calendar": {
