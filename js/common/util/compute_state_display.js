@@ -29,6 +29,7 @@ export default function computeStateDisplay(localize, stateObj, language) {
       } else if (!stateObj.attributes.has_date) {
         const now = new Date();
         date = new Date(
+          // Due to bugs.chromium.org/p/chromium/issues/detail?id=797548 don't use artificial 1970 year.
           now.getFullYear(), now.getMonth(), now.getDay(),
           stateObj.attributes.hour,
           stateObj.attributes.minute
