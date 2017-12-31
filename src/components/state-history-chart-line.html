@@ -236,7 +236,9 @@
         }
 
         // Add an entry for final values
-        pushData([endTime].concat(prevValues.slice(1)), false);
+        if (prevValues) {
+          pushData([endTime].concat(prevValues.slice(1)), false);
+        }
 
         dataTable.addRows(data);
         return dataTable;
