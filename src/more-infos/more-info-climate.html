@@ -147,10 +147,11 @@
 
       <div class='container-operation_list'>
         <div class='controls'>
-          <paper-dropdown-menu label-float dynamic-align label='Operation'>
+          <paper-dropdown-menu class='capitalize' label-float dynamic-align label='Operation'>
             <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
               <template is='dom-repeat'
-                        items='[[stateObj.attributes.operation_list]]'>
+                        items='[[stateObj.attributes.operation_list]]'
+                        on-dom-change='handleOperationListUpdate'>
                 <paper-item class="capitalize">[[item]]</paper-item>
               </template>
             </paper-listbox>
@@ -256,13 +257,6 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
       this.fanIndex = -1;
     }
 
-    if (newVal.attributes.operation_list) {
-      this.operationIndex =
-          newVal.attributes.operation_list.indexOf(newVal.attributes.operation_mode);
-    } else {
-      this.operationIndex = -1;
-    }
-
     if (newVal.attributes.swing_list) {
       this.swingIndex = newVal.attributes.swing_list.indexOf(newVal.attributes.swing_mode);
     } else {
@@ -273,6 +267,17 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
       setTimeout(() => {
         this.fire('iron-resize');
       }, 500);
+    }
+  }
+
+  handleOperationListUpdate() {
+    // force polymer to recognize selected item change (to update actual label)
+    this.operationIndex = -1;
+    if (this.stateObj.attributes.operation_list) {
+      this.operationIndex =
+          this.stateObj.attributes.operation_list.indexOf(this.stateObj.attributes.operation_mode);
+    } else {
+      this.operationIndex = -1;
     }
   }
 
