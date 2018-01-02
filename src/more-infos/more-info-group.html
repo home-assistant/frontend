@@ -15,7 +15,7 @@
     </style>
 
     <div id="groupedControlDetails"></div>
-    <template is='dom-repeat' items="[[states]]" as='state'>
+    <template is='dom-repeat' items="[[computedStates]]" as='state'>
       <div class='child-card'>
         <state-card-content state-obj="[[state]]" hass='[[hass]]'></state-card-content>
       </div>
@@ -37,7 +37,7 @@ class MoreInfoGroup extends Polymer.Element {
         type: Object,
       },
 
-      states: {
+      computedStates: {
         type: Array,
         computed: 'computeStates(stateObj, hass)',
       },
