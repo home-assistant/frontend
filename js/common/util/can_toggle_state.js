@@ -6,6 +6,9 @@ export default function canToggleState(hass, stateObj) {
   if (domain === 'group') {
     return stateObj.state === 'on' || stateObj.state === 'off';
   }
+  if (domain === 'climate') {
+    return !!((stateObj.attributes || {}).supported_features & 4096);
+  }
 
   return canToggleDomain(hass, domain);
 }
