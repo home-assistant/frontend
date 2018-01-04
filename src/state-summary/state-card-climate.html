@@ -43,7 +43,7 @@
         <div class='state'>
           <div class='target'>
             <span class="state-label">
-              [[computeState(stateObj)]]
+              [[stateObj.state]]
             </span>
             [[computeTargetTemperature(stateObj)]]
           </div>
@@ -103,8 +103,8 @@ class StateCardClimate extends Polymer.Element {
   }
 
   computeState(stateObj) {
-    if (!this.onOffSupported(stateObj)) return stateObj.state;
-    return stateObj.attributes.operation_mode || stateObj.state;
+    if (stateObj.state === 'off') return stateObj.attributes.operation_mode;
+    return stateObj.state;
   }
 }
 customElements.define(StateCardClimate.is, StateCardClimate);
