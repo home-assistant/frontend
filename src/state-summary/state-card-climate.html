@@ -2,6 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
+<link rel="import" href="../components/entity/ha-entity-toggle.html">
 <link rel="import" href="../components/entity/state-info.html">
 
 <dom-module id="state-card-climate">
@@ -24,8 +25,11 @@
 
       .current {
         color: var(--secondary-text-color);
+        margin-left: 16px;
       }
-
+      .state .current {
+        margin: 0;
+      }
       .state-label {
         font-weight: bold;
         text-transform: capitalize;
@@ -33,25 +37,39 @@
     </style>
 
     <div class='horizontal justified layout'>
+
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>
+      <template is='dom-if' if='[[!onOffSupported(stateObj)]]'>
+        <div class='state'>
+          <div class='target'>
+            <span class="state-label">
+              [[computeState(stateObj)]]
+            </span>
+            [[computeTargetTemperature(stateObj)]]
+          </div>
+
+          <div class='current'>
+            Currently: [[stateObj.attributes.current_temperature]] [[stateObj.attributes.unit_of_measurement]]
+          </div>
+        </div>
+      </template>
+      <template is='dom-if' if='[[onOffSupported(stateObj)]]'>
+        <ha-entity-toggle state-obj="[[stateObj]]" hass='[[hass]]'></ha-entity-toggle>
+      </template>
+    </div>
+    <template is='dom-if' if='[[onOffSupported(stateObj)]]'>
+      <div class='horizontal end-justified layout'>
         <div class='target'>
           <span class="state-label">
-            [[stateObj.state]]
+            [[computeState(stateObj)]]
           </span>
-          <span>
-            [[computeTargetTemperature(stateObj)]]
-          </span>
+          [[computeTargetTemperature(stateObj)]]
         </div>
-
         <div class='current'>
-          <span>Currently: </span>
-          <span>[[stateObj.attributes.current_temperature]]</span>
-          <span> </span>
-          <span>[[stateObj.attributes.unit_of_measurement]]</span>
+          Currently: [[stateObj.attributes.current_temperature]] [[stateObj.attributes.unit_of_measurement]]
         </div>
       </div>
-    </div>
+    </template>
   </template>
 </dom-module>
 
@@ -61,6 +79,7 @@ class StateCardClimate extends Polymer.Element {
 
   static get properties() {
     return {
+      hass: Object,
       stateObj: Object,
       inDialog: {
         type: Boolean,
@@ -70,19 +89,22 @@ class StateCardClimate extends Polymer.Element {
   }
 
   computeTargetTemperature(stateObj) {
-    var stateTemp = '';
-
     if (stateObj.attributes.target_temp_low &&
         stateObj.attributes.target_temp_high) {
-      stateTemp = stateObj.attributes.target_temp_low + ' - ' +
-        stateObj.attributes.target_temp_high + ' ' +
-        stateObj.attributes.unit_of_measurement;
+      return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${stateObj.attributes.unit_of_measurement}`;
     } else if (stateObj.attributes.temperature) {
-      stateTemp = stateObj.attributes.temperature + ' ' +
-      stateObj.attributes.unit_of_measurement;
+      return `${stateObj.attributes.temperature} ${stateObj.attributes.unit_of_measurement}`;
     }
+    return '';
+  }
 
-    return stateTemp;
+  onOffSupported(stateObj) {
+    return stateObj.attributes.supported_features & 4096;
+  }
+
+  computeState(stateObj) {
+    if (!this.onOffSupported(stateObj)) return stateObj.state;
+    return stateObj.attributes.operation_mode || stateObj.state;
   }
 }
 customElements.define(StateCardClimate.is, StateCardClimate);
