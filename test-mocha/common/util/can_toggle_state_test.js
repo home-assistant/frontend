@@ -37,4 +37,21 @@ describe('canToggleState', () => {
     };
     assert.isFalse(canToggleState(hass, stateObj));
   });
+
+  it('Detects climate with toggle', () => {
+    const stateObj = {
+      entity_id: 'climate.bla',
+      attributes: {
+        supported_features: 4096,
+      },
+    };
+    assert.isTrue(canToggleState(hass, stateObj));
+  });
+
+  it('Detects climate without toggle', () => {
+    const stateObj = {
+      entity_id: 'climate.bla',
+    };
+    assert.isFalse(canToggleState(hass, stateObj));
+  });
 });
