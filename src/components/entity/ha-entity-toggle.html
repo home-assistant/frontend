@@ -42,7 +42,10 @@ class HaEntityToggle extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object,
+      stateObj: {
+        type: Object,
+        observer: 'stateObjObserver'
+      },
 
       toggleChecked: {
         type: Boolean,
@@ -97,12 +100,15 @@ class HaEntityToggle extends Polymer.Element {
   }
 
   computeIsOn(stateObj) {
-    const result = stateObj && !window.hassUtil.OFF_STATES.includes(stateObj.state);
-    if (this.isOn === result) {
+    return stateObj && !window.hassUtil.OFF_STATES.includes(stateObj.state);
+  }
+
+  stateObjObserver(newVal, oldVal) {
+    if (!oldVal || !newVal) return;
+    if (this.computeIsOn(newVal) === this.computeIsOn(oldVal)) {
       // stateObj changed but isOn is the same. Make sure toggle is in the right position.
       this.forceStateChange();
     }
-    return result;
   }
 
   // We call updateToggle after a successful call to re-sync the toggle
