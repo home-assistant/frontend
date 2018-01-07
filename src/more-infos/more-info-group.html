@@ -66,33 +66,31 @@ class MoreInfoGroup extends Polymer.Element {
   }
 
   statesChanged(stateObj, states) {
-    var groupDomainStateObj = false;
-    var baseStateObj;
-    var i;
-    var state;
-    var el;
+    let groupDomainStateObj = false;
 
     if (states && states.length > 0) {
-      baseStateObj = states.find(s => s.state === 'on') || states[0];
+      const baseStateObj = states.find(s => s.state === 'on') || states[0];
+      const groupDomain = window.hassUtil.computeDomain(baseStateObj);
 
-      groupDomainStateObj = Object.assign({}, baseStateObj, {
-        entity_id: stateObj.entity_id,
-        attributes: Object.assign({}, baseStateObj.attributes)
-      });
-      var groupDomain = window.hassUtil.computeDomain(groupDomainStateObj);
+      // Groups need to be filtered out or we'll show content of
+      // first child above the children of the current group
+      if (groupDomain !== 'group') {
+        groupDomainStateObj = Object.assign({}, baseStateObj, {
+          entity_id: stateObj.entity_id,
+          attributes: Object.assign({}, baseStateObj.attributes)
+        });
 
-      for (i = 0; i < states.length; i++) {
-        state = states[i];
-
-        if (groupDomain !== window.hassUtil.computeDomain(state)) {
-          groupDomainStateObj = false;
-          break;
+        for (let i = 0; i < states.length; i++) {
+          if (groupDomain !== window.hassUtil.computeDomain(states[i])) {
+            groupDomainStateObj = false;
+            break;
+          }
         }
       }
     }
 
     if (!groupDomainStateObj) {
-      el = Polymer.dom(this.$.groupedControlDetails);
+      const el = Polymer.dom(this.$.groupedControlDetails);
       if (el.lastChild) {
         el.removeChild(el.lastChild);
       }
