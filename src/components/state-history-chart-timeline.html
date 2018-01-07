@@ -84,7 +84,7 @@ class StateHistoryChartTimeline extends Polymer.Element {
       var entityDisplay;
       var newLastChanged;
       var prevState = null;
-      var prevLastChanged = null;
+      var prevLastChanged = startTime;
       var dataRow = [];
 
       // if (stateInfo.data.length === 0) return;
@@ -111,7 +111,9 @@ class StateHistoryChartTimeline extends Polymer.Element {
         }
       });
 
-      dataRow.push([prevLastChanged, endTime, prevState]);
+      if (prevState !== null) {
+        dataRow.push([prevLastChanged, endTime, prevState]);
+      }
       datasets.push({ data: dataRow });
       labels.push(entityDisplay);
     });
