@@ -73,7 +73,7 @@ class MoreInfoGroup extends Polymer.Element {
     var el;
 
     if (states && states.length > 0) {
-      baseStateObj = states[0];
+      baseStateObj = states.find(s => s.state === 'on') || states[0];
 
       groupDomainStateObj = Object.assign({}, baseStateObj, {
         entity_id: stateObj.entity_id,
