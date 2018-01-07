@@ -180,9 +180,34 @@ class StateHistoryChartLine extends Polymer.Element {
         var columnStyle = domain === 'sensor';
         addColumn(name, columnStyle);
 
+        var lastValue = null;
+        var lastDate = null;
+        var lastNullDate = null;
+
+        // Process chart data.
+        // When state is `unknown`, calculate the value and break the line.
         states.states.forEach(function (state) {
           var value = safeParseFloat(state.state);
-          pushData(new Date(state.last_changed), [value]);
+          var date = new Date(state.last_changed);
+          if (value !== null && lastNullDate !== null) {
+            var dateTime = date.getTime();
+            var lastNullDateTime = lastNullDate.getTime();
+            var lastDateTime = lastDate.getTime();
+            var tmpValue = ((value - lastValue) *
+              ((lastNullDateTime - lastDateTime) / (dateTime - lastDateTime))) + lastValue;
+            pushData(lastNullDate, [tmpValue]);
+            pushData(new Date(lastNullDateTime + 1), [null]);
+            pushData(date, [value]);
+            lastDate = date;
+            lastValue = value;
+            lastNullDate = null;
+          } else if (value !== null && lastNullDate === null) {
+            pushData(date, [value]);
+            lastDate = date;
+            lastValue = value;
+          } else if (value === null && lastNullDate === null && lastValue !== null) {
+            lastNullDate = date;
+          }
         });
       }
 
@@ -197,7 +222,7 @@ class StateHistoryChartLine extends Polymer.Element {
       type: 'line',
       options: {
         title: {
-          display: false,
+          display: true,
           text: unit
         },
         scales: {
