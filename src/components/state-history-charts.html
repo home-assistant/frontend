@@ -116,8 +116,8 @@ class StateHistoryCharts extends Polymer.Element {
   }
 
   _computeIsEmpty(historyData) {
-    return (historyData &&
-            historyData.timeline.length === 0 &&
+    return !historyData || !historyData.timeline || !historyData.line ||
+           (historyData.timeline.length === 0 &&
             historyData.line.length === 0);
   }
 
