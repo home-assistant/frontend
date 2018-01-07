@@ -183,6 +183,10 @@
       orderedGroups
     ) {
       if (!panelVisible || !viewVisible) {
+        if (!this.cards) this.cards = this.emptyCards();
+        if (this.cards.badges.length || this.cards.columns.length) {
+          this.cards = this.emptyCards();
+        }
         return;
       }
       this._debouncer = Polymer.Debouncer.debounce(
@@ -197,14 +201,19 @@
       );
     }
 
-    computeCards(columns, states, orderedGroups) {
-      const hass = this.hass;
-
-      const cards = {
+    emptyCards() {
+      return {
         demo: false,
         badges: [],
         columns: [],
       };
+    }
+
+    computeCards(columns, states, orderedGroups) {
+      const hass = this.hass;
+
+      const cards = this.emptyCards();
+
       const entityCount = [];
       for (let i = 0; i < columns; i++) {
         cards.columns.push([]);
