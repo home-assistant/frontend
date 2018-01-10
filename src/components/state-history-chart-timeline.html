@@ -1,9 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 
 <script>
-class StateHistoryChartTimeline extends
-  Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+class StateHistoryChartTimeline extends Polymer.Element {
   static get is() { return 'state-history-chart-timeline'; }
   static get properties() {
     return {
@@ -23,9 +22,25 @@ class StateHistoryChartTimeline extends
     super.connectedCallback();
     this._isAttached = true;
     this.drawChart();
-    this.addEventListener('iron-resize', () => {
-      setTimeout(() => this.drawChart(), 10);
-    });
+
+    this._resizeListener = () => {
+      this._debouncer = Polymer.Debouncer.debounce(
+        this._debouncer,
+        Polymer.Async.timeOut.after(10),
+        () => {
+          if (this._isAttached) {
+            this.drawChart();
+          }
+        }
+      );
+    };
+    window.addEventListener('resize', this._resizeListener);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._isAttached = false;
+    window.removeEventListener('resize', this._resizeListener);
   }
 
   dataChanged() {
