@@ -1,4 +1,5 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -23,6 +24,7 @@
         }
       }
 
+      .container-on,
       .container-away_mode,
       .container-aux_heat,
       .container-temperature,
@@ -33,6 +35,7 @@
         display: none;
       }
 
+      .has-on .container-on,
       .has-away_mode .container-away_mode,
       .has-aux_heat .container-aux_heat,
       .has-target_temperature .container-temperature,
@@ -90,8 +93,18 @@
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
+      <div class='container-on'>
+        <div class='center horizontal layout single-row'>
+          <div class='flex'>On / Off</div>
+          <paper-toggle-button
+            checked='[[onToggleChecked]]'
+            on-change='onToggleChanged'>
+          </paper-toggle-button>
+        </div>
+      </div>
+
       <div class='container-temperature'>
-        <div class$='single-row, [[stateObj.attributes.operation_mode]]'>
+        <div class$='[[stateObj.attributes.operation_mode]]'>
           <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target
             Temperature</div>
           <template is='dom-if' if='[[computeIncludeTempControl(stateObj)]]'>
@@ -237,19 +250,16 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
         observer: 'handleSwingmodeChanged',
       },
 
-      awayToggleChecked: {
-        type: Boolean,
-      },
-
-      auxToggleChecked: {
-        type: Boolean,
-      },
+      awayToggleChecked: Boolean,
+      auxToggleChecked: Boolean,
+      onToggleChecked: Boolean,
     };
   }
 
   stateObjChanged(newVal, oldVal) {
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
     this.auxToggleChecked = newVal.attributes.aux_heat === 'on';
+    this.onToggleChecked = newVal.state !== 'off';
 
     if (newVal.attributes.fan_list) {
       this.fanIndex = newVal.attributes.fan_list.indexOf(newVal.attributes.fan_mode);
@@ -264,9 +274,13 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
 
     if (oldVal) {
-      setTimeout(() => {
-        this.fire('iron-resize');
-      }, 500);
+      this._debouncer = Polymer.Debouncer.debounce(
+        this._debouncer,
+        Polymer.Async.timeOut.after(500),
+        () => {
+          this.fire('iron-resize');
+        }
+      );
     }
   }
 
@@ -319,6 +333,7 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
       512: 'has-swing_mode',
       1024: 'has-away_mode',
       2048: 'has-aux_heat',
+      4096: 'has-on',
     };
 
 
@@ -376,6 +391,13 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.callServiceHelper('set_aux_heat', { aux_heat: newVal });
   }
 
+  onToggleChanged(ev) {
+    const oldVal = this.stateObj.state !== 'off';
+    const newVal = ev.target.checked;
+    if (oldVal === newVal) return;
+    this.callServiceHelper(newVal ? 'turn_on' : 'turn_off', {});
+  }
+
   handleFanmodeChanged(fanIndex) {
     // Selected Option will transition to '' before transitioning to new value
     if (fanIndex === '' || fanIndex === -1) return;
@@ -410,9 +432,9 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     data.entity_id = this.stateObj.entity_id;
     /* eslint-enable no-param-reassign */
     this.hass.callService('climate', service, data)
-      .then(function () {
+      .then(() => {
         this.stateObjChanged(this.stateObj);
-      }.bind(this));
+      });
   }
 }
 
