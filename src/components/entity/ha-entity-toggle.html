@@ -41,12 +41,10 @@ class HaEntityToggle extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
+      hass: Object,
       stateObj: {
         type: Object,
+        observer: 'stateObjObserver'
       },
 
       toggleChecked: {
@@ -73,7 +71,7 @@ class HaEntityToggle extends Polymer.Element {
   }
 
   toggleChanged(ev) {
-    var newVal = ev.target.checked;
+    const newVal = ev.target.checked;
 
     if (newVal && !this.isOn) {
       this.callService(true);
@@ -102,7 +100,15 @@ class HaEntityToggle extends Polymer.Element {
   }
 
   computeIsOn(stateObj) {
-    return stateObj && window.hassUtil.OFF_STATES.indexOf(stateObj.state) === -1;
+    return stateObj && !window.hassUtil.OFF_STATES.includes(stateObj.state);
+  }
+
+  stateObjObserver(newVal, oldVal) {
+    if (!oldVal || !newVal) return;
+    if (this.computeIsOn(newVal) === this.computeIsOn(oldVal)) {
+      // stateObj changed but isOn is the same. Make sure toggle is in the right position.
+      this.forceStateChange();
+    }
   }
 
   // We call updateToggle after a successful call to re-sync the toggle
@@ -110,10 +116,9 @@ class HaEntityToggle extends Polymer.Element {
   // result in the entity to be turned on. Since the state is not changing,
   // the resync is not called automatic.
   callService(turnOn) {
-    var stateDomain = window.hassUtil.computeDomain(this.stateObj);
-    var serviceDomain;
-    var service;
-    var currentState;
+    const stateDomain = window.hassUtil.computeDomain(this.stateObj);
+    let serviceDomain;
+    let service;
 
     if (stateDomain === 'lock') {
       serviceDomain = 'lock';
@@ -126,20 +131,20 @@ class HaEntityToggle extends Polymer.Element {
       service = turnOn ? 'turn_on' : 'turn_off';
     }
 
-    currentState = this.stateObj;
+    const currentState = this.stateObj;
     this.hass.callService(
       serviceDomain, service,
       { entity_id: this.stateObj.entity_id }
     )
-      .then(function () {
-        setTimeout(function () {
+      .then(() => {
+        setTimeout(() => {
           // If after 2 seconds we have not received a state update
           // reset the switch to it's original state.
           if (this.stateObj === currentState) {
             this.forceStateChange();
           }
-        }.bind(this), 2000);
-      }.bind(this));
+        }, 2000);
+      });
   }
 }
 
