@@ -317,19 +317,31 @@
 
     hassChanged(hass) {
       if (!hass) return;
-      var views = window.HAWS.extractViews(hass.states);
+      const views = window.HAWS.extractViews(hass.states);
+      let defaultView = null;
       // If default view present, it's in first index.
       if (views.length > 0 && views[0].entity_id === DEFAULT_VIEW_ENTITY_ID) {
-        this.defaultView = views.shift();
-      } else {
-        this.defaultView = null;
+        defaultView = views.shift();
       }
 
-      this.views = views;
+      this.setProperties({ views, defaultView });
     }
 
     isView(currentView, defaultView) {
       return currentView || defaultView;
+    }
+
+    _defaultViewFilter(hass, entityId) {
+      // Filter out hidden
+      return !hass.states[entityId].attributes.hidden;
+    }
+
+    _computeDefaultViewStates(hass, entityIds) {
+      const states = {};
+      entityIds.filter(this._defaultViewFilter.bind(null, hass)).forEach((entityId) => {
+        states[entityId] = hass.states[entityId];
+      });
+      return states;
     }
 
     /*
@@ -338,28 +350,14 @@
       Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
     */
     computeViewStates(currentView, hass, defaultView) {
-      var i;
-      var entityId;
-      var state;
-      var states;
-      var entityIds = Object.keys(hass.states);
+      const entityIds = Object.keys(hass.states);
 
       // If we base off all entities, only have to filter out hidden
       if (!this.isView(currentView, defaultView)) {
-        states = {};
-        for (i = 0; i < entityIds.length; i++) {
-          entityId = entityIds[i];
-          state = hass.states[entityId];
-
-          // We can filter out hidden and domain at the same time.
-          if (!state.attributes.hidden) {
-            states[entityId] = state;
-          }
-        }
-
-        return states;
+        return this._computeDefaultViewStates(hass, entityIds);
       }
 
+      let states;
       if (currentView) {
         states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
       } else {
@@ -367,14 +365,13 @@
       }
 
       // Make sure certain domains are always shown.
-      for (i = 0; i < entityIds.length; i++) {
-        entityId = entityIds[i];
-        state = hass.states[entityId];
+      entityIds.forEach((entityId) => {
+        const state = hass.states[entityId];
 
-        if (ALWAYS_SHOW_DOMAIN.indexOf(window.hassUtil.computeDomain(state)) !== -1) {
+        if (ALWAYS_SHOW_DOMAIN.includes(window.hassUtil.computeDomain(state))) {
           states[entityId] = state;
         }
-      }
+      });
 
       return states;
     }
