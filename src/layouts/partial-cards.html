@@ -359,12 +359,17 @@
             states[entityId] = state;
           }
         }
+
         for (i = 0; i < views.length; i++) {
           view = views[i];
           if (view.attributes.hide_on_home) {
-            for (j = 0; j < view.attributes.entity_id.length; j++) {
-              entityId = view.attributes.entity_id[j]
+            var entities = view.attributes.entity_id.slice();
+            while (entities.length) {
+              entityId = entities.shift()
               delete states[entityId]
+              if (window.HAWS.extractDomain(entityId) == 'group') {
+                entities = entities.concat(hass.states[entityId].attributes.entity_id)
+              }
             }
           }
         }
