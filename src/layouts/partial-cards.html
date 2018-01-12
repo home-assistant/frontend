@@ -338,13 +338,16 @@
       Will make sure we always show entities from ALWAYS_SHOW_DOMAINS domains.
     */
     computeViewStates(currentView, hass, defaultView) {
-      var i;
+      var i, j;
       var entityId;
       var state;
       var states;
+      var views;
+      var view;
       var entityIds = Object.keys(hass.states);
 
       // If we base off all entities, only have to filter out hidden
+      views = window.HAWS.extractViews(hass.states);
       if (!this.isView(currentView, defaultView)) {
         states = {};
         for (i = 0; i < entityIds.length; i++) {
@@ -354,6 +357,15 @@
           // We can filter out hidden and domain at the same time.
           if (!state.attributes.hidden) {
             states[entityId] = state;
+          }
+        }
+        for (i = 0; i < views.length; i++) {
+          view = views[i];
+          if (view.attributes.hide_on_home) {
+            for (j = 0; j < view.attributes.entity_id.length; j++) {
+              entityId = view.attributes.entity_id[j]
+              delete states[entityId]
+            }
           }
         }
 
