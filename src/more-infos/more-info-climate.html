@@ -176,7 +176,8 @@
         <paper-dropdown-menu label-float dynamic-align label='Fan Mode'>
           <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
             <template is='dom-repeat'
-                      items='[[stateObj.attributes.fan_list]]'>
+                      items='[[stateObj.attributes.fan_list]]'
+                      on-dom-change='handleFanListUpdate'>
               <paper-item>[[item]]</paper-item>
             </template>
           </paper-listbox>
@@ -187,7 +188,8 @@
         <paper-dropdown-menu label-float dynamic-align label='Swing Mode'>
           <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
             <template is='dom-repeat'
-                      items='[[stateObj.attributes.swing_list]]'>
+                      items='[[stateObj.attributes.swing_list]]'
+                      on-dom-change='handleSwingListUpdate'>
               <paper-item>[[item]]</paper-item>
             </template>
           </paper-listbox>
@@ -261,18 +263,6 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.auxToggleChecked = newVal.attributes.aux_heat === 'on';
     this.onToggleChecked = newVal.state !== 'off';
 
-    if (newVal.attributes.fan_list) {
-      this.fanIndex = newVal.attributes.fan_list.indexOf(newVal.attributes.fan_mode);
-    } else {
-      this.fanIndex = -1;
-    }
-
-    if (newVal.attributes.swing_list) {
-      this.swingIndex = newVal.attributes.swing_list.indexOf(newVal.attributes.swing_mode);
-    } else {
-      this.swingIndex = -1;
-    }
-
     if (oldVal) {
       this._debouncer = Polymer.Debouncer.debounce(
         this._debouncer,
@@ -290,8 +280,24 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     if (this.stateObj.attributes.operation_list) {
       this.operationIndex =
           this.stateObj.attributes.operation_list.indexOf(this.stateObj.attributes.operation_mode);
-    } else {
-      this.operationIndex = -1;
+    }
+  }
+
+  handleSwingListUpdate() {
+    // force polymer to recognize selected item change (to update actual label)
+    this.swingIndex = -1;
+    if (this.stateObj.attributes.swing_list) {
+      this.swingIndex =
+          this.stateObj.attributes.swing_list.indexOf(this.stateObj.attributes.swing_mode);
+    }
+  }
+
+  handleFanListUpdate() {
+    // force polymer to recognize selected item change (to update actual label)
+    this.fanIndex = -1;
+    if (this.stateObj.attributes.fan_list) {
+      this.fanIndex =
+          this.stateObj.attributes.fan_list.indexOf(this.stateObj.attributes.fan_list);
     }
   }
 
