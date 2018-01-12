@@ -101,7 +101,10 @@
     updateCameraFeedSrc() {
       var attr = this.stateObj.attributes;
       var time = (new Date()).getTime();
-      this.cameraFeedSrc = attr.entity_picture + '&time=' + time;
+      this.cameraFeedSrc = attr.entity_picture + '&time=' + time
+      if (this.scrollWidth) {
+        this.cameraFeedSrc += '&maxwidth=' + this.scrollWidth;
+      }
     }
 
     imageLoadSuccess() {
