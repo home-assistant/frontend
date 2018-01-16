@@ -21,12 +21,18 @@
         @apply(--paper-font-body1);
         color: var(--primary-text-color);
 
-        min-width: 45px;
         text-align: right;
         line-height: 40px;
       }
+      .sliderstate {
+          min-width: 45px;
+      }
       paper-slider[hidden] {
         display: none !important;
+      }
+      paper-input {
+        text-align: right;
+        margin-left: auto;
       }
     </style>
 
@@ -49,7 +55,8 @@
         hidden='[[hiddenbox]]'
       >
       </paper-input>
-      <div class="state" hidden='[[hiddenslider]]'>[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
+      <div class="state" hidden='[[hiddenbox]]'>[[stateObj.attributes.unit_of_measurement]]</div>
+      <div class="state sliderstate" hidden='[[hiddenslider]]'>[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
     </div>
   </template>
 </dom-module>
