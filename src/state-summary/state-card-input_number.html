@@ -15,7 +15,15 @@
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
       paper-slider {
-        margin-left: 16px;
+        margin-left: auto;
+      }
+      .state {
+        @apply(--paper-font-body1);
+        color: var(--primary-text-color);
+
+        min-width: 45px;
+        text-align: right;
+        line-height: 40px;
       }
       paper-slider[hidden] {
         display: none !important;
@@ -41,6 +49,7 @@
         hidden='[[hiddenbox]]'
       >
       </paper-input>
+      <div class="state" hidden='[[hiddenslider]]'>[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
     </div>
   </template>
 </dom-module>
