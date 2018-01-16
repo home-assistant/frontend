@@ -14,7 +14,10 @@
         @apply(--layout-horizontal);
         @apply(--layout-justified);
       }
-      .target-temperature {
+      .in-flux#target_temperature {
+        color: var(--google-red-500);
+      }
+      #target_temperature {
         @apply(--layout-self-center);
         font-size: 200%;
       }
@@ -29,7 +32,7 @@
     </style>
 
     <!-- local DOM goes here -->
-    <div class="target-temperature">
+    <div id="target_temperature">
       [[value]] [[units]]
     </div>
     <div class="control-buttons">
@@ -67,18 +70,34 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
       },
     };
   }
+  temperatureStateInFlux(inFlux) {
+    this.$.target_temperature.classList.toggle('in-flux', inFlux);
+  }
   incrementValue() {
-    var newval = this.value + this.step;
-    this.last_changed = Date.now();
+    const newval = this.value + this.step;
+    if (this.value < this.max) {
+      this.last_changed = Date.now();
+      this.temperatureStateInFlux(true);
+    }
     if (newval <= this.max) {
-      this.value = newval;
+      // If no initial target_temp
+      // this forces control to start
+      // from the min configured instead of 0
+      if (newval <= this.min) {
+        this.value = this.min;
+      } else {
+        this.value = newval;
+      }
     } else {
       this.value = this.max;
     }
   }
   decrementValue() {
-    var newval = this.value - this.step;
-    this.last_changed = Date.now();
+    const newval = this.value - this.step;
+    if (this.value > this.min) {
+      this.last_changed = Date.now();
+      this.temperatureStateInFlux(true);
+    }
     if (newval >= this.min) {
       this.value = newval;
     } else {
@@ -86,19 +105,16 @@ class HaClimateControl extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
   }
   valueChanged() {
-    // when the value is changed, trigger a potential event fire in
+    // when the last_changed timestamp is changed,
+    // trigger a potential event fire in
     // the future, as long as last changed is far enough in the
     // past.
-    //
-    // from a UX perspective it would probably be worth changing
-    // font color on the temperature when it's in the flux state
-    // (like set to red), then animate back to black when the
-    // change event is fired, and the signal sent to home-assistant.
     if (this.last_changed) {
       window.setTimeout(() => {
-        var now = Date.now();
+        const now = Date.now();
         if (now - this.last_changed >= 2000) {
           this.fire('change');
+          this.temperatureStateInFlux(false);
           this.last_changed = null;
         }
       }, 2010);
