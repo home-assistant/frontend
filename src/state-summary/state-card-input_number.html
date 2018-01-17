@@ -71,9 +71,7 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
 
   ready() {
     super.ready();
-    if (this.mode === 'slider') {
-      this.addEventListener('iron-resize', this.hiddenState);
-    }
+    this.addEventListener('iron-resize', this.hiddenState);
   }
 
   static get properties() {
@@ -120,6 +118,8 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
   }
 
   hiddenState() {
+    if (this.mode !== 'slider') return;
+
     if (this.$.slider.offsetWidth < 100) {
       this.$.sliderstate.hidden = true;
     } else if (this.$.slider.offsetWidth >= 145) {
@@ -138,6 +138,9 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
       hiddenbox: (newVal.attributes.mode !== 'box'),
       hiddenslider: (newVal.attributes.mode !== 'slider'),
     });
+    if (this.mode !== newVal.mode) {
+      this.hiddenState();
+    }
   }
 
   selectedValueChanged() {
