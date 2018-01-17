@@ -64,12 +64,14 @@
 </dom-module>
 
 <script>
-class StateCardInputNumber extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+class StateCardInputNumber extends Polymer.mixinBehaviors([
+  Polymer.IronResizableBehavior
+], Polymer.Element) {
   static get is() { return 'state-card-input_number'; }
 
   ready() {
     super.ready();
-    if (this.mode == "slider") {
+    if (this.mode === 'slider') {
       this.addEventListener('iron-resize', this.hiddenState);
     }
   }
