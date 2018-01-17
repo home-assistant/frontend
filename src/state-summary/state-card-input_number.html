@@ -6,6 +6,8 @@
 
 <link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 
+<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+
 <link rel="import" href="../components/entity/state-info.html">
 
 <link rel="import" href="../util/hass-util.html">
@@ -62,8 +64,15 @@
 </dom-module>
 
 <script>
-class StateCardInputNumber extends Polymer.Element {
+class StateCardInputNumber extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
   static get is() { return 'state-card-input_number'; }
+
+  ready() {
+    super.ready();
+    if (this.mode == "slider") {
+      this.addEventListener('iron-resize', this.hiddenState);
+    }
+  }
 
   static get properties() {
     return {
@@ -102,7 +111,18 @@ class StateCardInputNumber extends Polymer.Element {
       value: {
         type: Number,
       },
+      mode: {
+        type: String,
+      }
     };
+  }
+
+  hiddenState() {
+    if (this.$.slider.offsetWidth < 100) {
+      this.$.sliderstate.hidden = true;
+    } else if (this.$.slider.offsetWidth >= 145) {
+      this.$.sliderstate.hidden = false;
+    }
   }
 
   stateObjectChanged(newVal) {
@@ -110,13 +130,11 @@ class StateCardInputNumber extends Polymer.Element {
     this.max = Number(newVal.attributes.max);
     this.step = Number(newVal.attributes.step);
     this.value = Number(newVal.state);
+    this.mode = String(newVal.attributes.mode);
     this.maxlength = this.max.legnth;
     if (newVal.attributes.mode === 'slider') {
       this.hiddenbox = true;
       this.hiddenslider = false;
-      if (this.$.slider.offsetWidth < 100) {
-        this.$.sliderstate.hidden = true;
-      }
     } else {
       this.hiddenbox = false;
       this.hiddenslider = true;
