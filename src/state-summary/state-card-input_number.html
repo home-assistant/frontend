@@ -128,19 +128,16 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
   }
 
   stateObjectChanged(newVal) {
-    this.min = Number(newVal.attributes.min);
-    this.max = Number(newVal.attributes.max);
-    this.step = Number(newVal.attributes.step);
-    this.value = Number(newVal.state);
-    this.mode = String(newVal.attributes.mode);
-    this.maxlength = this.max.length;
-    if (newVal.attributes.mode === 'slider') {
-      this.hiddenbox = true;
-      this.hiddenslider = false;
-    } else {
-      this.hiddenbox = false;
-      this.hiddenslider = true;
-    }
+    this.setProperties({
+      min: Number(newVal.attributes.min),
+      max: Number(newVal.attributes.max),
+      step: Number(newVal.attributes.step),
+      value: Number(newVal.state),
+      mode: String(newVal.attributes.mode),
+      maxlength: String(newVal.attributes.max).length,
+      hiddenbox: (newVal.attributes.mode !== 'box'),
+      hiddenslider: (newVal.attributes.mode !== 'slider'),
+    });
   }
 
   selectedValueChanged() {
