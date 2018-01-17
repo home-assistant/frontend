@@ -39,7 +39,7 @@
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
         <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' hidden='[[hiddenslider]]' pin
-          on-change='selectedValueChanged' on-tap='stopPropagation'>
+          on-change='selectedValueChanged' on-tap='stopPropagation' id='slider'>
         </paper-slider>
       <paper-input
         no-label-float
@@ -56,7 +56,7 @@
       >
       </paper-input>
       <div class="state" hidden='[[hiddenbox]]'>[[stateObj.attributes.unit_of_measurement]]</div>
-      <div class="state sliderstate" hidden='[[hiddenslider]]'>[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
+      <div id="sliderstate" class="state sliderstate" hidden='[[hiddenslider]]'>[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
     </div>
   </template>
 </dom-module>
@@ -114,6 +114,9 @@ class StateCardInputNumber extends Polymer.Element {
     if (newVal.attributes.mode === 'slider') {
       this.hiddenbox = true;
       this.hiddenslider = false;
+      if(this.$.slider.offsetWidth < 100) {
+        this.$.sliderstate.hidden = true;
+      }
     } else {
       this.hiddenbox = false;
       this.hiddenslider = true;
