@@ -25,7 +25,7 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(Polymer.El
         readOnly: true,
         notify: true,
         value: (
-          'PushManager' in window &&
+          'serviceWorker' in navigator && 'PushManager' in window &&
             (document.location.protocol === 'https:' ||
               document.location.hostname === 'localhost' ||
               document.location.hostname === '127.0.0.1')
@@ -61,6 +61,7 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(Polymer.El
     );
   }
   handlePushChange(pushChecked) {
+    if (!this.pushSupported) return;
     if (pushChecked) {
       this.subscribePushNotifications();
     } else {
