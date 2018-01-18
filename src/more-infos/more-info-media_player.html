@@ -118,7 +118,7 @@
       <!-- SOUND MODE PICKER -->
       <div class='controls layout horizontal justified'
            hidden$='[[computeHideSelectSoundMode(isOff, supportsSelectSoundMode)]]'>
-        <iron-icon class="sound-mode-input" icon="mdi:login-variant"></iron-icon>
+        <iron-icon class="sound-mode-input" icon="mdi:music-note"></iron-icon>
         <paper-dropdown-menu class="flex sound-mode-input" dynamic-align label-float label='Sound Mode'>
           <paper-listbox slot="dropdown-content" selected="{{soundModeIndex}}">
             <template is='dom-repeat' items='[[stateObj.attributes.sound_mode_list]]'>
