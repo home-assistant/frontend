@@ -69,6 +69,16 @@ class HaStateLabelBadge extends
     };
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.startInterval(this.state);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.clearInterval();
+  }
+
   ready() {
     super.ready();
     this.addEventListener('tap', ev => this.badgeTap(ev));
@@ -165,29 +175,29 @@ class HaStateLabelBadge extends
 
   stateChanged(stateObj) {
     this.updateStyles();
+    this.startInterval(stateObj);
+  }
 
-    if (window.hassUtil.computeDomain(stateObj) !== 'timer') return;
-
+  clearInterval() {
     if (this._updateRemaining) {
       clearInterval(this._updateRemaining);
       this._updateRemaining = null;
     }
+  }
 
-    this.calculateTimerRemaining(stateObj);
+  startInterval(stateObj) {
+    this.clearInterval();
+    if (window.hassUtil.computeDomain(stateObj) === 'timer') {
+      this.calculateTimerRemaining(stateObj);
 
-    if (stateObj.state === 'active') {
-      this._updateRemaining = setInterval(() => this.calculateTimerRemaining(this.state), 1000);
+      if (stateObj.state === 'active') {
+        this._updateRemaining = setInterval(() => this.calculateTimerRemaining(this.state), 1000);
+      }
     }
   }
 
   calculateTimerRemaining(stateObj) {
-    this.timerTimeRemaining = window.hassUtil.durationToSeconds(stateObj.attributes.remaining);
-
-    if (stateObj.state === 'active') {
-      const now = new Date();
-      const madeActive = new Date(stateObj.last_changed);
-      this.timerTimeRemaining = Math.max(this.timerTimeRemaining - ((now - madeActive) / 1000), 0);
-    }
+    this.timerTimeRemaining = window.hassUtil.timerTimeRemaining(stateObj);
   }
 }
 

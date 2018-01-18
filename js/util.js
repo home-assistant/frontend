@@ -19,6 +19,7 @@ import formatTime from './common/util/format_time.js';
 import secondsToDuration from './common/util/seconds_to_duration.js';
 import stateCardType from './common/util/state_card_type.js';
 import stateMoreInfoType from './common/util/state_more_info_type.js';
+import timerTimeRemaining from './common/util/timer_time_remaining.js';
 
 window.hassUtil = window.hassUtil || {};
 
@@ -38,6 +39,7 @@ Object.assign(window.hassUtil, {
   secondsToDuration,
   stateCardType,
   stateMoreInfoType,
+  timerTimeRemaining,
   formatDate: dateObj => formatDate(dateObj, language),
   formatDateTime: dateObj => formatDateTime(dateObj, language),
   formatTime: dateObj => formatTime(dateObj, language),
