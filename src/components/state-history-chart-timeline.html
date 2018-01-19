@@ -93,20 +93,24 @@ class StateHistoryChartTimeline extends Polymer.Element {
 
       stateInfo.data.forEach(function (state) {
         var timeStamp = new Date(state.last_changed);
+        var newState = state.state;
+        if (newState === undefined || newState === '') {
+          newState = null;
+        }
         if (timeStamp > endTime) {
           // Drop datapoints that are after the requested endTime. This could happen if
           // endTime is 'now' and client time is not in sync with server time.
           return;
         }
-        if (prevState !== null && state.state !== prevState) {
+        if (prevState !== null && newState !== prevState) {
           newLastChanged = new Date(state.last_changed);
 
           dataRow.push([prevLastChanged, newLastChanged, prevState]);
 
-          prevState = state.state;
+          prevState = newState;
           prevLastChanged = newLastChanged;
         } else if (prevState === null) {
-          prevState = state.state;
+          prevState = newState;
           prevLastChanged = new Date(state.last_changed);
         }
       });

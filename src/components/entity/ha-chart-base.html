@@ -43,7 +43,72 @@
   </template>
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
-<script src="../../../bower_components/chart.js/dist/Chart.min.js"></script>
+<script src="../../../bower_components/chart.js/dist/Chart.js"></script>
+<script>
+(function () {
+  Chart.Interaction.modes.neareach = function(chart, e, options) {
+    var getRange = {
+      x: (a, b) => Math.abs(a.x - b.x),
+      y: (a, b) => Math.abs(a.y - b.y),
+      // eslint-disable-next-line no-restricted-properties
+      xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
+    };
+    var getRangeMax = {
+      x: r => r,
+      y: r => r,
+      xy: r => r * r,
+    };
+    var position;
+    if (e.native) {
+      position = {
+        x: e.x,
+        y: e.y
+      };
+    } else {
+      position = Chart.helpers.getRelativePosition(e, chart);
+    }
+    var elements = [];
+    var elementsRange = [];
+    var datasets = chart.data.datasets;
+    var meta;
+    options.axis = options.axis || 'xy';
+    var rangeFunc = getRange[options.axis];
+    var rangeMaxFunc = getRangeMax[options.axis];
+
+    for (var i = 0, ilen = datasets.length; i < ilen; ++i) {
+      if (!chart.isDatasetVisible(i)) {
+        continue;
+      }
+
+      meta = chart.getDatasetMeta(i);
+      for (var j = 0, jlen = meta.data.length; j < jlen; ++j) {
+        var element = meta.data[j];
+        if (!element._view.skip) {
+          var vm = element._view;
+          var range = rangeFunc(vm, position);
+          var oldRange = elementsRange[i];
+          if (range < rangeMaxFunc(vm.radius + vm.hitRadius)) {
+            if (oldRange === undefined || oldRange > range) {
+              elementsRange[i] = range;
+              elements[i] = element;
+            }
+          }
+        }
+      }
+    }
+    var ret = elements.filter(function (n) { return n !== undefined; });
+    return ret;
+  }
+
+  // Fix infinite loop bug in Chart.js 2.7.1
+  var x = Chart.scaleService.constructors.time.prototype;
+  x._getLabelCapacity = x.getLabelCapacity;
+  x.getLabelCapacity = function () {
+    var ret = this._getLabelCapacity.apply(this, arguments);
+    return ret > 0? ret : 1;
+  }
+} ());
+</script>
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <script>
 // Use minified Chart.js to fix strange color after uglify
@@ -125,8 +190,8 @@ class HaChartBase extends
       bodyLines.forEach(function (body, i) {
         var colors = tooltip.labelColors[i];
         var span = ce('span');
-        span.style = ('background:' + colors.backgroundColor +
-          '; border-color:' + colors.borderColor);
+        span.style.background = colors.backgroundColor;
+        span.style['border-color'] = colors.borderColor;
         var tableTr = ce('tr');
         var tableTd = ce('td');
         var tableText;
@@ -161,59 +226,6 @@ class HaChartBase extends
     tooltipEl.style.left = positionX + 'px';
     tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
   }
-  _chartGetIntersection(chart, e, options) {
-    var getRange = {
-      x: (a, b) => Math.abs(a.x - b.x),
-      y: (a, b) => Math.abs(a.y - b.y),
-      // eslint-disable-next-line no-restricted-properties
-      xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
-    };
-    var getRangeMax = {
-      x: r => r,
-      y: r => r,
-      xy: r => r * r,
-    };
-    var position;
-    if (e.native) {
-      position = {
-        x: e.x,
-        y: e.y
-      };
-    } else {
-      position = Chart.helpers.getRelativePosition(e, chart);
-    }
-    var elements = [];
-    var elementsRange = [];
-    var datasets = chart.data.datasets;
-    var meta;
-    options.axis = options.axis || 'xy';
-    var rangeFunc = getRange[options.axis];
-    var rangeMaxFunc = getRangeMax[options.axis];
-
-    for (var i = 0, ilen = datasets.length; i < ilen; ++i) {
-      if (!chart.isDatasetVisible(i)) {
-        continue;
-      }
-
-      meta = chart.getDatasetMeta(i);
-      for (var j = 0, jlen = meta.data.length; j < jlen; ++j) {
-        var element = meta.data[j];
-        if (!element._view.skip) {
-          var vm = element._view;
-          var range = rangeFunc(vm, position);
-          var oldRange = elementsRange[i];
-          if (range < rangeMaxFunc(vm.radius + vm.hitRadius)) {
-            if (oldRange === undefined || oldRange > range) {
-              elementsRange[i] = range;
-              elements[i] = element;
-            }
-          }
-        }
-      }
-    }
-    var ret = elements.filter(function (n) { return n !== undefined; });
-    return ret;
-  }
   drawChart() {
     var data = this.data.data;
     var ctx = this.$.chartCanvas;
@@ -240,9 +252,6 @@ class HaChartBase extends
     } else {
       if (!data.datasets) {
         return;
-      }
-      if (!Chart.Interaction.modes.neareach) {
-        Chart.Interaction.modes.neareach = this._chartGetIntersection.bind(this);
       }
       var colorList = this.data.colors ? this.data.colors.staticColors : undefined;
       var colorIndex = this.data.colors ? this.data.colors.staticColorIndex : undefined;
@@ -276,16 +285,28 @@ class HaChartBase extends
       options = Chart.helpers.merge(options, this.data.options);
       if (this.data.type === 'timeline') {
         this._isTimeline = true;
+        if (data.datasets.length === 1) {
+          if (options.scales.yAxes[0].ticks) {
+            options.scales.yAxes[0].ticks.display = false;
+          } else {
+            options.scales.yAxes[0].ticks = {display: false};
+          }
+        }
       }
       this.$.chartTarget.style.height = '200px';
       this.$.chartTarget.height = '200px';
-      this._chart = new Chart(ctx, {
+      var chartData = {
         type: this.data.type,
         data: this.data.data,
         options: options
-      });
+      };
+      var me = this;
+      // this._chart = new Chart(ctx, chartData);
       // Async resize after dom update
-      setTimeout(this.resizeChart.bind(this), 1);
+      me._chart = new Chart(ctx, chartData);
+      setTimeout(function () {
+        me.resizeChart.bind(me)
+      }, 1);
     }
   }
   resizeChart() {
