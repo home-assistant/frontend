@@ -1,5 +1,5 @@
 {
-  "entrypoint": "src/entrypoint.html",
+  "entrypoint": "index.html",
   "shell": "src/home-assistant.html",
   "fragments": [
     "panels/config/ha-panel-config.html",
