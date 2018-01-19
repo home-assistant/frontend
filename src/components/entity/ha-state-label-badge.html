@@ -40,7 +40,7 @@
       value='[[computeValue(state)]]'
       icon='[[computeIcon(state)]]'
       image='[[computeImage(state)]]'
-      label='[[computeLabel(localize, state)]]'
+      label='[[computeLabel(localize, state, timerTimeRemaining)]]'
       description='[[computeDescription(state)]]'
     ></ha-label-badge>
   </template>
@@ -62,7 +62,21 @@ class HaStateLabelBadge extends
         type: Object,
         observer: 'stateChanged',
       },
+      timerTimeRemaining: {
+        type: Number,
+        value: 0,
+      }
     };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.startInterval(this.state);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.clearInterval();
   }
 
   ready() {
@@ -92,6 +106,7 @@ class HaStateLabelBadge extends
       case 'updater':
       case 'sun':
       case 'alarm_control_panel':
+      case 'timer':
         return null;
       case 'sensor':
       default:
@@ -128,6 +143,8 @@ class HaStateLabelBadge extends
       case 'sun':
         return state.state === 'above_horizon' ?
           window.hassUtil.domainIcon(domain) : 'mdi:brightness-3';
+      case 'timer':
+        return state.state === 'active' ? 'mdi:timer' : 'mdi:timer-off';
       default:
         return null;
     }
@@ -137,7 +154,7 @@ class HaStateLabelBadge extends
     return state.attributes.entity_picture || null;
   }
 
-  computeLabel(localize, state) {
+  computeLabel(localize, state, timerTimeRemaining) {
     const domain = window.hassUtil.computeDomain(state);
     if (state.state === 'unavailable' ||
         ['device_tracker', 'alarm_control_panel'].includes(domain)) {
@@ -146,6 +163,9 @@ class HaStateLabelBadge extends
       // are only added for device_tracker and alarm_control_panel.
       return localize(`state_badge.${domain}.${state.state}`) || localize(`state_badge.default.${state.state}`) || state.state;
     }
+    if (domain === 'timer') {
+      return window.hassUtil.secondsToDuration(timerTimeRemaining);
+    }
     return state.attributes.unit_of_measurement || null;
   }
 
@@ -153,8 +173,31 @@ class HaStateLabelBadge extends
     return window.hassUtil.computeStateName(state);
   }
 
-  stateChanged() {
+  stateChanged(stateObj) {
     this.updateStyles();
+    this.startInterval(stateObj);
+  }
+
+  clearInterval() {
+    if (this._updateRemaining) {
+      clearInterval(this._updateRemaining);
+      this._updateRemaining = null;
+    }
+  }
+
+  startInterval(stateObj) {
+    this.clearInterval();
+    if (window.hassUtil.computeDomain(stateObj) === 'timer') {
+      this.calculateTimerRemaining(stateObj);
+
+      if (stateObj.state === 'active') {
+        this._updateRemaining = setInterval(() => this.calculateTimerRemaining(this.state), 1000);
+      }
+    }
+  }
+
+  calculateTimerRemaining(stateObj) {
+    this.timerTimeRemaining = window.hassUtil.timerTimeRemaining(stateObj);
   }
 }
 
