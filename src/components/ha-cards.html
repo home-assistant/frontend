@@ -51,7 +51,7 @@
       }
     </style>
 
-    <div class='main'>
+    <div id='main'>
       <template is='dom-if' if='[[cards.badges]]'>
         <div class='badges'>
           <template is='dom-if' if='[[cards.demo]]'>
@@ -183,11 +183,13 @@
       orderedGroups
     ) {
       if (!panelVisible || !viewVisible) {
-        if (!this.cards) this.cards = this.emptyCards();
-        if (this.cards.badges.length || this.cards.columns.length) {
-          this.cards = this.emptyCards();
+        if (this.$.main.parentNode) {
+          this.$.main._parentNode = this.$.main.parentNode;
+          this.$.main.parentNode.removeChild(this.$.main);
         }
         return;
+      } else if (!this.$.main.parentNode && this.$.main._parentNode) {
+        this.$.main._parentNode.appendChild(this.$.main);
       }
       this._debouncer = Polymer.Debouncer.debounce(
         this._debouncer,
