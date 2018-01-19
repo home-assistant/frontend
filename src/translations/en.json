@@ -108,8 +108,8 @@
         "on": "Hot"
       },
       "lock": {
-        "off": "[%key:state::lock::unlocked%]",
-        "on": "[%key:state::lock::locked%]"
+        "off": "[%key:state::lock::locked%]",
+        "on": "[%key:state::lock::unlocked%]"
       },
       "moisture": {
         "off": "Dry",
