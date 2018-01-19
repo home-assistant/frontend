@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
 <link rel='import' href='../util/hass-mixins.html'>
-<link rel='import' href='../util/hass-translation.html'>
 
 <dom-module id='ha-camera-card'>
   <template>
@@ -55,7 +54,8 @@
 {
   const UPDATE_INTERVAL = 10000; // ms
 
-  class HaCameraCard extends window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+  class HaCameraCard extends
+    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
     static get is() { return 'ha-camera-card'; }
     static get properties() {
       return {
