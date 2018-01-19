@@ -1,4 +1,17 @@
 {
+  "card": {
+    "camera": {
+      "not_available": "Image not available"
+    },
+    "persistent_notification": {
+      "dismiss": "DISMISS"
+    },
+    "weather": {
+      "humidity": "Humidity",
+      "visibility": "Visibility",
+      "wind": "Wind"
+    }
+  },
   "domain": {
     "alarm_control_panel": "Alarm control panel",
     "automation": "Automation",
