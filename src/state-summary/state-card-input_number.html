@@ -139,6 +139,7 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
   }
 
   stateObjectChanged(newVal) {
+    const prevMode = this.mode;
     this.setProperties({
       min: Number(newVal.attributes.min),
       max: Number(newVal.attributes.max),
@@ -149,7 +150,7 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
       hiddenbox: (newVal.attributes.mode !== 'box'),
       hiddenslider: (newVal.attributes.mode !== 'slider'),
     });
-    if (this.mode !== newVal.mode) {
+    if (this.mode === 'slider' && prevMode !== 'slider') {
       this.hiddenState();
     }
   }
