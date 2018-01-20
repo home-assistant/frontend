@@ -10,14 +10,14 @@
 <dom-module id="ha-config-section-translation">
   <template>
     <ha-config-section is-wide='[[isWide]]'>
-      <span slot='header'>Choose a Language</span>
+      <span slot='header'>[[localize('ui.panel.config.core.section.translation.header')]]</span>
       <span slot='introduction'>
-        Choose a language for the Home Assistant interface on this device.
+        [[localize('ui.panel.config.core.section.translation.introduction')]]
       </span>
 
       <paper-card>
         <div class='card-content'>
-          <paper-dropdown-menu label="Language" dynamic-align>
+          <paper-dropdown-menu label="[[localize('ui.panel.config.core.section.translation.language')]]" dynamic-align>
             <paper-listbox slot="dropdown-content" on-selected-item-changed="handleLanguageSelect" attr-for-selected="language-tag" selected="[[language]]">
               <template is='dom-repeat' items='[[languages]]'>
                 <paper-item language-tag="[[item.tag]]">[[item.nativeName]]</paper-item>

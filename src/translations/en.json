@@ -349,6 +349,11 @@
               "header": "Configure Push Notifications",
               "introduction": "Enable this setting to receive push notifications on this device",
               "push_notifications": "Push Notifications"
+            },
+            "translation": {
+              "header": "Choose a Language",
+              "introduction": "Choose a language for the Home Assistant interface on this device",
+              "language": "Language"
             }
           }
         },
