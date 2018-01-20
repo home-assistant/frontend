@@ -11,6 +11,7 @@ const DOMAINS_WITH_CARD = [
   'media_player',
   'scene',
   'script',
+  'timer',
   'weblink',
 ];
 
