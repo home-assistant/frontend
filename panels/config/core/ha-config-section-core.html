@@ -117,9 +117,9 @@
         </div>
       </paper-card>
 
-      <paper-card heading='Server Management'>
+      <paper-card heading="[[localize('ui.panel.config.core.section.core.server_management.heading')]]">
         <div class='card-content'>
-          Control your Home Assistant server… from Home Assistant.
+          [[localize('ui.panel.config.core.section.core.server_management.introduction')]]
         </div>
         <div class='card-actions warning'>
           <ha-call-service-button
@@ -127,13 +127,15 @@
             hass='[[hass]]'
             domain='homeassistant'
             service='restart'
-          >Restart</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.server_management.restart')]]
+          </ha-call-service-button>
           <ha-call-service-button
             class='warning'
             hass='[[hass]]'
             domain='homeassistant'
             service='stop'
-          >Stop</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.server_management.stop')]]
+          </ha-call-service-button>
         </div>
       </paper-card>
 

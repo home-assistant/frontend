@@ -337,6 +337,12 @@
                 "group": "Reload groups",
                 "automation": "Reload automations",
                 "script": "Reload scripts"
+              },
+              "server_management": {
+                "heading": "Server Management",
+                "introduction": "Control your Home Assistant server… from Home Assistant.",
+                "restart": "Restart",
+                "stop": "Stop"
               }
             }
           }
