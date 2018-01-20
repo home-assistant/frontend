@@ -51,17 +51,17 @@
           <div class='cond condtemp'>[[attr.temperature]]°</div>
           <div class='cond conddetails'>
             <div class="condsmall" hidden$="[[!attr.wind_speed]]">
-              [[localize('card.weather.wind')]]:
+              [[localize('attribute.weather.wind_speed')]]:
               <span hidden$="[[!attr.wind_speed]]">
                 [[attr.wind_speed]]
               </span>
               <span hidden$="[[!windBearing]]">[[windBearing]]</span>
             </div>
             <div class="condsmall" hidden$="[[!attr.humidity]]">
-              [[localize('card.weather.humidity')]]: [[attr.humidity]]%
+              [[localize('attribute.weather.humidity')]]: [[attr.humidity]]%
             </div>
             <div class="condsmall" hidden$="[[!attr.visibility]]">
-              [[localize('card.weather.visibility')]]: [[attr.visibility]]
+              [[localize('attribute.weather.visibility')]]: [[attr.visibility]]
             </div>
           </div>
           <div class='clear'></div>

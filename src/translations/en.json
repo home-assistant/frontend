@@ -1,15 +1,9 @@
 {
-  "card": {
-    "camera": {
-      "not_available": "Image not available"
-    },
-    "persistent_notification": {
-      "dismiss": "DISMISS"
-    },
+  "attribute": {
     "weather": {
       "humidity": "Humidity",
       "visibility": "Visibility",
-      "wind": "Wind"
+      "wind_speed": "Wind speed"
     }
   },
   "domain": {
@@ -307,6 +301,14 @@
     }
   },
   "ui": {
+    "card": {
+      "camera": {
+        "not_available": "Image not available"
+      },
+      "persistent_notification": {
+        "dismiss": "Dismiss"
+      }
+    },
     "common": {
       "loading": "Loading",
       "cancel": "Cancel"
