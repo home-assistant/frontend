@@ -313,6 +313,30 @@
       "log_out": "Log out"
     },
     "panel": {
+      "config": {
+        "header": "Configure Home Assistant",
+        "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "core": {
+          "caption": "General",
+          "description": "Validate your configuration file and control the server"
+        },
+        "customize": {
+          "caption": "Customization",
+          "description": "Customize your entities"
+        },
+        "automation": {
+          "caption": "Automation",
+          "description": "Create and edit automations"
+        },
+        "script": {
+          "caption": "Script",
+          "description": "Create and edit scripts"
+        },
+        "zwave": {
+          "caption": "Z-Wave",
+          "description": "Manage your Z-Wave network"
+        }
+      },
       "history": {
         "showing_entries": "Showing entries for",
         "period": "Period"

@@ -47,7 +47,7 @@
             icon='mdi:arrow-left'
             on-tap='_backTapped'
           ></paper-icon-button>
-          <div main-title>Scripts</div>
+          <div main-title>[[localize('ui.panel.config.script.caption')]]</div>
         </app-toolbar>
       </app-header>
 
@@ -90,7 +90,12 @@
 </dom-module>
 
 <script>
-class HaScriptPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaScriptPicker extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-script-picker'; }
 
   static get properties() {

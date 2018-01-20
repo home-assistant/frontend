@@ -21,8 +21,8 @@
         <template is='dom-if' if='[[_computeLoaded(hass, item)]]'>
           <paper-item on-tap='_navigate'>
             <paper-item-body two-line>
-              [[_computeCaption(item)]]
-              <div secondary>[[_computeDescription(item)]]</div>
+              [[_computeCaption(item, localize)]]
+              <div secondary>[[_computeDescription(item, localize)]]</div>
             </paper-item-body>
             <iron-icon icon='mdi:chevron-right'></iron-icon>
           </paper-item>
@@ -33,7 +33,12 @@
 </dom-module>
 
 <script>
-class HaConfigNavigation extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaConfigNavigation extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-config-navigation'; }
 
   static get properties() {
@@ -47,30 +52,20 @@ class HaConfigNavigation extends window.hassMixins.EventsMixin(Polymer.Element) 
         value: [
           {
             domain: 'core',
-            caption: 'General',
-            description: 'Validate your configuration file and control the server.',
             loaded: true,
           },
           {
             domain: 'customize',
-            caption: 'Customization',
-            description: 'Customize your entities.',
             loaded: true,
           },
           {
             domain: 'automation',
-            caption: 'Automation',
-            description: 'Create and edit automations.',
           },
           {
             domain: 'script',
-            caption: 'Script',
-            description: 'Create and edit scripts.',
           },
           {
             domain: 'zwave',
-            caption: 'Z-Wave',
-            description: 'Manage your Z-Wave network.',
           }
         ],
       }
@@ -81,12 +76,12 @@ class HaConfigNavigation extends window.hassMixins.EventsMixin(Polymer.Element) 
     return component.loaded || window.hassUtil.isComponentLoaded(hass, component.domain);
   }
 
-  _computeCaption(component) {
-    return component.caption;
+  _computeCaption(component, localize) {
+    return localize(`ui.panel.config.${component.domain}.caption`);
   }
 
-  _computeDescription(component) {
-    return component.description;
+  _computeDescription(component, localize) {
+    return localize(`ui.panel.config.${component.domain}.description`);
   }
 
   _navigate(ev) {
