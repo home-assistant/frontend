@@ -30,7 +30,54 @@
         margin-right: 10px;
         border-width: 3px;
       }
+      #chartTooltip tr span{
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 10px;
+        border-width: 3px;
+      }
+      .chartHeader {
+        padding: 6px 0 0 0;
+      }
+      .chartHeader div {
+        float: left;
+      }
+      #chartTitle {
+        margin: 0 12px 0 8px;
+      }
+      #chartLegend ul {
+        display: inline-block;
+        padding: 0 0px;
+        margin: 0 0 8px 0;
+        width: 100%
+      }
+      #chartLegend li {
+        display: inline-block;
+        padding: 0 5px;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: -moz-none;
+        -o-user-select: none;
+        user-select: none;
+        max-width: 50%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+      #chartLegend li.hidden {
+        text-decoration: line-through;
+      }
+      #chartLegend li em {
+        border-radius: 5px;
+        display: inline-block;
+        height: 10px;
+        margin-right: 6px;
+        width: 10px;
+      }
     </style>
+    <div class="chartHeader"><div id="chartTitle"></div><div id="chartLegend"></div></div>
     <div id="chartTarget" style="height:0; width:100%">
       <canvas id="chartCanvas"></canvas>
       <div id="chartTooltip" style="opacity:0">
@@ -226,6 +273,43 @@ class HaChartBase extends
     tooltipEl.style.left = positionX + 'px';
     tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
   }
+  _drawLegend() {
+    var chart = this._chart;
+    function legendClickCallback(event) {
+      event = event || window.event;
+
+      var target = event.target || event.srcElement;
+      while (target.nodeName !== 'LI') {
+          target = target.parentElement;
+      }
+      var index = target.getAttribute('data-lid');
+
+      chart.legend.options.onClick.call(chart, event, chart.legend.legendItems[index]);
+      if (chart.isDatasetVisible(index)) {
+        target.classList.remove('hidden');
+      } else {
+        target.classList.add('hidden');
+      }
+    }
+    var text = []; 
+    text.push('<ul class="chart-legend legend-' + chart.id + '">'); 
+    for (var i = 0; i < chart.data.datasets.length; i++) { 
+      text.push('<li data-lid="' + i + '" data-cid="' + chart.id +
+        '"><em style="background-color:' + chart.data.datasets[i].backgroundColor + '"></em>');
+      if (chart.data.datasets[i].label) { 
+        text.push(chart.data.datasets[i].label); 
+      } 
+      text.push('</li>'); 
+    } 
+    text.push('</ul>'); 
+    var legendHTML = text.join(''); 
+    this.$.chartLegend.innerHTML = legendHTML;
+    var legendItems = this.$.chartLegend.getElementsByTagName('li');
+    for (var i = 0; i < legendItems.length; i += 1) {
+      legendItems[i].addEventListener("click", legendClickCallback, false);
+    }
+    this.$.chartTitle.innerText = this.data.unit;
+  }
   drawChart() {
     var data = this.data.data;
     var ctx = this.$.chartCanvas;
@@ -248,6 +332,9 @@ class HaChartBase extends
       this._customTooltips({ opacity: 0 });
       this._chart.data = data;
       this._chart.update({ duration: 0 });
+      if (this._isTimeline !== true) {
+        this._drawLegend();
+      }
       this.resizeChart();
     } else {
       if (!data.datasets) {
@@ -293,8 +380,8 @@ class HaChartBase extends
           }
         }
       }
-      this.$.chartTarget.style.height = '200px';
-      this.$.chartTarget.height = '200px';
+      this.$.chartTarget.style.height = '160px';
+      this.$.chartTarget.height = '160px';
       var chartData = {
         type: this.data.type,
         data: this.data.data,
@@ -304,6 +391,9 @@ class HaChartBase extends
       // this._chart = new Chart(ctx, chartData);
       // Async resize after dom update
       me._chart = new Chart(ctx, chartData);
+      if (this._isTimeline !== true) {
+        this._drawLegend();
+      }
       setTimeout(function () {
         me.resizeChart.bind(me)
       }, 1);

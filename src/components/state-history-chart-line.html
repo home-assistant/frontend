@@ -220,11 +220,8 @@ class StateHistoryChartLine extends Polymer.Element {
 
     var chartOptions = {
       type: 'line',
+      unit: unit,
       options: {
-        title: {
-          display: true,
-          text: unit
-        },
         scales: {
           xAxes: [{
             type: 'time',
