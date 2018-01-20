@@ -354,6 +354,11 @@
               "header": "Choose a Language",
               "introduction": "Choose a language for the Home Assistant interface on this device",
               "language": "Language"
+            },
+            "themes": {
+              "header": "Set a theme",
+              "introduction": "Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device",
+              "theme": "Theme"
             }
           }
         },
