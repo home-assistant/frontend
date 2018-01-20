@@ -82,34 +82,38 @@
         </div>
       </paper-card>
 
-      <paper-card heading='Configuration Reloading'>
+      <paper-card heading="[[localize('ui.panel.config.core.section.core.reloading.heading')]]">
         <div class='card-content'>
-          Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.
+          [[localize('ui.panel.config.core.section.core.reloading.introduction')]]
         </div>
         <div class='card-actions'>
           <ha-call-service-button
             hass='[[hass]]'
             domain='homeassistant'
             service='reload_core_config'
-          >Reload Core</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.core')]]
+          </ha-call-service-button>
           <ha-call-service-button
             hass='[[hass]]'
             domain='group'
             service='reload'
             hidden$='[[!groupLoaded(hass)]]'
-          >Reload Groups</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.group')]]
+          </ha-call-service-button>
           <ha-call-service-button
             hass='[[hass]]'
             domain='automation'
             service='reload'
             hidden$='[[!automationLoaded(hass)]]'
-          >Reload Automation</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.automation')]]
+          </ha-call-service-button>
           <ha-call-service-button
             hass='[[hass]]'
             domain='script'
             service='reload'
             hidden$='[[!scriptLoaded(hass)]]'
-          >Reload Scripts</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.script')]]
+          </ha-call-service-button>
         </div>
       </paper-card>
 

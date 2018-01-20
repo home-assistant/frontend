@@ -329,6 +329,14 @@
                 "check_config": "Check config",
                 "valid": "Configuration valid!",
                 "invalid": "Configuration invalid"
+              },
+              "reloading": {
+                "heading": "Configuration Reloading",
+                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                "core": "Reload core",
+                "group": "Reload groups",
+                "automation": "Reload automations",
+                "script": "Reload scripts"
               }
             }
           }
