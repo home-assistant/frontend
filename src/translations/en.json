@@ -344,6 +344,11 @@
                 "restart": "Restart",
                 "stop": "Stop"
               }
+            },
+            "push_notifications": {
+              "header": "Configure Push Notifications",
+              "introduction": "Enable this setting to receive push notifications on this device",
+              "push_notifications": "Push Notifications"
             }
           }
         },
