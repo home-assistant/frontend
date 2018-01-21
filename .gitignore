@@ -3,6 +3,7 @@ build-temp/*
 build-es5/*
 build-temp-es5/*
 build-translations/*
+build-hassio/*
 node_modules/*
 bower_components/*
 npm-debug.log

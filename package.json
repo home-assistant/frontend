@@ -15,7 +15,7 @@
     "dev-watch": "npm run gulp watch_ru_all gen-service-worker",
     "dev-es5": "npm run gulp ru_all_es5 gen-service-worker-es5",
     "dev-watch-es5": "npm run gulp watch_ru_all_es5 gen-service-worker-es5",
-    "lint_js": "eslint src panels js test-mocha --ext js,html",
+    "lint_js": "eslint src panels js hassio test-mocha --ext js,html",
     "lint_html": "ls -1 src/home-assistant.html panels/**/ha-panel-*.html | xargs polymer lint --input",
     "mocha": "node_modules/.bin/mocha --opts test-mocha/mocha.opts",
     "test": "npm run lint_js && npm run lint_html && npm run mocha"
@@ -50,6 +50,7 @@
     "gulp-file": "^0.3.0",
     "gulp-filter": "^5.0.1",
     "gulp-foreach": "^0.1.0",
+    "gulp-gzip": "^1.4.0",
     "gulp-hash": "^4.0.1",
     "gulp-html-minifier": "^0.1.8",
     "gulp-if": "^2.0.2",
