@@ -313,6 +313,78 @@
       "log_out": "Log out"
     },
     "panel": {
+      "config": {
+        "header": "Configure Home Assistant",
+        "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "core": {
+          "caption": "General",
+          "description": "Validate your configuration file and control the server",
+          "section": {
+            "core": {
+              "header": "Configuration and server control",
+              "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
+              "validation": {
+                "heading": "Configuration validation",
+                "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+                "check_config": "Check config",
+                "valid": "Configuration valid!",
+                "invalid": "Configuration invalid"
+              },
+              "reloading": {
+                "heading": "Configuration reloading",
+                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                "core": "Reload core",
+                "group": "Reload groups",
+                "automation": "Reload automations",
+                "script": "Reload scripts"
+              },
+              "server_management": {
+                "heading": "Server management",
+                "introduction": "Control your Home Assistant server… from Home Assistant.",
+                "restart": "Restart",
+                "stop": "Stop"
+              }
+            },
+            "push_notifications": {
+              "header": "Configure push notifications",
+              "introduction": "Enable this setting to receive push notifications on this device",
+              "push_notifications": "Push notifications"
+            },
+            "translation": {
+              "header": "Choose a language",
+              "introduction": "Choose a language for the Home Assistant interface on this device",
+              "language": "Language"
+            },
+            "themes": {
+              "header": "Set a theme",
+              "introduction": "Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device",
+              "theme": "Theme"
+            },
+            "hassbian": {
+              "header": "Bring Hassbian to the next level",
+              "introduction": "Discover exciting add-ons to enhance your Home Assistant installation. Add an MQTT server or control a connected TV via HDMI-CEC.",
+              "learn_more": "Learn more",
+              "install": "Install"
+            }
+          }
+        },
+        "customize": {
+          "caption": "Customization",
+          "description": "Customize your entities"
+        },
+        "automation": {
+          "caption": "Automation",
+          "description": "Create and edit automations"
+        },
+        "script": {
+          "caption": "Script",
+          "description": "Create and edit scripts"
+        },
+        "zwave": {
+          "caption": "Z-Wave",
+          "description": "Manage your Z-Wave network"
+        }
+      },
       "history": {
         "showing_entries": "Showing entries for",
         "period": "Period"
