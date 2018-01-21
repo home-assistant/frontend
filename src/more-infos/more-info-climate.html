@@ -66,6 +66,17 @@
         width: 100%;
       }
 
+      .container-humidity .single-row {
+          display: flex;
+          height: 50px;
+      }
+
+      .target-humidity {
+        width: 90px;
+        font-size: 200%;
+        margin: auto;
+      }
+
       ha-climate-control.range-control-left,
       ha-climate-control.range-control-right {
         float: left;
@@ -144,17 +155,18 @@
       </div>
 
       <div class='container-humidity'>
-        <div class='single-row'>
-          <div>Target Humidity</div>
-          <paper-slider
-            class='humidity'
-            min='[[stateObj.attributes.min_humidity]]'
-            max='[[stateObj.attributes.max_humidity]]'
-            secondary-progress='[[stateObj.attributes.max_humidity]]'
-            step='1' pin
-            value='[[stateObj.attributes.humidity]]'
-            on-change='targetHumiditySliderChanged'>
-          </paper-slider>
+        <div>Target Humidity</div>
+          <div class="single-row">
+            <div class="target-humidity">[[stateObj.attributes.humidity]] %</div>
+            <paper-slider
+              class='humidity'
+              min='[[stateObj.attributes.min_humidity]]'
+              max='[[stateObj.attributes.max_humidity]]'
+              secondary-progress='[[stateObj.attributes.max_humidity]]'
+              step='1' pin
+              value='[[stateObj.attributes.humidity]]'
+              on-change='targetHumiditySliderChanged'>
+            </paper-slider>
         </div>
       </div>
 
