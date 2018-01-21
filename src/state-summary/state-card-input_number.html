@@ -6,6 +6,8 @@
 
 <link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 
+<link rel="import" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+
 <link rel="import" href="../components/entity/state-info.html">
 
 <link rel="import" href="../util/hass-util.html">
@@ -15,17 +17,31 @@
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
       paper-slider {
-        margin-left: 16px;
+        margin-left: auto;
+      }
+      .state {
+        @apply(--paper-font-body1);
+        color: var(--primary-text-color);
+
+        text-align: right;
+        line-height: 40px;
+      }
+      .sliderstate {
+          min-width: 45px;
       }
       paper-slider[hidden] {
         display: none !important;
+      }
+      paper-input {
+        text-align: right;
+        margin-left: auto;
       }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
         <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' hidden='[[hiddenslider]]' pin
-          on-change='selectedValueChanged' on-tap='stopPropagation'>
+          on-change='selectedValueChanged' on-tap='stopPropagation' id='slider'>
         </paper-slider>
       <paper-input
         no-label-float
@@ -41,13 +57,31 @@
         hidden='[[hiddenbox]]'
       >
       </paper-input>
+      <div class="state" hidden='[[hiddenbox]]'>[[stateObj.attributes.unit_of_measurement]]</div>
+      <div id="sliderstate" class="state sliderstate" hidden='[[hiddenslider]]'>[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
     </div>
   </template>
 </dom-module>
 
 <script>
-class StateCardInputNumber extends Polymer.Element {
+class StateCardInputNumber extends Polymer.mixinBehaviors([
+  Polymer.IronResizableBehavior
+], Polymer.Element) {
   static get is() { return 'state-card-input_number'; }
+
+  ready() {
+    super.ready();
+    if (typeof ResizeObserver === 'function') {
+      const ro = new ResizeObserver((entries) => {
+        entries.forEach((entry) => {
+          this.hiddenState(entry.contentRect.width);
+        });
+      });
+      ro.observe(this.$.slider);
+    } else {
+      this.addEventListener('iron-resize', this.hiddenState);
+    }
+  }
 
   static get properties() {
     return {
@@ -86,21 +120,38 @@ class StateCardInputNumber extends Polymer.Element {
       value: {
         type: Number,
       },
+      mode: {
+        type: String,
+      }
     };
   }
 
+  hiddenState(sliderwidth) {
+    if (this.mode !== 'slider') return;
+    if (isNaN(sliderwidth)) {
+      sliderwidth = this.$.slider.offsetWidth;
+    }
+    if (sliderwidth < 100) {
+      this.$.sliderstate.hidden = true;
+    } else if (sliderwidth >= 145) {
+      this.$.sliderstate.hidden = false;
+    }
+  }
+
   stateObjectChanged(newVal) {
-    this.min = Number(newVal.attributes.min);
-    this.max = Number(newVal.attributes.max);
-    this.step = Number(newVal.attributes.step);
-    this.value = Number(newVal.state);
-    this.maxlength = this.max.legnth;
-    if (newVal.attributes.mode === 'slider') {
-      this.hiddenbox = true;
-      this.hiddenslider = false;
-    } else {
-      this.hiddenbox = false;
-      this.hiddenslider = true;
+    const prevMode = this.mode;
+    this.setProperties({
+      min: Number(newVal.attributes.min),
+      max: Number(newVal.attributes.max),
+      step: Number(newVal.attributes.step),
+      value: Number(newVal.state),
+      mode: String(newVal.attributes.mode),
+      maxlength: String(newVal.attributes.max).length,
+      hiddenbox: (newVal.attributes.mode !== 'box'),
+      hiddenslider: (newVal.attributes.mode !== 'slider'),
+    });
+    if (this.mode === 'slider' && prevMode !== 'slider') {
+      this.hiddenState();
     }
   }
 
