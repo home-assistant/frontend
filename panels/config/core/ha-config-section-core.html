@@ -6,6 +6,7 @@
 
 <link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
 <link rel="import" href="../../../src/resources/ha-style.html">
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="../ha-config-section.html">
 
@@ -44,19 +45,23 @@
     <ha-config-section
       is-wide='[[isWide]]'
     >
-      <span slot='header'>Configuration and Server Control</span>
-      <span slot='introduction'>
-        Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.
-      </span>
+      <span slot='header'>[[localize('ui.panel.config.core.section.core.header')]]</span>
+      <span slot='introduction'>[[localize('ui.panel.config.core.section.core.introduction')]]</span>
 
-      <paper-card heading='Configuration Validation'>
+      <paper-card heading="[[localize('ui.panel.config.core.section.core.validation.heading')]]">
         <div class='card-content'>
-          Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.
+          [[localize('ui.panel.config.core.section.core.validation.introduction')]]
           <template is='dom-if' if='[[!validateLog]]'>
             <div class='validate-container'>
               <template is='dom-if' if='[[!validating]]'>
-                <div class='validate-result' id='result'>[[validateResult]]</div>
-                <paper-button raised on-tap='validateConfig'>check config</paper-button>
+                <template is='dom-if' if='[[isValid]]'>
+                  <div class='validate-result' id='result'>
+                    [[localize('ui.panel.config.core.section.core.validation.valid')]]
+                  </div>
+                </template>
+                <paper-button raised on-tap='validateConfig'>
+                  [[localize('ui.panel.config.core.section.core.validation.check_config')]]
+                </paper-button>
               </template>
               <template is='dom-if' if='[[validating]]'>
                 <paper-spinner active></paper-spinner>
@@ -65,48 +70,56 @@
           </template>
           <template is='dom-if' if='[[validateLog]]'>
             <div class='config-invalid'>
-              <span class='text'>Configuration invalid.</span>
-              <paper-button raised on-tap='validateConfig'>check config</paper-button>
+              <span class='text'>
+                [[localize('ui.panel.config.core.section.core.validation.invalid')]]
+              </span>
+              <paper-button raised on-tap='validateConfig'>
+                [[localize('ui.panel.config.core.section.core.validation.check_config')]]
+              </paper-button>
             </div>
             <div id='configLog' class='validate-log'>[[validateLog]]</div>
           </template>
         </div>
       </paper-card>
 
-      <paper-card heading='Configuration Reloading'>
+      <paper-card heading="[[localize('ui.panel.config.core.section.core.reloading.heading')]]">
         <div class='card-content'>
-          Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.
+          [[localize('ui.panel.config.core.section.core.reloading.introduction')]]
         </div>
         <div class='card-actions'>
           <ha-call-service-button
             hass='[[hass]]'
             domain='homeassistant'
             service='reload_core_config'
-          >Reload Core</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.core')]]
+          </ha-call-service-button>
           <ha-call-service-button
             hass='[[hass]]'
             domain='group'
             service='reload'
             hidden$='[[!groupLoaded(hass)]]'
-          >Reload Groups</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.group')]]
+          </ha-call-service-button>
           <ha-call-service-button
             hass='[[hass]]'
             domain='automation'
             service='reload'
             hidden$='[[!automationLoaded(hass)]]'
-          >Reload Automation</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.automation')]]
+          </ha-call-service-button>
           <ha-call-service-button
             hass='[[hass]]'
             domain='script'
             service='reload'
             hidden$='[[!scriptLoaded(hass)]]'
-          >Reload Scripts</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.reloading.script')]]
+          </ha-call-service-button>
         </div>
       </paper-card>
 
-      <paper-card heading='Server Management'>
+      <paper-card heading="[[localize('ui.panel.config.core.section.core.server_management.heading')]]">
         <div class='card-content'>
-          Control your Home Assistant server… from Home Assistant.
+          [[localize('ui.panel.config.core.section.core.server_management.introduction')]]
         </div>
         <div class='card-actions warning'>
           <ha-call-service-button
@@ -114,13 +127,15 @@
             hass='[[hass]]'
             domain='homeassistant'
             service='restart'
-          >Restart</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.server_management.restart')]]
+          </ha-call-service-button>
           <ha-call-service-button
             class='warning'
             hass='[[hass]]'
             domain='homeassistant'
             service='stop'
-          >Stop</ha-call-service-button>
+          >[[localize('ui.panel.config.core.section.core.server_management.stop')]]
+          </ha-call-service-button>
         </div>
       </paper-card>
 
@@ -129,7 +144,10 @@
 </dom-module>
 
 <script>
-class HaConfigSectionCore extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaConfigSectionCore extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-config-section-core'; }
 
   static get properties() {
@@ -148,9 +166,9 @@ class HaConfigSectionCore extends Polymer.Element {
         value: false,
       },
 
-      validateResult: {
-        type: String,
-        value: '',
+      isValid: {
+        type: Boolean,
+        value: null,
       },
 
       validateLog: {
@@ -175,21 +193,16 @@ class HaConfigSectionCore extends Polymer.Element {
   validateConfig() {
     this.validating = true;
     this.validateLog = '';
-    this.validateResult = '';
+    this.isValid = null;
 
-    var el = this;
+    this.hass.callApi('POST', 'config/core/check_config').then((result) => {
+      this.validating = false;
+      this.isValid = result.result === 'valid';
 
-    this.hass.callApi('POST', 'config/core/check_config')
-      .then(function (result) {
-        el.validating = false;
-        var isValid = el.configValid = result.result === 'valid';
-
-        if (isValid) {
-          el.validateResult = 'Valid!';
-        } else {
-          el.validateLog = result.errors;
-        }
-      });
+      if (!this.isValid) {
+        this.validateLog = result.errors;
+      }
+    });
   }
 }
 

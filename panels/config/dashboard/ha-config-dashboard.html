@@ -4,10 +4,12 @@
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="../../../src/components/ha-menu-button.html">
+<link rel='import' href='../../../src/util/hass-mixins.html'>
 <link rel="import" href="../ha-config-section.html">
 
 <link rel="import" href="./ha-config-navigation.html">
 <link rel="import" href="./ha-config-cloud-menu.html">
+
 
 <dom-module id="ha-config-dashboard">
   <template>
@@ -21,7 +23,7 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Configuration</div>
+          <div main-title>[[localize('panel.configuration')]]</div>
         </app-toolbar>
       </app-header>
 
@@ -29,10 +31,8 @@
         <ha-config-section
           is-wide='[[isWide]]'
         >
-          <span slot='header'>Configure Home Assistant</span>
-          <span slot='introduction'>
-            Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.
-          </span>
+          <span slot='header'>[[localize('ui.panel.config.header')]]</span>
+          <span slot='introduction'>[[localize('ui.panel.config.introduction')]]</span>
 
           <template is='dom-if' if='[[computeIsCloudLoaded(hass)]]'>
             <ha-config-cloud-menu
@@ -51,7 +51,10 @@
 </dom-module>
 
 <script>
-class HaConfigDashboard extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaConfigDashboard extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-config-dashboard'; }
 
   static get properties() {
