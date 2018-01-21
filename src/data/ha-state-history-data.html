@@ -8,7 +8,7 @@
   const RECENT_THRESHOLD = 60000; // 1 minute
   const RECENT_CACHE = {};
   const DOMAINS_USE_LAST_UPDATED = ['thermostat', 'climate'];
-  const LINE_ATTRIBUTES_TO_KEEP = ['temperature', 'current_temperature', 'target_temp_low', 'target_temp_high', 'operation'];
+  const LINE_ATTRIBUTES_TO_KEEP = ['temperature', 'current_temperature', 'target_temp_low', 'target_temp_high'];
   window.stateHistoryCache = window.stateHistoryCache || {};
 
   function computeHistory(stateHistory, localize, language) {
@@ -136,6 +136,14 @@
       ];
     }
 
+    connectedCallback() {
+      super.connectedCallback();
+      this.filterChanged(
+        this.filterType, this.entityId, this.startTime, this.endTime,
+        this.cacheConfig
+      );
+    }
+
     disconnectedCallback() {
       if (this._refreshTimeoutId) {
         window.clearInterval(this._refreshTimeoutId);
@@ -155,6 +163,7 @@
 
     filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language) {
       if (!this.hass) return;
+      if (cacheConfig && !cacheConfig.cacheKey) return;
       this._madeFirstCall = true;
       let data;
 
@@ -191,6 +200,7 @@
     getRecentWithCacheRefresh(entityId, cacheConfig, localize, language) {
       if (this._refreshTimeoutId) {
         window.clearInterval(this._refreshTimeoutId);
+        this._refreshTimeoutId = null;
       }
       if (cacheConfig.refresh) {
         this._refreshTimeoutId = window.setInterval(() => {

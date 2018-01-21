@@ -159,7 +159,6 @@
         var dataTable = new window.google.visualization.DataTable();
         // array containing [time, value1, value2, etc]
         var prevValues;
-        var hasTargetRange;
         var processState;
         var noInterpolations;
         var series;
@@ -187,20 +186,30 @@
         if (domain === 'thermostat' || domain === 'climate') {
           // We differentiate between thermostats that have a target temperature
           // range versus ones that have just a target temperature
-          hasTargetRange = states.states.some(state => state.attributes &&
+          const hasTargetRange = states.states.some(state => state.attributes &&
             state.attributes.target_temp_high !== state.attributes.target_temp_low);
+          const hasHeat = states.states.some(state => state.state === 'heat');
+          const hasCool = states.states.some(state => state.state === 'cool');
+
 
           dataTable.addColumn('number', name + ' current temperature');
-          dataTable.addColumn('number', name + ' heating');
-          // The "heating" series uses steppedArea to shade the area below the current
-          // temperature when the thermostat is calling for heat.
-          // Its series index is 2 less than its column number--1 because
-          // zero-based and 1 because the first becomes the horizontal axis.
-          var seriesIndex = dataTable.getNumberOfColumns() - 2;
-          // Get existing series config, if there is any, rather than clobbering
-          options.series = Object.assign({}, options.series);
-          options.series[seriesIndex] = { type: 'steppedArea' };
-
+          if (hasHeat || hasCool) {
+            options.series = Object.assign({}, options.series);
+          }
+          if (hasHeat) {
+            dataTable.addColumn('number', name + ' heating');
+            // The "heating" series uses steppedArea to shade the area below the current
+            // temperature when the thermostat is calling for heat.
+            options.series[dataTable.getNumberOfColumns() - 1] =
+              { type: 'steppedArea' };
+          }
+          if (hasCool) {
+            dataTable.addColumn('number', name + ' cooling');
+            // The "cooling" series uses steppedArea to shade the area below the current
+            // temperature when the thermostat is calling for heat.
+            options.series[dataTable.getNumberOfColumns() - 1] =
+              { type: 'steppedArea' };
+          }
           if (hasTargetRange) {
             dataTable.addColumn('number', name + ' target temperature high');
             dataTable.addColumn('number', name + ' target temperature low');
@@ -210,13 +219,21 @@
 
           processState = function (state) {
             if (!state.attributes) return;
-            var curTemp = saveParseFloat(state.attributes.current_temperature);
-            // Drawing the 'heating' area up to the current temp should keep it from
-            // overlapping but avoid any weird gaps or range mismatches
-            var heating = state.attributes.operation === 'heat' ? curTemp : null;
+            const curTemp = saveParseFloat(state.attributes.current_temperature);
 
-            series = [curTemp, heating];
-            noInterpolations = [false, true];
+            series = [curTemp];
+            noInterpolations = [false];
+
+            // Drawing the 'heating'/'cooling' area up to the current temp should keep it from
+            // overlapping but avoid any weird gaps or range mismatches
+            if (hasHeat) {
+              series.push(state.state === 'heat' ? curTemp : null);
+              noInterpolations.push(true);
+            }
+            if (hasCool) {
+              series.push(state.state === 'cool' ? curTemp : null);
+              noInterpolations.push(true);
+            }
 
             if (hasTargetRange) {
               var targetHigh = saveParseFloat(state.attributes.target_temp_high);
