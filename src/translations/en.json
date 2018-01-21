@@ -1,4 +1,11 @@
 {
+  "attribute": {
+    "weather": {
+      "humidity": "Humidity",
+      "visibility": "Visibility",
+      "wind_speed": "Wind speed"
+    }
+  },
   "domain": {
     "alarm_control_panel": "Alarm control panel",
     "automation": "Automation",
@@ -294,6 +301,14 @@
     }
   },
   "ui": {
+    "card": {
+      "camera": {
+        "not_available": "Image not available"
+      },
+      "persistent_notification": {
+        "dismiss": "Dismiss"
+      }
+    },
     "common": {
       "loading": "Loading",
       "cancel": "Cancel"
