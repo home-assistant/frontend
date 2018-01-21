@@ -1,10 +1,10 @@
-<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 
-<link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
-<link rel="import" href="../../../src/components/buttons/ha-call-service-button.html">
+<link rel='import' href='../../src/util/hass-mixins.html'>
+<link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
 
-<dom-module id="hassio-hass-info">
+<dom-module id="hassio-supervisor-info">
   <template>
     <style include="iron-flex ha-style">
       paper-card {
@@ -22,16 +22,19 @@
         margin-top: 16px;
       }
     </style>
-
-    <paper-card heading="Home Assistant">
+    <paper-card heading="Supervisor">
       <div class="card-content">
         <table class='info'>
           <tr>
-            <td>Current version</td>
+            <td>Version</td>
             <td>[[data.version]]</td>
           </tr>
           <tr>
-            <td>Latest version</td>
+            <td>Beta channel</td>
+            <td>[[data.beta_channel]]</td>
+          </tr>
+          <tr>
+            <td>Latest available version</td>
             <td>[[data.last_version]]</td>
           </tr>
         </table>
@@ -40,25 +43,26 @@
         </template>
       </div>
       <div class="card-actions">
+        <paper-button on-tap='supervisorLogsTapped'>View logs</paper-button>
         <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
           <ha-call-api-button
             hass='[[hass]]'
-            path="hassio/homeassistant/update"
+            path="hassio/supervisor/update"
           >Update</ha-call-api-button>
         </template>
         <ha-call-api-button
-          class="warning"
-          hass="[[hass]]"
-          path="hassio/homeassistant/restart"
-        >Restart</ha-call-api-button>
+          class='warning'
+          hass='[[hass]]'
+          path="hassio/supervisor/reload"
+        >Reload</ha-call-api-button>
       </div>
     </paper-card>
   </template>
 </dom-module>
 
 <script>
-class HassioHassInfo extends Polymer.Element {
-  static get is() { return 'hassio-hass-info'; }
+class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-supervisor-info'; }
 
   static get properties() {
     return {
@@ -70,6 +74,8 @@ class HassioHassInfo extends Polymer.Element {
         type: Object,
         value: {},
       },
+
+      errors: String,
     };
   }
 
@@ -96,7 +102,12 @@ class HassioHassInfo extends Polymer.Element {
   computeUpdateAvailable(data) {
     return data.version !== data.last_version;
   }
+
+  supervisorLogsTapped() {
+    history.pushState(null, null, '/hassio/supervisor');
+    this.fire('location-changed');
+  }
 }
 
-customElements.define(HassioHassInfo.is, HassioHassInfo);
+customElements.define(HassioSupervisorInfo.is, HassioSupervisorInfo);
 </script>
