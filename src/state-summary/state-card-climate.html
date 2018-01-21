@@ -2,6 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
+<link rel="import" href="../components/ha-climate-state.html">
 <link rel="import" href="../components/entity/state-info.html">
 
 <dom-module id="state-card-climate">
@@ -13,44 +14,15 @@
         line-height: 1.5;
       }
 
-      .state {
+      ha-climate-state {
         margin-left: 16px;
         text-align: right;
-      }
-
-      .target {
-        color: var(--primary-text-color);
-      }
-
-      .current {
-        color: var(--secondary-text-color);
-      }
-
-      .state-label {
-        font-weight: bold;
-        text-transform: capitalize;
       }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>
-        <div class='target'>
-          <span class="state-label">
-            [[stateObj.state]]
-          </span>
-          <span>
-            [[computeTargetTemperature(stateObj)]]
-          </span>
-        </div>
-
-        <div class='current'>
-          <span>Currently: </span>
-          <span>[[stateObj.attributes.current_temperature]]</span>
-          <span> </span>
-          <span>[[stateObj.attributes.unit_of_measurement]]</span>
-        </div>
-      </div>
+      <ha-climate-state state-obj="[[stateObj]]"></ha-climate-state>
     </div>
   </template>
 </dom-module>
@@ -67,22 +39,6 @@ class StateCardClimate extends Polymer.Element {
         value: false,
       },
     };
-  }
-
-  computeTargetTemperature(stateObj) {
-    var stateTemp = '';
-
-    if (stateObj.attributes.target_temp_low &&
-        stateObj.attributes.target_temp_high) {
-      stateTemp = stateObj.attributes.target_temp_low + ' - ' +
-        stateObj.attributes.target_temp_high + ' ' +
-        stateObj.attributes.unit_of_measurement;
-    } else if (stateObj.attributes.temperature) {
-      stateTemp = stateObj.attributes.temperature + ' ' +
-      stateObj.attributes.unit_of_measurement;
-    }
-
-    return stateTemp;
   }
 }
 customElements.define(StateCardClimate.is, StateCardClimate);
