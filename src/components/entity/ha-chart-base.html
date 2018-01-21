@@ -90,10 +90,13 @@
   </template>
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
-<script src="../../../bower_components/chart.js/dist/Chart.js"></script>
+<script src="../../../bower_components/chart.js/dist/Chart.min.js"></script>
 <script>
+// Use minified(Chart.min.js) version to fix strange color after uglify
+// eslint-disable-next-line no-unused-vars
+/* global Chart moment Color */
 (function () {
-  Chart.Interaction.modes.neareach = function(chart, e, options) {
+  Chart.Interaction.modes.neareach = function (chart, e, options) {
     var getRange = {
       x: (a, b) => Math.abs(a.x - b.x),
       y: (a, b) => Math.abs(a.y - b.y),
@@ -145,20 +148,20 @@
     }
     var ret = elements.filter(function (n) { return n !== undefined; });
     return ret;
-  }
+  };
 
   // Fix infinite loop bug in Chart.js 2.7.1
   var x = Chart.scaleService.constructors.time.prototype;
   x._getLabelCapacity = x.getLabelCapacity;
   x.getLabelCapacity = function () {
+    // eslint-disable-next-line prefer-rest-params
     var ret = this._getLabelCapacity.apply(this, arguments);
-    return ret > 0? ret : 1;
-  }
-} ());
+    return ret > 0 ? ret : 1;
+  };
+}());
 </script>
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <script>
-// Use minified Chart.js to fix strange color after uglify
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
 class HaChartBase extends
@@ -280,7 +283,7 @@ class HaChartBase extends
 
       var target = event.target || event.srcElement;
       while (target.nodeName !== 'LI') {
-          target = target.parentElement;
+        target = target.parentElement;
       }
       var index = target.getAttribute('data-lid');
 
@@ -291,22 +294,23 @@ class HaChartBase extends
         target.classList.add('hidden');
       }
     }
-    var text = []; 
-    text.push('<ul class="chart-legend legend-' + chart.id + '">'); 
-    for (var i = 0; i < chart.data.datasets.length; i++) { 
+    var text = [];
+    var i;
+    text.push('<ul class="chart-legend legend-' + chart.id + '">');
+    for (i = 0; i < chart.data.datasets.length; i++) {
       text.push('<li data-lid="' + i + '" data-cid="' + chart.id +
         '"><em style="background-color:' + chart.data.datasets[i].backgroundColor + '"></em>');
-      if (chart.data.datasets[i].label) { 
-        text.push(chart.data.datasets[i].label); 
-      } 
-      text.push('</li>'); 
-    } 
-    text.push('</ul>'); 
-    var legendHTML = text.join(''); 
+      if (chart.data.datasets[i].label) {
+        text.push(chart.data.datasets[i].label);
+      }
+      text.push('</li>');
+    }
+    text.push('</ul>');
+    var legendHTML = text.join('');
     this.$.chartLegend.innerHTML = legendHTML;
     var legendItems = this.$.chartLegend.getElementsByTagName('li');
-    for (var i = 0; i < legendItems.length; i += 1) {
-      legendItems[i].addEventListener("click", legendClickCallback, false);
+    for (i = 0; i < legendItems.length; i += 1) {
+      legendItems[i].addEventListener('click', legendClickCallback, false);
     }
     this.$.chartTitle.innerText = this.data.unit;
   }
@@ -376,7 +380,7 @@ class HaChartBase extends
           if (options.scales.yAxes[0].ticks) {
             options.scales.yAxes[0].ticks.display = false;
           } else {
-            options.scales.yAxes[0].ticks = {display: false};
+            options.scales.yAxes[0].ticks = { display: false };
           }
         }
       }
@@ -395,7 +399,7 @@ class HaChartBase extends
         this._drawLegend();
       }
       setTimeout(function () {
-        me.resizeChart.bind(me)
+        me.resizeChart.bind(me);
       }, 1);
     }
   }
