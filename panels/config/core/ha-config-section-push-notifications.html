@@ -16,15 +16,15 @@
       }
     </style>
     <ha-config-section is-wide='[[isWide]]'>
-      <span slot='header'>Enable Push Notifications</span>
+      <span slot='header'>[[localize('ui.panel.config.core.section.push_notifications.header')]]</span>
       <span slot='introduction'>
-        Enable this setting to receive push notifications on this device
+        [[localize('ui.panel.config.core.section.push_notifications.introduction')]]
       </span>
 
       <paper-card>
         <div class='card-content'>
           <iron-label class='horizontal layout'>            
-            Push Notifications
+            [[localize('ui.panel.config.core.section.push_notifications.push_notifications')]]
             <ha-push-notifications-toggle
               hass='[[hass]]'
               push-supported='{{pushSupported}}'
@@ -37,7 +37,10 @@
 </dom-module>
 
 <script>
-class HaConfigSectionPushNotifications extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaConfigSectionPushNotifications extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-config-section-push-notifications'; }
 
   static get properties() {
