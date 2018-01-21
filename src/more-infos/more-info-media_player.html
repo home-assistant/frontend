@@ -67,7 +67,7 @@
               hidden$='[[!supportsPreviousTrack]]'></paper-icon-button>
             <paper-icon-button icon='[[computePlaybackControlIcon(isPlaying)]]'
               on-tap='handlePlaybackControl'
-              hidden$='[[!computePlaybackControlIcon(stateObj)]]' highlight></paper-icon-button>
+              hidden$='[[!computePlaybackControlIcon(isPlaying)]]' highlight></paper-icon-button>
             <paper-icon-button icon='mdi:skip-next' on-tap='handleNext'
               hidden$='[[!supportsNextTrack]]'></paper-icon-button>
           </template>
