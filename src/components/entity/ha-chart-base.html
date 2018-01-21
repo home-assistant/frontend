@@ -332,7 +332,7 @@ class HaChartBase extends
       this._customTooltips({ opacity: 0 });
       this._chart.data = data;
       this._chart.update({ duration: 0 });
-      if (this._isTimeline !== true) {
+      if (this._isTimeline !== true && this.data.legend === true) {
         this._drawLegend();
       }
       this.resizeChart();
@@ -391,7 +391,7 @@ class HaChartBase extends
       // this._chart = new Chart(ctx, chartData);
       // Async resize after dom update
       me._chart = new Chart(ctx, chartData);
-      if (this._isTimeline !== true) {
+      if (this._isTimeline !== true && this.data.legend === true) {
         this._drawLegend();
       }
       setTimeout(function () {

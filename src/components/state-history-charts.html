@@ -36,7 +36,7 @@
       <state-history-chart-line
         unit='[[item.unit]]'
         data='[[item.data]]'
-        is-single-device='[[_computeIsSingleLineChart(historyData, noSingle)]]'
+        is-single-device='[[_computeIsSingleLineChart(item.data, noSingle)]]'
         end-time='[[_computeEndTime(endTime, upToNow, historyData)]]'>
       </state-history-chart-line>
     </template>
@@ -67,8 +67,8 @@ class StateHistoryCharts extends Polymer.Element {
     };
   }
 
-  _computeIsSingleLineChart(historyData, noSingle) {
-    return !noSingle && historyData && historyData.line.length === 1;
+  _computeIsSingleLineChart(data, noSingle) {
+    return !noSingle && data && data.length === 1;
   }
 
   _computeIsEmpty(historyData) {
