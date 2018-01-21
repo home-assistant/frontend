@@ -1,10 +1,9 @@
-<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 
-<link rel='import' href='../../../src/util/hass-mixins.html'>
-<link rel="import" href="../../../src/components/buttons/ha-call-api-button.html">
+<link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
 
-<dom-module id="hassio-supervisor-info">
+<dom-module id="hassio-host-info">
   <template>
     <style include="iron-flex ha-style">
       paper-card {
@@ -22,16 +21,24 @@
         margin-top: 16px;
       }
     </style>
-    <paper-card heading="Supervisor">
+    <paper-card heading="Host OS">
       <div class="card-content">
         <table class='info'>
           <tr>
-            <td>Version</td>
-            <td>[[data.version]]</td>
+            <td>Hostname</td>
+            <td>[[data.hostname]]</td>
           </tr>
           <tr>
-            <td>Beta channel</td>
-            <td>[[data.beta_channel]]</td>
+            <td>Type</td>
+            <td>[[data.type]]</td>
+          </tr>
+          <tr>
+            <td>OS</td>
+            <td>[[data.os]]</td>
+          </tr>
+          <tr>
+            <td>Host Control version</td>
+            <td>[[data.version]]</td>
           </tr>
           <tr>
             <td>Latest available version</td>
@@ -43,26 +50,34 @@
         </template>
       </div>
       <div class="card-actions">
-        <paper-button on-tap='supervisorLogsTapped'>View logs</paper-button>
         <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
           <ha-call-api-button
             hass='[[hass]]'
-            path="hassio/supervisor/update"
+            path="hassio/host/update"
           >Update</ha-call-api-button>
         </template>
-        <ha-call-api-button
-          class='warning'
-          hass='[[hass]]'
-          path="hassio/supervisor/reload"
-        >Reload</ha-call-api-button>
+        <template is='dom-if' if='[[computeRebootAvailable(data)]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path="hassio/host/reboot"
+          >Reboot</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[computeShutdownAvailable(data)]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path="hassio/host/shutdown"
+          >Shutdown</ha-call-api-button>
+        </template>
       </div>
     </paper-card>
   </template>
 </dom-module>
 
 <script>
-class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
-  static get is() { return 'hassio-supervisor-info'; }
+class HassioHostInfo extends Polymer.Element {
+  static get is() { return 'hassio-host-info'; }
 
   static get properties() {
     return {
@@ -103,11 +118,14 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
     return data.version !== data.last_version;
   }
 
-  supervisorLogsTapped() {
-    history.pushState(null, null, '/hassio/supervisor');
-    this.fire('location-changed');
+  computeRebootAvailable(data) {
+    return data.features && data.features.indexOf('reboot') !== -1;
+  }
+
+  computeShutdownAvailable(data) {
+    return data.features && data.features.indexOf('shutdown') !== -1;
   }
 }
 
-customElements.define(HassioSupervisorInfo.is, HassioSupervisorInfo);
+customElements.define(HassioHostInfo.is, HassioHostInfo);
 </script>
