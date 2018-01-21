@@ -44,7 +44,7 @@
     <div class='caption'>
       [[computeStateName(stateObj)]]
       <template is='dom-if' if='[[!imageLoaded]]'>
-        (Image not available)
+        ([[localize('ui.card.camera.not_available')]])
       </template>
     </div>
   </template>
@@ -54,7 +54,8 @@
 {
   const UPDATE_INTERVAL = 10000; // ms
 
-  class HaCameraCard extends window.hassMixins.EventsMixin(Polymer.Element) {
+  class HaCameraCard extends
+    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
     static get is() { return 'ha-camera-card'; }
     static get properties() {
       return {

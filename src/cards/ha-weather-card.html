@@ -2,6 +2,9 @@
 <link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 <link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
 <link rel='import' href='../components/ha-card.html'>
+
+<link rel='import' href='../util/hass-mixins.html'>
+
 <dom-module id='ha-weather-card'>
   <template>
     <style>
@@ -48,17 +51,17 @@
           <div class='cond condtemp'>[[attr.temperature]]°</div>
           <div class='cond conddetails'>
             <div class="condsmall" hidden$="[[!attr.wind_speed]]">
-              Wind:
+              [[localize('attribute.weather.wind_speed')]]:
               <span hidden$="[[!attr.wind_speed]]">
                 [[attr.wind_speed]]
               </span>
               <span hidden$="[[!windBearing]]">[[windBearing]]</span>
             </div>
             <div class="condsmall" hidden$="[[!attr.humidity]]">
-              Humidity: [[attr.humidity]]%
+              [[localize('attribute.weather.humidity')]]: [[attr.humidity]]%
             </div>
             <div class="condsmall" hidden$="[[!attr.visibility]]">
-              Visibility: [[attr.visibility]]
+              [[localize('attribute.weather.visibility')]]: [[attr.visibility]]
             </div>
           </div>
           <div class='clear'></div>
@@ -93,7 +96,7 @@
     'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
   ];
 
-  class HaWeatherCard extends Polymer.Element {
+  class HaWeatherCard extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     static get is() { return 'ha-weather-card'; }
     static get properties() {
       return {
