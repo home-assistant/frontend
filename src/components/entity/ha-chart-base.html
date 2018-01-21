@@ -77,7 +77,19 @@
         width: 10px;
       }
     </style>
-    <div class="chartHeader"><div id="chartTitle"></div><div id="chartLegend"></div></div>
+    <div class="chartHeader">
+      <div id="chartTitle"></div>
+      <div id="chartLegend">
+        <ul class="chart-legend">
+          <template is="dom-repeat" items="[[metas]]">
+            <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[_getHidden(item.meta.hidden)]]">
+              <em style$="background-color:[[item.bgColor]]"></em>
+              [[item.label]]
+            </li>
+          </template>
+        </ul>
+      </div>
+    </div>
     <div id="chartTarget" style="height:0; width:100%">
       <canvas id="chartCanvas"></canvas>
       <div id="chartTooltip" style="opacity:0">
@@ -90,7 +102,8 @@
   </template>
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
-<script src="../../../bower_components/chart.js/dist/Chart.min.js"></script>
+<script src="../../../bower_components/chart.js/dist/Chart.js"></script>
+<script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <script>
 // Use minified(Chart.min.js) version to fix strange color after uglify
 // eslint-disable-next-line no-unused-vars
@@ -159,11 +172,8 @@
     return ret > 0 ? ret : 1;
   };
 }());
-</script>
-<script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
-<script>
-// eslint-disable-next-line no-unused-vars
-/* global Chart moment Color */
+
+
 class HaChartBase extends
   Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
   get chart() {
@@ -276,42 +286,33 @@ class HaChartBase extends
     tooltipEl.style.left = positionX + 'px';
     tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
   }
+  _legendClick(event) {
+    event = event || window.event;
+
+    var target = event.target || event.srcElement;
+    while (target.nodeName !== 'LI') {
+      target = target.parentElement;
+    }
+    var index = target.getAttribute('data-lid');
+
+    this.set(['metas', index, 'meta', 'hidden'],
+      this.metas[index].meta.hidden === null ? !this._chart.data.datasets[index].hidden : null);
+    this._chart.update();
+  }
+  _getHidden(hidden) {
+    if (hidden === true) {
+      return 'hidden';
+    }
+    return null;
+  }
   _drawLegend() {
     var chart = this._chart;
-    function legendClickCallback(event) {
-      event = event || window.event;
-
-      var target = event.target || event.srcElement;
-      while (target.nodeName !== 'LI') {
-        target = target.parentElement;
-      }
-      var index = target.getAttribute('data-lid');
-
-      chart.legend.options.onClick.call(chart, event, chart.legend.legendItems[index]);
-      if (chart.isDatasetVisible(index)) {
-        target.classList.remove('hidden');
-      } else {
-        target.classList.add('hidden');
-      }
-    }
     var text = [];
     var i;
-    text.push('<ul class="chart-legend legend-' + chart.id + '">');
-    for (i = 0; i < chart.data.datasets.length; i++) {
-      text.push('<li data-lid="' + i + '" data-cid="' + chart.id +
-        '"><em style="background-color:' + chart.data.datasets[i].backgroundColor + '"></em>');
-      if (chart.data.datasets[i].label) {
-        text.push(chart.data.datasets[i].label);
-      }
-      text.push('</li>');
-    }
-    text.push('</ul>');
-    var legendHTML = text.join('');
-    this.$.chartLegend.innerHTML = legendHTML;
-    var legendItems = this.$.chartLegend.getElementsByTagName('li');
-    for (i = 0; i < legendItems.length; i += 1) {
-      legendItems[i].addEventListener('click', legendClickCallback, false);
-    }
+    this.datasets = chart.data.datasets;
+    this.metas = chart.data.datasets.map(function (x, i) {
+      return {label: x.label, color: x.color, bgColor: x.backgroundColor, meta: x._meta[chart.id]};
+    });
     this.$.chartTitle.innerText = this.data.unit;
   }
   drawChart() {
