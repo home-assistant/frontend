@@ -4,6 +4,8 @@
 <link rel='import' href='../components/ha-card.html'>
 <link rel='import' href='../components/ha-markdown.html'>
 
+<link rel='import' href='../util/hass-mixins.html'>
+
 <dom-module id='ha-persistent_notification-card'>
   <template>
     <style>
@@ -37,13 +39,13 @@
 
     <ha-card header='[[computeTitle(stateObj)]]'>
       <ha-markdown content='[[stateObj.attributes.message]]'></ha-markdown>
-      <paper-button on-tap='dismissTap'>DISMISS</paper-button>
+      <paper-button on-tap='dismissTap'>[[localize('ui.card.persistent_notification.dismiss')]]</paper-button>
     </ha-card>
   </template>
 </dom-module>
 
 <script>
-class HaPersistentNotificationCard extends Polymer.Element {
+class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-persistent_notification-card'; }
   static get properties() {
     return {
