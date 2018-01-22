@@ -45,7 +45,8 @@
         max-height: 84px;
       }
 
-      .has-rgb_color.is-on ha-color-picker {
+      .has-rgb_color.is-on ha-color-picker,
+      .has-xy_color.is-on ha-color-picker {
         max-height: 500px;
         overflow: visible;
         --ha-color-picker-wheel-borderwidth: 5;
@@ -116,6 +117,7 @@
     2: 'has-color_temp',
     4: 'has-effect_list',
     16: 'has-rgb_color',
+    64: 'has-xy_color',
     128: 'has-white_value',
   };
   class MoreInfoLight extends window.hassMixins.EventsMixin(Polymer.Element) {
@@ -247,7 +249,7 @@
     serviceChangeColor(hass, entityId, color) {
       hass.callService('light', 'turn_on', {
         entity_id: entityId,
-        rgb_color: [color.r, color.g, color.b],
+        xy_color: [color.x, color.y],
       });
     }
 
@@ -260,8 +262,7 @@
      * should be throttled with the 'throttle=' attribute of the color picker
      */
     colorPicked(ev) {
-      this.color = ev.detail.rgb;
-      this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
+      this.serviceChangeColor(this.hass, this.stateObj.entity_id, ev.detail.xy);
     }
   }
 
