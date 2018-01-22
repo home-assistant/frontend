@@ -3,7 +3,16 @@
 <dom-module id="ha-chart-base">
   <template>
     <style>
-      #chartCanvas{
+      .chartHeader {
+        padding: 6px 0 0 0;
+      }
+      .chartHeader div {
+        float: left;
+      }
+      #chartTitle {
+        margin: 0 12px 0 8px;
+      }
+      :root{
         user-select: none;
         -moz-user-select: none;
         -webkit-user-select: none;
@@ -15,51 +24,25 @@
         background: rgba(0, 0, 0, .7);
         color: white;
         border-radius: 3px;
-        -webkit-transition: all .1s ease;
-        transition: all .1s ease;
         pointer-events: none;
-        -webkit-transform: translate(-50%, 0);
         transform: translate(-50%, 0);
         z-index: 1000;
         width: 200px;
       }
-      #chartTooltip tr span{
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        margin-right: 10px;
-        border-width: 3px;
-      }
-      #chartTooltip tr span{
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        margin-right: 10px;
-        border-width: 3px;
-      }
-      .chartHeader {
-        padding: 6px 0 0 0;
-      }
-      .chartHeader div {
-        float: left;
-      }
-      #chartTitle {
-        margin: 0 12px 0 8px;
-      }
-      #chartLegend ul {
+      #chartLegend ul,
+      #chartTooltip ul {
         display: inline-block;
         padding: 0 0px;
         margin: 0 0 8px 0;
         width: 100%
       }
+      #chartTooltip li {
+        display: block;
+        white-space: pre-line;
+      }
       #chartLegend li {
         display: inline-block;
         padding: 0 5px;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: -moz-none;
-        -o-user-select: none;
-        user-select: none;
         max-width: 50%;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -69,7 +52,8 @@
       #chartLegend li.hidden {
         text-decoration: line-through;
       }
-      #chartLegend li em {
+      #chartLegend em,
+      #chartTooltip em {
         border-radius: 5px;
         display: inline-block;
         height: 10px;
@@ -78,11 +62,11 @@
       }
     </style>
     <div class="chartHeader">
-      <div id="chartTitle"></div>
+      <div id="chartTitle">[[unit]]</div>
       <div id="chartLegend">
         <ul class="chart-legend">
           <template is="dom-repeat" items="[[metas]]">
-            <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[_getHidden(item.meta.hidden)]]">
+            <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[item.hidden]]">
               <em style$="background-color:[[item.bgColor]]"></em>
               [[item.label]]
             </li>
@@ -92,11 +76,15 @@
     </div>
     <div id="chartTarget" style="height:0; width:100%">
       <canvas id="chartCanvas"></canvas>
-      <div id="chartTooltip" style="opacity:0">
-        <table>
-          <thead><tr><th id="tooltipTitle"></th></tr></thead>
-          <tbody id="tooltipBody"></tbody>
-        </table>
+      <div id="chartTooltip" class$="[[tooltip.yAlign]]" style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]">
+        <div>[[tooltip.title]]</div>
+        <div>
+          <ul class="chart-legend">
+            <template is="dom-repeat" items="[[tooltip.lines]]">
+              <li><em style$="background-color:[[item.bgColor]]"></em>[[item.text]]</li>
+            </template>
+          </ul>
+        </div>
       </div>
     </div>
   </template>
@@ -173,7 +161,6 @@
   };
 }());
 
-
 class HaChartBase extends
   Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
   get chart() {
@@ -209,68 +196,46 @@ class HaChartBase extends
     this.drawChart();
   }
   _customTooltips(tooltip) {
+    this.tooltip = this.tooltip || {
+      opacity: 0,
+    };
     // Tooltip Element
-    var tooltipEl = this._tooltipEl;
     var isTimeline = this._isTimeline;
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
-      tooltipEl.style.opacity = 0;
+      this.set(['tooltip', 'opacity'], 0);
       return;
     }
     // Set caret Position
-    tooltipEl.classList.remove('above', 'below', 'no-transform');
     if (tooltip.yAlign) {
-      tooltipEl.classList.add(tooltip.yAlign);
+      this.set(['tooltip', 'yAlign'], tooltip.yAlign);
     } else {
-      tooltipEl.classList.add('no-transform');
+      this.set(['tooltip', 'yAlign'], 'no-transform');
     }
     function getBody(bodyItem) {
       return bodyItem.lines;
     }
     // Set Text
     if (tooltip.body) {
-      var titleLines = tooltip.title || [];
+      var title = tooltip.title || '';
       var bodyLines = tooltip.body.map(getBody);
-      titleLines.forEach(function (title) {
-        var str1;
-        if (title instanceof Date) {
-          str1 = moment(title).format('L LTS');
-        } else if (title instanceof moment) {
-          str1 = title.format('L LTS');
-        } else {
-          str1 = title;
-        }
-        this.$.tooltipTitle.innerText = str1;
-      }, this);
-      var tBody = this.$.tooltipBody;
-      while (tBody.hasChildNodes()) {
-        tBody.removeChild(tBody.lastChild);
+      var str1;
+      if (title instanceof Date) {
+        str1 = moment(title).format('L LTS');
+      } else if (title instanceof moment) {
+        str1 = title.format('L LTS');
+      } else {
+        str1 = title;
       }
-      var ce = x => document.createElement(x);
-      bodyLines.forEach(function (body, i) {
+      this.set(['tooltip', 'title'], str1);
+      this.set(['tooltip', 'lines'], bodyLines.map(function (body, i) {
         var colors = tooltip.labelColors[i];
-        var span = ce('span');
-        span.style.background = colors.backgroundColor;
-        span.style['border-color'] = colors.borderColor;
-        var tableTr = ce('tr');
-        var tableTd = ce('td');
-        var tableText;
-        tableTr.appendChild(tableTd);
-        tableTd.appendChild(span);
-        if (isTimeline) {
-          tableText = document.createTextNode(body[0]);
-          tableTd.appendChild(tableText);
-          for (var loopI = 1; loopI < body.length; loopI++) {
-            tableTd.appendChild(ce('br'));
-            tableText = document.createTextNode(body[loopI]);
-            tableTd.appendChild(tableText);
-          }
-        } else {
-          tableText = document.createTextNode(body);
-          tableTd.appendChild(tableText);
-        }
-        tBody.appendChild(tableTr);
-      }, this);
+        return {
+          color: colors.borderColor,
+          bgColor: colors.backgroundColor,
+          text: body.join('\n'),
+        };
+      }));
     }
     var positionX = this._chart.canvas.offsetLeft + tooltip.caretX;
     var positionY = this._chart.canvas.offsetTop + tooltip.caretY;
@@ -281,10 +246,10 @@ class HaChartBase extends
       positionX = 100;
     }
     // Display, position, and set styles for font
-    tooltipEl.style.opacity = 1;
-    tooltipEl.style.top = positionY + 'px';
-    tooltipEl.style.left = positionX + 'px';
-    tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+    this.set(['tooltip', 'opacity'], 1);
+    this.set(['tooltip', 'left'], positionX + 'px');
+    this.set(['tooltip', 'top'], positionY + 'px');
+    // tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
   }
   _legendClick(event) {
     event = event || window.event;
@@ -295,15 +260,10 @@ class HaChartBase extends
     }
     var index = target.getAttribute('data-lid');
 
-    this.set(['metas', index, 'meta', 'hidden'],
-      this.metas[index].meta.hidden === null ? !this._chart.data.datasets[index].hidden : null);
+    var meta = this._chart.getDatasetMeta(index);
+    meta.hidden = meta.hidden === null ? !this._chart.data.datasets[index].hidden : null;
+    this.set(['metas', index, 'hidden'], this._chart.isDatasetVisible(index) ? null : 'hidden');
     this._chart.update();
-  }
-  _getHidden(hidden) {
-    if (hidden === true) {
-      return 'hidden';
-    }
-    return null;
   }
   _drawLegend() {
     var chart = this._chart;
@@ -311,9 +271,14 @@ class HaChartBase extends
     var i;
     this.datasets = chart.data.datasets;
     this.metas = chart.data.datasets.map(function (x, i) {
-      return {label: x.label, color: x.color, bgColor: x.backgroundColor, meta: x._meta[chart.id]};
+      return {
+        label: x.label,
+        color: x.color,
+        bgColor: x.backgroundColor,
+        hidden: chart.isDatasetVisible(i)
+      };
     });
-    this.$.chartTitle.innerText = this.data.unit;
+    this.unit = this.data.unit;
   }
   drawChart() {
     var data = this.data.data;
@@ -348,9 +313,6 @@ class HaChartBase extends
       var colorList = this.data.colors ? this.data.colors.staticColors : undefined;
       var colorIndex = this.data.colors ? this.data.colors.staticColorIndex : undefined;
       this._colorFunc = HaChartBase.getColorGenerator(colorList, colorIndex);
-      // chartTarget.style.height = targetHeight;
-      // chartTarget.height = targetHeight;
-      this._tooltipEl = this.$.chartTooltip;
       this._customTooltips({ opacity: 0 });
       var options = {
         responsive: true,
