@@ -9,7 +9,7 @@
       .chartHeader div {
         float: left;
       }
-      #chartTitle {
+      .chartTitle {
         margin: 0 12px 0 8px;
       }
       :root{
@@ -18,7 +18,7 @@
         -webkit-user-select: none;
         -ms-user-select: none;
       }
-      #chartTooltip {
+      .chartTooltip {
         opacity: 1;
         position: absolute;
         background: rgba(0, 0, 0, .7);
@@ -29,18 +29,21 @@
         z-index: 1000;
         width: 200px;
       }
-      #chartLegend ul,
-      #chartTooltip ul {
+      .chartLegend ul,
+      .chartTooltip ul {
         display: inline-block;
         padding: 0 0px;
         margin: 0 0 8px 0;
         width: 100%
       }
-      #chartTooltip li {
+      .chartTooltip li {
         display: block;
         white-space: pre-line;
       }
-      #chartLegend li {
+      .chartTooltip .title {
+        text-align: center;
+      }
+      .chartLegend li {
         display: inline-block;
         padding: 0 5px;
         max-width: 50%;
@@ -49,11 +52,11 @@
         overflow: hidden;
         box-sizing: border-box;
       }
-      #chartLegend li.hidden {
+      .chartLegend li.hidden {
         text-decoration: line-through;
       }
-      #chartLegend em,
-      #chartTooltip em {
+      .chartLegend em,
+      .chartTooltip em {
         border-radius: 5px;
         display: inline-block;
         height: 10px;
@@ -62,9 +65,9 @@
       }
     </style>
     <div class="chartHeader">
-      <div id="chartTitle">[[unit]]</div>
-      <div id="chartLegend">
-        <ul class="chart-legend">
+      <div class="chartTitle">[[unit]]</div>
+      <div class="chartLegend">
+        <ul>
           <template is="dom-repeat" items="[[metas]]">
             <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[item.hidden]]">
               <em style$="background-color:[[item.bgColor]]"></em>
@@ -76,10 +79,11 @@
     </div>
     <div id="chartTarget" style="height:0; width:100%">
       <canvas id="chartCanvas"></canvas>
-      <div id="chartTooltip" class$="[[tooltip.yAlign]]" style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]">
-        <div>[[tooltip.title]]</div>
+      <div class$="chartTooltip [[tooltip.yAlign]]"
+      style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px">
+        <div class="title">[[tooltip.title]]</div>
         <div>
-          <ul class="chart-legend">
+          <ul >
             <template is="dom-repeat" items="[[tooltip.lines]]">
               <li><em style$="background-color:[[item.bgColor]]"></em>[[item.text]]</li>
             </template>
@@ -90,7 +94,7 @@
   </template>
 </dom-module>
 <script src="../../../bower_components/moment/moment.js"></script>
-<script src="../../../bower_components/chart.js/dist/Chart.js"></script>
+<script src="../../../bower_components/chart.js/dist/Chart.min.js"></script>
 <script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <script>
 // Use minified(Chart.min.js) version to fix strange color after uglify
@@ -199,8 +203,6 @@ class HaChartBase extends
     this.tooltip = this.tooltip || {
       opacity: 0,
     };
-    // Tooltip Element
-    var isTimeline = this._isTimeline;
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
       this.set(['tooltip', 'opacity'], 0);
@@ -215,19 +217,19 @@ class HaChartBase extends
     function getBody(bodyItem) {
       return bodyItem.lines;
     }
+    var title = tooltip.title ? tooltip.title[0] || '' : '';
+    var bodyLines = tooltip.body.map(getBody);
+    var str1;
+    if (title instanceof Date) {
+      str1 = moment(title).format('L LTS');
+    } else if (title instanceof moment) {
+      str1 = title.format('L LTS');
+    } else {
+      str1 = title;
+    }
+    this.set(['tooltip', 'title'], str1);
     // Set Text
     if (tooltip.body) {
-      var title = tooltip.title || '';
-      var bodyLines = tooltip.body.map(getBody);
-      var str1;
-      if (title instanceof Date) {
-        str1 = moment(title).format('L LTS');
-      } else if (title instanceof moment) {
-        str1 = title.format('L LTS');
-      } else {
-        str1 = title;
-      }
-      this.set(['tooltip', 'title'], str1);
       this.set(['tooltip', 'lines'], bodyLines.map(function (body, i) {
         var colors = tooltip.labelColors[i];
         return {
@@ -249,11 +251,11 @@ class HaChartBase extends
     this.set(['tooltip', 'opacity'], 1);
     this.set(['tooltip', 'left'], positionX + 'px');
     this.set(['tooltip', 'top'], positionY + 'px');
-    // tooltipEl.style.padding = tooltip.yPadding + 'px ' + tooltip.xPadding + 'px';
+    this.set(['tooltip', 'yPadding'], tooltip.yPadding);
+    this.set(['tooltip', 'xPadding'], tooltip.xPadding);
   }
   _legendClick(event) {
     event = event || window.event;
-
     var target = event.target || event.srcElement;
     while (target.nodeName !== 'LI') {
       target = target.parentElement;
@@ -267,18 +269,15 @@ class HaChartBase extends
   }
   _drawLegend() {
     var chart = this._chart;
-    var text = [];
-    var i;
-    this.datasets = chart.data.datasets;
-    this.metas = chart.data.datasets.map(function (x, i) {
+    this.set('metas', this._chart.data.datasets.map(function (x, i) {
       return {
         label: x.label,
         color: x.color,
         bgColor: x.backgroundColor,
         hidden: chart.isDatasetVisible(i)
       };
-    });
-    this.unit = this.data.unit;
+    }));
+    this.set('unit', this.data.unit);
   }
   drawChart() {
     var data = this.data.data;
