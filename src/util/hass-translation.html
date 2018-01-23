@@ -12,14 +12,13 @@ function getActiveTranslation() {
 
   // Search for a matching translation from most specific to general
   function languageGetTranslation(language) {
-    const subtags = language.toLowerCase().split('-');
+    const lang = language.toLowerCase();
 
-    for (let i = subtags.length; i >= 1; i--) {
-      const lang = subtags.slice(0, i).join('-');
-
-      if (lookup[lang]) {
-        return lookup[lang];
-      }
+    if (lookup[lang]) {
+      return lookup[lang];
+    }
+    if (lang.split('-')[0] === 'zh') {
+      return (lang === 'zh-cn' || lang === 'zh-sg') ? 'zh-Hans' : 'zh-Hant';
     }
     return null;
   }
@@ -46,9 +45,15 @@ function getActiveTranslation() {
       }
     }
   } else {
-    translation = languageGetTranslation(navigator.language || navigator.userLanguage);
+    translation = languageGetTranslation(navigator.language);
     if (translation) {
       return translation;
+    }
+    if (navigator.language.includes('-')) {
+      translation = languageGetTranslation(navigator.language.split('-')[0]);
+      if (translation) {
+        return translation;
+      }
     }
   }
 
