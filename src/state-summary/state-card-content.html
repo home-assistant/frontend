@@ -40,7 +40,10 @@ class StateCardContent extends Polymer.Element {
   inputChanged(hass, inDialog, stateObj) {
     let stateCardType;
     if (!stateObj || !hass) return;
-    if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
+    var domain = window.hassUtil.computeDomain(stateObj);
+    if ((domain === 'custom_ha_card' || domain === 'custom_state_card') && stateObj.attributes && 'state_card' in stateObj.attributes) {
+      stateCardType = stateObj.attributes.state_card;
+    } else if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
       stateCardType = stateObj.attributes.custom_ui_state_card;
     } else {
       stateCardType = 'state-card-' + window.hassUtil.stateCardType(hass, stateObj);
