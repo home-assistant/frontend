@@ -10,14 +10,14 @@
 <dom-module id="ha-config-section-themes">
   <template>
     <ha-config-section is-wide='[[isWide]]'>
-      <span slot='header'>Set a theme</span>
+      <span slot='header'>[[localize('ui.panel.config.core.section.themes.header')]]</span>
       <span slot='introduction'>
-        Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device.
+        [[localize('ui.panel.config.core.section.themes.introduction')]]
       </span>
 
       <paper-card>
         <div class='card-content'>
-          <paper-dropdown-menu label='Theme' dynamic-align>
+          <paper-dropdown-menu label="[[localize('ui.panel.config.core.section.themes.header')]]" dynamic-align>
             <paper-listbox
               slot="dropdown-content"
               selected='{{selectedTheme}}'
@@ -34,7 +34,12 @@
 </dom-module>
 
 <script>
-class HaConfigSectionThemes extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaConfigSectionThemes extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-config-section-themes'; }
 
   static get properties() {

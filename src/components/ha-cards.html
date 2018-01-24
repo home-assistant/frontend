@@ -51,7 +51,7 @@
       }
     </style>
 
-    <div class='main'>
+    <div id='main'>
       <template is='dom-if' if='[[cards.badges]]'>
         <div class='badges'>
           <template is='dom-if' if='[[cards.demo]]'>
@@ -86,7 +86,7 @@
     history_graph: 4,
     media_player: 3,
     persistent_notification: 0,
-    // plant: 3,
+    plant: 3,
     weather: 4,
   };
 
@@ -106,6 +106,7 @@
     sun: 1,
     device_tracker: 2,
     alarm_control_panel: 3,
+    timer: 4,
     sensor: 5,
     binary_sensor: 6,
     mailbox: 7,
@@ -183,7 +184,13 @@
       orderedGroups
     ) {
       if (!panelVisible || !viewVisible) {
+        if (this.$.main.parentNode) {
+          this.$.main._parentNode = this.$.main.parentNode;
+          this.$.main.parentNode.removeChild(this.$.main);
+        }
         return;
+      } else if (!this.$.main.parentNode && this.$.main._parentNode) {
+        this.$.main._parentNode.appendChild(this.$.main);
       }
       this._debouncer = Polymer.Debouncer.debounce(
         this._debouncer,
@@ -197,14 +204,19 @@
       );
     }
 
-    computeCards(columns, states, orderedGroups) {
-      const hass = this.hass;
-
-      const cards = {
+    emptyCards() {
+      return {
         demo: false,
         badges: [],
         columns: [],
       };
+    }
+
+    computeCards(columns, states, orderedGroups) {
+      const hass = this.hass;
+
+      const cards = this.emptyCards();
+
       const entityCount = [];
       for (let i = 0; i < columns; i++) {
         cards.columns.push([]);

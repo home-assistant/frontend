@@ -59,7 +59,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     var map = this._map = window.L.map(this.$.map);
     var style = document.createElement('link');
     style.setAttribute('href', window.HASS_DEV ?
-      '/static/home-assistant-polymer/bower_components/leaflet/dist/leaflet.css' :
+      '/home-assistant-polymer/bower_components/leaflet/dist/leaflet.css' :
       '/static/images/leaflet/leaflet.css');
     style.setAttribute('rel', 'stylesheet');
     this.$.map.parentNode.appendChild(style);

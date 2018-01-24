@@ -35,6 +35,7 @@
         white-space: normal;
       }
       .status {
+        text-transform: capitalize;
         padding: 16px;
       }
       paper-button {
@@ -52,7 +53,7 @@
             Thank you for supporting Home Assistant. It's because of people like you that we are able to run this project and make a great home automation experience for everyone. Thank you!
           </span>
 
-          <paper-card>
+          <paper-card heading='Account'>
             <div class='account-row'>
               <paper-item-body two-line>
                 [[account.email]]
@@ -73,8 +74,35 @@
               <div class='status'>[[account.cloud]]</div>
             </div>
           </paper-card>
+        </ha-config-section>
 
-          <div class='soon'>More configuration options coming soon.</div>
+        <ha-config-section
+          is-wide='[[isWide]]'
+        >
+          <span slot='header'>Integrations</span>
+          <span slot='introduction'>
+            Integrations for Home Assistant Cloud allow you to connect with services in the cloud
+            without having to expose your Home Assistant instance publicy on the internet.
+          </span>
+
+          <paper-card heading='Alexa'>
+            <div class="card-content">
+              With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.
+              <p><em>This integration requires an Alexa-enabled device like the Amazon Echo.</em></p>
+            </div>
+            <div class='card-actions'>
+              <a href='https://alexa.amazon.com/spa/index.html#skills/dp/B0772J1QKB/?ref=skill_dsk_skb_sr_2' target='_blank'>
+                <paper-button>
+                  Home Assistant Alexa skill
+                </paper-button>
+              </a>
+              <a href='https://home-assistant.io/components/cloud.alexa/' target='_blank'>
+                <paper-button>
+                  Documentation
+                </paper-button>
+              </a>
+            </div>
+          </paper-card>
         </ha-config-section>
       </div>
     </hass-subpage>

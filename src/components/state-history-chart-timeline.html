@@ -1,4 +1,5 @@
 <link rel='import' href='../../bower_components/polymer/polymer.html'>
+<link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 <link rel='import' href='./entity/ha-chart-base.html'>
 
 <dom-module id='state-history-chart-timeline'>
@@ -30,9 +31,6 @@ class StateHistoryChartTimeline extends Polymer.Element {
     super.connectedCallback();
     this._isAttached = true;
     this.drawChart();
-    // this.addEventListener('iron-resize', () => {
-    //   this.async(this.drawChart, 10);
-    // });
   }
 
   dataChanged() {
