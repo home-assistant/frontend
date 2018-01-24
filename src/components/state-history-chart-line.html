@@ -86,7 +86,6 @@ class StateHistoryChartLine extends Polymer.Element {
       var name = states.name;
       // array containing [value1, value2, etc]
       var prevValues;
-      var hasTargetRange;
       var processState;
       var data = [];
 
@@ -137,7 +136,7 @@ class StateHistoryChartLine extends Polymer.Element {
         // range versus ones that have just a target temperature
 
         // Using step chart by step-before so manually interpolation not needed.
-          const hasTargetRange = states.states.some(state => state.attributes &&
+        const hasTargetRange = states.states.some(state => state.attributes &&
           state.attributes.target_temp_high !== state.attributes.target_temp_low);
         const hasHeat = states.states.some(state => state.state === 'heat');
         const hasCool = states.states.some(state => state.state === 'cool');
@@ -166,17 +165,12 @@ class StateHistoryChartLine extends Polymer.Element {
         processState = function (state) {
           if (!state.attributes) return;
           var curTemp = safeParseFloat(state.attributes.current_temperature);
-          var series = [curTemp]
+          var series = [curTemp];
           if (hasHeat) {
             series.push(state.state === 'heat' ? curTemp : null);
           }
           if (hasCool) {
             series.push(state.state === 'cool' ? curTemp : null);
-          }
-          var workTemp = null;
-          if (state.state !== 'idle') {
-            hasWorking = true;
-            workTemp = curTemp;
           }
           if (hasTargetRange) {
             var targetHigh = safeParseFloat(state.attributes.target_temp_high);
