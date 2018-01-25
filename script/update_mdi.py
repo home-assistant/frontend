@@ -34,7 +34,7 @@ def get_remote_version():
 
 def clean_component(source):
     """Clean component."""
-    return source[source.index(START_ICONSET):]
+    return source[source.index(START_ICONSET):].replace('iconSize="24"', 'size="24"', 1)
 
 
 def write_component(source):
