@@ -1,3 +1,4 @@
+const fs = require('fs');
 const gulp = require('gulp');
 const rollupEach = require('gulp-rollup-each');
 const commonjs = require('rollup-plugin-commonjs');
@@ -8,6 +9,7 @@ const uglify = require('../common/gulp-uglify.js');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
+const VERSION = fs.readFileSync('setup.py', 'utf8').match(/\d{4}[^']*/)[0] || '0';
 
 function getRollupInputOptions(es6) {
   const babelOpts = {
@@ -51,6 +53,7 @@ function getRollupInputOptions(es6) {
           __DEV__: JSON.stringify(DEV),
           __DEMO__: JSON.stringify(DEMO),
           __BUILD__: JSON.stringify(es6 ? 'latest' : 'es5'),
+          __VERSION__: JSON.stringify(VERSION),
         },
       }),
     ],
