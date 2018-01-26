@@ -18,35 +18,34 @@
       .camera-feed {
         width: 100%;
         height: auto;
-        border-radius: 2px;
+        border-bottom-left-radius: 2px;
+        border-bottom-right-radius: 2px;
+        margin-top: 26px;
       }
       .caption {
         @apply(--paper-font-common-nowrap);
         position: absolute;
         left: 0px;
         right: 0px;
-        bottom: 0px;
-        border-bottom-left-radius: 2px;
-        border-bottom-right-radius: 2px;
-
+        top: 0px;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;
         background-color: rgba(0, 0, 0, 0.3);
-        padding: 16px;
-
-        font-size: 16px;
+        padding: 13px;
+        font-size: 15px;
         font-weight: 500;
-        line-height: 16px;
         color: white;
       }
     </style>
 
-    <img src='[[cameraFeedSrc]]' class='camera-feed' hidden$='[[!imageLoaded]]'
-      on-load='imageLoadSuccess' on-error='imageLoadFail' alt='[[computeStateName(stateObj)]]'>
     <div class='caption'>
       [[computeStateName(stateObj)]]
       <template is='dom-if' if='[[!imageLoaded]]'>
         ([[localize('ui.card.camera.not_available')]])
       </template>
     </div>
+    <img src='[[cameraFeedSrc]]' class='camera-feed' hidden$='[[!imageLoaded]]'
+      on-load='imageLoadSuccess' on-error='imageLoadFail' alt='[[computeStateName(stateObj)]]'>
   </template>
 </dom-module>
 
