@@ -21,12 +21,11 @@
       <span class="state-label">
         [[stateObj.state]]
       </span>
-      [[computeTargetTemperature(stateObj)]]
+      [[computeTarget(stateObj)]]
     </div>
 
     <div class='current'>
-      Currently: [[stateObj.attributes.current_temperature]]
-      [[stateObj.attributes.unit_of_measurement]]
+      Currently: [[computeCurrentStatus(stateObj)]]
     </div>
   </template>
 </dom-module>
@@ -41,12 +40,27 @@ class HaClimateState extends Polymer.Element {
     };
   }
 
-  computeTargetTemperature(stateObj) {
+  computeCurrentStatus(stateObj) {
+    if (stateObj.attributes.current_temperature) {
+      return `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
+    } else if (stateObj.attributes.current_humidity) {
+      return `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
+    }
+
+    return '';
+  }
+
+  computeTarget(stateObj) {
     if (stateObj.attributes.target_temp_low &&
         stateObj.attributes.target_temp_high) {
       return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${stateObj.attributes.unit_of_measurement}`;
     } else if (stateObj.attributes.temperature) {
       return `${stateObj.attributes.temperature} ${stateObj.attributes.unit_of_measurement}`;
+    } else if (stateObj.attributes.target_humidity_low &&
+        stateObj.attributes.target_humidity_high) {
+      return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} ${stateObj.attributes.unit_of_measurement}`;
+    } else if (stateObj.attributes.humidity) {
+      return `${stateObj.attributes.humidity} ${stateObj.attributes.unit_of_measurement}`;
     }
 
     return '';
