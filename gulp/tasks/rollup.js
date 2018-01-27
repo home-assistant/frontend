@@ -9,7 +9,11 @@ const uglify = require('../common/gulp-uglify.js');
 
 const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 const DEMO = !!JSON.parse(process.env.BUILD_DEMO || 'false');
-const VERSION = fs.readFileSync('setup.py', 'utf8').match(/\d{4}[^']*/)[0] || '0';
+const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
+if (!version) {
+  throw Error('Version not found');
+}
+const VERSION = version[0];
 
 function getRollupInputOptions(es6) {
   const babelOpts = {
