@@ -172,7 +172,7 @@
           value: false,
         },
 
-        orderedGroups: Array,
+        orderedGroupEntities: Array,
 
         cards: Object,
       };
@@ -180,7 +180,7 @@
 
     static get observers() {
       return [
-        'updateCards(columns, states, panelVisible, viewVisible, orderedGroups)',
+        'updateCards(columns, states, panelVisible, viewVisible, orderedGroupEntities)',
       ];
     }
 
@@ -189,7 +189,7 @@
       states,
       panelVisible,
       viewVisible,
-      orderedGroups
+      orderedGroupEntities
     ) {
       if (!panelVisible || !viewVisible) {
         if (this.$.main.parentNode) {
@@ -206,7 +206,7 @@
         () => {
           // Things might have changed since it got scheduled.
           if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(columns, states, orderedGroups);
+            this.cards = this.computeCards(columns, states, orderedGroupEntities);
           }
         }
       );
@@ -220,7 +220,7 @@
       };
     }
 
-    computeCards(columns, states, orderedGroups) {
+    computeCards(columns, states, orderedGroupEntities) {
       const hass = this.hass;
 
       const cards = this.emptyCards();
@@ -293,9 +293,9 @@
       }
 
       const splitted = window.HAWS.splitByGroups(states);
-      if (orderedGroups) {
-        splitted.groups.sort((gr1, gr2) => orderedGroups[gr1.entity_id] -
-          orderedGroups[gr2.entity_id]);
+      if (orderedGroupEntities) {
+        splitted.groups.sort((gr1, gr2) => orderedGroupEntities[gr1.entity_id] -
+          orderedGroupEntities[gr2.entity_id]);
       } else {
         splitted.groups.sort((gr1, gr2) => gr1.attributes.order - gr2.attributes.order);
       }
@@ -335,13 +335,13 @@
         coll[domain].states.push(state);
       });
 
-      if (orderedGroups) {
+      if (orderedGroupEntities) {
         iterateDomain(badgesColl, (domain) => {
           cards.badges.push.apply(cards.badges, domain.states);
         });
         
-        cards.badges.sort((e1, e2) => orderedGroups[e1.entity_id] -
-          orderedGroups[e2.entity_id]);
+        cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
+          orderedGroupEntities[e2.entity_id]);
       } else {
         iterateDomainSorted(badgesColl, (domain) => {
           cards.badges.push.apply(cards.badges, domain.states);
