@@ -163,6 +163,9 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'notify':
       return 'mdi:comment-alert';
 
+    case 'plant':
+      return 'mdi:flower';
+
     case 'proximity':
       return 'mdi:apple-safari';
 
@@ -186,6 +189,9 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'switch':
       return 'mdi:flash';
+
+    case 'timer':
+      return 'mdi:timer';
 
     case 'updater':
       return 'mdi:cloud-upload';
@@ -241,7 +247,7 @@ window.hassUtil.binarySensorIcon = function (state) {
     case 'motion':
       return activated ? 'mdi:walk' : 'mdi:run';
     case 'occupancy':
-      return activated ? 'mdi:home' : 'mdi:home-outline';
+      return activated ? 'mdi:home-outline' : 'mdi:home';
     case 'opening':
       return activated ? 'mdi:square' : 'mdi:square-outline';
     case 'plug':

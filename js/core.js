@@ -4,6 +4,7 @@ window.HAWS = HAWS;
 window.HASS_DEMO = __DEMO__;
 window.HASS_DEV = __DEV__;
 window.HASS_BUILD = __BUILD__;
+window.HASS_VERSION = __VERSION__;
 
 const init = window.createHassConnection = function (password) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';

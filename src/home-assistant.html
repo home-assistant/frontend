@@ -1,6 +1,8 @@
 <link rel="import" href='../bower_components/polymer/polymer-element.html'>
 <script>
   Polymer.setPassiveTouchGestures(true);
+  /* LastPass createElement workaround. See #428 */
+  document.createElement = Document.prototype.createElement;
 </script>
 <link rel='import' href='./util/roboto.html'>
 <link rel='import' href='../bower_components/paper-styles/typography.html'>

@@ -65,9 +65,9 @@
           <template is='dom-if' if='[[computeShowPlaybackControls(isOff, hasMediaControl)]]'>
             <paper-icon-button icon='mdi:skip-previous' on-tap='handlePrevious'
               hidden$='[[!supportsPreviousTrack]]'></paper-icon-button>
-            <paper-icon-button icon='[[computePlaybackControlIcon(stateObj)]]'
+            <paper-icon-button icon='[[computePlaybackControlIcon(isPlaying)]]'
               on-tap='handlePlaybackControl'
-              hidden$='[[!computePlaybackControlIcon(stateObj)]]' highlight></paper-icon-button>
+              hidden$='[[!computePlaybackControlIcon(isPlaying)]]' highlight></paper-icon-button>
             <paper-icon-button icon='mdi:skip-next' on-tap='handleNext'
               hidden$='[[!supportsNextTrack]]'></paper-icon-button>
           </template>
@@ -295,8 +295,8 @@
       return !isOff && hasMedia;
     }
 
-    computePlaybackControlIcon() {
-      if (this.isPlaying) {
+    computePlaybackControlIcon(isPlaying) {
+      if (isPlaying) {
         return this.supportsPause ? 'mdi:pause' : 'mdi:stop';
       }
       return this.supportsPlay ? 'mdi:play' : null;

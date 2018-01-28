@@ -15,8 +15,10 @@
     "__DEV__": false,
     "__DEMO__": false,
     "__BUILD__": false,
+    "__VERSION__": false,
     "Polymer": true,
-    "webkitSpeechRecognition": false
+    "webkitSpeechRecognition": false,
+    "ResizeObserver": false
   },
   "env": {
     "browser": true,

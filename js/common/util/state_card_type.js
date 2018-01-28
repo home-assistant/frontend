@@ -12,6 +12,7 @@ const DOMAINS_WITH_CARD = [
   'scene',
   'lock',
   'script',
+  'timer',
   'weblink',
 ];
 
