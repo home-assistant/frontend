@@ -25,16 +25,14 @@
       }
     </style>
 
-    <template is='dom-if' if='[[!stateObj.attributes.assumed_state]]'>
-      <paper-button-group selected="">
-        <paper-icon-button icon="mdi:lock-open" on-tap="unlock" state-active$='[[!isLocked]]'>Unlock
-        </paper-icon-button>
-        <paper-icon-button icon="mdi:lock" on-tap="lock" state-active$='[[isLocked]]'>Lock</paper-icon-button>
-        <template is='dom-if' if='[[isOpenable]]'>
-          <paper-icon-button icon="mdi:door-open" on-tap="open">Open</paper-icon-button>
-        </template>
-      </paper-button-group>
-    </template>
+    <paper-button-group>
+      <paper-icon-button icon="mdi:lock-open" on-tap="unlock" state-active$='[[!isLocked]]'>Unlock
+      </paper-icon-button>
+      <paper-icon-button icon="mdi:lock" on-tap="lock" state-active$='[[isLocked]]'>Lock</paper-icon-button>
+      <template is='dom-if' if='[[isOpenable]]'>
+        <paper-icon-button icon="mdi:door-open" on-tap="open">Open</paper-icon-button>
+      </template>
+    </paper-button-group>
   </template>
 </dom-module>
 
@@ -78,16 +76,6 @@
 
     onTap(ev) {
       ev.stopPropagation();
-    }
-
-    toggleChanged(ev) {
-      const newVal = ev.target.checked;
-
-      if (newVal && !this.isLocked) {
-        this.callService(true);
-      } else if (!newVal && this.isLocked) {
-        this.callService(false);
-      }
     }
 
     isLockedChanged(newVal) {
