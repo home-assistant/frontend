@@ -135,9 +135,9 @@
     // the resync is not called automatic.
     callService(command) {
       const currentState = this.stateObj;
-      const service = this.hass.callService(
-        'lock', command, {entity_id: this.stateObj.entity_id}
-      );
+      const service = this.hass.callService('lock', command, {
+        entity_id: this.stateObj.entity_id
+      });
       service.then(() => {
         setTimeout(() => {
           // If after 3 seconds we have not received a state update
