@@ -143,6 +143,14 @@
       });
   };
 
+  const iterateDomain = (collection, func) => {
+    Object.keys(collection)
+      .map(key => collection[key])
+      .forEach((domain) => {
+        func(domain);
+      });
+  };
+
   const computeDomain = window.hassUtil.computeDomain;
 
   class HaCards extends Polymer.Element {
@@ -327,9 +335,18 @@
         coll[domain].states.push(state);
       });
 
-      iterateDomainSorted(badgesColl, (domain) => {
-        cards.badges.push.apply(cards.badges, domain.states);
-      });
+      if (orderedGroups) {
+        iterateDomain(badgesColl, (domain) => {
+          cards.badges.push.apply(cards.badges, domain.states);
+        });
+        
+        cards.badges.sort((e1, e2) => orderedGroups[e1.entity_id] -
+          orderedGroups[e2.entity_id]);
+      } else {
+        iterateDomainSorted(badgesColl, (domain) => {
+          cards.badges.push.apply(cards.badges, domain.states);
+        });
+      }
 
       iterateDomainSorted(beforeGroupColl, (domain) => {
         addEntitiesCard(domain.domain, domain.states);
