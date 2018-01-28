@@ -339,7 +339,7 @@
         iterateDomain(badgesColl, (domain) => {
           cards.badges.push.apply(cards.badges, domain.states);
         });
-        
+
         cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
           orderedGroupEntities[e2.entity_id]);
       } else {
