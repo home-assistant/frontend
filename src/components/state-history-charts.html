@@ -105,6 +105,7 @@ class StateHistoryCharts extends Polymer.Element {
   _googleApiLoaded() {
     window.google.load('visualization', '1', {
       packages: ['timeline', 'corechart'],
+      language: navigator.language,
       callback: function () {
         this._apiLoaded = true;
       }.bind(this),
