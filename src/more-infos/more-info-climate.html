@@ -116,9 +116,9 @@
 
       <div class='container-temperature'>
         <div class$='[[stateObj.attributes.operation_mode]]'>
-          <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target
+          <div hidden$='[[supportsTemperatureControls(stateObj)]]'>Target
             Temperature</div>
-          <template is='dom-if' if='[[computeIncludeTempControl(stateObj)]]'>
+          <template is='dom-if' if='[[supportsTemperature(stateObj)]]'>
             <ha-climate-control
               value='[[stateObj.attributes.temperature]]'
               units='[[stateObj.attributes.unit_of_measurement]]'
@@ -129,7 +129,7 @@
               >
             </ha-climate-control>
           </template>
-          <template is='dom-if' if='[[computeIncludeTempRangeControl(stateObj)]]'>
+          <template is='dom-if' if='[[supportsTemperatureRange(stateObj)]]'>
             <ha-climate-control
               value='[[stateObj.attributes.target_temp_low]]'
               units='[[stateObj.attributes.unit_of_measurement]]'
@@ -263,7 +263,6 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
         value: -1,
         observer: 'handleSwingmodeChanged',
       },
-
       awayToggleChecked: Boolean,
       auxToggleChecked: Boolean,
       onToggleChecked: Boolean,
@@ -274,6 +273,18 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.awayToggleChecked = newVal.attributes.away_mode === 'on';
     this.auxToggleChecked = newVal.attributes.aux_heat === 'on';
     this.onToggleChecked = newVal.state !== 'off';
+
+    if (newVal.attributes.fan_list) {
+      this.fanIndex = newVal.attributes.fan_list.indexOf(newVal.attributes.fan_mode);
+    } else {
+      this.fanIndex = -1;
+    }
+
+    if (newVal.attributes.swing_list) {
+      this.swingIndex = newVal.attributes.swing_list.indexOf(newVal.attributes.swing_mode);
+    } else {
+      this.swingIndex = -1;
+    }
 
     if (oldVal) {
       this._debouncer = Polymer.Debouncer.debounce(
@@ -322,19 +333,18 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     return 0.5;
   }
 
-  computeTargetTempHidden(stateObj) {
-    return !stateObj.attributes.temperature &&
-        !stateObj.attributes.target_temp_low &&
-        !stateObj.attributes.target_temp_high;
+  supportsTemperature(stateObj) {
+    return (stateObj.attributes.supported_features & 1) !== 0;
   }
 
-  computeIncludeTempRangeControl(stateObj) {
-    return stateObj.attributes.target_temp_low ||
-        stateObj.attributes.target_temp_high;
+  supportsTemperatureRange(stateObj) {
+    return ((newVal.attributes.supported_features & 2) !== 0)
+      || ((newVal.attributes.supported_features & 4) !== 0)
   }
 
-  computeIncludeTempControl(stateObj) {
-    return stateObj.attributes.temperature;
+  supportsTemperatureControls(stateObj) {
+    return supportsTemperature(stateObj) ||
+      supportsTemperatureRange (stateObj);
   }
 
   computeClassNames(stateObj) {
