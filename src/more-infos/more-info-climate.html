@@ -39,6 +39,8 @@
       .has-away_mode .container-away_mode,
       .has-aux_heat .container-aux_heat,
       .has-target_temperature .container-temperature,
+      .has-target_temperature_low .container-temperature,
+      .has-target_temperature_high .container-temperature,
       .has-target_humidity .container-humidity,
       .has-operation_mode .container-operation_list,
       .has-fan_mode .container-fan_list,
@@ -116,7 +118,7 @@
 
       <div class='container-temperature'>
         <div class$='[[stateObj.attributes.operation_mode]]'>
-          <div hidden$='[[supportsTemperatureControls(stateObj)]]'>Target
+          <div hidden$='[[!supportsTemperatureControls(stateObj)]]'>Target
             Temperature</div>
           <template is='dom-if' if='[[supportsTemperature(stateObj)]]'>
             <ha-climate-control
@@ -338,13 +340,13 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   supportsTemperatureRange(stateObj) {
-    return ((newVal.attributes.supported_features & 2) !== 0)
-      || ((newVal.attributes.supported_features & 4) !== 0)
+    return ((stateObj.attributes.supported_features & 2) !== 0)
+      || ((stateObj.attributes.supported_features & 4) !== 0);
   }
 
   supportsTemperatureControls(stateObj) {
-    return supportsTemperature(stateObj) ||
-      supportsTemperatureRange (stateObj);
+    return this.supportsTemperature(stateObj) ||
+      this.supportsTemperatureRange (stateObj);
   }
 
   computeClassNames(stateObj) {
