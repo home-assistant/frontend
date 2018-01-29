@@ -328,13 +328,12 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   supportsTemperatureRange(stateObj) {
-    return ((stateObj.attributes.supported_features & 2) !== 0)
-      || ((stateObj.attributes.supported_features & 4) !== 0);
+    return (stateObj.attributes.supported_features & 4) !== 0;
   }
 
   supportsTemperatureControls(stateObj) {
     return this.supportsTemperature(stateObj) ||
-      this.supportsTemperatureRange (stateObj);
+      this.supportsTemperatureRange(stateObj);
   }
 
   computeClassNames(stateObj) {
