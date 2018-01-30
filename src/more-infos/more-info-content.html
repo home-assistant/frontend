@@ -48,14 +48,8 @@ class MoreInfoContent extends Polymer.Element {
         this.lastChild.isVisible = false;
       }
     } else {
-      var moreInfoCardType;
-      if (stateObj.attributes && 'custom_ui_more_info_card' in stateObj.attributes) {
-        moreInfoCardType = stateObj.attributes.custom_ui_more_info_card;
-      } else {
-        moreInfoCardType = 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase();
-      }
       window.hassUtil.dynamicContentUpdater(
-        this, moreInfoCardType,
+        this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
         { hass: hass, stateObj: stateObj, isVisible: true }
       );
     }
