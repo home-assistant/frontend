@@ -29,7 +29,7 @@ class HaCardChooser extends Polymer.Element {
     } else {
       cardType = 'HA-' + newData.cardType.toUpperCase() + '-CARD';
     }
-    
+
     window.hassUtil.dynamicContentUpdater(this, cardType, newData);
   }
 }
