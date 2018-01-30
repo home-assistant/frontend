@@ -50,7 +50,7 @@ class MoreInfoContent extends Polymer.Element {
     } else {
       var moreInfoCardType;
       var domain = window.hassUtil.computeDomain(stateObj);
-      if (domain === 'custom_ha_card' || domain === 'custom_state_card') {
+      if (domain === 'custom_full_card' || domain === 'custom_state_card') {
         moreInfoCardType = stateObj.attributes.more_info_card || 'MORE-INFO-HIDDEN';
       } else if (stateObj.attributes && 'custom_ui_more_info_card' in stateObj.attributes) {
         moreInfoCardType = stateObj.attributes.custom_ui_more_info_card;
