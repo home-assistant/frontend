@@ -45,15 +45,6 @@
         margin-left: 10px;
       }
 
-      iron-icon.sound-mode-input {
-        padding: 7px;
-        margin-top: 15px;
-      }
-
-      paper-dropdown-menu.sound-mode-input {
-        margin-left: 10px;
-      }
-
       [hidden] {
         display: none !important;
       }
@@ -118,8 +109,8 @@
       <!-- SOUND MODE PICKER -->
       <div class='controls layout horizontal justified'
            hidden$='[[computeHideSelectSoundMode(isOff, supportsSelectSoundMode)]]'>
-        <iron-icon class="sound-mode-input" icon="mdi:music-note"></iron-icon>
-        <paper-dropdown-menu class="flex sound-mode-input" dynamic-align label-float label='Sound Mode'>
+        <iron-icon class="source-input" icon="mdi:music-note"></iron-icon>
+        <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
           <paper-listbox slot="dropdown-content" selected="{{soundModeIndex}}">
             <template is='dom-repeat' items='[[stateObj.attributes.sound_mode_list]]'>
               <paper-item>[[item]]</paper-item>
@@ -359,10 +350,6 @@
 
     computeHideSelectSoundMode(isOff, supportsSelectSoundMode) {
       return isOff || !supportsSelectSoundMode;
-    }
-
-    computeSelectedSoundMode(stateObj) {
-      return stateObj.attributes.sound_mode_list.indexOf(stateObj.attributes.sound_mode);
     }
 
     computeHideTTS(ttsLoaded, supportsPlayMedia) {
