@@ -26,13 +26,14 @@
           </div>
         </div>
         <template is='dom-repeat' items='[[addons]]' as='addon' sort='sortAddons'>
-          <paper-card on-tap='addonTapped'>
+          <paper-card on-click='addonTapped'>
             <div class='card-content'>
               <hassio-item-info
                 title='[[addon.name]]'
                 description='[[addon.description]]'
                 icon='[[computeIcon(addon)]]'
-                classname='[[computeClass(addon)]]'
+                icon-title='[[computeIconTitle(addon)]]'
+                icon-class='[[computeIconClass(addon)]]'
               ></hassio-item-info>
             </div>
           </paper-card>
@@ -49,7 +50,7 @@ class HassioStoreRepository extends window.hassMixins.EventsMixin(Polymer.Elemen
   static get properties() {
     return {
       repo: Object,
-      addons: Object,
+      addons: Array,
     };
   }
 
@@ -61,13 +62,18 @@ class HassioStoreRepository extends window.hassMixins.EventsMixin(Polymer.Elemen
     return a.name < b.name ? -1 : 1;
   }
 
-  computeClass(addon) {
-    if (addon.installed) return addon.installed !== addon.version ? 'update' : 'installed';
-    return '';
-  }
-
   computeIcon(addon) {
     return addon.installed && addon.installed !== addon.version ? 'mdi:arrow-up-bold-circle' : 'mdi:puzzle';
+  }
+
+  computeIconTitle(addon) {
+    if (addon.installed) return addon.installed !== addon.version ? 'New version available' : 'Add-on is installed';
+    return 'Add-on is not installed';
+  }
+
+  computeIconClass(addon) {
+    if (addon.installed) return addon.installed !== addon.version ? 'update' : 'installed';
+    return '';
   }
 
   addonTapped(ev) {

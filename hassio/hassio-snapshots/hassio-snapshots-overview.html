@@ -69,14 +69,14 @@
           </paper-card>
         </template>
         <template is='dom-repeat' items='[[snapshots]]' as='snapshot' sort='sortSnapshots'>
-          <paper-card class='pointer' on-tap='snapshotTapped'>
+          <paper-card class='pointer' on-click='snapshotTapped'>
             <div class='card-content'>
               <hassio-item-info
                 title='[[computeName(snapshot)]]'
                 description='[[snapshot.date]]Z'
                 datetime
                 icon='mdi:package-variant'
-                classname='primary'
+                icon-class='primary'
               ></hassio-item-info>
             </div>
           </paper-card>

@@ -15,7 +15,7 @@
       iron-icon.update {
         color: var(--paper-orange-400);
       }
-      iron-icon.started,
+      iron-icon.running,
       iron-icon.installed {
         color: var(--paper-green-400);
       }
@@ -36,7 +36,7 @@
       }
 
     </style>
-    <iron-icon icon='[[icon]]' class$='[[classname]]'></iron-icon>
+    <iron-icon icon='[[icon]]' class$='[[iconClass]]' title='[[iconTitle]]'></iron-icon>
     <div class='item-body'>
       <div class='title'>[[title]]</div>
       <div class='description'>
@@ -67,7 +67,8 @@ class HassioItemInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
         type: String,
         value: 'mdi:help-circle'
       },
-      classname: String,
+      iconTitle: String,
+      iconClass: String,
     };
   }
 }

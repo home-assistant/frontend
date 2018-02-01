@@ -4,13 +4,9 @@
 - [ ] new layout for /addons, no idea how...
 - [ ] snapshot details -> full restore, partial restore, delete
 - [ ] talk about error boxes, where are they usefull, are they usefull, where to place them
-- [ ] maybe add tooltips "Add-on is running", "Add-on is stopped", "New version available" to our card icons?
 - [ ] updating data after some APIs are called
 - [ ] vertical center card content
-- [x] maybe change snapshot icon? archive, package, ...?
 - [ ] make the create snapshot button get a spinner (like in old panel on some buttons)
-- [x] maybe remove timezone from advanced, useless info
-- [ ] add developer specific stuff back to /addons
 - [ ] maybe move more stuff to item-info, like card-content or the whole card
 - [ ] check if we get errors when pressing a reboot/update button -> pvizeli should send us an HTTP 200 OK before rebooting
 - [ ] make the content class horizontal centered?
@@ -20,7 +16,6 @@
 - [ ] reduce number of APIs called at the same time - maybe just call the APIs when view requries it
 - [ ] align top panels when multiple columns and panel size is different
 - [ ] capitalize only first letter (snapshot details name, addon details name, item-info)
-- [ ] move checkboxes out of click event form sidebar
 - [ ] handle errors for supervisor 'It is already a xxx process running' like `snapshot/restore`
 
 
