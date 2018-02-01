@@ -143,14 +143,6 @@
       });
   };
 
-  const iterateDomain = (collection, func) => {
-    Object.keys(collection)
-      .map(key => collection[key])
-      .forEach((domain) => {
-        func(domain);
-      });
-  };
-
   const computeDomain = window.hassUtil.computeDomain;
 
   class HaCards extends Polymer.Element {
@@ -336,9 +328,11 @@
       });
 
       if (orderedGroupEntities) {
-        iterateDomain(badgesColl, (domain) => {
-          cards.badges.push.apply(cards.badges, domain.states);
-        });
+        Object.keys(badgesColl)
+          .map(key => badgesColl[key])
+          .forEach((domain) => {
+            cards.badges.push.apply(cards.badges, domain.states);
+          });
 
         cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
           orderedGroupEntities[e2.entity_id]);
