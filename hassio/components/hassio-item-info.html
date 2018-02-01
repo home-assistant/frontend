@@ -1,0 +1,73 @@
+<link rel='import' href='../../../bower_components/iron-icon/iron-icon.html'>
+<link rel='import' href='../../../src/components/ha-relative-time.html'>
+
+<dom-module id='hassio-item-info'>
+  <template>
+    <style>
+      iron-icon {
+        color: var(--secondary-text-color);
+        margin-right: 16px;
+        margin-top: 16px;
+        float: left;
+      }
+      iron-icon.update {
+        color: var(--paper-orange-400);
+      }
+      iron-icon.started,
+      iron-icon.installed {
+        color: var(--paper-green-400);
+      }
+      iron-icon.primary {
+        color: var(--primary-color);
+      }
+      .title {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+      .description {
+        color: var(--secondary-text-color);
+        overflow: hidden;
+        position: relative; 
+        height: 2.4em;
+        line-height: 1.2em;
+      }
+
+    </style>
+    <iron-icon icon='[[icon]]' class$='[[classname]]'></iron-icon>
+    <div class='item-body'>
+      <div class='title'>[[title]]</div>
+      <div class='description'>
+        <template is='dom-if' if='[[!datetime]]'>
+          [[description]]
+        </template>
+        <template is='dom-if' if='[[datetime]]'>
+          <ha-relative-time datetime='[[description]]'></ha-relative-time>
+        </template>
+      </div>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+class HassioItemInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-item-info'; }
+
+  static get properties() {
+    return {
+      title: String,
+      description: String,
+      datetime: {
+        type: Boolean,
+        value: false,
+      },
+      icon: {
+        type: String,
+        value: 'mdi:help-circle'
+      },
+      classname: String,
+    };
+  }
+}
+customElements.define(HassioItemInfo.is, HassioItemInfo);
+</script>

@@ -1,0 +1,79 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-card/paper-card.html'>
+
+<link rel='import' href='../components/hassio-item-info.html'>
+<link rel='import' href='../hassio-style.html'>
+
+<dom-module id='hassio-store-repository'>
+  <template>
+    <style include='hassio-style'></style>
+    <style include='iron-flex ha-style'>
+      paper-card {
+        cursor: pointer;
+      }
+      a {
+        display: block;
+        color: var(--primary-text-color);
+      }
+    </style>
+    <template is='dom-if' if='[[computeRepoNotEmpty(addons)]]'>
+      <div class='card-group'>
+        <div class='title'>
+          [[repo.name]]
+          <div class='description'>
+            Maintained by [[repo.maintainer]]
+            <a href='[[repo.url]]' target='_blank'>[[repo.url]]</a>
+          </div>
+        </div>
+        <template is='dom-repeat' items='[[addons]]' as='addon' sort='sortAddons'>
+          <paper-card on-tap='addonTapped'>
+            <div class='card-content'>
+              <hassio-item-info
+                title='[[addon.name]]'
+                description='[[addon.description]]'
+                icon='[[computeIcon(addon)]]'
+                classname='[[computeClass(addon)]]'
+              ></hassio-item-info>
+            </div>
+          </paper-card>
+        </template>
+      </div>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class HassioStoreRepository extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-store-repository'; }
+
+  static get properties() {
+    return {
+      repo: Object,
+      addons: Object,
+    };
+  }
+
+  computeRepoNotEmpty(addons) {
+    return addons.length > 0;
+  }
+
+  sortAddons(a, b) {
+    return a.name < b.name ? -1 : 1;
+  }
+
+  computeClass(addon) {
+    if (addon.installed) return addon.installed !== addon.version ? 'update' : 'installed';
+    return '';
+  }
+
+  computeIcon(addon) {
+    return addon.installed && addon.installed !== addon.version ? 'mdi:arrow-up-bold-circle' : 'mdi:puzzle';
+  }
+
+  addonTapped(ev) {
+    history.pushState(null, null, '/hassio/addon/' + ev.model.addon.slug);
+    this.fire('location-changed');
+  }
+}
+customElements.define(HassioStoreRepository.is, HassioStoreRepository);
+</script>

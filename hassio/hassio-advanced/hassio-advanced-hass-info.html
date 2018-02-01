@@ -1,0 +1,91 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-card/paper-card.html'>
+
+<link rel='import' href='../../../src/components/buttons/ha-call-api-button.html'>
+
+<dom-module id='hassio-advanced-hass-info'>
+  <template>
+    <style include='iron-flex ha-style'>
+      .info {
+        width: 100%;
+      }
+      .info td:nth-child(2) {
+        text-align: right;
+      }
+      .error {
+        color: var(--google-red-500);
+        margin-top: 16px;
+      }
+    </style>
+
+    <paper-card heading='Home Assistant'>
+      <div class='card-content'>
+        <table class='info'>
+          <tr>
+            <td>Current version</td>
+            <td>[[hassInfo.version]]</td>
+          </tr>
+          <tr>
+            <td>Latest version</td>
+            <td>[[hassInfo.last_version]]</td>
+          </tr>
+        </table>
+      </div>
+      <div class='card-actions'>
+        <ha-call-api-button
+          class='warning'
+          hass='[[hass]]'
+          path='hassio/homeassistant/restart'
+        >Restart</ha-call-api-button>
+        <template is='dom-if' if='[[computeUpdateAvailable(hassInfo)]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path='hassio/homeassistant/update'
+          >Update</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[error]]'>
+          <div class='error'>Error: [[error]]</div>
+        </template>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+class HassioAdvancedHassInfo extends Polymer.Element {
+  static get is() { return 'hassio-advanced-hass-info'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      hassInfo: Object,
+      error: String,
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
+
+  apiCalled(ev) {
+    if (ev.detail.success) {
+      this.error = null;
+      return;
+    }
+
+    var response = ev.detail.response;
+
+    if (typeof response.body === 'object') {
+      this.error = response.body.message || 'Unknown error';
+    } else {
+      this.error = response.body;
+    }
+  }
+
+  computeUpdateAvailable(hassInfo) {
+    return hassInfo.version !== hassInfo.last_version;
+  }
+}
+customElements.define(HassioAdvancedHassInfo.is, HassioAdvancedHassInfo);
+</script>

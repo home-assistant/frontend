@@ -1,0 +1,56 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../../bower_components/paper-button/paper-button.html'>
+
+<dom-module id='hassio-addon-log'>
+  <template>
+    <style include='iron-flex ha-style'>
+      :host,
+      paper-card {
+        display: block;
+      }
+    </style>
+    <paper-card heading='Log'>
+      <div class='card-content'>
+        <pre>[[log]]</pre>
+      </div>
+      <div class='card-actions'>
+        <paper-button on-tap='refresh'>Refresh</paper-button>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+class HassioAddonLog extends Polymer.Element {
+  static get is() { return 'hassio-addon-log'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      addonSlug: {
+        type: String,
+        observer: 'addonSlugChanged',
+      },
+      log: String,
+    };
+  }
+
+  addonSlugChanged(slug) {
+    if (!this.hass) {
+      setTimeout(function () { this.addonChanged(slug); }.bind(this), 0);
+      return;
+    }
+
+    this.refresh();
+  }
+
+  refresh() {
+    this.hass.callApi('get', 'hassio/addons/' + this.addonSlug + '/logs')
+      .then(function (info) {
+        this.log = info;
+      }.bind(this));
+  }
+}
+customElements.define(HassioAddonLog.is, HassioAddonLog);
+</script>

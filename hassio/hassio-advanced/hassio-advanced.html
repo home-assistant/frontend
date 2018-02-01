@@ -1,0 +1,42 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+
+<link rel='import' href='./hassio-advanced-hass-info.html'>
+<link rel='import' href='./hassio-advanced-host-info.html'>
+<link rel='import' href='./hassio-advanced-supervisor-info.html'>
+
+<dom-module id='hassio-advanced'>
+  <template>
+    <style include='iron-flex ha-style'></style>
+    <div class='content'>
+      <hassio-advanced-hass-info
+        hass='[[hass]]'
+        hass-info='[[apiData.homeassistant]]'
+      ></hassio-advanced-hass-info>
+
+      <hassio-advanced-supervisor-info
+        hass='[[hass]]'
+        supervisor-info='[[apiData.supervisor]]'
+      ></hassio-advanced-supervisor-info>
+
+      <hassio-advanced-host-info
+        hass='[[hass]]'
+        host-info='[[apiData.host]]'
+      ></hassio-advanced-host-info>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+class HassioAdvanced extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-advanced'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      apiData: Object,
+    };
+  }
+}
+
+customElements.define(HassioAdvanced.is, HassioAdvanced);
+</script>

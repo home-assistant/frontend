@@ -1,0 +1,119 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-card/paper-card.html'>
+
+<link rel='import' href='../../../src/components/buttons/ha-call-api-button.html'>
+
+<dom-module id='hassio-advanced-host-info'>
+  <template>
+    <style include='iron-flex ha-style'>
+      .info {
+        width: 100%;
+      }
+      .info td:nth-child(2) {
+        text-align: right;
+      }
+      .error {
+        color: var(--google-red-500);
+        margin-top: 16px;
+      }
+    </style>
+    <paper-card heading='Host control'>
+      <div class='card-content'>
+        <table class='info'>
+          <tr>
+            <td>OS</td>
+            <td>[[hostInfo.os]]</td>
+          </tr>
+          <tr>
+            <td>Type</td>
+            <td>[[hostInfo.type]]</td>
+          </tr>
+          <tr>
+            <td>Hostname</td>
+            <td>[[hostInfo.hostname]]</td>
+          </tr>
+          <tr>
+            <td>Current version</td>
+            <td>[[hostInfo.version]]</td>
+          </tr>
+          <tr>
+            <td>Latest version</td>
+            <td>[[hostInfo.last_version]]</td>
+          </tr>
+        </table>        
+      </div>
+      <div class='card-actions'>
+        <template is='dom-if' if='[[computeUpdateAvailable(hostInfo)]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path='hassio/host/update'
+          >Update</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[computeRebootAvailable(hostInfo)]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path='hassio/host/reboot'
+          >Reboot</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[computeShutdownAvailable(hostInfo)]]'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path='hassio/host/shutdown'
+          >Shutdown</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[error]]'>
+          <div class='error'>Error: [[error]]</div>
+        </template>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+class HassioAdvancedHostInfo extends Polymer.Element {
+  static get is() { return 'hassio-advanced-host-info'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      hostInfo: Object,
+      error: String,
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
+
+  apiCalled(ev) {
+    if (ev.detail.success) {
+      this.error = null;
+      return;
+    }
+
+    var response = ev.detail.response;
+
+    if (typeof response.body === 'object') {
+      this.error = response.body.message || 'Unknown error';
+    } else {
+      this.error = response.body;
+    }
+  }
+
+  computeUpdateAvailable(hostInfo) {
+    return hostInfo.version !== hostInfo.last_version;
+  }
+
+  computeRebootAvailable(hostInfo) {
+    return hostInfo.features && hostInfo.features.indexOf('reboot') !== -1;
+  }
+
+  computeShutdownAvailable(hostInfo) {
+    return hostInfo.features && hostInfo.features.indexOf('shutdown') !== -1;
+  }
+}
+customElements.define(HassioAdvancedHostInfo.is, HassioAdvancedHostInfo);
+</script>

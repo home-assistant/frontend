@@ -1,0 +1,51 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="./hassio-main.html">
+
+<dom-module id="ha-panel-hassio">
+  <template>
+    <style>
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+
+    <hassio-main
+      hass='[[hass]]'
+      narrow='[[narrow]]'
+      show-menu='[[showMenu]]'
+      route='[[route]]'
+    ></hassio-main>
+  </template>
+</dom-module>
+
+<script>
+class HaPanelHassio extends Polymer.Element {
+  static get is() { return 'ha-panel-hassio'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      route: Object,
+
+      loaded: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (!window.HASS_DEV) {
+      Polymer.importHref(`/api/hassio/panel_${window.HASS_BUILD}`, null, () => {
+        // eslint-disable-next-line
+        alert('Failed to load the Hass.io panel from supervisor.');
+      });
+    }
+  }
+}
+
+customElements.define(HaPanelHassio.is, HaPanelHassio);
+</script>

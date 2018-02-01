@@ -1,0 +1,131 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../../bower_components/paper-input/paper-input.html'>
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
+
+<link rel='import' href='../../../src/components/buttons/ha-call-api-button.html'>
+
+<dom-module id='hassio-addon-network'>
+  <template>
+    <style include='ha-style'>
+      :host {
+        display: block;
+      }
+      paper-card {
+        display: block;
+      }
+      .error {
+        color: var(--google-red-500);
+        margin-bottom: 16px;
+      }
+      .card-actions {
+        @apply(--layout);
+        @apply(--layout-justified);
+      }
+      .header {
+        font-weight: bold;
+      }
+      .container {
+        width: 150px;
+        display: inline-block;
+      }
+      paper-input {
+        display: inline-block;
+        width: 75px;
+      }
+    </style>
+    <template is='dom-if' if='[[addon.network]]'>
+      <paper-card heading='Network'>
+        <div class='card-content'>
+          <template is='dom-if' if='[[error]]'>
+            <div class='error'>[[error]]</div>
+          </template>
+          <div class='header'>
+            <div class='container'>Container</div>
+            Host
+          </div>
+          <template is='dom-repeat' items='[[_data]]'>
+            <div>
+              <div class='container'>[[item.container]]</div>
+              <paper-input value='{{item.host}}' no-label-float></paper-input>
+            </div>
+          </template>
+        </div>
+        <div class='card-actions'>
+          <ha-call-api-button
+            class='warning'
+            hass='[[hass]]'
+            path='[[_pathApiOptions(addonSlug)]]'
+            data='[[resetData]]'
+          >Reset to defaults</ha-call-api-button>
+          <paper-button
+            on-tap='_saveTapped'
+          >Save</paper-button>
+        </div>
+      </paper-card>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class HassioAddonNetwork extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-addon-network'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      addonSlug: String,
+      error: String,
+
+      _data: Object,
+      addon: {
+        type: Object,
+        observer: '_addonChanged',
+      },
+
+      resetData: {
+        type: Object,
+        value: {
+          network: null,
+        },
+      },
+    };
+  }
+
+  _addonChanged(addon) {
+    if (!addon) return;
+
+    var network = addon.network || {};
+    var items = Object.keys(network).map(function (key) {
+      return {
+        container: key,
+        host: '' + network[key]
+      };
+    });
+    this._data = items.sort(function (el1, el2) { return el1.host - el2.host; });
+  }
+
+  _saveTapped() {
+    this.error = null;
+    var toSend = {};
+    this._data.forEach(function (item) {
+      toSend[item.container] = parseInt(item.host);
+    });
+    var path = 'hassio/addons/' + this.addonSlug + '/options';
+
+    this.hass.callApi('post', path, {
+      network: toSend
+    }).then(function () {
+      this.fire('hass-api-called', { success: true, path: path });
+    }.bind(this), function (resp) {
+      this.error = resp.body.message;
+    }.bind(this));
+  }
+
+  _pathApiOptions(slug) {
+    return 'hassio/addons/' + slug + '/options';
+  }
+}
+customElements.define(HassioAddonNetwork.is, HassioAddonNetwork);
+</script>

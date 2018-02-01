@@ -1,0 +1,46 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+
+<link rel='import' href='./hassio-snapshots-overview.html'>
+<link rel='import' href='./hassio-snapshots-details.html'>
+
+<dom-module id='hassio-snapshots'>
+  <template>
+    <app-route
+      route='[[route]]'
+      pattern='/snapshots/:slug'
+      data='{{routeData}}'
+      active='{{routeMatches}}'
+    ></app-route>
+    <template is='dom-if' if='[[routeMatches]]'>
+      <hassio-snapshots-details
+        hass='[[hass]]'
+        snapshot-slug='[[routeData.slug]]'
+      ></hassio-snapshots-details>
+    </template>
+
+    <template is='dom-if' if='[[!routeMatches]]'>
+      <hassio-snapshots-overview
+        hass='[[hass]]'
+        snapshots='[[snapshots]]'
+        addons='[[addons]]'
+      ></hassio-snapshots-overview>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-snapshots'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      snapshots: Object,
+      addons: Object,
+      routeData: Object,
+      routeMatches: Boolean,
+    };
+  }
+}
+customElements.define(HassioSnapshots.is, HassioSnapshots);
+</script>
