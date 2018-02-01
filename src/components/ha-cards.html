@@ -134,7 +134,8 @@
   };
 
   const iterateDomainSorted = (collection, func) => {
-    Object.values(collection)
+    Object.keys(collection)
+      .map(key => collection[key])
       .sort(sortPriority)
       .forEach((domain) => {
         domain.states.sort(entitySortBy);
@@ -143,7 +144,8 @@
   };
 
   const iterateDomain = (collection, func) => {
-    Object.values(collection)
+    Object.keys(collection)
+      .map(key => collection[key])
       .forEach((domain) => {
         func(domain);
       });
