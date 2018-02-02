@@ -3,3 +3,7 @@ import 'unfetch/polyfill';
 import objAssign from 'es6-object-assign';
 
 objAssign.polyfill();
+
+if (Object.values === undefined) {
+  Object.values = target => Object.keys(target).map(key => target[key]);
+}
