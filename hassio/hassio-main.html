@@ -154,6 +154,7 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   ready() {
     super.ready();
+    window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
     this.addEventListener('hass-api-called', ev => this._apiCalled(ev));
   }
 
