@@ -33,7 +33,7 @@ function getRollupInputOptions(es6) {
   if (!es6) {
     babelOpts.presets = [
       [
-        'es2015',
+        'env',
         {
           modules: false
         }
