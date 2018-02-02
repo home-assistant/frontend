@@ -1,5 +1,4 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
-<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
 <link rel='import' href='../../bower_components/paper-checkbox/paper-checkbox.html'>
 
 <link rel='import' href='../../src/components/buttons/ha-call-api-button.html'>
@@ -7,9 +6,6 @@
 <dom-module id='hassio-snapshots-details'>
   <template>
     <style include='iron-flex ha-style'>
-      paper-card {
-        width: 600px;
-      }
       paper-checkbox {
         display: block;
         margin: 4px 8px 4px 48px;
@@ -31,55 +27,49 @@
         color: var(--primary-color);
       }
     </style>
-    <div class='content'>
-      <div class='card-group'>
-        <paper-card>
-          <div class='card-content'>
-            <iron-icon icon='[[computeIcon(snapshot.type)]]' class='primary'></iron-icon>
-            <div class='snapshot'>
-              [[computeName(snapshot)]]            
-              <div class='snapshot-type'>                
-                [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
-                <ha-relative-time datetime='[[snapshot.date]]'></ha-relative-time>
-              </div>
-            </div>
-            <div>
-                Home Assistant:<paper-checkbox checked='{{restoreHass}}'>Home Assistant [[snapshot.homeassistant]]</paper-checkbox>
-            </div>
-            <div>
-              Folders:
-              <template is='dom-repeat' items='[[snapshot.folders]]'>
-                <paper-checkbox checked='{{item.checked}}'>[[item.name]]</paper-checkbox>
-              </template>
-            </div>
-            <template is='dom-if' if='[[showAddons(snapshot.addons)]]'>
-              <div>
-                Add-ons:
-                <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
-                  <paper-checkbox checked='{{item.checked}}'>
-                    [[item.name]] <span class='addon-version'>([[item.version]])</span>
-                  </paper-checkbox>
-                </template>
-              </div>
-            </template>
-          </div>
-          <div class='card-actions'>
-              <ha-call-api-button
-              class='warning'
-              hass='[[hass]]'
-              path='hassio/snapshots/[[snapshot.slug]]/remove'
-            >Delete</ha-call-api-button>
-            <ha-call-api-button
-              hass='[[hass]]'
-              path='/snapshots/[[snapshot.slug]]/restore/partial'
-              data='[[computeRestoreData(snapshot, restoreHass)]]'
-            >Restore</ha-call-api-button>
-            <template is='dom-if' if='[[error]]'>
-              <p class='error'>[[error]]</p>
-            </template>
-          </div>
-        </paper-card>
+    <div class='card-content'>
+      <iron-icon icon='[[computeIcon(snapshot.type)]]' class='primary'></iron-icon>
+      <div class='snapshot'>
+        [[computeName(snapshot)]]            
+        <div class='snapshot-type'>                
+          [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
+          <ha-relative-time datetime='[[snapshot.date]]'></ha-relative-time>
+        </div>
       </div>
+      <div>
+          Home Assistant:<paper-checkbox checked='{{restoreHass}}'>Home Assistant [[snapshot.homeassistant]]</paper-checkbox>
+      </div>
+      <div>
+        Folders:
+        <template is='dom-repeat' items='[[snapshot.folders]]'>
+          <paper-checkbox checked='{{item.checked}}'>[[item.name]]</paper-checkbox>
+        </template>
+      </div>
+      <template is='dom-if' if='[[showAddons(snapshot.addons)]]'>
+        <div>
+          Add-ons:
+          <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
+            <paper-checkbox checked='{{item.checked}}'>
+              [[item.name]] <span class='addon-version'>([[item.version]])</span>
+            </paper-checkbox>
+          </template>
+        </div>
+      </template>
+    </div>
+    <div class='card-actions'>
+        <ha-call-api-button
+        class='warning'
+        hass='[[hass]]'
+        path='hassio/snapshots/[[snapshot.slug]]/remove'
+      >Delete</ha-call-api-button>
+      <ha-call-api-button
+        hass='[[hass]]'
+        path='/snapshots/[[snapshot.slug]]/restore/partial'
+        data='[[computeRestoreData(snapshot, restoreHass)]]'
+      >Restore</ha-call-api-button>
+      <template is='dom-if' if='[[error]]'>
+        <p class='error'>[[error]]</p>
+      </template>
     </div>
   </template>
 </dom-module>

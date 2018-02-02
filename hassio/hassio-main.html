@@ -35,7 +35,6 @@
       route='[[route]]'
       pattern='/:page'
       data='{{routeData}}'
-      tail='{{routeTail}}'
     ></app-route>
     <hassio-api-data
       id='data'
@@ -154,7 +153,6 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
         observer: 'routeChanged',
       },
       routeData: Object,
-      routeTail: Object,
       _columns: {
         type: Number,
         value: 1,
@@ -162,7 +160,7 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
       apiData: Object,
       mainTitle: {
         type: String,
-        computed: 'computeTitle(routeData.page, routeTail)',
+        computed: 'computeTitle(route)',
       },
     };
   }
@@ -186,6 +184,7 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   ready() {
     super.ready();
+    window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
   }
 
@@ -229,12 +228,8 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
   }
 
-  computeTitle(page, routeTail) {
-    if (routeTail && routeTail.path && routeTail.path.length > 1) {
-      if (page === 'addon') return 'Add-on details';
-      if (page === 'snapshots') return 'Snapshot details';
-    }
-    return 'Hass.io';
+  computeTitle(route) {
+    return route.path.substring(0, 7) === '/addon/' ? 'Add-on details' : 'Hass.io';
   }
 
   handleWindowChange() {
