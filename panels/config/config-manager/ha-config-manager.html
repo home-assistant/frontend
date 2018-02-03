@@ -1,0 +1,73 @@
+<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-button/paper-button.html'>
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
+
+<link rel='import' href='./ha-config-flow.html'>
+
+<dom-module id="ha-config-manager">
+  <template>
+    <style>
+      :host {
+        padding: 24px;
+        display: block;
+      }
+    </style>
+    <h1>Config Manager</h1>
+
+    <template is='dom-if' if='[[!flowId]]'>
+      <template is='dom-repeat' items='[[handlers]]'>
+        <paper-button on-tap='createFlow'>[[item]]</paper-button>
+      </template>
+    </template>
+
+    <template is='dom-if' if='[[flowId]]'>
+      <ha-config-flow
+        hass='[[hass]]'
+        flow-id='[[flowId]]'
+        on-flow-done='flowDone'
+      ></ha-config-flow>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+{
+  class HaConfigManager extends window.hassMixins.NavigateMixin(Polymer.Element) {
+    static get is() { return 'ha-config-manager'; }
+
+    static get properties() {
+      return {
+        hass: Object,
+        isWide: Boolean,
+
+        route: Object,
+        flowId: {
+          type: String,
+          value: null,
+        },
+
+        handlers: {
+          type: Array,
+          value: [
+            'hue',
+            'nest',
+          ]
+        }
+      };
+    }
+
+    createFlow(ev) {
+      this.hass.callApi('post', 'config/config_manager/flow', { domain: ev.model.item })
+        .then((flow) => { this.flowId = flow.flow_id; });
+    }
+
+    flowDone(ev) {
+      this.flowId = null;
+      // Refresh?
+    }
+  }
+
+  customElements.define(HaConfigManager.is, HaConfigManager);
+}
+</script>

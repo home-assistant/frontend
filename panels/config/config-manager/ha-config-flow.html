@@ -1,0 +1,99 @@
+<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href='../../../bower_components/paper-button/paper-button.html'>
+
+<link rel="import" href='../../../src/components/ha-markdown.html'>
+<link rel="import" href='./ha-form.html'>
+
+<dom-module id="ha-config-flow">
+  <template>
+    <style>
+      .error {
+        color: red;
+      }
+    </style>
+    <template is='dom-if' if='[[!step]]'>
+      Loading flow.
+    </template>
+    <template is='dom-if' if='[[step]]'>
+      <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
+        <h1>Aborted</h1>
+        <p>[[step.reason]]</p>
+        <paper-button on-tap='_flowDone'>Close</paper-button>
+      </template>
+
+      <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
+        <h1>Success!</h1>
+        <p>Created config for [[step.title]]</p>
+        <paper-button on-tap='_flowDone'>Close</paper-button>
+      </template>
+
+      <template is='dom-if' if='[[_equals(step.type, "form")]]'>
+        <h1>[[step.title]]</h1>
+
+        <template is='dom-if' if='[[step.description]]'>
+          <ha-markdown content='[[step.description]]'></ha-markdown>
+        </template>
+
+        <template is='dom-if' if='[[step.errors.base]]'>
+          <div class='error'>[[step.errors.base]]</div>
+        </template>
+
+        <ha-form
+          data='{{stepData}}'
+          schema='[[step.data_schema]]'
+          error='[[step.errors]]'
+        ></ha-form>
+        <paper-button on-tap='_submitStep'>Submit</paper-button>
+      </template>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-config-flow'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      step: Object,
+      flowId: {
+        type: String,
+        observer: '_flowIdChanged'
+      },
+      stepData: Object,
+    };
+  }
+
+  _flowIdChanged(flowId) {
+    if (!flowId) return;
+    this.hass.callApi('get', `config/config_manager/flow/${flowId}`)
+      .then(step => this._processStep(step));
+  }
+
+  _submitStep() {
+    this.hass.callApi('post', `config/config_manager/flow/${this.flowId}`, this.stepData)
+      .then(step => this._processStep(step));
+  }
+
+  _processStep(step) {
+    console.log(step);
+    if (!step.errors) step.errors = {};
+    this.step = step;
+    // We got a new form if there are no errors.
+    if (Object.keys(step.errors).length === 0) {
+      this.stepData = {};
+    }
+  }
+
+  _flowDone() {
+    this.fire('flow-done');
+  }
+
+  _equals(a, b) {
+    return a === b;
+  }
+}
+
+customElements.define(HaConfigFlow.is, HaConfigFlow);
+</script>
