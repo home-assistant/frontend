@@ -1,51 +1,85 @@
 <link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-dialog/paper-dialog.html'>
+<link rel='import' href='../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html'>
 <link rel="import" href='../../../bower_components/paper-button/paper-button.html'>
 
 <link rel="import" href='../../../src/components/ha-markdown.html'>
+<link rel='import' href='../../../src/resources/ha-style.html'>
 <link rel="import" href='./ha-form.html'>
 
 <dom-module id="ha-config-flow">
   <template>
-    <style>
+    <style include='ha-style-dialog'>
       .error {
         color: red;
       }
+      paper-dialog {
+        max-width: 500px;
+      }
+      ha-markdown img:first-child:last-child {
+        display: block;
+        margin: 0 auto;
+      }
     </style>
-    <template is='dom-if' if='[[!step]]'>
-      Loading flow.
-    </template>
-    <template is='dom-if' if='[[step]]'>
-      <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
-        <h1>Aborted</h1>
-        <p>[[step.reason]]</p>
-        <paper-button on-tap='_flowDone'>Close</paper-button>
-      </template>
-
-      <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
-        <h1>Success!</h1>
-        <p>Created config for [[step.title]]</p>
-        <paper-button on-tap='_flowDone'>Close</paper-button>
-      </template>
-
-      <template is='dom-if' if='[[_equals(step.type, "form")]]'>
-        <h1>[[step.title]]</h1>
-
-        <template is='dom-if' if='[[step.description]]'>
-          <ha-markdown content='[[step.description]]'></ha-markdown>
+    <paper-dialog
+      id='dialog'
+      with-backdrop
+      opened='[[flowId]]'
+      on-opened-changed='_openedChanged'
+    >
+      <h2>
+        <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
+          Aborted
         </template>
-
-        <template is='dom-if' if='[[step.errors.base]]'>
-          <div class='error'>[[step.errors.base]]</div>
+        <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
+          Success!
         </template>
+        <template is='dom-if' if='[[_equals(step.type, "form")]]'>
+          [[step.title]]
+        </template>
+      </h2>
+      <paper-dialog-scrollable>
+        <template is='dom-if' if='[[!step]]'>
+          Loading flow.
+        </template>
+        <template is='dom-if' if='[[step]]'>
+          <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
+            <p>[[step.reason]]</p>
+          </template>
 
-        <ha-form
-          data='{{stepData}}'
-          schema='[[step.data_schema]]'
-          error='[[step.errors]]'
-        ></ha-form>
-        <paper-button on-tap='_submitStep'>Submit</paper-button>
-      </template>
-    </template>
+          <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
+            <p>Created config for [[step.title]]</p>
+          </template>
+
+          <template is='dom-if' if='[[_equals(step.type, "form")]]'>
+            <template is='dom-if' if='[[step.description]]'>
+              <ha-markdown content='[[step.description]]'></ha-markdown>
+            </template>
+
+            <template is='dom-if' if='[[step.errors.base]]'>
+              <div class='error'>[[step.errors.base]]</div>
+            </template>
+
+            <ha-form
+              data='{{stepData}}'
+              schema='[[step.data_schema]]'
+              error='[[step.errors]]'
+            ></ha-form>
+          </template>
+        </template>
+      </paper-dialog-scrollable>
+      <div class='buttons'>
+        <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
+          <paper-button on-tap='_flowDone'>Close</paper-button>
+        </template>
+        <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
+          <paper-button on-tap='_flowDone'>Close</paper-button>
+        </template>
+        <template is='dom-if' if='[[_equals(step.type, "form")]]'>
+          <paper-button on-tap='_submitStep'>Submit</paper-button>
+        </template>
+      </div>
+    </paper-dialog>
   </template>
 </dom-module>
 
@@ -68,7 +102,12 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
   _flowIdChanged(flowId) {
     if (!flowId) return;
     this.hass.callApi('get', `config/config_manager/flow/${flowId}`)
-      .then(step => this._processStep(step));
+      .then((step) => {
+        this._processStep(step);
+        // When the flow changes, center the dialog.
+        // Don't do it on each step or else the dialog keeps bouncing.
+        setTimeout(() => this.$.dialog.center(), 0);
+      });
   }
 
   _submitStep() {
@@ -77,7 +116,6 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _processStep(step) {
-    console.log(step);
     if (!step.errors) step.errors = {};
     this.step = step;
     // We got a new form if there are no errors.
@@ -87,11 +125,22 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _flowDone() {
-    this.fire('flow-done');
+    this.fire('flow-closed', {
+      flowFinished: true
+    });
   }
 
   _equals(a, b) {
     return a === b;
+  }
+
+  _openedChanged(ev) {
+    // Closed dialog by clicking on the overlay
+    if (!ev.detail.value) {
+      this.fire('flow-closed', {
+        flowFinished: ['success', 'abort'].includes(this.step.type)
+      });
+    }
   }
 }
 

@@ -1,33 +1,79 @@
 <link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../../bower_components/paper-button/paper-button.html'>
+<link rel='import' href='../../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
 
 <link rel='import' href='../../../src/util/hass-mixins.html'>
+<link rel='import' href='../../../src/resources/ha-style.html'>
+<link rel='import' href='../../../src/layouts/hass-subpage.html'>
 
 <link rel='import' href='./ha-config-flow.html'>
 
 <dom-module id="ha-config-manager">
   <template>
-    <style>
-      :host {
-        padding: 24px;
-        display: block;
+    <style include='iron-flex ha-style'>
+      .content {
+        padding: 8px;
+      }
+      .entries {
+        margin: 0 -4px;
+      }
+      .entries paper-card {
+        margin: 4px;
       }
     </style>
-    <h1>Config Manager</h1>
+    <hass-subpage title='Config Manager'>
+      <div class='content'>
+        <h1>Configured</h1>
+        <template is='dom-if' if='[[!_entries.length]]'>
+          <i>Nothing configured.</i>
+        </template>
+        <div class='entries layout horizontal wrap'>
+          <template is='dom-repeat' items='[[_entries]]'>
+            <paper-card heading='[[item.title]]'>
+              <div class='card-content'>
+                Integration: [[item.domain]]<br>
+                Added by: [[item.source]]
+              </div>
+              <div class="card-actions">
+                <paper-button on-tap='_editEntry' disabled>edit</paper-button>
+              </div>
+            </paper-card>
+          </template>
+        </div>
 
-    <template is='dom-if' if='[[!flowId]]'>
-      <template is='dom-repeat' items='[[handlers]]'>
-        <paper-button on-tap='createFlow'>[[item]]</paper-button>
-      </template>
-    </template>
+        <template is='dom-if' if='[[_discovered.length]]'>
+          <h1>Discovered</h1>
+          <div class='entries layout horizontal wrap'>
+            <template is='dom-repeat' items='[[_discovered]]'>
+              <paper-card heading='[[item.domain]]'>
+                <div class="card-actions">
+                  <paper-button on-tap='_continueFlow'>Configure</paper-button>
+                </div>
+              </paper-card>
+            </template>
+          </div>
+        </template>
 
-    <template is='dom-if' if='[[flowId]]'>
-      <ha-config-flow
-        hass='[[hass]]'
-        flow-id='[[flowId]]'
-        on-flow-done='flowDone'
-      ></ha-config-flow>
-    </template>
+        <h1>Add integration</h1>
+        <div class='entries layout horizontal wrap'>
+          <template is='dom-repeat' items='[[handlers]]'>
+            <paper-card heading='[[item]]'>
+              <!-- <div class="card-content">Some content</div> -->
+              <div class="card-actions">
+                <paper-button on-tap='_createFlow'>Configure</paper-button>
+              </div>
+            </paper-card>
+          </template>
+        </div>
+      </div>
+    </hass-subpage>
+
+    <ha-config-flow
+      hass='[[hass]]'
+      flow-id='[[flowId]]'
+      on-flow-closed='_flowClose'
+    ></ha-config-flow>
   </template>
 </dom-module>
 
@@ -46,6 +92,10 @@
           type: String,
           value: null,
         },
+        userCreatedFlow: Boolean,
+
+        _entries: Array,
+        _discovered: Array,
 
         handlers: {
           type: Array,
@@ -57,14 +107,54 @@
       };
     }
 
-    createFlow(ev) {
-      this.hass.callApi('post', 'config/config_manager/flow', { domain: ev.model.item })
-        .then((flow) => { this.flowId = flow.flow_id; });
+    ready() {
+      super.ready();
+      this._loadData();
     }
 
-    flowDone(ev) {
+    _createFlow(ev) {
+      this.hass.callApi('post', 'config/config_manager/flow', { domain: ev.model.item })
+        .then((flow) => {
+          this.userCreatedFlow = true;
+          this.flowId = flow.flow_id;
+        });
+    }
+
+    _continueFlow(ev) {
+      this.flowId = ev.model.item.flow_id;
+    }
+
+    _editEntry(/* ev */) {
+
+    }
+
+    _flowClose(ev) {
+      // Was the flow completed?
+      if (ev.detail.flowFinished) {
+        this._loadData();
+
+      // Remove a flow if it was not finished and was started by the user
+      } else if (this.userCreatedFlow) {
+        this.userCreatedFlow = false;
+        this.hass.callApi('delete', `config/config_manager/flow/${this.flowId}`);
+      }
+
       this.flowId = null;
-      // Refresh?
+    }
+
+    _loadData() {
+      this._loadEntries();
+      this._loadDiscovery();
+    }
+
+    _loadEntries() {
+      this.hass.callApi('get', 'config/config_manager/entry')
+        .then((entries) => { this._entries = entries; });
+    }
+
+    _loadDiscovery() {
+      this.hass.callApi('get', 'config/config_manager/flow?filter_source=discovery')
+        .then((discovered) => { this._discovered = discovered; });
     }
   }
 

@@ -7,10 +7,11 @@
 <link rel="import" href="../more-infos/more-info-content.html">
 <link rel="import" href="../state-summary/state-card-content.html">
 <link rel='import' href='../util/hass-mixins.html'>
+<link rel='import' href='../resources/ha-style.html'>
 
 <dom-module id="more-info-dialog">
   <template>
-    <style>
+    <style include="ha-style-dialog">
       paper-dialog {
         font-size: 14px;
         width: 365px;
@@ -41,25 +42,6 @@
       state-card-content {
         margin-bottom: 24px;
         font-size: 14px;
-      }
-
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        paper-dialog {
-          margin: 0;
-          width: 100%;
-          max-height: calc(100% - 64px);
-
-          position: fixed !important;
-          bottom: 0px;
-          left: 0px;
-          right: 0px;
-          overflow: scroll;
-          border-bottom-left-radius: 0px;
-          border-bottom-right-radius: 0px;
-        }
-        paper-dialog[data-domain=history_graph] {
-          width: 100%;
-        }
       }
     </style>
 
