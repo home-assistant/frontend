@@ -39,19 +39,19 @@
       <div>
           Home Assistant:<paper-checkbox checked='{{restoreHass}}'>Home Assistant [[snapshot.homeassistant]]</paper-checkbox>
       </div>
-      <iron-collapse id="all-folders" opened>Folders:
+      <div>Folders:
         <template is='dom-repeat' items='[[snapshot.folders]]'>
           <paper-checkbox checked='{{item.checked}}'>[[item.name]]</paper-checkbox>
         </template>
-      </iron-collapse>
+      </div>
       <template is='dom-if' if='[[showAddons(snapshot.addons)]]'>
-        <iron-collapse id="all-addons" opened>Add-ons:
+        <div>Add-ons:
           <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
             <paper-checkbox checked='{{item.checked}}'>
               [[item.name]] <span class='addon-version'>([[item.version]])</span>
             </paper-checkbox>
           </template>
-        </iron-collapse>
+        </div>
       </template>
     </div>
     <div class='card-actions'>
