@@ -1,6 +1,7 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/paper-card/paper-card.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
+<link rel='import' href='../../bower_components/iron-collapse/iron-collapse.html'>
 <link rel='import' href='../../bower_components/paper-radio-group/paper-radio-group.html'>
 <link rel='import' href='../../bower_components/paper-radio-button/paper-radio-button.html'>
 <link rel='import' href='../../bower_components/paper-checkbox/paper-checkbox.html'>
@@ -22,6 +23,9 @@
       .pointer {
         cursor: pointer;
       }
+      paper-dialog#details {
+        padding: 0 16px;
+      }
     </style>
     <div class='content'>
       <div class='card-group'>
@@ -39,18 +43,16 @@
               <paper-radio-button name='full'>Full snapshot</paper-radio-button>
               <paper-radio-button name='partial'>Partial snapshot</paper-radio-button>
             </paper-radio-group>
-            <div>
-              Folders:
+            <iron-collapse id="snapshot_folders">Folders:
               <template is='dom-repeat' items='[[_folders]]'>
                 <paper-checkbox checked='{{item.checked}}' on-change='checkboxChanged'>[[item.name]]</paper-checkbox>
               </template>
-            </div>
-            <div>
-              Add-ons:
+            </iron-collapse>
+            <iron-collapse id="snapshot_addons">Add-ons:
               <template is='dom-repeat' items='[[_addons]]' sort='sortAddons'>
-                  <paper-checkbox checked='{{item.checked}}' on-change='checkboxChanged'>[[item.name]]</paper-checkbox>
-                </template>
-            </div>
+                <paper-checkbox checked='{{item.checked}}' on-change='checkboxChanged'>[[item.name]]</paper-checkbox>
+              </template>
+            </iron-collapse>
           </div>
           <div class='card-actions'>
             <paper-button
@@ -78,7 +80,7 @@
                 title='[[computeName(snapshot)]]'
                 description='[[snapshot.date]]Z'
                 datetime
-                icon='mdi:package-variant'
+                icon='[[computeIcon(snapshot.type)]]'
                 icon-class='primary'
               ></hassio-item-info>
             </div>
@@ -213,8 +215,14 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.root.getElementById('details').open();
   }
 
+  computeIcon(type) {
+    return type === 'full' ? 'mdi:package-variant' : 'mdi:folder-open';
+  }
+
   typeChanged() {
     if (this._type === 'full') {
+      this.$.snapshot_folders.hide();
+      this.$.snapshot_addons.hide();
       for (const i in this._folders) {
         this._folders[i].checked = true;
         this.notifyPath('_folders.' + i + '.checked');
@@ -223,6 +231,10 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
         this._addons[i].checked = true;
         this.notifyPath('_addons.' + i + '.checked');
       }
+    }
+    else {
+      this.$.snapshot_folders.show();
+      this.$.snapshot_addons.show();
     }
   }
 

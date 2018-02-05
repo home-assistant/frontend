@@ -17,6 +17,7 @@
     "font-roboto": "PolymerElements/font-roboto-local#~1.0.1",
     "google-apis": "GoogleWebComponents/google-apis#~2.0.0",
     "iron-autogrow-textarea": "PolymerElements/iron-autogrow-textarea#^2.0.0",
+    "iron-collapse": "PolymerElements/iron-collapse#^2.1.0",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
     "iron-icon": "PolymerElements/iron-icon#^2.0.0",
     "iron-image": "PolymerElements/iron-image#^2.1.1",
