@@ -35,6 +35,7 @@
           entity_id: stateInfo[0].entity_id,
           data: stateInfo
             .map(state => ({
+              state_localize: window.hassUtil.computeStateDisplay(localize, state, language),
               state: state.state,
               last_changed: state.last_changed,
             }))

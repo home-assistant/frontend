@@ -4,6 +4,7 @@ window.HAWS = HAWS;
 window.HASS_DEMO = __DEMO__;
 window.HASS_DEV = __DEV__;
 window.HASS_BUILD = __BUILD__;
+window.HASS_VERSION = __VERSION__;
 
 const init = window.createHassConnection = function (password) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -30,3 +31,13 @@ if (window.noAuth === '1') {
 } else {
   window.hassConnection = null;
 }
+
+window.addEventListener('error', (e) => {
+  const homeAssistant = document.querySelector('home-assistant');
+  if (homeAssistant && homeAssistant.hass && homeAssistant.hass.callService) {
+    homeAssistant.hass.callService('system_log', 'write', {
+      logger: `frontend.${window.HASS_DEV ? 'js_dev' : 'js'}.${window.HASS_BUILD}.${window.HASS_VERSION.replace('.', '')}`,
+      message: `${e.filename}:${e.lineno}:${e.colno} ${e.message}`,
+    });
+  }
+});

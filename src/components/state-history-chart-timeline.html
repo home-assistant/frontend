@@ -91,6 +91,7 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       var entityDisplay;
       var newLastChanged;
       var prevState = null;
+      var locState = null;
       var prevLastChanged = startTime;
       var dataRow = [];
 
@@ -117,14 +118,16 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
           dataRow.push([
             prevLastChanged,
             newLastChanged,
-            getLocalize(domain, prevState),
+            locState,
             prevState,
           ]);
 
           prevState = newState;
+          locState = state.state_localize;
           prevLastChanged = newLastChanged;
         } else if (prevState === null) {
           prevState = newState;
+          locState = state.state_localize;
           prevLastChanged = new Date(state.last_changed);
         }
       });
@@ -133,7 +136,7 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
         dataRow.push([
           prevLastChanged,
           newLastChanged,
-          getLocalize(domain, prevState),
+          locState,
           prevState,
         ]);
       }
