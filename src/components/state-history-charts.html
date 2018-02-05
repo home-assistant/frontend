@@ -27,6 +27,7 @@
     </template>
 
     <state-history-chart-timeline
+      hass='[[hass]]'
       data='[[historyData.timeline]]'
       end-time='[[_computeEndTime(endTime, upToNow, historyData)]]'
       no-single='[[noSingle]]'>
@@ -34,6 +35,7 @@
 
     <template is='dom-repeat' items='[[historyData.line]]'>
       <state-history-chart-line
+        hass='[[hass]]'
         unit='[[item.unit]]'
         data='[[item.data]]'
         is-single-device='[[_computeIsSingleLineChart(item.data, noSingle)]]'
@@ -44,7 +46,7 @@
 </dom-module>
 
 <script>
-class StateHistoryCharts extends Polymer.Element {
+class StateHistoryCharts extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-history-charts'; }
   static get properties() {
     return {

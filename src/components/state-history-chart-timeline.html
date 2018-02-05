@@ -2,6 +2,9 @@
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 <link rel='import' href='./entity/ha-chart-base.html'>
 
+<link rel='import' href='../../src/util/hass-mixins.html'>
+<link rel='import' href='../../src/util/hass-util.html'>
+
 <dom-module id='state-history-chart-timeline'>
   <template>
       <ha-chart-base publish data="[[chartData]]"></ha-chart-base>
@@ -9,11 +12,13 @@
 </dom-module>
 <script>
 'use strict';
-
-class StateHistoryChartTimeline extends Polymer.Element {
+class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-history-chart-timeline'; }
   static get properties() {
     return {
+      hass: {
+        type: Object,
+      },
       data: {
         type: Object,
         observer: 'dataChanged',
@@ -24,7 +29,7 @@ class StateHistoryChartTimeline extends Polymer.Element {
   }
 
   static get observers() {
-    return ['dataChanged(data, endTime)'];
+    return ['dataChanged(data, endTime, localize, language)'];
   }
 
   connectedCallback() {
@@ -38,7 +43,7 @@ class StateHistoryChartTimeline extends Polymer.Element {
   }
 
   drawChart() {
-    var staticColor = {
+    const staticColors = {
       on: 1,
       off: 0,
       unavailable: '#a0a0a0',
@@ -48,13 +53,13 @@ class StateHistoryChartTimeline extends Polymer.Element {
     var stateHistory = this.data;
     var startTime;
     var endTime;
+    var me = this;
 
     if (!this._isAttached) {
       return;
     }
 
     if (!stateHistory) {
-      // || stateHistory.length === 0) {
       stateHistory = [];
     }
 
@@ -75,6 +80,10 @@ class StateHistoryChartTimeline extends Polymer.Element {
       endTime = new Date();
     }
 
+    var getLocalize = function (domain, state) {
+      return me.localize(`state.${domain}.${state}`) || me.localize(`state.default.${state}`) || state;
+    }
+
     var labels = [];
     var datasets = [];
     // stateHistory is a list of lists of sorted state objects
@@ -84,6 +93,8 @@ class StateHistoryChartTimeline extends Polymer.Element {
       var prevState = null;
       var prevLastChanged = startTime;
       var dataRow = [];
+
+      var domain = window.hassUtil.computeDomain(stateInfo);
 
       // if (stateInfo.data.length === 0) return;
 
@@ -103,7 +114,12 @@ class StateHistoryChartTimeline extends Polymer.Element {
         if (prevState !== null && newState !== prevState) {
           newLastChanged = new Date(state.last_changed);
 
-          dataRow.push([prevLastChanged, newLastChanged, prevState]);
+          dataRow.push([
+            prevLastChanged,
+            newLastChanged,
+            getLocalize(domain, prevState),
+            prevState,
+          ]);
 
           prevState = newState;
           prevLastChanged = newLastChanged;
@@ -114,7 +130,12 @@ class StateHistoryChartTimeline extends Polymer.Element {
       });
 
       if (prevState !== null) {
-        dataRow.push([prevLastChanged, endTime, prevState]);
+        dataRow.push([
+          prevLastChanged,
+          newLastChanged,
+          getLocalize(domain, prevState),
+          prevState,
+        ]);
       }
       datasets.push({ data: dataRow });
       labels.push(entityDisplay);
@@ -143,7 +164,7 @@ class StateHistoryChartTimeline extends Polymer.Element {
         datasets: datasets
       },
       colors: {
-        staticColors: staticColor,
+        staticColors: staticColors,
         staticColorIndex: 3,
       }
     };

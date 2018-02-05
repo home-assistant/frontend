@@ -7,7 +7,7 @@
         padding: 6px 0 0 0;
       }
       .chartHeader div {
-        float: left;
+        /*float: left;*/
       }
       .chartTitle {
         margin: 0 12px 0 8px;
@@ -165,8 +165,7 @@
   };
 }());
 
-class HaChartBase extends
-  Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
+class HaChartBase extends Polymer.Element {
   get chart() {
     return this._chart;
   }
@@ -185,24 +184,39 @@ class HaChartBase extends
   }
   connectedCallback() {
     super.connectedCallback();
-    this.connected = true;
-    this.addEventListener('iron-resize', () => {
-      setTimeout(this.resizeChart.bind(this), 1);
-    });
+    this._isAttached = true;
+    this.set(['tooltip', 'opacity'], 0);
     if (!this._chart) {
       this.onPropsChange();
     }
+    this._resizeListener = () => {
+      this._debouncer = Polymer.Debouncer.debounce(
+        this._debouncer,
+        Polymer.Async.timeOut.after(10),
+        () => {
+          if (this._isAttached) {
+            this.resizeChart();
+          }
+        }
+      );
+    };
+    window.addEventListener('resize', this._resizeListener);
+  }
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._isAttached = false;
+    window.removeEventListener('resize', this._resizeListener);
   }
   onPropsChange() {
-    if (!this.connected || !this.publish || !this.data) {
+    if (!this._isAttached || !this.publish || !this.data) {
       return;
     }
     this.drawChart();
   }
   _customTooltips(tooltip) {
-    this.tooltip = this.tooltip || {
-      opacity: 0,
-    };
+    if (this.tooltip === undefined) {
+      this.tooltip = {};
+    }
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
       this.set(['tooltip', 'opacity'], 0);
@@ -290,7 +304,7 @@ class HaChartBase extends
     if (this.data.type !== 'timeline' && data.datasets.length > 0) {
       var cnt = 0;
       cnt = data.datasets.length;
-      var colors = HaChartBase.getColorList(cnt);
+      var colors = this.constructor.getColorList(cnt);
       for (var loopI = 0; loopI < cnt; loopI++) {
         data.datasets[loopI].borderColor = colors[loopI].rgbString();
         data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.6).rgbaString();
@@ -311,7 +325,7 @@ class HaChartBase extends
       }
       var colorList = this.data.colors ? this.data.colors.staticColors : undefined;
       var colorIndex = this.data.colors ? this.data.colors.staticColorIndex : undefined;
-      this._colorFunc = HaChartBase.getColorGenerator(colorList, colorIndex);
+      this._colorFunc = this.constructor.getColorGenerator(colorList, colorIndex);
       this._customTooltips({ opacity: 0 });
       var options = {
         responsive: true,
@@ -470,8 +484,9 @@ class HaChartBase extends
       });
     }
     // Custom color assign
-    function getColor(name) {
+    function getColor(__, data) {
       var ret;
+      var name = data[3];
       if (name === null) return Color().hsl(0, 40, 38);
       if (name === undefined) return Color().hsl(120, 40, 38);
       var name1 = name.toLowerCase();
