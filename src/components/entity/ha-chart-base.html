@@ -77,7 +77,7 @@
         </ul>
       </div>
     </div>
-    <div id="chartTarget" style="height:0; width:100%">
+    <div id="chartTarget" style="height:40px; width:100%">
       <canvas id="chartCanvas"></canvas>
       <div class$="chartTooltip [[tooltip.yAlign]]"
       style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px">
@@ -185,6 +185,9 @@ class HaChartBase extends Polymer.Element {
   connectedCallback() {
     super.connectedCallback();
     this._isAttached = true;
+    if (this.tooltip === undefined) {
+      this.tooltip = {};
+    }
     this.set(['tooltip', 'opacity'], 0);
     if (!this._chart) {
       this.onPropsChange();
@@ -214,9 +217,6 @@ class HaChartBase extends Polymer.Element {
     this.drawChart();
   }
   _customTooltips(tooltip) {
-    if (this.tooltip === undefined) {
-      this.tooltip = {};
-    }
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
       this.set(['tooltip', 'opacity'], 0);
@@ -374,23 +374,26 @@ class HaChartBase extends Polymer.Element {
       if (this._isTimeline !== true && this.data.legend === true) {
         this._drawLegend();
       }
-      setTimeout(function () {
-        me.resizeChart.bind(me);
-      }, 1);
+      setTimeout(me.resizeChart.bind(me), 1);
     }
   }
   resizeChart() {
     if (!this._chart) return;
+
+    var chartTarget = this.$.chartTarget;
+    if (chartTarget.clientWidth === 0) {
+      setTimeout(this.resizeChart.bind(this), 10);
+      return;
+    }
+
     var options = this.data;
     var data = options.data;
 
-    var chartTarget = this.$.chartTarget;
-
     if (this._isTimeline) {
       if (data.datasets.length === 0) {
-        chartTarget.style.height = '0px';
-        chartTarget.height = '0px';
-        this._chart.resize();
+        // chartTarget.style.height = '0px';
+        // chartTarget.height = '0px';
+        // this._chart.resize();
       } else {
         var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
         if (axis && axis.height > 0) {

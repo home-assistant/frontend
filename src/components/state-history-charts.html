@@ -26,12 +26,14 @@
       No state history found.
     </template>
 
-    <state-history-chart-timeline
-      hass='[[hass]]'
-      data='[[historyData.timeline]]'
-      end-time='[[_computeEndTime(endTime, upToNow, historyData)]]'
-      no-single='[[noSingle]]'>
-    </state-history-chart-timeline>
+    <template is='dom-if' if='[[historyData.timeline.length]]'>
+      <state-history-chart-timeline
+        hass='[[hass]]'
+        data='[[historyData.timeline]]'
+        end-time='[[_computeEndTime(endTime, upToNow, historyData)]]'
+        no-single='[[noSingle]]'>
+      </state-history-chart-timeline>
+    </template>
 
     <template is='dom-repeat' items='[[historyData.line]]'>
       <state-history-chart-line

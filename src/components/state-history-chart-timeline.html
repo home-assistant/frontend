@@ -101,16 +101,19 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
 
       entityDisplay = stateInfo.name;
 
-      stateInfo.data.forEach(function (state) {
-        var timeStamp = new Date(state.last_changed);
-        var newState = state.state;
+      for (let stateid in stateInfo.data) {
+        var timeStamp;
+        var newState;
+        var state = stateInfo.data[stateid];
+        newState = state.state;
+        timeStamp = new Date(state.last_changed);
         if (newState === undefined || newState === '') {
           newState = null;
         }
         if (timeStamp > endTime) {
           // Drop datapoints that are after the requested endTime. This could happen if
           // endTime is 'now' and client time is not in sync with server time.
-          return;
+          continue;
         }
         if (prevState !== null && newState !== prevState) {
           newLastChanged = new Date(state.last_changed);
@@ -130,12 +133,12 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
           locState = state.state_localize;
           prevLastChanged = new Date(state.last_changed);
         }
-      });
+      };
 
       if (prevState !== null) {
         dataRow.push([
           prevLastChanged,
-          newLastChanged,
+          endTime,
           locState,
           prevState,
         ]);
