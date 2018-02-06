@@ -31,10 +31,8 @@
     </ha-card>
   </template>
 </dom-module>
-
 <script>
 {
-
   class HaPlotDataCard extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     static get is() { return 'ha-plot_data-card'; }
     static get properties() {
@@ -73,28 +71,25 @@
 
     drawChart() {
       var dataGrid = new window.google.visualization.DataTable();
-      var plot_data = this.stateObj.attributes._plot_data;
-      if (!plot_data || !plot_data.data) {
+      var plotData = this.stateObj.attributes._plot_data;
+      if (!plotData || !plotData.data) {
         return;
       }
 
       var colors = ['red'];
-      if (plot_data.color){
-        colors = plot_data.color;
-      } 
+      if (plotData.color) {
+        colors = plotData.color;
+      }
       dataGrid.addColumn('datetime', 'Time');
-      var j;
-      for (j = 0; j < plot_data.attr.length; j++) {
-        dataGrid.addColumn('number', plot_data.attr[j]);
+      for (var j = 0; j < plotData.attr.length; j++) {
+        dataGrid.addColumn('number', plotData.attr[j]);
       }
 
       var dataArray = [];
-      var i;
-      for (i = 0; i < plot_data.data.length; i++) {
-        var _row = [new Date(plot_data.data[i].x)];
-        var _y = plot_data.data[i].y; 
-        var j;
-        for (j = 0; j < _y.length; j++) {
+      for (var i = 0; i < plotData.data.length; i++) {
+        var _row = [new Date(plotData.data[i].x)];
+        var _y = plotData.data[i].y; 
+        for (var j = 0; j < _y.length; j++) {
           _row.push(_y[j]);
         }
         dataArray.push(_row);
