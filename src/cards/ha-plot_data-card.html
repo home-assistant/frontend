@@ -72,6 +72,7 @@
     drawChart() {
       var dataGrid = new window.google.visualization.DataTable();
       var plotData = this.stateObj.attributes._plot_data;
+      var j;
       if (!plotData || !plotData.data) {
         return;
       }
@@ -81,16 +82,17 @@
         colors = plotData.color;
       }
       dataGrid.addColumn('datetime', 'Time');
-      for (var j = 0; j < plotData.attr.length; j++) {
+      for (j = 0; j < plotData.attr.length; j++) {
         dataGrid.addColumn('number', plotData.attr[j]);
       }
 
       var dataArray = [];
-      for (var i = 0; i < plotData.data.length; i++) {
-        var _row = [new Date(plotData.data[i].x)];
-        var _y = plotData.data[i].y; 
-        for (var j = 0; j < _y.length; j++) {
-          _row.push(_y[j]);
+      for (j = 0; j < plotData.data.length; j++) {
+        var _row = [new Date(plotData.data[j].x)];
+        var _y = plotData.data[j].y;
+        var i;
+        for (i = 0; j < _y.length; i++) {
+          _row.push(_y[i]);
         }
         dataArray.push(_row);
       }
@@ -119,7 +121,7 @@
         }
       };
       this.chartEngine.draw(dataGrid, options);
-      }
+    }
 
     googleApiLoaded() {
       window.google.load('visualization', '1', {
