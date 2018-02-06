@@ -72,7 +72,6 @@
     drawChart() {
       var dataGrid = new window.google.visualization.DataTable();
       var plotData = this.stateObj.attributes._plot_data;
-      var j;
       if (!plotData || !plotData.data) {
         return;
       }
@@ -82,16 +81,18 @@
         colors = plotData.color;
       }
       dataGrid.addColumn('datetime', 'Time');
+      var j;
       for (j = 0; j < plotData.attr.length; j++) {
         dataGrid.addColumn('number', plotData.attr[j]);
       }
 
       var dataArray = [];
-      for (j = 0; j < plotData.data.length; j++) {
-        var _row = [new Date(plotData.data[j].x)];
-        var _y = plotData.data[j].y;
+      var k;
+      for (k = 0; k < plotData.data.length; k++) {
+        var _row = [new Date(plotData.data[k].x)];
+        var _y = plotData.data[k].y;
         var i;
-        for (i = 0; j < _y.length; i++) {
+        for (i = 0; i < _y.length; i++) {
           _row.push(_y[i]);
         }
         dataArray.push(_row);
