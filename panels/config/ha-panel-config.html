@@ -13,7 +13,7 @@
 <link rel="import" href="./script/ha-config-script.html">
 <link rel="import" href="./zwave/ha-config-zwave.html">
 <link rel="import" href="./customize/ha-config-customize.html">
-<link rel="import" href="./config-manager/ha-config-manager.html">
+<link rel="import" href="./config-entries/ha-config-entries.html">
 
 <dom-module id="ha-panel-config">
   <template>
@@ -88,11 +88,11 @@
         is-wide='[[isWide]]'
       ></ha-config-customize>
 
-      <ha-config-manager
-        page-name='manager'
+      <ha-config-entries
+        page-name='integrations'
         hass='[[hass]]'
         is-wide='[[isWide]]'
-      ></ha-config-manager>
+      ></ha-config-entries>
 
       <hass-error-screen
         page-name='not-found'

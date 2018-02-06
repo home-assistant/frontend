@@ -9,6 +9,7 @@
 
 <link rel="import" href="./ha-config-navigation.html">
 <link rel="import" href="./ha-config-cloud-menu.html">
+<link rel="import" href="./ha-config-entries-menu.html">
 
 
 <dom-module id="ha-config-dashboard">
@@ -34,11 +35,17 @@
           <span slot='header'>[[localize('ui.panel.config.header')]]</span>
           <span slot='introduction'>[[localize('ui.panel.config.introduction')]]</span>
 
-          <template is='dom-if' if='[[computeIsCloudLoaded(hass)]]'>
+          <template is='dom-if' if='[[computeIsLoaded(hass, "cloud")]]'>
             <ha-config-cloud-menu
               hass='[[hass]]'
               account='[[account]]'
             ></ha-config-cloud-menu>
+          </template>
+
+          <template is='dom-if' if='[[computeIsLoaded(hass, "config.config_entries")]]'>
+            <ha-config-entries-menu
+              hass='[[hass]]'
+            ></ha-config-entries-menu>
           </template>
 
           <ha-config-navigation
@@ -67,8 +74,8 @@ class HaConfigDashboard extends window.hassMixins.LocalizeMixin(Polymer.Element)
     };
   }
 
-  computeIsCloudLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'cloud');
+  computeIsLoaded(hass, component) {
+    return window.hassUtil.isComponentLoaded(hass, component);
   }
 }
 

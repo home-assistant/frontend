@@ -9,7 +9,7 @@
 
 <link rel='import' href='./ha-config-flow.html'>
 
-<dom-module id="ha-config-manager">
+<dom-module id="ha-config-entries">
   <template>
     <style include='iron-flex ha-style'>
       .content {
@@ -22,7 +22,7 @@
         margin: 4px;
       }
     </style>
-    <hass-subpage title='Config Manager'>
+    <hass-subpage title='Integrations'>
       <div class='content'>
         <h1>Configured</h1>
         <template is='dom-if' if='[[!_entries.length]]'>
@@ -33,19 +33,20 @@
             <paper-card heading='[[item.title]]'>
               <div class='card-content'>
                 Integration: [[item.domain]]<br>
+                State: [[item.state]]<br>
                 Added by: [[item.source]]
               </div>
               <div class="card-actions">
-                <paper-button on-tap='_editEntry' disabled>edit</paper-button>
+                <paper-button on-tap='_removeEntry'>REMOVE</paper-button>
               </div>
             </paper-card>
           </template>
         </div>
 
-        <template is='dom-if' if='[[_discovered.length]]'>
-          <h1>Discovered</h1>
+        <template is='dom-if' if='[[_progress.length]]'>
+          <h1>To be finished</h1>
           <div class='entries layout horizontal wrap'>
-            <template is='dom-repeat' items='[[_discovered]]'>
+            <template is='dom-repeat' items='[[_progress]]'>
               <paper-card heading='[[item.domain]]'>
                 <div class="card-actions">
                   <paper-button on-tap='_continueFlow'>Configure</paper-button>
@@ -80,7 +81,7 @@
 <script>
 {
   class HaConfigManager extends window.hassMixins.NavigateMixin(Polymer.Element) {
-    static get is() { return 'ha-config-manager'; }
+    static get is() { return 'ha-config-entries'; }
 
     static get properties() {
       return {
@@ -94,16 +95,18 @@
         },
         userCreatedFlow: Boolean,
 
+        /**
+         * Existing entries.
+         */
         _entries: Array,
-        _discovered: Array,
 
-        handlers: {
-          type: Array,
-          value: [
-            'hue',
-            'nest',
-          ]
-        }
+        /**
+         * Current flows that are in progress and have not been started by a user.
+         * For example, can be discovered devices that require more config.
+         */
+        _progress: Array,
+
+        handlers: Array,
       };
     }
 
@@ -113,7 +116,7 @@
     }
 
     _createFlow(ev) {
-      this.hass.callApi('post', 'config/config_manager/flow', { domain: ev.model.item })
+      this.hass.callApi('post', 'config/config_entries/flow', { domain: ev.model.item })
         .then((flow) => {
           this.userCreatedFlow = true;
           this.flowId = flow.flow_id;
@@ -124,8 +127,18 @@
       this.flowId = ev.model.item.flow_id;
     }
 
-    _editEntry(/* ev */) {
+    _removeEntry(ev) {
+      if (!confirm('Are you sure you want to delete this integration?')) return;
 
+      const entryId = ev.model.item.entry_id;
+
+      this.hass.callApi('delete', `config/config_entries/entry/${entryId}`)
+        .then((result) => {
+          this._entries = this._entries.filter(entry => entry.entry_id !== entryId);
+          if (result.require_restart) {
+            alert('Restart Home Assistant to finish removing this integration');
+          }
+        });
     }
 
     _flowClose(ev) {
@@ -135,26 +148,27 @@
 
       // Remove a flow if it was not finished and was started by the user
       } else if (this.userCreatedFlow) {
-        this.userCreatedFlow = false;
-        this.hass.callApi('delete', `config/config_manager/flow/${this.flowId}`);
+        this.hass.callApi('delete', `config/config_entries/flow/${this.flowId}`);
       }
-
       this.flowId = null;
+      this.userCreatedFlow = false;
     }
 
     _loadData() {
       this._loadEntries();
       this._loadDiscovery();
+      this.hass.callApi('get', 'config/config_entries/flow_handlers')
+        .then((handlers) => { this.handlers = handlers; });
     }
 
     _loadEntries() {
-      this.hass.callApi('get', 'config/config_manager/entry')
+      this.hass.callApi('get', 'config/config_entries/entry')
         .then((entries) => { this._entries = entries; });
     }
 
     _loadDiscovery() {
-      this.hass.callApi('get', 'config/config_manager/flow?filter_source=discovery')
-        .then((discovered) => { this._discovered = discovered; });
+      this.hass.callApi('get', 'config/config_entries/flow')
+        .then((progress) => { this._progress = progress; });
     }
   }
 

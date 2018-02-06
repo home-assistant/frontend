@@ -99,9 +99,18 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
     };
   }
 
+  ready() {
+    super.ready();
+    this.addEventListener('keypress', (ev) => {
+      if (ev.keyCode === 13) {
+        this._submitStep();
+      }
+    });
+  }
+
   _flowIdChanged(flowId) {
     if (!flowId) return;
-    this.hass.callApi('get', `config/config_manager/flow/${flowId}`)
+    this.hass.callApi('get', `config/config_entries/flow/${flowId}`)
       .then((step) => {
         this._processStep(step);
         // When the flow changes, center the dialog.
@@ -111,7 +120,7 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _submitStep() {
-    this.hass.callApi('post', `config/config_manager/flow/${this.flowId}`, this.stepData)
+    this.hass.callApi('post', `config/config_entries/flow/${this.flowId}`, this.stepData)
       .then(step => this._processStep(step));
   }
 
