@@ -38,7 +38,7 @@
       }
     </style>
 
-    <div class='horizontal justified layout'>
+    <div class='horizontal justified layout' id='input_number_card'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
         <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' hidden='[[hiddenslider]]' pin
           on-change='selectedValueChanged' on-tap='stopPropagation' id='slider'>
@@ -73,11 +73,11 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
     super.ready();
     if (typeof ResizeObserver === 'function') {
       const ro = new ResizeObserver((entries) => {
-        entries.forEach((entry) => {
-          this.hiddenState(entry.contentRect.width);
+        entries.forEach(() => {
+          this.hiddenState();
         });
       });
-      ro.observe(this.$.slider);
+      ro.observe(this.$.input_number_card);
     } else {
       this.addEventListener('iron-resize', this.hiddenState);
     }
@@ -126,11 +126,9 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
     };
   }
 
-  hiddenState(sliderwidth) {
+  hiddenState() {
     if (this.mode !== 'slider') return;
-    if (isNaN(sliderwidth)) {
-      sliderwidth = this.$.slider.offsetWidth;
-    }
+    const sliderwidth = this.$.slider.offsetWidth;
     if (sliderwidth < 100) {
       this.$.sliderstate.hidden = true;
     } else if (sliderwidth >= 145) {
