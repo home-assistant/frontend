@@ -1,0 +1,163 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/paper-checkbox/paper-checkbox.html'>
+
+<link rel='import' href='../../src/components/buttons/ha-call-api-button.html'>
+
+<dom-module id='hassio-snapshots-details'>
+  <template>
+    <style include='iron-flex ha-style'>
+      paper-checkbox {
+        display: block;
+        margin: 4px 8px 4px 48px;
+      }
+      .snapshot {
+        margin-bottom: 8px;
+        margin-left: 32px;
+        font-size: 1.2em;
+      }
+      .snapshot-type {
+        color: var(--secondary-text-color);
+        font-size: 0.9em;
+      }
+      .addon-version {
+        color: var(--secondary-text-color);
+      }
+      iron-icon {
+        float: left;
+        color: var(--primary-color);
+      }
+    </style>
+    <div class='card-content'>
+      <iron-icon icon='[[computeIcon(snapshot.type)]]' class='primary'></iron-icon>
+      <div class='snapshot'>
+        [[computeName(snapshot)]]            
+        <div class='snapshot-type'>                
+          [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
+          <ha-relative-time datetime='[[snapshot.date]]'></ha-relative-time>
+        </div>
+      </div>
+      <div>
+          Home Assistant:<paper-checkbox checked='{{restoreHass}}'>Home Assistant [[snapshot.homeassistant]]</paper-checkbox>
+      </div>
+      <div>Folders:
+        <template is='dom-repeat' items='[[snapshot.folders]]'>
+          <paper-checkbox checked='{{item.checked}}'>[[item.name]]</paper-checkbox>
+        </template>
+      </div>
+      <template is='dom-if' if='[[showAddons(snapshot.addons)]]'>
+        <div>Add-ons:
+          <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
+            <paper-checkbox checked='{{item.checked}}'>
+              [[item.name]] <span class='addon-version'>([[item.version]])</span>
+            </paper-checkbox>
+          </template>
+        </div>
+      </template>
+    </div>
+    <div class='card-actions'>
+        <ha-call-api-button
+        class='warning'
+        hass='[[hass]]'
+        path='hassio/snapshots/[[snapshot.slug]]/remove'
+      >Delete</ha-call-api-button>
+      <ha-call-api-button
+        hass='[[hass]]'
+        path='/snapshots/[[snapshot.slug]]/restore/partial'
+        data='[[computeRestoreData(snapshot, restoreHass)]]'
+      >Restore</ha-call-api-button>
+      <template is='dom-if' if='[[error]]'>
+        <p class='error'>[[error]]</p>
+      </template>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+class HassioSnapshotsDetails extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-snapshots-details'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      snapshotSlug: {
+        type: String,
+        observer: 'computeSnapshot',
+      },
+      snapshot: Object,
+      restoreHass: {
+        type: Boolean,
+        value: true,
+      },
+    };
+  }
+
+  computeSnapshot(snapshotSlug) {
+    this.hass.callApi('get', 'hassio/snapshots/' + snapshotSlug + '/info')
+      .then(function (info) {
+        info.data.folders = this.computeFolders(info.data.folders);
+        info.data.addons = this.computeAddons(info.data.addons);
+        this.snapshot = info.data;
+      }.bind(this), function () {
+        this.snapshot = null;
+      }.bind(this));
+  }
+
+  computeFolders(folders) {
+    var list = [];
+    if (folders.indexOf('homeassistant') !== -1) list.push( { slug: 'homeassistant', name: 'Home Assistant configuration', checked: true} );
+    if (folders.indexOf('ssl') !== -1) list.push( { slug: 'ssl', name: 'SSL', checked: true} );
+    if (folders.indexOf('share') !== -1) list.push( { slug: 'share', name: 'Share', checked: true} );
+    if (folders.indexOf('addons/local') !== -1) list.push( { slug: 'addons/local', name: 'Local add-ons', checked: true} );
+    return list;
+  }
+
+  computeAddons(addons) {
+    for (const i in addons) {
+      addons[i].checked = true;
+    }
+    return addons;
+  }
+
+  computeRestoreData(snapshot, restoreHass) {
+    if (!snapshot) return null;
+    var addons = [];
+    for (const i in snapshot.addons) {
+      if (snapshot.addons[i].checked === true) addons.push(snapshot.addons[i].slug);
+    }
+    var folders = [];
+    for (const i in snapshot.folders) {
+      if (snapshot.folders[i].checked === true) folders.push(snapshot.folders[i].slug);
+    }
+    return {
+      homeassistant: this.restoreHass,
+      addons: addons,
+      folders: folders,
+    };
+  }
+
+  computeIcon(type) {
+    return type === 'full' ? 'mdi:package-variant' : 'mdi:folder-open';
+  }
+
+  showAddons(addons) {
+    return addons.length == 0 ? false : true;
+  }
+
+  computeName(snapshot) {
+    return snapshot.name || snapshot.slug;
+  }
+
+  computeType(type) {
+    return type === 'full' ? 'Full snapshot' : 'Partial snapshot';
+  }
+
+  computeSize(size) {
+    return Math.ceil(size) + ' MB';
+  }
+
+  sortAddons(a, b) {
+    return a.name < b.name ? -1 : 1;
+  }
+}
+customElements.define(HassioSnapshotsDetails.is, HassioSnapshotsDetails);
+</script>

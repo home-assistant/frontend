@@ -1,0 +1,100 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html'>
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+
+<link rel='import' href='../../src/components/buttons/ha-call-api-button.html'>
+
+<dom-module id='hassio-addon-config'>
+  <template>
+    <style include='ha-style'>
+      :host {
+        display: block;
+      }
+      paper-card {
+        display: block;
+      }
+      .error {
+        color: var(--google-red-500);
+        margin-bottom: 16px;
+      }
+      iron-autogrow-textarea {
+        width: 100%;
+        font-family: monospace;
+        background-color: #444444;
+        color: #ffffff;
+      }
+    </style>
+    <paper-card heading='Configuration'>
+      <div class='card-content'>
+        <iron-autogrow-textarea value='{{config}}'></iron-autogrow-textarea>
+      </div>
+      <div class='card-actions'>
+        <ha-call-api-button
+          class='warning'
+          hass='[[hass]]'
+          path='hassio/addons/[[addonSlug]]/options'
+          data='[[resetData]]'
+        >Reset to defaults</ha-call-api-button>
+        <paper-button
+          on-tap='saveTapped'
+          disabled='[[!configParsed]]'
+        >Save</paper-button>
+        <template is='dom-if' if='[[error]]'>
+          <div class='error'>[[error]]</div>
+        </template>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+class HassioAddonConfig extends Polymer.Element {
+  static get is() { return 'hassio-addon-config'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      addon: {
+        type: Object,
+        observer: 'addonChanged',
+      },
+      addonSlug: String,
+      config: String,
+      configParsed: {
+        type: Object,
+        computed: 'parseConfig(config)',
+      },
+      error: String,
+      resetData: {
+        type: Object,
+        value: {
+          options: null,
+        },
+      },
+    };
+  }
+
+  addonChanged(addon) {
+    this.config = addon ? JSON.stringify(addon.options, null, 2) : '';
+  }
+
+  parseConfig(config) {
+    try {
+      return JSON.parse(config);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  saveTapped() {
+    this.error = null;
+    this.hass.callApi('post', 'hassio/addons/' + this.addonSlug + '/options', {
+      options: this.configParsed
+    }).catch(function (resp) {
+      this.error = resp.body.message;
+    }.bind(this));
+  }
+}
+customElements.define(HassioAddonConfig.is, HassioAddonConfig);
+</script>

@@ -1,0 +1,104 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/app-route/app-route.html'>
+
+<link rel='import' href='./hassio-addon-info.html'>
+<link rel='import' href='./hassio-addon-config.html'>
+<link rel='import' href='./hassio-addon-network.html'>
+<link rel='import' href='./hassio-addon-log.html'>
+
+<dom-module id='hassio-addon'>
+  <template>
+    <style include='iron-flex ha-style'>
+      hassio-addon-info,
+      hassio-addon-network,
+      hassio-addon-config,
+      hassio-addon-log {
+        margin: 8px;
+      }
+      .content {
+        padding: 0;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    </style>
+    <app-route
+      route='[[route]]'
+      pattern='/addon/:slug'
+      data='{{routeData}}'
+      active='{{routeMatches}}'
+    ></app-route>
+    <div class='content'>
+      <hassio-addon-info
+        hass='[[hass]]'
+        addon='[[addon]]'
+        addon-slug='[[routeData.slug]]'
+      ></hassio-addon-info>
+    </div>
+      <template is='dom-if' if='[[addon.version]]'>
+        <div class='content'>
+          <hassio-addon-config
+            hass='[[hass]]'
+            addon='[[addon]]'
+            addon-slug='[[routeData.slug]]'
+          ></hassio-addon-config>
+          <hassio-addon-network
+            hass='[[hass]]'
+            addon='[[addon]]'
+            addon-slug='[[routeData.slug]]'
+          ></hassio-addon-network>
+        </div>
+        <hassio-addon-log
+          hass='[[hass]]'
+          addon-slug='[[routeData.slug]]'
+        ></hassio-addon-log>
+      </template>
+
+  </template>
+</dom-module>
+
+<script>
+class HassioAddon extends Polymer.Element {
+  static get is() { return 'hassio-addon'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      route: Object,
+      routeData: {
+        type: Object,
+        observer: 'routeDataChanged',
+      },      
+      routeMatches: Boolean,
+      addon: Object,
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
+
+  apiCalled(ev) {
+    var path = ev.detail.path;
+
+    if (!path) return;
+
+    if (path.substr(path.lastIndexOf('/') + 1) === 'uninstall') {
+      this.backTapped();
+    } else {
+      this.routeDataChanged(this.routeData);
+    }
+  }
+
+  routeDataChanged(routeData) {
+    if (!this.routeMatches || !routeData || !routeData.slug) return;
+    this.hass.callApi('get', 'hassio/addons/' + routeData.slug + '/info')
+      .then(function (info) {
+        this.addon = info.data;
+      }.bind(this), function () {
+        this.addon = null;
+      }.bind(this));
+  }
+}
+customElements.define(HassioAddon.is, HassioAddon);
+</script>

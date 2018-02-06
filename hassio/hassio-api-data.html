@@ -1,0 +1,86 @@
+<link rel='import' href='../bower_components/polymer/polymer-element.html'>
+
+<script>
+class HassioApiData extends Polymer.Element {
+  static get is() { return 'hassio-api-data'; }
+
+  static get properties() {
+    return {
+      apiData: {
+        type: Object,
+        notify: true,
+        computed: 'computeApiData(supervisor, host, homeassistant, snapshots, addons)',
+      },
+      supervisor: Object,
+      host: Object,
+      homeassistant: Object,
+      snapshots: Object,
+      addons: Object,
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.refresh();
+  }
+
+  refresh() {
+    return Promise.all([
+      this.fetchSupervisorInfo(),
+      this.fetchHostInfo(),
+      this.fetchHassInfo(),
+      this.fetchSnapshots(),
+      this.fetchAddons(),
+    ]);
+  }
+
+  fetchSupervisorInfo() {
+    return this.hass.callApi('get', 'hassio/supervisor/info')
+      .then(function (info) {
+        this.supervisor = info.data;
+      }.bind(this));
+  }
+
+  fetchHostInfo() {
+    return this.hass.callApi('get', 'hassio/host/info')
+      .then(function (info) {
+        this.host = info.data;
+      }.bind(this));
+  }
+
+  fetchHassInfo() {
+    return this.hass.callApi('get', 'hassio/homeassistant/info')
+      .then(function (info) {
+        this.homeassistant = info.data;
+      }.bind(this));
+  }
+
+  fetchSnapshots() {
+    return this.hass.callApi('get', 'hassio/snapshots')
+      .then(function (info) {
+        this.snapshots = info.data.snapshots;
+      }.bind(this));
+  }
+
+  fetchAddons() {
+    return this.hass.callApi('get', 'hassio/addons')
+      .then(function (info) {
+        this.addons = info.data;
+      }.bind(this));
+  }
+
+  computeApiData(supervisor, host, homeassistant, snapshots, addons) {
+    let apiData = {};
+    if (supervisor && host && homeassistant && snapshots && addons) {
+      apiData.supervisor = supervisor;
+      apiData.host = host;
+      apiData.homeassistant = homeassistant;
+      apiData.snapshots = snapshots;
+      apiData.addons = addons.addons;
+      apiData.repositories = addons.repositories;
+    }
+    return apiData;
+  }
+}
+customElements.define(HassioApiData.is, HassioApiData);
+</script>

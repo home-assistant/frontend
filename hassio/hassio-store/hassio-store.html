@@ -1,0 +1,59 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
+
+<link rel='import' href='./hassio-store-repo-manager.html'>
+<link rel='import' href='./hassio-store-repository.html'>
+<link rel='import' href='../hassio-style.html'>
+
+<dom-module id='hassio-store'>
+  <template>
+    <style include='hassio-style'></style>
+    <style include='iron-flex ha-style'></style>
+    <hassio-store-repo-manager
+      hass='[[hass]]'
+      repos='[[repos]]'
+    ></hassio-store-repo-manager>
+
+    <template is='dom-repeat' items='[[repos]]' as='repo' sort='sortRepos'>
+      <hassio-store-repository
+        repo='[[repo]]'
+        addons='[[computeAddons(repo.slug)]]'
+        columns='[[columns]]'
+      ></hassio-store-repository>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class HassioStore extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-store'; }
+
+  static get properties() {
+    return {
+      hass:  Object,
+      addons: Object,
+      repos: Object,
+    };
+  }
+
+  sortRepos(a, b) {
+    if (a.slug === 'local') {
+      return -1;
+    } else if (b.slug === 'local') {
+      return 1;
+    } else if (a.slug === 'core') {
+      return -1;
+    } else if (b.slug === 'core') {
+      return 1;
+    }
+    return a.name < b.name ? -1 : 1;
+  }
+
+  computeAddons(repo) {
+    return this.addons.filter(function (addon) {
+      return addon.repository === repo;
+    });
+  }
+}
+customElements.define(HassioStore.is, HassioStore);
+</script>

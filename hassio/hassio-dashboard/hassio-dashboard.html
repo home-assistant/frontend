@@ -1,0 +1,30 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+
+<link rel='import' href='./hassio-dashboard-update-info.html'>
+<link rel='import' href='./hassio-dashboard-addons.html'>
+
+<dom-module id='hassio-dashboard'>
+  <template>
+    <hassio-dashboard-update-info
+      hass='[[hass]]'
+      hass-info='[[apiData.homeassistant]]'
+    ></hassio-dashboard-update-info>
+    <hassio-dashboard-addons
+      addons='[[apiData.supervisor.addons]]'
+    ></hassio-dashboard-addons>
+  </template>
+</dom-module>
+
+<script>
+class HassioDashboard extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-dashboard'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      apiData: Object,
+    };
+  }
+}
+customElements.define(HassioDashboard.is, HassioDashboard);
+</script>
