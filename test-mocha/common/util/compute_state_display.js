@@ -52,7 +52,7 @@ describe('computeStateDisplay', () => {
         unit_of_measurement: 'm',
       },
     };
-    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), '123 m');
+    assert.strictEqual(computeStateDisplay(localize, stateObj, 'en'), '123&nbspm');
   });
 
   it('Localizes unknown sensor value with units', () => {
