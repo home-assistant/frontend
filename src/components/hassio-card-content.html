@@ -7,11 +7,17 @@
 <dom-module id='hassio-card-content'>
   <template>
     <style>
+      :host {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        height: 3.5em;
+      }
       iron-icon {
+        display: inline-block;
+        height: 24px !important;
+        margin-right: 16px !important;
         color: var(--secondary-text-color);
-        margin-right: 16px;
-        margin-top: 16px;
-        float: left;
       }
       iron-icon.update {
         color: var(--paper-orange-400);
@@ -20,31 +26,40 @@
       iron-icon.installed {
         color: var(--paper-green-400);
       }
-      iron-icon.primary {
+      iron-icon.hassupdate {
         color: var(--primary-color);
+      }
+      .content {
+        display: inline-block;
       }
       .title {
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
       }
-      .description {
+      .addition {
         color: var(--secondary-text-color);
         overflow: hidden;
         position: relative; 
-        height: 2.4em;
+        max-height: 2.4em;
         line-height: 1.2em;
+      }
+      @media screen and (max-width: 600px) {
+        :host {
+          height: auto;
+          max-height: 3.5em;
+        }
       }
     </style>
     <iron-icon icon='[[icon]]' class$='[[iconClass]]' title='[[iconTitle]]'></iron-icon>
-    <div>
+    <div class='content'>
       <div class='title'>[[title]]</div>
-      <div class='description'>
-        <template is='dom-if' if='[[!datetime]]'>
+      <div class='addition'>
+        <template is='dom-if' if='[[description]]'>
           [[description]]
         </template>
         <template is='dom-if' if='[[datetime]]'>
-          <ha-relative-time datetime='[[description]]'></ha-relative-time>
+          <ha-relative-time class='addition' datetime='[[datetime]]'></ha-relative-time>
         </template>
       </div>
     </div>
@@ -59,10 +74,7 @@ class HassioCardContent extends window.hassMixins.EventsMixin(Polymer.Element) {
     return {
       title: String,
       description: String,
-      datetime: {
-        type: Boolean,
-        value: false,
-      },
+      datetime: String,
       icon: {
         type: String,
         value: 'mdi:help-circle'
