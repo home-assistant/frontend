@@ -1,39 +1,40 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
+<link rel='import' href='../../src/components/hassio-card-content.html'>
+<link rel='import' href='../../src/resources/hassio-style.html'>
 
-<dom-module id="hassio-addons">
+<dom-module id='hassio-addons'>
   <template>
-    <style include="ha-style">
+    <style include='ha-style hassio-style'>
       paper-card {
-        display: block;
-        padding-top: 16px;
-        padding-right: 16px;
-      }
-
-      paper-item {
         cursor: pointer;
       }
     </style>
-    <paper-card heading="Installed Add-ons">
-      <template is='dom-if' if='[[!data.length]]'>
-        <div class='card-content'>
-          Looks like you don't have any add-ons installed yet. Head over to <a href='#' on-tap='openStore'>the add-on store</a> to get started!
-        </div>
+    <div class='content card-group'>
+      <div class='title'>Add-ons</div>
+      <template is='dom-if' if='[[!addons.length]]'>
+        <paper-card>
+          <div class='card-content'>
+            You don't have any add-ons installed yet. Head over to <a href='#' on-tap='openStore'>the add-on store</a> to get started!
+          </div>
+        </paper-card>
       </template>
-      <template is='dom-repeat' items='[[data]]' as='addon'>
-        <paper-item>
-          <paper-item-body two-line on-tap='addonTapped'>
-            <div>[[addon.name]]</div>
-            <div secondary>[[addon.description]]</div>
-          </paper-item-body>
-          [[addon.installed]]
-        </paper-item>
+      <template is='dom-repeat' items='[[addons]]' as='addon'>
+        <paper-card on-tap='addonTapped'>
+          <div class='card-content'>
+            <hassio-card-content
+              title='[[addon.name]]'
+              description='[[addon.description]]'
+              icon='[[computeIcon(addon)]]'
+              icon-title='[[computeIconTitle(addon)]]'
+              icon-class='[[computeIconClass(addon)]]'
+            ></hassio-card-content>
+          </div>
+        </paper-card>
       </template>
-    </paper-card>
+    </div>
   </template>
 </dom-module>
 
@@ -43,28 +44,27 @@ class HassioAddons extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      narrow: {
-        type: Boolean,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
-      data: {
-        type: Object,
-        value: [],
-      },
+      hass: Object,
+      addons: Array,
     };
   }
 
+  computeIcon(addon) {
+    return addon.installed !== addon.version ? 'mdi:arrow-up-bold-circle' : 'mdi:puzzle';
+  }
+
+  computeIconTitle(addon) {
+    if (addon.installed !== addon.version) return 'New version available';
+    return addon.state === 'started' ? 'Add-on is running' : 'Add-on is stopped';
+  }
+
+  computeIconClass(addon) {
+    if (addon.installed !== addon.version) return 'update';
+    return addon.state === 'started' ? 'running' : '';
+  }
+
   addonTapped(ev) {
-    history.pushState(null, null, '/hassio/addon/' + this.data[ev.model.index].slug);
+    history.pushState(null, null, '/hassio/addon/' + ev.model.addon.slug);
     this.fire('location-changed');
     ev.target.blur();
   }
