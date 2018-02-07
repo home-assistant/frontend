@@ -12,6 +12,7 @@
 </dom-module>
 <script>
 'use strict';
+
 class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-history-chart-timeline'; }
   static get properties() {
@@ -53,7 +54,6 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
     var stateHistory = this.data;
     var startTime;
     var endTime;
-    var me = this;
 
     if (!this._isAttached) {
       return;
@@ -80,10 +80,6 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       endTime = new Date();
     }
 
-    var getLocalize = function (domain, state) {
-      return me.localize(`state.${domain}.${state}`) || me.localize(`state.default.${state}`) || state;
-    }
-
     var labels = [];
     var datasets = [];
     // stateHistory is a list of lists of sorted state objects
@@ -95,25 +91,18 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       var prevLastChanged = startTime;
       var dataRow = [];
 
-      var domain = window.hassUtil.computeDomain(stateInfo);
-
-      // if (stateInfo.data.length === 0) return;
-
       entityDisplay = stateInfo.name;
 
-      for (let stateid in stateInfo.data) {
-        var timeStamp;
-        var newState;
-        var state = stateInfo.data[stateid];
-        newState = state.state;
-        timeStamp = new Date(state.last_changed);
+      stateInfo.data.forEach(function (state) {
+        var newState = state.state;
+        var timeStamp = new Date(state.last_changed);
         if (newState === undefined || newState === '') {
           newState = null;
         }
         if (timeStamp > endTime) {
           // Drop datapoints that are after the requested endTime. This could happen if
           // endTime is 'now' and client time is not in sync with server time.
-          continue;
+          return;
         }
         if (prevState !== null && newState !== prevState) {
           newLastChanged = new Date(state.last_changed);
@@ -133,7 +122,7 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
           locState = state.state_localize;
           prevLastChanged = new Date(state.last_changed);
         }
-      };
+      });
 
       if (prevState !== null) {
         dataRow.push([
