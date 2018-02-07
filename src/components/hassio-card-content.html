@@ -7,16 +7,10 @@
 <dom-module id='hassio-card-content'>
   <template>
     <style>
-      :host {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        height: 3.5em;
-      }
       iron-icon {
-        display: inline-block;
-        height: 24px !important;
-        margin-right: 16px !important;
+        margin-right: 16px;
+        margin-top: 16px;
+        float: left;
         color: var(--secondary-text-color);
       }
       iron-icon.update {
@@ -29,9 +23,6 @@
       iron-icon.hassupdate {
         color: var(--primary-color);
       }
-      .content {
-        display: inline-block;
-      }
       .title {
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -41,18 +32,12 @@
         color: var(--secondary-text-color);
         overflow: hidden;
         position: relative; 
-        max-height: 2.4em;
+        height: 2.4em;
         line-height: 1.2em;
-      }
-      @media screen and (max-width: 600px) {
-        :host {
-          height: auto;
-          max-height: 3.5em;
-        }
       }
     </style>
     <iron-icon icon='[[icon]]' class$='[[iconClass]]' title='[[iconTitle]]'></iron-icon>
-    <div class='content'>
+    <div>
       <div class='title'>[[title]]</div>
       <div class='addition'>
         <template is='dom-if' if='[[description]]'>
