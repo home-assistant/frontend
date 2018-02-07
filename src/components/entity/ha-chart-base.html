@@ -7,7 +7,8 @@
         padding: 6px 0 0 0;
       }
       .chartHeader div {
-        /*float: left;*/
+        display: inline-block;
+        vertical-align: top;
       }
       .chartTitle {
         margin: 0 12px 0 8px;
@@ -46,7 +47,7 @@
       .chartLegend li {
         display: inline-block;
         padding: 0 5px;
-        max-width: 50%;
+        max-width: 49%;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
@@ -64,19 +65,21 @@
         width: 10px;
       }
     </style>
-    <div class="chartHeader">
-      <div class="chartTitle">[[unit]]</div>
-      <div class="chartLegend">
-        <ul>
-          <template is="dom-repeat" items="[[metas]]">
-            <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[item.hidden]]">
-              <em style$="background-color:[[item.bgColor]]"></em>
-              [[item.label]]
-            </li>
-          </template>
-        </ul>
+    <template is="dom-if" if="[[unit]]">
+      <div class="chartHeader">
+        <div class="chartTitle">[[unit]]</div>
+        <div class="chartLegend">
+          <ul>
+            <template is="dom-repeat" items="[[metas]]">
+              <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[item.hidden]]">
+                <em style$="background-color:[[item.bgColor]]"></em>
+                [[item.label]]
+              </li>
+            </template>
+          </ul>
+        </div>
       </div>
-    </div>
+    </template>
     <div id="chartTarget" style="height:40px; width:100%">
       <canvas id="chartCanvas"></canvas>
       <div class$="chartTooltip [[tooltip.yAlign]]"
@@ -185,10 +188,13 @@ class HaChartBase extends Polymer.Element {
   connectedCallback() {
     super.connectedCallback();
     this._isAttached = true;
-    if (this.tooltip === undefined) {
-      this.tooltip = {};
-    }
-    this.set(['tooltip', 'opacity'], 0);
+    this.set('tooltip', {
+      opacity: '0',
+      left: '0',
+      top: '0',
+      xPadding: '0',
+      yPadding: '0'
+    });
     if (!this._chart) {
       this.onPropsChange();
     }
@@ -209,6 +215,9 @@ class HaChartBase extends Polymer.Element {
     super.disconnectedCallback();
     this._isAttached = false;
     window.removeEventListener('resize', this._resizeListener);
+
+    clearInterval(this._resizeTimer);
+    this._resizeTimer = undefined;
   }
   onPropsChange() {
     if (!this._isAttached || !this.publish || !this.data) {
@@ -253,14 +262,15 @@ class HaChartBase extends Polymer.Element {
         };
       }));
     }
-    var positionX = this._chart.canvas.offsetLeft + tooltip.caretX;
-    var positionY = this._chart.canvas.offsetTop + tooltip.caretY;
     var parentWidth = this.$.chartTarget.clientWidth;
-    if (positionX + 100 > parentWidth) {
+    var positionX = tooltip.caretX;
+    var positionY = this._chart.canvas.offsetTop + tooltip.caretY;
+    if (tooltip.caretX + 100 > parentWidth) {
       positionX = parentWidth - 100;
-    } else if (positionX < 100) {
+    } else if (tooltip.caretX < 100) {
       positionX = 100;
     }
+    positionX += this._chart.canvas.offsetLeft;
     // Display, position, and set styles for font
     this.set(['tooltip', 'opacity'], 1);
     this.set(['tooltip', 'left'], positionX + 'px');
@@ -315,7 +325,7 @@ class HaChartBase extends Polymer.Element {
       this._customTooltips({ opacity: 0 });
       this._chart.data = data;
       this._chart.update({ duration: 0 });
-      if (this._isTimeline !== true && this.data.legend === true) {
+      if (this.isTimeline !== true && this.data.legend === true) {
         this._drawLegend();
       }
       this.resizeChart();
@@ -351,7 +361,7 @@ class HaChartBase extends Polymer.Element {
       };
       options = Chart.helpers.merge(options, this.data.options);
       if (this.data.type === 'timeline') {
-        this._isTimeline = true;
+        this.set('isTimeline', true);
         if (data.datasets.length === 1) {
           if (options.scales.yAxes[0].ticks) {
             options.scales.yAxes[0].ticks.display = false;
@@ -371,25 +381,35 @@ class HaChartBase extends Polymer.Element {
       // this._chart = new Chart(ctx, chartData);
       // Async resize after dom update
       me._chart = new Chart(ctx, chartData);
-      if (this._isTimeline !== true && this.data.legend === true) {
+      if (this.isTimeline !== true && this.data.legend === true) {
         this._drawLegend();
       }
-      setTimeout(me.resizeChart.bind(me), 1);
+      this.resizeChart();
     }
   }
   resizeChart() {
     if (!this._chart) return;
-
-    var chartTarget = this.$.chartTarget;
-    if (chartTarget.clientWidth === 0) {
-      setTimeout(this.resizeChart.bind(this), 10);
-      return;
+    if (this.$.chartTarget.clientWidth === 0) {
+      if (this._resizeTimer === undefined) {
+        this._resizeTimer = setInterval(this.resizeChart.bind(this), 10);
+        return false;
+      }
     }
+
+    clearInterval(this._resizeTimer);
+    this._resizeTimer = undefined;
+
+    this._resizeChart();
+    return true;
+  }
+
+  _resizeChart() {
+    var chartTarget = this.$.chartTarget;
 
     var options = this.data;
     var data = options.data;
 
-    if (this._isTimeline) {
+    if (this.isTimeline) {
       if (data.datasets.length === 0) {
         // chartTarget.style.height = '0px';
         // chartTarget.height = '0px';
