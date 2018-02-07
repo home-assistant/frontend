@@ -449,8 +449,7 @@ class HaConfigZwave extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     return Object.keys(hass.states)
       .map(function (key) { return hass.states[key]; })
       .filter(function (ent) {
-        return (!ent.attributes.hidden &&
-                (ent.entity_id).match('zwave[.]'));
+        return ((ent.entity_id).match('zwave[.]'));
       })
       .sort(window.hassUtil.sortByName);
   }
