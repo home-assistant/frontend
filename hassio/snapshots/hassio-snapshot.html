@@ -108,7 +108,7 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeSnapshot(snapshotSlug) {
-    this.hass.callApi('get', `hassio/snapshots/${this.snapshotSlug}/info`)
+    this.hass.callApi('get', `hassio/snapshots/${snapshotSlug}/info`)
       .then((info) => {
         info.data.folders = this.computeFolders(info.data.folders);
         info.data.addons = this.computeAddons(info.data.addons);
@@ -128,7 +128,7 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeAddons(addons) {
-    return addons.map(addon => ({ slug: addon.slug, name: addon.name, version: addon.verion, checked: true}));
+    return addons.map(addon => ({ slug: addon.slug, name: addon.name, version: addon.version, checked: true}));
   }
 
   isFullSnapshot(type) {
@@ -139,8 +139,8 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
-    const addons = this.snapshot.addons.filter(addon => addon.checked).map(addon => addon.slug)
-    const folders = this.snapshot.folders.filter(folder => folder.checked).map(folder => folder.slug)
+    const addons = this.snapshot.addons.filter(addon => addon.checked).map(addon => addon.slug);
+    const folders = this.snapshot.folders.filter(folder => folder.checked).map(folder => folder.slug);
 
     this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/partial`, {
       homeassistant: this.restoreHass,

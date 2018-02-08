@@ -212,8 +212,8 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       data = { name: name };
       path = 'hassio/snapshots/new/full';
     } else {
-      const addons = this.addonList.filter(addon => addon.checked).map(addon => addon.slug)
-      const folders = this.folderList.filter(folder => folder.checked).map(folder => folder.slug)
+      const addons = this.addonList.filter(addon => addon.checked).map(addon => addon.slug);
+      const folders = this.folderList.filter(folder => folder.checked).map(folder => folder.slug);
 
       data = { name: name, folders: folders, addons: addons };
       path = 'hassio/snapshots/new/partial';
@@ -230,7 +230,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   installedAddonsChanged(addons) {
-    this.addonList = addons.map(addon => ({ slug: addon.slug, name: addon.name, checked: true}));
+    this.addonList = addons.map(addon => ({ slug: addon.slug, name: addon.name, checked: true }));
   }
 
   sortAddons(a, b) {
