@@ -10,9 +10,9 @@
         display: block;
       }
     </style>
-    <paper-card heading='Logs'>
+    <paper-card heading='Log'>
       <div class="card-content">
-        <pre>[[addonLogs]]</pre>
+        <pre>[[log]]</pre>
       </div>
       <div class="card-actions">
         <paper-button on-tap='refresh'>Refresh</paper-button>
@@ -27,25 +27,18 @@ class HassioAddonLogs extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      addon: {
+      hass: Object,
+      addonSlug: {
         type: String,
-        observer: 'addonChanged',
+        observer: 'addonSlugChanged',
       },
-
-      addonLogs: {
-        type: String,
-        value: '',
-      },
+      log: String,
     };
   }
 
-  addonChanged(addon) {
+  addonSlugChanged(slug) {
     if (!this.hass) {
-      setTimeout(function () { this.addonChanged(addon); }.bind(this), 0);
+      setTimeout(() => { this.addonChanged(slug); }, 0);
       return;
     }
 
@@ -53,10 +46,10 @@ class HassioAddonLogs extends Polymer.Element {
   }
 
   refresh() {
-    this.hass.callApi('get', 'hassio/addons/' + this.addon + '/logs')
-      .then(function (info) {
-        this.addonLogs = info;
-      }.bind(this));
+    this.hass.callApi('get', `hassio/addons/${this.addonSlug}/logs`)
+      .then((info) => {
+        this.log = info;
+      });
   }
 }
 
