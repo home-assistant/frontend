@@ -80,7 +80,6 @@ class HassioHassUpdate extends Polymer.Element {
   }
 
   computeUpdateAvailable(hassInfo) {
-    return true; // remove on release
     return hassInfo.version !== hassInfo.last_version;
   }
 }
