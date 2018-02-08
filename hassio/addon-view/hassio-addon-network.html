@@ -26,8 +26,8 @@
     </style>
     <paper-card heading='Network'>
       <div class="card-content">
-        <template is='dom-if' if='[[errors]]'>
-          <div class='errors'>[[errors]]</div>
+        <template is='dom-if' if='[[error]]'>
+          <div class='errors'>[[error]]</div>
         </template>
 
         <table>
@@ -37,7 +37,7 @@
           </tr>
           <template
             is='dom-repeat'
-            items='[[_data]]'
+            items='[[config]]'
           >
             <tr>
               <td>
@@ -53,16 +53,16 @@
           </template>
         </table>
       </div>
-      <div class="card-actions">
-        <paper-button
-          on-tap='_saveTapped'
-        >Save</paper-button>
+      <div class="card-actions">        
         <ha-call-api-button
           class='warning'
           hass='[[hass]]'
-          path="[[_pathAddonOptions(addon)]]"
-          data="[[_resetData]]"
-        >Reset</ha-call-api-button>
+          path="hassio/addons/[[addonSlug]]/options"
+          data="[[resetData]]"
+        >Reset to defaults</ha-call-api-button>
+        <paper-button
+          on-tap='saveTapped'
+        >Save</paper-button>
       </div>
     </paper-card>
   </template>
@@ -75,23 +75,14 @@ class HassioAddonNetwork extends window.hassMixins.EventsMixin(Polymer.Element) 
   static get properties() {
     return {
       hass: Object,
-      addon: String,
-      errors: {
-        type: String,
-        value: null,
-      },
-
-      _data: {
+      addonSlug: String,
+      config: Object,
+      addon: {
         type: Object,
-        value: [],
+        observer: 'addonChanged',
       },
-
-      addonState: {
-        type: Object,
-        observer: '_addonStateChanged',
-      },
-
-      _resetData: {
+      error: String,
+      resetData: {
         type: Object,
         value: {
           network: null,
@@ -100,38 +91,32 @@ class HassioAddonNetwork extends window.hassMixins.EventsMixin(Polymer.Element) 
     };
   }
 
-  _addonStateChanged(addonState) {
-    if (!addonState) return;
+  addonChanged(addon) {
+    if (!addon) return;
 
-    var network = addonState.network || {};
-    var items = Object.keys(network).map(function (key) {
-      return {
-        container: key,
-        host: '' + network[key]
-      };
-    });
-    this._data = items.sort(function (el1, el2) { return el1.host - el2.host; });
+    const network = addon.network || {};
+    const items = Object.keys(network).map(key => ({
+      container: key,
+      host: network[key]
+    }));
+    this.config = items.sort(function (el1, el2) { return el1.host - el2.host; });
   }
 
-  _saveTapped() {
-    this.errors = null;
-    var toSend = {};
-    this._data.forEach(function (item) {
-      toSend[item.container] = parseInt(item.host);
+  saveTapped() {
+    this.error = null;
+    const data = {};
+    this.config.forEach(function (item) {
+      data[item.container] = parseInt(item.host);
     });
-    var path = 'hassio/addons/' + this.addon + '/options';
+    const path = `hassio/addons/${this.addonSlug}/options`;
 
     this.hass.callApi('post', path, {
-      network: toSend
-    }).then(function () {
+      network: data
+    }).then(() => {
       this.fire('hass-api-called', { success: true, path: path });
-    }.bind(this), function (resp) {
-      this.errors = resp.body.message;
-    }.bind(this));
-  }
-
-  _pathAddonOptions(addon) {
-    return 'hassio/addons/' + addon + '/options';
+    }, (resp) => {
+      this.error = resp.body.message;
+    });
   }
 }
 
