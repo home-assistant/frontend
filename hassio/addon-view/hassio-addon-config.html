@@ -26,8 +26,11 @@
       iron-autogrow-textarea {
         width: 100%;
         font-family: monospace;
-        background-color: #444444;
-        color: #ffffff;
+        background-color: var(--primary-text-color);
+        color: var(--text-primary-color);
+      }
+      .syntaxerror {
+        color: var(--google-red-500);
       }
     </style>
     <paper-card heading='Config'>
@@ -35,7 +38,7 @@
         <template is='dom-if' if='[[error]]'>
           <div class='errors'>[[error]]</div>
         </template>
-        <iron-autogrow-textarea value="{{config}}"></iron-autogrow-textarea>
+        <iron-autogrow-textarea id='jsona' value="{{config}}"></iron-autogrow-textarea>
       </div>
       <div class="card-actions">
         <ha-call-api-button
@@ -48,7 +51,6 @@
           on-tap='saveTapped'
           disabled='[[!configParsed]]'
         >Save</paper-button>
-
       </div>
     </paper-card>
   </template>
@@ -66,11 +68,11 @@ class HassioAddonConfig extends Polymer.Element {
         observer: 'addonChanged',
       },
       addonSlug: String,
-      config: String,
-      configParsed: {
-        type: Object,
-        computed: 'parseConfig(config)',
+      config: {
+        type: String,
+        observer: 'configChanged',
       },
+      configParsed: Object,
       error: String,
       resetData: {
         type: Object,
@@ -85,11 +87,13 @@ class HassioAddonConfig extends Polymer.Element {
     this.config = addon ? JSON.stringify(addon.options, null, 2) : '';
   }
 
-  parseConfig(config) {
+  configChanged(config) {
     try {
-      return JSON.parse(config);
+      this.$.jsona.classList.remove('syntaxerror');
+      this.configParsed = JSON.parse(config);
     } catch (err) {
-      return null;
+      this.$.jsona.classList.add('syntaxerror');
+      this.configParsed = null;
     }
   }
 
