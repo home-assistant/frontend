@@ -12,7 +12,7 @@
       paper-card {
         cursor: pointer;
       }
-      a {
+      a.repo {
         display: block;
         color: var(--primary-text-color);
       }
@@ -23,7 +23,7 @@
           [[repo.name]]
           <div class='description'>
             Maintained by [[repo.maintainer]]
-            <a href='[[repo.url]]' target='_blank'>[[repo.url]]</a>
+            <a class='repo' href='[[repo.url]]' target='_blank'>[[repo.url]]</a>
           </div>
         </div>
         <template is='dom-repeat' items='[[addons]]' as='addon' sort='sortAddons'>

@@ -31,7 +31,7 @@
           Configure which add-on repositories to fetch data from:
         </div>
       </div>
-      <template id='list' is='dom-repeat' items='[[repoList]]' as='repo'>
+      <template id='list' is='dom-repeat' items='[[repoList]]' as='repo' sort='sortRepos'>
         <paper-card>
           <div class='card-content'>
             <hassio-card-content
@@ -53,13 +53,13 @@
       <paper-card>
         <div class='card-content add'>
           <iron-icon icon='mdi:github-circle'></iron-icon>
-          <paper-input label='Add new repository by URL' value='{{addRepo}}'></paper-input>
+          <paper-input label='Add new repository by URL' value='{{repoUrl}}'></paper-input>
         </div>
         <div class='card-actions'>
           <ha-call-api-button
             hass='[[hass]]'
             path='hassio/supervisor/options'
-            data='[[computeAddRepoData(repoList, addRepo)]]'
+            data='[[computeAddRepoData(repoList, repoUrl)]]'
           >Add</ha-call-api-button>
         </div>
       </paper-card>
@@ -75,43 +75,30 @@ class HassioRepositoriesEditor extends Polymer.Element {
     return {
       hass: Object,
       repos: {
-        type: Object,
+        type: Array,
         observer: 'reposChanged',
       },
       repoList: Array,
-      addRepo: String,
+      repoUrl: String,
     };
   }
 
   reposChanged(repos) {
-    var list = [];
-    for(var i in repos){
-      if(repos[i].slug !== 'core' && repos[i].slug !== 'local') {
-        list.push(
-        {
-          name: repos[i].name,
-          url: repos[i].url,
-        });
-      } 
-    }
-    this.repoList = list.sort(function(a, b){
-      return a.name < b.name ? -1 : 1;
-      });
+    this.repoList = repos.filter(repo => repo.slug !== 'core' && repo.slug !== 'local');
+    this.repoUrl = '';
+  }
+
+  sortRepos(a, b) {
+    return a.name < b.name ? -1 : 1;
   }
 
   computeRemoveRepoData(repoList, url) {
-    var list = [];
-    for(var i in repoList){
-      if (repoList[i].url !== url) list.push(repoList[i].url);
-    }
+    const list = repoList.filter(repo => repo.url !== url).map(repo => repo.url);
     return { addons_repositories: list };
   }
 
   computeAddRepoData(repoList, url) {
-    var list = [];
-    for(var i in repoList){
-      list.push(repoList[i].url);
-    }
+    const list = repoList.map(repo => repo.url);
     list.push(url);
     return { addons_repositories: list };
   }
