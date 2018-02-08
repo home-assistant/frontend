@@ -196,7 +196,7 @@ class HaChartBase extends Polymer.Element {
     }
     const parentWidth = this.$.chartTarget.clientWidth;
     let positionX = tooltip.caretX;
-    let positionY = this._chart.canvas.offsetTop + tooltip.caretY;
+    const positionY = this._chart.canvas.offsetTop + tooltip.caretY;
     if (tooltip.caretX + 100 > parentWidth) {
       positionX = parentWidth - 100;
     } else if (tooltip.caretX < 100) {
@@ -218,7 +218,7 @@ class HaChartBase extends Polymer.Element {
     }
     const index = target.getAttribute('data-lid');
 
-    let meta = this._chart.getDatasetMeta(index);
+    const meta = this._chart.getDatasetMeta(index);
     meta.hidden = meta.hidden === null ? !this._chart.data.datasets[index].hidden : null;
     this.set(['metas', index, 'hidden'], this._chart.isDatasetVisible(index) ? null : 'hidden');
     this._chart.update();
@@ -243,7 +243,7 @@ class HaChartBase extends Polymer.Element {
     if (this.data.type !== 'timeline' && data.datasets.length > 0) {
       let cnt = 0;
       cnt = data.datasets.length;
-      let colors = this.constructor.getColorList(cnt);
+      const colors = this.constructor.getColorList(cnt);
       for (let loopI = 0; loopI < cnt; loopI++) {
         data.datasets[loopI].borderColor = colors[loopI].rgbString();
         data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.6).rgbaString();
@@ -290,7 +290,8 @@ class HaChartBase extends Polymer.Element {
         if (this.data.colors !== undefined) {
           this._colorFunc = this.constructor.getColorGenerator(
             this.data.colors.staticColors,
-            this.data.colors.staticColorIndex);
+            this.data.colors.staticColorIndex
+          );
         }
         if (this._colorFunc !== undefined) {
           options.colorFunction = this._colorFunc;
@@ -305,7 +306,7 @@ class HaChartBase extends Polymer.Element {
       }
       this.$.chartTarget.style.height = '160px';
       this.$.chartTarget.height = '160px';
-      let chartData = {
+      const chartData = {
         type: this.data.type,
         data: this.data.data,
         options: options
@@ -364,8 +365,8 @@ class HaChartBase extends Polymer.Element {
       }
     }
     if (this._axisHeight) {
-      let cnt = data.datasets.length;
-      let targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
+      const cnt = data.datasets.length;
+      const targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
       if (chartTarget.style.height !== targetHeight) {
         chartTarget.style.height = targetHeight;
         chartTarget.height = targetHeight;
@@ -382,7 +383,7 @@ class HaChartBase extends Polymer.Element {
       count = Math.ceil(count / 2);
     }
     const h1 = 360 / count;
-    let result = [];
+    const result = [];
     for (let loopI = 0; loopI < count; loopI++) {
       result[loopI] = Color().hsl(h1 * loopI, 80, 38);
       if (processL) {
@@ -398,10 +399,10 @@ class HaChartBase extends Polymer.Element {
     function getColorRange(x) {
       if (x === 0) return 0;
       if (x === 1) return 0.5;
-      let y = Math.floor(Math.log(x) / Math.LN2);
+      const y = Math.floor(Math.log(x) / Math.LN2);
       // eslint-disable-next-line no-restricted-properties
-      let e = Math.pow(2, y);
-      let n = x - e;
+      const e = Math.pow(2, y);
+      const n = x - e;
       let a;
       if (y % 2 === 1) {
         if (n % 2 === 0) {
@@ -420,18 +421,18 @@ class HaChartBase extends Polymer.Element {
       return a / (e + e);
     }
     function getColorIndex(idx) {
-      let hIndex = Math.floor(idx / 6);
-      let h1 = getColorRange(hIndex);
-      let c1 = (h1 + (idx % 3)) * 120;
-      let l1 = idx % 6 < 3 ? 62 : 38;
+      const hIndex = Math.floor(idx / 6);
+      const h1 = getColorRange(hIndex);
+      const c1 = (h1 + (idx % 3)) * 120;
+      const l1 = idx % 6 < 3 ? 62 : 38;
       return Color().hsl(c1, 75, l1);
     }
-    let colorDict = {};
+    const colorDict = {};
     let colorIndex = 0;
     if (startIndex > 0) colorIndex = startIndex;
     if (staticColors) {
       Object.keys(staticColors).forEach((c) => {
-        let c1 = staticColors[c];
+        const c1 = staticColors[c];
         if (isFinite(c1)) {
           colorDict[c.toLowerCase()] = getColorIndex(c1);
         } else {
@@ -442,10 +443,10 @@ class HaChartBase extends Polymer.Element {
     // Custom color assign
     function getColor(__, data) {
       let ret;
-      let name = data[3];
+      const name = data[3];
       if (name === null) return Color().hsl(0, 40, 38);
       if (name === undefined) return Color().hsl(120, 40, 38);
-      let name1 = name.toLowerCase();
+      const name1 = name.toLowerCase();
       if (ret === undefined) {
         ret = colorDict[name1];
       }

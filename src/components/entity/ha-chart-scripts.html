@@ -29,8 +29,8 @@
     } else {
       position = Chart.helpers.getRelativePosition(e, chart);
     }
-    let elements = [];
-    let elementsRange = [];
+    const elements = [];
+    const elementsRange = [];
     const datasets = chart.data.datasets;
     let meta;
     options.axis = options.axis || 'xy';
@@ -44,11 +44,11 @@
 
       meta = chart.getDatasetMeta(i);
       for (let j = 0, jlen = meta.data.length; j < jlen; ++j) {
-        let element = meta.data[j];
+        const element = meta.data[j];
         if (!element._view.skip) {
-          let vm = element._view;
-          let range = rangeFunc(vm, position);
-          let oldRange = elementsRange[i];
+          const vm = element._view;
+          const range = rangeFunc(vm, position);
+          const oldRange = elementsRange[i];
           if (range < rangeMaxFunc(vm.radius + vm.hitRadius)) {
             if (oldRange === undefined || oldRange > range) {
               elementsRange[i] = range;
@@ -58,16 +58,16 @@
         }
       }
     }
-    let ret = elements.filter(n => n !== undefined);
+    const ret = elements.filter(n => n !== undefined);
     return ret;
   };
 
   // Fix infinite loop bug in Chart.js 2.7.1
-  let x = Chart.scaleService.constructors.time.prototype;
+  const x = Chart.scaleService.constructors.time.prototype;
   x._getLabelCapacity = x.getLabelCapacity;
   x.getLabelCapacity = function () {
     // eslint-disable-next-line prefer-rest-params
-    let ret = this._getLabelCapacity.apply(this, arguments);
+    const ret = this._getLabelCapacity.apply(this, arguments);
     return ret > 0 ? ret : 1;
   };
 }

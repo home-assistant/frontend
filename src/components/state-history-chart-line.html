@@ -47,8 +47,8 @@ class StateHistoryChartLine extends Polymer.Element {
   drawChart() {
     const unit = this.unit;
     const deviceStates = this.data;
+    const datasets = [];
     let endTime;
-    let datasets;
 
     if (!this._isAttached) {
       return;
@@ -70,14 +70,12 @@ class StateHistoryChartLine extends Polymer.Element {
       endTime = new Date();
     }
 
-    datasets = [];
-
     deviceStates.forEach((states) => {
       const domain = states.domain;
       const name = states.name;
       // array containing [value1, value2, etc]
       let prevValues;
-      let data = [];
+      const data = [];
 
 
       function pushData(timestamp, datavalues) {
@@ -110,15 +108,6 @@ class StateHistoryChartLine extends Polymer.Element {
           data: [],
           unitText: unit
         });
-      }
-
-      function removeColumn(nameY) {
-        for (let x = data.length - 1; x >= 0; x--) {
-          if (data[x].label === nameY) {
-            data.splice(x, 1);
-            return;
-          }
-        }
       }
 
       if (domain === 'thermostat' || domain === 'climate') {
@@ -154,7 +143,7 @@ class StateHistoryChartLine extends Polymer.Element {
         states.states.forEach((state) => {
           if (!state.attributes) return;
           const curTemp = safeParseFloat(state.attributes.current_temperature);
-          let series = [curTemp];
+          const series = [curTemp];
           if (hasHeat) {
             series.push(state.state === 'heat' ? curTemp : null);
           }
@@ -221,7 +210,7 @@ class StateHistoryChartLine extends Polymer.Element {
       Array.prototype.push.apply(datasets, data);
     });
 
-    let chartOptions = {
+    const chartOptions = {
       type: 'line',
       unit: unit,
       legend: !this.isSingleDevice,

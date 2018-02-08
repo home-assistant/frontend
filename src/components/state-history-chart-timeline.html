@@ -52,8 +52,6 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       idle: 2
     };
     let stateHistory = this.data;
-    let startTime;
-    let endTime;
 
     if (!this._isAttached) {
       return;
@@ -63,37 +61,37 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       stateHistory = [];
     }
 
-    startTime = new Date(stateHistory.reduce((minTime, stateInfo) => Math.min(
-      minTime, new Date(stateInfo.data[0].last_changed)),
-      new Date()));
+    const startTime = new Date(stateHistory.reduce(
+      (minTime, stateInfo) => Math.min(minTime, new Date(stateInfo.data[0].last_changed)),
+      new Date()
+    ));
 
     // end time is Math.max(startTime, last_event)
-    endTime = this.endTime ||
+    let endTime = this.endTime ||
       new Date(stateHistory.reduce((maxTime, stateInfo) => Math.max(
-          maxTime,
-          new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
-        ), startTime));
+        maxTime,
+        new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
+      ), startTime));
 
     if (endTime > new Date()) {
       endTime = new Date();
     }
 
-    let labels = [];
-    let datasets = [];
+    const labels = [];
+    const datasets = [];
     // stateHistory is a list of lists of sorted state objects
     stateHistory.forEach((stateInfo) => {
-      let entityDisplay;
       let newLastChanged;
       let prevState = null;
       let locState = null;
       let prevLastChanged = startTime;
-      let dataRow = [];
+      const entityDisplay = stateInfo.name;
+      const dataRow = [];
 
-      entityDisplay = stateInfo.name;
 
       stateInfo.data.forEach((state) => {
         let newState = state.state;
-        let timeStamp = new Date(state.last_changed);
+        const timeStamp = new Date(state.last_changed);
         if (newState === undefined || newState === '') {
           newState = null;
         }
@@ -134,7 +132,7 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       labels.push(entityDisplay);
     });
 
-    let chartOptions = {
+    const chartOptions = {
       type: 'timeline',
       options: {
         scales: {
