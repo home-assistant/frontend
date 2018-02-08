@@ -38,7 +38,7 @@
         <template is='dom-if' if='[[error]]'>
           <div class='errors'>[[error]]</div>
         </template>
-        <iron-autogrow-textarea id='jsona' value="{{config}}"></iron-autogrow-textarea>
+        <iron-autogrow-textarea id='config' value="{{config}}"></iron-autogrow-textarea>
       </div>
       <div class="card-actions">
         <ha-call-api-button
@@ -89,10 +89,10 @@ class HassioAddonConfig extends Polymer.Element {
 
   configChanged(config) {
     try {
-      this.$.jsona.classList.remove('syntaxerror');
+      this.$.config.classList.remove('syntaxerror');
       this.configParsed = JSON.parse(config);
     } catch (err) {
-      this.$.jsona.classList.add('syntaxerror');
+      this.$.config.classList.add('syntaxerror');
       this.configParsed = null;
     }
   }
