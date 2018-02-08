@@ -209,7 +209,7 @@ class HassioAddonInfo extends Polymer.Element {
   }
 
   computeUpdateAvailable(addon) {
-    return addon &&  !addon.detached && addon.version && addon.version !== addon.last_version;
+    return addon && !addon.detached && addon.version && addon.version !== addon.last_version;
   }
 
   pathWebui(webui) {
