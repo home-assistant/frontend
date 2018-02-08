@@ -8,8 +8,6 @@
   </template>
 </dom-module>
 <script>
-'use strict';
-
 class StateHistoryChartLine extends Polymer.Element {
   static get is() { return 'state-history-chart-line'; }
   static get properties() {
@@ -47,12 +45,10 @@ class StateHistoryChartLine extends Polymer.Element {
   }
 
   drawChart() {
-    var unit = this.unit;
-    var deviceStates = this.data;
-    // Comment out startTime might use future.
-    // var startTime;
-    var endTime;
-    var datasets;
+    const unit = this.unit;
+    const deviceStates = this.data;
+    let endTime;
+    let datasets;
 
     if (!this._isAttached) {
       return;
@@ -63,14 +59,9 @@ class StateHistoryChartLine extends Polymer.Element {
     }
 
     function safeParseFloat(value) {
-      var parsed = parseFloat(value);
-      // isFinite(NaN) === False
+      const parsed = parseFloat(value);
       return isFinite(parsed) ? parsed : null;
     }
-
-    // startTime = new Date(Math.min.apply(null, deviceStates.map(function (states) {
-    //   return new Date(states.states[0].last_changed);
-    // })));
 
     endTime = this.endTime ||
       new Date(Math.max.apply(null, deviceStates.map(states =>
@@ -81,13 +72,12 @@ class StateHistoryChartLine extends Polymer.Element {
 
     datasets = [];
 
-    deviceStates.forEach(function (states) {
-      var domain = states.domain;
-      var name = states.name;
+    deviceStates.forEach((states) => {
+      const domain = states.domain;
+      const name = states.name;
       // array containing [value1, value2, etc]
-      var prevValues;
-      var processState;
-      var data = [];
+      let prevValues;
+      let data = [];
 
 
       function pushData(timestamp, datavalues) {
@@ -97,15 +87,15 @@ class StateHistoryChartLine extends Polymer.Element {
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
-        data.forEach(function (d, i) {
+        data.forEach((d, i) => {
           d.data.push({ x: timestamp, y: datavalues[i] });
         });
         prevValues = datavalues;
       }
 
       function addColumn(nameY, step, fill) {
-        var dataFill = false;
-        var dataStep = false;
+        let dataFill = false;
+        let dataStep = false;
         if (fill) {
           dataFill = 'origin';
         }
@@ -123,7 +113,7 @@ class StateHistoryChartLine extends Polymer.Element {
       }
 
       function removeColumn(nameY) {
-        for (var x = data.length - 1; x >= 0; x--) {
+        for (let x = data.length - 1; x >= 0; x--) {
           if (data[x].label === nameY) {
             data.splice(x, 1);
             return;
@@ -154,18 +144,17 @@ class StateHistoryChartLine extends Polymer.Element {
           // temperature when the thermostat is calling for heat.
         }
 
-
         if (hasTargetRange) {
           addColumn(name + ' target temperature high', true);
           addColumn(name + ' target temperature low', true);
         } else {
           addColumn(name + ' target temperature', true);
         }
-        var hasWorking = false;
-        processState = function (state) {
+
+        states.states.forEach((state) => {
           if (!state.attributes) return;
-          var curTemp = safeParseFloat(state.attributes.current_temperature);
-          var series = [curTemp];
+          const curTemp = safeParseFloat(state.attributes.current_temperature);
+          let series = [curTemp];
           if (hasHeat) {
             series.push(state.state === 'heat' ? curTemp : null);
           }
@@ -173,47 +162,41 @@ class StateHistoryChartLine extends Polymer.Element {
             series.push(state.state === 'cool' ? curTemp : null);
           }
           if (hasTargetRange) {
-            var targetHigh = safeParseFloat(state.attributes.target_temp_high);
-            var targetLow = safeParseFloat(state.attributes.target_temp_low);
+            const targetHigh = safeParseFloat(state.attributes.target_temp_high);
+            const targetLow = safeParseFloat(state.attributes.target_temp_low);
             series.push(targetHigh, targetLow);
             pushData(
               new Date(state.last_changed),
               series
             );
           } else {
-            var target = safeParseFloat(state.attributes.temperature);
+            const target = safeParseFloat(state.attributes.temperature);
             series.push(target);
             pushData(
               new Date(state.last_changed),
               series
             );
           }
-        };
-
-        states.states.forEach(processState);
-
-        if (!hasWorking) {
-          removeColumn(name + ' working');
-        }
+        });
       } else {
         // Only disable interpolation for sensors
-        var columnStyle = domain === 'sensor';
-        addColumn(name, columnStyle);
+        const isStep = domain === 'sensor';
+        addColumn(name, isStep);
 
-        var lastValue = null;
-        var lastDate = null;
-        var lastNullDate = null;
+        let lastValue = null;
+        let lastDate = null;
+        let lastNullDate = null;
 
         // Process chart data.
         // When state is `unknown`, calculate the value and break the line.
-        states.states.forEach(function (state) {
-          var value = safeParseFloat(state.state);
-          var date = new Date(state.last_changed);
+        states.states.forEach((state) => {
+          const value = safeParseFloat(state.state);
+          const date = new Date(state.last_changed);
           if (value !== null && lastNullDate !== null) {
-            var dateTime = date.getTime();
-            var lastNullDateTime = lastNullDate.getTime();
-            var lastDateTime = lastDate.getTime();
-            var tmpValue = ((value - lastValue) *
+            const dateTime = date.getTime();
+            const lastNullDateTime = lastNullDate.getTime();
+            const lastDateTime = lastDate.getTime();
+            const tmpValue = ((value - lastValue) *
               ((lastNullDateTime - lastDateTime) / (dateTime - lastDateTime))) + lastValue;
             pushData(lastNullDate, [tmpValue]);
             pushData(new Date(lastNullDateTime + 1), [null]);
@@ -238,7 +221,7 @@ class StateHistoryChartLine extends Polymer.Element {
       Array.prototype.push.apply(datasets, data);
     });
 
-    var chartOptions = {
+    let chartOptions = {
       type: 'line',
       unit: unit,
       legend: !this.isSingleDevice,
@@ -257,11 +240,11 @@ class StateHistoryChartLine extends Polymer.Element {
               maxTicksLimit: 7,
             },
             // Add space to prevent cut-off.
-            afterDataLimits: function (axis) {
-              var min = axis.min;
-              var max = axis.max;
+            afterDataLimits: (axis) => {
+              const min = axis.min;
+              const max = axis.max;
               if (isFinite(min) && isFinite(max)) {
-                var padding = (max - min) * 0.05;
+                const padding = (max - min) * 0.05;
                 axis.min -= padding;
                 axis.max += padding;
               }

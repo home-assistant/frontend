@@ -1,4 +1,5 @@
 <link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='ha-chart-scripts.html'>
 
 <dom-module id="ha-chart-base">
   <template>
@@ -96,78 +97,9 @@
     </div>
   </template>
 </dom-module>
-<script src="../../../bower_components/moment/moment.js"></script>
-<script src="../../../bower_components/chart.js/dist/Chart.min.js"></script>
-<script src="../../../bower_components/chartjs-chart-timeline/timeline.js"></script>
 <script>
-// Use minified(Chart.min.js) version to fix strange color after uglify
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
-(function () {
-  Chart.Interaction.modes.neareach = function (chart, e, options) {
-    var getRange = {
-      x: (a, b) => Math.abs(a.x - b.x),
-      y: (a, b) => Math.abs(a.y - b.y),
-      // eslint-disable-next-line no-restricted-properties
-      xy: (a, b) => Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2),
-    };
-    var getRangeMax = {
-      x: r => r,
-      y: r => r,
-      xy: r => r * r,
-    };
-    var position;
-    if (e.native) {
-      position = {
-        x: e.x,
-        y: e.y
-      };
-    } else {
-      position = Chart.helpers.getRelativePosition(e, chart);
-    }
-    var elements = [];
-    var elementsRange = [];
-    var datasets = chart.data.datasets;
-    var meta;
-    options.axis = options.axis || 'xy';
-    var rangeFunc = getRange[options.axis];
-    var rangeMaxFunc = getRangeMax[options.axis];
-
-    for (var i = 0, ilen = datasets.length; i < ilen; ++i) {
-      if (!chart.isDatasetVisible(i)) {
-        continue;
-      }
-
-      meta = chart.getDatasetMeta(i);
-      for (var j = 0, jlen = meta.data.length; j < jlen; ++j) {
-        var element = meta.data[j];
-        if (!element._view.skip) {
-          var vm = element._view;
-          var range = rangeFunc(vm, position);
-          var oldRange = elementsRange[i];
-          if (range < rangeMaxFunc(vm.radius + vm.hitRadius)) {
-            if (oldRange === undefined || oldRange > range) {
-              elementsRange[i] = range;
-              elements[i] = element;
-            }
-          }
-        }
-      }
-    }
-    var ret = elements.filter(function (n) { return n !== undefined; });
-    return ret;
-  };
-
-  // Fix infinite loop bug in Chart.js 2.7.1
-  var x = Chart.scaleService.constructors.time.prototype;
-  x._getLabelCapacity = x.getLabelCapacity;
-  x.getLabelCapacity = function () {
-    // eslint-disable-next-line prefer-rest-params
-    var ret = this._getLabelCapacity.apply(this, arguments);
-    return ret > 0 ? ret : 1;
-  };
-}());
-
 class HaChartBase extends Polymer.Element {
   get chart() {
     return this._chart;
@@ -216,8 +148,10 @@ class HaChartBase extends Polymer.Element {
     this._isAttached = false;
     window.removeEventListener('resize', this._resizeListener);
 
-    clearInterval(this._resizeTimer);
-    this._resizeTimer = undefined;
+    if (this._resizeTimer !== undefined) {
+      clearInterval(this._resizeTimer);
+      this._resizeTimer = undefined;
+    }
   }
   onPropsChange() {
     if (!this._isAttached || !this.publish || !this.data) {
@@ -237,12 +171,8 @@ class HaChartBase extends Polymer.Element {
     } else {
       this.set(['tooltip', 'yAlign'], 'no-transform');
     }
-    function getBody(bodyItem) {
-      return bodyItem.lines;
-    }
-    var title = tooltip.title ? tooltip.title[0] || '' : '';
-    var bodyLines = tooltip.body.map(getBody);
-    var str1;
+    const title = tooltip.title ? tooltip.title[0] || '' : '';
+    let str1;
     if (title instanceof Date) {
       str1 = moment(title).format('L LTS');
     } else if (title instanceof moment) {
@@ -251,10 +181,12 @@ class HaChartBase extends Polymer.Element {
       str1 = title;
     }
     this.set(['tooltip', 'title'], str1);
+    const bodyLines = tooltip.body.map(n => n.lines);
+
     // Set Text
     if (tooltip.body) {
-      this.set(['tooltip', 'lines'], bodyLines.map(function (body, i) {
-        var colors = tooltip.labelColors[i];
+      this.set(['tooltip', 'lines'], bodyLines.map((body, i) => {
+        const colors = tooltip.labelColors[i];
         return {
           color: colors.borderColor,
           bgColor: colors.backgroundColor,
@@ -262,9 +194,9 @@ class HaChartBase extends Polymer.Element {
         };
       }));
     }
-    var parentWidth = this.$.chartTarget.clientWidth;
-    var positionX = tooltip.caretX;
-    var positionY = this._chart.canvas.offsetTop + tooltip.caretY;
+    const parentWidth = this.$.chartTarget.clientWidth;
+    let positionX = tooltip.caretX;
+    let positionY = this._chart.canvas.offsetTop + tooltip.caretY;
     if (tooltip.caretX + 100 > parentWidth) {
       positionX = parentWidth - 100;
     } else if (tooltip.caretX < 100) {
@@ -280,42 +212,39 @@ class HaChartBase extends Polymer.Element {
   }
   _legendClick(event) {
     event = event || window.event;
-    var target = event.target || event.srcElement;
+    let target = event.target || event.srcElement;
     while (target.nodeName !== 'LI') {
       target = target.parentElement;
     }
-    var index = target.getAttribute('data-lid');
+    const index = target.getAttribute('data-lid');
 
-    var meta = this._chart.getDatasetMeta(index);
+    let meta = this._chart.getDatasetMeta(index);
     meta.hidden = meta.hidden === null ? !this._chart.data.datasets[index].hidden : null;
     this.set(['metas', index, 'hidden'], this._chart.isDatasetVisible(index) ? null : 'hidden');
     this._chart.update();
   }
   _drawLegend() {
-    var chart = this._chart;
-    this.set('metas', this._chart.data.datasets.map(function (x, i) {
-      return {
-        label: x.label,
-        color: x.color,
-        bgColor: x.backgroundColor,
-        hidden: chart.isDatasetVisible(i)
-      };
-    }));
+    const chart = this._chart;
+    this.set('metas', this._chart.data.datasets.map((x, i) => ({
+      label: x.label,
+      color: x.color,
+      bgColor: x.backgroundColor,
+      hidden: chart.isDatasetVisible(i)
+    })));
     this.set('unit', this.data.unit);
   }
   drawChart() {
-    var data = this.data.data;
-    var ctx = this.$.chartCanvas;
-
+    const data = this.data.data;
+    const ctx = this.$.chartCanvas;
 
     if ((!data.datasets || !data.datasets.length) && !this._chart) {
       return;
     }
     if (this.data.type !== 'timeline' && data.datasets.length > 0) {
-      var cnt = 0;
+      let cnt = 0;
       cnt = data.datasets.length;
-      var colors = this.constructor.getColorList(cnt);
-      for (var loopI = 0; loopI < cnt; loopI++) {
+      let colors = this.constructor.getColorList(cnt);
+      for (let loopI = 0; loopI < cnt; loopI++) {
         data.datasets[loopI].borderColor = colors[loopI].rgbString();
         data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.6).rgbaString();
       }
@@ -333,14 +262,10 @@ class HaChartBase extends Polymer.Element {
       if (!data.datasets) {
         return;
       }
-      var colorList = this.data.colors ? this.data.colors.staticColors : undefined;
-      var colorIndex = this.data.colors ? this.data.colors.staticColorIndex : undefined;
-      this._colorFunc = this.constructor.getColorGenerator(colorList, colorIndex);
       this._customTooltips({ opacity: 0 });
-      var options = {
+      let options = {
         responsive: true,
         maintainAspectRatio: false,
-        colorFunction: this._colorFunc,
         animation: {
           duration: 0,
         },
@@ -362,6 +287,14 @@ class HaChartBase extends Polymer.Element {
       options = Chart.helpers.merge(options, this.data.options);
       if (this.data.type === 'timeline') {
         this.set('isTimeline', true);
+        if (this.data.colors !== undefined) {
+          this._colorFunc = this.constructor.getColorGenerator(
+            this.data.colors.staticColors,
+            this.data.colors.staticColorIndex);
+        }
+        if (this._colorFunc !== undefined) {
+          options.colorFunction = this._colorFunc;
+        }
         if (data.datasets.length === 1) {
           if (options.scales.yAxes[0].ticks) {
             options.scales.yAxes[0].ticks.display = false;
@@ -372,15 +305,13 @@ class HaChartBase extends Polymer.Element {
       }
       this.$.chartTarget.style.height = '160px';
       this.$.chartTarget.height = '160px';
-      var chartData = {
+      let chartData = {
         type: this.data.type,
         data: this.data.data,
         options: options
       };
-      var me = this;
-      // this._chart = new Chart(ctx, chartData);
       // Async resize after dom update
-      me._chart = new Chart(ctx, chartData);
+      this._chart = new Chart(ctx, chartData);
       if (this.isTimeline !== true && this.data.legend === true) {
         this._drawLegend();
       }
@@ -389,6 +320,7 @@ class HaChartBase extends Polymer.Element {
   }
   resizeChart() {
     if (!this._chart) return;
+    // Chart not ready
     if (this.$.chartTarget.clientWidth === 0) {
       if (this._resizeTimer === undefined) {
         this._resizeTimer = setInterval(this.resizeChart.bind(this), 10);
@@ -403,53 +335,55 @@ class HaChartBase extends Polymer.Element {
   }
 
   _resizeChart() {
-    var chartTarget = this.$.chartTarget;
+    const chartTarget = this.$.chartTarget;
 
-    var options = this.data;
-    var data = options.data;
+    const options = this.data;
+    const data = options.data;
 
-    if (this.isTimeline) {
-      if (data.datasets.length === 0) {
-        // chartTarget.style.height = '0px';
-        // chartTarget.height = '0px';
-        // this._chart.resize();
-      } else {
-        var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
-        if (axis && axis.height > 0) {
-          this._axisHeight = axis.height;
-        }
-        if (!this._axisHeight) {
-          chartTarget.style.height = '100px';
-          chartTarget.height = '100px';
-          this._chart.resize();
-          axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
-          if (axis && axis.height > 0) {
-            this._axisHeight = axis.height;
-          }
-        }
-        if (this._axisHeight) {
-          var cnt = data.datasets.length;
-          var targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
-          if (chartTarget.style.height !== targetHeight) {
-            chartTarget.style.height = targetHeight;
-            chartTarget.height = targetHeight;
-          }
-          this._chart.resize();
-        }
+    if (data.datasets.length === 0) {
+      return;
+    }
+
+    if (!this.isTimeline) {
+      this._chart.resize();
+      return;
+    }
+
+    // Recalculate chart height for Timeline chart
+    var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
+    if (axis && axis.height > 0) {
+      this._axisHeight = axis.height;
+    }
+    if (!this._axisHeight) {
+      chartTarget.style.height = '100px';
+      chartTarget.height = '100px';
+      this._chart.resize();
+      axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
+      if (axis && axis.height > 0) {
+        this._axisHeight = axis.height;
       }
-    } else {
+    }
+    if (this._axisHeight) {
+      let cnt = data.datasets.length;
+      let targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
+      if (chartTarget.style.height !== targetHeight) {
+        chartTarget.style.height = targetHeight;
+        chartTarget.height = targetHeight;
+      }
       this._chart.resize();
     }
   }
+
+  // Get HSL distributed color list
   static getColorList(count) {
-    var processL = false;
+    let processL = false;
     if (count > 10) {
       processL = true;
       count = Math.ceil(count / 2);
     }
-    var h1 = 360 / count;
-    var result = [];
-    for (var loopI = 0; loopI < count; loopI++) {
+    const h1 = 360 / count;
+    let result = [];
+    for (let loopI = 0; loopI < count; loopI++) {
       result[loopI] = Color().hsl(h1 * loopI, 80, 38);
       if (processL) {
         result[loopI + count] = Color().hsl(h1 * loopI, 80, 62);
@@ -464,11 +398,11 @@ class HaChartBase extends Polymer.Element {
     function getColorRange(x) {
       if (x === 0) return 0;
       if (x === 1) return 0.5;
-      var y = Math.floor(Math.log(x) / Math.LN2);
+      let y = Math.floor(Math.log(x) / Math.LN2);
       // eslint-disable-next-line no-restricted-properties
-      var e = Math.pow(2, y);
-      var n = x - e;
-      var a;
+      let e = Math.pow(2, y);
+      let n = x - e;
+      let a;
       if (y % 2 === 1) {
         if (n % 2 === 0) {
           a = n + 1;
@@ -486,18 +420,18 @@ class HaChartBase extends Polymer.Element {
       return a / (e + e);
     }
     function getColorIndex(idx) {
-      var hIndex = Math.floor(idx / 6);
-      var h1 = getColorRange(hIndex);
-      var c1 = (h1 + (idx % 3)) * 120;
-      var l1 = idx % 6 < 3 ? 62 : 38;
+      let hIndex = Math.floor(idx / 6);
+      let h1 = getColorRange(hIndex);
+      let c1 = (h1 + (idx % 3)) * 120;
+      let l1 = idx % 6 < 3 ? 62 : 38;
       return Color().hsl(c1, 75, l1);
     }
-    var colorDict = {};
-    var colorIndex = 0;
+    let colorDict = {};
+    let colorIndex = 0;
     if (startIndex > 0) colorIndex = startIndex;
     if (staticColors) {
-      Object.keys(staticColors).forEach(function (c) {
-        var c1 = staticColors[c];
+      Object.keys(staticColors).forEach((c) => {
+        let c1 = staticColors[c];
         if (isFinite(c1)) {
           colorDict[c.toLowerCase()] = getColorIndex(c1);
         } else {
@@ -507,11 +441,11 @@ class HaChartBase extends Polymer.Element {
     }
     // Custom color assign
     function getColor(__, data) {
-      var ret;
-      var name = data[3];
+      let ret;
+      let name = data[3];
       if (name === null) return Color().hsl(0, 40, 38);
       if (name === undefined) return Color().hsl(120, 40, 38);
-      var name1 = name.toLowerCase();
+      let name1 = name.toLowerCase();
       if (ret === undefined) {
         ret = colorDict[name1];
       }

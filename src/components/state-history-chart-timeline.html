@@ -51,9 +51,9 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       unknown: '#606060',
       idle: 2
     };
-    var stateHistory = this.data;
-    var startTime;
-    var endTime;
+    let stateHistory = this.data;
+    let startTime;
+    let endTime;
 
     if (!this._isAttached) {
       return;
@@ -63,39 +63,37 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       stateHistory = [];
     }
 
-    startTime = new Date(stateHistory.reduce(function (minTime, stateInfo) {
-      return Math.min(minTime, new Date(stateInfo.data[0].last_changed));
-    }, new Date()));
+    startTime = new Date(stateHistory.reduce((minTime, stateInfo) => Math.min(
+      minTime, new Date(stateInfo.data[0].last_changed)),
+      new Date()));
 
     // end time is Math.max(startTime, last_event)
     endTime = this.endTime ||
-      new Date(stateHistory.reduce(function (maxTime, stateInfo) {
-        return Math.max(
+      new Date(stateHistory.reduce((maxTime, stateInfo) => Math.max(
           maxTime,
           new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
-        );
-      }, startTime));
+        ), startTime));
 
     if (endTime > new Date()) {
       endTime = new Date();
     }
 
-    var labels = [];
-    var datasets = [];
+    let labels = [];
+    let datasets = [];
     // stateHistory is a list of lists of sorted state objects
-    stateHistory.forEach(function (stateInfo) {
-      var entityDisplay;
-      var newLastChanged;
-      var prevState = null;
-      var locState = null;
-      var prevLastChanged = startTime;
-      var dataRow = [];
+    stateHistory.forEach((stateInfo) => {
+      let entityDisplay;
+      let newLastChanged;
+      let prevState = null;
+      let locState = null;
+      let prevLastChanged = startTime;
+      let dataRow = [];
 
       entityDisplay = stateInfo.name;
 
-      stateInfo.data.forEach(function (state) {
-        var newState = state.state;
-        var timeStamp = new Date(state.last_changed);
+      stateInfo.data.forEach((state) => {
+        let newState = state.state;
+        let timeStamp = new Date(state.last_changed);
         if (newState === undefined || newState === '') {
           newState = null;
         }
@@ -136,7 +134,7 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
       labels.push(entityDisplay);
     });
 
-    var chartOptions = {
+    let chartOptions = {
       type: 'timeline',
       options: {
         scales: {
@@ -148,7 +146,7 @@ class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.
             },
           }],
           yAxes: [{
-            afterSetDimensions: function (yaxe) {
+            afterSetDimensions: (yaxe) => {
               yaxe.maxWidth = yaxe.chart.width * 0.18;
             }
           }],
