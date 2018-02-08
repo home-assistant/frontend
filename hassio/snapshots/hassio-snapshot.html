@@ -128,7 +128,8 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeAddons(addons) {
-    return addons.map(addon => ({ slug: addon.slug, name: addon.name, version: addon.version, checked: true}));
+    return addons.map(addon => (
+      { slug: addon.slug, name: addon.name, version: addon.version, checked: true }));
   }
 
   isFullSnapshot(type) {
@@ -140,7 +141,8 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
       return;
     }
     const addons = this.snapshot.addons.filter(addon => addon.checked).map(addon => addon.slug);
-    const folders = this.snapshot.folders.filter(folder => folder.checked).map(folder => folder.slug);
+    const folders =
+      this.snapshot.folders.filter(folder => folder.checked).map(folder => folder.slug);
 
     this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/partial`, {
       homeassistant: this.restoreHass,
