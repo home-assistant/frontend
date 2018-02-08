@@ -2,9 +2,6 @@
 <link rel="import" href="../../bower_components/polymer/lib/utils/debounce.html">
 <link rel='import' href='./entity/ha-chart-base.html'>
 
-<link rel='import' href='../../src/util/hass-mixins.html'>
-<link rel='import' href='../../src/util/hass-util.html'>
-
 <dom-module id='state-history-chart-timeline'>
   <template>
       <ha-chart-base publish data="[[chartData]]"></ha-chart-base>
@@ -13,7 +10,7 @@
 <script>
 'use strict';
 
-class StateHistoryChartTimeline extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class StateHistoryChartTimeline extends Polymer.Element {
   static get is() { return 'state-history-chart-timeline'; }
   static get properties() {
     return {

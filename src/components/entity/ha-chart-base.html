@@ -283,6 +283,12 @@ class HaChartBase extends Polymer.Element {
         line: {
           spanGaps: true,
         },
+        elements: {
+          font: "12px 'Roboto', 'sans-serif'",
+        },
+        ticks: {
+          fontFamily: "'Roboto', 'sans-serif'",
+        }
       };
       options = Chart.helpers.merge(options, this.data.options);
       if (this.data.type === 'timeline') {
