@@ -137,10 +137,10 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
         observer: 'visibleChanged',
       },
       snapshotName: String,
-      snapshotType : {
+      snapshotType: {
         type: String,
         value: 'full',
-      },      
+      },
       snapshots: {
         type: Array,
         value: [],
@@ -152,11 +152,11 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       addonList: Array,
       folderList: {
         type: Array,
-        value : [
-          { slug: 'homeassistant', name: 'Home Assistant configuration', checked: true},
-          { slug: 'ssl', name: 'SSL', checked: true},
-          { slug: 'share', name: 'Share', checked: true},
-          { slug: 'addons/local', name: 'Local add-ons', checked: true},
+        value: [
+          { slug: 'homeassistant', name: 'Home Assistant configuration', checked: true },
+          { slug: 'ssl', name: 'SSL', checked: true },
+          { slug: 'share', name: 'Share', checked: true },
+          { slug: 'addons/local', name: 'Local add-ons', checked: true },
         ],
       },
       selectedSnapshot: String,
@@ -189,18 +189,18 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   updateSnapshots() {
     this.hass.callApi('get', 'hassio/snapshots')
-      .then(function (result) {
+      .then((result) => {
         this.snapshots = result.data.snapshots;
-      }.bind(this), function (error) {
+      }, (error) => {
         this.error = error.message;
-      }.bind(this));
+      });
   }
 
   createSnapshot() {
     this.creatingSnapshot = true;
     let name = this.snapshotName;
     if (!name || name.length === 0) {
-      name = (new Date).toLocaleDateString(navigator.language, { 
+      name = new Date().toLocaleDateString(navigator.language, {
         weekday: 'long',
         year: 'numeric',
         month: 'short',
@@ -212,36 +212,25 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       data = { name: name };
       path = 'hassio/snapshots/new/full';
     } else {
-      const folderList = this.folderList;
-      let folders = [];
-      for (const i in folderList) {
-        if (folderList[i].checked === true) folders.push(folderList[i].slug);
-      }
-      const addonList = this.addonList;
-      let addons = [];
-      for (const i in addonList) {
-        if (addonList[i].checked === true) addons.push(addonList[i].slug);
-      }
+      const addons = this.addonList.filter(addon => addon.checked).map(addon => addon.slug)
+      const folders = this.folderList.filter(folder => folder.checked).map(folder => folder.slug)
+
       data = { name: name, folders: folders, addons: addons };
       path = 'hassio/snapshots/new/partial';
     }
 
     this.hass.callApi('post', path, data)
-      .then(function () {
+      .then(() => {
         this.creatingSnapshot = false;
         this.fire('hass-api-called', { success: true });
-      }.bind(this), function (error) {
+      }, (error) => {
         this.creatingSnapshot = false;
         this.error = error.message;
-      }.bind(this));
+      });
   }
 
   installedAddonsChanged(addons) {
-    let list = [];
-    for (const i in addons) {
-      list.push({ slug: addons[i].slug, name: addons[i].name, checked: true});
-    }
-    this.addonList = list;
+    this.addonList = addons.map(addon => ({ slug: addon.slug, name: addon.name, checked: true}));
   }
 
   sortAddons(a, b) {
@@ -283,7 +272,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     if (update) {
       this.updateSnapshots();
       this.updateOverview = false;
-    } 
+    }
   }
 
   backTapped() {
@@ -292,9 +281,9 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   refreshTapped() {
     this.hass.callApi('post', 'hassio/snapshots/reload')
-      .then(function () {
+      .then(() => {
         this.updateSnapshots();
-      }.bind(this));
+      });
   }
 }
 

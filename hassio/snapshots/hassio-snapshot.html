@@ -6,38 +6,18 @@
 <dom-module id='hassio-snapshot'>
   <template>
     <style include='ha-style'>
-      .content {
-        width: 400px;
-        padding: 16px 48px 0 48px;
-      }
-      iron-icon {
-        float: left;
-        color: var(--primary-color);
-      }
       paper-checkbox {
         display: block;
-        margin: 4px 8px 4px 48px;
+        margin: 4px;
       }
-      .snapshot {
-        margin-bottom: 32px;
-        margin-left: 32px;
-        font-size: 1.2em;
-      }
-      .snapshot-type {
+      .snapshot-details {
         color: var(--secondary-text-color);
-        font-size: 0.9em;
+        margin-bottom: 16px;
       }
       .addon-version {
         color: var(--secondary-text-color);
       }      
-      .card-actions {
-        border-top: 1px solid #e8e8e8;
-        padding: 5px 16px;
-        margin: 0;
-      }
-      .warning {
-        color: var(--google-red-500);
-      }
+      .warning,
       .error {
         color: var(--google-red-500);
       }
@@ -52,15 +32,11 @@
       }
     </style>
     <paper-dialog id='dialog' with-backdrop on-iron-overlay-closed='dialogClosed'>
-      <div class='content'>
-        <iron-icon icon='[[computeIcon(snapshot.type)]]' class='primary'
-        ></iron-icon>
-        <div class='snapshot'>
-          [[computeName(snapshot)]]
-          <div class='snapshot-type'>
-            [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
-            [[formatDatetime(snapshot.date)]]
-          </div>
+      <h2>[[computeName(snapshot)]]</h2>
+      <div>
+        <div class='snapshot-details'>
+          [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
+          [[formatDatetime(snapshot.date)]]
         </div>
         <div>
           Home Assistant:
@@ -76,7 +52,7 @@
             </paper-checkbox>
           </template>
         </div>
-        <template is='dom-if' if='[[showAddons(snapshot.addons)]]'>
+        <template is='dom-if' if='[[snapshot.addons.length]]'>
           <div>
             Add-ons:
             <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
@@ -91,7 +67,7 @@
           <p class='error'>Error: [[error]]</p>
         </template>
       </div>
-      <div class='card-actions'>
+      <div class='buttons'>
         <paper-button class='warning' on-tap='deleteTapped'>Delete</paper-button>
         <paper-button on-tap='partialRestoreTapped'>Partial restore</paper-button>
         <template is='dom-if' if='[[isFullSnapshot(snapshot.type)]]'>
@@ -132,94 +108,76 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeSnapshot(snapshotSlug) {
-    this.hass.callApi('get', 'hassio/snapshots/' + snapshotSlug + '/info')
-      .then(function (info) {
+    this.hass.callApi('get', `hassio/snapshots/${this.snapshotSlug}/info`)
+      .then((info) => {
         info.data.folders = this.computeFolders(info.data.folders);
         info.data.addons = this.computeAddons(info.data.addons);
         this.snapshot = info.data;
-      }.bind(this), function () {
+      }, () => {
         this.snapshot = null;
-      }.bind(this));
+      });
   }
 
   computeFolders(folders) {
-    let list = [];
-    if (folders.indexOf('homeassistant') !== -1) list.push({ slug: 'homeassistant', name: 'Home Assistant configuration', checked: true});
-    if (folders.indexOf('ssl') !== -1) list.push({ slug: 'ssl', name: 'SSL', checked: true});
-    if (folders.indexOf('share') !== -1) list.push({ slug: 'share', name: 'Share', checked: true});
-    if (folders.indexOf('addons/local') !== -1) list.push({ slug: 'addons/local', name: 'Local add-ons', checked: true});
+    const list = [];
+    if (folders.includes('homeassistant')) list.push({ slug: 'homeassistant', name: 'Home Assistant configuration', checked: true });
+    if (folders.includes('ssl')) list.push({ slug: 'ssl', name: 'SSL', checked: true });
+    if (folders.includes('share')) list.push({ slug: 'share', name: 'Share', checked: true });
+    if (folders.includes('addons/local')) list.push({ slug: 'addons/local', name: 'Local add-ons', checked: true });
     return list;
   }
 
   computeAddons(addons) {
-    for (const i in addons) {
-      addons[i].checked = true;
-    }
-    return addons;
+    return addons.map(addon => ({ slug: addon.slug, name: addon.name, version: addon.verion, checked: true}));
   }
 
   isFullSnapshot(type) {
     return type === 'full';
   }
 
-  partialRestoreTapped(ev) {
+  partialRestoreTapped() {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
-    const snapshot = this.snapshot;
-    let addons = [];
-    for (const i in snapshot.addons) {
-      if (snapshot.addons[i].checked === true) addons.push(snapshot.addons[i].slug);
-    }
-    let folders = [];
-    for (const i in snapshot.folders) {
-      if (snapshot.folders[i].checked === true) folders.push(snapshot.folders[i].slug);
-    }
+    const addons = this.snapshot.addons.filter(addon => addon.checked).map(addon => addon.slug)
+    const folders = this.snapshot.folders.filter(folder => folder.checked).map(folder => folder.slug)
 
-    this.hass.callApi('post', 'hassio/snapshots/' + this.snapshotSlug + '/restore/partial', {
-        homeassistant: this.restoreHass,
-        addons: addons,
-        folders: folders})
-      .then(function () {
-        alert('Snapshot restored!');
-        this.$.dialog.close();
-      }.bind(this), function (error) {
-        this.error = error.body.message;
-      }.bind(this));
+    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/partial`, {
+      homeassistant: this.restoreHass,
+      addons: addons,
+      folders: folders
+    }).then(() => {
+      alert('Snapshot restored!');
+      this.$.dialog.close();
+    }, (error) => {
+      this.error = error.body.message;
+    });
   }
 
-  fullRestoreTapped(ev) {
+  fullRestoreTapped() {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
-    this.hass.callApi('post', 'hassio/snapshots/' + this.snapshotSlug + '/restore/full')
-      .then(function () {
+    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/full`)
+      .then(() => {
         alert('Snapshot restored!');
         this.$.dialog.close();
-      }.bind(this), function (error) {
+      }, (error) => {
         this.error = error.body.message;
-      }.bind(this));
+      });
   }
 
-  deleteTapped(ev) {
+  deleteTapped() {
     if (!confirm('Are you sure you want to delete this snapshot?')) {
       return;
     }
-    this.hass.callApi('post', 'hassio/snapshots/' + this.snapshotSlug + '/remove')
-      .then(function () {
+    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/remove`)
+      .then(() => {
         this.$.dialog.close();
         this.updateOverview = true;
-      }.bind(this), function (error) {
+      }, (error) => {
         this.error = error.body.message;
-      }.bind(this));
-  }
-
-  computeIcon(type) {
-    return type === 'full' ? 'mdi:package-variant-closed' : 'mdi:package-variant';
-  }
-
-  showAddons(addons) {
-    return addons.length === 0 ? false : true;
+      });
   }
 
   computeName(snapshot) {
@@ -239,17 +197,18 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   formatDatetime(datetime) {
-    return new Date(datetime + '+00:00').toLocaleDateString(navigator.language, { 
+    return new Date(datetime + '+00:00').toLocaleDateString(navigator.language, {
       weekday: 'long',
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
-      minute: '2-digit'});
+      minute: '2-digit'
+    });
   }
 
   openedChanged(opened) {
-    if (opened === true) this.$.dialog.open();
+    if (opened) this.$.dialog.open();
   }
 
   dialogClosed() {
