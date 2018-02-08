@@ -1,0 +1,291 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel='import' href='../../bower_components/paper-radio-group/paper-radio-group.html'>
+<link rel='import' href='../../bower_components/paper-radio-button/paper-radio-button.html'>
+<link rel='import' href='../../bower_components/paper-checkbox/paper-checkbox.html'>
+
+<link rel='import' href='../../src/util/hass-mixins.html'>
+
+<link rel='import' href='../../src/components/hassio-card-content.html'>
+<link rel='import' href='../../src/resources/hassio-style.html'>
+<link rel='import' href='./hassio-snapshot.html'>
+
+<dom-module id="hassio-snapshots">
+  <template>
+    <style include="ha-style hassio-style">
+      paper-checkbox {
+        display: block;
+        margin: 4px 0 4px 48px;
+      }
+      .pointer {
+        cursor: pointer;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <paper-icon-button
+            icon='mdi:arrow-left'
+            on-tap='_backTapped'
+          ></paper-icon-button>
+          <div main-title>Snapshots</div>
+          <paper-icon-button
+            icon="mdi:refresh"
+            on-tap="_refreshTapped"
+          ></paper-icon-button>
+        </app-toolbar>
+      </app-header>
+
+      <div class='content'>
+        <div class='card-group'>
+          <div class='title'>
+            New snapshot
+            <div class='description'>
+              Snapshots allow you to easily backup and
+              restore all data of your Hass.io instance.
+            </div>
+          </div>
+          <paper-card>
+            <div class='card-content'>
+              <paper-input autofocus label='Name' value='{{snapshotName}}'>
+              </paper-input>
+              <label id='lbltype'>Type:</label>
+              <paper-radio-group selected='{{snapshotType}}' aria-labelledby='lbltype' on-paper-radio-group-changed='typeChanged'>
+                <paper-radio-button name='full'>
+                  Full snapshot
+                </paper-radio-button>
+                <paper-radio-button name='partial'>
+                  Partial snapshot
+                </paper-radio-button>
+              </paper-radio-group>
+              <div id='folders' class='hidden'>
+                Folders:
+                <template is='dom-repeat' items='[[folderList]]'>
+                  <paper-checkbox checked='{{item.checked}}'>
+                    [[item.name]]
+                  </paper-checkbox>
+                </template>
+              </div>
+              <div id='addons' class='hidden'>
+                Add-ons:
+                <template is='dom-repeat' items='[[addonList]]' sort='sortAddons'>
+                  <paper-checkbox checked='{{item.checked}}'>
+                    [[item.name]]
+                  </paper-checkbox>
+                </template>
+              </div>
+            </div>
+            <div class='card-actions'>
+              <paper-button disabled='[[creatingSnapshot]]' on-tap='createSnapshot'>Create</paper-button>
+              <template is='dom-if' if='[[error]]'>
+                <p class='error'>[[error]]</p>
+              </template>
+            </div>
+          </paper-card>
+        </div>
+  
+        <div class='card-group'>
+          <div class='title'>Available snapshots</div>
+          <template is='dom-if' if='[[!snapshots.length]]'>
+            <paper-card>
+              <div class='card-content'>You don't have any snapshots yet.</div>
+            </paper-card>
+          </template>
+          <template is='dom-repeat' items='[[snapshots]]' as='snapshot' sort='sortSnapshots'>
+            <paper-card class='pointer' on-click='snapshotTapped'>
+              <div class='card-content'>
+                <hassio-card-content
+                  title='[[computeName(snapshot)]]'
+                  description='[[computeType(snapshot.type)]]'
+                  datetime='[[snapshot.date]]+00:00'
+                  icon='[[computeIcon(snapshot.type)]]'
+                  icon-class='snapshot'
+                ></hassio-card-content>
+              </div>
+            </paper-card>
+          </template>
+        </div>
+      </div>
+    </app-header-layout>    
+    <hassio-snapshot      
+      hass='[[hass]]'
+      snapshot-slug='[[selectedSnapshot]]'
+      opened='{{dialogOpened}}'
+      update-overview='{{updateOverview}}'
+    ></hassio-snapshot>
+  </template>
+</dom-module>
+
+<script>
+class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'hassio-snapshots'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      visible: {
+        type: Boolean,
+        observer: 'visibleChanged',
+      },
+      snapshotName: String,
+      snapshotType: {
+        type: String,
+        value: 'full',
+      },
+      snapshots: {
+        type: Array,
+        value: [],
+      },
+      installedAddons: {
+        type: Array,
+        observer: 'installedAddonsChanged',
+      },
+      addonList: Array,
+      folderList: {
+        type: Array,
+        value: [
+          { slug: 'homeassistant', name: 'Home Assistant configuration', checked: true },
+          { slug: 'ssl', name: 'SSL', checked: true },
+          { slug: 'share', name: 'Share', checked: true },
+          { slug: 'addons/local', name: 'Local add-ons', checked: true },
+        ],
+      },
+      selectedSnapshot: String,
+      creatingSnapshot: Boolean,
+      dialogOpened: Boolean,
+      updateOverview: {
+        type: Boolean,
+        observer: 'updateOverviewChanged',
+      },
+      error: String,
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+  }
+
+  visibleChanged(visible) {
+    if (visible) {
+      this.updateSnapshots();
+    }
+  }
+
+  apiCalled(ev) {
+    if (ev.detail.success) {
+      this.updateSnapshots();
+    }
+  }
+
+  updateSnapshots() {
+    this.hass.callApi('get', 'hassio/snapshots')
+      .then((result) => {
+        this.snapshots = result.data.snapshots;
+      }, (error) => {
+        this.error = error.message;
+      });
+  }
+
+  createSnapshot() {
+    this.creatingSnapshot = true;
+    let name = this.snapshotName;
+    if (!name || name.length === 0) {
+      name = new Date().toLocaleDateString(navigator.language, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric' });
+    }
+    let data;
+    let path;
+    if (this.snapshotType === 'full') {
+      data = { name: name };
+      path = 'hassio/snapshots/new/full';
+    } else {
+      const addons = this.addonList.filter(addon => addon.checked).map(addon => addon.slug);
+      const folders = this.folderList.filter(folder => folder.checked).map(folder => folder.slug);
+
+      data = { name: name, folders: folders, addons: addons };
+      path = 'hassio/snapshots/new/partial';
+    }
+
+    this.hass.callApi('post', path, data)
+      .then(() => {
+        this.creatingSnapshot = false;
+        this.fire('hass-api-called', { success: true });
+      }, (error) => {
+        this.creatingSnapshot = false;
+        this.error = error.message;
+      });
+  }
+
+  installedAddonsChanged(addons) {
+    this.addonList = addons.map(addon => ({ slug: addon.slug, name: addon.name, checked: true }));
+  }
+
+  sortAddons(a, b) {
+    return a.name < b.name ? -1 : 1;
+  }
+
+  sortSnapshots(a, b) {
+    return a.date < b.date ? 1 : -1;
+  }
+
+  computeName(snapshot) {
+    return snapshot.name || snapshot.slug;
+  }
+
+  computeType(type) {
+    return type === 'full' ? 'Full snapshot' : 'Partial snapshot';
+  }
+
+  computeIcon(type) {
+    return type === 'full' ? 'mdi:package-variant-closed' : 'mdi:package-variant';
+  }
+
+  snapshotTapped(ev) {
+    this.selectedSnapshot = ev.model.snapshot.slug;
+    this.dialogOpened = true;
+  }
+
+  typeChanged() {
+    if (this.snapshotType === 'full') {
+      this.$.folders.classList.add('hidden');
+      this.$.addons.classList.add('hidden');
+    } else {
+      this.$.folders.classList.remove('hidden');
+      this.$.addons.classList.remove('hidden');
+    }
+  }
+
+  updateOverviewChanged(update) {
+    if (update) {
+      this.updateSnapshots();
+      this.updateOverview = false;
+    }
+  }
+
+  backTapped() {
+    history.back();
+  }
+
+  refreshTapped() {
+    this.hass.callApi('post', 'hassio/snapshots/reload')
+      .then(() => {
+        this.updateSnapshots();
+      });
+  }
+}
+
+customElements.define(HassioSnapshots.is, HassioSnapshots);
+</script>
