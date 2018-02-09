@@ -3,38 +3,55 @@
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/app-route/app-route.html">
 
-<link rel="import" href="../../src/components/ha-menu-button.html">
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <link rel="import" href="./hassio-repositories-editor.html">
 <link rel="import" href="./hassio-addon-repository.html">
-<link rel="import" href="./hassio-addon-store-view.html">
-<link rel="import" href="./hassio-addon-store-overview.html">
 
 <dom-module id="hassio-addon-store">
   <template>
-    <app-route
-      route='[[route]]'
-      pattern='/:addon'
-      data="{{_routeData}}"
-      active="{{_routeMatches}}"
-    ></app-route>
-    <template is='dom-if' if='[[_routeMatches]]' restamp>
-      <hassio-addon-store-view
-        hass='[[hass]]'
-        addon='[[selectedAddonObject]]'
-        repo='[[computeActiveRepo(repos, selectedAddonObject)]]'
-      ></hassio-addon-store-view>
-    </template>
+    <style include="iron-flex ha-style">
+      paper-card {
+        display: block;
+      }
+      .content {
+        padding: 24px 0 32px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
 
-    <template is='dom-if' if='[[!_routeMatches]]'>
-      <hassio-addon-store-overview
+      hassio-addon-repository {
+        margin-top: 24px;
+      }
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <paper-icon-button
+            icon='mdi:arrow-left'
+            on-tap='backTapped'
+          ></paper-icon-button>
+          <div main-title>Add-on store</div>
+          <paper-icon-button
+            icon="mdi:refresh"
+            on-tap="refreshTapped"
+          ></paper-icon-button>
+        </app-toolbar>
+      </app-header>
+
+      <hassio-repositories-editor
         hass='[[hass]]'
-        addons='[[addons]]'
         repos='[[repos]]'
-      ></hassio-addon-store-overview>
-    </template>
+      ></hassio-repositories-editor>
+
+      <template is='dom-repeat' items='[[repos]]' as='repo' sort='sortRepos'>
+        <hassio-addon-repository
+          repo='[[repo]]'
+          addons='[[computeAddons(repo.slug)]]'
+        ></hassio-addon-repository>
+      </template>
+    </app-header-layout>
   </template>
 </dom-module>
 
@@ -44,37 +61,13 @@ class HassioAddonStore extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
+      hass: Object,
+      addons: Array,
+      repos: Array,
       visible: {
         type: Boolean,
-        observer: '_visibleChanged',
+        observer: 'visibleChanged',
       },
-
-      route: Object,
-      _routeData: Object,
-      _routeMatches: Boolean,
-
-      selectedAddonObject: {
-        type: Object,
-        computed: 'computeActiveAddon(addons, _routeData.addon)',
-      },
-
-      addons: {
-        type: Array,
-        value: [],
-      },
-
-      repos: {
-        type: Array,
-        value: []
-      },
-
-      supervisorInfo: {
-        type: Object,
-      }
     };
   }
 
@@ -86,52 +79,60 @@ class HassioAddonStore extends Polymer.Element {
 
   apiCalled(ev) {
     if (ev.detail.success) {
-      this._loadData();
+      this.loadData();
     }
   }
 
-  _visibleChanged(visible) {
+  sortRepos(a, b) {
+    if (a.slug === 'local') {
+      return -1;
+    } else if (b.slug === 'local') {
+      return 1;
+    } else if (a.slug === 'core') {
+      return -1;
+    } else if (b.slug === 'core') {
+      return 1;
+    }
+    return a.name < b.name ? -1 : 1;
+  }
+
+  computeAddons(repo) {
+    return this.addons.filter(function (addon) {
+      return addon.repository === repo;
+    });
+  }
+
+  visibleChanged(visible) {
     if (visible) {
-      this._loadData();
+      this.loadData();
     }
   }
 
-  _loadData() {
+  loadData() {
     this.hass.callApi('get', 'hassio/addons')
-      .then(function (info) {
+      .then((info) => {
         this.addons = info.data.addons;
         this.repos = info.data.repositories;
-      }.bind(this), function () {
+      }, () => {
         this.addons = [];
         this.repos = [];
-      }.bind(this));
+      });
   }
 
-  computeActiveAddon(addons, selectedAddon) {
-    for (var i = 0; i < addons.length; i++) {
-      if (addons[i].slug === selectedAddon) {
-        return addons[i];
-      }
-    }
-    return null;
-  }
-
-  computeActiveRepo(repos, selectedAddonObject) {
-    if (!selectedAddonObject) return null;
-
-    for (var i = 0; i < repos.length; i++) {
-      if (repos[i].slug === selectedAddonObject.repository) {
-        return repos[i];
-      }
-    }
-    return null;
-  }
 
   refreshData() {
     this.hass.callApi('post', 'hassio/addons/reload')
-      .then(function () {
-        this._loadData();
-      }.bind(this));
+      .then(() => {
+        this.loadData();
+      });
+  }
+
+  refreshTapped() {
+    this.fire('hassio-store-refresh');
+  }
+
+  backTapped() {
+    history.back();
   }
 }
 

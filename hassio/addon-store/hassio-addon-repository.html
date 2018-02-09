@@ -1,45 +1,46 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
 
+<link rel='import' href='../../src/components/hassio-card-content.html'>
+<link rel='import' href='../../src/resources/hassio-style.html'>
+
 <dom-module id="hassio-addon-repository">
   <template>
-    <style include="iron-flex ha-style">
-      :host,
+    <style include="iron-flex ha-style hassio-style">
       paper-card {
-        display: block;
-      }
-
-      paper-item {
         cursor: pointer;
       }
+      a.repo {
+        display: block;
+        color: var(--primary-text-color);
+      }
     </style>
-    <paper-card heading='[[repo.name]]'>
-      <template is='dom-if' if='[[computeShowIntro(repo)]]'>
-        <div class='card-content'>
-          <template is='dom-if' if='[[repo.maintainer]]'>
-            Maintained by [[repo.maintainer]].
-          </template>
-          <template is='dom-if' if='[[repo.url]]'>
-            &nbsp;
-            <a href='[[repo.url]]' target='_blank'>Visit repository website</a>.
-          </template>
+    <template is='dom-if' if='[[addons.length]]'>
+      <div class='card-group'>
+        <div class='title'>
+          [[repo.name]]
+          <div class='description'>
+            Maintained by [[repo.maintainer]]
+            <a class='repo' href='[[repo.url]]' target='_blank'>[[repo.url]]</a>
+          </div>
         </div>
-      </template>
-
-      <template is='dom-repeat' items='[[addons]]' as='addon'>
-        <paper-item>
-          <paper-item-body two-line on-tap='addonTapped'>
-            <div>[[addon.name]]</div>
-            <div secondary>[[addon.description]]</div>
-          </paper-item-body>
-          [[computeInstallStatus(addon)]]
-        </paper-item>
-      </template>
-    </paper-card>
+        <template is='dom-repeat' items='[[addons]]' as='addon' sort='sortAddons'>
+          <paper-card on-click='addonTapped'>
+            <div class='card-content'>
+              <hassio-card-content
+                title='[[addon.name]]'
+                description='[[addon.description]]'
+                icon='[[computeIcon(addon)]]'
+                icon-title='[[computeIconTitle(addon)]]'
+                icon-class='[[computeIconClass(addon)]]'
+              ></hassio-card-content>
+            </div>
+          </paper-card>
+        </template>
+      </div>
+    </template>
   </template>
 </dom-module>
 
@@ -49,31 +50,31 @@ class HassioAddonRepository extends window.hassMixins.EventsMixin(Polymer.Elemen
 
   static get properties() {
     return {
-      repo: {
-        type: Object,
-      },
-
-      addons: {
-        type: Array,
-      },
+      repo: Object,
+      addons: Array,
     };
   }
 
-  computeShowIntro(repo) {
-    return repo.url || repo.maintainer;
+  sortAddons(a, b) {
+    return a.name < b.name ? -1 : 1;
   }
 
-  computeInstallStatus(addon) {
-    if (!addon.installed) {
-      return 'Not installed';
-    } else if (addon.installed !== addon.version) {
-      return addon.installed + ' (update available)';
-    }
-    return addon.installed;
+  computeIcon(addon) {
+    return addon.installed && addon.installed !== addon.version ? 'mdi:arrow-up-bold-circle' : 'mdi:puzzle';
+  }
+
+  computeIconTitle(addon) {
+    if (addon.installed) return addon.installed !== addon.version ? 'New version available' : 'Add-on is installed';
+    return 'Add-on is not installed';
+  }
+
+  computeIconClass(addon) {
+    if (addon.installed) return addon.installed !== addon.version ? 'update' : 'installed';
+    return '';
   }
 
   addonTapped(ev) {
-    history.pushState(null, null, '/hassio/store/' + this.addons[ev.model.index].slug);
+    history.pushState(null, null, '/hassio/addon/' + ev.model.addon.slug);
     this.fire('location-changed');
   }
 }
