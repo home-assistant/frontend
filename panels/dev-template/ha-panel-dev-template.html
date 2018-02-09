@@ -83,7 +83,7 @@
             <li><a href='https://home-assistant.io/topics/templating/' target='_blank'>Home Assistant template extensions</a></li>
           </ul>
           <paper-textarea
-            label="Template Editor"
+            label="Template editor"
             value='{{template}}'
             autofocus
           ></paper-textarea>
@@ -143,15 +143,15 @@ The temperature is {{ my_test_json.temperature }} {{ my_test_json.unit }}.
       is_state("device_tracker.anne_therese", "home") -%}
   You are both home, you silly
 {%- else -%}
-  Anne Therese is at {{ states("device_tracker.anne_therese") }} and  +
-Paulus is at {{ states("device_tracker.paulus") }}
+  Anne Therese is at {{ states("device_tracker.anne_therese") }}
+  Paulus is at {{ states("device_tracker.paulus") }}
 {%- endif %}
 
 For loop example:
 {% for state in states.sensor -%}
   {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}
   {{ state.name | lower }} is {{state.state_with_unit}}
-{%- endfor -%}.`,
+{%- endfor %}.`,
         /* eslint-enable max-len */
         observer: 'templateChanged',
       },
