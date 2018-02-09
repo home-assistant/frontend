@@ -1,0 +1,135 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+
+<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item-body.html'>
+
+<link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
+<link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
+<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+
+<link rel='import' href='../../src/components/ha-menu-button.html'>
+<link rel='import' href='../../src/resources/ha-style.html'>
+
+
+<dom-module id='ha-panel-calendar'>
+  <template>
+    <style include='ha-style'>
+      .event-active .row {
+        color: var(--google-green-500);
+        font-weight: bold;
+      }
+    </style>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Calendar</div>
+        </app-toolbar>
+      </app-header>
+      <div class='content'>
+        <template is='dom-repeat' items='[[_platforms]]' as="platform">
+          <paper-card heading='[[platform.name]]'>
+            <div class='card-content'>
+              <template is='dom-if' if='[[!platform.events]]'>
+                Calendar has no events
+              </template>
+              <template is='dom-repeat' items='[[platform.events]]' as='event' sort="sortEvents">
+                <paper-item disabled='[[eventPassed(event)]]' class$="[[checkActive(event)]]">
+                  <paper-item-body style="width:100%" two-line>
+                    <div class="row">
+                      <div>[[event.message]]</div>
+                    </div>
+                    <div secondary>
+                      <span class="date">[[event.start]] - [[event.end]]</span>
+                    </div>
+                  </paper-item-body>
+                </paper-item>
+              </template>
+            </div>
+          </template>
+        </paper-card>
+      </div>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+class HaPanelCalendar extends Polymer.Element {
+  static get is() { return 'ha-panel-calendar'; }
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
+
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
+
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
+
+      _platforms: {
+        type: Array,
+        notify: true,
+        reflectToAttribute: true
+      },
+
+      _events: {
+        type: Object,
+      },
+    };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.hassChanged = this.hassChanged.bind(this);
+    this.fetchPlatforms().then(function (platforms) {
+      this._platforms = platforms.map(function (platform) {
+        return { name: platform };
+      });
+
+      this.hassChanged();
+    }.bind(this));
+  }
+
+  hassChanged() {
+    if (this._platforms) {
+      this._platforms.forEach(function (platform, index) {
+        this.fetchEvents(platform.name).then(function (events) {
+          platform.events = events;
+          this.notifyPath('_platforms.' + index + '.events');
+        }.bind(this));
+      }.bind(this));
+    }
+  }
+
+  fetchPlatforms() {
+    return this.hass.callApi('GET', 'calendar/platforms');
+  }
+
+  fetchEvents(platform) {
+    return this.hass.callApi('GET', 'calendar/events/' + platform);
+  }
+
+  sortEvents(a, b) {
+    return new Date(a.start) - new Date(b.start);
+  }
+
+  eventPassed(event) {
+    return (new Date(event.start) < new Date() && new Date(event.end) < new Date());
+  }
+
+  checkActive(event) {
+    return (new Date(event.start) < new Date() && new Date(event.end) > new Date()) ? 'event-active' : '';
+  }
+}
+
+customElements.define(HaPanelCalendar.is, HaPanelCalendar);
+
+</script>
