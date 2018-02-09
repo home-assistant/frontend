@@ -199,11 +199,11 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
   }
 
-    handlePageSelected(ev) {
-    var page = ev.detail.item.getAttribute('page-name') || null;
-    var current = this.routeData.page;
+  handlePageSelected(ev) {
+    const page = ev.detail.item.getAttribute('page-name') || null;
+    const current = this.routeData.page;
     if (page !== current) {
-      var path = '/hassio';
+      let path = '/hassio';
       if (page) {
         path += '/' + page;
       }

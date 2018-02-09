@@ -18,7 +18,7 @@
     </style>
     <paper-icon-button
       icon='mdi:refresh'
-      on-tap='refreshLog'
+      on-tap='refreshTapped'
     ></paper-icon-button>
     <pre class='content'>[[log]]</pre>
   </template>
@@ -33,7 +33,7 @@ class HassioSupervisor extends Polymer.Element {
       hass: Object,
       visible: {
         type: Boolean,
-        observer: '_visibleChanged',
+        observer: 'visibleChanged',
       },
       log: {
         type: String,
@@ -42,23 +42,23 @@ class HassioSupervisor extends Polymer.Element {
     };
   }
 
-  _visibleChanged(visible) {
+  visibleChanged(visible) {
     if (visible) {
-      this._loadData();
+      this.loadData();
     }
   }
 
-  _loadData() {
+  loadData() {
     this.hass.callApi('get', 'hassio/supervisor/logs')
-      .then(info => {
+      .then((info) => {
         this.log = info;
       }, () => {
         this.log = 'Error fetching logs';
       });
   }
 
-  _refreshTapped() {
-    this._loadData();
+  refreshTapped() {
+    this.loadData();
   }
 }
 
