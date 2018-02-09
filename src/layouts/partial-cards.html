@@ -113,7 +113,7 @@
           columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
-          ordered-groups='[[orderedGroups]]'
+          ordered-group-entities='[[orderedGroupEntities]]'
         ></ha-cards>
 
         <template is='dom-repeat' items='[[views]]'>
@@ -123,7 +123,7 @@
             columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
-            ordered-groups='[[orderedGroups]]'
+            ordered-group-entities='[[orderedGroupEntities]]'
           ></ha-cards>
         </template>
 
@@ -198,9 +198,9 @@
           computed: 'computeViewStates(currentView, hass, defaultView)',
         },
 
-        orderedGroups: {
+        orderedGroupEntities: {
           type: Array,
-          computed: 'computeOrderedGroups(currentView, hass, defaultView)',
+          computed: 'computeOrderedGroupEntities(currentView, hass, defaultView)',
         },
 
         showTabs: {
@@ -372,19 +372,19 @@
     /*
       Compute the ordered list of groups for this view
     */
-    computeOrderedGroups(currentView, hass, defaultView) {
+    computeOrderedGroupEntities(currentView, hass, defaultView) {
       if (!this.isView(currentView, defaultView)) {
         return null;
       }
 
-      var orderedGroups = {};
+      var orderedGroupEntities = {};
       var entitiesList = hass.states[currentView || DEFAULT_VIEW_ENTITY_ID].attributes.entity_id;
 
       for (var i = 0; i < entitiesList.length; i++) {
-        orderedGroups[entitiesList[i]] = i;
+        orderedGroupEntities[entitiesList[i]] = i;
       }
 
-      return orderedGroups;
+      return orderedGroupEntities;
     }
   }
 
