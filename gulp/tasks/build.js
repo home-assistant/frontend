@@ -36,6 +36,7 @@ function build(es6) {
     stripImportsStrategy([
       'bower_components/font-roboto/roboto.html',
       'bower_components/paper-styles/color.html',
+      'src/resources/ha-chart-scripts.html',
     ]),
     stripAllButEntrypointStrategy('panels/hassio/ha-panel-hassio.html')
   ]);
