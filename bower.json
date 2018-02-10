@@ -55,7 +55,10 @@
     "vaadin-combo-box": "vaadin/vaadin-combo-box#^3.0.2",
     "vaadin-date-picker": "vaadin/vaadin-date-picker#^2.0.0",
     "web-animations-js": "^2.2.5",
-    "webcomponentsjs": "^1.0.10"
+    "webcomponentsjs": "^1.0.10",
+    "chart.js": "~2.7.1",
+    "moment": "^2.20.0",
+    "chartjs-chart-timeline": "fanthos/chartjs-chart-timeline#^0.1.3"
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"
