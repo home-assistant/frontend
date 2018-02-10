@@ -21,7 +21,7 @@
           bottom: 0;
           left: 0;
           right: 0;
-          overflow: scroll;
+          overflow: no-display;
           border-bottom-left-radius: 0;
           border-bottom-right-radius: 0;
         }
@@ -31,9 +31,7 @@
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
     <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
       <h2>{{confirmationObj.title}}</h2>
-      <paper-dialog-scrollable>
-        {{confirmationObj.message}}
-      </paper-dialog-scrollable>
+      <p>{{confirmationObj.message}}</p>
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
         <paper-button dialog-confirm autofocus>Accept</paper-button>
