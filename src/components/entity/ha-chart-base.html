@@ -1,0 +1,484 @@
+<link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../resources/ha-chart-scripts.html'>
+
+<dom-module id="ha-chart-base">
+  <template>
+    <style>
+      .chartHeader {
+        padding: 6px 0 0 0;
+      }
+      .chartHeader div {
+        display: inline-block;
+        vertical-align: top;
+      }
+      .chartTitle {
+        margin: 0 12px 0 8px;
+      }
+      :root{
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+      .chartTooltip {
+        opacity: 1;
+        position: absolute;
+        background: rgba(0, 0, 0, .7);
+        color: white;
+        border-radius: 3px;
+        pointer-events: none;
+        transform: translate(-50%, 0);
+        z-index: 1000;
+        width: 200px;
+      }
+      .chartLegend ul,
+      .chartTooltip ul {
+        display: inline-block;
+        padding: 0 0px;
+        margin: 0 0 8px 0;
+        width: 100%
+      }
+      .chartTooltip li {
+        display: block;
+        white-space: pre-line;
+      }
+      .chartTooltip .title {
+        text-align: center;
+      }
+      .chartLegend li {
+        display: inline-block;
+        padding: 0 5px;
+        max-width: 49%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+      .chartLegend li.hidden {
+        text-decoration: line-through;
+      }
+      .chartLegend em,
+      .chartTooltip em {
+        border-radius: 5px;
+        display: inline-block;
+        height: 10px;
+        margin-right: 6px;
+        width: 10px;
+      }
+    </style>
+    <template is="dom-if" if="[[unit]]">
+      <div class="chartHeader">
+        <div class="chartTitle">[[unit]]</div>
+        <div class="chartLegend">
+          <ul>
+            <template is="dom-repeat" items="[[metas]]">
+              <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[item.hidden]]">
+                <em style$="background-color:[[item.bgColor]]"></em>
+                [[item.label]]
+              </li>
+            </template>
+          </ul>
+        </div>
+      </div>
+    </template>
+    <div id="chartTarget" style="height:40px; width:100%">
+      <canvas id="chartCanvas"></canvas>
+      <div class$="chartTooltip [[tooltip.yAlign]]"
+      style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px">
+        <div class="title">[[tooltip.title]]</div>
+        <div>
+          <ul >
+            <template is="dom-repeat" items="[[tooltip.lines]]">
+              <li><em style$="background-color:[[item.bgColor]]"></em>[[item.text]]</li>
+            </template>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </template>
+</dom-module>
+<script>
+// eslint-disable-next-line no-unused-vars
+/* global Chart moment Color */
+{
+  let SCRIPT_LOADED = window.HASS_DEV;
+
+  class HaChartBase extends Polymer.Element {
+    get chart() {
+      return this._chart;
+    }
+    static get is() { return 'ha-chart-base'; }
+    static get properties() {
+      return {
+        publish: {
+          type: Boolean,
+          observer: 'onPropsChange'
+        },
+        data: {
+          type: Object,
+          observer: 'onPropsChange'
+        },
+      };
+    }
+    connectedCallback() {
+      super.connectedCallback();
+      this._isAttached = true;
+      this.set('tooltip', {
+        opacity: '0',
+        left: '0',
+        top: '0',
+        xPadding: '0',
+        yPadding: '0'
+      });
+      if (!this._chart) {
+        this.onPropsChange();
+      }
+      this._resizeListener = () => {
+        this._debouncer = Polymer.Debouncer.debounce(
+          this._debouncer,
+          Polymer.Async.timeOut.after(10),
+          () => {
+            if (this._isAttached) {
+              this.resizeChart();
+            }
+          }
+        );
+      };
+      window.addEventListener('resize', this._resizeListener);
+
+      if (!SCRIPT_LOADED) {
+        Polymer.importHref(
+          `${window.HASS_ROOT}/ha-chart-scripts.html`,
+          () => {
+            SCRIPT_LOADED = true;
+            this.onPropsChange();
+          },
+        );
+      }
+    }
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this._isAttached = false;
+      window.removeEventListener('resize', this._resizeListener);
+
+      if (this._resizeTimer !== undefined) {
+        clearInterval(this._resizeTimer);
+        this._resizeTimer = undefined;
+      }
+    }
+    onPropsChange() {
+      if (!this._isAttached || !SCRIPT_LOADED || !this.publish || !this.data) {
+        return;
+      }
+      this.drawChart();
+    }
+    _customTooltips(tooltip) {
+      // Hide if no tooltip
+      if (tooltip.opacity === 0) {
+        this.set(['tooltip', 'opacity'], 0);
+        return;
+      }
+      // Set caret Position
+      if (tooltip.yAlign) {
+        this.set(['tooltip', 'yAlign'], tooltip.yAlign);
+      } else {
+        this.set(['tooltip', 'yAlign'], 'no-transform');
+      }
+      const title = tooltip.title ? tooltip.title[0] || '' : '';
+      let str1;
+      if (title instanceof Date) {
+        str1 = moment(title).format('L LTS');
+      } else if (title instanceof moment) {
+        str1 = title.format('L LTS');
+      } else {
+        str1 = title;
+      }
+      this.set(['tooltip', 'title'], str1);
+      const bodyLines = tooltip.body.map(n => n.lines);
+
+      // Set Text
+      if (tooltip.body) {
+        this.set(['tooltip', 'lines'], bodyLines.map((body, i) => {
+          const colors = tooltip.labelColors[i];
+          return {
+            color: colors.borderColor,
+            bgColor: colors.backgroundColor,
+            text: body.join('\n'),
+          };
+        }));
+      }
+      const parentWidth = this.$.chartTarget.clientWidth;
+      let positionX = tooltip.caretX;
+      const positionY = this._chart.canvas.offsetTop + tooltip.caretY;
+      if (tooltip.caretX + 100 > parentWidth) {
+        positionX = parentWidth - 100;
+      } else if (tooltip.caretX < 100) {
+        positionX = 100;
+      }
+      positionX += this._chart.canvas.offsetLeft;
+      // Display, position, and set styles for font
+      this.set(['tooltip', 'opacity'], 1);
+      this.set(['tooltip', 'left'], positionX + 'px');
+      this.set(['tooltip', 'top'], positionY + 'px');
+      this.set(['tooltip', 'yPadding'], tooltip.yPadding);
+      this.set(['tooltip', 'xPadding'], tooltip.xPadding);
+    }
+    _legendClick(event) {
+      event = event || window.event;
+      let target = event.target || event.srcElement;
+      while (target.nodeName !== 'LI') {
+        target = target.parentElement;
+      }
+      const index = target.getAttribute('data-lid');
+
+      const meta = this._chart.getDatasetMeta(index);
+      meta.hidden = meta.hidden === null ? !this._chart.data.datasets[index].hidden : null;
+      this.set(['metas', index, 'hidden'], this._chart.isDatasetVisible(index) ? null : 'hidden');
+      this._chart.update();
+    }
+    _drawLegend() {
+      const chart = this._chart;
+      this.set('metas', this._chart.data.datasets.map((x, i) => ({
+        label: x.label,
+        color: x.color,
+        bgColor: x.backgroundColor,
+        hidden: chart.isDatasetVisible(i)
+      })));
+      this.set('unit', this.data.unit);
+    }
+    drawChart() {
+      const data = this.data.data;
+      const ctx = this.$.chartCanvas;
+
+      if ((!data.datasets || !data.datasets.length) && !this._chart) {
+        return;
+      }
+      if (this.data.type !== 'timeline' && data.datasets.length > 0) {
+        let cnt = 0;
+        cnt = data.datasets.length;
+        const colors = this.constructor.getColorList(cnt);
+        for (let loopI = 0; loopI < cnt; loopI++) {
+          data.datasets[loopI].borderColor = colors[loopI].rgbString();
+          data.datasets[loopI].backgroundColor = colors[loopI].alpha(0.6).rgbaString();
+        }
+      }
+
+      if (this._chart) {
+        this._customTooltips({ opacity: 0 });
+        this._chart.data = data;
+        this._chart.update({ duration: 0 });
+        if (this.isTimeline !== true && this.data.legend === true) {
+          this._drawLegend();
+        }
+        this.resizeChart();
+      } else {
+        if (!data.datasets) {
+          return;
+        }
+        this._customTooltips({ opacity: 0 });
+        let options = {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: {
+            duration: 0,
+          },
+          hover: {
+            animationDuration: 0,
+          },
+          responsiveAnimationDuration: 0,
+          tooltips: {
+            enabled: false,
+            custom: this._customTooltips.bind(this),
+          },
+          legend: {
+            display: false,
+          },
+          line: {
+            spanGaps: true,
+          },
+          elements: {
+            font: "12px 'Roboto', 'sans-serif'",
+          },
+          ticks: {
+            fontFamily: "'Roboto', 'sans-serif'",
+          }
+        };
+        options = Chart.helpers.merge(options, this.data.options);
+        if (this.data.type === 'timeline') {
+          this.set('isTimeline', true);
+          if (this.data.colors !== undefined) {
+            this._colorFunc = this.constructor.getColorGenerator(
+              this.data.colors.staticColors,
+              this.data.colors.staticColorIndex
+            );
+          }
+          if (this._colorFunc !== undefined) {
+            options.colorFunction = this._colorFunc;
+          }
+          if (data.datasets.length === 1) {
+            if (options.scales.yAxes[0].ticks) {
+              options.scales.yAxes[0].ticks.display = false;
+            } else {
+              options.scales.yAxes[0].ticks = { display: false };
+            }
+          }
+        }
+        this.$.chartTarget.style.height = '160px';
+        this.$.chartTarget.height = '160px';
+        const chartData = {
+          type: this.data.type,
+          data: this.data.data,
+          options: options
+        };
+        // Async resize after dom update
+        this._chart = new Chart(ctx, chartData);
+        if (this.isTimeline !== true && this.data.legend === true) {
+          this._drawLegend();
+        }
+        this.resizeChart();
+      }
+    }
+    resizeChart() {
+      if (!this._chart) return;
+      // Chart not ready
+      if (this.$.chartTarget.clientWidth === 0) {
+        if (this._resizeTimer === undefined) {
+          this._resizeTimer = setInterval(this.resizeChart.bind(this), 10);
+          return;
+        }
+      }
+
+      clearInterval(this._resizeTimer);
+      this._resizeTimer = undefined;
+
+      this._resizeChart();
+    }
+
+    _resizeChart() {
+      const chartTarget = this.$.chartTarget;
+
+      const options = this.data;
+      const data = options.data;
+
+      if (data.datasets.length === 0) {
+        return;
+      }
+
+      if (!this.isTimeline) {
+        this._chart.resize();
+        return;
+      }
+
+      // Recalculate chart height for Timeline chart
+      var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
+      if (axis && axis.height > 0) {
+        this._axisHeight = axis.height;
+      }
+      if (!this._axisHeight) {
+        chartTarget.style.height = '100px';
+        chartTarget.height = '100px';
+        this._chart.resize();
+        axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
+        if (axis && axis.height > 0) {
+          this._axisHeight = axis.height;
+        }
+      }
+      if (this._axisHeight) {
+        const cnt = data.datasets.length;
+        const targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
+        if (chartTarget.style.height !== targetHeight) {
+          chartTarget.style.height = targetHeight;
+          chartTarget.height = targetHeight;
+        }
+        this._chart.resize();
+      }
+    }
+
+    // Get HSL distributed color list
+    static getColorList(count) {
+      let processL = false;
+      if (count > 10) {
+        processL = true;
+        count = Math.ceil(count / 2);
+      }
+      const h1 = 360 / count;
+      const result = [];
+      for (let loopI = 0; loopI < count; loopI++) {
+        result[loopI] = Color().hsl(h1 * loopI, 80, 38);
+        if (processL) {
+          result[loopI + count] = Color().hsl(h1 * loopI, 80, 62);
+        }
+      }
+      return result;
+    }
+    static getColorGenerator(staticColors, startIndex) {
+      // Known colors for static data,
+      // should add for very common state string manually.
+      // Distribute the color data like complete binary tree
+      function getColorRange(x) {
+        if (x === 0) return 0;
+        if (x === 1) return 0.5;
+        const y = Math.floor(Math.log(x) / Math.LN2);
+        // eslint-disable-next-line no-restricted-properties
+        const e = Math.pow(2, y);
+        const n = x - e;
+        let a;
+        if (y % 2 === 1) {
+          if (n % 2 === 0) {
+            a = n + 1;
+          } else {
+            a = n + e;
+          }
+        } else {
+          // eslint-disable-next-line no-lonely-if
+          if (n % 2 === 0) {
+            a = e - n - 1;
+          } else {
+            a = (e + e) - n;
+          }
+        }
+        return a / (e + e);
+      }
+      function getColorIndex(idx) {
+        const hIndex = Math.floor(idx / 6);
+        const h1 = getColorRange(hIndex);
+        const c1 = (h1 + (idx % 3)) * 120;
+        const l1 = idx % 6 < 3 ? 62 : 38;
+        return Color().hsl(c1, 75, l1);
+      }
+      const colorDict = {};
+      let colorIndex = 0;
+      if (startIndex > 0) colorIndex = startIndex;
+      if (staticColors) {
+        Object.keys(staticColors).forEach((c) => {
+          const c1 = staticColors[c];
+          if (isFinite(c1)) {
+            colorDict[c.toLowerCase()] = getColorIndex(c1);
+          } else {
+            colorDict[c.toLowerCase()] = Color(staticColors[c]);
+          }
+        });
+      }
+      // Custom color assign
+      function getColor(__, data) {
+        let ret;
+        const name = data[3];
+        if (name === null) return Color().hsl(0, 40, 38);
+        if (name === undefined) return Color().hsl(120, 40, 38);
+        const name1 = name.toLowerCase();
+        if (ret === undefined) {
+          ret = colorDict[name1];
+        }
+        if (ret === undefined) {
+          ret = getColorIndex(colorIndex);
+          colorIndex++;
+          colorDict[name1] = ret;
+        }
+        return ret;
+      }
+      return getColor;
+    }
+  }
+  customElements.define(HaChartBase.is, HaChartBase);
+}
+</script>

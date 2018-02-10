@@ -27,6 +27,10 @@ cp build/panels/*.html $OUTPUT_DIR/panels
 mkdir $OUTPUT_DIR_ES5/panels
 cp build-es5/panels/*.html $OUTPUT_DIR_ES5/panels
 
+# Chart code
+cp build/src/resources/ha-chart-scripts.html $OUTPUT_DIR
+cp build-es5/src/resources/ha-chart-scripts.html $OUTPUT_DIR_ES5
+
 # Translations
 cp -r build-translations/output $OUTPUT_DIR/translations
 
