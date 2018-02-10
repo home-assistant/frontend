@@ -11,33 +11,43 @@
       paper-icon-button {
         color: var(--primary-text-color);
         transition: color .5s;
+        cursor: pointer;
+        padding: 6px;
       }
 
       paper-icon-button[state-active] {
         color: var(--primary-color);
       }
 
-      paper-toggle-button {
-        cursor: pointer;
-        --paper-toggle-button-label-spacing: 0;
-        padding: 13px 5px;
-        margin: -4px -5px;
+      paper-icon-button.openbutton {
+        padding: 5px;
       }
     </style>
 
-    <paper-button-group>
-      <paper-icon-button icon="mdi:lock-open" on-tap="unlock" state-active$='[[!isLocked]]'>Unlock
-      </paper-icon-button>
-      <paper-icon-button icon="mdi:lock" on-tap="lock" state-active$='[[isLocked]]'>Lock</paper-icon-button>
-      <template is='dom-if' if='[[isOpenable]]'>
-        <paper-icon-button icon="mdi:door-open" on-tap="open">Open</paper-icon-button>
+    <template is='dom-if' if='[[isOpenable]]'>
+      <paper-icon-button class="openbutton" icon="mdi:door-open" on-tap="open">Open</paper-icon-button>
+    </template>
+
+    <template is='dom-if' if='[[stateObj.attributes.assumed_state]]'>
+      <paper-icon-button icon="mdi:lock-open" on-tap="unlock" state-active$='[[!isLocked]]'></paper-icon-button>
+      <paper-icon-button icon="mdi:lock" on-tap="lock" state-active$='[[isLocked]]'></paper-icon-button>
+    </template>
+
+    <template is='dom-if' if='[[!stateObj.attributes.assumed_state]]'>
+      <template is='dom-if' if='[[isLocked]]'>
+        <paper-icon-button icon="mdi:lock-open" on-tap="unlock"></paper-icon-button>
       </template>
-    </paper-button-group>
+      <template is='dom-if' if='[[!isLocked]]'>
+        <paper-icon-button icon="mdi:lock" on-tap="lock"></paper-icon-button>
+      </template>
+    </template>
+
   </template>
 </dom-module>
 
 <script>
-  class HaEntityLock extends Polymer.Element {
+  class HaEntityLock extends
+    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
     static get is() {
       return 'ha-entity-lock';
     }
@@ -98,7 +108,17 @@
     }
 
     open() {
-      this.callService('open');
+      const that = this;
+      // TODO: This needs translation.
+      this.fire('hass-confirmation', {
+        confirmationObj: {
+          title: 'Really open the door latch?',
+          message: 'Keep in mind that you can only close the door physically.',
+          acceptHandler: function () {
+            that.callService('open');
+          }
+        }
+      });
     }
 
     computeIsLocked(stateObj) {
