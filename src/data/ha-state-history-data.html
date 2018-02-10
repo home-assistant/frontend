@@ -35,7 +35,8 @@
           entity_id: stateInfo[0].entity_id,
           data: stateInfo
             .map(state => ({
-              state: window.hassUtil.computeStateDisplay(localize, state, language),
+              state_localize: window.hassUtil.computeStateDisplay(localize, state, language),
+              state: state.state,
               last_changed: state.last_changed,
             }))
             .filter((element, index, arr) => {
@@ -140,7 +141,7 @@
       super.connectedCallback();
       this.filterChanged(
         this.filterType, this.entityId, this.startTime, this.endTime,
-        this.cacheConfig, this.localize, this.language
+        this.cacheConfig
       );
     }
 
@@ -164,6 +165,7 @@
     filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language) {
       if (!this.hass) return;
       if (cacheConfig && !cacheConfig.cacheKey) return;
+      if (!localize || !language) return;
       this._madeFirstCall = true;
       let data;
 

@@ -82,9 +82,11 @@
           </paper-dropdown-menu>
         </div>
         <state-history-charts
+          hass='[[hass]]'
           history-data="[[stateHistoryOutput]]"
           is-loading-data="[[isLoadingData]]"
-          end-time="[[endTime]]">
+          end-time="[[endTime]]"
+          no-single>
         </state-history-charts>
       </div>
     </app-header-layout>
