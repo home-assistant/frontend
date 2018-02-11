@@ -58,7 +58,6 @@ function getRollupInputOptions(es6) {
           __DEMO__: JSON.stringify(DEMO),
           __BUILD__: JSON.stringify(es6 ? 'latest' : 'es5'),
           __VERSION__: JSON.stringify(VERSION),
-          __ROOT__: JSON.stringify(es6 ? 'frontend_latest' : 'frontend_es5'),
         },
       }),
     ],
