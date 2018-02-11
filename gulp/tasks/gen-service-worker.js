@@ -30,12 +30,14 @@ const staticFingerprinted = [
 const staticFingerprintedEs6 = [
   'core.js',
   'frontend.html',
+  'ha-chart-scripts.html',
 ];
 
 const staticFingerprintedEs5 = [
   'compatibility.js',
   'core.js',
   'frontend.html',
+  'ha-chart-scripts.html',
 ];
 
 // These panels will always be registered inside HA and thus can
