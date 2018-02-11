@@ -1,5 +1,4 @@
 <link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
-<link rel='import' href='../../resources/ha-chart-scripts.html'>
 
 <dom-module id="ha-chart-base">
   <template>
@@ -148,7 +147,7 @@
 
       if (!SCRIPT_LOADED) {
         Polymer.importHref(
-          `${window.HASS_ROOT}/ha-chart-scripts.html`,
+          window.CHART_SCRIPT,
           () => {
             SCRIPT_LOADED = true;
             this.onPropsChange();
