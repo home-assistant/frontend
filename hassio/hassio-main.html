@@ -1,36 +1,15 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel='import' href='../bower_components/app-layout/app-header-layout/app-header-layout.html'>
-<link rel='import' href='../bower_components/app-layout/app-header/app-header.html'>
-<link rel='import' href='../bower_components/app-layout/app-toolbar/app-toolbar.html'>
-<link rel='import' href='../bower_components/paper-icon-button/paper-icon-button.html'>
-<link rel='import' href='../bower_components/paper-tabs/paper-tabs.html'>
-<link rel='import' href='../bower_components/paper-tabs/paper-tab.html'>
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<link rel='import' href='../src/components/ha-menu-button.html'>
 <link rel="import" href="../src/layouts/hass-loading-screen.html">
-<link rel='import' href='../src/util/hass-mixins.html'>
 <link rel='import' href='../src/util/hass-util.html'>
-<link rel='import' href='../src/resources/ha-style.html'>
 
-<link rel="import" href="./dashboard/hassio-dashboard.html">
-<link rel="import" href="./advanced/hassio-advanced.html">
-<link rel="import" href="./addon-view/hassio-addon-view.html">
-<link rel="import" href="./addon-store/hassio-addon-store.html">
-<link rel="import" href="./supervisor/hassio-supervisor.html">
-<link rel="import" href="./snapshots/hassio-snapshots.html">
-<link rel="import" href="./hassio-data.html">
+<link rel='import' href='./hassio-data.html'>
+<link rel='import' href='./hassio-navigation.html'>
+<link rel='import' href='./hassio-pages.html'>
 
 <dom-module id="hassio-main">
   <template>
-    <style include='iron-flex iron-positioning ha-style'>
-      paper-tabs {
-        margin-left: 12px;
-        --paper-tabs-selection-bar-color: #FFF;
-        text-transform: uppercase;
-      }
-    </style>
     <app-route
       route='[[route]]'
       pattern='/:page'
@@ -50,91 +29,30 @@
         show-menu='[[showMenu]]'
       ></hass-loading-screen>
     </template>
+
     <template is='dom-if' if='[[loaded]]'>
-      <app-header-layout has-scrolling-region>
-        <app-header fixed slot='header'>
-          <app-toolbar>            
-            <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-            <paper-icon-button
-              icon='mdi:arrow-left'
-              on-tap='backTapped'
-              hidden='[[computeHideBack(mainTitle)]]'></paper-icon-button>
-            <div main-title>[[mainTitle]]</div>
-          </app-toolbar>
-          <paper-tabs
-            scrollable
-            selected='[[routeData.page]]'
-            attr-for-selected='page-name'
-            on-iron-activate='handlePageSelected'
-          >
-            <paper-tab page-name='dashboard'>Dashboard</paper-tab>
-            <paper-tab page-name='store'>Add-on store</paper-tab>
-            <paper-tab page-name='snapshots'>Snapshots</paper-tab>
-            <paper-tab page-name='advanced'>Advanced</paper-tab>
-          </paper-tabs>
-        </app-header>
-        <iron-pages
-          selected='[[routeData.page]]'
-          attr-for-selected='page-name'
-          fallback-selection='not-found'
-          selected-attribute='visible'
-        >
-          <hassio-addon-view
-            page-name='addon'
-            route='[[route]]'
-            hass='[[hass]]'
-          ></hassio-addon-view>
-
-          <hassio-addon-store
-            page-name='store'
-            hass='[[hass]]'
-          ></hassio-addon-store>
-
-          <hassio-supervisor
-            page-name='supervisor'
-            hass='[[hass]]'
-            supervisor-info='[[supervisorInfo]]'
-          ></hassio-supervisor>
-
-          <hassio-dashboard
-            page-name='dashboard'
-            hass='[[hass]]'
-            supervisor-info='[[supervisorInfo]]'
-            hass-info='[[hassInfo]]'
-          ></hassio-dashboard>
-
-          <hassio-advanced
-            page-name='advanced'
-            hass='[[hass]]'
-            supervisor-info='[[supervisorInfo]]'
-            host-info='[[hostInfo]]'
-            hass-info='[[hassInfo]]'
-          ></hassio-advanced>
-
-          <hassio-snapshots
-            page-name='snapshots'
-            hass='[[hass]]'
-            installed-addons='[[supervisorInfo.addons]]'
-          ></hassio-snapshots>
-
-          <div
-            page-name='not-found'
-          >Page not found</div>
-        </iron-pages>
-      </app-header-layout>
+      <hassio-navigation
+        page='[[routeData.page]]'>
+        <hassio-pages
+          page='[[routeData.page]]'
+          route='[[route]]'
+          hass='[[hass]]'
+          supervisor-info='[[supervisorInfo]]'
+          hass-info='[[hassInfo]]'
+          host-info='[[hostInfo]]'
+        ></hassio-pages>
+      </hassio-navigation>
     </template>
   </template>
 </dom-module>
 
 <script>
-class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HassioMain extends Polymer.Element {
   static get is() { return 'hassio-main'; }
 
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
-      showMenu: Boolean,
       route: {
         type: Object,
         // Fake route object
@@ -152,10 +70,6 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
       loaded: {
         type: Boolean,
         computed: 'computeIsLoaded(supervisorInfo, hostInfo, hassInfo)',
-      },
-      mainTitle: {
-        type: String,
-        computed: 'computeTitle(route)',
       },
     };
   }
@@ -197,31 +111,6 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
       history.replaceState(null, null, '/hassio/dashboard');
       this.fire('location-changed');
     }
-  }
-
-  handlePageSelected(ev) {
-    const page = ev.detail.item.getAttribute('page-name') || null;
-    const current = this.routeData.page;
-    if (page !== current) {
-      let path = '/hassio';
-      if (page) {
-        path += '/' + page;
-      }
-      history.pushState(null, null, path);
-      this.fire('location-changed');
-    }
-  }
-
-  computeTitle(route) {
-    return route.path.substring(0, 7) === '/addon/' ? 'Add-on details' : 'Hass.io';
-  }
-
-  computeHideBack(mainTitle) {
-    return mainTitle === 'Hass.io';
-  }
-
-  backTapped() {
-    history.back();
   }
 }
 
