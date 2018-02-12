@@ -47,7 +47,7 @@
 </dom-module>
 
 <script>
-class HassioMain extends Polymer.Element {
+class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'hassio-main'; }
 
   static get properties() {
