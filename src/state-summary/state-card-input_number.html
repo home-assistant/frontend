@@ -57,7 +57,7 @@
         hidden='[[hiddenbox]]'
       >
       </paper-input>
-      <div class="state" hidden='[[hiddenbox]]'>[[stateObj.attributes.unit_of_measurement]]</div>
+      <div id="boxstate" class="state" hidden='[[hiddenbox]]'>[[stateObj.attributes.unit_of_measurement]]</div>
       <div id="sliderstate" class="state sliderstate" hidden='[[hiddenslider]]'>[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
     </div>
   </template>
@@ -94,6 +94,10 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
         type: Boolean,
         value: true,
       },
+      displayState: {
+        type: Boolean,
+        value: true,
+      },
       inDialog: {
         type: Boolean,
         value: false,
@@ -127,7 +131,18 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
   }
 
   hiddenState() {
-    if (this.mode !== 'slider') return;
+    if (this.mode === 'box') {
+      if (this.displayState === false) {
+        this.$.boxstate.hidden = true;
+      } else {
+        this.$.boxstate.hidden = false;
+      }
+      return;
+    }
+    if (this.displayState === false) {
+      this.$.sliderstate.hidden = true;
+      return;
+    }
     const sliderwidth = this.$.slider.offsetWidth;
     if (sliderwidth < 100) {
       this.$.sliderstate.hidden = true;
@@ -147,6 +162,7 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
       maxlength: String(newVal.attributes.max).length,
       hiddenbox: (newVal.attributes.mode !== 'box'),
       hiddenslider: (newVal.attributes.mode !== 'slider'),
+      displayState: (newVal.attributes.display_state),
     });
     if (this.mode === 'slider' && prevMode !== 'slider') {
       this.hiddenState();
