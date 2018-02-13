@@ -37,7 +37,7 @@
                 Added by: [[item.source]]
               </div>
               <div class="card-actions">
-                <paper-button on-tap='_removeEntry'>REMOVE</paper-button>
+                <paper-button on-tap='_removeEntry'>Remove</paper-button>
               </div>
             </paper-card>
           </template>
@@ -86,7 +86,6 @@
     static get properties() {
       return {
         hass: Object,
-        isWide: Boolean,
 
         flowId: {
           type: String,
