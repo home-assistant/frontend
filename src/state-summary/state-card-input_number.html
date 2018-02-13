@@ -131,15 +131,15 @@ class StateCardInputNumber extends Polymer.mixinBehaviors([
   }
 
   hiddenState() {
-    if (this.mode == 'box') {
-      if (this.displayState == false) {
+    if (this.mode === 'box') {
+      if (this.displayState === false) {
         this.$.boxstate.hidden = true;
       } else {
         this.$.boxstate.hidden = false;
       }
       return;
     }
-    if (this.displayState == false) {
+    if (this.displayState === false) {
       this.$.sliderstate.hidden = true;
       return;
     }
