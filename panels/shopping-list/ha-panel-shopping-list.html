@@ -175,9 +175,8 @@ class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(Polymer.Elemen
 
   _itemCompleteTapped(ev) {
     ev.stopPropagation();
-    var item = ev.model.item;
-    this.hass.callApi('post', 'shopping_list/item/' + item.id, {
-      complete: !item.complete
+    this.hass.callApi('post', 'shopping_list/item/' + ev.model.item.id, {
+      complete: ev.target.checked
     }).catch(() => this._fetchData());
   }
 
