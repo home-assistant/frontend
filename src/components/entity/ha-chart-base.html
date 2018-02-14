@@ -64,6 +64,9 @@
         margin-right: 6px;
         width: 10px;
       }
+      .chartZoomInline {
+        float: right;
+      }
     </style>
     <template is="dom-if" if="[[unit]]">
       <div class="chartHeader">
@@ -78,6 +81,14 @@
             </template>
           </ul>
         </div>
+        <template is="dom-if" if="[[isZoomable]]">
+          <div class="chartZoomInline">
+            <paper-icon-button
+              icon='mdi:arrow-expand-all'
+              on-tap='resetZoom'
+            ></paper-icon-button>
+          </div>
+        </template>
       </div>
     </template>
     <div id="chartTarget" style="height:40px; width:100%">
@@ -305,12 +316,14 @@
         options = Chart.helpers.merge(options, this.data.options);
         if (this.data.type === 'timeline') {
           // timeline is not zoomable, so dont capture mouse
+          this.set('isZoomable', false);
           options = Chart.helpers.merge(options, {
             pan: { enabled: false },
             zoom: { enabled: false },
           });
         } else {
           // allow free zooming&moving around
+          this.set('isZoomable', true);
           options = Chart.helpers.merge(options, {
             pan: {
               enabled: true,
@@ -415,7 +428,10 @@
     }
 
     // for chartjs-plugin-zoom
-    resetZoom() {
+    resetZoom(event = null) {
+      if (event) {
+        event.stopPropagation();
+      }
       this._chart.resetZoom();
     }
 
