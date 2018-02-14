@@ -39,6 +39,8 @@
       .has-away_mode .container-away_mode,
       .has-aux_heat .container-aux_heat,
       .has-target_temperature .container-temperature,
+      .has-target_temperature_low .container-temperature,
+      .has-target_temperature_high .container-temperature,
       .has-target_humidity .container-humidity,
       .has-operation_mode .container-operation_list,
       .has-fan_mode .container-fan_list,
@@ -104,21 +106,24 @@
     </style>
 
     <div class$='[[computeClassNames(stateObj)]]'>
-      <div class='container-on'>
-        <div class='center horizontal layout single-row'>
-          <div class='flex'>On / Off</div>
-          <paper-toggle-button
-            checked='[[onToggleChecked]]'
-            on-change='onToggleChanged'>
-          </paper-toggle-button>
+
+      <template is='dom-if' if='[[supportsOn(stateObj)]]'>
+        <div class='container-on'>
+          <div class='center horizontal layout single-row'>
+            <div class='flex'>On / Off</div>
+            <paper-toggle-button
+              checked='[[onToggleChecked]]'
+              on-change='onToggleChanged'>
+            </paper-toggle-button>
+          </div>
         </div>
-      </div>
+      </template>
 
       <div class='container-temperature'>
         <div class$='[[stateObj.attributes.operation_mode]]'>
-          <div hidden$='[[computeTargetTempHidden(stateObj)]]'>Target
+          <div hidden$='[[!supportsTemperatureControls(stateObj)]]'>Target
             Temperature</div>
-          <template is='dom-if' if='[[computeIncludeTempControl(stateObj)]]'>
+          <template is='dom-if' if='[[supportsTemperature(stateObj)]]'>
             <ha-climate-control
               value='[[stateObj.attributes.temperature]]'
               units='[[stateObj.attributes.unit_of_measurement]]'
@@ -129,7 +134,7 @@
               >
             </ha-climate-control>
           </template>
-          <template is='dom-if' if='[[computeIncludeTempRangeControl(stateObj)]]'>
+          <template is='dom-if' if='[[supportsTemperatureRange(stateObj)]]'>
             <ha-climate-control
               value='[[stateObj.attributes.target_temp_low]]'
               units='[[stateObj.attributes.unit_of_measurement]]'
@@ -154,79 +159,91 @@
         </div>
       </div>
 
-      <div class='container-humidity'>
-        <div>Target Humidity</div>
-          <div class="single-row">
-            <div class="target-humidity">[[stateObj.attributes.humidity]] %</div>
-            <paper-slider
-              class='humidity'
-              min='[[stateObj.attributes.min_humidity]]'
-              max='[[stateObj.attributes.max_humidity]]'
-              secondary-progress='[[stateObj.attributes.max_humidity]]'
-              step='1' pin
-              value='[[stateObj.attributes.humidity]]'
-              on-change='targetHumiditySliderChanged'>
-            </paper-slider>
+      <template is='dom-if' if='[[supportsHumidity(stateObj)]]'>
+        <div class='container-humidity'>
+          <div>Target Humidity</div>
+            <div class="single-row">
+              <div class="target-humidity">[[stateObj.attributes.humidity]] %</div>
+              <paper-slider
+                class='humidity'
+                min='[[stateObj.attributes.min_humidity]]'
+                max='[[stateObj.attributes.max_humidity]]'
+                secondary-progress='[[stateObj.attributes.max_humidity]]'
+                step='1' pin
+                value='[[stateObj.attributes.humidity]]'
+                on-change='targetHumiditySliderChanged'>
+              </paper-slider>
+          </div>
         </div>
-      </div>
+      </template>
 
-      <div class='container-operation_list'>
-        <div class='controls'>
-          <paper-dropdown-menu class='capitalize' label-float dynamic-align label='Operation'>
-            <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
+      <template is='dom-if' if='[[supportsOperationMode(stateObj)]]'>
+        <div class='container-operation_list'>
+          <div class='controls'>
+            <paper-dropdown-menu class='capitalize' label-float dynamic-align label='Operation'>
+              <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
+                <template is='dom-repeat'
+                          items='[[stateObj.attributes.operation_list]]'
+                          on-dom-change='handleOperationListUpdate'>
+                  <paper-item class="capitalize">[[item]]</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+        </div>
+      </template>
+
+      <template is='dom-if' if='[[supportsFanMode(stateObj)]]'>
+        <div class='container-fan_list'>
+          <paper-dropdown-menu label-float dynamic-align label='Fan Mode'>
+            <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
               <template is='dom-repeat'
-                        items='[[stateObj.attributes.operation_list]]'
-                        on-dom-change='handleOperationListUpdate'>
-                <paper-item class="capitalize">[[item]]</paper-item>
+                        items='[[stateObj.attributes.fan_list]]'
+                        on-dom-change='handleFanListUpdate'>
+                <paper-item>[[item]]</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
-      </div>
+      </template>
 
-      <div class='container-fan_list'>
-        <paper-dropdown-menu label-float dynamic-align label='Fan Mode'>
-          <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
-            <template is='dom-repeat'
-                      items='[[stateObj.attributes.fan_list]]'
-                      on-dom-change='handleFanListUpdate'>
-              <paper-item>[[item]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-
-      <div class='container-swing_list'>
-        <paper-dropdown-menu label-float dynamic-align label='Swing Mode'>
-          <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
-            <template is='dom-repeat'
-                      items='[[stateObj.attributes.swing_list]]'
-                      on-dom-change='handleSwingListUpdate'>
-              <paper-item>[[item]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-
-      <div class='container-away_mode'>
-        <div class='center horizontal layout single-row'>
-          <div class='flex'>Away Mode</div>
-          <paper-toggle-button
-            checked='[[awayToggleChecked]]'
-            on-change='awayToggleChanged'>
-          </paper-toggle-button>
+      <template is='dom-if' if='[[supportsSwingMode(stateObj)]]'>
+        <div class='container-swing_list'>
+          <paper-dropdown-menu label-float dynamic-align label='Swing Mode'>
+            <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
+              <template is='dom-repeat'
+                        items='[[stateObj.attributes.swing_list]]'
+                        on-dom-change='handleSwingListUpdate'>
+                <paper-item>[[item]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
         </div>
-      </div>
+      </template>
 
-      <div class='container-aux_heat'>
-        <div class='center horizontal layout single-row'>
-          <div class='flex'>Aux Heat</div>
-          <paper-toggle-button
-            checked='[[auxToggleChecked]]'
-            on-change='auxToggleChanged'>
-          </paper-toggle-button>
+      <template is='dom-if' if='[[supportsAwayMode(stateObj)]]'>
+        <div class='container-away_mode'>
+          <div class='center horizontal layout single-row'>
+            <div class='flex'>Away Mode</div>
+            <paper-toggle-button
+              checked='[[awayToggleChecked]]'
+              on-change='awayToggleChanged'>
+            </paper-toggle-button>
+          </div>
         </div>
-      </div>
+      </template>
+
+      <template is='dom-if' if='[[supportsAuxHeat(stateObj)]]'>
+        <div class='container-aux_heat'>
+          <div class='center horizontal layout single-row'>
+            <div class='flex'>Aux Heat</div>
+            <paper-toggle-button
+              checked='[[auxToggleChecked]]'
+              on-change='auxToggleChanged'>
+            </paper-toggle-button>
+          </div>
+        </div>
+      </template>
     </div>
   </template>
 </dom-module>
@@ -263,7 +280,6 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
         value: -1,
         observer: 'handleSwingmodeChanged',
       },
-
       awayToggleChecked: Boolean,
       auxToggleChecked: Boolean,
       onToggleChecked: Boolean,
@@ -309,7 +325,7 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.fanIndex = -1;
     if (this.stateObj.attributes.fan_list) {
       this.fanIndex =
-          this.stateObj.attributes.fan_list.indexOf(this.stateObj.attributes.fan_list);
+          this.stateObj.attributes.fan_list.indexOf(this.stateObj.attributes.fan_mode);
     }
   }
 
@@ -322,19 +338,45 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
     return 0.5;
   }
 
-  computeTargetTempHidden(stateObj) {
-    return !stateObj.attributes.temperature &&
-        !stateObj.attributes.target_temp_low &&
-        !stateObj.attributes.target_temp_high;
+  supportsTemperatureControls(stateObj) {
+    return this.supportsTemperature(stateObj) ||
+      this.supportsTemperatureRange(stateObj);
   }
 
-  computeIncludeTempRangeControl(stateObj) {
-    return stateObj.attributes.target_temp_low ||
-        stateObj.attributes.target_temp_high;
+  supportsTemperature(stateObj) {
+    return (stateObj.attributes.supported_features & 1) !== 0;
   }
 
-  computeIncludeTempControl(stateObj) {
-    return stateObj.attributes.temperature;
+  supportsTemperatureRange(stateObj) {
+    return (stateObj.attributes.supported_features & 6) !== 0;
+  }
+
+  supportsHumidity(stateObj) {
+    return (stateObj.attributes.supported_features & 8) !== 0;
+  }
+
+  supportsFanMode(stateObj) {
+    return (stateObj.attributes.supported_features & 64) !== 0;
+  }
+
+  supportsOperationMode(stateObj) {
+    return (stateObj.attributes.supported_features & 128) !== 0;
+  }
+
+  supportsSwingMode(stateObj) {
+    return (stateObj.attributes.supported_features & 512) !== 0;
+  }
+
+  supportsAwayMode(stateObj) {
+    return (stateObj.attributes.supported_features & 1024) !== 0;
+  }
+
+  supportsAuxHeat(stateObj) {
+    return (stateObj.attributes.supported_features & 2048) !== 0;
+  }
+
+  supportsOn(stateObj) {
+    return (stateObj.attributes.supported_features & 4096) !== 0;
   }
 
   computeClassNames(stateObj) {
