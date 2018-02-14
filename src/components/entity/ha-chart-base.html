@@ -98,7 +98,7 @@
 </dom-module>
 <script>
 // eslint-disable-next-line no-unused-vars
-/* global Chart moment Color */
+/* global Chart moment Color Hammer */
 {
   let SCRIPT_LOADED = false;
 
@@ -304,6 +304,27 @@
         };
         options = Chart.helpers.merge(options, this.data.options);
         if (this.data.type === 'timeline') {
+          // timeline is not zoomable, so dont capture mouse
+          options = Chart.helpers.merge(options, {
+            pan: { enabled: false },
+            zoom: { enabled: false },
+          });
+        } else {
+          // allow free zooming&moving around
+          options = Chart.helpers.merge(options, {
+            pan: {
+              enabled: true,
+              drag: true,
+              mode: 'xy',
+            },
+            zoom: {
+              enabled: true,
+              drag: false,
+              mode: 'xy',
+            }
+          });
+        }
+        if (this.data.type === 'timeline') {
           this.set('isTimeline', true);
           if (this.data.colors !== undefined) {
             this._colorFunc = this.constructor.getColorGenerator(
@@ -391,6 +412,11 @@
         }
         this._chart.resize();
       }
+    }
+
+    // for chartjs-plugin-zoom
+    resetZoom() {
+      this._chart.resetZoom();
     }
 
     // Get HSL distributed color list
