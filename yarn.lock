@@ -10,6 +10,12 @@
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@polymer/test-fixture/-/test-fixture-0.0.3.tgz#4443752697d4d9293bbc412ea0b5e4d341f149d9"
 
+"@sinonjs/formatio@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@sinonjs/formatio/-/formatio-2.0.0.tgz#84db7e9eb5531df18a8c5e0bfb6e449e55e654b2"
+  dependencies:
+    samsam "1.3.0"
+
 "@types/assert@0.0.29":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/assert/-/assert-0.0.29.tgz#8e562785baa5abda7c04a49f6665eae7431928d3"
@@ -499,10 +505,6 @@ acorn@^5.1.1:
 acorn@^5.2.1, acorn@^5.4.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.4.1.tgz#fdc58d9d17f4a4e98d102ded826a9b9759125102"
-
-acorn@~5.1.1:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.1.2.tgz#911cb53e036807cf0fa778dc5d370fbd864246d7"
 
 adm-zip@~0.4.3:
   version "0.4.7"
@@ -3390,7 +3392,7 @@ formatio@1.1.1:
   dependencies:
     samsam "~1.1"
 
-formatio@1.2.0, formatio@^1.2.0:
+formatio@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/formatio/-/formatio-1.2.0.tgz#f3b2167d9068c4698a8d51f4f760a39a54d818eb"
   dependencies:
@@ -4809,7 +4811,7 @@ jsx-ast-utils@^2.0.1:
   dependencies:
     array-includes "^3.0.3"
 
-just-extend@^1.1.26:
+just-extend@^1.1.27:
   version "1.1.27"
   resolved "https://registry.yarnpkg.com/just-extend/-/just-extend-1.1.27.tgz#ec6e79410ff914e472652abfa0e603c03d60e905"
 
@@ -5279,9 +5281,9 @@ lolex@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/lolex/-/lolex-1.6.0.tgz#3a9a0283452a47d7439e72731b9e07d7386e49f6"
 
-lolex@^2.2.0:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/lolex/-/lolex-2.3.1.tgz#3d2319894471ea0950ef64692ead2a5318cff362"
+lolex@^2.2.0, lolex@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/lolex/-/lolex-2.3.2.tgz#85f9450425103bf9e7a60668ea25dc43274ca807"
 
 longest@^1.0.1:
   version "1.0.1"
@@ -5539,9 +5541,9 @@ minipass@^2.2.1:
   dependencies:
     yallist "^3.0.0"
 
-minizlib@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/minizlib/-/minizlib-1.0.4.tgz#8ebb51dd8bbe40b0126b5633dbb36b284a2f523c"
+minizlib@^1.0.4:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/minizlib/-/minizlib-1.1.0.tgz#11e13658ce46bc3a70a267aac58359d1e0c29ceb"
   dependencies:
     minipass "^2.2.1"
 
@@ -5574,9 +5576,9 @@ mocha@^3.4.2:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
-mocha@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/mocha/-/mocha-4.0.1.tgz#0aee5a95cf69a4618820f5e51fa31717117daf1b"
+mocha@^5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/mocha/-/mocha-5.0.1.tgz#759b62c836b0732382a62b6b1fb245ec1bc943ac"
   dependencies:
     browser-stdout "1.3.0"
     commander "2.11.0"
@@ -5691,12 +5693,12 @@ netrc@^0.1.4:
   resolved "https://registry.yarnpkg.com/netrc/-/netrc-0.1.4.tgz#6be94fcaca8d77ade0a9670dc460914c94472444"
 
 nise@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/nise/-/nise-1.2.0.tgz#079d6cadbbcb12ba30e38f1c999f36ad4d6baa53"
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/nise/-/nise-1.2.5.tgz#a143371b65014b6807d3a6e6b4556063f3a53363"
   dependencies:
-    formatio "^1.2.0"
-    just-extend "^1.1.26"
-    lolex "^1.6.0"
+    "@sinonjs/formatio" "^2.0.0"
+    just-extend "^1.1.27"
+    lolex "^2.3.2"
     path-to-regexp "^1.7.0"
     text-encoding "^0.6.4"
 
@@ -6804,13 +6806,13 @@ regjsparser@^0.1.4:
   dependencies:
     jsesc "~0.5.0"
 
-reify@^0.12.3:
-  version "0.12.3"
-  resolved "https://registry.yarnpkg.com/reify/-/reify-0.12.3.tgz#b1aa0c196e7dc7fb7e9ad42b87c1e10fe7f97f97"
+reify@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/reify/-/reify-0.14.1.tgz#2f79c546f72812afaaaf3afddf560b0eca759afd"
   dependencies:
-    acorn "~5.1.1"
-    minizlib "^1.0.3"
-    semver "^5.3.0"
+    acorn "^5.2.1"
+    minizlib "^1.0.4"
+    semver "^5.4.1"
 
 relateurl@0.2.x:
   version "0.2.7"
@@ -7104,7 +7106,7 @@ samsam@1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/samsam/-/samsam-1.1.2.tgz#bec11fdc83a9fda063401210e40176c3024d1567"
 
-samsam@1.x, samsam@^1.1.3:
+samsam@1.3.0, samsam@1.x, samsam@^1.1.3:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/samsam/-/samsam-1.3.0.tgz#8d1d9350e25622da30de3e44ba692b5221ab7c50"
 
@@ -7156,7 +7158,7 @@ semver@^4.1.0:
   version "4.3.6"
   resolved "https://registry.yarnpkg.com/semver/-/semver-4.3.6.tgz#300bc6e0e86374f7ba61068b5b1ecd57fc6532da"
 
-semver@^5.3.0:
+semver@^5.3.0, semver@^5.4.1:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
@@ -7327,11 +7329,11 @@ sinon@^2.3.5:
     type-detect "^4.0.0"
 
 sinon@^4.1.6:
-  version "4.1.6"
-  resolved "https://registry.yarnpkg.com/sinon/-/sinon-4.1.6.tgz#9cb346bddb180d68a804429ffe14978d7fafd629"
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/sinon/-/sinon-4.3.0.tgz#cec9b27d5f4e2c63c1a79c9dc1c05d34bb088234"
   dependencies:
+    "@sinonjs/formatio" "^2.0.0"
     diff "^3.1.0"
-    formatio "1.2.0"
     lodash.get "^4.4.2"
     lolex "^2.2.0"
     nise "^1.2.0"
@@ -7754,13 +7756,7 @@ supports-color@^4.0.0:
   dependencies:
     has-flag "^2.0.0"
 
-supports-color@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-5.1.0.tgz#058a021d1b619f7ddf3980d712ea3590ce7de3d5"
-  dependencies:
-    has-flag "^2.0.0"
-
-supports-color@^5.2.0:
+supports-color@^5.1.0, supports-color@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-5.2.0.tgz#b0d5333b1184dd3666cbe5aa0b45c5ac7ac17a4a"
   dependencies:
@@ -8061,8 +8057,8 @@ type-detect@^4.0.0:
   resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.5.tgz#d70e5bc81db6de2a381bcaca0c6e0cbdc7635de2"
 
 type-detect@^4.0.5:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.6.tgz#88cbce3d13bc675a63f840b3225c180f870786d7"
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
 
 type-is@^1.6.4, type-is@~1.6.15:
   version "1.6.15"
