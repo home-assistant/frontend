@@ -34,6 +34,7 @@ class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
       if (this._scriptLoaded === 1) {
         const converter = window.Markdown.getSanitizingConverter();
         this.innerHTML = converter.makeHtml(this._content);
+        this._resize();
 
         const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
 
