@@ -32,12 +32,11 @@ export default class JSONTextArea extends Component {
   }
 
   componentWillReceiveProps({ value }) {
-    if (this.state.isValid) {
-      this.setState({
-        value: JSON.stringify(value, null, 2),
-        isValid: true,
-      });
-    }
+    if (value === this.props.value) return;
+    this.setState({
+      value: JSON.stringify(value, null, 2),
+      isValid: true,
+    });
   }
 
   render({ label }, { value, isValid }) {
