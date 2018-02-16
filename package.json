@@ -76,7 +76,7 @@
     "pump": "^1.0.2",
     "reify": "^0.12.3",
     "require-dir": "^0.3.2",
-    "rollup": "^0.51.3",
+    "rollup": "^0.56.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-resolve": "^3.0.0",
