@@ -3871,10 +3871,10 @@ growl@1.9.2:
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.9.2.tgz#0ea7743715db8d8de2c5ede1775e1b45ac85c02f"
 
 gulp-babel@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/gulp-babel/-/gulp-babel-7.0.0.tgz#7b93c975159f7a0553e4263b4a55100ccc239b28"
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/gulp-babel/-/gulp-babel-7.0.1.tgz#b9c8e29fa376b36c57989db820fc1c1715bb47cb"
   dependencies:
-    gulp-util "^3.0.0"
+    plugin-error "^1.0.1"
     replace-ext "0.0.1"
     through2 "^2.0.0"
     vinyl-sourcemaps-apply "^0.2.0"
@@ -3961,11 +3961,11 @@ gulp-json-transform@^0.4.5:
     through2 "^2.0.3"
 
 gulp-jsonminify@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/gulp-jsonminify/-/gulp-jsonminify-1.0.0.tgz#c42b68812c657e6e0a12e93c2aa217b3eb38c70a"
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/gulp-jsonminify/-/gulp-jsonminify-1.1.0.tgz#3b3c787f252ab42bbd7f355c7629665357e88d1a"
   dependencies:
-    gulp-util "~3.0.4"
     jsonminify "~0.2.3"
+    plugin-error "^0.1.2"
     through2 "~0.6.5"
 
 gulp-match@^1.0.3:
@@ -3975,14 +3975,15 @@ gulp-match@^1.0.3:
     minimatch "^3.0.3"
 
 gulp-merge-json@^1.0.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/gulp-merge-json/-/gulp-merge-json-1.2.0.tgz#8b68f297505278a8143a6fa5bb9830192e4e3ea1"
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/gulp-merge-json/-/gulp-merge-json-1.2.1.tgz#8b72688029aff20e33dc5886abacae169da2e113"
   dependencies:
     deprecate "^1.0.0"
-    gulp-util "^3.0.8"
     json5 "^0.5.1"
     lodash "^4.17.4"
+    plugin-error "^0.1.2"
     through "^2.3.8"
+    vinyl "^2.1.0"
 
 gulp-rename@^1.2.2:
   version "1.2.2"
@@ -4037,7 +4038,7 @@ gulp-util@^2.2.20, gulp-util@~2.2.14:
     through2 "^0.5.0"
     vinyl "^0.2.1"
 
-gulp-util@^3.0.0, gulp-util@^3.0.4, gulp-util@^3.0.8, gulp-util@~3.0.4:
+gulp-util@^3.0.0, gulp-util@^3.0.4, gulp-util@^3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.8.tgz#0054e1e744502e27c04c187c3ecc505dd54bbb4f"
   dependencies:
@@ -6332,7 +6333,7 @@ plugin-error@^0.1.2:
     arr-union "^2.0.1"
     extend-shallow "^1.1.2"
 
-plugin-error@^1.0.0:
+plugin-error@^1.0.0, plugin-error@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/plugin-error/-/plugin-error-1.0.1.tgz#77016bd8919d0ac377fdcdd0322328953ca5781c"
   dependencies:
