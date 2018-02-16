@@ -1,0 +1,175 @@
+<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-button/paper-button.html'>
+<link rel='import' href='../../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
+
+<link rel='import' href='../../../src/util/hass-mixins.html'>
+<link rel='import' href='../../../src/resources/ha-style.html'>
+<link rel='import' href='../../../src/layouts/hass-subpage.html'>
+
+<link rel='import' href='./ha-config-flow.html'>
+
+<dom-module id="ha-config-entries">
+  <template>
+    <style include='iron-flex ha-style'>
+      .content {
+        padding: 8px;
+      }
+      .entries {
+        margin: 0 -4px;
+      }
+      .entries paper-card {
+        margin: 4px;
+      }
+    </style>
+    <hass-subpage title='Integrations'>
+      <div class='content'>
+        <h1>Configured</h1>
+        <template is='dom-if' if='[[!_entries.length]]'>
+          <i>Nothing configured.</i>
+        </template>
+        <div class='entries layout horizontal wrap'>
+          <template is='dom-repeat' items='[[_entries]]'>
+            <paper-card heading='[[item.title]]'>
+              <div class='card-content'>
+                Integration: [[item.domain]]<br>
+                State: [[item.state]]<br>
+                Added by: [[item.source]]
+              </div>
+              <div class="card-actions">
+                <paper-button on-tap='_removeEntry'>Remove</paper-button>
+              </div>
+            </paper-card>
+          </template>
+        </div>
+
+        <template is='dom-if' if='[[_progress.length]]'>
+          <h1>To be finished</h1>
+          <div class='entries layout horizontal wrap'>
+            <template is='dom-repeat' items='[[_progress]]'>
+              <paper-card heading='[[item.domain]]'>
+                <div class="card-actions">
+                  <paper-button on-tap='_continueFlow'>Configure</paper-button>
+                </div>
+              </paper-card>
+            </template>
+          </div>
+        </template>
+
+        <h1>Add integration</h1>
+        <div class='entries layout horizontal wrap'>
+          <template is='dom-repeat' items='[[handlers]]'>
+            <paper-card heading='[[item]]'>
+              <!-- <div class="card-content">Some content</div> -->
+              <div class="card-actions">
+                <paper-button on-tap='_createFlow'>Configure</paper-button>
+              </div>
+            </paper-card>
+          </template>
+        </div>
+      </div>
+    </hass-subpage>
+
+    <ha-config-flow
+      hass='[[hass]]'
+      flow-id='[[flowId]]'
+      on-flow-closed='_flowClose'
+    ></ha-config-flow>
+  </template>
+</dom-module>
+
+<script>
+{
+  class HaConfigManager extends window.hassMixins.NavigateMixin(Polymer.Element) {
+    static get is() { return 'ha-config-entries'; }
+
+    static get properties() {
+      return {
+        hass: Object,
+
+        flowId: {
+          type: String,
+          value: null,
+        },
+        userCreatedFlow: Boolean,
+
+        /**
+         * Existing entries.
+         */
+        _entries: Array,
+
+        /**
+         * Current flows that are in progress and have not been started by a user.
+         * For example, can be discovered devices that require more config.
+         */
+        _progress: Array,
+
+        handlers: Array,
+      };
+    }
+
+    ready() {
+      super.ready();
+      this._loadData();
+    }
+
+    _createFlow(ev) {
+      this.hass.callApi('post', 'config/config_entries/flow', { domain: ev.model.item })
+        .then((flow) => {
+          this.userCreatedFlow = true;
+          this.flowId = flow.flow_id;
+        });
+    }
+
+    _continueFlow(ev) {
+      this.flowId = ev.model.item.flow_id;
+    }
+
+    _removeEntry(ev) {
+      if (!confirm('Are you sure you want to delete this integration?')) return;
+
+      const entryId = ev.model.item.entry_id;
+
+      this.hass.callApi('delete', `config/config_entries/entry/${entryId}`)
+        .then((result) => {
+          this._entries = this._entries.filter(entry => entry.entry_id !== entryId);
+          if (result.require_restart) {
+            alert('Restart Home Assistant to finish removing this integration');
+          }
+        });
+    }
+
+    _flowClose(ev) {
+      // Was the flow completed?
+      if (ev.detail.flowFinished) {
+        this._loadData();
+
+      // Remove a flow if it was not finished and was started by the user
+      } else if (this.userCreatedFlow) {
+        this.hass.callApi('delete', `config/config_entries/flow/${this.flowId}`);
+      }
+      this.flowId = null;
+      this.userCreatedFlow = false;
+    }
+
+    _loadData() {
+      this._loadEntries();
+      this._loadDiscovery();
+      this.hass.callApi('get', 'config/config_entries/flow_handlers')
+        .then((handlers) => { this.handlers = handlers; });
+    }
+
+    _loadEntries() {
+      this.hass.callApi('get', 'config/config_entries/entry')
+        .then((entries) => { this._entries = entries; });
+    }
+
+    _loadDiscovery() {
+      this.hass.callApi('get', 'config/config_entries/flow')
+        .then((progress) => { this._progress = progress; });
+    }
+  }
+
+  customElements.define(HaConfigManager.is, HaConfigManager);
+}
+</script>
