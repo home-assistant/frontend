@@ -1,0 +1,49 @@
+<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../../src/util/hass-mixins.html">
+
+<dom-module id="ha-config-entries-menu">
+  <template>
+    <style include="iron-flex">
+      paper-card {
+        display: block;
+      }
+      paper-item {
+        cursor: pointer;
+      }
+    </style>
+    <paper-card>
+      <paper-item on-tap='_navigate'>
+        <paper-item-body two-line>
+          Integrations
+          <div secondary>EXPERIMENTAL – Manage connected devices and services</div>
+        </paper-item-body>
+        <iron-icon icon='mdi:chevron-right'></iron-icon>
+      </paper-item>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigEntriesMenu extends window.hassMixins.NavigateMixin(Polymer.Element) {
+  static get is() { return 'ha-config-entries-menu'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      isWide: Boolean,
+      account: Object,
+    };
+  }
+
+  _navigate() {
+    this.navigate('/config/integrations');
+  }
+}
+
+customElements.define(HaConfigEntriesMenu.is, HaConfigEntriesMenu);
+</script>

@@ -1,0 +1,120 @@
+<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+
+<link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
+<link rel="import" href='../../../bower_components/paper-slider/paper-slider.html'>
+<link rel="import" href='../../../bower_components/paper-checkbox/paper-checkbox.html'>
+
+<dom-module id="ha-form">
+  <template>
+    <style>
+      .error {
+        color: red;
+      }
+    </style>
+    <template is='dom-if' if='[[_isArray(schema)]]' restamp>
+      <template is='dom-repeat' items='[[schema]]'>
+        <ha-form
+          data='[[_getValue(data, item)]]'
+          schema='[[item]]'
+          error='[[_getValue(error, item)]]'
+          on-data-changed='_valueChanged'
+        ></ha-form>
+      </template>
+    </template>
+    <template is='dom-if' if='[[!_isArray(schema)]]' restamp>
+      <template is='dom-if' if='[[error]]'>
+        <div class='error'>[[error]]</div>
+      </template>
+
+      <template is='dom-if' if='[[_equals(schema.type, "string")]]' restamp>
+        <paper-input
+          label='[[schema.name]]'
+          value='{{data}}'
+        ></paper-input>
+      </template>
+
+      <template is='dom-if' if='[[_equals(schema.type, "integer")]]' restamp>
+        <template is='dom-if' if='[[_isRange(schema)]]' restamp>
+          <div>
+            [[schema.name]]
+            <paper-slider
+              pin
+              value='{{data}}'
+              min='[[schema.value-min]]'
+              max='[[schema.value-max]]'
+            ></paper-slider>
+          </div>
+        </template>
+        <template is='dom-if' if='[[!_isRange(schema)]]' restamp>
+          <paper-input
+            label='[[schema.name]]'
+            value='{{data}}'
+            type='number'
+          ></paper-input>
+        </template>
+      </template>
+
+      <template is='dom-if' if='[[_equals(schema.type, "float")]]' restamp>
+        <!--TODO-->
+        <paper-input
+          label='[[schema.name]]'
+          value='{{data}}'
+        ></paper-input>
+      </template>
+
+      <template is='dom-if' if='[[_equals(schema.type, "boolean")]]' restamp>
+        <paper-checkbox
+          checked='{{data}}'
+        >[[schema.name]]</paper-checkbox>
+      </template>
+
+      <template is='dom-if' if='[[_equals(schema.type, "select")]]' restamp>
+        <!--TODO-->
+        <paper-input
+          label='[[schema.name]]'
+          value='{{data}}'
+        ></paper-input>
+      </template>
+
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class HaForm extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-form'; }
+
+  static get properties() {
+    return {
+      data: {
+        type: Object,
+        notify: true,
+      },
+      schema: Object,
+      error: Object,
+    };
+  }
+
+  _isArray(val) {
+    return Array.isArray(val);
+  }
+
+  _isRange(schema) {
+    return ('value-min' in schema) && ('value-max' in schema);
+  }
+
+  _equals(a, b) {
+    return a === b;
+  }
+
+  _getValue(obj, item) {
+    return obj[item.name];
+  }
+
+  _valueChanged(ev) {
+    this.set(['data', ev.model.item.name], ev.detail.value);
+  }
+}
+
+customElements.define(HaForm.is, HaForm);
+</script>
