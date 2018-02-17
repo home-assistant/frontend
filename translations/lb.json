@@ -1,1 +1,417 @@
-{"panel":{"config":"Astellungen","states":"Iwwersiicht","map":"Kaart","logbook":"Journal","history":"Verlaf","mailbox":"Bréifkëscht","shopping_list":"Akafslëscht","dev-services":"Servicen","dev-states":"Zoustänn","dev-events":"Evenementer","dev-templates":"Modeller","dev-mqtt":"MQTT","dev-info":"Info"},"state":{"default":{"off":"Aus","on":"Un","unknown":"Onbekannt","unavailable":"Net Ereechbar"},"alarm_control_panel":{"armed":"Aktivéiert","disarmed":"Désaktivéiert","armed_home":"Aktivéiert Doheem","armed_away":"Aktivéiert Ënnerwee","armed_night":"Aktivéiert Nuecht","pending":"Ustoend","arming":"Aktivéieren","disarming":"Desaktivéieren","triggered":"Ausgeléist","armed_custom_bypass":"Aktiv, Benotzerdefinéiert"},"automation":{"off":"Aus","on":"Un"},"binary_sensor":{"default":{"off":"Aus","on":"Un"},"moisture":{"off":"Dréchen","on":"Naass"},"gas":{"off":"Kloer","on":"Détektéiert"},"motion":{"off":"Roueg","on":"Détektéiert"},"occupancy":{"off":"Kloer","on":"Détektéiert"},"smoke":{"off":"Kloer","on":"Détektéiert"},"sound":{"off":"Kloer","on":"Détektéiert"},"vibration":{"off":"Kloer","on":"Détektéiert"},"opening":{"off":"Zou","on":"Op"},"safety":{"off":"Sécher","on":"Onsécher"},"presence":{"off":"Ënnerwee","on":"Doheem"},"battery":{"off":"Normal","on":"Niddreg"},"problem":{"off":"OK","on":"Problem"},"connectivity":{"off":"Net Verbonnen","on":"Verbonnen"},"cold":{"off":"Normal","on":"Kal"},"door":{"off":"Zou","on":"Op"},"garage_door":{"off":"Zou","on":"Op"},"heat":{"off":"Normal","on":"Waarm"},"window":{"off":"Zou","on":"Op"}},"calendar":{"off":"Aus","on":"Un"},"camera":{"recording":"Hëlt Op","streaming":"Streamt","idle":"Roueg"},"climate":{"off":"Aus","on":"Un","heat":"Heizen","cool":"Kill","idle":"Leerlauf","auto":"Auto","dry":"Dréchen","fan_only":"Nëmmen Ventilator","eco":"Eco","electric":"Elektresch","performance":"Leeschtung","high_demand":"Héich Ufro","heat_pump":"Heizung","gas":"Gas"},"configurator":{"configure":"Astellen","configured":"Agestallt"},"cover":{"open":"Op","opening":"Gëtt opgemaach","closed":"Zou","closing":"Gëtt zougemaach","stopped":"Gestoppt"},"device_tracker":{"home":"Doheem","not_home":"Ënnerwee"},"fan":{"off":"Aus","on":"Un"},"group":{"off":"Aus","on":"Un","home":"Doheem","not_home":"Ënnerwee","open":"Op","opening":"Gëtt opgemaach","closed":"Zou","closing":"Gëtt zougemaach","stopped":"Gestoppt","locked":"Gespaart","unlocked":"Net gespaart","ok":"OK","problem":"Problem"},"input_boolean":{"off":"Aus","on":"Un"},"light":{"off":"Aus","on":"Un"},"lock":{"locked":"Gespaart","unlocked":"Net gespaart"},"media_player":{"off":"Aus","on":"Un","playing":"Spillt","paused":"Pauseiert","idle":"Waart","standby":"Standby"},"plant":{"ok":"OK","problem":"Problem"},"remote":{"off":"Aus","on":"Un"},"scene":{"scening":"Zeen"},"script":{"off":"Aus","on":"Un"},"sensor":{"off":"Aus","on":"Un"},"sun":{"above_horizon":"Iwwert dem Horizont","below_horizon":"Ënnert dem Horizont"},"switch":{"off":"Aus","on":"Un"},"zwave":{"default":{"initializing":"Initialiséiert","dead":"Net Ereechbar","sleeping":"Schléift","ready":"Bereet"},"query_stage":{"initializing":"Initialiséiert ({query_stage})","dead":"Net Ereechbar ({query_stage})"}}},"state_badge":{"default":{"unknown":"Onbekannt","unavailable":"Net Verfügbar"},"alarm_control_panel":{"armed":"Aktivéiert","disarmed":"Desaktivéieren","armed_home":"Aktivéiert","armed_away":"Aktivéiert","armed_night":"Aktivéiert","pending":"Ustoend","arming":"Aktivéieren","disarming":"Desaktivéieren","triggered":"Ausgeléist","armed_custom_bypass":"Aktiv"},"device_tracker":{"home":"Doheem","not_home":"Ënnerwee"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Fäerdeg Elementer ewechhuelen","add_item":"Objet dobäisetze","microphone_tip":"Tipp uewe riets op de Mikro a so “Add candy to my shopping list”"},"history":{"showing_entries":"Weist Beiträg fir","period":"Zäitraum"},"logbook":{"showing_entries":"Weist Beiträg fir"},"mailbox":{"empty":"Dir hutt keng Noriicht","playback_title":"Noriicht ofspillen","delete_prompt":"Dës Noriicht löschen?","delete_button":"Löschen"},"config":{"header":"Home Assistant astellen","introduction":"Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.","core":{"caption":"Generell","description":"Konfiguratioun validéieren an de Server kontrolléieren","section":{"core":{"header":"Konfiguratioun an Server Kontroll","introduction":"D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.","validation":{"heading":"Validatioun vun der Konfiguratioun","introduction":"Validéiert är Konfiguratioun wann Dir viru kuerzem e puer Ännerungen an ärer Konfiguratioun gemaacht hutt a wëllt sécher sinn datt alles gëlteg ass","check_config":"Konfiguratioun iwwerpréiwen","valid":"Konfiguratioun gëlteg!","invalid":"Konfiguratioun ongëlteg"},"reloading":{"heading":"Konfiguratioun gëtt frësch gelueden","introduction":"E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.","core":"Kär nei lueden","group":"Gruppe nei lueden","automation":"Automatioune nei lueden","script":"Skripte nei lueden"},"server_management":{"heading":"Serververwaltung","introduction":"Kontroll vun Ärem Home Assistant Server ... vun Home Assistant.","restart":"Neistart","stop":"Stop"}},"push_notifications":{"header":"Push-Noriichte konfiguréieren","introduction":"Aktivéiert dës Astellung fir Push-Noriichte op dësem Apparat ze kréien","push_notifications":"Push-Noriichte"},"translation":{"header":"Sproch auswielen","introduction":"Wielt eng Sproch fir den Home Assistant Interface op dësem Apparat","language":"Sproch"},"themes":{"header":"Thema auswielen","introduction":"Wielt 'Backend-Selected' fir all Thema ze benotzen deen de Backend auswielt oder e Thema fir dësen Apparat auswielen","theme":"Thema"}}},"customize":{"caption":"Personaliséieren","description":"Är Entitéite personaliséieren"},"automation":{"caption":"Automatioun","description":"Automatioun erstellen an änneren"},"script":{"caption":"Skript","description":"Skript erstellen an änneren"},"zwave":{"caption":"Z-Wave","description":"Verwalt är Z-Wave Netzwierk"}}},"sidebar":{"log_out":"Ausloggen","developer_tools":"Entwécklungsgeschir"},"common":{"loading":"Lued","cancel":"Ofbriechen"},"duration":{"day":"{count} {count, plural,\none {dag}\nother {deeg}\n}","week":"{count} {count, plural,\none {woch}\nother {woche}\n}","second":"{count} {count, plural,\none {sekonn}\nother {sekonne}\n}"},"login-form":{"password":"Passwuert","remember":"Verhalen","log_in":"Aloggen"},"card":{"camera":{"not_available":"Bild net disponibel"},"persistent_notification":{"dismiss":"Verwerfen"}}},"domain":{"alarm_control_panel":"Kontroll Feld Alarm","automation":"Automatioun","binary_sensor":"Binären Sensor","calendar":"Kalenner","camera":"Kamera","climate":"Klima","configurator":"Konfiguréieren","conversation":"Ënnerhalung","cover":"Paart","device_tracker":"Apparat Verfolgung","fan":"Ventilator","history_graph":"Verlafs Grafik","group":"Gruppe","image_processing":"Bildveraarbechtung","input_boolean":"Angab Boolean","input_datetime":"Angab Datum-Zäit","input_select":"Angab Auswiel","input_number":"Angab Ziffer","input_text":"Angab Text","light":"Luucht","lock":"Schlass","mailbox":"Bréifkëscht","media_player":"Medie Spiller","notify":"Notifikatioun","plant":"Planz","proximity":"Ëmgéigend","remote":"Télécommande","scene":"Zeen","script":"Script","sensor":"Sensor","sun":"Sonn","switch":"Schalter","updater":"Aktualiséierung","weblink":"Weblink","zwave":"Z-Wave"},"attribute":{"weather":{"humidity":"Loftfiichtegkeet","visibility":"Visibilitéit","wind_speed":"Wand Vitesse"}}}
+{
+    "panel": {
+        "config": "Astellungen",
+        "states": "Iwwersiicht",
+        "map": "Kaart",
+        "logbook": "Journal",
+        "history": "Verlaf",
+        "mailbox": "Bréifkëscht",
+        "shopping_list": "Akafslëscht",
+        "dev-services": "Servicen",
+        "dev-states": "Zoustänn",
+        "dev-events": "Evenementer",
+        "dev-templates": "Modeller",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Aus",
+            "on": "Un",
+            "unknown": "Onbekannt",
+            "unavailable": "Net Ereechbar"
+        },
+        "alarm_control_panel": {
+            "armed": "Aktivéiert",
+            "disarmed": "Désaktivéiert",
+            "armed_home": "Aktivéiert Doheem",
+            "armed_away": "Aktivéiert Ënnerwee",
+            "armed_night": "Aktivéiert Nuecht",
+            "pending": "Ustoend",
+            "arming": "Aktivéieren",
+            "disarming": "Desaktivéieren",
+            "triggered": "Ausgeléist",
+            "armed_custom_bypass": "Aktiv, Benotzerdefinéiert"
+        },
+        "automation": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Aus",
+                "on": "Un"
+            },
+            "moisture": {
+                "off": "Dréchen",
+                "on": "Naass"
+            },
+            "gas": {
+                "off": "Kloer",
+                "on": "Détektéiert"
+            },
+            "motion": {
+                "off": "Roueg",
+                "on": "Détektéiert"
+            },
+            "occupancy": {
+                "off": "Kloer",
+                "on": "Détektéiert"
+            },
+            "smoke": {
+                "off": "Kloer",
+                "on": "Détektéiert"
+            },
+            "sound": {
+                "off": "Kloer",
+                "on": "Détektéiert"
+            },
+            "vibration": {
+                "off": "Kloer",
+                "on": "Détektéiert"
+            },
+            "opening": {
+                "off": "Zou",
+                "on": "Op"
+            },
+            "safety": {
+                "off": "Sécher",
+                "on": "Onsécher"
+            },
+            "presence": {
+                "off": "Ënnerwee",
+                "on": "Doheem"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Niddreg"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Net Verbonnen",
+                "on": "Verbonnen"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Kal"
+            },
+            "door": {
+                "off": "Zou",
+                "on": "Op"
+            },
+            "garage_door": {
+                "off": "Zou",
+                "on": "Op"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Waarm"
+            },
+            "window": {
+                "off": "Zou",
+                "on": "Op"
+            }
+        },
+        "calendar": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "camera": {
+            "recording": "Hëlt Op",
+            "streaming": "Streamt",
+            "idle": "Roueg"
+        },
+        "climate": {
+            "off": "Aus",
+            "on": "Un",
+            "heat": "Heizen",
+            "cool": "Kill",
+            "idle": "Leerlauf",
+            "auto": "Auto",
+            "dry": "Dréchen",
+            "fan_only": "Nëmmen Ventilator",
+            "eco": "Eco",
+            "electric": "Elektresch",
+            "performance": "Leeschtung",
+            "high_demand": "Héich Ufro",
+            "heat_pump": "Heizung",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Astellen",
+            "configured": "Agestallt"
+        },
+        "cover": {
+            "open": "Op",
+            "opening": "Gëtt opgemaach",
+            "closed": "Zou",
+            "closing": "Gëtt zougemaach",
+            "stopped": "Gestoppt"
+        },
+        "device_tracker": {
+            "home": "Doheem",
+            "not_home": "Ënnerwee"
+        },
+        "fan": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "group": {
+            "off": "Aus",
+            "on": "Un",
+            "home": "Doheem",
+            "not_home": "Ënnerwee",
+            "open": "Op",
+            "opening": "Gëtt opgemaach",
+            "closed": "Zou",
+            "closing": "Gëtt zougemaach",
+            "stopped": "Gestoppt",
+            "locked": "Gespaart",
+            "unlocked": "Net gespaart",
+            "ok": "OK",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "light": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "lock": {
+            "locked": "Gespaart",
+            "unlocked": "Net gespaart"
+        },
+        "media_player": {
+            "off": "Aus",
+            "on": "Un",
+            "playing": "Spillt",
+            "paused": "Pauseiert",
+            "idle": "Waart",
+            "standby": "Standby"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "scene": {
+            "scening": "Zeen"
+        },
+        "script": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "sensor": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "sun": {
+            "above_horizon": "Iwwert dem Horizont",
+            "below_horizon": "Ënnert dem Horizont"
+        },
+        "switch": {
+            "off": "Aus",
+            "on": "Un"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initialiséiert",
+                "dead": "Net Ereechbar",
+                "sleeping": "Schléift",
+                "ready": "Bereet"
+            },
+            "query_stage": {
+                "initializing": "Initialiséiert ({query_stage})",
+                "dead": "Net Ereechbar ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Onbekannt",
+            "unavailable": "Net Verfügbar"
+        },
+        "alarm_control_panel": {
+            "armed": "Aktivéiert",
+            "disarmed": "Desaktivéieren",
+            "armed_home": "Aktivéiert",
+            "armed_away": "Aktivéiert",
+            "armed_night": "Aktivéiert",
+            "pending": "Ustoend",
+            "arming": "Aktivéieren",
+            "disarming": "Desaktivéieren",
+            "triggered": "Ausgeléist",
+            "armed_custom_bypass": "Aktiv"
+        },
+        "device_tracker": {
+            "home": "Doheem",
+            "not_home": "Ënnerwee"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Fäerdeg Elementer ewechhuelen",
+                "add_item": "Objet dobäisetze",
+                "microphone_tip": "Tipp uewe riets op de Mikro a so “Add candy to my shopping list”"
+            },
+            "history": {
+                "showing_entries": "Weist Beiträg fir",
+                "period": "Zäitraum"
+            },
+            "logbook": {
+                "showing_entries": "Weist Beiträg fir"
+            },
+            "mailbox": {
+                "empty": "Dir hutt keng Noriicht",
+                "playback_title": "Noriicht ofspillen",
+                "delete_prompt": "Dës Noriicht löschen?",
+                "delete_button": "Löschen"
+            },
+            "config": {
+                "header": "Home Assistant astellen",
+                "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
+                "core": {
+                    "caption": "Generell",
+                    "description": "Konfiguratioun validéieren an de Server kontrolléieren",
+                    "section": {
+                        "core": {
+                            "header": "Konfiguratioun an Server Kontroll",
+                            "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
+                            "validation": {
+                                "heading": "Validatioun vun der Konfiguratioun",
+                                "introduction": "Validéiert är Konfiguratioun wann Dir viru kuerzem e puer Ännerungen an ärer Konfiguratioun gemaacht hutt a wëllt sécher sinn datt alles gëlteg ass",
+                                "check_config": "Konfiguratioun iwwerpréiwen",
+                                "valid": "Konfiguratioun gëlteg!",
+                                "invalid": "Konfiguratioun ongëlteg"
+                            },
+                            "reloading": {
+                                "heading": "Konfiguratioun gëtt frësch gelueden",
+                                "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                                "core": "Kär nei lueden",
+                                "group": "Gruppe nei lueden",
+                                "automation": "Automatioune nei lueden",
+                                "script": "Skripte nei lueden"
+                            },
+                            "server_management": {
+                                "heading": "Serververwaltung",
+                                "introduction": "Kontroll vun Ärem Home Assistant Server ... vun Home Assistant.",
+                                "restart": "Neistart",
+                                "stop": "Stop"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Push-Noriichte konfiguréieren",
+                            "introduction": "Aktivéiert dës Astellung fir Push-Noriichte op dësem Apparat ze kréien",
+                            "push_notifications": "Push-Noriichte"
+                        },
+                        "translation": {
+                            "header": "Sproch auswielen",
+                            "introduction": "Wielt eng Sproch fir den Home Assistant Interface op dësem Apparat",
+                            "language": "Sproch"
+                        },
+                        "themes": {
+                            "header": "Thema auswielen",
+                            "introduction": "Wielt 'Backend-Selected' fir all Thema ze benotzen deen de Backend auswielt oder e Thema fir dësen Apparat auswielen",
+                            "theme": "Thema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Personaliséieren",
+                    "description": "Är Entitéite personaliséieren"
+                },
+                "automation": {
+                    "caption": "Automatioun",
+                    "description": "Automatioun erstellen an änneren"
+                },
+                "script": {
+                    "caption": "Skript",
+                    "description": "Skript erstellen an änneren"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Verwalt är Z-Wave Netzwierk"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Ausloggen",
+            "developer_tools": "Entwécklungsgeschir"
+        },
+        "common": {
+            "loading": "Lued",
+            "cancel": "Ofbriechen"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",
+            "week": "{count} {count, plural,\none {woch}\nother {woche}\n}",
+            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}"
+        },
+        "login-form": {
+            "password": "Passwuert",
+            "remember": "Verhalen",
+            "log_in": "Aloggen"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Bild net disponibel"
+            },
+            "persistent_notification": {
+                "dismiss": "Verwerfen"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Kontroll Feld Alarm",
+        "automation": "Automatioun",
+        "binary_sensor": "Binären Sensor",
+        "calendar": "Kalenner",
+        "camera": "Kamera",
+        "climate": "Klima",
+        "configurator": "Konfiguréieren",
+        "conversation": "Ënnerhalung",
+        "cover": "Paart",
+        "device_tracker": "Apparat Verfolgung",
+        "fan": "Ventilator",
+        "history_graph": "Verlafs Grafik",
+        "group": "Gruppe",
+        "image_processing": "Bildveraarbechtung",
+        "input_boolean": "Angab Boolean",
+        "input_datetime": "Angab Datum-Zäit",
+        "input_select": "Angab Auswiel",
+        "input_number": "Angab Ziffer",
+        "input_text": "Angab Text",
+        "light": "Luucht",
+        "lock": "Schlass",
+        "mailbox": "Bréifkëscht",
+        "media_player": "Medie Spiller",
+        "notify": "Notifikatioun",
+        "plant": "Planz",
+        "proximity": "Ëmgéigend",
+        "remote": "Télécommande",
+        "scene": "Zeen",
+        "script": "Script",
+        "sensor": "Sensor",
+        "sun": "Sonn",
+        "switch": "Schalter",
+        "updater": "Aktualiséierung",
+        "weblink": "Weblink",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Loftfiichtegkeet",
+            "visibility": "Visibilitéit",
+            "wind_speed": "Wand Vitesse"
+        }
+    }
+}

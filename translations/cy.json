@@ -1,0 +1,17 @@
+{
+    "panel": {
+        "dev-mqtt": "MQTT"
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    },
+    "ui": {
+        "panel": {
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        }
+    }
+}
