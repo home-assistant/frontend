@@ -53,9 +53,11 @@ export default function computeStateDisplay(localize, stateObj, language) {
     } else {
       stateObj._stateDisplay = localize(`state.${domain}.${stateObj.state}`);
     }
-    // Fall back to default or raw state if nothing else matches.
+    // Fall back to default, component backend translation, or raw state if nothing else matches.
     stateObj._stateDisplay = stateObj._stateDisplay
-      || localize(`state.default.${stateObj.state}`) || stateObj.state;
+      || localize(`state.default.${stateObj.state}`)
+      || localize(`component.${domain}.state.${stateObj.state}`)
+      || stateObj.state;
   }
 
   return stateObj._stateDisplay;
