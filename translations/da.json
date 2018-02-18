@@ -1,1 +1,409 @@
-{"panel":{"config":"Indstillinger","states":"Oversigt","map":"Kort","logbook":"Logbog","history":"Historik","mailbox":"Postkasse","shopping_list":"Indkøbsliste","dev-services":"Services","dev-states":"Tilstand","dev-events":"Begivenheder","dev-templates":"Skabeloner","dev-mqtt":"MQTT","dev-info":"Udvikler Information"},"state":{"default":{"off":"Fra","on":"Til","unknown":"Ukendt","unavailable":"Utilgængelig"},"alarm_control_panel":{"armed":"Tilkoblet","disarmed":"Frakoblet","armed_home":"Tilkoblet hjemme","armed_away":"Tilkoblet ude","armed_night":"Tilkoblet nat","pending":"Afventer","arming":"Tilkobler","disarming":"Frakobler","triggered":"Udløst","armed_custom_bypass":"Delvis tilkoblet"},"automation":{"off":"Fra","on":"Til"},"binary_sensor":{"default":{"off":"Fra","on":"Til"},"moisture":{"off":"Tør","on":"Fugtig"},"gas":{"off":"Ikke registreret","on":"Registreret"},"motion":{"off":"Ikke registreret","on":"Registreret"},"occupancy":{"off":"Ikke registreret","on":"Registreret"},"smoke":{"off":"Ikke registreret","on":"Registreret"},"sound":{"off":"Ikke registreret","on":"Registreret"},"vibration":{"off":"Ikke registreret","on":"Registreret"},"opening":{"off":"Lukket","on":"Åben"},"safety":{"off":"Sikret","on":"Usikret"},"presence":{"off":"Ude","on":"Hjemme"},"battery":{"off":"Normal","on":"Lav"},"problem":{"off":"OK","on":"Problem"},"connectivity":{"off":"Afbrudt","on":"Forbundet"},"cold":{"off":"Normal","on":"Koldt"},"door":{"off":"Lukket","on":"Åben"},"garage_door":{"off":"Lukket","on":"Åben"},"heat":{"off":"Normal","on":"Varmt"},"window":{"off":"Lukket","on":"Åben"}},"calendar":{"off":"Fra","on":"Til"},"camera":{"recording":"Optager","streaming":"Streamer","idle":"Inaktiv"},"climate":{"off":"Fra","on":"Til","heat":"Varme","cool":"Køl","idle":"Inaktiv","auto":"Auto","dry":"Tør","fan_only":"Kun blæser","eco":"Øko","electric":"Elektrisk","performance":"Ydeevne","high_demand":"Høj efterspørgsel","heat_pump":"Varmepumpe","gas":"Gas"},"configurator":{"configure":"Konfigurer","configured":"Konfigureret"},"cover":{"open":"Åben","opening":"Åbner","closed":"Lukket","closing":"Lukker","stopped":"Stoppet"},"device_tracker":{"home":"Hjemme","not_home":"Ude"},"fan":{"off":"Slukket","on":"Tændt"},"group":{"off":"Fra","on":"Til","home":"Hjemme","not_home":"Ude","open":"Åben","opening":"Åbner","closed":"Lukket","closing":"Lukker","stopped":"Stoppet","locked":"Låst","unlocked":"Ulåst","ok":"OK","problem":"Problem"},"input_boolean":{"off":"Fra","on":"Til"},"light":{"off":"Slukket","on":"Tændt"},"lock":{"locked":"Låst","unlocked":"Ulåst"},"media_player":{"off":"Slukket","on":"Tændt","playing":"Afspiller","paused":"Sat på pause","idle":"Inaktiv","standby":"Standby"},"plant":{"ok":"OK","problem":"Problem"},"remote":{"off":"Fra","on":"Til"},"scene":{"scening":"Skifter scene"},"script":{"off":"Fra","on":"Til"},"sensor":{"off":"Fra","on":"Til"},"sun":{"above_horizon":"Over horisonten","below_horizon":"Under horisonten"},"switch":{"off":"Fra","on":"Til"},"zwave":{"default":{"initializing":"Initialiserer","dead":"Død","sleeping":"Sover","ready":"Klar"},"query_stage":{"initializing":"Initialiserer ({query_stage})","dead":"Død ({query_stage})"}}},"state_badge":{"default":{"unknown":"Ukendt","unavailable":"Utilgængelig"},"alarm_control_panel":{"armed":"Tilkoblet","disarmed":"Frakoblet","armed_home":"Tilkoblet","armed_away":"Tilkoblet","armed_night":"Tilkoblet","pending":"Venter","arming":"Tilkobler","disarming":"Frakobler","triggered":"Udløst","armed_custom_bypass":"Tilkoblet"},"device_tracker":{"home":"Hjemme","not_home":"Ude"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Klar afsluttet","add_item":"Tilføj element","microphone_tip":"Tryk på mikrofonen øverst til højre og sig “Add candy to my shopping list”"},"history":{"showing_entries":"Viser emner for","period":"Periode"},"logbook":{"showing_entries":"Viser emner for"},"mailbox":{"empty":"Du har ingen beskeder","playback_title":"Meddelelse afspilles","delete_prompt":"Slet denne besked","delete_button":"Slet"},"config":{"header":"Konfigurer Home Assistant","core":{"caption":"Generelt","section":{"core":{"header":"Konfiguration og server kontrol","validation":{"check_config":"Tjek konfiguration","valid":"Konfiguration gyldig!","invalid":"Konfigurationen ugyldig"},"reloading":{"heading":"Genindlæsning af konfiguration","core":"Genindlæs system","group":"Genindlæs grupper","automation":"Genindlæs automatiseringer","script":"Genindlæs scripts"},"server_management":{"heading":"Serveradministration","restart":"Genstart","stop":"Stop"}},"push_notifications":{"header":"Konfigurer push-meddelelser","introduction":"Aktivér denne indstilling for at modtage push-meddelelser på denne enhed","push_notifications":"Push-meddelelser"},"translation":{"header":"Vælg et sprog","introduction":"Vælg et sprog til Home Assistant til denne enhed","language":"Sprog"},"themes":{"header":"Vælg et tema","theme":"Tema"}}},"customize":{"caption":"Tilpasning","description":"Tilpas dine enheder"},"automation":{"caption":"Automatisering","description":"Opret og rediger automatiseringer"},"script":{"caption":"Script","description":"Opret og rediger scripts"},"zwave":{"caption":"Z-Wave","description":"Administrer dit Z-Wave netværk"}}},"sidebar":{"log_out":"Log af","developer_tools":"Udviklerværktøjer"},"common":{"loading":"Indlæser","cancel":"Annuller"},"duration":{"day":"{count} {count, plural,\none {dag}\nother {dage}\n}","week":"{count} {count, plural,\none {uge}\nother {uger}\n}","second":"{count} {count, plural,\none {sekund}\nother {sekunder}\n}"},"login-form":{"password":"Adgangskode","remember":"Husk","log_in":"Log på"},"card":{"camera":{"not_available":"Billedet er ikke tilgængeligt"},"persistent_notification":{"dismiss":"Afvis"}}},"domain":{"alarm_control_panel":"Alarm kontrolpanel","automation":"Automatisering","binary_sensor":"Binær sensor","calendar":"Kalender","camera":"Kamera","climate":"Klima","configurator":"Konfigurator","conversation":"Samtale","cover":"Dække","device_tracker":"Enhedssporing","fan":"Ventilator","history_graph":"Historik graf","group":"Gruppe","image_processing":"Billedbehandling","input_boolean":"Valgt boolsk","input_datetime":"Indsæt dato og tid","input_select":"Indsæt valg","input_number":"Indsæt nummer","input_text":"Indsæt tekst","light":"Lys","lock":"Lås","mailbox":"Postkasse","media_player":"Medieafspiller","notify":"Meddelelser","plant":"Plante","proximity":"Nærhed","remote":"Fjernbetjening","scene":"Scene","script":"Script","sensor":"Sensor","sun":"Sol","switch":"Kontakt","updater":"Opdater","weblink":"Link","zwave":"Z-Wave"},"attribute":{"weather":{"humidity":"Luftfugtighed","visibility":"Sigtbarhed","wind_speed":"Vindhastighed"}}}
+{
+    "panel": {
+        "config": "Indstillinger",
+        "states": "Oversigt",
+        "map": "Kort",
+        "logbook": "Logbog",
+        "history": "Historik",
+        "mailbox": "Postkasse",
+        "shopping_list": "Indkøbsliste",
+        "dev-services": "Services",
+        "dev-states": "Tilstand",
+        "dev-events": "Begivenheder",
+        "dev-templates": "Skabeloner",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Udvikler Information"
+    },
+    "state": {
+        "default": {
+            "off": "Fra",
+            "on": "Til",
+            "unknown": "Ukendt",
+            "unavailable": "Utilgængelig"
+        },
+        "alarm_control_panel": {
+            "armed": "Tilkoblet",
+            "disarmed": "Frakoblet",
+            "armed_home": "Tilkoblet hjemme",
+            "armed_away": "Tilkoblet ude",
+            "armed_night": "Tilkoblet nat",
+            "pending": "Afventer",
+            "arming": "Tilkobler",
+            "disarming": "Frakobler",
+            "triggered": "Udløst",
+            "armed_custom_bypass": "Delvis tilkoblet"
+        },
+        "automation": {
+            "off": "Fra",
+            "on": "Til"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Fra",
+                "on": "Til"
+            },
+            "moisture": {
+                "off": "Tør",
+                "on": "Fugtig"
+            },
+            "gas": {
+                "off": "Ikke registreret",
+                "on": "Registreret"
+            },
+            "motion": {
+                "off": "Ikke registreret",
+                "on": "Registreret"
+            },
+            "occupancy": {
+                "off": "Ikke registreret",
+                "on": "Registreret"
+            },
+            "smoke": {
+                "off": "Ikke registreret",
+                "on": "Registreret"
+            },
+            "sound": {
+                "off": "Ikke registreret",
+                "on": "Registreret"
+            },
+            "vibration": {
+                "off": "Ikke registreret",
+                "on": "Registreret"
+            },
+            "opening": {
+                "off": "Lukket",
+                "on": "Åben"
+            },
+            "safety": {
+                "off": "Sikret",
+                "on": "Usikret"
+            },
+            "presence": {
+                "off": "Ude",
+                "on": "Hjemme"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Lav"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Afbrudt",
+                "on": "Forbundet"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Koldt"
+            },
+            "door": {
+                "off": "Lukket",
+                "on": "Åben"
+            },
+            "garage_door": {
+                "off": "Lukket",
+                "on": "Åben"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Varmt"
+            },
+            "window": {
+                "off": "Lukket",
+                "on": "Åben"
+            }
+        },
+        "calendar": {
+            "off": "Fra",
+            "on": "Til"
+        },
+        "camera": {
+            "recording": "Optager",
+            "streaming": "Streamer",
+            "idle": "Inaktiv"
+        },
+        "climate": {
+            "off": "Fra",
+            "on": "Til",
+            "heat": "Varme",
+            "cool": "Køl",
+            "idle": "Inaktiv",
+            "auto": "Auto",
+            "dry": "Tør",
+            "fan_only": "Kun blæser",
+            "eco": "Øko",
+            "electric": "Elektrisk",
+            "performance": "Ydeevne",
+            "high_demand": "Høj efterspørgsel",
+            "heat_pump": "Varmepumpe",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Konfigurer",
+            "configured": "Konfigureret"
+        },
+        "cover": {
+            "open": "Åben",
+            "opening": "Åbner",
+            "closed": "Lukket",
+            "closing": "Lukker",
+            "stopped": "Stoppet"
+        },
+        "device_tracker": {
+            "home": "Hjemme",
+            "not_home": "Ude"
+        },
+        "fan": {
+            "off": "Slukket",
+            "on": "Tændt"
+        },
+        "group": {
+            "off": "Fra",
+            "on": "Til",
+            "home": "Hjemme",
+            "not_home": "Ude",
+            "open": "Åben",
+            "opening": "Åbner",
+            "closed": "Lukket",
+            "closing": "Lukker",
+            "stopped": "Stoppet",
+            "locked": "Låst",
+            "unlocked": "Ulåst",
+            "ok": "OK",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Fra",
+            "on": "Til"
+        },
+        "light": {
+            "off": "Slukket",
+            "on": "Tændt"
+        },
+        "lock": {
+            "locked": "Låst",
+            "unlocked": "Ulåst"
+        },
+        "media_player": {
+            "off": "Slukket",
+            "on": "Tændt",
+            "playing": "Afspiller",
+            "paused": "Sat på pause",
+            "idle": "Inaktiv",
+            "standby": "Standby"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Fra",
+            "on": "Til"
+        },
+        "scene": {
+            "scening": "Skifter scene"
+        },
+        "script": {
+            "off": "Fra",
+            "on": "Til"
+        },
+        "sensor": {
+            "off": "Fra",
+            "on": "Til"
+        },
+        "sun": {
+            "above_horizon": "Over horisonten",
+            "below_horizon": "Under horisonten"
+        },
+        "switch": {
+            "off": "Fra",
+            "on": "Til"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initialiserer",
+                "dead": "Død",
+                "sleeping": "Sover",
+                "ready": "Klar"
+            },
+            "query_stage": {
+                "initializing": "Initialiserer ({query_stage})",
+                "dead": "Død ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Ukendt",
+            "unavailable": "Utilgængelig"
+        },
+        "alarm_control_panel": {
+            "armed": "Tilkoblet",
+            "disarmed": "Frakoblet",
+            "armed_home": "Tilkoblet",
+            "armed_away": "Tilkoblet",
+            "armed_night": "Tilkoblet",
+            "pending": "Venter",
+            "arming": "Tilkobler",
+            "disarming": "Frakobler",
+            "triggered": "Udløst",
+            "armed_custom_bypass": "Tilkoblet"
+        },
+        "device_tracker": {
+            "home": "Hjemme",
+            "not_home": "Ude"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Klar afsluttet",
+                "add_item": "Tilføj element",
+                "microphone_tip": "Tryk på mikrofonen øverst til højre og sig “Add candy to my shopping list”"
+            },
+            "history": {
+                "showing_entries": "Viser emner for",
+                "period": "Periode"
+            },
+            "logbook": {
+                "showing_entries": "Viser emner for"
+            },
+            "mailbox": {
+                "empty": "Du har ingen beskeder",
+                "playback_title": "Meddelelse afspilles",
+                "delete_prompt": "Slet denne besked",
+                "delete_button": "Slet"
+            },
+            "config": {
+                "header": "Konfigurer Home Assistant",
+                "core": {
+                    "caption": "Generelt",
+                    "section": {
+                        "core": {
+                            "header": "Konfiguration og server kontrol",
+                            "validation": {
+                                "check_config": "Tjek konfiguration",
+                                "valid": "Konfiguration gyldig!",
+                                "invalid": "Konfigurationen ugyldig"
+                            },
+                            "reloading": {
+                                "heading": "Genindlæsning af konfiguration",
+                                "core": "Genindlæs system",
+                                "group": "Genindlæs grupper",
+                                "automation": "Genindlæs automatiseringer",
+                                "script": "Genindlæs scripts"
+                            },
+                            "server_management": {
+                                "heading": "Serveradministration",
+                                "restart": "Genstart",
+                                "stop": "Stop"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfigurer push-meddelelser",
+                            "introduction": "Aktivér denne indstilling for at modtage push-meddelelser på denne enhed",
+                            "push_notifications": "Push-meddelelser"
+                        },
+                        "translation": {
+                            "header": "Vælg et sprog",
+                            "introduction": "Vælg et sprog til Home Assistant til denne enhed",
+                            "language": "Sprog"
+                        },
+                        "themes": {
+                            "header": "Vælg et tema",
+                            "theme": "Tema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Tilpasning",
+                    "description": "Tilpas dine enheder"
+                },
+                "automation": {
+                    "caption": "Automatisering",
+                    "description": "Opret og rediger automatiseringer"
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Opret og rediger scripts"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Administrer dit Z-Wave netværk"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Log af",
+            "developer_tools": "Udviklerværktøjer"
+        },
+        "common": {
+            "loading": "Indlæser",
+            "cancel": "Annuller"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
+            "week": "{count} {count, plural,\none {uge}\nother {uger}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}"
+        },
+        "login-form": {
+            "password": "Adgangskode",
+            "remember": "Husk",
+            "log_in": "Log på"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Billedet er ikke tilgængeligt"
+            },
+            "persistent_notification": {
+                "dismiss": "Afvis"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Alarm kontrolpanel",
+        "automation": "Automatisering",
+        "binary_sensor": "Binær sensor",
+        "calendar": "Kalender",
+        "camera": "Kamera",
+        "climate": "Klima",
+        "configurator": "Konfigurator",
+        "conversation": "Samtale",
+        "cover": "Dække",
+        "device_tracker": "Enhedssporing",
+        "fan": "Ventilator",
+        "history_graph": "Historik graf",
+        "group": "Gruppe",
+        "image_processing": "Billedbehandling",
+        "input_boolean": "Valgt boolsk",
+        "input_datetime": "Indsæt dato og tid",
+        "input_select": "Indsæt valg",
+        "input_number": "Indsæt nummer",
+        "input_text": "Indsæt tekst",
+        "light": "Lys",
+        "lock": "Lås",
+        "mailbox": "Postkasse",
+        "media_player": "Medieafspiller",
+        "notify": "Meddelelser",
+        "plant": "Plante",
+        "proximity": "Nærhed",
+        "remote": "Fjernbetjening",
+        "scene": "Scene",
+        "script": "Script",
+        "sensor": "Sensor",
+        "sun": "Sol",
+        "switch": "Kontakt",
+        "updater": "Opdater",
+        "weblink": "Link",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Luftfugtighed",
+            "visibility": "Sigtbarhed",
+            "wind_speed": "Vindhastighed"
+        }
+    }
+}
