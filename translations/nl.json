@@ -1,1 +1,417 @@
-{"panel":{"config":"Instellingen","states":"Overzicht","map":"Kaart","logbook":"Logboek","history":"Geschiedenis","mailbox":"Postvak","shopping_list":"Boodschappenlijst","dev-services":"Diensten","dev-states":"Toestanden","dev-events":"Gebeurtenissen","dev-templates":"Sjablonen","dev-mqtt":"MQTT","dev-info":"Info"},"state":{"default":{"off":"Uit","on":"Aan","unknown":"Onbekend","unavailable":"Onbeschikbaar"},"alarm_control_panel":{"armed":"Ingeschakeld","disarmed":"Uitgeschakeld","armed_home":"Ingeschakeld thuis","armed_away":"Ingeschakeld afwezig","armed_night":"Ingeschakeld nacht","pending":"In wacht","arming":"Schakelt in","disarming":"Schakelt uit","triggered":"Geactiveerd","armed_custom_bypass":"Gedeeltelijk actief"},"automation":{"off":"Uit","on":"Aan"},"binary_sensor":{"default":{"off":"Uit","on":"Aan"},"moisture":{"off":"Droog","on":"Vochtig"},"gas":{"off":"Niet gedetecteerd","on":"Gedetecteerd"},"motion":{"off":"Niet gedetecteerd","on":"Gedetecteerd"},"occupancy":{"off":"Niet gedetecteerd","on":"Gedetecteerd"},"smoke":{"off":"Niet gedetecteerd","on":"Gedetecteerd"},"sound":{"off":"Niet gedetecteerd","on":"Gedetecteerd"},"vibration":{"off":"Niet gedetecteerd","on":"Gedetecteerd"},"opening":{"off":"Gesloten","on":"Open"},"safety":{"off":"Veilig","on":"Onveilig"},"presence":{"off":"Afwezig","on":"Thuis"},"battery":{"off":"Normaal","on":"Laag"},"problem":{"off":"Oké","on":"Probleem"},"connectivity":{"off":"Verbroken","on":"Verbonden"},"cold":{"off":"Normaal","on":"Koud"},"door":{"off":"Dicht","on":"Open"},"garage_door":{"off":"Dicht","on":"Open"},"heat":{"off":"Normaal","on":"Heet"},"window":{"off":"Dicht","on":"Open"}},"calendar":{"off":"Uit","on":"Aan"},"camera":{"recording":"Opnemen","streaming":"Streamen","idle":"Inactief"},"climate":{"off":"Uit","on":"Aan","heat":"Verwarmen","cool":"Koelen","idle":"Inactief","auto":"Auto","dry":"Droog","fan_only":"Alleen ventilatie","eco":"Eco","electric":"Elektrisch","performance":"Prestatie","high_demand":"Hoge vraag","heat_pump":"Warmtepomp","gas":"Gas"},"configurator":{"configure":"Configureer","configured":"Geconfigureerd"},"cover":{"open":"Open","opening":"Opent","closed":"Gesloten","closing":"Sluit","stopped":"Gestopt"},"device_tracker":{"home":"Thuis","not_home":"Afwezig"},"fan":{"off":"Uit","on":"Aan"},"group":{"off":"Uit","on":"Aan","home":"Thuis","not_home":"Afwezig","open":"Open","opening":"Openen","closed":"Gesloten","closing":"Sluiten","stopped":"Gestopt","locked":"Vergrendeld","unlocked":"Ontgrendeld","ok":"OK","problem":"Probleem"},"input_boolean":{"off":"Uit","on":"Aan"},"light":{"off":"Uit","on":"Aan"},"lock":{"locked":"Vergrendeld","unlocked":"Ontgrendeld"},"media_player":{"off":"Uit","on":"Aan","playing":"Afspelen","paused":"Gepauzeerd","idle":"Inactief","standby":"Stand-by"},"plant":{"ok":"OK","problem":"Probleem"},"remote":{"off":"Uit","on":"Aan"},"scene":{"scening":"Scenarios"},"script":{"off":"Uit","on":"Aan"},"sensor":{"off":"Uit","on":"Aan"},"sun":{"above_horizon":"Boven de horizon","below_horizon":"Onder de horizon"},"switch":{"off":"Uit","on":"Aan"},"zwave":{"default":{"initializing":"Initialiseren","dead":"Onbereikbaar","sleeping":"Slaapt","ready":"Gereed"},"query_stage":{"initializing":"Initialiseren ({query_stage})","dead":"Onbereikbaar ({query_stage})"}}},"state_badge":{"default":{"unknown":"Onbekend","unavailable":"Niet beschikbaar"},"alarm_control_panel":{"armed":"Actief","disarmed":"Uit","armed_home":"Ingeschakeld","armed_away":"Ingeschakeld","armed_night":"Ingeschakeld","pending":"Wacht","arming":"Aan","disarming":"Uitschakelen","triggered":"Gaat af","armed_custom_bypass":"Ingeschakeld"},"device_tracker":{"home":"Thuis","not_home":"Afwezig"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Wissen voltooid","add_item":"Item toevoegen","microphone_tip":"Tik op de microfoon rechtsboven en zeg \"Add candy to my shopping list\""},"history":{"showing_entries":"Toon items voor","period":"Periode"},"logbook":{"showing_entries":"Toon items voor"},"mailbox":{"empty":"Je hebt geen berichten","playback_title":"Bericht afspelen","delete_prompt":"Bericht verwijderen?","delete_button":"Verwijderen"},"config":{"header":"Configureer Home Assistant","core":{"caption":"Algemeen","section":{"core":{"validation":{"introduction":"Controleer uw configuratie als u onlangs wijzigingen heeft aangebracht en er zeker van wil zijn dat deze geldig is","check_config":"Controleer configuratie","valid":"Geldige configuratie!","invalid":"Ongeldige configuratie"},"reloading":{"introduction":"Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als u reload gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.","core":"Herlaad kern","group":"Herlaad groepen","script":"Herlaad scripts"},"server_management":{"heading":"Serverbeheer","introduction":"Beheer uw Home Assistant-server ... via Home Assistant.","stop":"Stop"}},"push_notifications":{"header":"Configureer push-meldingen","push_notifications":"Push-meldingen"},"translation":{"header":"Kies een taal","introduction":"Kies een taal voor de Home Assistant interface op dit apparaat","language":"Taal"},"themes":{"header":"Stel een thema in","theme":"Thema"}}},"customize":{"caption":"Aanpassingen"},"automation":{"caption":"Automatisering"},"script":{"caption":"Script","description":"Maak en bewerk scripts"},"zwave":{"caption":"Z-Wave","description":"Beheer uw Z-Wave-netwerk"}}},"sidebar":{"log_out":"Uitloggen","developer_tools":"Ontwikkelaarstools"},"common":{"loading":"Bezig met laden","cancel":"Annuleren"},"duration":{"day":"{count} {count, plural,\none {dag}\nother {dagen}\n}","week":"{count} {count, plural,\none {week}\nother {weken}\n}","second":"{count} {count, plural,\none {seconde}\nother {seconden}\n}"},"login-form":{"password":"Wachtwoord","remember":"Onthouden","log_in":"Aanmelden"},"card":{"camera":{"not_available":"Afbeelding niet beschikbaar"}}},"domain":{"alarm_control_panel":"Alarm bedieningspaneel","automation":"Automatisering","binary_sensor":"Binaire sensor","calendar":"Kalender","camera":"Camera","climate":"Klimaat","configurator":"Configurator","conversation":"Conversatie","cover":"Bedekking","device_tracker":"Apparaat tracker","fan":"Ventilator","history_graph":"Geschiedenis","group":"Groep","image_processing":"Beeldverwerking","input_boolean":"Boolean invoer","input_datetime":"Invoer datum en tijd","input_select":"Invoer selectie","input_number":"Numerieke invoer","input_text":"Tekstinvoer","light":"Licht","lock":"Slot","mailbox":"Postvak","media_player":"Mediaspeler","notify":"Notificeer","plant":"Plant","proximity":"Nabijheid","remote":"Extern","scene":"Scène","script":"Script","sensor":"Sensor","sun":"Zon","switch":"Schakelaar","updater":"Updater","weblink":"Web link","zwave":"Z-Wave"},"attribute":{"weather":{"humidity":"Vochtigheid","visibility":"Zichtbaarheid","wind_speed":"Windsnelheid"}}}
+{
+    "panel": {
+        "config": "Instellingen",
+        "states": "Overzicht",
+        "map": "Kaart",
+        "logbook": "Logboek",
+        "history": "Geschiedenis",
+        "mailbox": "Postvak",
+        "shopping_list": "Boodschappenlijst",
+        "dev-services": "Diensten",
+        "dev-states": "Toestanden",
+        "dev-events": "Gebeurtenissen",
+        "dev-templates": "Sjablonen",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Uit",
+            "on": "Aan",
+            "unknown": "Onbekend",
+            "unavailable": "Onbeschikbaar"
+        },
+        "alarm_control_panel": {
+            "armed": "Ingeschakeld",
+            "disarmed": "Uitgeschakeld",
+            "armed_home": "Ingeschakeld thuis",
+            "armed_away": "Ingeschakeld afwezig",
+            "armed_night": "Ingeschakeld nacht",
+            "pending": "In wacht",
+            "arming": "Schakelt in",
+            "disarming": "Schakelt uit",
+            "triggered": "Geactiveerd",
+            "armed_custom_bypass": "Gedeeltelijk actief"
+        },
+        "automation": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Uit",
+                "on": "Aan"
+            },
+            "moisture": {
+                "off": "Droog",
+                "on": "Vochtig"
+            },
+            "gas": {
+                "off": "Niet gedetecteerd",
+                "on": "Gedetecteerd"
+            },
+            "motion": {
+                "off": "Niet gedetecteerd",
+                "on": "Gedetecteerd"
+            },
+            "occupancy": {
+                "off": "Niet gedetecteerd",
+                "on": "Gedetecteerd"
+            },
+            "smoke": {
+                "off": "Niet gedetecteerd",
+                "on": "Gedetecteerd"
+            },
+            "sound": {
+                "off": "Niet gedetecteerd",
+                "on": "Gedetecteerd"
+            },
+            "vibration": {
+                "off": "Niet gedetecteerd",
+                "on": "Gedetecteerd"
+            },
+            "opening": {
+                "off": "Gesloten",
+                "on": "Open"
+            },
+            "safety": {
+                "off": "Veilig",
+                "on": "Onveilig"
+            },
+            "presence": {
+                "off": "Afwezig",
+                "on": "Thuis"
+            },
+            "battery": {
+                "off": "Normaal",
+                "on": "Laag"
+            },
+            "problem": {
+                "off": "Oké",
+                "on": "Probleem"
+            },
+            "connectivity": {
+                "off": "Verbroken",
+                "on": "Verbonden"
+            },
+            "cold": {
+                "off": "Normaal",
+                "on": "Koud"
+            },
+            "door": {
+                "off": "Dicht",
+                "on": "Open"
+            },
+            "garage_door": {
+                "off": "Dicht",
+                "on": "Open"
+            },
+            "heat": {
+                "off": "Normaal",
+                "on": "Heet"
+            },
+            "window": {
+                "off": "Dicht",
+                "on": "Open"
+            }
+        },
+        "calendar": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "camera": {
+            "recording": "Opnemen",
+            "streaming": "Streamen",
+            "idle": "Inactief"
+        },
+        "climate": {
+            "off": "Uit",
+            "on": "Aan",
+            "heat": "Verwarmen",
+            "cool": "Koelen",
+            "idle": "Inactief",
+            "auto": "Auto",
+            "dry": "Droog",
+            "fan_only": "Alleen ventilatie",
+            "eco": "Eco",
+            "electric": "Elektrisch",
+            "performance": "Prestatie",
+            "high_demand": "Hoge vraag",
+            "heat_pump": "Warmtepomp",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Configureer",
+            "configured": "Geconfigureerd"
+        },
+        "cover": {
+            "open": "Open",
+            "opening": "Opent",
+            "closed": "Gesloten",
+            "closing": "Sluit",
+            "stopped": "Gestopt"
+        },
+        "device_tracker": {
+            "home": "Thuis",
+            "not_home": "Afwezig"
+        },
+        "fan": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "group": {
+            "off": "Uit",
+            "on": "Aan",
+            "home": "Thuis",
+            "not_home": "Afwezig",
+            "open": "Open",
+            "opening": "Openen",
+            "closed": "Gesloten",
+            "closing": "Sluiten",
+            "stopped": "Gestopt",
+            "locked": "Vergrendeld",
+            "unlocked": "Ontgrendeld",
+            "ok": "OK",
+            "problem": "Probleem"
+        },
+        "input_boolean": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "light": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "lock": {
+            "locked": "Vergrendeld",
+            "unlocked": "Ontgrendeld"
+        },
+        "media_player": {
+            "off": "Uit",
+            "on": "Aan",
+            "playing": "Afspelen",
+            "paused": "Gepauzeerd",
+            "idle": "Inactief",
+            "standby": "Stand-by"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Probleem"
+        },
+        "remote": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "scene": {
+            "scening": "Scenarios"
+        },
+        "script": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "sensor": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "sun": {
+            "above_horizon": "Boven de horizon",
+            "below_horizon": "Onder de horizon"
+        },
+        "switch": {
+            "off": "Uit",
+            "on": "Aan"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initialiseren",
+                "dead": "Onbereikbaar",
+                "sleeping": "Slaapt",
+                "ready": "Gereed"
+            },
+            "query_stage": {
+                "initializing": "Initialiseren ({query_stage})",
+                "dead": "Onbereikbaar ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Onbekend",
+            "unavailable": "Niet beschikbaar"
+        },
+        "alarm_control_panel": {
+            "armed": "Actief",
+            "disarmed": "Uit",
+            "armed_home": "Ingeschakeld",
+            "armed_away": "Ingeschakeld",
+            "armed_night": "Ingeschakeld",
+            "pending": "Wacht",
+            "arming": "Aan",
+            "disarming": "Uitschakelen",
+            "triggered": "Gaat af",
+            "armed_custom_bypass": "Ingeschakeld"
+        },
+        "device_tracker": {
+            "home": "Thuis",
+            "not_home": "Afwezig"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Wissen voltooid",
+                "add_item": "Item toevoegen",
+                "microphone_tip": "Tik op de microfoon rechtsboven en zeg \"Add candy to my shopping list\""
+            },
+            "history": {
+                "showing_entries": "Toon items voor",
+                "period": "Periode"
+            },
+            "logbook": {
+                "showing_entries": "Toon items voor"
+            },
+            "mailbox": {
+                "empty": "Je hebt geen berichten",
+                "playback_title": "Bericht afspelen",
+                "delete_prompt": "Bericht verwijderen?",
+                "delete_button": "Verwijderen"
+            },
+            "config": {
+                "header": "Configureer Home Assistant",
+                "introduction": "Hier kunt u uw componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
+                "core": {
+                    "caption": "Algemeen",
+                    "description": "Valideer uw configuratiebestand en beheer de server",
+                    "section": {
+                        "core": {
+                            "header": "Configuratie en serverbeheer",
+                            "introduction": "Het aanpassen van uw configuratie kan een moeizaam proces zijn.  Dat weten we. Dit onderdeel probeert u het leven iets makkelijker te maken.",
+                            "validation": {
+                                "heading": "Valideer configuratie",
+                                "introduction": "Controleer uw configuratie als u onlangs wijzigingen heeft aangebracht en er zeker van wil zijn dat deze geldig is",
+                                "check_config": "Controleer configuratie",
+                                "valid": "Geldige configuratie!",
+                                "invalid": "Ongeldige configuratie"
+                            },
+                            "reloading": {
+                                "heading": "Configuratie herladen",
+                                "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als u reload gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
+                                "core": "Herlaad kern",
+                                "group": "Herlaad groepen",
+                                "automation": "Herlaad automatiseringen",
+                                "script": "Herlaad scripts"
+                            },
+                            "server_management": {
+                                "heading": "Serverbeheer",
+                                "introduction": "Beheer uw Home Assistant-server ... via Home Assistant.",
+                                "restart": "Herstarten",
+                                "stop": "Stop"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Configureer push-meldingen",
+                            "introduction": "Schakel deze instelling in om pushmeldingen op dit apparaat te ontvangen",
+                            "push_notifications": "Push-meldingen"
+                        },
+                        "translation": {
+                            "header": "Kies een taal",
+                            "introduction": "Kies een taal voor de Home Assistant interface op dit apparaat",
+                            "language": "Taal"
+                        },
+                        "themes": {
+                            "header": "Stel een thema in",
+                            "introduction": "Kies 'gekozen in beheeromgeving' om het thema te gebruiken dat is gekozen in de beheeromgeving of kies een thema voor dit apparaat",
+                            "theme": "Thema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Aanpassingen",
+                    "description": "Pas uw entiteiten aan"
+                },
+                "automation": {
+                    "caption": "Automatisering",
+                    "description": "Het maken en bewerken van automatiseringen"
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Maak en bewerk scripts"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Beheer uw Z-Wave-netwerk"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Uitloggen",
+            "developer_tools": "Ontwikkelaarstools"
+        },
+        "common": {
+            "loading": "Bezig met laden",
+            "cancel": "Annuleren"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
+            "week": "{count} {count, plural,\none {week}\nother {weken}\n}",
+            "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}"
+        },
+        "login-form": {
+            "password": "Wachtwoord",
+            "remember": "Onthouden",
+            "log_in": "Aanmelden"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Afbeelding niet beschikbaar"
+            },
+            "persistent_notification": {
+                "dismiss": "Sluiten"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Alarm bedieningspaneel",
+        "automation": "Automatisering",
+        "binary_sensor": "Binaire sensor",
+        "calendar": "Kalender",
+        "camera": "Camera",
+        "climate": "Klimaat",
+        "configurator": "Configurator",
+        "conversation": "Conversatie",
+        "cover": "Bedekking",
+        "device_tracker": "Apparaat tracker",
+        "fan": "Ventilator",
+        "history_graph": "Geschiedenis",
+        "group": "Groep",
+        "image_processing": "Beeldverwerking",
+        "input_boolean": "Boolean invoer",
+        "input_datetime": "Invoer datum en tijd",
+        "input_select": "Invoer selectie",
+        "input_number": "Numerieke invoer",
+        "input_text": "Tekstinvoer",
+        "light": "Licht",
+        "lock": "Slot",
+        "mailbox": "Postvak",
+        "media_player": "Mediaspeler",
+        "notify": "Notificeer",
+        "plant": "Plant",
+        "proximity": "Nabijheid",
+        "remote": "Extern",
+        "scene": "Scène",
+        "script": "Script",
+        "sensor": "Sensor",
+        "sun": "Zon",
+        "switch": "Schakelaar",
+        "updater": "Updater",
+        "weblink": "Web link",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Vochtigheid",
+            "visibility": "Zichtbaarheid",
+            "wind_speed": "Windsnelheid"
+        }
+    }
+}

@@ -1,1 +1,341 @@
-{"panel":{"config":"Konfiguration","states":"Översikt","map":"Karta","logbook":"Loggbok","history":"Historik","mailbox":"Brevlåda","shopping_list":"Inköpslista","dev-services":"Tjänster","dev-states":"Tillstånd","dev-events":"Händelser","dev-templates":"Mallar","dev-mqtt":"MQTT","dev-info":"Info"},"state":{"default":{"off":"Av","on":"På","unknown":"Okänd","unavailable":"Otillgänglig"},"alarm_control_panel":{"armed":"Larmat","disarmed":"Avlarmat","armed_home":"Hemmalarmat","armed_away":"Larmat","armed_night":"Nattlarmat","pending":"Väntande","arming":"Tillkopplar","disarming":"Frånkopplar","triggered":"Utlöst","armed_custom_bypass":"Larm förbikopplat"},"automation":{"off":"Av","on":"På"},"binary_sensor":{"default":{"off":"Av","on":"På"},"moisture":{"off":"Torr","on":"Blöt"},"gas":{"off":"Klart","on":"Detekterad"},"motion":{"off":"Av","on":"Detekterad"},"occupancy":{"off":"Klart","on":"Detekterad"},"smoke":{"off":"Av","on":"Detekterad"},"sound":{"off":"Av","on":"På"},"vibration":{"off":"Klart","on":"Detekterad"},"opening":{"off":"Stängd","on":"Öppen"},"safety":{"off":"Säker","on":"Osäker"},"presence":{"off":"Borta","on":"Hemma"},"battery":{"off":"Normal","on":"Låg"},"problem":{"off":"Ok","on":"Problem"},"connectivity":{"off":"Frånkopplad","on":"Ansluten"},"cold":{"off":"Normal","on":"Kallt"},"door":{"off":"Stängd","on":"Öppen"},"garage_door":{"off":"Stängd","on":"Öppen"},"heat":{"off":"Normal","on":"Varmt"},"window":{"off":"Stängt","on":"Öppet"}},"calendar":{"off":"Av","on":"På"},"camera":{"recording":"Spelar in","streaming":"Strömmar","idle":"Inaktiv"},"climate":{"off":"Av","on":"På","heat":"Värme","cool":"Kylning","idle":"Inaktiv","auto":"Automatisk","dry":"Torr","fan_only":"Endast fläkt","eco":"Eco","electric":"Elektrisk","performance":"Prestanda","high_demand":"Hög efterfrågan","heat_pump":"Värmepump","gas":"Gas"},"configurator":{"configure":"Konfigurera","configured":"Konfigurerad"},"cover":{"open":"Öppen","opening":"Öppnar","closed":"Stängd","closing":"Stänger","stopped":"Stoppad"},"device_tracker":{"home":"Hemma","not_home":"Borta"},"fan":{"off":"Av","on":"På"},"group":{"off":"Av","on":"På","home":"Hemma","not_home":"Borta","open":"Öppen","opening":"Öppnar","closed":"Stängd","closing":"Stänger","stopped":"Stoppad","locked":"Låst","unlocked":"Olåst","ok":"Ok","problem":"Problem"},"input_boolean":{"off":"Av","on":"På"},"light":{"off":"Av","on":"På"},"lock":{"locked":"Låst","unlocked":"Olåst"},"media_player":{"off":"Av","on":"På","playing":"Spelar","paused":"Pausad","idle":"Inaktiv","standby":"Viloläge"},"plant":{"ok":"Ok","problem":"Problem"},"remote":{"off":"Av","on":"På"},"scene":{"scening":"Aktiverar scen"},"script":{"off":"Av","on":"På"},"sensor":{"off":"Av","on":"På"},"sun":{"above_horizon":"Ovanför horisonten","below_horizon":"Nedanför horisonten"},"switch":{"off":"Av","on":"På"},"zwave":{"default":{"initializing":"Initierar","dead":"Död","sleeping":"Sovande","ready":"Redo"},"query_stage":{"initializing":"Initierar ({query_stage})","dead":"Död ({query_stage})"}}},"state_badge":{"default":{"unknown":"Okänd","unavailable":"Otillgänglig"},"alarm_control_panel":{"armed":"Tillkopplat","disarmed":"Frånkopplat","armed_home":"Larmat","armed_away":"Larmat","armed_night":"Larmat","pending":"Väntar","arming":"Tillkopplar","disarming":"Frånkopplar","triggered":"Utlöst","armed_custom_bypass":"Larmat"},"device_tracker":{"home":"Hemma","not_home":"Borta"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Rensa klara","add_item":"Lägg till objekt","microphone_tip":"Tryck på mikrofonen längst upp till höger och säg \"Add candy to my shopping list\""},"history":{"showing_entries":"Visar poster för","period":"Period"},"logbook":{"showing_entries":"Visar poster för"},"mailbox":{"empty":"Du har inga meddelanden","playback_title":"Meddelandeuppspelning","delete_prompt":"Vill du ta bort det här meddelandet?","delete_button":"Ta bort"},"config":{"zwave":{"caption":"Z-Wave"}}},"sidebar":{"log_out":"Logga ut","developer_tools":"Utvecklarverktyg"},"common":{"loading":"Läser in","cancel":"Avbryt"},"duration":{"day":"{count} {count, plural,\none {dag}\nother {dagar}\n}","week":"{count} {count, plural,\none {vecka}\nother {veckor}\n}","second":"{count} {count, plural,\none {sekund}\nother {sekunder}\n}"},"login-form":{"password":"Lösenord","remember":"Kom ihåg","log_in":"Logga in"}},"domain":{"alarm_control_panel":"Larmkontrollpanel","automation":"Automation","binary_sensor":"Binär sensor","calendar":"Kalender","camera":"Kamera","climate":"Klimat","configurator":"Konfiguratorn","conversation":"Samtal","cover":"Rullgardin","device_tracker":"Enhetsspårare","fan":"Fläkt","history_graph":"Historikdiagram","group":"Grupp","image_processing":"Bildbehandling","input_boolean":"Välj av eller på","input_datetime":"Mata in datum och tid","input_select":"Välj","input_number":"Mata in tal","input_text":"Mata in text","light":"Lampor","lock":"Lås","mailbox":"Brevlåda","media_player":"Mediaspelare","notify":"Meddela","plant":"Växt","proximity":"Närhet","remote":"Fjärrkontroll","scene":"Scen","script":"Skript","sensor":"Sensor","sun":"Sol","switch":"Kontakt","updater":"Uppdaterare","weblink":"Webblänk","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Konfiguration",
+        "states": "Översikt",
+        "map": "Karta",
+        "logbook": "Loggbok",
+        "history": "Historik",
+        "mailbox": "Brevlåda",
+        "shopping_list": "Inköpslista",
+        "dev-services": "Tjänster",
+        "dev-states": "Tillstånd",
+        "dev-events": "Händelser",
+        "dev-templates": "Mallar",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Av",
+            "on": "På",
+            "unknown": "Okänd",
+            "unavailable": "Otillgänglig"
+        },
+        "alarm_control_panel": {
+            "armed": "Larmat",
+            "disarmed": "Avlarmat",
+            "armed_home": "Hemmalarmat",
+            "armed_away": "Larmat",
+            "armed_night": "Nattlarmat",
+            "pending": "Väntande",
+            "arming": "Tillkopplar",
+            "disarming": "Frånkopplar",
+            "triggered": "Utlöst",
+            "armed_custom_bypass": "Larm förbikopplat"
+        },
+        "automation": {
+            "off": "Av",
+            "on": "På"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Av",
+                "on": "På"
+            },
+            "moisture": {
+                "off": "Torr",
+                "on": "Blöt"
+            },
+            "gas": {
+                "off": "Klart",
+                "on": "Detekterad"
+            },
+            "motion": {
+                "off": "Av",
+                "on": "Detekterad"
+            },
+            "occupancy": {
+                "off": "Klart",
+                "on": "Detekterad"
+            },
+            "smoke": {
+                "off": "Av",
+                "on": "Detekterad"
+            },
+            "sound": {
+                "off": "Av",
+                "on": "På"
+            },
+            "vibration": {
+                "off": "Klart",
+                "on": "Detekterad"
+            },
+            "opening": {
+                "off": "Stängd",
+                "on": "Öppen"
+            },
+            "safety": {
+                "off": "Säker",
+                "on": "Osäker"
+            },
+            "presence": {
+                "off": "Borta",
+                "on": "Hemma"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Låg"
+            },
+            "problem": {
+                "off": "Ok",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Frånkopplad",
+                "on": "Ansluten"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Kallt"
+            },
+            "door": {
+                "off": "Stängd",
+                "on": "Öppen"
+            },
+            "garage_door": {
+                "off": "Stängd",
+                "on": "Öppen"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Varmt"
+            },
+            "window": {
+                "off": "Stängt",
+                "on": "Öppet"
+            }
+        },
+        "calendar": {
+            "off": "Av",
+            "on": "På"
+        },
+        "camera": {
+            "recording": "Spelar in",
+            "streaming": "Strömmar",
+            "idle": "Inaktiv"
+        },
+        "climate": {
+            "off": "Av",
+            "on": "På",
+            "heat": "Värme",
+            "cool": "Kylning",
+            "idle": "Inaktiv",
+            "auto": "Automatisk",
+            "dry": "Torr",
+            "fan_only": "Endast fläkt",
+            "eco": "Eco",
+            "electric": "Elektrisk",
+            "performance": "Prestanda",
+            "high_demand": "Hög efterfrågan",
+            "heat_pump": "Värmepump",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Konfigurera",
+            "configured": "Konfigurerad"
+        },
+        "cover": {
+            "open": "Öppen",
+            "opening": "Öppnar",
+            "closed": "Stängd",
+            "closing": "Stänger",
+            "stopped": "Stoppad"
+        },
+        "device_tracker": {
+            "home": "Hemma",
+            "not_home": "Borta"
+        },
+        "fan": {
+            "off": "Av",
+            "on": "På"
+        },
+        "group": {
+            "off": "Av",
+            "on": "På",
+            "home": "Hemma",
+            "not_home": "Borta",
+            "open": "Öppen",
+            "opening": "Öppnar",
+            "closed": "Stängd",
+            "closing": "Stänger",
+            "stopped": "Stoppad",
+            "locked": "Låst",
+            "unlocked": "Olåst",
+            "ok": "Ok",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Av",
+            "on": "På"
+        },
+        "light": {
+            "off": "Av",
+            "on": "På"
+        },
+        "lock": {
+            "locked": "Låst",
+            "unlocked": "Olåst"
+        },
+        "media_player": {
+            "off": "Av",
+            "on": "På",
+            "playing": "Spelar",
+            "paused": "Pausad",
+            "idle": "Inaktiv",
+            "standby": "Viloläge"
+        },
+        "plant": {
+            "ok": "Ok",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Av",
+            "on": "På"
+        },
+        "scene": {
+            "scening": "Aktiverar scen"
+        },
+        "script": {
+            "off": "Av",
+            "on": "På"
+        },
+        "sensor": {
+            "off": "Av",
+            "on": "På"
+        },
+        "sun": {
+            "above_horizon": "Ovanför horisonten",
+            "below_horizon": "Nedanför horisonten"
+        },
+        "switch": {
+            "off": "Av",
+            "on": "På"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initierar",
+                "dead": "Död",
+                "sleeping": "Sovande",
+                "ready": "Redo"
+            },
+            "query_stage": {
+                "initializing": "Initierar ({query_stage})",
+                "dead": "Död ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Okänd",
+            "unavailable": "Otillgänglig"
+        },
+        "alarm_control_panel": {
+            "armed": "Tillkopplat",
+            "disarmed": "Frånkopplat",
+            "armed_home": "Larmat",
+            "armed_away": "Larmat",
+            "armed_night": "Larmat",
+            "pending": "Väntar",
+            "arming": "Tillkopplar",
+            "disarming": "Frånkopplar",
+            "triggered": "Utlöst",
+            "armed_custom_bypass": "Larmat"
+        },
+        "device_tracker": {
+            "home": "Hemma",
+            "not_home": "Borta"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Rensa klara",
+                "add_item": "Lägg till objekt",
+                "microphone_tip": "Tryck på mikrofonen längst upp till höger och säg \"Add candy to my shopping list\""
+            },
+            "history": {
+                "showing_entries": "Visar poster för",
+                "period": "Period"
+            },
+            "logbook": {
+                "showing_entries": "Visar poster för"
+            },
+            "mailbox": {
+                "empty": "Du har inga meddelanden",
+                "playback_title": "Meddelandeuppspelning",
+                "delete_prompt": "Vill du ta bort det här meddelandet?",
+                "delete_button": "Ta bort"
+            },
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Logga ut",
+            "developer_tools": "Utvecklarverktyg"
+        },
+        "common": {
+            "loading": "Läser in",
+            "cancel": "Avbryt"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+            "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}"
+        },
+        "login-form": {
+            "password": "Lösenord",
+            "remember": "Kom ihåg",
+            "log_in": "Logga in"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Larmkontrollpanel",
+        "automation": "Automation",
+        "binary_sensor": "Binär sensor",
+        "calendar": "Kalender",
+        "camera": "Kamera",
+        "climate": "Klimat",
+        "configurator": "Konfiguratorn",
+        "conversation": "Samtal",
+        "cover": "Rullgardin",
+        "device_tracker": "Enhetsspårare",
+        "fan": "Fläkt",
+        "history_graph": "Historikdiagram",
+        "group": "Grupp",
+        "image_processing": "Bildbehandling",
+        "input_boolean": "Välj av eller på",
+        "input_datetime": "Mata in datum och tid",
+        "input_select": "Välj",
+        "input_number": "Mata in tal",
+        "input_text": "Mata in text",
+        "light": "Lampor",
+        "lock": "Lås",
+        "mailbox": "Brevlåda",
+        "media_player": "Mediaspelare",
+        "notify": "Meddela",
+        "plant": "Växt",
+        "proximity": "Närhet",
+        "remote": "Fjärrkontroll",
+        "scene": "Scen",
+        "script": "Skript",
+        "sensor": "Sensor",
+        "sun": "Sol",
+        "switch": "Kontakt",
+        "updater": "Uppdaterare",
+        "weblink": "Webblänk",
+        "zwave": "Z-Wave"
+    }
+}

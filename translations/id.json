@@ -1,0 +1,135 @@
+{
+    "domain": {
+        "group": "Grup",
+        "input_select": "Pilih input",
+        "input_text": "Masukkan teks",
+        "light": "Lampu",
+        "lock": "Kunci"
+    },
+    "ui": {
+        "panel": {
+            "history": {
+                "period": "Periode"
+            },
+            "mailbox": {
+                "empty": "Anda tidak memiliki pesan apa pun",
+                "playback_title": "Pemutaran pesan",
+                "delete_prompt": "Hapus pesan ini?",
+                "delete_button": "Hapus"
+            },
+            "config": {
+                "header": "Mengkonfigurasi Home Assistant",
+                "introduction": "Di sini memungkinkan untuk mengkonfigurasi komponen dan Home Assistant. Belum semua dapat dikonfigurasikan dari UI, tapi kami sedang mengusahakannya.",
+                "core": {
+                    "caption": "Umum",
+                    "description": "Memvalidasi file konfigurasi anda dan mengontrol server",
+                    "section": {
+                        "core": {
+                            "header": "Konfigurasi dan kontrol server",
+                            "introduction": "Mengubah konfigurasi anda bisa menjadi proses yang melelahkan. Kita tahu. Bagian ini akan mencoba membuat hidup anda menjadi sedikit lebih mudah.",
+                            "validation": {
+                                "heading": "Validasi konfigurasi",
+                                "introduction": "Validasikan konfigurasi anda jika anda baru saja membuat beberapa perubahan pada konfigurasi anda dan ingin memastikan semuanya valid",
+                                "check_config": "Periksa konfigurasi",
+                                "valid": "Konfigurasi valid!",
+                                "invalid": "Konfigurasi tidak valid"
+                            },
+                            "reloading": {
+                                "heading": "Memuat ulang konfigurasi",
+                                "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan restart. Menekan tombol reload akan membatalkan konfigurasi sekarang dan memuat konfigurasi yang baru.",
+                                "core": "Muat ulang core",
+                                "group": "Muat ulang grup",
+                                "automation": "Muat ulang otomasi",
+                                "script": "Muat ulang script"
+                            },
+                            "server_management": {
+                                "heading": "Pengelolaan server",
+                                "introduction": "Kontrol server Home Assistant anda ... dari Home Assistant.",
+                                "restart": "Ulang kembali",
+                                "stop": "Stop"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfigurasikan notifikasi push",
+                            "introduction": "Aktifkan setelan ini untuk menerima pemberitahuan push pada perangkat ini",
+                            "push_notifications": "Pemberitahuan push"
+                        },
+                        "translation": {
+                            "header": "Pilih bahasa",
+                            "introduction": "Pilih bahasa untuk antarmuka Home Assistant pada perangkat ini",
+                            "language": "Bahasa"
+                        },
+                        "themes": {
+                            "header": "Tetapkan tema",
+                            "introduction": "Pilih 'Backend-selected' untuk menggunakan tema apa pun yang dipilih oleh backend atau pilih tema untuk perangkat ini",
+                            "theme": "Tema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Penyesuaian",
+                    "description": "Sesuaikan entitas anda"
+                },
+                "automation": {
+                    "caption": "Otomasi",
+                    "description": "Buat dan edit otomasi"
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Buat dan edit script"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Kelola jaringan Z-Wave anda"
+                }
+            }
+        },
+        "common": {
+            "cancel": "Batalkan"
+        },
+        "login-form": {
+            "password": "Kata sandi",
+            "remember": "Ingat",
+            "log_in": "Masuk"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Gambar tidak tersedia"
+            },
+            "persistent_notification": {
+                "dismiss": "Abaikan"
+            }
+        }
+    },
+    "state": {
+        "binary_sensor": {
+            "cold": {
+                "off": "Normal",
+                "on": "Dingin"
+            },
+            "door": {
+                "off": "Tertutup",
+                "on": "Terbuka"
+            },
+            "garage_door": {
+                "off": "Tertutup",
+                "on": "Terbuka"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Panas"
+            },
+            "window": {
+                "off": "Tertutup",
+                "on": "Terbuka"
+            }
+        }
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Kelembaban",
+            "visibility": "Jarak pandang",
+            "wind_speed": "Kecepatan angin"
+        }
+    }
+}

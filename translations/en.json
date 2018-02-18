@@ -1,1 +1,423 @@
-{"panel":{"config":"Configuration","states":"Overview","map":"Map","logbook":"Logbook","history":"History","mailbox":"Mailbox","shopping_list":"Shopping list","dev-services":"Services","dev-states":"States","dev-events":"Events","dev-templates":"Templates","dev-mqtt":"MQTT","dev-info":"Info"},"state":{"default":{"off":"Off","on":"On","unknown":"Unknown","unavailable":"Unavailable"},"alarm_control_panel":{"armed":"Armed","disarmed":"Disarmed","armed_home":"Armed home","armed_away":"Armed away","armed_night":"Armed night","pending":"Pending","arming":"Arming","disarming":"Disarming","triggered":"Triggered","armed_custom_bypass":"Armed custom bypass"},"automation":{"off":"Off","on":"On"},"binary_sensor":{"default":{"off":"Off","on":"On"},"moisture":{"off":"Dry","on":"Wet"},"gas":{"off":"Clear","on":"Detected"},"motion":{"off":"Clear","on":"Detected"},"occupancy":{"off":"Clear","on":"Detected"},"smoke":{"off":"Clear","on":"Detected"},"sound":{"off":"Clear","on":"Detected"},"vibration":{"off":"Clear","on":"Detected"},"opening":{"off":"Closed","on":"Open"},"safety":{"off":"Safe","on":"Unsafe"},"presence":{"off":"Away","on":"Home"},"battery":{"off":"Normal","on":"Low"},"problem":{"off":"OK","on":"Problem"},"connectivity":{"off":"Disconnected","on":"Connected"},"cold":{"off":"Normal","on":"Cold"},"door":{"off":"Closed","on":"Open"},"garage_door":{"off":"Closed","on":"Open"},"heat":{"off":"Normal","on":"Hot"},"window":{"off":"Closed","on":"Open"}},"calendar":{"off":"Off","on":"On"},"camera":{"recording":"Recording","streaming":"Streaming","idle":"Idle"},"climate":{"off":"Off","on":"On","heat":"Heat","cool":"Cool","idle":"Idle","auto":"Auto","dry":"Dry","fan_only":"Fan only","eco":"Eco","electric":"Electric","performance":"Performance","high_demand":"High demand","heat_pump":"Heat pump","gas":"Gas"},"configurator":{"configure":"Configure","configured":"Configured"},"cover":{"open":"Open","opening":"Opening","closed":"Closed","closing":"Closing","stopped":"Stopped"},"device_tracker":{"home":"Home","not_home":"Away"},"fan":{"off":"Off","on":"On"},"group":{"off":"Off","on":"On","home":"Home","not_home":"Away","open":"Open","opening":"Opening","closed":"Closed","closing":"Closing","stopped":"Stopped","locked":"Locked","unlocked":"Unlocked","ok":"OK","problem":"Problem"},"input_boolean":{"off":"Off","on":"On"},"light":{"off":"Off","on":"On"},"lock":{"locked":"Locked","unlocked":"Unlocked"},"media_player":{"off":"Off","on":"On","playing":"Playing","paused":"Paused","idle":"Idle","standby":"Standby"},"plant":{"ok":"OK","problem":"Problem"},"remote":{"off":"Off","on":"On"},"scene":{"scening":"Scening"},"script":{"off":"Off","on":"On"},"sensor":{"off":"Off","on":"On"},"sun":{"above_horizon":"Above horizon","below_horizon":"Below horizon"},"switch":{"off":"Off","on":"On"},"zwave":{"default":{"initializing":"Initializing","dead":"Dead","sleeping":"Sleeping","ready":"Ready"},"query_stage":{"initializing":"Initializing ({query_stage})","dead":"Dead ({query_stage})"}}},"state_badge":{"default":{"unknown":"Unk","unavailable":"Unavai"},"alarm_control_panel":{"armed":"Armed","disarmed":"Disarm","armed_home":"Armed","armed_away":"Armed","armed_night":"Armed","pending":"Pend","arming":"Arming","disarming":"Disarm","triggered":"Trig","armed_custom_bypass":"Armed"},"device_tracker":{"home":"Home","not_home":"Away"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Clear completed","add_item":"Add item","microphone_tip":"Tap the microphone on the top right and say “Add candy to my shopping list”"},"history":{"showing_entries":"Showing entries for","period":"Period"},"logbook":{"showing_entries":"Showing entries for"},"mailbox":{"empty":"You do not have any messages","playback_title":"Message playback","delete_prompt":"Delete this message?","delete_button":"Delete"},"config":{"header":"Configure Home Assistant","introduction":"Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.","core":{"caption":"General","description":"Validate your configuration file and control the server","section":{"core":{"header":"Configuration and server control","introduction":"Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.","validation":{"heading":"Configuration validation","introduction":"Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid","check_config":"Check config","valid":"Configuration valid!","invalid":"Configuration invalid"},"reloading":{"heading":"Configuration reloading","introduction":"Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.","core":"Reload core","group":"Reload groups","automation":"Reload automations","script":"Reload scripts"},"server_management":{"heading":"Server management","introduction":"Control your Home Assistant server… from Home Assistant.","restart":"Restart","stop":"Stop"}},"push_notifications":{"header":"Configure push notifications","introduction":"Enable this setting to receive push notifications on this device","push_notifications":"Push notifications"},"translation":{"header":"Choose a language","introduction":"Choose a language for the Home Assistant interface on this device","language":"Language"},"themes":{"header":"Set a theme","introduction":"Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device","theme":"Theme"},"hassbian":{"header":"Bring Hassbian to the next level","introduction":"Discover exciting add-ons to enhance your Home Assistant installation. Add an MQTT server or control a connected TV via HDMI-CEC.","learn_more":"Learn more","install":"Install"}}},"customize":{"caption":"Customization","description":"Customize your entities"},"automation":{"caption":"Automation","description":"Create and edit automations"},"script":{"caption":"Script","description":"Create and edit scripts"},"zwave":{"caption":"Z-Wave","description":"Manage your Z-Wave network"}}},"sidebar":{"log_out":"Log out","developer_tools":"Developer tools"},"common":{"loading":"Loading","cancel":"Cancel"},"duration":{"day":"{count} {count, plural,\n  one {day}\n  other {days}\n}","week":"{count} {count, plural,\n  one {week}\n  other {weeks}\n}","second":"{count} {count, plural,\n  one {second}\n  other {seconds}\n}"},"login-form":{"password":"Password","remember":"Remember","log_in":"Log in"},"card":{"camera":{"not_available":"Image not available"},"persistent_notification":{"dismiss":"Dismiss"}}},"domain":{"alarm_control_panel":"Alarm control panel","automation":"Automation","binary_sensor":"Binary sensor","calendar":"Calendar","camera":"Camera","climate":"Climate","configurator":"Configurator","conversation":"Conversation","cover":"Cover","device_tracker":"Device tracker","fan":"Fan","history_graph":"History graph","group":"Group","image_processing":"Image processing","input_boolean":"Input boolean","input_datetime":"Input datetime","input_select":"Input select","input_number":"Input number","input_text":"Input text","light":"Light","lock":"Lock","mailbox":"Mailbox","media_player":"Media player","notify":"Notify","plant":"Plant","proximity":"Proximity","remote":"Remote","scene":"Scene","script":"Script","sensor":"Sensor","sun":"Sun","switch":"Switch","updater":"Updater","weblink":"Weblink","zwave":"Z-Wave"},"attribute":{"weather":{"humidity":"Humidity","visibility":"Visibility","wind_speed":"Wind speed"}}}
+{
+    "panel": {
+        "config": "Configuration",
+        "states": "Overview",
+        "map": "Map",
+        "logbook": "Logbook",
+        "history": "History",
+        "mailbox": "Mailbox",
+        "shopping_list": "Shopping list",
+        "dev-services": "Services",
+        "dev-states": "States",
+        "dev-events": "Events",
+        "dev-templates": "Templates",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Off",
+            "on": "On",
+            "unknown": "Unknown",
+            "unavailable": "Unavailable"
+        },
+        "alarm_control_panel": {
+            "armed": "Armed",
+            "disarmed": "Disarmed",
+            "armed_home": "Armed home",
+            "armed_away": "Armed away",
+            "armed_night": "Armed night",
+            "pending": "Pending",
+            "arming": "Arming",
+            "disarming": "Disarming",
+            "triggered": "Triggered",
+            "armed_custom_bypass": "Armed custom bypass"
+        },
+        "automation": {
+            "off": "Off",
+            "on": "On"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Off",
+                "on": "On"
+            },
+            "moisture": {
+                "off": "Dry",
+                "on": "Wet"
+            },
+            "gas": {
+                "off": "Clear",
+                "on": "Detected"
+            },
+            "motion": {
+                "off": "Clear",
+                "on": "Detected"
+            },
+            "occupancy": {
+                "off": "Clear",
+                "on": "Detected"
+            },
+            "smoke": {
+                "off": "Clear",
+                "on": "Detected"
+            },
+            "sound": {
+                "off": "Clear",
+                "on": "Detected"
+            },
+            "vibration": {
+                "off": "Clear",
+                "on": "Detected"
+            },
+            "opening": {
+                "off": "Closed",
+                "on": "Open"
+            },
+            "safety": {
+                "off": "Safe",
+                "on": "Unsafe"
+            },
+            "presence": {
+                "off": "Away",
+                "on": "Home"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Low"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Disconnected",
+                "on": "Connected"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Cold"
+            },
+            "door": {
+                "off": "Closed",
+                "on": "Open"
+            },
+            "garage_door": {
+                "off": "Closed",
+                "on": "Open"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Hot"
+            },
+            "window": {
+                "off": "Closed",
+                "on": "Open"
+            }
+        },
+        "calendar": {
+            "off": "Off",
+            "on": "On"
+        },
+        "camera": {
+            "recording": "Recording",
+            "streaming": "Streaming",
+            "idle": "Idle"
+        },
+        "climate": {
+            "off": "Off",
+            "on": "On",
+            "heat": "Heat",
+            "cool": "Cool",
+            "idle": "Idle",
+            "auto": "Auto",
+            "dry": "Dry",
+            "fan_only": "Fan only",
+            "eco": "Eco",
+            "electric": "Electric",
+            "performance": "Performance",
+            "high_demand": "High demand",
+            "heat_pump": "Heat pump",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Configure",
+            "configured": "Configured"
+        },
+        "cover": {
+            "open": "Open",
+            "opening": "Opening",
+            "closed": "Closed",
+            "closing": "Closing",
+            "stopped": "Stopped"
+        },
+        "device_tracker": {
+            "home": "Home",
+            "not_home": "Away"
+        },
+        "fan": {
+            "off": "Off",
+            "on": "On"
+        },
+        "group": {
+            "off": "Off",
+            "on": "On",
+            "home": "Home",
+            "not_home": "Away",
+            "open": "Open",
+            "opening": "Opening",
+            "closed": "Closed",
+            "closing": "Closing",
+            "stopped": "Stopped",
+            "locked": "Locked",
+            "unlocked": "Unlocked",
+            "ok": "OK",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Off",
+            "on": "On"
+        },
+        "light": {
+            "off": "Off",
+            "on": "On"
+        },
+        "lock": {
+            "locked": "Locked",
+            "unlocked": "Unlocked"
+        },
+        "media_player": {
+            "off": "Off",
+            "on": "On",
+            "playing": "Playing",
+            "paused": "Paused",
+            "idle": "Idle",
+            "standby": "Standby"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Off",
+            "on": "On"
+        },
+        "scene": {
+            "scening": "Scening"
+        },
+        "script": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sensor": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sun": {
+            "above_horizon": "Above horizon",
+            "below_horizon": "Below horizon"
+        },
+        "switch": {
+            "off": "Off",
+            "on": "On"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initializing",
+                "dead": "Dead",
+                "sleeping": "Sleeping",
+                "ready": "Ready"
+            },
+            "query_stage": {
+                "initializing": "Initializing ({query_stage})",
+                "dead": "Dead ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Unk",
+            "unavailable": "Unavai"
+        },
+        "alarm_control_panel": {
+            "armed": "Armed",
+            "disarmed": "Disarm",
+            "armed_home": "Armed",
+            "armed_away": "Armed",
+            "armed_night": "Armed",
+            "pending": "Pend",
+            "arming": "Arming",
+            "disarming": "Disarm",
+            "triggered": "Trig",
+            "armed_custom_bypass": "Armed"
+        },
+        "device_tracker": {
+            "home": "Home",
+            "not_home": "Away"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Clear completed",
+                "add_item": "Add item",
+                "microphone_tip": "Tap the microphone on the top right and say “Add candy to my shopping list”"
+            },
+            "history": {
+                "showing_entries": "Showing entries for",
+                "period": "Period"
+            },
+            "logbook": {
+                "showing_entries": "Showing entries for"
+            },
+            "mailbox": {
+                "empty": "You do not have any messages",
+                "playback_title": "Message playback",
+                "delete_prompt": "Delete this message?",
+                "delete_button": "Delete"
+            },
+            "config": {
+                "header": "Configure Home Assistant",
+                "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+                "core": {
+                    "caption": "General",
+                    "description": "Validate your configuration file and control the server",
+                    "section": {
+                        "core": {
+                            "header": "Configuration and server control",
+                            "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
+                            "validation": {
+                                "heading": "Configuration validation",
+                                "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+                                "check_config": "Check config",
+                                "valid": "Configuration valid!",
+                                "invalid": "Configuration invalid"
+                            },
+                            "reloading": {
+                                "heading": "Configuration reloading",
+                                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                                "core": "Reload core",
+                                "group": "Reload groups",
+                                "automation": "Reload automations",
+                                "script": "Reload scripts"
+                            },
+                            "server_management": {
+                                "heading": "Server management",
+                                "introduction": "Control your Home Assistant server… from Home Assistant.",
+                                "restart": "Restart",
+                                "stop": "Stop"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Configure push notifications",
+                            "introduction": "Enable this setting to receive push notifications on this device",
+                            "push_notifications": "Push notifications"
+                        },
+                        "translation": {
+                            "header": "Choose a language",
+                            "introduction": "Choose a language for the Home Assistant interface on this device",
+                            "language": "Language"
+                        },
+                        "themes": {
+                            "header": "Set a theme",
+                            "introduction": "Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device",
+                            "theme": "Theme"
+                        },
+                        "hassbian": {
+                            "header": "Bring Hassbian to the next level",
+                            "introduction": "Discover exciting add-ons to enhance your Home Assistant installation. Add an MQTT server or control a connected TV via HDMI-CEC.",
+                            "learn_more": "Learn more",
+                            "install": "Install"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Customization",
+                    "description": "Customize your entities"
+                },
+                "automation": {
+                    "caption": "Automation",
+                    "description": "Create and edit automations"
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Create and edit scripts"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Manage your Z-Wave network"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Log out",
+            "developer_tools": "Developer tools"
+        },
+        "common": {
+            "loading": "Loading",
+            "cancel": "Cancel"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+            "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}",
+            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}"
+        },
+        "login-form": {
+            "password": "Password",
+            "remember": "Remember",
+            "log_in": "Log in"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Image not available"
+            },
+            "persistent_notification": {
+                "dismiss": "Dismiss"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Alarm control panel",
+        "automation": "Automation",
+        "binary_sensor": "Binary sensor",
+        "calendar": "Calendar",
+        "camera": "Camera",
+        "climate": "Climate",
+        "configurator": "Configurator",
+        "conversation": "Conversation",
+        "cover": "Cover",
+        "device_tracker": "Device tracker",
+        "fan": "Fan",
+        "history_graph": "History graph",
+        "group": "Group",
+        "image_processing": "Image processing",
+        "input_boolean": "Input boolean",
+        "input_datetime": "Input datetime",
+        "input_select": "Input select",
+        "input_number": "Input number",
+        "input_text": "Input text",
+        "light": "Light",
+        "lock": "Lock",
+        "mailbox": "Mailbox",
+        "media_player": "Media player",
+        "notify": "Notify",
+        "plant": "Plant",
+        "proximity": "Proximity",
+        "remote": "Remote",
+        "scene": "Scene",
+        "script": "Script",
+        "sensor": "Sensor",
+        "sun": "Sun",
+        "switch": "Switch",
+        "updater": "Updater",
+        "weblink": "Weblink",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Humidity",
+            "visibility": "Visibility",
+            "wind_speed": "Wind speed"
+        }
+    }
+}

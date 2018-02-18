@@ -1,1 +1,113 @@
-{"panel":{"config":"Konfigurācija","states":"Pārskats","map":"Karte","logbook":"Žurnāls","history":"Vēsture","mailbox":"Pastkaste","shopping_list":"Iepirkumu saraksts","dev-mqtt":"MQTT"},"state":{"default":{"off":"Izslēgts","on":"Ieslēgts","unknown":"Nezināms"},"alarm_control_panel":{"pending":"Gaida"},"binary_sensor":{"moisture":{"off":"Sauss","on":"Slapjš"},"safety":{"off":"Drošs","on":"Nedrošs"}},"camera":{"recording":"Ieraksta","streaming":"Straumē"},"climate":{"heat":"Sildīt","cool":"Dzesēt","dry":"Sauss","fan_only":"Tikai ventilators","eco":"Eko","high_demand":"Augsts pieprasījums","heat_pump":"Siltumsūknis","gas":"Gāze"},"configurator":{"configure":"Konfigurēt","configured":"Konfigurēts"},"cover":{"open":"Atvērts","closed":"Aizvērts","stopped":"Apturēts"},"device_tracker":{"home":"Mājās","not_home":"Prom"},"media_player":{"playing":"Atskaņo"},"plant":{"ok":"Labi","problem":"Problēma"},"sun":{"above_horizon":"Virs horizonta","below_horizon":"Zem horizonta"}},"domain":{"zwave":"Z-Wave"},"ui":{"panel":{"history":{"period":"Periods"},"mailbox":{"empty":"Jums nav ziņu","playback_title":"Ziņu atskaņošana","delete_prompt":"Vai dzēst šo ziņojumu?","delete_button":"Dzēst"},"config":{"core":{"section":{"translation":{"header":"Izvēlēties valodu","language":"Valoda"}}},"zwave":{"caption":"Z-Wave"}}},"common":{"cancel":"Atcelt"},"login-form":{"password":"Parole","remember":"Atcerēties"}},"attribute":{"weather":{"humidity":"Gaisa mitrums","visibility":"Redzamība","wind_speed":"Vēja ātrums"}}}
+{
+    "panel": {
+        "config": "Konfigurācija",
+        "states": "Pārskats",
+        "map": "Karte",
+        "logbook": "Žurnāls",
+        "history": "Vēsture",
+        "mailbox": "Pastkaste",
+        "shopping_list": "Iepirkumu saraksts",
+        "dev-mqtt": "MQTT"
+    },
+    "state": {
+        "default": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts",
+            "unknown": "Nezināms"
+        },
+        "alarm_control_panel": {
+            "pending": "Gaida"
+        },
+        "binary_sensor": {
+            "moisture": {
+                "off": "Sauss",
+                "on": "Slapjš"
+            },
+            "safety": {
+                "off": "Drošs",
+                "on": "Nedrošs"
+            }
+        },
+        "camera": {
+            "recording": "Ieraksta",
+            "streaming": "Straumē"
+        },
+        "climate": {
+            "heat": "Sildīt",
+            "cool": "Dzesēt",
+            "dry": "Sauss",
+            "fan_only": "Tikai ventilators",
+            "eco": "Eko",
+            "high_demand": "Augsts pieprasījums",
+            "heat_pump": "Siltumsūknis",
+            "gas": "Gāze"
+        },
+        "configurator": {
+            "configure": "Konfigurēt",
+            "configured": "Konfigurēts"
+        },
+        "cover": {
+            "open": "Atvērts",
+            "closed": "Aizvērts",
+            "stopped": "Apturēts"
+        },
+        "device_tracker": {
+            "home": "Mājās",
+            "not_home": "Prom"
+        },
+        "media_player": {
+            "playing": "Atskaņo"
+        },
+        "plant": {
+            "ok": "Labi",
+            "problem": "Problēma"
+        },
+        "sun": {
+            "above_horizon": "Virs horizonta",
+            "below_horizon": "Zem horizonta"
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    },
+    "ui": {
+        "panel": {
+            "history": {
+                "period": "Periods"
+            },
+            "mailbox": {
+                "empty": "Jums nav ziņu",
+                "playback_title": "Ziņu atskaņošana",
+                "delete_prompt": "Vai dzēst šo ziņojumu?",
+                "delete_button": "Dzēst"
+            },
+            "config": {
+                "core": {
+                    "section": {
+                        "translation": {
+                            "header": "Izvēlēties valodu",
+                            "language": "Valoda"
+                        }
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        },
+        "common": {
+            "cancel": "Atcelt"
+        },
+        "login-form": {
+            "password": "Parole",
+            "remember": "Atcerēties"
+        }
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Gaisa mitrums",
+            "visibility": "Redzamība",
+            "wind_speed": "Vēja ātrums"
+        }
+    }
+}

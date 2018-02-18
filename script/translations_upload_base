@@ -31,6 +31,7 @@ if [ "${CURRENT_BRANCH}" != "master" ] && [ "${TRAVIS_BRANCH}" != "master" ] ; t
   exit 1
 fi
 
+docker pull lokalise/lokalise-cli
 docker run \
     -v ${LOCAL_FILE}:/opt/src/${LOCAL_FILE} \
     lokalise/lokalise-cli lokalise \
