@@ -1,1 +1,341 @@
-{"panel":{"config":"การตั้งค่า","states":"ภาพรวม","map":"แผนที่","logbook":"สมุดบันทึก","history":"ประวัติ","mailbox":"กล่องจดหมาย","shopping_list":"รายการช้อปปิ้ง","dev-services":"บริการ","dev-states":"สถานะ","dev-events":"เหตุการณ์","dev-templates":"แม่แบบ","dev-mqtt":"MQTT","dev-info":"ข้อมูล"},"state":{"default":{"off":"ปิด","on":"เปิด","unknown":"ไม่ทราบสถานะ","unavailable":"ไม่พร้อมใช้งาน"},"alarm_control_panel":{"armed":"เปิดการป้องกัน","disarmed":"ปลดการป้องกัน","armed_home":"เปิดการป้องกัน-โหมดอยู่บ้าน","armed_away":"เปิดการป้องกัน-โหมดไม่อยู่บ้าน","armed_night":"เปิดการป้องกัน-โหมดกลางคืน","pending":"ค้างอยู่","arming":"เปิดการป้องกัน","disarming":"ปลดการป้องกัน","triggered":"ถูกกระตุ้น","armed_custom_bypass":"ป้องกันโดยกำหนดเอง"},"automation":{"off":"ปิด","on":"เปิด"},"binary_sensor":{"default":{"off":"ปิด","on":"เปิด"},"moisture":{"off":"แห้ง","on":"เปียก"},"gas":{"off":"ไม่พบแก๊ส","on":"ตรวจพบแก๊ส"},"motion":{"off":"ไม่พบการเคลื่อนไหว","on":"พบการเคลื่อนไหว"},"occupancy":{"off":"ไม่พบ","on":"พบ"},"smoke":{"off":"ไม่พบควัน","on":"พบควัน"},"sound":{"off":"ไม่ได้ยิน","on":"ได้ยิน"},"vibration":{"off":"ไม่พบการสั่น","on":"พบการสั่น"},"opening":{"off":"ปิด","on":"เปิด"},"safety":{"off":"ปิด","on":"เปิด"},"presence":{"off":"ไม่อยู่","on":"อยูบ้าน"},"battery":{"off":"ปกติ","on":"ต่ำ"},"problem":{"off":"ตกลง","on":"ปัญหา"},"connectivity":{"off":"ตัดการเชื่อมต่อ","on":"เชื่อมต่อแล้ว"},"cold":{"off":"ปิด","on":"หนาว"},"door":{"off":"ปิด","on":"เปิด"},"garage_door":{"off":"ปิด","on":"เปิด"},"heat":{"off":"ปกติ","on":"ร้อน"},"window":{"off":"ปิด","on":"เปิด"}},"calendar":{"off":"ปิด","on":"เปิด"},"camera":{"recording":"กำลังบันทึก","streaming":"สตรีมมิ่ง","idle":"ไม่ได้ใช้งาน"},"climate":{"off":"ปิด","on":"เปิด","heat":"ร้อน","cool":"เย็น","idle":"ไม่ได้ใช้งาน","auto":"อัตโนมัติ","dry":"แห้ง","fan_only":"เฉพาะพัดลม","eco":"อีโค","electric":"ไฟฟ้า","performance":"ประสิทธิภาพ","high_demand":"ความต้องการสูง","heat_pump":"ปั๊มความร้อน","gas":"แก๊ส"},"configurator":{"configure":"ตั้งค่า","configured":"ตั้งค่าแล้ว"},"cover":{"open":"เปิด","opening":"กำลังเปิด","closed":"ปิด","closing":"กำลังปิด","stopped":"หยุด"},"device_tracker":{"home":"อยู่บ้าน","not_home":"ไม่อยู่"},"fan":{"off":"ปิด","on":"เปิด"},"group":{"off":"ปิด","on":"เปิด","home":"อยู่บ้าน","not_home":"ไม่อยู่บ้าน","open":"เปิด","opening":"กำลังเปิด","closed":"ปิด","closing":"กำลังปิด","stopped":"หยุด","locked":"ล็อค","unlocked":"ปลดล็อค","ok":"พร้อมใช้งาน","problem":"มีปัญหา"},"input_boolean":{"off":"ปิด","on":"เปิด"},"light":{"off":"ปิด","on":"เปิด"},"lock":{"locked":"ล็อค","unlocked":"ปลดล็อค"},"media_player":{"off":"ปิด","on":"เปิด","playing":"กำลังเล่น","paused":"หยุดชั่วคราว","idle":"ไม่ได้ใช้งาน","standby":"แสตนด์บาย"},"plant":{"ok":"พร้อมใช้งาน","problem":"มีปัญหา"},"remote":{"off":"ปิด","on":"เปิด"},"scene":{"scening":"ซีน"},"script":{"off":"ปิด","on":"เปิด"},"sensor":{"off":"ปิด","on":"เปิด"},"sun":{"above_horizon":"เหนือขอบฟ้า","below_horizon":"ตกดิน"},"switch":{"off":"ปิด","on":"เปิด"},"zwave":{"default":{"initializing":"กำลังเริ่มต้น","dead":"ไม่พร้อมใช้งาน","sleeping":"กำลังหลับ","ready":"พร้อมใช้งาน"},"query_stage":{"initializing":"กำลังเริ่มต้น ({query_stage})","dead":"ไม่พร้อมใช้งาน ({query_stage})"}}},"state_badge":{"default":{"unknown":"ไม่ทราบสถานะ","unavailable":"ไม่พร้อมใช้งาน"},"alarm_control_panel":{"armed":"เปิดการป้องกัน","disarmed":"ปลดการป้องกัน","armed_home":"เปิดการป้องกัน-โหมดอยู่บ้าน","armed_away":"เปิดการป้องกัน-โหมดไม่อยู่บ้าน","armed_night":"เปิดการป้องกัน-โหมดกลางคืน","pending":"ค้างอยู่","arming":"กำลังเปิดการป้องกัน","disarming":"กำลังปลดการป้องกัน","triggered":"ถูกกระตุ้น","armed_custom_bypass":"ป้องกัน"},"device_tracker":{"home":"อยู่บ้าน","not_home":"ไม่อยู่"}},"ui":{"panel":{"shopping-list":{"clear_completed":"จัดการเรียบร้อย","add_item":"เพิ่มรายการ","microphone_tip":"แตะไมโครโฟนที่ด้านบนขวาและพูดว่า \"เพิ่มลูกอมลงในรายการช้อปปิ้งของฉัน\""},"history":{"showing_entries":"แสดงรายการ","period":"ระยะเวลา"},"logbook":{"showing_entries":"แสดงรายการ"},"mailbox":{"empty":"ไม่มีข้อความ","playback_title":"เล่นข้อความ","delete_prompt":"ลบข้อความนี้หรือไม่?","delete_button":"ลบ"},"config":{"script":{"caption":"สคริปต์","description":"สร้างและแก้ไขสคริปต์"},"zwave":{"caption":"Z-Wave","description":"จัดการเครือข่าย Z-Wave"}}},"sidebar":{"log_out":"ออกจากระบบ","developer_tools":"เครื่องมือสำหรับนักพัฒนา"},"common":{"loading":"กำลังโหลด","cancel":"ยกเลิก"},"login-form":{"password":"รหัสผ่าน","remember":"จดจำ","log_in":"ลงชื่อเข้า"}},"domain":{"alarm_control_panel":"แผงควบคุมสัญญาณเตือนภัย","automation":"การทำงานอัตโนมัติ","binary_sensor":"เซ็นเซอร์แบบไบนารี","calendar":"ปฏิทิน","camera":"กล้อง","climate":"สภาพอากาศ","configurator":"ตัวตั้งค่า","conversation":"การสนทนา","cover":"ม่าน","device_tracker":"อุปกรณ์ติดตาม","fan":"พัดลม","history_graph":"กราฟประวัติ","group":"กลุ่ม","image_processing":"การประมวลผลภาพ","input_boolean":"ป้อนค่าตรรกะ","input_datetime":"ป้อนวันเวลา","input_select":"เลือกข้อมูล","input_number":"ป้อนตัวเลข","input_text":"ป้อนข้อความ","light":"แสงสว่าง","lock":"ล็อค","mailbox":"กล่องจดหมาย","media_player":"เครื่องเล่นสื่อ","notify":"แจ้ง","plant":"พืช","proximity":"ใกล้ชิด","remote":"รีโมต","scene":"ฉาก","script":"สคริปต์","sensor":"เซนเซอร์","sun":"ดวงอาทิตย์","switch":"สวิตซ์","updater":"อัพเดต","weblink":"เว็บลิงค์","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "การตั้งค่า",
+        "states": "ภาพรวม",
+        "map": "แผนที่",
+        "logbook": "สมุดบันทึก",
+        "history": "ประวัติ",
+        "mailbox": "กล่องจดหมาย",
+        "shopping_list": "รายการช้อปปิ้ง",
+        "dev-services": "บริการ",
+        "dev-states": "สถานะ",
+        "dev-events": "เหตุการณ์",
+        "dev-templates": "แม่แบบ",
+        "dev-mqtt": "MQTT",
+        "dev-info": "ข้อมูล"
+    },
+    "state": {
+        "default": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "unknown": "ไม่ทราบสถานะ",
+            "unavailable": "ไม่พร้อมใช้งาน"
+        },
+        "alarm_control_panel": {
+            "armed": "เปิดการป้องกัน",
+            "disarmed": "ปลดการป้องกัน",
+            "armed_home": "เปิดการป้องกัน-โหมดอยู่บ้าน",
+            "armed_away": "เปิดการป้องกัน-โหมดไม่อยู่บ้าน",
+            "armed_night": "เปิดการป้องกัน-โหมดกลางคืน",
+            "pending": "ค้างอยู่",
+            "arming": "เปิดการป้องกัน",
+            "disarming": "ปลดการป้องกัน",
+            "triggered": "ถูกกระตุ้น",
+            "armed_custom_bypass": "ป้องกันโดยกำหนดเอง"
+        },
+        "automation": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "moisture": {
+                "off": "แห้ง",
+                "on": "เปียก"
+            },
+            "gas": {
+                "off": "ไม่พบแก๊ส",
+                "on": "ตรวจพบแก๊ส"
+            },
+            "motion": {
+                "off": "ไม่พบการเคลื่อนไหว",
+                "on": "พบการเคลื่อนไหว"
+            },
+            "occupancy": {
+                "off": "ไม่พบ",
+                "on": "พบ"
+            },
+            "smoke": {
+                "off": "ไม่พบควัน",
+                "on": "พบควัน"
+            },
+            "sound": {
+                "off": "ไม่ได้ยิน",
+                "on": "ได้ยิน"
+            },
+            "vibration": {
+                "off": "ไม่พบการสั่น",
+                "on": "พบการสั่น"
+            },
+            "opening": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "safety": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "presence": {
+                "off": "ไม่อยู่",
+                "on": "อยูบ้าน"
+            },
+            "battery": {
+                "off": "ปกติ",
+                "on": "ต่ำ"
+            },
+            "problem": {
+                "off": "ตกลง",
+                "on": "ปัญหา"
+            },
+            "connectivity": {
+                "off": "ตัดการเชื่อมต่อ",
+                "on": "เชื่อมต่อแล้ว"
+            },
+            "cold": {
+                "off": "ปิด",
+                "on": "หนาว"
+            },
+            "door": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "garage_door": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "heat": {
+                "off": "ปกติ",
+                "on": "ร้อน"
+            },
+            "window": {
+                "off": "ปิด",
+                "on": "เปิด"
+            }
+        },
+        "calendar": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "camera": {
+            "recording": "กำลังบันทึก",
+            "streaming": "สตรีมมิ่ง",
+            "idle": "ไม่ได้ใช้งาน"
+        },
+        "climate": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "heat": "ร้อน",
+            "cool": "เย็น",
+            "idle": "ไม่ได้ใช้งาน",
+            "auto": "อัตโนมัติ",
+            "dry": "แห้ง",
+            "fan_only": "เฉพาะพัดลม",
+            "eco": "อีโค",
+            "electric": "ไฟฟ้า",
+            "performance": "ประสิทธิภาพ",
+            "high_demand": "ความต้องการสูง",
+            "heat_pump": "ปั๊มความร้อน",
+            "gas": "แก๊ส"
+        },
+        "configurator": {
+            "configure": "ตั้งค่า",
+            "configured": "ตั้งค่าแล้ว"
+        },
+        "cover": {
+            "open": "เปิด",
+            "opening": "กำลังเปิด",
+            "closed": "ปิด",
+            "closing": "กำลังปิด",
+            "stopped": "หยุด"
+        },
+        "device_tracker": {
+            "home": "อยู่บ้าน",
+            "not_home": "ไม่อยู่"
+        },
+        "fan": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "group": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "home": "อยู่บ้าน",
+            "not_home": "ไม่อยู่บ้าน",
+            "open": "เปิด",
+            "opening": "กำลังเปิด",
+            "closed": "ปิด",
+            "closing": "กำลังปิด",
+            "stopped": "หยุด",
+            "locked": "ล็อค",
+            "unlocked": "ปลดล็อค",
+            "ok": "พร้อมใช้งาน",
+            "problem": "มีปัญหา"
+        },
+        "input_boolean": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "light": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "lock": {
+            "locked": "ล็อค",
+            "unlocked": "ปลดล็อค"
+        },
+        "media_player": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "playing": "กำลังเล่น",
+            "paused": "หยุดชั่วคราว",
+            "idle": "ไม่ได้ใช้งาน",
+            "standby": "แสตนด์บาย"
+        },
+        "plant": {
+            "ok": "พร้อมใช้งาน",
+            "problem": "มีปัญหา"
+        },
+        "remote": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "scene": {
+            "scening": "ซีน"
+        },
+        "script": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "sensor": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "sun": {
+            "above_horizon": "เหนือขอบฟ้า",
+            "below_horizon": "ตกดิน"
+        },
+        "switch": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "กำลังเริ่มต้น",
+                "dead": "ไม่พร้อมใช้งาน",
+                "sleeping": "กำลังหลับ",
+                "ready": "พร้อมใช้งาน"
+            },
+            "query_stage": {
+                "initializing": "กำลังเริ่มต้น ({query_stage})",
+                "dead": "ไม่พร้อมใช้งาน ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "ไม่ทราบสถานะ",
+            "unavailable": "ไม่พร้อมใช้งาน"
+        },
+        "alarm_control_panel": {
+            "armed": "เปิดการป้องกัน",
+            "disarmed": "ปลดการป้องกัน",
+            "armed_home": "เปิดการป้องกัน-โหมดอยู่บ้าน",
+            "armed_away": "เปิดการป้องกัน-โหมดไม่อยู่บ้าน",
+            "armed_night": "เปิดการป้องกัน-โหมดกลางคืน",
+            "pending": "ค้างอยู่",
+            "arming": "กำลังเปิดการป้องกัน",
+            "disarming": "กำลังปลดการป้องกัน",
+            "triggered": "ถูกกระตุ้น",
+            "armed_custom_bypass": "ป้องกัน"
+        },
+        "device_tracker": {
+            "home": "อยู่บ้าน",
+            "not_home": "ไม่อยู่"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "จัดการเรียบร้อย",
+                "add_item": "เพิ่มรายการ",
+                "microphone_tip": "แตะไมโครโฟนที่ด้านบนขวาและพูดว่า \"เพิ่มลูกอมลงในรายการช้อปปิ้งของฉัน\""
+            },
+            "history": {
+                "showing_entries": "แสดงรายการ",
+                "period": "ระยะเวลา"
+            },
+            "logbook": {
+                "showing_entries": "แสดงรายการ"
+            },
+            "mailbox": {
+                "empty": "ไม่มีข้อความ",
+                "playback_title": "เล่นข้อความ",
+                "delete_prompt": "ลบข้อความนี้หรือไม่?",
+                "delete_button": "ลบ"
+            },
+            "config": {
+                "script": {
+                    "caption": "สคริปต์",
+                    "description": "สร้างและแก้ไขสคริปต์"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "จัดการเครือข่าย Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "ออกจากระบบ",
+            "developer_tools": "เครื่องมือสำหรับนักพัฒนา"
+        },
+        "common": {
+            "loading": "กำลังโหลด",
+            "cancel": "ยกเลิก"
+        },
+        "login-form": {
+            "password": "รหัสผ่าน",
+            "remember": "จดจำ",
+            "log_in": "ลงชื่อเข้า"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "แผงควบคุมสัญญาณเตือนภัย",
+        "automation": "การทำงานอัตโนมัติ",
+        "binary_sensor": "เซ็นเซอร์แบบไบนารี",
+        "calendar": "ปฏิทิน",
+        "camera": "กล้อง",
+        "climate": "สภาพอากาศ",
+        "configurator": "ตัวตั้งค่า",
+        "conversation": "การสนทนา",
+        "cover": "ม่าน",
+        "device_tracker": "อุปกรณ์ติดตาม",
+        "fan": "พัดลม",
+        "history_graph": "กราฟประวัติ",
+        "group": "กลุ่ม",
+        "image_processing": "การประมวลผลภาพ",
+        "input_boolean": "ป้อนค่าตรรกะ",
+        "input_datetime": "ป้อนวันเวลา",
+        "input_select": "เลือกข้อมูล",
+        "input_number": "ป้อนตัวเลข",
+        "input_text": "ป้อนข้อความ",
+        "light": "แสงสว่าง",
+        "lock": "ล็อค",
+        "mailbox": "กล่องจดหมาย",
+        "media_player": "เครื่องเล่นสื่อ",
+        "notify": "แจ้ง",
+        "plant": "พืช",
+        "proximity": "ใกล้ชิด",
+        "remote": "รีโมต",
+        "scene": "ฉาก",
+        "script": "สคริปต์",
+        "sensor": "เซนเซอร์",
+        "sun": "ดวงอาทิตย์",
+        "switch": "สวิตซ์",
+        "updater": "อัพเดต",
+        "weblink": "เว็บลิงค์",
+        "zwave": "Z-Wave"
+    }
+}
