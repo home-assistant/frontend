@@ -64,6 +64,9 @@
         margin-right: 6px;
         width: 10px;
       }
+      .chartZoomInline {
+        float: right;
+      }
     </style>
     <template is="dom-if" if="[[unit]]">
       <div class="chartHeader">
@@ -78,6 +81,14 @@
             </template>
           </ul>
         </div>
+        <template is="dom-if" if="[[isZoomable]]">
+          <div class="chartZoomInline">
+            <paper-icon-button
+              icon='mdi:arrow-expand-all'
+              on-tap='resetZoom'
+            ></paper-icon-button>
+          </div>
+        </template>
       </div>
     </template>
     <div id="chartTarget" style="height:40px; width:100%">
@@ -98,7 +109,7 @@
 </dom-module>
 <script>
 // eslint-disable-next-line no-unused-vars
-/* global Chart moment Color */
+/* global Chart moment Color Hammer */
 {
   let SCRIPT_LOADED = false;
 
@@ -270,6 +281,7 @@
           this._drawLegend();
         }
         this.resizeChart();
+        this.updateZoomlimits();
       } else {
         if (!data.datasets) {
           return;
@@ -304,6 +316,29 @@
         };
         options = Chart.helpers.merge(options, this.data.options);
         if (this.data.type === 'timeline') {
+          // timeline is not zoomable, so dont capture mouse
+          this.set('isZoomable', false);
+          options = Chart.helpers.merge(options, {
+            pan: { enabled: false },
+            zoom: { enabled: false },
+          });
+        } else {
+          // allow free zooming&moving around
+          this.set('isZoomable', true);
+          options = Chart.helpers.merge(options, {
+            pan: {
+              enabled: true,
+              drag: true,
+              mode: 'xy',
+            },
+            zoom: {
+              enabled: true,
+              drag: false,
+              mode: 'xy',
+            }
+          });
+        }
+        if (this.data.type === 'timeline') {
           this.set('isTimeline', true);
           if (this.data.colors !== undefined) {
             this._colorFunc = this.constructor.getColorGenerator(
@@ -335,8 +370,45 @@
           this._drawLegend();
         }
         this.resizeChart();
+        this.updateZoomlimits();
       }
     }
+    updateZoomlimits() {
+      if (!this._chart) return;
+      if (this.isTimeline) return;
+
+      const buffer = {
+        x: { min: null, max: null },
+        y: { min: null, max: null }
+      };
+      Object.keys(this._chart.scales).forEach((name) => {
+        var scale = this._chart.scales[name];
+        var axis = name.substr(0, 1);
+        if (!(axis in buffer)) return;
+
+        if (buffer[axis].max === null || buffer[axis].max < scale.max) {
+          // ===null to accept negative-max
+          buffer[axis].max = scale.max;
+        }
+        if (buffer[axis].min === null || buffer[axis].min > scale.min) {
+          // ===null to allow to go "up" on the first value
+          buffer[axis].min = scale.min;
+        }
+      });
+
+      this._chart.options = Chart.helpers.merge(this._chart.options, {
+        pan: {
+          rangeMin: { x: buffer.x.min, y: buffer.y.min },
+          rangeMax: { x: buffer.x.max, y: buffer.y.max }
+        },
+        zoom: {
+          // x is nulled so users are able to "zoom in on time"
+          rangeMin: { x: null /* buffer.x.min */, y: buffer.y.min },
+          rangeMax: { x: null /* buffer.x.max */, y: buffer.y.max }
+        }
+      });
+    }
+
     resizeChart() {
       if (!this._chart) return;
       // Chart not ready
@@ -391,6 +463,14 @@
         }
         this._chart.resize();
       }
+    }
+
+    // for chartjs-plugin-zoom
+    resetZoom(event = null) {
+      if (event) {
+        event.stopPropagation();
+      }
+      this._chart.resetZoom();
     }
 
     // Get HSL distributed color list
