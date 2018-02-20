@@ -40,8 +40,8 @@
             <paper-slider
               pin
               value='{{data}}'
-              min='[[schema.value-min]]'
-              max='[[schema.value-max]]'
+              min='[[schema.valueMin]]'
+              max='[[schema.valueMax]]'
             ></paper-slider>
           </div>
         </template>
@@ -100,7 +100,7 @@ class HaForm extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _isRange(schema) {
-    return ('value-min' in schema) && ('value-max' in schema);
+    return ('valueMin' in schema) && ('valueMax' in schema);
   }
 
   _equals(a, b) {
