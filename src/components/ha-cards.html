@@ -252,7 +252,7 @@
         entities.forEach((entity) => {
           const domain = computeDomain(entity);
 
-          if (domain in DOMAINS_WITH_CARD) {
+          if (domain in DOMAINS_WITH_CARD || entity.attributes._plot_data) {
             owncard.push(entity);
             size += DOMAINS_WITH_CARD[domain];
           } else {
@@ -305,7 +305,7 @@
           return;
         }
 
-        const priority = getPriority(domain);
+        const priority = ((state.attributes._plot_data) ? 100 : getPriority(domain));
         let coll;
 
         if (priority < 0) {

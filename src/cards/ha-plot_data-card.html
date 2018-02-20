@@ -1,0 +1,138 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
+<link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
+<link rel='import' href='../components/ha-card.html'>
+
+<link rel='import' href='../util/hass-mixins.html'>
+
+<dom-module id='ha-plot_data-card'>
+  <template>
+    <style>
+        .content {
+          padding: 0 16px 16px;
+        }
+        .attribution {
+          color: var(--secondary-text-color);
+          text-align: right;
+        }
+        span.line {
+          display: block;
+        }
+        .clear {
+          clear: both;
+        }
+    </style>
+    <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
+    <ha-card header='[[computeTitle(stateObj)]]'>
+      <div class='content'>
+          <div class='attribution attribution'>[[stateObj.state]] [[stateObj.attributes.unit_of_measurement]]</div>
+        <div id='chart_id' hidden$="[[!attr._plot_data]]"></div>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+<script>
+{
+  class HaPlotDataCard extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+    static get is() { return 'ha-plot_data-card'; }
+    static get properties() {
+      return {
+        hass: Object,
+        stateObj: {
+          type: Object,
+          observer: 'checkRequirements'
+        },
+      };
+    }
+
+    computeTitle(stateObj) {
+      return stateObj.attributes.friendly_name;
+    }
+
+    checkRequirements() {
+      if (!this.stateObj) {
+        return;
+      }
+      if (!this.stateObj.attributes) {
+        return;
+      }
+      if (!this.stateObj.attributes._plot_data) {
+        return;
+      }
+      if (!window.google || !window.google.visualization) {
+        return;
+      }
+
+      if (!this.chartEngine) {
+        this.chartEngine = new window.google.visualization.LineChart(this.$.chart_id);
+      }
+      this.drawChart();
+    }
+
+    drawChart() {
+      var dataGrid = new window.google.visualization.DataTable();
+      var plotData = this.stateObj.attributes._plot_data;
+      if (!plotData || !plotData.data) {
+        return;
+      }
+
+      var colors = ['red'];
+      if (plotData.color) {
+        colors = plotData.color;
+      }
+      dataGrid.addColumn('datetime', 'Time');
+      var j;
+      for (j = 0; j < plotData.attr.length; j++) {
+        dataGrid.addColumn('number', plotData.attr[j]);
+      }
+
+      var dataArray = [];
+      var k;
+      for (k = 0; k < plotData.data.length; k++) {
+        var _row = [new Date(plotData.data[k].x)];
+        var _y = plotData.data[k].y;
+        var i;
+        for (i = 0; i < _y.length; i++) {
+          _row.push(_y[i]);
+        }
+        dataArray.push(_row);
+      }
+      dataGrid.addRows(dataArray);
+
+      var options = {
+        legend: {
+          position: 'top'
+        },
+        interpolateNulls: true,
+        titlePosition: 'none',
+        chartArea: {
+          left: 25,
+          top: 5,
+          height: '100%',
+          width: '90%',
+          bottom: 25,
+        },
+        curveType: 'function',
+        focusTarget: 'category',
+        colors: colors,
+        annotations: {
+          textStyle: {
+            fontSize: '24',
+          }
+        }
+      };
+      this.chartEngine.draw(dataGrid, options);
+    }
+
+    googleApiLoaded() {
+      window.google.load('visualization', '1', {
+        packages: ['corechart'],
+        callback: function () {
+          this.checkRequirements();
+        }.bind(this),
+      });
+    }
+  }
+  customElements.define(HaPlotDataCard.is, HaPlotDataCard);
+}
+</script>

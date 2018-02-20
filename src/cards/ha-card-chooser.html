@@ -7,6 +7,7 @@
 <link rel='import' href='./ha-weather-card.html'>
 <link rel='import' href='./ha-persistent_notification-card.html'>
 <link rel='import' href='./ha-plant-card.html'>
+<link rel='import' href='./ha-plot_data-card.html'>
 
 <script>
 class HaCardChooser extends Polymer.Element {
@@ -22,9 +23,9 @@ class HaCardChooser extends Polymer.Element {
 
   cardDataChanged(newData) {
     if (!newData) return;
-
+    const cardType = ((newData.stateObj.attributes._plot_data) ? 'PLOT_DATA' : newData.cardType.toUpperCase());
     window.hassUtil.dynamicContentUpdater(
-      this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
+      this, 'HA-' + cardType + '-CARD',
       newData
     );
   }
