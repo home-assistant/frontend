@@ -39,19 +39,23 @@
       fallback-selection='not-found'
       selected-attribute='visible'
     >
-      <ha-config-core
-        page-name='core'
-        hass='[[hass]]'
-        is-wide='[[isWide]]'
-      ></ha-config-core>
+      <template is="dom-if" if='[[_equals(_routeData.page, "core")]]' restamp>
+        <ha-config-core
+          page-name='core'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+        ></ha-config-core>
+      </template>
 
-      <ha-config-cloud
-        page-name='cloud'
-        route='[[route]]'
-        hass='[[hass]]'
-        is-wide='[[isWide]]'
-        account='[[account]]'
-      ></ha-config-cloud>
+      <template is="dom-if" if='[[_equals(_routeData.page, "cloud")]]' restamp>
+        <ha-config-cloud
+          page-name='cloud'
+          route='[[route]]'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+          account='[[account]]'
+        ></ha-config-cloud>
+      </template>
 
       <ha-config-dashboard
         page-name='dashboard'
@@ -62,36 +66,46 @@
         show-menu='[[showMenu]]'
       ></ha-config-dashboard>
 
-      <ha-config-automation
-        page-name='automation'
-        route='[[route]]'
-        hass='[[hass]]'
-        is-wide='[[isWide]]'
-      ></ha-config-automation>
+      <template is="dom-if" if='[[_equals(_routeData.page, "automation")]]' restamp>
+        <ha-config-automation
+          page-name='automation'
+          route='[[route]]'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+        ></ha-config-automation>
+      </template>
 
-      <ha-config-script
-        page-name='script'
-        route='[[route]]'
-        hass='[[hass]]'
-        is-wide='[[isWide]]'
-      ></ha-config-script>
+      <template is="dom-if" if='[[_equals(_routeData.page, "script")]]' restamp>
+        <ha-config-script
+          page-name='script'
+          route='[[route]]'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+        ></ha-config-script>
+      </template>
 
-      <ha-config-zwave
-        page-name='zwave'
-        hass='[[hass]]'
-        is-wide='[[isWide]]'
-      ></ha-config-zwave>
+      <template is="dom-if" if='[[_equals(_routeData.page, "zwave")]]' restamp>
+        <ha-config-zwave
+          page-name='zwave'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+        ></ha-config-zwave>
+      </template>
 
-      <ha-config-customize
-        page-name='customize'
-        hass='[[hass]]'
-        is-wide='[[isWide]]'
-      ></ha-config-customize>
+      <template is="dom-if" if='[[_equals(_routeData.page, "customize")]]' restamp>
+        <ha-config-customize
+          page-name='customize'
+          hass='[[hass]]'
+          is-wide='[[isWide]]'
+        ></ha-config-customize>
+      </template>
 
-      <ha-config-entries
-        page-name='integrations'
-        hass='[[hass]]'
-      ></ha-config-entries>
+      <template is="dom-if" if='[[_equals(_routeData.page, "integrations")]]' restamp>
+        <ha-config-entries
+          page-name='integrations'
+          hass='[[hass]]'
+        ></ha-config-entries>
+      </template>
 
       <hass-error-screen
         page-name='not-found'
@@ -152,6 +166,10 @@ class HaPanelConfig extends window.hassMixins.EventsMixin(Polymer.Element) {
       history.replaceState(null, null, '/config/dashboard');
       this.fire('location-changed');
     }
+  }
+
+  _equals(a, b) {
+    return a === b;
   }
 }
 
