@@ -23,10 +23,14 @@ class HaCardChooser extends Polymer.Element {
   cardDataChanged(newData) {
     if (!newData) return;
 
-    window.hassUtil.dynamicContentUpdater(
-      this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
-      newData
-    );
+    let cardType;
+    if (newData.stateObj && newData.stateObj.attributes && 'custom_ui_full_card' in newData.stateObj.attributes) {
+      cardType = newData.stateObj.attributes.custom_ui_full_card.toUpperCase();
+    } else {
+      cardType = 'HA-' + newData.cardType.toUpperCase() + '-CARD';
+    }
+
+    window.hassUtil.dynamicContentUpdater(this, cardType, newData);
   }
 }
 customElements.define(HaCardChooser.is, HaCardChooser);
