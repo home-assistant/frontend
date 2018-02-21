@@ -20,13 +20,50 @@ class HaCardChooser extends Polymer.Element {
     };
   }
 
-  cardDataChanged(newData) {
-    if (!newData) return;
-
+  _updateCard(newData) {
     window.hassUtil.dynamicContentUpdater(
       this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
       newData
     );
+  }
+
+  cardDataChanged(newData) {
+    if (!newData) return;
+    // ha-entities-card is exempt from observer as it doesn't load heavy resources.
+    // and usually doesn't load external resources (except for entity_picture).
+    const eligibleToObserver =
+      (window.IntersectionObserver && newData.cardType !== 'entities');
+    if (!eligibleToObserver) {
+      if (this.observer) {
+        this.observer.unobserve(this);
+        this.observer = null;
+      }
+      this._updateCard(newData);
+      return;
+    }
+    if (!this.observer) {
+      this.observer = new IntersectionObserver((entries) => {
+        if (!entries.length) return;
+        if (entries[0].isIntersecting) {
+          this.style.height = '';
+          if (this._detachedChild) {
+            this.appendChild(this._detachedChild);
+            this._detachedChild = null;
+          }
+          this._updateCard(this.cardData); // Don't use 'newData' as it might have chnaged.
+        } else {
+          // Set the card to be 48px high. Otherwise if the card is kept as 0px height then all
+          // following cards would trigger the observer at once.
+          const offsetHeight = this.offsetHeight;
+          this.style.height = `${offsetHeight || 48}px`;
+          if (this.lastChild) {
+            this._detachedChild = this.lastChild;
+            this.removeChild(this.lastChild);
+          }
+        }
+      });
+      this.observer.observe(this);
+    }
   }
 }
 customElements.define(HaCardChooser.is, HaCardChooser);
