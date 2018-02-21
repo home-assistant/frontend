@@ -29,7 +29,8 @@
         overflow-x: hidden;
       }
 
-      .zone-card {
+      ha-card-chooser {
+        display: block;
         margin-left: 8px;
         margin-bottom: 8px;
       }
@@ -39,7 +40,7 @@
           padding-right: 0;
         }
 
-        .zone-card {
+        ha-card-chooser {
           margin-left: 0;
         }
       }
@@ -66,10 +67,8 @@
         <template is='dom-repeat' items='[[cards.columns]]' as='column'>
           <div class='column flex-1'>
             <template is='dom-repeat' items='[[column]]' as='card'>
-              <div class='zone-card'>
-                <ha-card-chooser card-data='[[card]]' hass='[[hass]]'
-                ></ha-card-chooser>
-              </div>
+              <ha-card-chooser card-data='[[card]]' hass='[[hass]]'
+              ></ha-card-chooser>
             </template>
           </div>
         </template>
