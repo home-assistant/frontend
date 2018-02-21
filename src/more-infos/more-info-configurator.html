@@ -4,6 +4,7 @@
 <link rel='import' href='../../bower_components/paper-spinner/paper-spinner.html'>
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel='import' href='../../bower_components/paper-input/paper-input.html'>
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel='import' href='../components/ha-markdown.html'>
 
@@ -36,6 +37,11 @@
         height: 41px;
       }
 
+      paper-checkbox {
+        margin-top: 12px;
+        margin-bottom: 8px;
+      }
+
       paper-spinner {
         width: 14px;
         height: 14px;
@@ -56,12 +62,26 @@
         </p>
 
         <template is='dom-repeat' items='[[stateObj.attributes.fields]]'>
-          <paper-input
-            label='[[item.name]]'
-            name='[[item.id]]'
-            type='[[item.type]]'
-            on-change='fieldChanged'
-          ></paper-input>
+
+          <template is='dom-if' if='[[fieldIs(item.type, "checkbox")]]'>
+            <paper-checkbox
+              label='[[item.name]]'
+              name='[[item.id]]'
+              value='[[item.value]]'
+              on-change='checkboxChanged'
+            >
+              [[item.name]]
+            </paper-checkbox>
+          </template>
+
+          <template is='dom-if' if='[[fieldIs(item.type, "string")]]'>
+            <paper-input
+              label='[[item.name]]'
+              name='[[item.id]]'
+              type='[[item.type]]'
+              on-change='fieldChanged'
+            ></paper-input>
+          </template>
         </template>
 
         <p class='submit' hidden$='[[!stateObj.attributes.submit_caption]]'>
@@ -85,6 +105,9 @@
 </dom-module>
 
 <script>
+
+const NON_STRING_FIELD_TYPES = ['checkbox'];
+
 class MoreInfoConfigurator extends Polymer.Element {
   static get is() { return 'more-info-configurator'; }
 
@@ -123,6 +146,20 @@ class MoreInfoConfigurator extends Polymer.Element {
   fieldChanged(ev) {
     var el = ev.target;
     this.fieldInput[el.name] = el.value;
+  }
+
+  checkboxChanged(ev) {
+    var el = ev.target;
+    this.fieldInput[el.name] = el.checked;
+  }
+
+  fieldIs(type, condition) {
+    if (type === condition) {
+      return true;
+    } else if (condition === 'string') {
+      return !(NON_STRING_FIELD_TYPES.includes(type));
+    }
+    return false;
   }
 
   submitClicked() {
