@@ -11,11 +11,6 @@
 
 <dom-module id="ha-config-cloud">
   <template>
-    <style>
-      iron-pages {
-        height: 100%;
-      }
-    </style>
     <app-route
       route='[[route]]'
       pattern='/cloud/:page'
@@ -23,7 +18,7 @@
       tail="{{_routeTail}}"
     ></app-route>
 
-    <template is='dom-if' if='[[_equals(routeData.page, "account")]]' restamp>
+    <template is='dom-if' if='[[_equals(_routeData.page, "account")]]' restamp>
       <ha-config-cloud-account
         hass='[[hass]]'
         account='[[account]]'
@@ -62,6 +57,15 @@
 
 <script>
 {
+  const LOGGED_IN_URLS = [
+    '/cloud/account',
+  ];
+  const NOT_LOGGED_IN_URLS = [
+    '/cloud/login',
+    '/cloud/register',
+    '/cloud/forgot-password',
+  ];
+
   class HaConfigCloud extends window.hassMixins.NavigateMixin(Polymer.Element) {
     static get is() { return 'ha-config-cloud'; }
 
@@ -75,7 +79,6 @@
         },
         account: {
           type: Object,
-          value: null,
         },
 
         route: Object,
@@ -92,15 +95,20 @@
       ];
     }
 
-    _checkRoute(route, account) {
+    _checkRoute(route) {
       if (!route || route.path.substr(0, 6) !== '/cloud') return;
 
-      if (!account && ['/cloud/forgot-password', '/cloud/register'].indexOf(route.path) === -1) {
-        setTimeout(() => this.navigate('/config/cloud/login', true), 0);
-      } else if (account &&
-                 ['/cloud/login', '/cloud/register', '/cloud/forgot-password'].indexOf(route.path) !== -1) {
-        setTimeout(() => this.navigate('/config/cloud/account', true), 0);
-      }
+      this._debouncer = Polymer.Debouncer.debounce(
+        this._debouncer,
+        Polymer.Async.timeOut.after(0),
+        () => {
+          if (!this.account && !NOT_LOGGED_IN_URLS.includes(route.path)) {
+            this.navigate('/config/cloud/login', true);
+          } else if (this.account && !LOGGED_IN_URLS.includes(route.path)) {
+            this.navigate('/config/cloud/account', true);
+          }
+        }
+      );
     }
 
     _equals(a, b) {

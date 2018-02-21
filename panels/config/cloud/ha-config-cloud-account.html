@@ -132,7 +132,7 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(Polymer.Element
   }
 
   _accountChanged(newAccount) {
-    if (newAccount.cloud !== 'connecting') {
+    if (!newAccount || newAccount.cloud !== 'connecting') {
       if (this._accountUpdater) {
         clearTimeout(this._accountUpdater);
         this._accountUpdater = null;
