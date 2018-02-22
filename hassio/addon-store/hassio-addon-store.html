@@ -35,10 +35,6 @@ class HassioAddonStore extends Polymer.Element {
       hass: Object,
       addons: Array,
       repos: Array,
-      visible: {
-        type: Boolean,
-        observer: 'visibleChanged',
-      },
     };
   }
 
@@ -46,6 +42,7 @@ class HassioAddonStore extends Polymer.Element {
     super.ready();
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
     this.addEventListener('hassio-store-refresh', ev => this.refreshData(ev));
+    this.loadData();
   }
 
   apiCalled(ev) {
@@ -71,12 +68,6 @@ class HassioAddonStore extends Polymer.Element {
     return this.addons.filter(function (addon) {
       return addon.repository === repo;
     });
-  }
-
-  visibleChanged(visible) {
-    if (visible) {
-      this.loadData();
-    }
   }
 
   loadData() {

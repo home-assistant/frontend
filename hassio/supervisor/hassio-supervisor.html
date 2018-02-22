@@ -31,21 +31,13 @@ class HassioSupervisor extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-      visible: {
-        type: Boolean,
-        observer: 'visibleChanged',
-      },
-      log: {
-        type: String,
-        value: '',
-      },
+      log: String,
     };
   }
 
-  visibleChanged(visible) {
-    if (visible) {
-      this.loadData();
-    }
+  ready() {
+    super.ready();
+    this.loadData();
   }
 
   loadData() {

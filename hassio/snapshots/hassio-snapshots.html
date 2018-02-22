@@ -112,10 +112,6 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get properties() {
     return {
       hass: Object,
-      visible: {
-        type: Boolean,
-        observer: 'visibleChanged',
-      },
       snapshotName: String,
       snapshotType: {
         type: String,
@@ -153,12 +149,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   ready() {
     super.ready();
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
-  }
-
-  visibleChanged(visible) {
-    if (visible) {
-      this.updateSnapshots();
-    }
+    this.updateSnapshots();
   }
 
   apiCalled(ev) {
