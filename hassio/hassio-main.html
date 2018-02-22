@@ -1,8 +1,14 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel='import' href='../bower_components/app-layout/app-header-layout/app-header-layout.html'>
+<link rel='import' href='../bower_components/app-layout/app-header/app-header.html'>
+<link rel='import' href='../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel='import' href='../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <link rel="import" href="../src/layouts/hass-loading-screen.html">
 <link rel='import' href='../src/util/hass-util.html'>
+<link rel='import' href='../src/components/ha-menu-button.html'>
+<link rel='import' href='../src/resources/ha-style.html'>
 
 <link rel='import' href='./hassio-data.html'>
 <link rel='import' href='./hassio-navigation.html'>
@@ -10,6 +16,7 @@
 
 <dom-module id="hassio-main">
   <template>
+    <style include='ha-style'></style>
     <app-route
       route='[[route]]'
       pattern='/:page'
@@ -31,8 +38,23 @@
     </template>
 
     <template is='dom-if' if='[[loaded]]'>
-      <hassio-navigation
-        page='[[routeData.page]]'>
+      <app-header-layout has-scrolling-region>
+        <app-header fixed slot='header'>
+          <app-toolbar>            
+            <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+            <paper-icon-button
+              icon='mdi:arrow-left'
+              on-tap='backTapped'
+              hidden='[[!pageIsAddon]]'
+            ></paper-icon-button>
+            <div main-title>[[title]]</div>
+          </app-toolbar>
+          <template is='dom-if' if='[[!pageIsAddon]]'>
+            <hassio-navigation
+              page='[[routeData.page]]'>        
+            </hassio-navigation>
+          </template>
+        </app-header>
         <hassio-pages
           page='[[routeData.page]]'
           route='[[route]]'
@@ -41,7 +63,7 @@
           hass-info='[[hassInfo]]'
           host-info='[[hostInfo]]'
         ></hassio-pages>
-      </hassio-navigation>
+      </app-header-layout>
     </template>
   </template>
 </dom-module>
@@ -63,7 +85,10 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
         },
         observer: 'routeChanged',
       },
-      routeData: Object,
+      routeData: {
+        type: Object,
+        observer: 'routeDataChanged',
+      },
       supervisorInfo: Object,
       hostInfo: Object,
       hassInfo: Object,
@@ -71,6 +96,10 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
         type: Boolean,
         computed: 'computeIsLoaded(supervisorInfo, hostInfo, hassInfo)',
       },
+      narrow: Boolean,
+      showMenu: Boolean,
+      pageIsAddon: Boolean,
+      title: String,
     };
   }
 
@@ -111,6 +140,20 @@ class HassioMain extends window.hassMixins.EventsMixin(Polymer.Element) {
       history.replaceState(null, null, '/hassio/dashboard');
       this.fire('location-changed');
     }
+  }
+
+  routeDataChanged(routeData) {
+    if (routeData.page && routeData.page === 'addon') {
+      this.pageIsAddon = true;
+      this.title = 'Hass.io: add-on details';
+    } else {
+      this.pageIsAddon = false;
+      this.title = 'Hass.io';
+    }
+  }
+
+  backTapped() {
+    history.back();
   }
 }
 

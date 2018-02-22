@@ -1,15 +1,8 @@
 <link rel='import' href='../bower_components/polymer/polymer-element.html'>
-<link rel='import' href='../bower_components/app-layout/app-header-layout/app-header-layout.html'>
-<link rel='import' href='../bower_components/app-layout/app-header/app-header.html'>
-<link rel='import' href='../bower_components/app-layout/app-toolbar/app-toolbar.html'>
-<link rel='import' href='../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../bower_components/paper-tabs/paper-tabs.html'>
 <link rel='import' href='../bower_components/paper-tabs/paper-tab.html'>
 
 <link rel='import' href='../src/util/hass-mixins.html'>
-
-<link rel='import' href='../src/components/ha-menu-button.html'>
-<link rel='import' href='../src/resources/ha-style.html'>
 
 <dom-module id='hassio-navigation'>
   <template>
@@ -20,32 +13,17 @@
         text-transform: uppercase;
       }
     </style>
-    <app-header-layout has-scrolling-region>
-      <app-header fixed slot='header'>
-        <app-toolbar>            
-          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <paper-icon-button
-            icon='mdi:arrow-left'
-            on-tap='backTapped'
-            hidden='[[!isAddonPage]]'
-          ></paper-icon-button>
-          <div main-title>[[title]]</div>
-        </app-toolbar>
-        <paper-tabs
-          scrollable
-          selected='[[routeData.page]]'
-          attr-for-selected='page-name'
-          on-iron-activate='handlePageSelected'
-          hidden='[[isAddonPage]]'
-        >
-          <paper-tab page-name='dashboard'>Dashboard</paper-tab>
-          <paper-tab page-name='store'>Add-on store</paper-tab>
-          <paper-tab page-name='snapshots'>Snapshots</paper-tab>
-          <paper-tab page-name='advanced'>Advanced</paper-tab>
-        </paper-tabs>
-      </app-header>
-      <slot></slot>
-    </app-header-layout>
+    <paper-tabs
+      scrollable
+      selected='[[page]]'
+      attr-for-selected='page-name'
+      on-iron-activate='handlePageSelected'
+    >
+      <paper-tab page-name='dashboard'>Dashboard</paper-tab>
+      <paper-tab page-name='store'>Add-on store</paper-tab>
+      <paper-tab page-name='snapshots'>Snapshots</paper-tab>
+      <paper-tab page-name='advanced'>Advanced</paper-tab>
+    </paper-tabs>      
   </template>
 </dom-module>
 
@@ -55,29 +33,8 @@ class HassioNavigation extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   static get properties() {
     return {
-      page: {
-        type: String,
-        observer: 'pageChanged',
-      },
-      isAddonPage: Boolean,
-      title: String,
-      narrow: Boolean,
-      showMenu: Boolean,
+      page: String,
     };
-  }
-
-  pageChanged(page) {
-    if (page === 'addon') {
-      this.title = 'Hass.io: add-on details';
-      this.isAddonPage = true;
-    } else {
-      this.title = 'Hass.io';
-      this.isAddonPage = false;
-    }
-  }
-
-  backTapped() {
-    history.back();
   }
 
   handlePageSelected(ev) {
@@ -87,7 +44,6 @@ class HassioNavigation extends window.hassMixins.EventsMixin(Polymer.Element) {
       this.fire('location-changed');
     }
   }
-
 }
 
 customElements.define(HassioNavigation.is, HassioNavigation);
