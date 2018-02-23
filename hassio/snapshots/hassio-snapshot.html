@@ -199,7 +199,7 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   formatDatetime(datetime) {
-    return new Date(datetime + '+00:00').toLocaleDateString(navigator.language, {
+    return new Date(datetime).toLocaleDateString(navigator.language, {
       weekday: 'long',
       year: 'numeric',
       month: 'short',
