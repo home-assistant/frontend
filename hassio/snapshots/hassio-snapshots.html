@@ -1,8 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
@@ -30,92 +26,76 @@
         display: none;
       }
     </style>
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <paper-icon-button
-            icon='mdi:arrow-left'
-            on-tap='_backTapped'
-          ></paper-icon-button>
-          <div main-title>Snapshots</div>
-          <paper-icon-button
-            icon="mdi:refresh"
-            on-tap="_refreshTapped"
-          ></paper-icon-button>
-        </app-toolbar>
-      </app-header>
-
-      <div class='content'>
-        <div class='card-group'>
-          <div class='title'>
-            New snapshot
-            <div class='description'>
-              Snapshots allow you to easily backup and
-              restore all data of your Hass.io instance.
-            </div>
+    <div class='content'>
+      <div class='card-group'>
+        <div class='title'>
+          New snapshot
+          <div class='description'>
+            Snapshots allow you to easily backup and
+            restore all data of your Hass.io instance.
           </div>
-          <paper-card>
-            <div class='card-content'>
-              <paper-input autofocus label='Name' value='{{snapshotName}}'>
-              </paper-input>
-              <label id='lbltype'>Type:</label>
-              <paper-radio-group selected='{{snapshotType}}' aria-labelledby='lbltype' on-paper-radio-group-changed='typeChanged'>
-                <paper-radio-button name='full'>
-                  Full snapshot
-                </paper-radio-button>
-                <paper-radio-button name='partial'>
-                  Partial snapshot
-                </paper-radio-button>
-              </paper-radio-group>
-              <div id='folders' class='hidden'>
-                Folders:
-                <template is='dom-repeat' items='[[folderList]]'>
-                  <paper-checkbox checked='{{item.checked}}'>
-                    [[item.name]]
-                  </paper-checkbox>
-                </template>
-              </div>
-              <div id='addons' class='hidden'>
-                Add-ons:
-                <template is='dom-repeat' items='[[addonList]]' sort='sortAddons'>
-                  <paper-checkbox checked='{{item.checked}}'>
-                    [[item.name]]
-                  </paper-checkbox>
-                </template>
-              </div>
-            </div>
-            <div class='card-actions'>
-              <paper-button disabled='[[creatingSnapshot]]' on-tap='createSnapshot'>Create</paper-button>
-              <template is='dom-if' if='[[error]]'>
-                <p class='error'>[[error]]</p>
+        </div>
+        <paper-card>
+          <div class='card-content'>
+            <paper-input autofocus label='Name' value='{{snapshotName}}'>
+            </paper-input>
+            <label id='lbltype'>Type:</label>
+            <paper-radio-group selected='{{snapshotType}}' aria-labelledby='lbltype' on-paper-radio-group-changed='typeChanged'>
+              <paper-radio-button name='full'>
+                Full snapshot
+              </paper-radio-button>
+              <paper-radio-button name='partial'>
+                Partial snapshot
+              </paper-radio-button>
+            </paper-radio-group>
+            <div id='folders' class='hidden'>
+              Folders:
+              <template is='dom-repeat' items='[[folderList]]'>
+                <paper-checkbox checked='{{item.checked}}'>
+                  [[item.name]]
+                </paper-checkbox>
               </template>
             </div>
-          </paper-card>
-        </div>
-  
-        <div class='card-group'>
-          <div class='title'>Available snapshots</div>
-          <template is='dom-if' if='[[!snapshots.length]]'>
-            <paper-card>
-              <div class='card-content'>You don't have any snapshots yet.</div>
-            </paper-card>
-          </template>
-          <template is='dom-repeat' items='[[snapshots]]' as='snapshot' sort='sortSnapshots'>
-            <paper-card class='pointer' on-click='snapshotTapped'>
-              <div class='card-content'>
-                <hassio-card-content
-                  title='[[computeName(snapshot)]]'
-                  description='[[computeType(snapshot.type)]]'
-                  datetime='[[snapshot.date]]+00:00'
-                  icon='[[computeIcon(snapshot.type)]]'
-                  icon-class='snapshot'
-                ></hassio-card-content>
-              </div>
-            </paper-card>
-          </template>
-        </div>
+            <div id='addons' class='hidden'>
+              Add-ons:
+              <template is='dom-repeat' items='[[addonList]]' sort='sortAddons'>
+                <paper-checkbox checked='{{item.checked}}'>
+                  [[item.name]]
+                </paper-checkbox>
+              </template>
+            </div>
+          </div>
+          <div class='card-actions'>
+            <paper-button disabled='[[creatingSnapshot]]' on-tap='createSnapshot'>Create</paper-button>
+            <template is='dom-if' if='[[error]]'>
+              <p class='error'>[[error]]</p>
+            </template>
+          </div>
+        </paper-card>
       </div>
-    </app-header-layout>    
+
+      <div class='card-group'>
+        <div class='title'>Available snapshots</div>
+        <template is='dom-if' if='[[!snapshots.length]]'>
+          <paper-card>
+            <div class='card-content'>You don't have any snapshots yet.</div>
+          </paper-card>
+        </template>
+        <template is='dom-repeat' items='[[snapshots]]' as='snapshot' sort='sortSnapshots'>
+          <paper-card class='pointer' on-click='snapshotTapped'>
+            <div class='card-content'>
+              <hassio-card-content
+                title='[[computeName(snapshot)]]'
+                description='[[computeType(snapshot.type)]]'
+                datetime='[[snapshot.date]]+00:00'
+                icon='[[computeIcon(snapshot.type)]]'
+                icon-class='snapshot'
+              ></hassio-card-content>
+            </div>
+          </paper-card>
+        </template>
+      </div>
+    </div>
     <hassio-snapshot      
       hass='[[hass]]'
       snapshot-slug='[[selectedSnapshot]]'
@@ -132,10 +112,6 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get properties() {
     return {
       hass: Object,
-      visible: {
-        type: Boolean,
-        observer: 'visibleChanged',
-      },
       snapshotName: String,
       snapshotType: {
         type: String,
@@ -173,12 +149,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   ready() {
     super.ready();
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
-  }
-
-  visibleChanged(visible) {
-    if (visible) {
-      this.updateSnapshots();
-    }
+    this.updateSnapshots();
   }
 
   apiCalled(ev) {
@@ -273,17 +244,6 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       this.updateSnapshots();
       this.updateOverview = false;
     }
-  }
-
-  backTapped() {
-    history.back();
-  }
-
-  refreshTapped() {
-    this.hass.callApi('post', 'hassio/snapshots/reload')
-      .then(() => {
-        this.updateSnapshots();
-      });
   }
 }
 

@@ -1,10 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-
-<link rel="import" href="../../src/components/ha-menu-button.html">
 
 <dom-module id="hassio-supervisor">
   <template>
@@ -14,24 +9,18 @@
         margin: 0;
         white-space: pre-wrap;
       }
+      paper-icon-button {
+        color: var(--primary-color);
+        position: sticky;
+        top: 0;
+        float: right;
+      }
     </style>
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <paper-icon-button
-            icon='mdi:arrow-left'
-            on-tap='_backTapped'
-          ></paper-icon-button>
-          <div main-title>Supervisor Logs</div>
-          <paper-icon-button
-            icon="mdi:refresh"
-            on-tap="_refreshTapped"
-          ></paper-icon-button>
-        </app-toolbar>
-      </app-header>
-
-      <pre class='content'>[[logs]]</pre>
-    </app-header-layout>
+    <paper-icon-button
+      icon='mdi:refresh'
+      on-tap='refreshTapped'
+    ></paper-icon-button>
+    <pre class='content'>[[log]]</pre>
   </template>
 </dom-module>
 
@@ -41,43 +30,27 @@ class HassioSupervisor extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      visible: {
-        type: Boolean,
-        observer: '_visibleChanged',
-      },
-
-      logs: {
-        type: String,
-        value: '',
-      },
+      hass: Object,
+      log: String,
     };
   }
 
-  _visibleChanged(visible) {
-    if (visible) {
-      this._loadData();
-    }
+  ready() {
+    super.ready();
+    this.loadData();
   }
 
-  _loadData() {
+  loadData() {
     this.hass.callApi('get', 'hassio/supervisor/logs')
-      .then(function (info) {
-        this.logs = info;
-      }.bind(this), function () {
-        this.logs = 'Error fetching logs';
-      }.bind(this));
+      .then((info) => {
+        this.log = info;
+      }, () => {
+        this.log = 'Error fetching logs';
+      });
   }
 
-  _refreshTapped() {
-    this._loadData();
-  }
-
-  _backTapped() {
-    history.back();
+  refreshTapped() {
+    this.loadData();
   }
 }
 
