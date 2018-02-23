@@ -16,15 +16,19 @@
 <dom-module id="hassio-addon-view">
   <template>
     <style include="iron-flex ha-style">
-      hassio-addon-info,
-      hassio-addon-network,
-      hassio-addon-config {
-        margin-bottom: 24px;
-      }
+      :host {
+        color: var(--primary-text-color);
+        --paper-card-header-color: var(--primary-text-color);
+      }      
       .content {
         padding: 24px 0 32px;
         max-width: 600px;
         margin: 0 auto;
+      }
+      hassio-addon-info,
+      hassio-addon-network,
+      hassio-addon-config {
+        margin-bottom: 24px;
       }
     </style>
     <app-route
