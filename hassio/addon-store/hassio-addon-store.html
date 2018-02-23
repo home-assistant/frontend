@@ -1,8 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
 
@@ -12,46 +8,21 @@
 <dom-module id="hassio-addon-store">
   <template>
     <style include="iron-flex ha-style">
-      paper-card {
-        display: block;
-      }
-      .content {
-        padding: 24px 0 32px;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
       hassio-addon-repository {
         margin-top: 24px;
       }
     </style>
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <paper-icon-button
-            icon='mdi:arrow-left'
-            on-tap='backTapped'
-          ></paper-icon-button>
-          <div main-title>Add-on store</div>
-          <paper-icon-button
-            icon="mdi:refresh"
-            on-tap="refreshTapped"
-          ></paper-icon-button>
-        </app-toolbar>
-      </app-header>
+    <hassio-repositories-editor
+      hass='[[hass]]'
+      repos='[[repos]]'
+    ></hassio-repositories-editor>
 
-      <hassio-repositories-editor
-        hass='[[hass]]'
-        repos='[[repos]]'
-      ></hassio-repositories-editor>
-
-      <template is='dom-repeat' items='[[repos]]' as='repo' sort='sortRepos'>
-        <hassio-addon-repository
-          repo='[[repo]]'
-          addons='[[computeAddons(repo.slug)]]'
-        ></hassio-addon-repository>
-      </template>
-    </app-header-layout>
+    <template is='dom-repeat' items='[[repos]]' as='repo' sort='sortRepos'>
+      <hassio-addon-repository
+        repo='[[repo]]'
+        addons='[[computeAddons(repo.slug)]]'
+      ></hassio-addon-repository>
+    </template>
   </template>
 </dom-module>
 
@@ -64,10 +35,6 @@ class HassioAddonStore extends Polymer.Element {
       hass: Object,
       addons: Array,
       repos: Array,
-      visible: {
-        type: Boolean,
-        observer: 'visibleChanged',
-      },
     };
   }
 
@@ -75,6 +42,7 @@ class HassioAddonStore extends Polymer.Element {
     super.ready();
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
     this.addEventListener('hassio-store-refresh', ev => this.refreshData(ev));
+    this.loadData();
   }
 
   apiCalled(ev) {
@@ -102,12 +70,6 @@ class HassioAddonStore extends Polymer.Element {
     });
   }
 
-  visibleChanged(visible) {
-    if (visible) {
-      this.loadData();
-    }
-  }
-
   loadData() {
     this.hass.callApi('get', 'hassio/addons')
       .then((info) => {
@@ -125,14 +87,6 @@ class HassioAddonStore extends Polymer.Element {
       .then(() => {
         this.loadData();
       });
-  }
-
-  refreshTapped() {
-    this.fire('hassio-store-refresh');
-  }
-
-  backTapped() {
-    history.back();
   }
 }
 
