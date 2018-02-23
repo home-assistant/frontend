@@ -1,8 +1,12 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/app-route/app-route.html'>
+<link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
+<link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
+<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+
+<link rel='import' href='../../src/components/ha-menu-button.html'>
+<link rel='import' href='../../src/resources/ha-style.html'>
 
 <link rel="import" href="./hassio-addon-info.html">
 <link rel="import" href="./hassio-addon-config.html">
@@ -30,16 +34,16 @@
       active='{{routeMatches}}'
     ></app-route>
     <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
+      <app-header fixed slot='header'>
+        <app-toolbar>            
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <paper-icon-button
             icon='mdi:arrow-left'
             on-tap='backTapped'
           ></paper-icon-button>
-          <div main-title>[[addon.name]]</div>
+          <div main-title>Hass.io: add-on details</div>
         </app-toolbar>
       </app-header>
-
       <div class='content'>
         <hassio-addon-info
           hass='[[hass]]'
@@ -79,6 +83,8 @@ class HassioAddonView extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
+      showMenu: Boolean,
+      narrow: Boolean,
       route: Object,
       routeData: {
         type: Object,

@@ -1,0 +1,103 @@
+<link rel='import' href='../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../bower_components/app-layout/app-header-layout/app-header-layout.html'>
+<link rel='import' href='../bower_components/app-layout/app-header/app-header.html'>
+<link rel='import' href='../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel='import' href='../bower_components/paper-tabs/paper-tabs.html'>
+<link rel='import' href='../bower_components/paper-tabs/paper-tab.html'>
+
+<link rel='import' href='../src/components/ha-menu-button.html'>
+<link rel='import' href='../src/util/hass-mixins.html'>
+<link rel='import' href='../src/resources/ha-style.html'>
+
+<link rel='import' href='./dashboard/hassio-dashboard.html'>
+<link rel='import' href='./snapshots/hassio-snapshots.html'>
+<link rel='import' href='./addon-store/hassio-addon-store.html'>
+<link rel='import' href='./system/hassio-system.html'>
+
+<dom-module id='hassio-pages-with-tabs'>
+  <template>
+    <style include='iron-flex iron-positioning ha-style'>
+      paper-tabs {
+        margin-left: 12px;
+        --paper-tabs-selection-bar-color: #FFF;
+        text-transform: uppercase;
+      }
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header fixed slot='header'>
+        <app-toolbar>            
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Hass.io</div>
+        </app-toolbar>
+        <paper-tabs
+          scrollable
+          selected='[[page]]'
+          attr-for-selected='page-name'
+          on-iron-activate='handlePageSelected'
+        >
+          <paper-tab page-name='dashboard'>Dashboard</paper-tab>
+          <paper-tab page-name='snapshots'>Snapshots</paper-tab>
+          <paper-tab page-name='store'>Add-on store</paper-tab>          
+          <paper-tab page-name='system'>System</paper-tab>
+        </paper-tabs>
+      </app-header>
+      <template is='dom-if' if='[[equals(page, "dashboard")]]'>
+        <hassio-dashboard
+          hass='[[hass]]'
+          supervisor-info='[[supervisorInfo]]'
+          hass-info='[[hassInfo]]'
+        ></hassio-dashboard>
+      </template>
+      <template is='dom-if' if='[[equals(page, "snapshots")]]'>
+        <hassio-snapshots
+          hass='[[hass]]'
+          installed-addons='[[supervisorInfo.addons]]'
+        ></hassio-snapshots>
+      </template>
+      <template is='dom-if' if='[[equals(page, "store")]]'>
+        <hassio-addon-store
+          hass='[[hass]]'
+        ></hassio-addon-store>
+      </template>
+      <template is='dom-if' if='[[equals(page, "system")]]'>
+        <hassio-system
+          hass='[[hass]]'
+          supervisor-info='[[supervisorInfo]]'
+          host-info='[[hostInfo]]'
+          hass-info='[[hassInfo]]'
+        ></hassio-system>
+      </template>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Element) {
+  static get is() { return 'hassio-pages-with-tabs'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      showMenu: Boolean,
+      narrow: Boolean,
+      page: String,
+      supervisorInfo: Object,
+      hostInfo: Object,
+      hassInfo: Object,
+    };
+  }
+
+  handlePageSelected(ev) {
+    const newPage = ev.detail.item.getAttribute('page-name');
+    if (newPage !== this.page) {
+      this.navigate(`/hassio/${newPage}`);
+    }
+  }
+
+  equals(a, b) {
+    return a === b;
+  }
+}
+
+customElements.define(HassioPagesWithTabs.is, HassioPagesWithTabs);
+</script>

@@ -1,11 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-
-<link rel="import" href="../../src/components/ha-menu-button.html">
 
 <link rel="import" href="./hassio-host-info.html">
 <link rel="import" href="./hassio-hass-info.html">
@@ -31,38 +25,26 @@
         margin-right: 24px;
       }
     </style>
-    <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed>
-        <app-toolbar>
-          <paper-icon-button
-            icon='mdi:arrow-left'
-            on-tap='backTapped'
-          ></paper-icon-button>
-          <div main-title>Advanced Settings</div>
-        </app-toolbar>
-      </app-header>
+    <div class='content'>
+      <div class='status'>
+        <hassio-supervisor-info
+          hass='[[hass]]'
+          data='[[supervisorInfo]]'
+        ></hassio-supervisor-info>
 
-      <div class='content'>
-        <div class='status'>
-          <hassio-supervisor-info
-            hass='[[hass]]'
-            data='[[supervisorInfo]]'
-          ></hassio-supervisor-info>
-
-          <hassio-host-info
-            hass='[[hass]]'
-            data='[[hostInfo]]'
-          ></hassio-host-info>
-        </div>
-        <div class='status'>
-          <hassio-hass-info
-            hass='[[hass]]'
-            data='[[hassInfo]]'
-          ></hassio-hass-info>
-          <div></div>
-        </div>
+        <hassio-host-info
+          hass='[[hass]]'
+          data='[[hostInfo]]'
+        ></hassio-host-info>
       </div>
-    </app-header-layout>
+      <div class='status'>
+        <hassio-hass-info
+          hass='[[hass]]'
+          data='[[hassInfo]]'
+        ></hassio-hass-info>
+        <div></div>
+      </div>
+    </div>
   </template>
 </dom-module>
 
@@ -72,29 +54,11 @@ class HassioAdvanced extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      supervisorInfo: {
-        type: Object,
-        value: {},
-      },
-
-      hostInfo: {
-        type: Object,
-        value: {},
-      },
-
-      hassInfo: {
-        type: Object,
-        value: {},
-      },
+      hass: Object,
+      supervisorInfo: Object,
+      hostInfo: Object,
+      hassInfo: Object,
     };
-  }
-
-  backTapped() {
-    history.back();
   }
 }
 
