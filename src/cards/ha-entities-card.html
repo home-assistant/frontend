@@ -108,9 +108,9 @@ class HaEntitiesCard extends
     const cards = this.root.querySelectorAll('.state');
     cards.forEach((card) => {
       if (card.classList.contains('more-info')) {
-        card.addEventListener('tap', this.entityTapped);
+        card.addEventListener('click', this.entityTapped);
       } else {
-        card.removeEventListener('tap', this.entityTapped);
+        card.removeEventListener('click', this.entityTapped);
       }
     });
   }
