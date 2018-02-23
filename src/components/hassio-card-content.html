@@ -22,9 +22,10 @@
       }
       iron-icon.hassupdate,
       iron-icon.snapshot {
-        color: var(--primary-color);
+        color: var(--paper-item-icon-color);
       }
       .title {
+        color: var(--primary-text-color);
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -56,7 +57,7 @@
 </dom-module>
 
 <script>
-class HassioCardContent extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HassioCardContent extends Polymer.Element {
   static get is() { return 'hassio-card-content'; }
 
   static get properties() {
