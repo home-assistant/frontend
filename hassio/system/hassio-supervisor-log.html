@@ -1,32 +1,28 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
+<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 
-<dom-module id="hassio-supervisor">
+<dom-module id="hassio-supervisor-log">
   <template>
-    <style include="iron-flex ha-style">
-      .content {
-        padding: 16px;
-        margin: 0;
-        white-space: pre-wrap;
-      }
-      paper-icon-button {
-        color: var(--primary-color);
-        position: sticky;
-        top: 0;
-        float: right;
+    <style include="ha-style">
+      paper-card {
+        display: block;
       }
     </style>
-    <paper-icon-button
-      icon='mdi:refresh'
-      on-tap='refreshTapped'
-    ></paper-icon-button>
-    <pre class='content'>[[log]]</pre>
+    <paper-card>
+      <div class='card-content'>
+        <pre>[[log]]</pre>
+      </div>
+      <div class='card-actions'>
+        <paper-button on-tap='refreshTapped'>Refresh</paper-button>
+      </div>
+    </paper-card>
   </template>
 </dom-module>
 
 <script>
-class HassioSupervisor extends Polymer.Element {
-  static get is() { return 'hassio-supervisor'; }
+class HassioSupervisorLog extends Polymer.Element {
+  static get is() { return 'hassio-supervisor-log'; }
 
   static get properties() {
     return {
@@ -54,5 +50,5 @@ class HassioSupervisor extends Polymer.Element {
   }
 }
 
-customElements.define(HassioSupervisor.is, HassioSupervisor);
+customElements.define(HassioSupervisorLog.is, HassioSupervisorLog);
 </script>

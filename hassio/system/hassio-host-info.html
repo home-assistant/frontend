@@ -7,8 +7,21 @@
   <template>
     <style include="iron-flex ha-style">
       paper-card {
-        display: block;
-        height: 100%;
+        display: inline-block;
+        width: 350px;
+      }
+      .card-content {
+        height: 110px;
+      }
+      @media screen and (max-width: 730px) {
+        paper-card {
+          margin-top: 8px;     
+          width: 100%;
+          height: 100%;
+        }
+        .card-content {
+          height: 100%;
+        }
       }
       .info {
         width: 100%;
@@ -21,27 +34,19 @@
         margin-top: 16px;
       }
     </style>
-    <paper-card heading="Host OS">
+    <paper-card heading="Host system">
       <div class="card-content">
         <table class='info'>
           <tr>
-            <td>Hostname</td>
-            <td>[[data.hostname]]</td>
-          </tr>
-          <tr>
             <td>Type</td>
-            <td>[[data.type]]</td>
+            <td>[[data.type]] ([[data.os]])</td>
           </tr>
           <tr>
-            <td>OS</td>
-            <td>[[data.os]]</td>
-          </tr>
-          <tr>
-            <td>Host Control version</td>
+            <td>Host controller version</td>
             <td>[[data.version]]</td>
           </tr>
           <tr>
-            <td>Latest available version</td>
+            <td>Latest version</td>
             <td>[[data.last_version]]</td>
           </tr>
         </table>
@@ -81,15 +86,8 @@ class HassioHostInfo extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      data: {
-        type: Object,
-        value: {},
-      },
-
+      hass: Object,
+      data: Object,
       errors: String,
     };
   }
@@ -119,11 +117,11 @@ class HassioHostInfo extends Polymer.Element {
   }
 
   computeRebootAvailable(data) {
-    return data.features && data.features.indexOf('reboot') !== -1;
+    return data.features && data.features.includes('reboot');
   }
 
   computeShutdownAvailable(data) {
-    return data.features && data.features.indexOf('shutdown') !== -1;
+    return data.features && data.features.includes('shutdown');
   }
 }
 
