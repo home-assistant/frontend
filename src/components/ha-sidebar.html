@@ -98,23 +98,23 @@
 
     <app-toolbar>
       <div main-title>Home Assistant</div>
-      <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-tap='toggleMenu'></paper-icon-button>
+      <paper-icon-button icon='mdi:chevron-left' hidden$='[[narrow]]' on-click='toggleMenu'></paper-icon-button>
     </app-toolbar>
 
     <paper-listbox attr-for-selected='data-panel' selected='[[hass.panelUrl]]'>
-      <paper-icon-item on-tap='menuClicked' data-panel='states'>
+      <paper-icon-item on-click='menuClicked' data-panel='states'>
         <iron-icon slot="item-icon" icon='mdi:apps'></iron-icon>
         <span class='item-text'>[[localize('panel.states')]]</span>
       </paper-icon-item>
 
       <template is='dom-repeat' items='[[panels]]'>
-        <paper-icon-item on-tap='menuClicked' data-panel$='[[item.url_path]]'>
+        <paper-icon-item on-click='menuClicked' data-panel$='[[item.url_path]]'>
           <iron-icon slot="item-icon" icon='[[item.icon]]'></iron-icon>
           <span class='item-text'>[[computePanelName(localize, item)]]</span>
         </paper-icon-item>
       </template>
 
-      <paper-icon-item on-tap='menuClicked' data-panel='logout' class='logout'>
+      <paper-icon-item on-click='menuClicked' data-panel='logout' class='logout'>
         <iron-icon slot="item-icon" icon='mdi:exit-to-app'></iron-icon>
         <span class='item-text'>[[localize('ui.sidebar.log_out')]]</span>
       </paper-icon-item>
@@ -129,29 +129,29 @@
         <paper-icon-button
           icon='mdi:remote' data-panel='dev-service'
           alt="[[localize('panel.dev-services')]]" title="[[localize('panel.dev-services')]]"
-          on-tap='menuClicked'></paper-icon-button>
+          on-click='menuClicked'></paper-icon-button>
         <paper-icon-button
           icon='mdi:code-tags' data-panel='dev-state'
           alt="[[localize('panel.dev-states')]]" title="[[localize('panel.dev-states')]]"
-          on-tap='menuClicked'></paper-icon-button>
+          on-click='menuClicked'></paper-icon-button>
         <paper-icon-button
           icon='mdi:radio-tower' data-panel='dev-event'
           alt="[[localize('panel.dev-events')]]" title="[[localize('panel.dev-events')]]"
-          on-tap='menuClicked'></paper-icon-button>
+          on-click='menuClicked'></paper-icon-button>
         <paper-icon-button
           icon='mdi:file-xml' data-panel='dev-template'
           alt="[[localize('panel.dev-templates')]]" title="[[localize('panel.dev-templates')]]"
-          on-tap='menuClicked'></paper-icon-button>
+          on-click='menuClicked'></paper-icon-button>
         <template is='dom-if' if='[[_mqttLoaded(hass)]]'>
           <paper-icon-button
             icon='mdi:altimeter' data-panel='dev-mqtt'
             alt="[[localize('panel.dev-mqtt')]]" title="[[localize('panel.dev-mqtt')]]"
-            on-tap='menuClicked'></paper-icon-button>
+            on-click='menuClicked'></paper-icon-button>
         </template>
         <paper-icon-button
           icon='mdi:information-outline' data-panel='dev-info'
           alt="[[localize('panel.dev-info')]]" title="[[localize('panel.dev-info')]]"
-          on-tap='menuClicked'></paper-icon-button>
+          on-click='menuClicked'></paper-icon-button>
       </div>
     </div>
   </template>

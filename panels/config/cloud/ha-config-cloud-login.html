@@ -73,7 +73,7 @@
             </div>
             <div class='card-actions'>
               <ha-progress-button
-                on-tap='_handleLogin'
+                on-click='_handleLogin'
                 progress='[[_requestInProgress]]'
               >Sign in</ha-progress-button>
               <button
@@ -85,7 +85,7 @@
           </paper-card>
 
           <paper-card>
-            <paper-item on-tap='_handleRegister'>
+            <paper-item on-click='_handleRegister'>
               <paper-item-body two-line>
                 Create Account
                 <div secondary>Get up and running quickly.</div>

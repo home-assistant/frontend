@@ -80,7 +80,7 @@
               </div>
               <div class='card-actions'>
                 <ha-progress-button
-                  on-tap='_handleRegister'
+                  on-click='_handleRegister'
                   progress='[[_requestInProgress]]'
                 >Create Account</ha-progress-button>
                 <button
@@ -119,11 +119,11 @@
               </div>
               <div class='card-actions'>
                 <ha-progress-button
-                  on-tap='_handleVerifyEmail'
+                  on-click='_handleVerifyEmail'
                   progress='[[_requestInProgress]]'
                 >Verify Email</ha-progress-button>
                 <paper-button
-                  on-tap='_handleResendVerifyEmail'
+                  on-click='_handleResendVerifyEmail'
                 >Resend Verify Email</paper-button>
               </div>
             </paper-card>

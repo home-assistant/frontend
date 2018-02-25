@@ -19,7 +19,7 @@
     <paper-card>
       <template is='dom-repeat' items='[[pages]]'>
         <template is='dom-if' if='[[_computeLoaded(hass, item)]]'>
-          <paper-item on-tap='_navigate'>
+          <paper-item on-click='_navigate'>
             <paper-item-body two-line>
               [[_computeCaption(item, localize)]]
               <div secondary>[[_computeDescription(item, localize)]]</div>
