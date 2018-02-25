@@ -5,7 +5,7 @@
 <dom-module id="ha-service-picker">
   <template>
     <ha-combo-box
-      label='Service'
+      label="[[localize('ui.components.service-picker.service')]]"
       items='[[_services]]'
       value='{{value}}'
       allow-custom-value
@@ -14,7 +14,10 @@
 </dom-module>
 
 <script>
-class HaServicePicker extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaServicePicker extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-service-picker'; }
 
   static get properties() {
