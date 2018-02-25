@@ -9,6 +9,15 @@
 <dom-module id="more-info-controls">
   <template>
     <style>
+      app-toolbar {
+        color: var(--more-info-header-color);
+        background-color: var(--more-info-header-background);
+      }
+
+      app-toolbar [main-title] {
+        margin-left: 24px;
+      }
+
       state-card-content {
         display: block;
         padding: 16px;
@@ -18,13 +27,35 @@
         position: relative;
         z-index: 1;
         max-width: 365px;
+        margin-bottom: 16px;
+      }
+
+      paper-dialog-scrollable {
+        margin-bottom: 16px;
       }
     </style>
-    <state-card-content
-      state-obj="[[stateObj]]"
-      hass='[[hass]]' in-dialog></state-card-content>
 
-    <template is='dom-if' if="[[showHistoryComponent]]" restamp>
+    <app-toolbar>
+      <paper-icon-button
+        icon='mdi:close'
+        dialog-dismiss
+      ></paper-icon-button>
+      <div main-title>[[_computeStateName(stateObj)]]</div>
+      <template is='dom-if' if='[[canConfigure]]'>
+        <paper-icon-button
+          icon='mdi:settings'
+          on-click='_gotoSettings'
+        ></paper-icon-button>
+      </template>
+    </app-toolbar>
+
+    <template is='dom-if' if="[[_computeShowStateInfo(stateObj)]]" restamp>
+      <state-card-content
+        state-obj="[[stateObj]]"
+        hass='[[hass]]' in-dialog></state-card-content>
+    </template>
+
+    <template is='dom-if' if="[[_computeShowHistoryComponent(hass, stateObj)]]" restamp>
       <div>
         <ha-state-history-data
           hass='[[hass]]'
@@ -37,8 +68,8 @@
         <state-history-charts
           history-data="[[stateHistory]]"
           is-loading-data="[[stateHistoryLoading]]"
-          up-to-now>
-          </state-history-charts>
+          up-to-now
+        ></state-history-charts>
       </div>
     </template>
     <paper-dialog-scrollable dialog-element='[[dialogElement]]'>
@@ -49,67 +80,72 @@
 </dom-module>
 
 <script>
-class MoreInfoControls extends window.hassMixins.EventsMixin(Polymer.Element) {
-  static get is() { return 'more-info-controls'; }
-  static get properties() {
-    return {
-      hass: Object,
+{
+  const DOMAINS_NO_INFO = [
+    'configurator',
+    'history_graph',
+  ];
+  class MoreInfoControls extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'more-info-controls'; }
+    static get properties() {
+      return {
+        hass: Object,
 
-      stateObj: {
-        type: Object,
-        observer: 'stateObjChanged',
-      },
-
-      stateHistory: Object,
-
-      stateHistoryLoading: Boolean,
-
-      hasHistoryComponent: {
-        type: Boolean,
-        computed: 'computeHasHistoryComponent(hass)',
-      },
-
-      showHistoryComponent: {
-        type: Boolean,
-        value: false,
-        computed: 'computeShowHistoryComponent(hasHistoryComponent, stateObj)',
-      },
-
-      cacheConfig: {
-        type: Object,
-        value: {
-          refresh: 60,
-          cacheKey: null,
-          hoursToShow: 24,
+        stateObj: {
+          type: Object,
+          observer: '_stateObjChanged',
         },
-      },
 
-      dialogElement: Object,
-    };
-  }
+        stateHistory: Object,
 
-  computeHasHistoryComponent(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'history');
-  }
+        stateHistoryLoading: Boolean,
 
-  computeShowHistoryComponent(hasHistoryComponent, stateObj) {
-    return this.hasHistoryComponent && stateObj &&
-      window.hassUtil.DOMAINS_WITH_NO_HISTORY
-        .indexOf(window.hassUtil.computeDomain(stateObj)) === -1;
-  }
+        cacheConfig: {
+          type: Object,
+          value: {
+            refresh: 60,
+            cacheKey: null,
+            hoursToShow: 24,
+          },
+        },
 
-  stateObjChanged(newVal) {
-    if (!newVal) {
-      return;
+        dialogElement: Object,
+        canConfigure: Boolean,
+      };
     }
 
-    if (this.cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
-      this.cacheConfig = Object.assign(
-        {}, this.cacheConfig,
-        { cacheKey: `more_info.${newVal.entity_id}` }
-      );
+    _computeShowStateInfo(stateObj) {
+      return !stateObj || !DOMAINS_NO_INFO.includes(window.hassUtil.computeDomain(stateObj));
+    }
+
+    _computeShowHistoryComponent(hass, stateObj) {
+      return hass && stateObj &&
+        window.hassUtil.isComponentLoaded(hass, 'history') &&
+        !window.hassUtil.DOMAINS_WITH_NO_HISTORY.includes(window.hassUtil.computeDomain(stateObj));
+    }
+
+    _computeStateName(stateObj) {
+      if (!stateObj) return '';
+      return window.hassUtil.computeStateName(stateObj);
+    }
+
+    _stateObjChanged(newVal) {
+      if (!newVal) {
+        return;
+      }
+
+      if (this.cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
+        this.cacheConfig = Object.assign(
+          {}, this.cacheConfig,
+          { cacheKey: `more_info.${newVal.entity_id}` }
+        );
+      }
+    }
+
+    _gotoSettings() {
+      this.fire('more-info-page', { page: 'settings' });
     }
   }
+  customElements.define(MoreInfoControls.is, MoreInfoControls);
 }
-customElements.define(MoreInfoControls.is, MoreInfoControls);
 </script>
