@@ -10,7 +10,6 @@
 
 <link rel='import' href='../../src/components/hassio-card-content.html'>
 <link rel='import' href='../../src/resources/hassio-style.html'>
-<link rel='import' href='./hassio-snapshot.html'>
 
 <dom-module id="hassio-snapshots">
   <template>
@@ -96,12 +95,6 @@
         </template>
       </div>
     </div>
-    <hassio-snapshot      
-      hass='[[hass]]'
-      snapshot-slug='[[selectedSnapshot]]'
-      opened='{{dialogOpened}}'
-      update-overview='{{updateOverview}}'
-    ></hassio-snapshot>
   </template>
 </dom-module>
 
@@ -135,13 +128,17 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
           { slug: 'addons/local', name: 'Local add-ons', checked: true },
         ],
       },
-      selectedSnapshot: String,
+      snapshotSlug: {
+        type: String,
+        notify: true,
+      },
+      snapshotDeleted: {
+        type: Boolean,
+        notify: true,
+        observer: 'snapshotDeletedChanged',
+      },
       creatingSnapshot: Boolean,
       dialogOpened: Boolean,
-      updateOverview: {
-        type: Boolean,
-        observer: 'updateOverviewChanged',
-      },
       error: String,
     };
   }
@@ -225,8 +222,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   snapshotTapped(ev) {
-    this.selectedSnapshot = ev.model.snapshot.slug;
-    this.dialogOpened = true;
+    this.snapshotSlug = ev.model.snapshot.slug;
   }
 
   typeChanged() {
@@ -239,10 +235,10 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
   }
 
-  updateOverviewChanged(update) {
-    if (update) {
+  snapshotDeletedChanged(snapshotDeleted) {
+    if (snapshotDeleted) {
       this.updateSnapshots();
-      this.updateOverview = false;
+      this.snapshotDeleted = false;
     }
   }
 }

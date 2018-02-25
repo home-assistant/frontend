@@ -11,6 +11,7 @@
 
 <link rel='import' href='./dashboard/hassio-dashboard.html'>
 <link rel='import' href='./snapshots/hassio-snapshots.html'>
+<link rel='import' href='./snapshots/hassio-snapshot.html'>
 <link rel='import' href='./addon-store/hassio-addon-store.html'>
 <link rel='import' href='./system/hassio-system.html'>
 
@@ -56,6 +57,8 @@
         <hassio-snapshots
           hass='[[hass]]'
           installed-addons='[[supervisorInfo.addons]]'
+          snapshot-slug='{{snapshotSlug}}'
+          snapshot-deleted='{{snapshotDeleted}}'
         ></hassio-snapshots>
       </template>
       <template is='dom-if' if='[[equals(page, "store")]]'>
@@ -71,6 +74,13 @@
         ></hassio-system>
       </template>
     </app-header-layout>
+    <template is='dom-if' if='[[equals(page, "snapshots")]]'>      
+      <hassio-snapshot      
+        hass='[[hass]]'
+        snapshot-slug='{{snapshotSlug}}'
+        snapshot-deleted='{{snapshotDeleted}}'
+      ></hassio-snapshot>
+    </template>
   </template>
 </dom-module>
 
@@ -87,6 +97,8 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
       supervisorInfo: Object,
       hostInfo: Object,
       hassInfo: Object,
+      snapshotSlug: String,
+      snapshotDeleted: Boolean,
     };
   }
 
