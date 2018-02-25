@@ -1,0 +1,115 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../state-summary/state-card-content.html">
+<link rel='import' href='../../util/hass-mixins.html'>
+<link rel='import' href='../../resources/ha-style.html'>
+<link rel="import" href="./controls/more-info-content.html">
+
+<dom-module id="more-info-controls">
+  <template>
+    <style>
+      state-card-content {
+        display: block;
+        padding: 16px;
+      }
+
+      state-history-charts {
+        position: relative;
+        z-index: 1;
+        max-width: 365px;
+      }
+    </style>
+    <state-card-content
+      state-obj="[[stateObj]]"
+      hass='[[hass]]' in-dialog></state-card-content>
+
+    <template is='dom-if' if="[[showHistoryComponent]]" restamp>
+      <div>
+        <ha-state-history-data
+          hass='[[hass]]'
+          filter-type='recent-entity'
+          entity-id='[[stateObj.entity_id]]'
+          data='{{stateHistory}}'
+          is-loading='{{stateHistoryLoading}}'
+          cache-config='[[cacheConfig]]'
+        ></ha-state-history-data>
+        <state-history-charts
+          history-data="[[stateHistory]]"
+          is-loading-data="[[stateHistoryLoading]]"
+          up-to-now>
+          </state-history-charts>
+      </div>
+    </template>
+    <paper-dialog-scrollable dialog-element='[[dialogElement]]'>
+      <more-info-content
+          state-obj="[[stateObj]]" hass='[[hass]]'></more-info-content>
+    </paper-dialog-scrollable>
+  </template>
+</dom-module>
+
+<script>
+class MoreInfoControls extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'more-info-controls'; }
+  static get properties() {
+    return {
+      hass: Object,
+
+      stateObj: {
+        type: Object,
+        observer: 'stateObjChanged',
+      },
+
+      stateHistory: Object,
+
+      stateHistoryLoading: Boolean,
+
+      hasHistoryComponent: {
+        type: Boolean,
+        computed: 'computeHasHistoryComponent(hass)',
+      },
+
+      showHistoryComponent: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowHistoryComponent(hasHistoryComponent, stateObj)',
+      },
+
+      cacheConfig: {
+        type: Object,
+        value: {
+          refresh: 60,
+          cacheKey: null,
+          hoursToShow: 24,
+        },
+      },
+
+      dialogElement: Object,
+    };
+  }
+
+  computeHasHistoryComponent(hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'history');
+  }
+
+  computeShowHistoryComponent(hasHistoryComponent, stateObj) {
+    return this.hasHistoryComponent && stateObj &&
+      window.hassUtil.DOMAINS_WITH_NO_HISTORY
+        .indexOf(window.hassUtil.computeDomain(stateObj)) === -1;
+  }
+
+  stateObjChanged(newVal) {
+    if (!newVal) {
+      return;
+    }
+
+    if (this.cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
+      this.cacheConfig = Object.assign(
+        {}, this.cacheConfig,
+        { cacheKey: `more_info.${newVal.entity_id}` }
+      );
+    }
+  }
+}
+customElements.define(MoreInfoControls.is, MoreInfoControls);
+</script>

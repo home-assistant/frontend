@@ -1,0 +1,94 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="more-info-settings">
+  <template>
+    <style include='ha-style'>
+      .error {
+        text-align: center;
+      }
+      .form {
+        padding: 0 24px;
+      }
+      .card-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 16px;
+        padding: 8px 0;
+      }
+    </style>
+    <template is='dom-if' if="[[!_componentLoaded]]" restamp>
+      <p class='error'>
+        This section requires the config component to be loaded.
+      </p>
+    </template>
+    <template is='dom-if' if="[[_componentLoaded]]" restamp>
+      <template is='dom-if' if="[[!_registrySettings]]" restamp>
+        <p class='error'>
+          Configuring this entity is not yet supported.
+        </p>
+      </template>
+      <template is='dom-if' if="[[_registrySettings]]" restamp>
+        <div class='form'>
+          <paper-input
+            value='{{_registrySettings.name}}'
+            label='Name'
+          ></paper-input>
+        </div>
+        <div class='card-actions'>
+          <paper-button on-click='_save'>Save</paper-button>
+        </div>
+      </template>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class MoreInfoSettings extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'more-info-settings'; }
+  static get properties() {
+    return {
+      hass: Object,
+
+      stateObj: {
+        type: Object,
+        observer: 'stateObjChanged',
+      },
+
+      _componentLoaded: {
+        type: Boolean,
+        computed: '_computeComponentLoaded(hass)'
+      },
+
+      _registrySettings: Object,
+    };
+  }
+
+  stateObjChanged(newVal, oldVal) {
+    if (!this._componentLoaded || !newVal ||
+        (oldVal && newVal.entity_id === oldVal.entity_id)) return;
+
+    this.hass.callApi('get', `config/entity_registry/${newVal.entity_id}`)
+      .then(
+        (info) => { this._registrySettings = info; },
+        () => { this._registrySettings = false; }
+      );
+  }
+
+  _computeComponentLoaded(hass) {
+    return window.hassUtil.isComponentLoaded(hass, 'config.entity_registry');
+  }
+
+  _save() {
+    const data = {
+      name: this._registrySettings.name,
+    };
+
+    this.hass.callApi('post', `config/entity_registry/${this.stateObj.entity_id}`, data)
+      .then(
+        (info) => { this._registrySettings = info; },
+        () => { alert('save failed!'); }
+      );
+  }
+}
+customElements.define(MoreInfoSettings.is, MoreInfoSettings);
+</script>

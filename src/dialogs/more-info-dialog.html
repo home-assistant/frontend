@@ -4,10 +4,11 @@
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../components/state-history-charts.html">
 <link rel="import" href="../data/ha-state-history-data.html">
-<link rel="import" href="../more-infos/more-info-content.html">
-<link rel="import" href="../state-summary/state-card-content.html">
 <link rel='import' href='../util/hass-mixins.html'>
 <link rel='import' href='../resources/ha-style.html'>
+
+<link rel='import' href='./more-info/more-info-controls.html'>
+<link rel='import' href='./more-info/more-info-settings.html'>
 
 <dom-module id="more-info-dialog">
   <template>
@@ -19,6 +20,10 @@
         --paper-dialog-scrollable: {
           -webkit-overflow-scrolling: auto;
         }
+
+        /* overrule the ha-style-dialog max-height on small screens */
+        height: 100%;
+        max-height: 100%;
       }
 
       paper-dialog[data-domain=camera] {
@@ -33,46 +38,45 @@
         display: none;
       }
 
-      state-history-charts {
-        position: relative;
-        z-index: 1;
-        max-width: 365px;
+      .header {
+        margin-top: 0;
       }
 
-      state-card-content {
-        margin-bottom: 24px;
-        font-size: 14px;
+      .header app-toolbar {
+        color: #FFF;
+        border-bottom: 1px solid var(--divider-color);
+        background-color: var(--primary-color);
+      }
+
+      .header [main-title] {
+        margin-left: 24px;
       }
     </style>
 
     <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
     <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}' data-domain$='[[computeDomain(stateObj)]]'>
-      <h2>
-        <state-card-content
-          state-obj="[[stateObj]]"
-          hass='[[hass]]' in-dialog></state-card-content>
-      </h2>
-      <template is='dom-if' if="[[showHistoryComponent]]" restamp>
-        <div>
-          <ha-state-history-data
-            hass='[[hass]]'
-            filter-type='recent-entity'
-            entity-id='[[stateObj.entity_id]]'
-            data='{{stateHistory}}'
-            is-loading='{{stateHistoryLoading}}'
-            cache-config='[[cacheConfig]]'
-          ></ha-state-history-data>
-          <state-history-charts
-            history-data="[[stateHistory]]"
-            is-loading-data="[[isLoadingHistoryData]]"
-            up-to-now>
-          </state-history-charts>
-        </div>
+      <div class='header no-padding'>
+        <app-toolbar>
+          <paper-icon-button icon='mdi:close' dialog-dismiss></paper-icon-button>
+          <div main-title>[[computeStateName(stateObj)]]</div>
+          <paper-icon-button icon='[[_computeToggleIcon(_showSettings)]]' on-click='_toggleSettings'></paper-icon-button>
+        </app-toolbar>
+      </div>
+      <template is='dom-if' if='[[!_showSettings]]'>
+        <more-info-controls
+          class='no-padding'
+          hass='[[hass]]'
+          state-obj='[[stateObj]]'
+          dialog-element='[[dialogElement]]'
+        ></more-info-controls>
       </template>
-      <paper-dialog-scrollable id='scrollable'>
-        <more-info-content
-          state-obj="[[stateObj]]" hass='[[hass]]'></more-info-content>
-      </paper-dialog-scrollable>
+      <template is='dom-if' if='[[_showSettings]]'>
+        <more-info-settings
+          class='no-padding'
+          hass='[[hass]]'
+          state-obj='[[stateObj]]'
+        ></more-info-settings>
+      </template>
     </paper-dialog>
   </template>
 </dom-module>
@@ -90,26 +94,6 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
         observer: 'stateObjChanged',
       },
 
-      stateHistory: Object,
-
-      stateHistoryLoading: Boolean,
-
-      isLoadingHistoryData: {
-        type: Boolean,
-        computed: 'computeIsLoadingHistoryData(delayedDialogOpen, stateHistoryLoading)',
-      },
-
-      hasHistoryComponent: {
-        type: Boolean,
-        computed: 'computeHasHistoryComponent(hass)',
-      },
-
-      showHistoryComponent: {
-        type: Boolean,
-        value: false,
-        computed: 'computeShowHistoryComponent(hasHistoryComponent, stateObj)',
-      },
-
       dialogOpen: {
         type: Boolean,
         value: false,
@@ -121,20 +105,18 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
         value: false,
       },
 
-      cacheConfig: {
-        type: Object,
-        value: {
-          refresh: 60,
-          cacheKey: null,
-          hoursToShow: 24,
-        },
+      dialogElement: Object,
+
+      _showSettings: {
+        type: Boolean,
+        value: false,
       },
     };
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.$.scrollable.dialogElement = this.$.dialog;
+    this.dialogElement = this.$.dialog;
   }
 
   computeDomain(stateObj) {
@@ -145,43 +127,18 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
     return hass.states[hass.moreInfoEntityId] || null;
   }
 
-  /**
-   * We depend on a delayed dialogOpen value to tell the chart component
-   * that the data is there. Otherwise the chart component will render
-   * before the dialog is attached to the screen and is unable to determine
-   * graph size resulting in scroll bars.
-   */
-  computeIsLoadingHistoryData(delayedDialogOpen, stateHistoryLoading) {
-    return !delayedDialogOpen || stateHistoryLoading;
-  }
-
-  computeHasHistoryComponent(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'history');
-  }
-
-  computeShowHistoryComponent(hasHistoryComponent, stateObj) {
-    return this.hasHistoryComponent && stateObj &&
-      window.hassUtil.DOMAINS_WITH_NO_HISTORY
-        .indexOf(window.hassUtil.computeDomain(stateObj)) === -1;
-  }
-
   stateObjChanged(newVal) {
     if (!newVal) {
       this.dialogOpen = false;
+      this._showSettings = false;
       return;
     }
 
-    window.setTimeout(() => {
-      // allow dialog to render content before showing it so it is
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      // allow dialog to render content before showing it so it will be
       // positioned correctly.
       this.dialogOpen = true;
-    }, 10);
-    if (this.cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
-      this.cacheConfig = Object.assign(
-        {}, this.cacheConfig,
-        { cacheKey: `more_info.${newVal.entity_id}` }
-      );
-    }
+    }));
   }
 
   dialogOpenChanged(newVal) {
@@ -191,6 +148,19 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
       this.fire('hass-more-info', { entityId: null });
       this.delayedDialogOpen = false;
     }
+  }
+
+  computeStateName(stateObj) {
+    if (!stateObj) return '';
+    return window.hassUtil.computeStateName(stateObj);
+  }
+
+  _computeToggleIcon(showSettings) {
+    return showSettings ? 'mdi:tune' : 'mdi:settings';
+  }
+
+  _toggleSettings() {
+    this._showSettings = !this._showSettings;
   }
 }
 customElements.define(MoreInfoDialog.is, MoreInfoDialog);
