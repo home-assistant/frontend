@@ -31,7 +31,7 @@
         }
       }
     </style>
-    <paper-dialog id='dialog' on-iron-overlay-closed='dialogClosed'>
+    <paper-dialog id='dialog' with-backdrop on-iron-overlay-closed='dialogClosed'>
       <h2>[[computeName(snapshot)]]</h2>
       <div>
         <div class='snapshot-details'>
@@ -79,7 +79,7 @@
 </dom-module>
 
 <script>
-class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HassioSnapshot extends Polymer.Element {
   static get is() { return 'hassio-snapshot'; }
 
   static get properties() {
@@ -87,32 +87,30 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
       hass: Object,
       snapshotSlug: {
         type: String,
-        observer: 'computeSnapshot',
+        notify: true,
+        observer: 'snapshotSlugChanged',
+      },
+      snapshotDeleted: {
+        type: Boolean,
+        notify: true,
       },
       snapshot: Object,
       restoreHass: {
         type: Boolean,
         value: true,
       },
-      opened: {
-        type: Boolean,
-        observer: 'openedChanged',
-        notify: true,
-      },
-      updateOverview: {
-        type: Boolean,
-        notify: true,
-      },
       error: String,
     };
   }
 
-  computeSnapshot(snapshotSlug) {
+  snapshotSlugChanged(snapshotSlug) {
+    if (!snapshotSlug || snapshotSlug === 'update') return;
     this.hass.callApi('get', `hassio/snapshots/${snapshotSlug}/info`)
       .then((info) => {
         info.data.folders = this.computeFolders(info.data.folders);
         info.data.addons = this.computeAddons(info.data.addons);
         this.snapshot = info.data;
+        this.$.dialog.open();
       }, () => {
         this.snapshot = null;
       });
@@ -176,7 +174,7 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/remove`)
       .then(() => {
         this.$.dialog.close();
-        this.updateOverview = true;
+        this.snapshotDeleted = true;
       }, (error) => {
         this.error = error.body.message;
       });
@@ -209,12 +207,8 @@ class HassioSnapshot extends window.hassMixins.EventsMixin(Polymer.Element) {
     });
   }
 
-  openedChanged(opened) {
-    if (opened) this.$.dialog.open();
-  }
-
   dialogClosed() {
-    this.opened = false;
+    this.snapshotSlug = null;
   }
 }
 customElements.define(HassioSnapshot.is, HassioSnapshot);
