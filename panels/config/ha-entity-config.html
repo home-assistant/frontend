@@ -7,13 +7,13 @@
       }
 
       .device-picker {
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
         padding-bottom: 24px;
       }
 
       .form-placeholder {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
+        @apply --layout-vertical;
+        @apply --layout-center-center;
         height: 96px;
       }
 
@@ -22,8 +22,8 @@
       }
 
       .card-actions {
-        @apply(--layout-horizontal);
-        @apply(--layout-justified);
+        @apply --layout-horizontal;
+        @apply --layout-justified;
       }
     </style>
     <paper-card>
@@ -64,13 +64,13 @@
       </div>
       <div class='card-actions'>
         <paper-button
-          on-tap='saveEntity'
+          on-click='saveEntity'
           disabled='[[computeShowPlaceholder(formState)]]'
         >SAVE</paper-button>
         <template is='dom-if' if='[[allowDelete]]'>
           <paper-button
             class='warning'
-            on-tap='deleteEntity'
+            on-click='deleteEntity'
             disabled='[[computeShowPlaceholder(formState)]]'
           >DELETE</paper-button>
         </template>

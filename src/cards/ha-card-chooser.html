@@ -64,6 +64,9 @@ class HaCardChooser extends Polymer.Element {
       });
       this.observer.observe(this);
     }
+    if (!this._detachedChild) {
+      this._updateCard(newData);
+    }
   }
 }
 customElements.define(HaCardChooser.is, HaCardChooser);

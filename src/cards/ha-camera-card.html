@@ -21,7 +21,7 @@
         border-radius: 2px;
       }
       .caption {
-        @apply(--paper-font-common-nowrap);
+        @apply --paper-font-common-nowrap;
         position: absolute;
         left: 0px;
         right: 0px;
@@ -82,7 +82,7 @@
 
     ready() {
       super.ready();
-      this.addEventListener('tap', () => this.cardTapped());
+      this.addEventListener('click', () => this.cardTapped());
     }
 
     connectedCallback() {

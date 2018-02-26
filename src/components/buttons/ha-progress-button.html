@@ -31,8 +31,8 @@
       }
 
       .progress {
-        @apply(--layout);
-        @apply(--layout-center-center);
+        @apply --layout;
+        @apply --layout-center-center;
         position: absolute;
         top: 0;
         left: 0;
@@ -44,7 +44,7 @@
       <paper-button
         id='button'
         disabled='[[computeDisabled(disabled, progress)]]'
-        on-tap='buttonTapped'
+        on-click='buttonTapped'
       >
         <slot></slot>
       </paper-button>
@@ -89,7 +89,7 @@ class HaProgressButton extends Polymer.Element {
 
   ready() {
     super.ready();
-    this.addEventListener('tap', ev => this.buttonTapped(ev));
+    this.addEventListener('click', ev => this.buttonTapped(ev));
   }
 
   buttonTapped(ev) {

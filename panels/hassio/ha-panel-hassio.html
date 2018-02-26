@@ -54,7 +54,7 @@ class HaPanelHassio extends
   }
 
   _updateProperties(data) {
-    const setProperties = this.$.iframe.contentWindow.setProperties;
+    const setProperties = this.$.iframe.contentWindow && this.$.iframe.contentWindow.setProperties;
 
     // Delay calling setProperties until iframe loaded
     if (!setProperties) {

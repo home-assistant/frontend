@@ -88,7 +88,7 @@
         <app-toolbar>
           <paper-icon-button
             icon='mdi:arrow-left'
-            on-tap='backTapped'
+            on-click='backTapped'
           ></paper-icon-button>
           <div main-title>[[name]]</div>
         </app-toolbar>
@@ -105,7 +105,7 @@
         dirty$='[[dirty]]'
         icon='mdi:content-save'
         title="[[localize('ui.panel.config.automation.editor.save')]]"
-        on-tap='saveAutomation'
+        on-click='saveAutomation'
       ></paper-fab>
     </ha-app-layout>
 

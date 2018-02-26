@@ -18,7 +18,7 @@
         padding: 4px 0;
       }
       .header {
-        @apply(--paper-font-headline);
+        @apply --paper-font-headline;
         /* overwriting line-height +8 because entity-toggle can be 40px height,
            compensating this with reduced padding */
         line-height: 40px;
@@ -26,7 +26,7 @@
         padding: 4px 0 12px;
       }
       .header .name {
-        @apply(--paper-font-common-nowrap);
+        @apply --paper-font-common-nowrap;
       }
       ha-entity-toggle {
         margin-left: 16px;
@@ -38,7 +38,7 @@
 
     <ha-card>
       <template is='dom-if' if='[[title]]'>
-        <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
+        <div class$='[[computeTitleClass(groupEntity)]]' on-click='entityTapped'>
           <div class='flex name'>[[title]]</div>
           <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
             <ha-entity-toggle
@@ -108,9 +108,9 @@ class HaEntitiesCard extends
     const cards = this.root.querySelectorAll('.state');
     cards.forEach((card) => {
       if (card.classList.contains('more-info')) {
-        card.addEventListener('tap', this.entityTapped);
+        card.addEventListener('click', this.entityTapped);
       } else {
-        card.removeEventListener('tap', this.entityTapped);
+        card.removeEventListener('click', this.entityTapped);
       }
     });
   }

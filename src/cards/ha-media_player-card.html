@@ -73,7 +73,7 @@
       }
 
       .banner > .caption {
-        @apply(--paper-font-caption);
+        @apply --paper-font-caption;
 
         position: absolute;
         left: 0;
@@ -96,7 +96,7 @@
       }
 
       .banner > .caption .title {
-        @apply(--paper-font-common-nowrap);
+        @apply --paper-font-common-nowrap;
         font-size: 1.2em;
         margin: 8px 0 4px;
       }
@@ -109,7 +109,7 @@
 
       .controls {
         position: relative;
-        @apply(--paper-font-body1);
+        @apply --paper-font-body1;
         padding: 8px;
         border-bottom-left-radius: 2px;
         border-bottom-right-radius: 2px;
@@ -168,7 +168,7 @@
     <div class='controls layout horizontal justified'>
       <paper-icon-button
         icon='mdi:power'
-        on-tap='handleTogglePower'
+        on-click='handleTogglePower'
         invisible$='[[computeHidePowerButton(playerObj)]]'
         class='self-center secondary'
       ></paper-icon-button>
@@ -178,26 +178,26 @@
           icon='mdi:skip-previous'
           invisible$='[[!playerObj.supportsPreviousTrack]]'
           disabled='[[playerObj.isOff]]'
-          on-tap='handlePrevious'
+          on-click='handlePrevious'
         ></paper-icon-button>
         <paper-icon-button
           class='primary'
           icon='[[computePlaybackControlIcon(playerObj)]]'
           invisible$='[[!computePlaybackControlIcon(playerObj)]]'
           disabled='[[playerObj.isOff]]'
-          on-tap='handlePlaybackControl'
+          on-click='handlePlaybackControl'
         ></paper-icon-button>
         <paper-icon-button
           icon='mdi:skip-next'
           invisible$='[[!playerObj.supportsNextTrack]]'
           disabled='[[playerObj.isOff]]'
-          on-tap='handleNext'
+          on-click='handleNext'
         ></paper-icon-button>
       </div>
 
       <paper-icon-button
         icon='mdi:dots-vertical'
-        on-tap='handleOpenMoreInfo'
+        on-click='handleOpenMoreInfo'
         class='self-center secondary'
       ></paper-icon-button>
 

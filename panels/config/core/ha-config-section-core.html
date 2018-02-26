@@ -14,8 +14,8 @@
   <template>
     <style include="iron-flex ha-style">
       .validate-container {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
+        @apply --layout-vertical;
+        @apply --layout-center-center;
         height: 140px;
       }
 
@@ -59,7 +59,7 @@
                     [[localize('ui.panel.config.core.section.core.validation.valid')]]
                   </div>
                 </template>
-                <paper-button raised on-tap='validateConfig'>
+                <paper-button raised on-click='validateConfig'>
                   [[localize('ui.panel.config.core.section.core.validation.check_config')]]
                 </paper-button>
               </template>
@@ -73,7 +73,7 @@
               <span class='text'>
                 [[localize('ui.panel.config.core.section.core.validation.invalid')]]
               </span>
-              <paper-button raised on-tap='validateConfig'>
+              <paper-button raised on-click='validateConfig'>
                 [[localize('ui.panel.config.core.section.core.validation.check_config')]]
               </paper-button>
             </div>

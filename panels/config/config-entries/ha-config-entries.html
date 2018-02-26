@@ -37,7 +37,7 @@
                 Added by: [[item.source]]
               </div>
               <div class="card-actions">
-                <paper-button on-tap='_removeEntry'>Remove</paper-button>
+                <paper-button on-click='_removeEntry'>Remove</paper-button>
               </div>
             </paper-card>
           </template>
@@ -49,7 +49,7 @@
             <template is='dom-repeat' items='[[_progress]]'>
               <paper-card heading='[[item.domain]]'>
                 <div class="card-actions">
-                  <paper-button on-tap='_continueFlow'>Configure</paper-button>
+                  <paper-button on-click='_continueFlow'>Configure</paper-button>
                 </div>
               </paper-card>
             </template>
@@ -62,7 +62,7 @@
             <paper-card heading='[[item]]'>
               <!-- <div class="card-content">Some content</div> -->
               <div class="card-actions">
-                <paper-button on-tap='_createFlow'>Configure</paper-button>
+                <paper-button on-click='_createFlow'>Configure</paper-button>
               </div>
             </paper-card>
           </template>

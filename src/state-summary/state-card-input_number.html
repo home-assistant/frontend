@@ -20,7 +20,7 @@
         margin-left: auto;
       }
       .state {
-        @apply(--paper-font-body1);
+        @apply --paper-font-body1;
         color: var(--primary-text-color);
 
         text-align: right;
@@ -41,7 +41,7 @@
     <div class='horizontal justified layout' id='input_number_card'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
         <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' hidden='[[hiddenslider]]' pin
-          on-change='selectedValueChanged' on-tap='stopPropagation' id='slider'>
+          on-change='selectedValueChanged' on-click='stopPropagation' id='slider'>
         </paper-slider>
       <paper-input
         no-label-float
@@ -53,7 +53,7 @@
         value='{{value}}'
         type='number'
         on-change='selectedValueChanged'
-        on-tap='stopPropagation'
+        on-click='stopPropagation'
         hidden='[[hiddenbox]]'
       >
       </paper-input>

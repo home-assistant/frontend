@@ -10,7 +10,7 @@
   <template>
     <style>
       :host {
-        @apply(--paper-font-body1);
+        @apply --paper-font-body1;
       }
       ha-markdown {
         display: block;
@@ -39,7 +39,7 @@
 
     <ha-card header='[[computeTitle(stateObj)]]'>
       <ha-markdown content='[[stateObj.attributes.message]]'></ha-markdown>
-      <paper-button on-tap='dismissTap'>[[localize('ui.card.persistent_notification.dismiss')]]</paper-button>
+      <paper-button on-click='dismissTap'>[[localize('ui.card.persistent_notification.dismiss')]]</paper-button>
     </ha-card>
   </template>
 </dom-module>

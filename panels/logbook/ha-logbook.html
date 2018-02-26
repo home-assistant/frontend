@@ -14,7 +14,7 @@
       }
 
       .entry {
-        @apply(--paper-font-body1);
+        @apply --paper-font-body1;
         line-height: 2em;
       }
 
@@ -51,7 +51,7 @@
             <span class='name'>[[item.name]]</span>
           </template>
           <template is='dom-if' if="[[item.entity_id]]">
-            <a href='#' on-tap="entityClicked" class='name'>[[item.name]]</a>
+            <a href='#' on-click="entityClicked" class='name'>[[item.name]]</a>
           </template>
           <span> </span>
           <span>[[item.message]]</span>

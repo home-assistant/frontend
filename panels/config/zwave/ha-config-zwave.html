@@ -49,8 +49,8 @@
       }
 
       .device-picker {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
         padding-left: 24px;
         padding-right: 24px;
         padding-bottom: 24px;
@@ -77,7 +77,7 @@
         <app-toolbar>
           <paper-icon-button
             icon='mdi:arrow-left'
-            on-tap='_backTapped'
+            on-click='_backTapped'
           ></paper-icon-button>
           <div main-title>[[localize('ui.panel.config.zwave.caption')]]</div>
         </app-toolbar>
@@ -95,7 +95,7 @@
           <span>Z-Wave Node Management</span>
           <paper-icon-button
             class="toggle-help-icon"
-            on-tap='toggleHelp'
+            on-click='toggleHelp'
             icon='mdi:help-circle'
           ></paper-icon-button>
 

@@ -79,7 +79,7 @@
             ></paper-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-item
-                on-tap="_clearCompleted"
+                on-click="_clearCompleted"
               >[[localize('ui.panel.shopping-list.clear_completed')]]</paper-item>
             </paper-listbox>
           </paper-menu-button>
@@ -92,7 +92,7 @@
             <paper-icon-button
               slot="item-icon"
               icon="mdi:plus"
-              on-tap='_addItem'
+              on-click='_addItem'
             ></paper-icon-button>
             <paper-item-body>
               <paper-input
@@ -109,7 +109,7 @@
                 <paper-checkbox
                   slot="item-icon"
                   checked='{{item.complete}}'
-                  on-tap='_itemCompleteTapped'
+                  on-click='_itemCompleteTapped'
                   tabindex='0'
                 ></paper-checkbox>
               <paper-item-body>

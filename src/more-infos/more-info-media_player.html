@@ -58,17 +58,17 @@
       <div class='layout horizontal'>
         <div class='flex'>
           <paper-icon-button icon='mdi:power' highlight$='[[isOff]]'
-            on-tap='handleTogglePower'
+            on-click='handleTogglePower'
             hidden$='[[computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff)]]'></paper-icon-button>
         </div>
         <div>
           <template is='dom-if' if='[[computeShowPlaybackControls(isOff, hasMediaControl)]]'>
-            <paper-icon-button icon='mdi:skip-previous' on-tap='handlePrevious'
+            <paper-icon-button icon='mdi:skip-previous' on-click='handlePrevious'
               hidden$='[[!supportsPreviousTrack]]'></paper-icon-button>
             <paper-icon-button icon='[[computePlaybackControlIcon(isPlaying)]]'
-              on-tap='handlePlaybackControl'
+              on-click='handlePlaybackControl'
               hidden$='[[!computePlaybackControlIcon(isPlaying)]]' highlight></paper-icon-button>
-            <paper-icon-button icon='mdi:skip-next' on-tap='handleNext'
+            <paper-icon-button icon='mdi:skip-next' on-click='handleNext'
               hidden$='[[!supportsNextTrack]]'></paper-icon-button>
           </template>
         </div>
@@ -76,7 +76,7 @@
       <!-- VOLUME -->
       <div class='volume_buttons center horizontal layout'
           hidden$='[[computeHideVolumeButtons(isOff, supportsVolumeButtons)]]'>
-        <paper-icon-button on-tap="handleVolumeTap"
+        <paper-icon-button on-click="handleVolumeTap"
           icon="mdi:volume-off"></paper-icon-button>
         <paper-icon-button id="volumeDown" disabled$='[[isMuted]]'
           on-mousedown="handleVolumeDown" on-touchstart="handleVolumeDown"
@@ -86,7 +86,7 @@
           icon="mdi:volume-high"></paper-icon-button>
       </div>
       <div class='volume center horizontal layout' hidden$='[[!supportsVolumeSet]]'>
-        <paper-icon-button on-tap="handleVolumeTap"
+        <paper-icon-button on-click="handleVolumeTap"
           hidden$="[[supportsVolumeButtons]]"
           icon="[[computeMuteVolumeIcon(isMuted)]]"></paper-icon-button>
         <paper-slider disabled$='[[isMuted]]'
@@ -115,7 +115,7 @@
           value='{{ttsMessage}}'
           on-keydown="ttsCheckForEnter"
         ></paper-input>
-        <paper-icon-button icon='mdi:send' on-tap='sendTTS'></paper-icon-button>
+        <paper-icon-button icon='mdi:send' on-click='sendTTS'></paper-icon-button>
       </div>
     </div>
   </template>

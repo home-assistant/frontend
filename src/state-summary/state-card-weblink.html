@@ -9,8 +9,8 @@
         display: block;
       }
       .name {
-        @apply(--paper-font-common-nowrap);
-        @apply(--paper-font-body1);
+        @apply --paper-font-common-nowrap;
+        @apply --paper-font-body1;
         color: var(--primary-color);
 
         text-transform: capitalize;
@@ -40,7 +40,7 @@ class StateCardWeblink extends Polymer.Element {
 
   ready() {
     super.ready();
-    this.addEventListener('tap', ev => this.onTap(ev));
+    this.addEventListener('click', ev => this.onTap(ev));
   }
 
   computeStateName(stateObj) {
