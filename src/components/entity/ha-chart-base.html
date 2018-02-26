@@ -5,21 +5,19 @@
   <template>
     <style>
       .chartHeader {
+        display: flex;
         padding: 6px 0 0 0;
-        display: table;
         width: 100%
       }
       .chartHeader > div {
-        display: table-cell;
         vertical-align: top;
         padding: 0 8px;
       }
       .chartHeader > div.chartTitle {
         padding-top: 8px;
-        width: 1%
       }
-      .chartHeader > div.chartZoomInline {
-        width: 1%
+      .chartHeader > div.chartLegend {
+        flex: auto;
       }
       :root{
         user-select: none;
