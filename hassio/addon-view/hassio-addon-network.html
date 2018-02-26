@@ -21,8 +21,8 @@
         margin-bottom: 16px;
       }
       .card-actions {
-        @apply(--layout);
-        @apply(--layout-justified);
+        @apply --layout;
+        @apply --layout-justified;
       }
     </style>
     <paper-card heading='Network'>
@@ -54,7 +54,7 @@
           </template>
         </table>
       </div>
-      <div class="card-actions">        
+      <div class="card-actions">
         <ha-call-api-button
           class='warning'
           hass='[[hass]]'
