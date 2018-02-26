@@ -35,6 +35,10 @@
       paper-dialog-scrollable {
         margin-bottom: 16px;
       }
+
+      :host([domain=camera]) paper-dialog-scrollable {
+        margin: 0 -24px -5px;
+      }
     </style>
 
     <app-toolbar>
@@ -84,6 +88,7 @@
 <script>
 {
   const DOMAINS_NO_INFO = [
+    'camera',
     'configurator',
     'history_graph',
   ];
@@ -100,6 +105,12 @@
 
         dialogElement: Object,
         canConfigure: Boolean,
+
+        domain: {
+          type: String,
+          reflectToAttribute: true,
+          computed: '_computeDomain(stateObj)',
+        },
 
         _stateHistory: Object,
         _stateHistoryLoading: Boolean,
@@ -124,9 +135,12 @@
         !window.hassUtil.DOMAINS_WITH_NO_HISTORY.includes(window.hassUtil.computeDomain(stateObj));
     }
 
+    _computeDomain(stateObj) {
+      return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
+    }
+
     _computeStateName(stateObj) {
-      if (!stateObj) return '';
-      return window.hassUtil.computeStateName(stateObj);
+      return stateObj ? window.hassUtil.computeStateName(stateObj) : '';
     }
 
     _stateObjChanged(newVal) {

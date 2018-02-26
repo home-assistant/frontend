@@ -22,8 +22,7 @@
         @apply --paper-font-common-nowrap;
       }
       paper-card[dialog] .header {
-        padding-top: 0;
-        padding-left: 0;
+        display: none;
       }
     </style>
     <ha-state-history-data
@@ -37,7 +36,7 @@
     <paper-card dialog$='[[inDialog]]'
         on-click='cardTapped'
         elevation='[[computeElevation(inDialog)]]'>
-      <div class='header'>[[computeTitle(stateObj)]]</div>
+      <div class='header'>[[computeTitle(stateObj, inDialog)]]</div>
       <div class='content'>
          <state-history-charts
            history-data="[[stateHistory]]"
