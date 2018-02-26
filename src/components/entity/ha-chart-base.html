@@ -1,17 +1,23 @@
 <link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <dom-module id="ha-chart-base">
   <template>
     <style>
       .chartHeader {
+        display: flex;
         padding: 6px 0 0 0;
+        width: 100%
       }
-      .chartHeader div {
-        display: inline-block;
+      .chartHeader > div {
         vertical-align: top;
+        padding: 0 8px;
       }
-      .chartTitle {
-        margin: 0 12px 0 8px;
+      .chartHeader > div.chartTitle {
+        padding-top: 8px;
+      }
+      .chartHeader > div.chartLegend {
+        flex: auto;
       }
       :root{
         user-select: none;
@@ -34,7 +40,7 @@
       .chartTooltip ul {
         display: inline-block;
         padding: 0 0px;
-        margin: 0 0 8px 0;
+        margin: 8px 0 0 0;
         width: 100%
       }
       .chartTooltip li {
@@ -63,9 +69,6 @@
         height: 10px;
         margin-right: 6px;
         width: 10px;
-      }
-      .chartZoomInline {
-        float: right;
       }
     </style>
     <template is="dom-if" if="[[unit]]">
@@ -97,7 +100,7 @@
       style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px">
         <div class="title">[[tooltip.title]]</div>
         <div>
-          <ul >
+          <ul>
             <template is="dom-repeat" items="[[tooltip.lines]]">
               <li><em style$="background-color:[[item.bgColor]]"></em>[[item.text]]</li>
             </template>
