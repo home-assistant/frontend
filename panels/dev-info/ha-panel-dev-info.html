@@ -154,7 +154,7 @@
                 <div class='card-content'>There are no new issues!</div>
               </template>
               <template is='dom-repeat' items='[[items]]'>
-                <paper-item on-tap='openLog'>
+                <paper-item on-click='openLog'>
                   <paper-item-body two-line>
                     <div class="row">
                       [[item.message]]
@@ -173,7 +173,7 @@
                  service='clear'
                  >Clear</ha-call-service-button>
                 <ha-progress-button
-                 on-tap='_fetchData'
+                 on-click='_fetchData'
                  >Refresh</ha-progress-button>
               </div>
             </template>
@@ -181,7 +181,7 @@
         </div>
         <p class='error-log-intro'>
           Press the button to load the full Home Assistant log.
-          <paper-icon-button icon='mdi:refresh' on-tap='refreshErrorLog'></paper-icon-button>
+          <paper-icon-button icon='mdi:refresh' on-click='refreshErrorLog'></paper-icon-button>
         </p>
         <div class='error-log'>[[errorLog]]</div>
       </div>

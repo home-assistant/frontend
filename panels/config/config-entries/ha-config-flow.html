@@ -71,13 +71,13 @@
       </paper-dialog-scrollable>
       <div class='buttons'>
         <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
-          <paper-button on-tap='_flowDone'>Close</paper-button>
+          <paper-button on-click='_flowDone'>Close</paper-button>
         </template>
         <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
-          <paper-button on-tap='_flowDone'>Close</paper-button>
+          <paper-button on-click='_flowDone'>Close</paper-button>
         </template>
         <template is='dom-if' if='[[_equals(step.type, "form")]]'>
-          <paper-button on-tap='_submitStep'>Submit</paper-button>
+          <paper-button on-click='_submitStep'>Submit</paper-button>
         </template>
       </div>
     </paper-dialog>

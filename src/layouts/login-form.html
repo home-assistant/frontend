@@ -60,7 +60,7 @@
           ></paper-input>
           <div class="layout horizontal center">
             <paper-checkbox for id='rememberLogin'>[[localize('ui.login-form.remember')]]</paper-checkbox>
-            <paper-button on-tap='validatePassword'>[[localize('ui.login-form.log_in')]]</paper-button>
+            <paper-button on-click='validatePassword'>[[localize('ui.login-form.log_in')]]</paper-button>
           </div>
         </div>
         <div id="validatebox" hidden$="[[!showSpinner]]">

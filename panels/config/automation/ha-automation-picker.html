@@ -49,7 +49,7 @@
         <app-toolbar>
           <paper-icon-button
             icon='mdi:arrow-left'
-            on-tap='_backTapped'
+            on-click='_backTapped'
           ></paper-icon-button>
           <div main-title>[[localize('ui.panel.config.automation.caption')]]</div>
         </app-toolbar>
@@ -72,7 +72,7 @@
           </template>
           <template is='dom-repeat' items='[[automations]]' as='automation'>
             <paper-item>
-              <paper-item-body two-line on-tap='automationTapped'>
+              <paper-item-body two-line on-click='automationTapped'>
                 <div>[[computeName(automation)]]</div>
                 <div secondary>[[computeDescription(automation)]]</div>
               </paper-item-body>
@@ -86,7 +86,7 @@
         is-wide$='[[isWide]]'
         icon='mdi:plus'
         title='Add Automation'
-        on-tap='addAutomation'
+        on-click='addAutomation'
       ></paper-fab>
     </ha-app-layout>
 

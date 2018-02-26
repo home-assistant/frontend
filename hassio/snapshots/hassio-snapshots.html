@@ -65,7 +65,7 @@
             </div>
           </div>
           <div class='card-actions'>
-            <paper-button disabled='[[creatingSnapshot]]' on-tap='createSnapshot'>Create</paper-button>
+            <paper-button disabled='[[creatingSnapshot]]' on-click='createSnapshot'>Create</paper-button>
             <template is='dom-if' if='[[error]]'>
               <p class='error'>[[error]]</p>
             </template>

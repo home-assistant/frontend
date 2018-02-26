@@ -38,7 +38,7 @@
 
     <ha-card>
       <template is='dom-if' if='[[title]]'>
-        <div class$='[[computeTitleClass(groupEntity)]]' on-tap='entityTapped'>
+        <div class$='[[computeTitleClass(groupEntity)]]' on-click='entityTapped'>
           <div class='flex name'>[[title]]</div>
           <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
             <ha-entity-toggle
@@ -108,9 +108,9 @@ class HaEntitiesCard extends
     const cards = this.root.querySelectorAll('.state');
     cards.forEach((card) => {
       if (card.classList.contains('more-info')) {
-        card.addEventListener('tap', this.entityTapped);
+        card.addEventListener('click', this.entityTapped);
       } else {
-        card.removeEventListener('tap', this.entityTapped);
+        card.removeEventListener('click', this.entityTapped);
       }
     });
   }

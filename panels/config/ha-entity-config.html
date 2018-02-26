@@ -64,13 +64,13 @@
       </div>
       <div class='card-actions'>
         <paper-button
-          on-tap='saveEntity'
+          on-click='saveEntity'
           disabled='[[computeShowPlaceholder(formState)]]'
         >SAVE</paper-button>
         <template is='dom-if' if='[[allowDelete]]'>
           <paper-button
             class='warning'
-            on-tap='deleteEntity'
+            on-click='deleteEntity'
             disabled='[[computeShowPlaceholder(formState)]]'
           >DELETE</paper-button>
         </template>

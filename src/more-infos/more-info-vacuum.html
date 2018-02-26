@@ -44,23 +44,23 @@
       <div class='horizontal justified layout'>
         <div hidden$='[[!supportsPause(stateObj)]]'>
           <paper-icon-button icon='mdi:play-pause'
-            on-tap='onPlayPause' title='Start/Pause'></paper-icon-button>
+            on-click='onPlayPause' title='Start/Pause'></paper-icon-button>
         </div>
         <div hidden$='[[!supportsStop(stateObj)]]'>
           <paper-icon-button icon='mdi:stop'
-            on-tap='onStop' title='Stop'></paper-icon-button>
+            on-click='onStop' title='Stop'></paper-icon-button>
         </div>
         <div hidden$='[[!supportsCleanSpot(stateObj)]]'>
         <paper-icon-button icon='mdi:broom'
-            on-tap='onCleanSpot' title='Clean spot'></paper-icon-button>
+            on-click='onCleanSpot' title='Clean spot'></paper-icon-button>
         </div>
         <div hidden$='[[!supportsLocate(stateObj)]]'>
         <paper-icon-button icon='mdi:map-marker'
-            on-tap='onLocate' title='Locate'></paper-icon-button>
+            on-click='onLocate' title='Locate'></paper-icon-button>
         </div>
         <div hidden$='[[!supportsReturnHome(stateObj)]]'>
         <paper-icon-button icon='mdi:home-map-marker'
-            on-tap='onReturnHome' title='Return home'></paper-icon-button>
+            on-click='onReturnHome' title='Return home'></paper-icon-button>
         </div>
       </div>
     </div>
