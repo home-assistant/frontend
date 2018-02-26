@@ -1,5 +1,6 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
-<link rel='import' href='../../bower_components/paper-drawer-panel/paper-drawer-panel.html'>
+<link rel='import' href='../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html'>
+<link rel='import' href='../../bower_components/app-layout/app-drawer/app-drawer.html'>
 <link rel='import' href='../../bower_components/iron-media-query/iron-media-query.html'>
 <link rel='import' href='../../bower_components/iron-pages/iron-pages.html'>
 <link rel='import' href='../../bower_components/app-route/app-route.html'>
@@ -20,6 +21,9 @@
       :host {
 	      color: var(--primary-text-color);
       }
+      iron-pages {
+        height: 100%;
+      }
     </style>
     <more-info-dialog hass='[[hass]]'></more-info-dialog>
     <ha-url-sync hass='[[hass]]'></ha-url-sync>
@@ -35,18 +39,25 @@
     <iron-media-query query="(max-width: 870px)" query-matches="{{narrow}}">
     </iron-media-query>
 
-    <paper-drawer-panel id='drawer'
+    <app-drawer-layout
+      fullbleed
       force-narrow='[[computeForceNarrow(narrow, dockedSidebar)]]'
-      responsive-width='0' disable-swipe='[[_computeDisableSwipe(hass)]]'
-      disable-edge-swipe='[[_computeDisableSwipe(hass)]]'>
-      <ha-sidebar
+      responsive-width='0'
+    >
+      <app-drawer
+        id='drawer'
         slot="drawer"
-        narrow='[[narrow]]'
-        hass='[[hass]]'
-      ></ha-sidebar>
+        disable-swipe='[[_computeDisableSwipe(hass)]]'
+        swipe-open='[[!_computeDisableSwipe(hass)]]'
+        persistent='[[dockedSidebar]]'
+      >
+        <ha-sidebar
+          narrow='[[narrow]]'
+          hass='[[hass]]'
+        ></ha-sidebar>
+      </app-drawer>
 
       <iron-pages
-        slot="main"
         attr-for-selected='id'
         fallback-selection='panel-resolver'
         selected='[[hass.panelUrl]]'
@@ -70,7 +81,7 @@
         ></partial-panel-resolver>
 
       </iron-pages>
-    </paper-drawer-panel>
+    </app-drawer-layout>
 
   </template>
 </dom-module>
@@ -107,7 +118,7 @@
 
     _routeChanged() {
       if (this.narrow) {
-        this.$.drawer.closeDrawer();
+        this.$.drawer.close();
       }
     }
 
@@ -118,14 +129,14 @@
 
     handleOpenMenu() {
       if (this.narrow) {
-        this.$.drawer.openDrawer();
+        this.$.drawer.open();
       } else {
         this.fire('hass-dock-sidebar', { dock: true });
       }
     }
 
     handleCloseMenu() {
-      this.$.drawer.closeDrawer();
+      this.$.drawer.close();
       if (this.dockedSidebar) {
         this.fire('hass-dock-sidebar', { dock: false });
       }
