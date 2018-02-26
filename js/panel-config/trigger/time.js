@@ -15,7 +15,7 @@ export default class TimeTrigger extends Component {
     return (
       <div>
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.time.at')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.time.at')}
           name="at"
           value={at}
           onvalue-changed={this.onChange}

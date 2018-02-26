@@ -15,13 +15,13 @@ export default class TimeCondition extends Component {
     return (
       <div>
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.conditions.type.time.after')}
+          label={localize('ui.panel.config.automation.editor.conditions.type.time.after')}
           name="after"
           value={after}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.conditions.type.time.before')}
+          label={localize('ui.panel.config.automation.editor.conditions.type.time.before')}
           name="before"
           value={before}
           onvalue-changed={this.onChange}

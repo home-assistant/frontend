@@ -45,7 +45,7 @@ export default class Trigger extends Component {
           />))}
         <paper-card>
           <div class='card-actions add-card'>
-            <paper-button onTap={this.addTrigger}>{localize('ui.panel.config.automation.section.editor.triggers.add')}</paper-button>
+            <paper-button onTap={this.addTrigger}>{localize('ui.panel.config.automation.editor.triggers.add')}</paper-button>
           </div>
         </paper-card>
       </div>

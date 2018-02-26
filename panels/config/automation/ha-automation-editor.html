@@ -104,7 +104,7 @@
         is-wide$='[[isWide]]'
         dirty$='[[dirty]]'
         icon='mdi:content-save'
-        title="[[localize('ui.panel.config.automation.section.editor.save')]]"
+        title="[[localize('ui.panel.config.automation.editor.save')]]"
         on-tap='saveAutomation'
       ></paper-fab>
     </ha-app-layout>
@@ -237,7 +237,7 @@ class HaAutomationEditor extends
     }
     this.dirty = false;
     this.config = {
-      alias: this.localize('ui.panel.config.automation.section.editor.default_name'),
+      alias: this.localize('ui.panel.config.automation.editor.default_name'),
       trigger: [
         { platform: 'state' },
       ],
@@ -252,7 +252,7 @@ class HaAutomationEditor extends
   backTapped() {
     if (this.dirty &&
         // eslint-disable-next-line
-        !confirm(this.localize('ui.panel.config.automation.section.editor.unsaved_confirm'))) {
+        !confirm(this.localize('ui.panel.config.automation.editor.unsaved_confirm'))) {
       return;
     }
     history.back();
@@ -291,7 +291,7 @@ class HaAutomationEditor extends
   computeName(automation, localize) {
     return automation
       ? window.hassUtil.computeStateName(automation)
-      : localize('ui.panel.config.automation.section.editor.default_name');
+      : localize('ui.panel.config.automation.editor.default_name');
   }
 }
 

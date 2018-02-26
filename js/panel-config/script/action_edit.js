@@ -50,20 +50,20 @@ export default class Action extends Component {
     if (!Comp) {
       return (
         <div>
-          {localize('ui.panel.config.automation.section.editor.actions.unsupported_action', 'action', type)}
+          {localize('ui.panel.config.automation.editor.actions.unsupported_action', 'action', type)}
           <pre>{JSON.stringify(action, null, 2)}</pre>
         </div>
       );
     }
     return (
       <div>
-        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.section.editor.actions.type_select')} no-animations>
+        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.editor.actions.type_select')} no-animations>
           <paper-listbox
             slot="dropdown-content"
             selected={selected}
             oniron-select={this.typeChanged}
           >
-            {OPTIONS.map(opt => <paper-item action={opt}>{localize(`ui.panel.config.automation.section.editor.actions.type.${opt}.label`)}</paper-item>)}
+            {OPTIONS.map(opt => <paper-item action={opt}>{localize(`ui.panel.config.automation.editor.actions.type.${opt}.label`)}</paper-item>)}
           </paper-listbox>
         </paper-dropdown-menu-light>
         <Comp

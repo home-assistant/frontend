@@ -58,15 +58,15 @@
       <ha-config-section
         is-wide='[[isWide]]'
       >
-        <div slot='header'>[[localize('ui.panel.config.automation.section.picker.header')]]</div>
+        <div slot='header'>[[localize('ui.panel.config.automation.picker.header')]]</div>
         <div slot='introduction'>
-          <ha-markdown content="[[localize('ui.panel.config.automation.section.picker.introduction')]]"></ha-markdown>
+          <ha-markdown content="[[localize('ui.panel.config.automation.picker.introduction')]]"></ha-markdown>
         </div>
 
-        <paper-card heading="[[localize('ui.panel.config.automation.section.picker.pick_automation')]]">
+        <paper-card heading="[[localize('ui.panel.config.automation.picker.pick_automation')]]">
           <template is='dom-if' if='[[!automations.length]]'>
             <div class='card-content'>
-              <p>[[localize('ui.panel.config.automation.section.picker.no_automations')]]</p>
+              <p>[[localize('ui.panel.config.automation.picker.no_automations')]]</p>
             </div>
           </template>
           <template is='dom-repeat' items='[[automations]]' as='automation'>
@@ -84,7 +84,7 @@
       <paper-fab slot="fab"
         is-wide$='[[isWide]]'
         icon='mdi:plus'
-        title="[[localize('ui.panel.config.automation.section.picker.add_automation')]]"
+        title="[[localize('ui.panel.config.automation.picker.add_automation')]]"
         on-tap='addAutomation'
       ></paper-fab>
     </ha-app-layout>

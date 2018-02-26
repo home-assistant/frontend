@@ -24,13 +24,13 @@ export default class WaitAction extends Component {
     return (
       <div>
         <paper-textarea
-          label={localize('ui.panel.config.automation.section.editor.actions.type.wait_template.wait_template')}
+          label={localize('ui.panel.config.automation.editor.actions.type.wait_template.wait_template')}
           name="wait_template"
           value={wait_template}
           onvalue-changed={this.onTemplateChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.actions.type.wait_template.timeout')}
+          label={localize('ui.panel.config.automation.editor.actions.type.wait_template.timeout')}
           name="timeout"
           value={timeout}
           onvalue-changed={this.onChange}

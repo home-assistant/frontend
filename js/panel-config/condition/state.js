@@ -30,7 +30,7 @@ export default class StateCondition extends Component {
           allowCustomEntity
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.conditions.type.state.state')}
+          label={localize('ui.panel.config.automation.editor.conditions.type.state.state')}
           name="state"
           value={state}
           onvalue-changed={this.onChange}

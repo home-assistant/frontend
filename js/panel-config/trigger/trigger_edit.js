@@ -49,20 +49,20 @@ export default class TriggerEdit extends Component {
     if (!Comp) {
       return (
         <div>
-          {localize('ui.panel.config.automation.section.editor.triggers.unsupported_platform', 'platform', trigger.platform)}
+          {localize('ui.panel.config.automation.editor.triggers.unsupported_platform', 'platform', trigger.platform)}
           <pre>{JSON.stringify(trigger, null, 2)}</pre>
         </div>
       );
     }
     return (
       <div>
-        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.section.editor.triggers.type_select')} no-animations>
+        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.editor.triggers.type_select')} no-animations>
           <paper-listbox
             slot="dropdown-content"
             selected={selected}
             oniron-select={this.typeChanged}
           >
-            {OPTIONS.map(opt => <paper-item platform={opt}>{localize(`ui.panel.config.automation.section.editor.triggers.type.${opt}.label`)}</paper-item>)}
+            {OPTIONS.map(opt => <paper-item platform={opt}>{localize(`ui.panel.config.automation.editor.triggers.type.${opt}.label`)}</paper-item>)}
           </paper-listbox>
         </paper-dropdown-menu-light>
         <Comp

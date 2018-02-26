@@ -32,19 +32,19 @@ export default class NumericStateTrigger extends Component {
           allowCustomEntity
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.numeric_state.above')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.numeric_state.above')}
           name="above"
           value={above}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.numeric_state.below')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.numeric_state.below')}
           name="below"
           value={below}
           onvalue-changed={this.onChange}
         />
         <paper-textarea
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.numeric_state.value_template')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.numeric_state.value_template')}
           name="value_template"
           value={value_template}
           onvalue-changed={this.onChange}

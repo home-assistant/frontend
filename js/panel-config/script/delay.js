@@ -13,7 +13,7 @@ export default class DelayAction extends Component {
     return (
       <div>
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.actions.type.delay.delay')}
+          label={localize('ui.panel.config.automation.editor.actions.type.delay.delay')}
           name="delay"
           value={delay}
           onvalue-changed={this.onChange}

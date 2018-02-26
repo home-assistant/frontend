@@ -15,13 +15,13 @@ export default class MQTTTrigger extends Component {
     return (
       <div>
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.mqtt.topic')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.mqtt.topic')}
           name="topic"
           value={topic}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.mqtt.payload')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.mqtt.payload')}
           name="payload"
           value={payload}
           onvalue-changed={this.onChange}

@@ -43,7 +43,7 @@ export default class Script extends Component {
           />))}
         <paper-card>
           <div class='card-actions add-card'>
-            <paper-button onTap={this.addAction}>{localize('ui.panel.config.automation.section.editor.actions.add')}</paper-button>
+            <paper-button onTap={this.addAction}>{localize('ui.panel.config.automation.editor.actions.add')}</paper-button>
           </div>
         </paper-card>
       </div>

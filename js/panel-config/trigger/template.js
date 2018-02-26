@@ -15,7 +15,7 @@ export default class TemplateTrigger extends Component {
     return (
       <div>
         <paper-textarea
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.template.value_template')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.template.value_template')}
           name="value_template"
           value={value_template}
           onvalue-changed={this.onChange}

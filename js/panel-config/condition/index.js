@@ -43,7 +43,7 @@ export default class Condition extends Component {
           />))}
         <paper-card>
           <div class='card-actions add-card'>
-            <paper-button onTap={this.addCondition}>{localize('ui.panel.config.automation.section.editor.conditions.add')}</paper-button>
+            <paper-button onTap={this.addCondition}>{localize('ui.panel.config.automation.editor.conditions.add')}</paper-button>
           </div>
         </paper-card>
       </div>

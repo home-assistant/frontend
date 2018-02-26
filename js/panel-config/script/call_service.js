@@ -35,7 +35,7 @@ export default class CallServiceAction extends Component {
           onChange={this.serviceChanged}
         />
         <JSONTextArea
-          label={localize('ui.panel.config.automation.section.editor.actions.type.service.service_data')}
+          label={localize('ui.panel.config.automation.editor.actions.type.service.service_data')}
           value={data}
           onChange={this.serviceDataChanged}
         />

@@ -45,7 +45,7 @@ export default class ZoneTrigger extends Component {
     return (
       <div>
         <ha-entity-picker
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.zone.entity')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.zone.entity')}
           value={entity_id}
           onChange={this.entityPicked}
           hass={hass}
@@ -53,21 +53,21 @@ export default class ZoneTrigger extends Component {
           entityFilter={zoneAndLocationFilter}
         />
         <ha-entity-picker
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.zone.zone')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.zone.zone')}
           value={zone}
           onChange={this.zonePicked}
           hass={hass}
           allowCustomEntity
           domainFilter='zone'
         />
-        <label id="eventlabel">{localize('ui.panel.config.automation.section.editor.triggers.type.zone.event')}</label>
+        <label id="eventlabel">{localize('ui.panel.config.automation.editor.triggers.type.zone.event')}</label>
         <paper-radio-group
           selected={event}
           aria-labelledby="eventlabel"
           onpaper-radio-group-changed={this.radioGroupPicked}
         >
-          <paper-radio-button name="enter">{localize('ui.panel.config.automation.section.editor.triggers.type.zone.enter')}</paper-radio-button>
-          <paper-radio-button name="leave">{localize('ui.panel.config.automation.section.editor.triggers.type.zone.leave')}</paper-radio-button>
+          <paper-radio-button name="enter">{localize('ui.panel.config.automation.editor.triggers.type.zone.enter')}</paper-radio-button>
+          <paper-radio-button name="leave">{localize('ui.panel.config.automation.editor.triggers.type.zone.leave')}</paper-radio-button>
         </paper-radio-group>
       </div>
     );

@@ -24,13 +24,13 @@ export default class EventAction extends Component {
     return (
       <div>
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.actions.type.event.event')}
+          label={localize('ui.panel.config.automation.editor.actions.type.event.event')}
           name="event"
           value={event}
           onvalue-changed={this.onChange}
         />
         <JSONTextArea
-          label={localize('ui.panel.config.automation.section.editor.actions.type.event.service_data')}
+          label={localize('ui.panel.config.automation.editor.actions.type.event.service_data')}
           value={event_data}
           onChange={this.serviceDataChanged}
         />

@@ -52,12 +52,12 @@ export default class Automation extends Component {
         <ha-config-section is-wide={isWide}>
           <span slot='header'>{alias}</span>
           <span slot='introduction'>
-            {localize('ui.panel.config.automation.section.editor.introduction')}
+            {localize('ui.panel.config.automation.editor.introduction')}
           </span>
           <paper-card>
             <div class='card-content'>
               <paper-input
-                label={localize('ui.panel.config.automation.section.editor.alias')}
+                label={localize('ui.panel.config.automation.editor.alias')}
                 name="alias"
                 value={alias}
                 onvalue-changed={this.onChange}
@@ -67,9 +67,9 @@ export default class Automation extends Component {
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
-          <span slot='header'>{localize('ui.panel.config.automation.section.editor.triggers.header')}</span>
+          <span slot='header'>{localize('ui.panel.config.automation.editor.triggers.header')}</span>
           <span slot='introduction'>
-            <ha-markdown content={localize('ui.panel.config.automation.section.editor.triggers.introduction')} />
+            <ha-markdown content={localize('ui.panel.config.automation.editor.triggers.introduction')} />
           </span>
           <Trigger
             trigger={trigger}
@@ -80,9 +80,9 @@ export default class Automation extends Component {
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
-          <span slot='header'>{localize('ui.panel.config.automation.section.editor.conditions.header')}</span>
+          <span slot='header'>{localize('ui.panel.config.automation.editor.conditions.header')}</span>
           <span slot='introduction'>
-            <ha-markdown content={localize('ui.panel.config.automation.section.editor.conditions.introduction')} />
+            <ha-markdown content={localize('ui.panel.config.automation.editor.conditions.introduction')} />
           </span>
           <Condition
             condition={condition || []}
@@ -93,9 +93,9 @@ export default class Automation extends Component {
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
-          <span slot='header'>{localize('ui.panel.config.automation.section.editor.actions.header')}</span>
+          <span slot='header'>{localize('ui.panel.config.automation.editor.actions.header')}</span>
           <span slot='introduction'>
-            <ha-markdown content={localize('ui.panel.config.automation.section.editor.actions.introduction')} />
+            <ha-markdown content={localize('ui.panel.config.automation.editor.actions.introduction')} />
           </span>
           <Script
             script={action}

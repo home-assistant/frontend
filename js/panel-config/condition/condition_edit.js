@@ -43,7 +43,7 @@ export default class ConditionRow extends Component {
     if (!Comp) {
       return (
         <div>
-          {localize('ui.panel.config.automation.section.editor.conditions.unsupported_condition', 'condition', condition.condition)}
+          {localize('ui.panel.config.automation.editor.conditions.unsupported_condition', 'condition', condition.condition)}
           <pre>{JSON.stringify(condition, null, 2)}</pre>
         </div>
       );
@@ -51,13 +51,13 @@ export default class ConditionRow extends Component {
 
     return (
       <div>
-        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.section.editor.conditions.type_select')} no-animations>
+        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.editor.conditions.type_select')} no-animations>
           <paper-listbox
             slot="dropdown-content"
             selected={selected}
             oniron-select={this.typeChanged}
           >
-            {OPTIONS.map(opt => <paper-item condition={opt}>{localize(`ui.panel.config.automation.section.editor.conditions.type.${opt}.label`)}</paper-item>)}
+            {OPTIONS.map(opt => <paper-item condition={opt}>{localize(`ui.panel.config.automation.editor.conditions.type.${opt}.label`)}</paper-item>)}
           </paper-listbox>
         </paper-dropdown-menu-light>
         <Comp

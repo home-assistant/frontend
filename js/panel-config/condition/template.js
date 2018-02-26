@@ -15,7 +15,7 @@ export default class TemplateCondition extends Component {
     return (
       <div>
         <paper-textarea
-          label={localize('ui.panel.config.automation.section.editor.conditions.type.template.value_template')}
+          label={localize('ui.panel.config.automation.editor.conditions.type.template.value_template')}
           name="value_template"
           value={value_template}
           onvalue-changed={this.onChange}

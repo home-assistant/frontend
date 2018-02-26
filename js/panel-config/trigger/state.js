@@ -31,13 +31,13 @@ export default class StateTrigger extends Component {
           allowCustomEntity
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.state.from')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.state.from')}
           name="from"
           value={trgFrom}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label={localize('ui.panel.config.automation.section.editor.triggers.type.state.to')}
+          label={localize('ui.panel.config.automation.editor.triggers.type.state.to')}
           name="to"
           value={to}
           onvalue-changed={this.onChange}

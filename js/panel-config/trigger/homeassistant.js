@@ -19,14 +19,14 @@ export default class HassTrigger extends Component {
     const { event } = trigger;
     return (
       <div>
-        <label id="eventlabel">{localize('ui.panel.config.automation.section.editor.triggers.type.homeassistant.event')}</label>
+        <label id="eventlabel">{localize('ui.panel.config.automation.editor.triggers.type.homeassistant.event')}</label>
         <paper-radio-group
           selected={event}
           aria-labelledby="eventlabel"
           onpaper-radio-group-changed={this.radioGroupPicked}
         >
-          <paper-radio-button name="start">{localize('ui.panel.config.automation.section.editor.triggers.type.homeassistant.start')}</paper-radio-button>
-          <paper-radio-button name="shutdown">{localize('ui.panel.config.automation.section.editor.triggers.type.homeassistant.shutdown')}</paper-radio-button>
+          <paper-radio-button name="start">{localize('ui.panel.config.automation.editor.triggers.type.homeassistant.start')}</paper-radio-button>
+          <paper-radio-button name="shutdown">{localize('ui.panel.config.automation.editor.triggers.type.homeassistant.shutdown')}</paper-radio-button>
         </paper-radio-group>
       </div>
     );
