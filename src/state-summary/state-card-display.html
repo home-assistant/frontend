@@ -17,6 +17,8 @@
         margin-left: 16px;
         text-align: right;
         line-height: 40px;
+      }
+      .state.has-unit_of_measurement {
         white-space: nowrap;
       }
     </style>
@@ -54,7 +56,6 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) 
     ];
     return classes.join(' ');
   }
-
 }
 customElements.define(StateCardDisplay.is, StateCardDisplay);
 </script>
