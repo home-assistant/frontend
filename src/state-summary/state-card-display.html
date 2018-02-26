@@ -50,7 +50,7 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) 
   }
 
   computeClassNames(stateObj) {
-    var classes = [
+    const classes = [
       'state',
       window.hassUtil.attributeClassNames(stateObj, ['unit_of_measurement']),
     ];
