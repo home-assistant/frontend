@@ -14,8 +14,8 @@
 
     <div hidden$='[[!stateObj.attributes.code_format]]'>
       <paper-input label='code' value='{{enteredCode}}' pattern='[[stateObj.attributes.code_format]]' type='password'></paper-input>
-      <paper-button on-tap='handleUnlockTap' hidden$='[[!isLocked]]'>Unlock</paper-button>
-      <paper-button on-tap='handleLockTap' hidden$=[[isLocked]]>Lock</paper-button>
+      <paper-button on-click='handleUnlockTap' hidden$='[[!isLocked]]'>Unlock</paper-button>
+      <paper-button on-click='handleLockTap' hidden$=[[isLocked]]>Lock</paper-button>
     </div>
     <ha-attributes state-obj='[[stateObj]]' extra-filters='code_format'></ha-attributes>
   </template>

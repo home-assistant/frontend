@@ -45,7 +45,7 @@
         <app-toolbar>
           <paper-icon-button
             icon='mdi:arrow-left'
-            on-tap='_backTapped'
+            on-click='_backTapped'
           ></paper-icon-button>
           <div main-title>[[localize('ui.panel.config.script.caption')]]</div>
         </app-toolbar>
@@ -68,7 +68,7 @@
           </template>
           <template is='dom-repeat' items='[[scripts]]' as='script'>
             <paper-item>
-              <paper-item-body two-line on-tap='scriptTapped'>
+              <paper-item-body two-line on-click='scriptTapped'>
                 <div>[[computeName(script)]]</div>
                 <div secondary>[[computeDescription(script)]]</div>
               </paper-item-body>
@@ -82,7 +82,7 @@
         is-wide$='[[isWide]]'
         icon='mdi:plus'
         title='Add Script'
-        on-tap='addScript'
+        on-click='addScript'
       ></paper-fab>
     </ha-app-layout>
 
