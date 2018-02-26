@@ -187,7 +187,9 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       data = { name: name, folders: folders, addons: addons };
       path = 'hassio/snapshots/new/partial';
     }
-    if (this.snapshotPassword && this.snapshotPassword.length) data.password = this.snapshotPassword;
+    if (this.snapshotPassword && this.snapshotPassword.length) {
+      data.password = this.snapshotPassword;
+    }
 
     this.hass.callApi('post', path, data)
       .then(() => {
