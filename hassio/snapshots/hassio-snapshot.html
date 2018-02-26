@@ -115,7 +115,7 @@ class HassioSnapshot extends Polymer.Element {
         info.data.folders = this.computeFolders(info.data.folders);
         info.data.addons = this.computeAddons(info.data.addons);
         this.snapshot = info.data;
-        this.$.dialog.open();        
+        this.$.dialog.open();
       }, () => {
         this.snapshot = null;
       });
