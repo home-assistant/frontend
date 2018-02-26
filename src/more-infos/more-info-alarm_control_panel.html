@@ -23,16 +23,16 @@
     </div>
     <div class='layout horizontal'>
       <paper-button
-        on-tap='handleDisarmTap'
+        on-click='handleDisarmTap'
         hidden$='[[!disarmButtonVisible]]'
         disabled='[[!codeValid]]'
       >Disarm</paper-button>
       <paper-button
-        on-tap='handleHomeTap'
+        on-click='handleHomeTap'
         hidden$='[[!armHomeButtonVisible]]'
         disabled=[[!codeValid]]>Arm Home</paper-button>
       <paper-button
-        on-tap='handleAwayTap'
+        on-click='handleAwayTap'
         hidden$='[[!armAwayButtonVisible]]'
         disabled='[[!codeValid]]'>Arm Away</paper-button>
     </div>

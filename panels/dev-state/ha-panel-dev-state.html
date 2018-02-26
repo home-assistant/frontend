@@ -85,7 +85,7 @@
             class='state-input'
           ></paper-input>
           <paper-textarea label="State attributes (JSON, optional)" value='{{_stateAttributes}}'></paper-textarea>
-          <paper-button on-tap='handleSetState' raised>Set State</paper-button>
+          <paper-button on-click='handleSetState' raised>Set State</paper-button>
         </div>
 
         <h1>Current entities</h1>
@@ -108,7 +108,7 @@
           </tr>
           <template is='dom-repeat' items='[[_entities]]' as='entity'>
             <tr>
-              <td><a href='#' on-tap='entitySelected'>[[entity.entity_id]]</a></td>
+              <td><a href='#' on-click='entitySelected'>[[entity.entity_id]]</a></td>
               <td>[[entity.state]]</td>
               <template is='dom-if' if='[[computeShowAttributes(narrow, _showAttributes)]]'>
                 <td>[[attributeString(entity)]]</td>
