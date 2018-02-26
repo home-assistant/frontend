@@ -36,8 +36,8 @@
         </div>
         <paper-card>
           <div class='card-content'>
-            <paper-input autofocus label='Name' value='{{snapshotName}}'>
-            </paper-input>
+            <paper-input autofocus label='Name' value='{{snapshotName}}'></paper-input>
+            <paper-input autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
             <label id='lbltype'>Type:</label>
             <paper-radio-group selected='{{snapshotType}}' aria-labelledby='lbltype' on-paper-radio-group-changed='typeChanged'>
               <paper-radio-button name='full'>
@@ -85,7 +85,7 @@
             <div class='card-content'>
               <hassio-card-content
                 title='[[computeName(snapshot)]]'
-                description='[[computeType(snapshot.type)]]'
+                description='[[computeDetails(snapshot)]]'
                 datetime='[[snapshot.date]]'
                 icon='[[computeIcon(snapshot.type)]]'
                 icon-class='snapshot'
@@ -106,6 +106,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     return {
       hass: Object,
       snapshotName: String,
+      snapshotPassword: String,
       snapshotType: {
         type: String,
         value: 'full',
@@ -186,6 +187,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       data = { name: name, folders: folders, addons: addons };
       path = 'hassio/snapshots/new/partial';
     }
+    if (this.snapshotPassword && this.snapshotPassword.length) data.password = this.snapshotPassword;
 
     this.hass.callApi('post', path, data)
       .then(() => {
@@ -213,8 +215,9 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     return snapshot.name || snapshot.slug;
   }
 
-  computeType(type) {
-    return type === 'full' ? 'Full snapshot' : 'Partial snapshot';
+  computeDetails(snapshot) {
+    const type = snapshot.type === 'full' ? 'Full snapshot' : 'Partial snapshot';
+    return snapshot.protected ? type + ', password protected' : type;
   }
 
   computeIcon(type) {
