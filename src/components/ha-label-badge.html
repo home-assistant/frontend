@@ -19,7 +19,7 @@
       line-height: var(--ha-label-badge-size, 2.5em);
       font-size: var(--ha-label-badge-font-size, 1.5em);
       border-radius: 50%;
-      border: 0.1em solid var(--ha-label-badge-color, --primary-color);
+      border: 0.1em solid var(--ha-label-badge-color, var(--primary-color));
       color: var(--label-badge-text-color, rgb(76, 76, 76));
 
       white-space: nowrap;
@@ -47,7 +47,7 @@
     .label-badge .label span {
       max-width: 68%; /* Parent width minus two times 16% padding */
       display: inline-block;
-      background-color: var(--ha-label-badge-color, --primary-color);
+      background-color: var(--ha-label-badge-color, var(--primary-color));
       color: white;
       border-radius: 1em;
       padding: 8% 16%;
