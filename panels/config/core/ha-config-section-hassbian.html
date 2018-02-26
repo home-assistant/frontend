@@ -52,12 +52,12 @@
               [[computeSuiteDescription(suiteStatus, suiteKey)]]
             </div>
             <div class='card-actions'>
-              <paper-button on-tap='suiteMoreInfoTapped'>
+              <paper-button on-click='suiteMoreInfoTapped'>
                 [[localize('ui.panel.config.core.section.hassbian.learn_more')]]
               </paper-button>
 
               <template is='dom-if' if='[[computeShowInstall(suiteStatus, suiteKey)]]'>
-                <paper-button on-tap='suiteActionTapped'>
+                <paper-button on-click='suiteActionTapped'>
                   [[localize('ui.panel.config.core.section.hassbian.install')]]
                 </paper-button>
               </template>

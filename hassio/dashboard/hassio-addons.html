@@ -17,12 +17,12 @@
       <template is='dom-if' if='[[!addons.length]]'>
         <paper-card>
           <div class='card-content'>
-            You don't have any add-ons installed yet. Head over to <a href='#' on-tap='openStore'>the add-on store</a> to get started!
+            You don't have any add-ons installed yet. Head over to <a href='#' on-click='openStore'>the add-on store</a> to get started!
           </div>
         </paper-card>
       </template>
       <template is='dom-repeat' items='[[addons]]' as='addon'>
-        <paper-card on-tap='addonTapped'>
+        <paper-card on-click='addonTapped'>
           <div class='card-content'>
             <hassio-card-content
               title='[[addon.name]]'

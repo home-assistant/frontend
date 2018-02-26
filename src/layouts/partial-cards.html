@@ -62,7 +62,7 @@
           >
             <paper-tab
               data-entity=''
-              on-tap='scrollToTop'
+              on-click='scrollToTop'
             >
               <template is='dom-if' if='[[!defaultView]]'>
                 Home
@@ -88,7 +88,7 @@
             <template is='dom-repeat' items='[[views]]'>
               <paper-tab
                 data-entity$='[[item.entity_id]]'
-                on-tap='scrollToTop'
+                on-click='scrollToTop'
               >
                 <template is='dom-if' if='[[item.attributes.icon]]'>
                   <iron-icon title$='[[computeStateName(item)]]' icon='[[item.attributes.icon]]'></iron-icon>

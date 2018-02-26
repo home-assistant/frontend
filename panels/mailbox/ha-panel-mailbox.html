@@ -109,7 +109,7 @@
             </div>
           </template>
           <template is='dom-repeat' items='[[_messages]]'>
-            <paper-item on-tap='openMP3Dialog'>
+            <paper-item on-click='openMP3Dialog'>
               <paper-item-body style="width:100%" two-line>
                 <div class="row">
                   <div>[[item.caller]]</div>
@@ -129,7 +129,7 @@
       <h2>
         [[localize('ui.panel.mailbox.playback_title')]]
         <paper-icon-button
-          on-tap='openDeleteDialog'
+          on-click='openDeleteDialog'
           icon='mdi:delete'
         ></paper-icon-button>
       </h2>
@@ -143,7 +143,7 @@
       <p>[[localize('ui.panel.mailbox.delete_prompt')]]</p>
       <div class="buttons">
         <paper-button dialog-dismiss>[[localize('ui.common.cancel')]]</paper-button>
-        <paper-button dialog-confirm autofocus on-tap="deleteSelected">[[localize('ui.panel.mailbox.delete_button')]]</paper-button>
+        <paper-button dialog-confirm autofocus on-click="deleteSelected">[[localize('ui.panel.mailbox.delete_button')]]</paper-button>
       </div>
     </paper-dialog>
   </template>

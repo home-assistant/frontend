@@ -35,7 +35,7 @@
       cache-config='[[cacheConfig]]'
     ></ha-state-history-data>
     <paper-card dialog$='[[inDialog]]'
-        on-tap='cardTapped'
+        on-click='cardTapped'
         elevation='[[computeElevation(inDialog)]]'>
       <div class='header'>[[computeTitle(stateObj)]]</div>
       <div class='content'>

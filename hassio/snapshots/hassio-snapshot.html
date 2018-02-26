@@ -16,7 +16,7 @@
       }
       .addon-version {
         color: var(--secondary-text-color);
-      }      
+      }
       .warning,
       .error {
         color: var(--google-red-500);
@@ -68,10 +68,10 @@
         </template>
       </div>
       <div class='buttons'>
-        <paper-button class='warning' on-tap='deleteTapped'>Delete</paper-button>
-        <paper-button on-tap='partialRestoreTapped'>Partial restore</paper-button>
+        <paper-button class='warning' on-click='deleteTapped'>Delete</paper-button>
+        <paper-button on-click='partialRestoreTapped'>Partial restore</paper-button>
         <template is='dom-if' if='[[isFullSnapshot(snapshot.type)]]'>
-          <paper-button on-tap='fullRestoreTapped'>Full restore</paper-button>
+          <paper-button on-click='fullRestoreTapped'>Full restore</paper-button>
         </template>
       </div>
     </paper-dialog>

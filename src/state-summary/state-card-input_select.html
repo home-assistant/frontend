@@ -29,7 +29,7 @@
 
     <state-badge state-obj='[[stateObj]]'></state-badge>
     <paper-dropdown-menu
-      on-tap='stopPropagation'
+      on-click='stopPropagation'
       selected-item-label='{{selectedOption}}'
       label='[[computeStateName(stateObj)]]'>
       <paper-listbox slot="dropdown-content" selected="[[computeSelected(stateObj)]]">
