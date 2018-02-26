@@ -63,13 +63,13 @@
           hass='[[hass]]'
           filter-type='recent-entity'
           entity-id='[[stateObj.entity_id]]'
-          data='{{stateHistory}}'
-          is-loading='{{stateHistoryLoading}}'
-          cache-config='[[cacheConfig]]'
+          data='{{_stateHistory}}'
+          is-loading='{{_stateHistoryLoading}}'
+          cache-config='[[_cacheConfig]]'
         ></ha-state-history-data>
         <state-history-charts
-          history-data="[[stateHistory]]"
-          is-loading-data="[[stateHistoryLoading]]"
+          history-data="[[_stateHistory]]"
+          is-loading-data="[[_stateHistoryLoading]]"
           up-to-now
         ></state-history-charts>
       </div>
@@ -98,11 +98,12 @@
           observer: '_stateObjChanged',
         },
 
-        stateHistory: Object,
+        dialogElement: Object,
+        canConfigure: Boolean,
 
-        stateHistoryLoading: Boolean,
-
-        cacheConfig: {
+        _stateHistory: Object,
+        _stateHistoryLoading: Boolean,
+        _cacheConfig: {
           type: Object,
           value: {
             refresh: 60,
@@ -110,9 +111,6 @@
             hoursToShow: 24,
           },
         },
-
-        dialogElement: Object,
-        canConfigure: Boolean,
       };
     }
 
@@ -136,9 +134,9 @@
         return;
       }
 
-      if (this.cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
-        this.cacheConfig = Object.assign(
-          {}, this.cacheConfig,
+      if (this._cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
+        this._cacheConfig = Object.assign(
+          {}, this._cacheConfig,
           { cacheKey: `more_info.${newVal.entity_id}` }
         );
       }
