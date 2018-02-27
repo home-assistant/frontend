@@ -11,18 +11,21 @@
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
     <style>
       .state {
-        @apply(--paper-font-body1);
+        @apply --paper-font-body1;
         color: var(--primary-text-color);
 
         margin-left: 16px;
         text-align: right;
         line-height: 40px;
       }
+      .state.has-unit_of_measurement {
+        white-space: nowrap;
+      }
     </style>
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <div class='state'>[[computeStateDisplay(localize, stateObj, language)]]</div>
+      <div class$='[[computeClassNames(stateObj)]]'>[[computeStateDisplay(localize, stateObj, language)]]</div>
     </div>
   </template>
 </dom-module>
@@ -44,6 +47,14 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) 
 
   computeStateDisplay(localize, stateObj, language) {
     return window.hassUtil.computeStateDisplay(localize, stateObj, language);
+  }
+
+  computeClassNames(stateObj) {
+    const classes = [
+      'state',
+      window.hassUtil.attributeClassNames(stateObj, ['unit_of_measurement']),
+    ];
+    return classes.join(' ');
   }
 }
 customElements.define(StateCardDisplay.is, StateCardDisplay);

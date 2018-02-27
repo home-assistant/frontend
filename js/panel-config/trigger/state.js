@@ -18,7 +18,7 @@ export default class StateTrigger extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ trigger, hass }) {
+  render({ trigger, hass, localize }) {
     const { entity_id, to } = trigger;
     const trgFrom = trigger.from;
     const trgFor = trigger.for;
@@ -31,13 +31,13 @@ export default class StateTrigger extends Component {
           allowCustomEntity
         />
         <paper-input
-          label="From"
+          label={localize('ui.panel.config.automation.editor.triggers.type.state.from')}
           name="from"
           value={trgFrom}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label="To"
+          label={localize('ui.panel.config.automation.editor.triggers.type.state.to')}
           name="to"
           value={to}
           onvalue-changed={this.onChange}

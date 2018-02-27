@@ -1,8 +1,16 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
 
 <custom-style>
 <style is="custom-style">/* remove is= on Polymer 2 */
-  body {
+/*
+  Home Assistant default styles.
+
+  In Polymer 2.0, default styles should to be set on the html selector.
+  (Setting all default styles only on body breaks shadyCSS polyfill.)
+  See: https://github.com/home-assistant/home-assistant-polymer/pull/901
+*/
+  html {
     font-size: 14px;
     height: 100vh;
 
@@ -82,7 +90,7 @@
   <template>
     <style>
       :host {
-        @apply(--paper-font-body1);
+        @apply --paper-font-body1;
       }
 
       app-header-layout, ha-app-layout {
@@ -101,7 +109,7 @@
       }
 
       h1 {
-        @apply(--paper-font-title);
+        @apply --paper-font-title;
       }
 
       button.link {

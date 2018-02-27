@@ -19,10 +19,6 @@
         display: block;
       }
 
-/*      .content {
-        padding: 16px;
-      }
-*/
       paper-item {
         cursor: pointer;
       }
@@ -42,6 +38,10 @@
       a {
         color: var(--primary-color);
       }
+
+      ha-markdown p {
+        margin: 0px;
+      }
     </style>
 
     <ha-app-layout has-scrolling-region>
@@ -58,16 +58,15 @@
       <ha-config-section
         is-wide='[[isWide]]'
       >
-        <div slot='header'>Automation Editor</div>
+        <div slot='header'>[[localize('ui.panel.config.automation.picker.header')]]</div>
         <div slot='introduction'>
-          The automation editor allows you to create and edit automations.
-          Please read <a href='https://home-assistant.io/docs/automation/editor/' target='_blank'>the instructions</a> to make sure that you have configured Home Assistant correctly.
+          <ha-markdown content="[[localize('ui.panel.config.automation.picker.introduction')]]"></ha-markdown>
         </div>
 
-        <paper-card heading='Pick automation to edit'>
+        <paper-card heading="[[localize('ui.panel.config.automation.picker.pick_automation')]]">
           <template is='dom-if' if='[[!automations.length]]'>
             <div class='card-content'>
-              <p>We couldn't find any editable automations.</p>
+              <p>[[localize('ui.panel.config.automation.picker.no_automations')]]</p>
             </div>
           </template>
           <template is='dom-repeat' items='[[automations]]' as='automation'>
@@ -85,7 +84,7 @@
       <paper-fab slot="fab"
         is-wide$='[[isWide]]'
         icon='mdi:plus'
-        title='Add Automation'
+        title="[[localize('ui.panel.config.automation.picker.add_automation')]]"
         on-click='addAutomation'
       ></paper-fab>
     </ha-app-layout>

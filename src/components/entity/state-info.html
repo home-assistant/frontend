@@ -8,7 +8,7 @@
   <template>
     <style>
     :host {
-      @apply(--paper-font-body1);
+      @apply --paper-font-body1;
       min-width: 150px;
       white-space: nowrap;
     }
@@ -22,7 +22,7 @@
     }
 
     .name {
-      @apply(--paper-font-common-nowrap);
+      @apply --paper-font-common-nowrap;
       color: var(--primary-text-color);
       line-height: 40px;
     }
@@ -32,7 +32,7 @@
     }
 
     .time-ago, ::slotted(*) {
-      @apply(--paper-font-common-nowrap);
+      @apply --paper-font-common-nowrap;
       color: var(--secondary-text-color);
     }
     </style>
