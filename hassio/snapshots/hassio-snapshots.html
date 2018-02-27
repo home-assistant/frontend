@@ -68,12 +68,12 @@
               <paper-checkbox checked='{{snapshotHasPassword}}'>Password protected</paper-checkbox>
               <paper-input hidden=[[!snapshotHasPassword]] autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
             </div>
-          </div>
-          <div class='card-actions'>
-            <paper-button disabled='[[creatingSnapshot]]' on-click='createSnapshot'>Create</paper-button>
             <template is='dom-if' if='[[error]]'>
               <p class='error'>[[error]]</p>
             </template>
+          </div>
+          <div class='card-actions'>
+            <paper-button disabled='[[creatingSnapshot]]' on-click='createSnapshot'>Create</paper-button>
           </div>
         </paper-card>
       </div>
@@ -111,7 +111,10 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     return {
       hass: Object,
       snapshotName: String,
-      snapshotPassword: String,
+      snapshotPassword: {
+        type: String,
+        value: '',
+      },
       snapshotHasPassword: Boolean,
       snapshotType: {
         type: String,
@@ -172,7 +175,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   createSnapshot() {
-    if (this.snapshotHasPassword && this.snapshotPassword && !this.snapshotPassword.length) {
+    if (this.snapshotHasPassword && !this.snapshotPassword.length) {
       this.error = 'Please enter a password.';
       return;
     }
@@ -204,6 +207,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.hass.callApi('post', path, data)
       .then(() => {
         this.creatingSnapshot = false;
+        this.error = '';
         this.fire('hass-api-called', { success: true });
       }, (error) => {
         this.creatingSnapshot = false;
