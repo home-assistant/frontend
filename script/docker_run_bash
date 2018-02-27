@@ -1,0 +1,11 @@
+#!/bin/bash
+# Execute interactive bash on basic image
+
+IMAGE_NAME=home_assistant_fe_image
+IMAGE_TAG=latest
+
+docker run -it \
+  -v $PWD/:/frontend/ \
+  -v /frontend/node_modules \
+  -v /frontend/bower_components \
+  ${IMAGE_NAME}:${IMAGE_TAG} /bin/bash
