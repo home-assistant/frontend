@@ -19,18 +19,18 @@ export default class EventTrigger extends Component {
     });
   }
 
-  render({ trigger }) {
+  render({ trigger, localize }) {
     const { event_type, event_data } = trigger;
     return (
       <div>
         <paper-input
-          label="Event Type"
+          label={localize('ui.panel.config.automation.editor.triggers.type.event.event_type')}
           name="event_type"
           value={event_type}
           onvalue-changed={this.onChange}
         />
         <JSONTextArea
-          label="Event Data"
+          label={localize('ui.panel.config.automation.editor.triggers.type.event.event_data')}
           value={event_data}
           onChange={this.eventDataChanged}
         />

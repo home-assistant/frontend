@@ -24,7 +24,7 @@ export default class ScriptEditor extends Component {
     });
   }
 
-  render({ script, isWide, hass }) {
+  render({ script, isWide, hass, localize }) {
     const { alias, sequence } = script;
 
     return (
@@ -58,6 +58,7 @@ export default class ScriptEditor extends Component {
             script={sequence}
             onChange={this.sequenceChanged}
             hass={hass}
+            localize={localize}
           />
         </ha-config-section>
       </div>

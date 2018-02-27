@@ -18,19 +18,19 @@ export default class WaitAction extends Component {
     });
   }
 
-  render({ action }) {
+  render({ action, localize }) {
     /* eslint-disable camelcase */
     const { wait_template, timeout } = action;
     return (
       <div>
         <paper-textarea
-          label="Wait Template"
+          label={localize('ui.panel.config.automation.editor.actions.type.wait_template.wait_template')}
           name="wait_template"
           value={wait_template}
           onvalue-changed={this.onTemplateChange}
         />
         <paper-input
-          label="Timeout (Optional)"
+          label={localize('ui.panel.config.automation.editor.actions.type.wait_template.timeout')}
           name="timeout"
           value={timeout}
           onvalue-changed={this.onChange}
@@ -40,7 +40,6 @@ export default class WaitAction extends Component {
   }
 }
 
-WaitAction.configKey = 'wait_template';
 WaitAction.defaultConfig = {
   wait_template: '',
   timeout: '',

@@ -8,12 +8,12 @@ export default class DelayAction extends Component {
     this.onChange = onChangeEvent.bind(this, 'action');
   }
 
-  render({ action }) {
+  render({ action, localize }) {
     const { delay } = action;
     return (
       <div>
         <paper-input
-          label="Delay"
+          label={localize('ui.panel.config.automation.editor.actions.type.delay.delay')}
           name="delay"
           value={delay}
           onvalue-changed={this.onChange}
@@ -23,7 +23,6 @@ export default class DelayAction extends Component {
   }
 }
 
-DelayAction.configKey = 'delay';
 DelayAction.defaultConfig = {
   delay: '',
 };

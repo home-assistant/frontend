@@ -3,6 +3,8 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
 
+<link rel='import' href='../../../src/util/hass-mixins.html'>
+
 <link rel="import" href="./state-badge.html">
 
 <dom-module id="ha-entity-picker">
@@ -28,7 +30,7 @@
     >
       <paper-input
         autofocus="[[autofocus]]"
-        label="[[label]]"
+        label="[[_computeLabel(label, localize)]]"
         class="input"
         value='[[value]]'
         disabled='[[disabled]]'
@@ -66,7 +68,10 @@
 </dom-module>
 
 <script>
-class HaEntityPicker extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaEntityPicker extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-entity-picker'; }
 
   static get properties() {
@@ -87,7 +92,6 @@ class HaEntityPicker extends Polymer.Element {
       autofocus: Boolean,
       label: {
         type: String,
-        value: 'Entity',
       },
       value: {
         type: String,
@@ -108,6 +112,12 @@ class HaEntityPicker extends Polymer.Element {
       },
       disabled: Boolean,
     };
+  }
+
+  _computeLabel(label, localize) {
+    return label === undefined
+      ? localize('ui.components.entity.entity-picker.entity')
+      : label;
   }
 
   _computeStates(hass, domainFilter, entityFilter) {

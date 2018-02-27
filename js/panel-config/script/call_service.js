@@ -24,7 +24,7 @@ export default class CallServiceAction extends Component {
     });
   }
 
-  render({ action, hass }) {
+  render({ action, hass, localize }) {
     const { service, data } = action;
 
     return (
@@ -35,7 +35,7 @@ export default class CallServiceAction extends Component {
           onChange={this.serviceChanged}
         />
         <JSONTextArea
-          label="Service Data"
+          label={localize('ui.panel.config.automation.editor.actions.type.service.service_data')}
           value={data}
           onChange={this.serviceDataChanged}
         />
@@ -44,7 +44,6 @@ export default class CallServiceAction extends Component {
   }
 }
 
-CallServiceAction.configKey = 'service';
 CallServiceAction.defaultConfig = {
   alias: '',
   service: '',
