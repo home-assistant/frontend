@@ -197,16 +197,23 @@
       } else {
         this.set(['tooltip', 'yAlign'], 'no-transform');
       }
+
       const title = tooltip.title ? tooltip.title[0] || '' : '';
-      let str1;
+      let titleDate = null;
+      let formattedTitle;
       if (title instanceof Date) {
-        str1 = moment(title).format('L LTS');
+        titleDate = title;
       } else if (title instanceof moment) {
-        str1 = title.format('L LTS');
-      } else {
-        str1 = title;
+        titleDate = title.toDate();
       }
-      this.set(['tooltip', 'title'], str1);
+
+      if (titleDate === null) {
+        formattedTitle = title;
+      } else {
+        formattedTitle = window.hassUtil.formatDateTime(titleDate);
+      }
+      this.set(['tooltip', 'title'], formattedTitle);
+
       const bodyLines = tooltip.body.map(n => n.lines);
 
       // Set Text
