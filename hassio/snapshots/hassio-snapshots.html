@@ -14,7 +14,8 @@
 <dom-module id="hassio-snapshots">
   <template>
     <style include="ha-style hassio-style">
-      paper-checkbox {
+      paper-checkbox,
+      paper-input[type="password"] {
         display: block;
         margin: 4px 0 4px 48px;
       }
@@ -37,7 +38,6 @@
         <paper-card>
           <div class='card-content'>
             <paper-input autofocus label='Name' value='{{snapshotName}}'></paper-input>
-            <paper-input autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
             <label id='lbltype'>Type:</label>
             <paper-radio-group selected='{{snapshotType}}' aria-labelledby='lbltype' on-paper-radio-group-changed='typeChanged'>
               <paper-radio-button name='full'>
@@ -62,6 +62,11 @@
                   [[item.name]]
                 </paper-checkbox>
               </template>
+            </div>
+            <div>
+              Password:
+              <paper-checkbox checked='{{snapshotHasPassword}}'>Password protected</paper-checkbox>
+              <paper-input hidden=[[!snapshotHasPassword]] autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
             </div>
           </div>
           <div class='card-actions'>
@@ -107,6 +112,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       hass: Object,
       snapshotName: String,
       snapshotPassword: String,
+      snapshotHasPassword: Boolean,
       snapshotType: {
         type: String,
         value: 'full',
@@ -166,6 +172,10 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   createSnapshot() {
+    if (this.snapshotHasPassword && this.snapshotPassword && !this.snapshotPassword.length) {
+      this.error = 'Please enter a password.';
+      return;
+    }
     this.creatingSnapshot = true;
     let name = this.snapshotName;
     if (!name || name.length === 0) {
@@ -187,7 +197,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       data = { name: name, folders: folders, addons: addons };
       path = 'hassio/snapshots/new/partial';
     }
-    if (this.snapshotPassword && this.snapshotPassword.length) {
+    if (this.snapshotHasPassword) {
       data.password = this.snapshotPassword;
     }
 
