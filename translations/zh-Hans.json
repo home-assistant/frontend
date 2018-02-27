@@ -331,7 +331,60 @@
                 },
                 "automation": {
                     "caption": "自动化",
-                    "description": "创建和编辑自动化"
+                    "description": "创建和编辑自动化",
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "homeassistant": {
+                                    "shutdown": "关闭"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT"
+                                },
+                                "sun": {
+                                    "sunrise": "日出",
+                                    "sunset": "日落"
+                                },
+                                "time": {
+                                    "label": "时间"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "add": "添加条件",
+                            "duplicate": "复制",
+                            "type": {
+                                "sun": {
+                                    "sunset": "日落"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "add": "添加动作",
+                            "duplicate": "复制",
+                            "delete": "删除",
+                            "delete_confirm": "确定删除？",
+                            "unsupported_action": "不支持的操作: {action}",
+                            "type_select": "动作类型",
+                            "type": {
+                                "delay": {
+                                    "label": "延迟",
+                                    "delay": "延迟"
+                                },
+                                "wait_template": {
+                                    "label": "等待",
+                                    "wait_template": "等待模板",
+                                    "timeout": "超时（可选）"
+                                },
+                                "condition": {
+                                    "label": "条件"
+                                },
+                                "event": {
+                                    "label": "火灾事件"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "脚本",
