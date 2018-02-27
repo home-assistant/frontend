@@ -10,18 +10,18 @@ export default class MQTTTrigger extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ trigger }) {
+  render({ trigger, localize }) {
     const { topic, payload } = trigger;
     return (
       <div>
         <paper-input
-          label="Topic"
+          label={localize('ui.panel.config.automation.editor.triggers.type.mqtt.topic')}
           name="topic"
           value={topic}
           onvalue-changed={this.onChange}
         />
         <paper-input
-          label="Payload (Optional)"
+          label={localize('ui.panel.config.automation.editor.triggers.type.mqtt.payload')}
           name="payload"
           value={payload}
           onvalue-changed={this.onChange}

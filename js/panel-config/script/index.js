@@ -30,7 +30,7 @@ export default class Script extends Component {
     this.props.onChange(script);
   }
 
-  render({ script, hass }) {
+  render({ script, hass, localize }) {
     return (
       <div class="script">
         {script.map((act, idx) => (
@@ -39,10 +39,11 @@ export default class Script extends Component {
             action={act}
             onChange={this.actionChanged}
             hass={hass}
+            localize={localize}
           />))}
         <paper-card>
           <div class='card-actions add-card'>
-            <paper-button onTap={this.addAction}>Add action</paper-button>
+            <paper-button onTap={this.addAction}>{localize('ui.panel.config.automation.editor.actions.add')}</paper-button>
           </div>
         </paper-card>
       </div>

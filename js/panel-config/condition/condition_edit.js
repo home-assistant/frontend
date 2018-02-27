@@ -26,7 +26,7 @@ export default class ConditionRow extends Component {
   }
 
   typeChanged(ev) {
-    const type = ev.target.selectedItem.innerHTML;
+    const type = ev.target.selectedItem.attributes.condition.value;
 
     if (type !== this.props.condition.condition) {
       this.props.onChange(this.props.index, {
@@ -36,14 +36,14 @@ export default class ConditionRow extends Component {
     }
   }
 
-  render({ index, condition, onChange, hass }) {
+  render({ index, condition, onChange, hass, localize }) {
     const Comp = TYPES[condition.condition];
     const selected = OPTIONS.indexOf(condition.condition);
 
     if (!Comp) {
       return (
         <div>
-          Unsupported condition: {condition.condition}
+          {localize('ui.panel.config.automation.editor.conditions.unsupported_condition', 'condition', condition.condition)}
           <pre>{JSON.stringify(condition, null, 2)}</pre>
         </div>
       );
@@ -51,13 +51,13 @@ export default class ConditionRow extends Component {
 
     return (
       <div>
-        <paper-dropdown-menu-light label="Condition Type" no-animations>
+        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.editor.conditions.type_select')} no-animations>
           <paper-listbox
             slot="dropdown-content"
             selected={selected}
             oniron-select={this.typeChanged}
           >
-            {OPTIONS.map(opt => <paper-item>{opt}</paper-item>)}
+            {OPTIONS.map(opt => <paper-item condition={opt}>{localize(`ui.panel.config.automation.editor.conditions.type.${opt}.label`)}</paper-item>)}
           </paper-listbox>
         </paper-dropdown-menu-light>
         <Comp
@@ -65,6 +65,7 @@ export default class ConditionRow extends Component {
           condition={condition}
           onChange={onChange}
           hass={hass}
+          localize={localize}
         />
       </div>
     );

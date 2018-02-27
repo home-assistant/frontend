@@ -110,7 +110,10 @@
 </dom-module>
 
 <script>
-class HaScriptEditor extends window.hassMixins.NavigateMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaScriptEditor extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'ha-script-editor'; }
 
   static get properties() {
@@ -256,6 +259,7 @@ class HaScriptEditor extends window.hassMixins.NavigateMixin(Polymer.Element) {
         onChange: this.configChanged,
         isWide: this.isWide,
         hass: this.hass,
+        localize: this.localize,
       }, this._rendered);
       this._renderScheduled = false;
     });
