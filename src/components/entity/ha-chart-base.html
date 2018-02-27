@@ -259,6 +259,13 @@
       })));
       this.set('unit', this.data.unit);
     }
+    _formatTickValue(value, index, values) {
+      if (values.length === 0) {
+        return value;
+      }
+      const date = new Date(values[index].value);
+      return window.hassUtil.formatTime(date);
+    }
     drawChart() {
       const data = this.data.data;
       const ctx = this.$.chartCanvas;
@@ -318,6 +325,7 @@
           }
         };
         options = Chart.helpers.merge(options, this.data.options);
+        options.scales.xAxes[0].ticks.callback = this._formatTickValue;
         if (this.data.type === 'timeline') {
           // timeline is not zoomable, so dont capture mouse
           this.set('isZoomable', false);
