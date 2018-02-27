@@ -36,7 +36,7 @@
     <paper-card dialog$='[[inDialog]]'
         on-click='cardTapped'
         elevation='[[computeElevation(inDialog)]]'>
-      <div class='header'>[[computeTitle(stateObj, inDialog)]]</div>
+      <div class='header'>[[computeTitle(stateObj)]]</div>
       <div class='content'>
          <state-history-charts
            history-data="[[stateHistory]]"
