@@ -137,14 +137,6 @@
       ];
     }
 
-    connectedCallback() {
-      super.connectedCallback();
-      this.filterChanged(
-        this.filterType, this.entityId, this.startTime, this.endTime,
-        this.cacheConfig, this.localize, this.language
-      );
-    }
-
     disconnectedCallback() {
       if (this._refreshTimeoutId) {
         window.clearInterval(this._refreshTimeoutId);
