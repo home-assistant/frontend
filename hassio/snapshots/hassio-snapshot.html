@@ -147,7 +147,7 @@ class HassioSnapshot extends Polymer.Element {
     const folders =
       this.snapshot.folders.filter(folder => folder.checked).map(folder => folder.slug);
 
-    let data = {
+    const data = {
       homeassistant: this.restoreHass,
       addons: addons,
       folders: folders
