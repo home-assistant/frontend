@@ -18,7 +18,7 @@ export default class StateCondition extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ condition, hass }) {
+  render({ condition, hass, localize }) {
     const { entity_id, state } = condition;
     const cndFor = condition.for;
     return (
@@ -30,7 +30,7 @@ export default class StateCondition extends Component {
           allowCustomEntity
         />
         <paper-input
-          label="State"
+          label={localize('ui.panel.config.automation.editor.conditions.type.state.state')}
           name="state"
           value={state}
           onvalue-changed={this.onChange}

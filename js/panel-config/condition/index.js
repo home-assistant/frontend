@@ -30,7 +30,7 @@ export default class Condition extends Component {
     this.props.onChange(condition);
   }
 
-  render({ condition, hass }) {
+  render({ condition, hass, localize }) {
     return (
       <div class="triggers">
         {condition.map((cnd, idx) => (
@@ -39,10 +39,11 @@ export default class Condition extends Component {
             condition={cnd}
             onChange={this.conditionChanged}
             hass={hass}
+            localize={localize}
           />))}
         <paper-card>
           <div class='card-actions add-card'>
-            <paper-button onTap={this.addCondition}>Add condition</paper-button>
+            <paper-button onTap={this.addCondition}>{localize('ui.panel.config.automation.editor.conditions.add')}</paper-button>
           </div>
         </paper-card>
       </div>
