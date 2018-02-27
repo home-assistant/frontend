@@ -43,16 +43,21 @@ class MoreInfoContent extends Polymer.Element {
 
   stateObjChanged(stateObj, hass) {
     if (!stateObj || !hass) {
-      // If root has lastChild, set 'isVisible' attribute of that child to false.
       if (this.lastChild) {
-        this.lastChild.isVisible = false;
+        this._detachedChild = this.lastChild;
+        // Detach child to prevent it from doing work.
+        this.removeChild(this.lastChild);
       }
-    } else {
-      window.hassUtil.dynamicContentUpdater(
-        this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
-        { hass: hass, stateObj: stateObj, isVisible: true }
-      );
+      return;
     }
+    if (this._detachedChild) {
+      this.appendChild(this._detachedChild);
+      this._detachedChild = null;
+    }
+    window.hassUtil.dynamicContentUpdater(
+      this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
+      { hass: hass, stateObj: stateObj }
+    );
   }
 }
 
