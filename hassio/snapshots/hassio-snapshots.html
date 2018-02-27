@@ -175,6 +175,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   createSnapshot() {
+    this.error = '';
     if (this.snapshotHasPassword && !this.snapshotPassword.length) {
       this.error = 'Please enter a password.';
       return;
@@ -207,7 +208,6 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.hass.callApi('post', path, data)
       .then(() => {
         this.creatingSnapshot = false;
-        this.error = '';
         this.fire('hass-api-called', { success: true });
       }, (error) => {
         this.creatingSnapshot = false;
