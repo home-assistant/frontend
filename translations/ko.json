@@ -10,7 +10,7 @@
         "dev-services": "서비스",
         "dev-states": "상태",
         "dev-events": "이벤트",
-        "dev-templates": "서식",
+        "dev-templates": "템플릿",
         "dev-mqtt": "MQTT",
         "dev-info": "정보"
     },
@@ -331,7 +331,161 @@
                 },
                 "automation": {
                     "caption": "자동화",
-                    "description": "자동화를 만들고 편집합니다"
+                    "description": "자동화를 만들고 편집합니다",
+                    "picker": {
+                        "header": "자동화 편집기",
+                        "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집 할 수 있습니다. [안내] (https:\/\/home-assistant.io\/docs\/automation\/editor\/)를 읽고 Home Assistant 를 올바르게 구성했는지 확인하세요.",
+                        "pick_automation": "편집 할 자동화 선택",
+                        "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
+                        "add_automation": "자동화 추가"
+                    },
+                    "editor": {
+                        "introduction": "자동화를 사용하여 집에 생기를 불어넣으세요",
+                        "default_name": "새로운 자동화",
+                        "save": "저장",
+                        "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 정말 이 페이지를 떠나시겠습니까?",
+                        "alias": "이름",
+                        "triggers": {
+                            "header": "트리거",
+                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다. \n\n [트리거에 대해 자세히 알아보기] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "트리거 추가",
+                            "duplicate": "복제",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "unsupported_platform": "미지원 플랫폼: {platform}",
+                            "type_select": "트리거 유형",
+                            "type": {
+                                "event": {
+                                    "label": "이벤트",
+                                    "event_type": "이벤트 유형",
+                                    "event_data": "이벤트 데이터"
+                                },
+                                "state": {
+                                    "label": "상태",
+                                    "from": "상태 변화 이후",
+                                    "to": "상태 변화 이전"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "이벤트:",
+                                    "start": "시작",
+                                    "shutdown": "종료"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "토픽",
+                                    "payload": "페이로드 (선택 사항)"
+                                },
+                                "numeric_state": {
+                                    "label": "숫자 상태",
+                                    "above": "이상",
+                                    "below": "이하",
+                                    "value_template": "템플릿 값 (선택 사항)"
+                                },
+                                "sun": {
+                                    "label": "태양",
+                                    "event": "이벤트:",
+                                    "sunrise": "해돋이",
+                                    "sunset": "해넘이",
+                                    "offset": "오프셋 (선택 사항)"
+                                },
+                                "template": {
+                                    "label": "템플릿",
+                                    "value_template": "템플릿 값"
+                                },
+                                "time": {
+                                    "label": "시간",
+                                    "at": "시각"
+                                },
+                                "zone": {
+                                    "label": "구역",
+                                    "entity": "위치기반 구성요소",
+                                    "zone": "구역",
+                                    "event": "이벤트:",
+                                    "enter": "입장",
+                                    "leave": "퇴장"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "조건",
+                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다. \n\n [조건에 대해 자세히 알아보기] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "조건 추가",
+                            "duplicate": "복제",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "unsupported_condition": "미지원 조건: {condition}",
+                            "type_select": "조건 유형",
+                            "type": {
+                                "state": {
+                                    "label": "상태",
+                                    "state": "상태"
+                                },
+                                "numeric_state": {
+                                    "label": "숫자 상태",
+                                    "above": "이상",
+                                    "below": "이하",
+                                    "value_template": "템플릿 값 (선택 사항)"
+                                },
+                                "sun": {
+                                    "label": "태양",
+                                    "before": "이전:",
+                                    "after": "이후:",
+                                    "before_offset": "이전 오프셋 (선택 사항)",
+                                    "after_offset": "이후 오프셋 (선택 사항)",
+                                    "sunrise": "해돋이",
+                                    "sunset": "해넘이"
+                                },
+                                "template": {
+                                    "label": "템플릿",
+                                    "value_template": "템플릿 값"
+                                },
+                                "time": {
+                                    "label": "시간",
+                                    "after": "이후",
+                                    "before": "이전"
+                                },
+                                "zone": {
+                                    "label": "구역",
+                                    "entity": "위치기반 구성요소",
+                                    "zone": "구역"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "동작",
+                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant가 수행할 작업입니다.\n\n [동작에 대해 자세히 알아보기] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "동작 추가",
+                            "duplicate": "복제",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "unsupported_action": "미지원 동작: {action}",
+                            "type_select": "동작 유형",
+                            "type": {
+                                "service": {
+                                    "label": "서비스 호출",
+                                    "service_data": "서비스 데이터"
+                                },
+                                "delay": {
+                                    "label": "지연",
+                                    "delay": "지연 시간"
+                                },
+                                "wait_template": {
+                                    "label": "대기",
+                                    "wait_template": "대기 템플릿",
+                                    "timeout": "제한 시간 (선택 사항)"
+                                },
+                                "condition": {
+                                    "label": "조건"
+                                },
+                                "event": {
+                                    "label": "이벤트 발생",
+                                    "event": "이벤트:",
+                                    "service_data": "서비스 데이터"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "스크립트",
@@ -367,6 +521,16 @@
             },
             "persistent_notification": {
                 "dismiss": "해제"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "구성요소"
+                }
+            },
+            "service-picker": {
+                "service": "서비스"
             }
         }
     },

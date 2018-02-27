@@ -277,8 +277,69 @@
                 "delete_button": "Ta bort"
             },
             "config": {
+                "header": "Konfigurera Home Assistant",
+                "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Allt är inte möjligt att ställa in från användargränssnittet ännu, men vi jobbar på det.",
+                "core": {
+                    "caption": "Allmänt",
+                    "description": "Kontrollera din konfiguration och hantera servern.",
+                    "section": {
+                        "core": {
+                            "header": "Konfiguration och serverhantering",
+                            "introduction": "Att ändra din konfiguration kan vara en tröttsam process. Vi vet. Den här avdelningen ska försöka göra ditt liv lite enklare.",
+                            "validation": {
+                                "heading": "Validering av konfiguration",
+                                "introduction": "Kontrollera din konfiguration om du nyligen gjort ändringar och du vill säkerställa att den fortfarande är giltig",
+                                "check_config": "Kontrollera konfigurationen",
+                                "valid": "Konfigurationen är giltig!",
+                                "invalid": "Konfigurationen är inte giltig"
+                            },
+                            "reloading": {
+                                "heading": "Konfigurationen uppdateras",
+                                "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"Uppdatera\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
+                                "core": "Uppdatera core",
+                                "group": "Uppdatera grupper",
+                                "automation": "Uppdatera automationer",
+                                "script": "Uppdatera skript"
+                            },
+                            "server_management": {
+                                "heading": "Serverhantering",
+                                "introduction": "Hantera din Home Assistant-server... från Home Assistant.",
+                                "restart": "Starta om",
+                                "stop": "Stoppa"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfigurera push-notiser",
+                            "introduction": "Aktivera den här inställningen för att ta emot push-notiser på den här enheten",
+                            "push_notifications": "Push-notiser"
+                        },
+                        "translation": {
+                            "header": "Välj ett språk",
+                            "introduction": "Välj ett språk för Home Assistants gränssnitt på denna enhet",
+                            "language": "Språk"
+                        },
+                        "themes": {
+                            "header": "Välj ett tema",
+                            "introduction": "Välj \"Backend-selected\" för att använda det tema som \"backend\" väljer, eller välj ett tema att använda på den här enheten.",
+                            "theme": "Tema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Anpassning",
+                    "description": "Anpassa dina enheter"
+                },
+                "automation": {
+                    "caption": "Automation",
+                    "description": "Skapa och redigera automationer"
+                },
+                "script": {
+                    "caption": "Skript",
+                    "description": "Skapa och redigera skript"
+                },
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "description": "Hantera ditt Z-Wave-nätverk"
                 }
             }
         },
@@ -299,6 +360,14 @@
             "password": "Lösenord",
             "remember": "Kom ihåg",
             "log_in": "Logga in"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Bilden är inte tillgänglig"
+            },
+            "persistent_notification": {
+                "dismiss": "Avfärda"
+            }
         }
     },
     "domain": {
@@ -337,5 +406,12 @@
         "updater": "Uppdaterare",
         "weblink": "Webblänk",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Luftfuktighet",
+            "visibility": "Sikt",
+            "wind_speed": "Vindhastighet"
+        }
     }
 }
