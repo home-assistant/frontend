@@ -21,7 +21,7 @@
           </div>
         </paper-card>
       </template>
-      <template is='dom-repeat' items='[[addons]]' as='addon'>
+      <template is='dom-repeat' items='[[addons]]' as='addon' sort='sortAddons'>
         <paper-card on-click='addonTapped'>
           <div class='card-content'>
             <hassio-card-content
@@ -47,6 +47,10 @@ class HassioAddons extends window.hassMixins.EventsMixin(Polymer.Element) {
       hass: Object,
       addons: Array,
     };
+  }
+
+  sortAddons(a, b) {
+    return a.name < b.name ? -1 : 1;
   }
 
   computeIcon(addon) {
