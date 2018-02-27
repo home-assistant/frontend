@@ -32,7 +32,7 @@ export default class Trigger extends Component {
     this.props.onChange(trigger);
   }
 
-  render({ trigger, hass }) {
+  render({ trigger, hass, localize }) {
     return (
       <div class="triggers">
         {trigger.map((trg, idx) => (
@@ -41,10 +41,11 @@ export default class Trigger extends Component {
             trigger={trg}
             onChange={this.triggerChanged}
             hass={hass}
+            localize={localize}
           />))}
         <paper-card>
           <div class='card-actions add-card'>
-            <paper-button onTap={this.addTrigger}>Add trigger</paper-button>
+            <paper-button onTap={this.addTrigger}>{localize('ui.panel.config.automation.editor.triggers.add')}</paper-button>
           </div>
         </paper-card>
       </div>

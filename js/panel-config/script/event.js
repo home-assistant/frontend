@@ -18,19 +18,19 @@ export default class EventAction extends Component {
     });
   }
 
-  render({ action }) {
+  render({ action, localize }) {
     /* eslint-disable camelcase */
     const { event, event_data } = action;
     return (
       <div>
         <paper-input
-          label="Event"
+          label={localize('ui.panel.config.automation.editor.actions.type.event.event')}
           name="event"
           value={event}
           onvalue-changed={this.onChange}
         />
         <JSONTextArea
-          label="Service Data"
+          label={localize('ui.panel.config.automation.editor.actions.type.event.service_data')}
           value={event_data}
           onChange={this.serviceDataChanged}
         />
@@ -39,7 +39,6 @@ export default class EventAction extends Component {
   }
 }
 
-EventAction.configKey = 'event';
 EventAction.defaultConfig = {
   event: '',
   event_data: {},

@@ -17,6 +17,7 @@
 
 <link rel='import' href='../../../src/components/entity/ha-entity-picker.html'>
 <link rel='import' href='../../../src/components/ha-combo-box.html'>
+<link rel='import' href='../../../src/components/ha-markdown.html'>
 <link rel='import' href='../../../src/components/ha-service-picker.html'>
 <link rel='import' href='../../../src/layouts/ha-app-layout.html'>
 <link rel='import' href='../../../src/util/hass-mixins.html'>
@@ -89,7 +90,7 @@
             icon='mdi:arrow-left'
             on-click='backTapped'
           ></paper-icon-button>
-          <div main-title>Automation [[name]]</div>
+          <div main-title>[[name]]</div>
         </app-toolbar>
       </app-header>
 
@@ -103,7 +104,7 @@
         is-wide$='[[isWide]]'
         dirty$='[[dirty]]'
         icon='mdi:content-save'
-        title='Save'
+        title="[[localize('ui.panel.config.automation.editor.save')]]"
         on-click='saveAutomation'
       ></paper-fab>
     </ha-app-layout>
@@ -112,7 +113,12 @@
 </dom-module>
 
 <script>
-class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaAutomationEditor extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-automation-editor'; }
 
   static get properties() {
@@ -158,7 +164,7 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
 
       name: {
         type: String,
-        computed: 'computeName(automation)'
+        computed: 'computeName(automation, localize)'
       },
 
       isWide: {
@@ -231,7 +237,7 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     }
     this.dirty = false;
     this.config = {
-      alias: 'New Automation',
+      alias: this.localize('ui.panel.config.automation.editor.default_name'),
       trigger: [
         { platform: 'state' },
       ],
@@ -246,7 +252,7 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
   backTapped() {
     if (this.dirty &&
         // eslint-disable-next-line
-        !confirm('You have unsaved changes. Are you sure you want to leave?')) {
+        !confirm(this.localize('ui.panel.config.automation.editor.unsaved_confirm'))) {
       return;
     }
     history.back();
@@ -261,6 +267,7 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
         onChange: this.configChanged,
         isWide: this.isWide,
         hass: this.hass,
+        localize: this.localize,
       }, this._rendered);
       this._renderScheduled = false;
     });
@@ -281,8 +288,10 @@ class HaAutomationEditor extends window.hassMixins.EventsMixin(Polymer.Element) 
     }.bind(this));
   }
 
-  computeName(automation) {
-    return automation && window.hassUtil.computeStateName(automation);
+  computeName(automation, localize) {
+    return automation
+      ? window.hassUtil.computeStateName(automation)
+      : localize('ui.panel.config.automation.editor.default_name');
   }
 }
 

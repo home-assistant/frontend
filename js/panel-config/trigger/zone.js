@@ -40,12 +40,12 @@ export default class ZoneTrigger extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ trigger, hass }) {
+  render({ trigger, hass, localize }) {
     const { entity_id, zone, event } = trigger;
     return (
       <div>
         <ha-entity-picker
-          label='Entity with location'
+          label={localize('ui.panel.config.automation.editor.triggers.type.zone.entity')}
           value={entity_id}
           onChange={this.entityPicked}
           hass={hass}
@@ -53,21 +53,21 @@ export default class ZoneTrigger extends Component {
           entityFilter={zoneAndLocationFilter}
         />
         <ha-entity-picker
-          label='Zone'
+          label={localize('ui.panel.config.automation.editor.triggers.type.zone.zone')}
           value={zone}
           onChange={this.zonePicked}
           hass={hass}
           allowCustomEntity
           domainFilter='zone'
         />
-        <label id="eventlabel">Event:</label>
+        <label id="eventlabel">{localize('ui.panel.config.automation.editor.triggers.type.zone.event')}</label>
         <paper-radio-group
           selected={event}
           aria-labelledby="eventlabel"
           onpaper-radio-group-changed={this.radioGroupPicked}
         >
-          <paper-radio-button name="enter">Enter</paper-radio-button>
-          <paper-radio-button name="leave">Leave</paper-radio-button>
+          <paper-radio-button name="enter">{localize('ui.panel.config.automation.editor.triggers.type.zone.enter')}</paper-radio-button>
+          <paper-radio-button name="leave">{localize('ui.panel.config.automation.editor.triggers.type.zone.leave')}</paper-radio-button>
         </paper-radio-group>
       </div>
     );

@@ -23,45 +23,45 @@ export default class SunCondition extends Component {
     this.props.onChange(this.props.index, condition);
   }
 
-  render({ condition }) {
+  render({ condition, localize }) {
     /* eslint-disable camelcase */
     const {
       after, after_offset, before, before_offset
     } = condition;
     return (
       <div>
-        <label id="beforelabel">Before:</label>
+        <label id="beforelabel">{localize('ui.panel.config.automation.editor.conditions.type.sun.before')}</label>
         <paper-radio-group
           allow-empty-selection
           selected={before}
           aria-labelledby="beforelabel"
           onpaper-radio-group-changed={this.beforePicked}
         >
-          <paper-radio-button name="sunrise">Sunrise</paper-radio-button>
-          <paper-radio-button name="sunset">Sunset</paper-radio-button>
+          <paper-radio-button name="sunrise">{localize('ui.panel.config.automation.editor.conditions.type.sun.sunrise')}</paper-radio-button>
+          <paper-radio-button name="sunset">{localize('ui.panel.config.automation.editor.conditions.type.sun.sunset')}</paper-radio-button>
         </paper-radio-group>
 
         <paper-input
-          label="Before offset (optional)"
+          label={localize('ui.panel.config.automation.editor.conditions.type.sun.before_offset')}
           name="before_offset"
           value={before_offset}
           onvalue-changed={this.onChange}
           disabled={before === undefined}
         />
 
-        <label id="afterlabel">After:</label>
+        <label id="afterlabel">{localize('ui.panel.config.automation.editor.conditions.type.sun.after')}</label>
         <paper-radio-group
           allow-empty-selection
           selected={after}
           aria-labelledby="afterlabel"
           onpaper-radio-group-changed={this.afterPicked}
         >
-          <paper-radio-button name="sunrise">Sunrise</paper-radio-button>
-          <paper-radio-button name="sunset">Sunset</paper-radio-button>
+          <paper-radio-button name="sunrise">{localize('ui.panel.config.automation.editor.conditions.type.sun.sunrise')}</paper-radio-button>
+          <paper-radio-button name="sunset">{localize('ui.panel.config.automation.editor.conditions.type.sun.sunset')}</paper-radio-button>
         </paper-radio-group>
 
         <paper-input
-          label="After offset (optional)"
+          label={localize('ui.panel.config.automation.editor.conditions.type.sun.after_offset')}
           name="after_offset"
           value={after_offset}
           onvalue-changed={this.onChange}

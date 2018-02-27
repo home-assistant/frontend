@@ -32,12 +32,12 @@ export default class ZoneCondition extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ condition, hass }) {
+  render({ condition, hass, localize }) {
     const { entity_id, zone } = condition;
     return (
       <div>
         <ha-entity-picker
-          label='Entity with location'
+          label={localize('ui.panel.config.automation.editor.conditions.type.zone.entity')}
           value={entity_id}
           onChange={this.entityPicked}
           hass={hass}
@@ -45,7 +45,7 @@ export default class ZoneCondition extends Component {
           entityFilter={zoneAndLocationFilter}
         />
         <ha-entity-picker
-          label='Zone'
+          label={localize('ui.panel.config.automation.editor.conditions.type.zone.zone')}
           value={zone}
           onChange={this.zonePicked}
           hass={hass}

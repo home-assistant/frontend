@@ -32,7 +32,7 @@ export default class TriggerEdit extends Component {
   }
 
   typeChanged(ev) {
-    const type = ev.target.selectedItem.innerHTML;
+    const type = ev.target.selectedItem.attributes.platform.value;
 
     if (type !== this.props.trigger.platform) {
       this.props.onChange(this.props.index, {
@@ -42,27 +42,27 @@ export default class TriggerEdit extends Component {
     }
   }
 
-  render({ index, trigger, onChange, hass }) {
+  render({ index, trigger, onChange, hass, localize }) {
     const Comp = TYPES[trigger.platform];
     const selected = OPTIONS.indexOf(trigger.platform);
 
     if (!Comp) {
       return (
         <div>
-          Unsupported platform: {trigger.platform}
+          {localize('ui.panel.config.automation.editor.triggers.unsupported_platform', 'platform', trigger.platform)}
           <pre>{JSON.stringify(trigger, null, 2)}</pre>
         </div>
       );
     }
     return (
       <div>
-        <paper-dropdown-menu-light label="Trigger Type" no-animations>
+        <paper-dropdown-menu-light label={localize('ui.panel.config.automation.editor.triggers.type_select')} no-animations>
           <paper-listbox
             slot="dropdown-content"
             selected={selected}
             oniron-select={this.typeChanged}
           >
-            {OPTIONS.map(opt => <paper-item>{opt}</paper-item>)}
+            {OPTIONS.map(opt => <paper-item platform={opt}>{localize(`ui.panel.config.automation.editor.triggers.type.${opt}.label`)}</paper-item>)}
           </paper-listbox>
         </paper-dropdown-menu-light>
         <Comp
@@ -70,6 +70,7 @@ export default class TriggerEdit extends Component {
           trigger={trigger}
           onChange={onChange}
           hass={hass}
+          localize={localize}
         />
       </div>
     );
