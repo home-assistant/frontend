@@ -40,6 +40,16 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(Polymer.Element) {
     };
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.isVisible = true;
+  }
+
+  disconnectedCallback() {
+    this.isVisible = false;
+    super.disconnectedCallback();
+  }
+
   imageLoaded() {
     this.fire('iron-resize');
   }
