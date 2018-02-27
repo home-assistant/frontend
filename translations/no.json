@@ -288,7 +288,7 @@
                             "introduction": "Endringer i konfigurasjonen kan være en slitsom prosess, vi vet det. Denne delen vil forsøke å gjøre livet ditt litt lettere.",
                             "validation": {
                                 "heading": "Konfigurasjonsvalidering",
-                                "introduction": "Sjekk din konfigurasjon hvis du nylig har gjort noen endringer og ønsker å være sikker på at den er gyldig ved å validere den",
+                                "introduction": "Sjekk konfigurasjon din hvis du nylig har gjort noen endringer og ønsker å være sikker på at den er gyldig ved å kjøre en valideringstest",
                                 "check_config": "Sjekk konfigurasjonen",
                                 "valid": "Konfigurasjonen er gyldig!",
                                 "invalid": "Konfigurasjonen er ikke gyldig"

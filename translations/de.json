@@ -10,7 +10,7 @@
         "dev-services": "Dienste",
         "dev-states": "Zustände",
         "dev-events": "Ereignisse",
-        "dev-templates": "Vorlagen",
+        "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
         "dev-info": "Info"
     },
@@ -303,7 +303,7 @@
                             },
                             "server_management": {
                                 "heading": "Serververwaltung",
-                                "introduction": "Verwalte Home Assistant Server… von Home Assistant aus.",
+                                "introduction": "Verwalte den Home Assistant Server",
                                 "restart": "Neu starten",
                                 "stop": "Stoppen"
                             }
@@ -331,7 +331,161 @@
                 },
                 "automation": {
                     "caption": "Automatisierung",
-                    "description": "Automatisierungen erstellen und bearbeiten"
+                    "description": "Automatisierungen erstellen und bearbeiten",
+                    "picker": {
+                        "header": "Automatisierungseditor",
+                        "introduction": "Der Automatisierungs-Editor erlaubt es dir Automatisierungen zu erstellen und zu bearbeiten. Bitte lies [die Instruktionen](https:\/\/home-assistant.io\/docs\/automation\/editor\/) um sicher zu stellen, dass du Home Assistant richtig konfiguriert hast.",
+                        "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
+                        "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
+                        "add_automation": "Automatisierung hinzufügen"
+                    },
+                    "editor": {
+                        "introduction": "Benutze Automatisierungen, um deinem zu Hause Leben einzuhauchen",
+                        "default_name": "Neue Automatisierung",
+                        "save": "Speichern",
+                        "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?",
+                        "alias": "Name",
+                        "triggers": {
+                            "header": "Auslöser",
+                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist mögliche mehrere Auslöser für die selbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Auslöser hinzufügen",
+                            "duplicate": "Duplizieren",
+                            "delete": "Löschen",
+                            "delete_confirm": "Möchtest du das wirklich löschen?",
+                            "unsupported_platform": "Nicht unterstützte Plattform: {platform}",
+                            "type_select": "Auslösertyp",
+                            "type": {
+                                "event": {
+                                    "label": "Ereignis",
+                                    "event_type": "Ereignistyp",
+                                    "event_data": "Ereignisdaten"
+                                },
+                                "state": {
+                                    "label": "Zustand",
+                                    "from": "Von",
+                                    "to": "Zu"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Ereignis:",
+                                    "start": "Start",
+                                    "shutdown": "Beenden"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Thema",
+                                    "payload": "Payload (optional)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerischer Zustand",
+                                    "above": "Über",
+                                    "below": "Unter",
+                                    "value_template": "Wert Template (optional)"
+                                },
+                                "sun": {
+                                    "label": "Sonne",
+                                    "event": "Ereignis:",
+                                    "sunrise": "Sonnenaufgang",
+                                    "sunset": "Sonnenuntergang",
+                                    "offset": "Versatz (optional)"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Wert Template"
+                                },
+                                "time": {
+                                    "label": "Zeit",
+                                    "at": "Um"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entity mit Standort",
+                                    "zone": "Zone",
+                                    "event": "Ereignis:",
+                                    "enter": "Betreten",
+                                    "leave": "Verlassen"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Bedingungen",
+                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, dass ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.\n\n[Erfahre mehr über Bedingungen.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Bedingung hinzufügen",
+                            "duplicate": "Duplizieren",
+                            "delete": "Löschen",
+                            "delete_confirm": "Möchtest du das wirklich löschen?",
+                            "unsupported_condition": "Nicht unterstützte Bedingung: {condition}",
+                            "type_select": "Bedingungstyp",
+                            "type": {
+                                "state": {
+                                    "label": "Zustand",
+                                    "state": "Zustand"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerischer Zustand",
+                                    "above": "Über",
+                                    "below": "Unter",
+                                    "value_template": "Wert Template (optional)"
+                                },
+                                "sun": {
+                                    "label": "Sonne",
+                                    "before": "Vor:",
+                                    "after": "Nach:",
+                                    "before_offset": "Vor Versatz (optional)",
+                                    "after_offset": "Nach Versatz (optional)",
+                                    "sunrise": "Sonnenaufgang",
+                                    "sunset": "Sonnenuntergang"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Wert Template"
+                                },
+                                "time": {
+                                    "label": "Zeit",
+                                    "after": "Nach",
+                                    "before": "Vor"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entity mit Standort",
+                                    "zone": "Zone"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Aktionen",
+                            "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.\n\n[Erfahre mehr über Aktionen.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Aktion hinzufügen",
+                            "duplicate": "Duplizieren",
+                            "delete": "Löschen",
+                            "delete_confirm": "Möchtest du das wirklich löschen?",
+                            "unsupported_action": "Nicht unterstützte Aktion: {action}",
+                            "type_select": "Aktionstyp",
+                            "type": {
+                                "service": {
+                                    "label": "Dienst ausführen",
+                                    "service_data": "Dienstdaten"
+                                },
+                                "delay": {
+                                    "label": "Verzögerung",
+                                    "delay": "Verzögerung"
+                                },
+                                "wait_template": {
+                                    "label": "Warten",
+                                    "wait_template": "Warten Template",
+                                    "timeout": "Timeout (optional)"
+                                },
+                                "condition": {
+                                    "label": "Bedingung"
+                                },
+                                "event": {
+                                    "label": "Ereignis auslösen",
+                                    "event": "Ereignis:",
+                                    "service_data": "Dienstdaten"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skript",
@@ -367,6 +521,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Ausblenden"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entity"
+                }
+            },
+            "service-picker": {
+                "service": "Dienst"
             }
         }
     },
