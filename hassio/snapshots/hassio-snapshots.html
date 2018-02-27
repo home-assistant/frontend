@@ -110,7 +110,10 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get properties() {
     return {
       hass: Object,
-      snapshotName: String,
+      snapshotName: {
+        type: String,
+        value: '',
+      },
       snapshotPassword: {
         type: String,
         value: '',
@@ -182,7 +185,7 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     }
     this.creatingSnapshot = true;
     let name = this.snapshotName;
-    if (!name || name.length === 0) {
+    if (!name.length) {
       name = new Date().toLocaleDateString(navigator.language, {
         weekday: 'long',
         year: 'numeric',
