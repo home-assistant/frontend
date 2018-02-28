@@ -10,6 +10,11 @@
 <dom-module id='more-info-alarm_control_panel'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
+    <style>
+      paper-button {
+        text-align: center;
+      }
+    </style>
 
     <div class='layout horizontal'>
       <paper-input
@@ -30,11 +35,23 @@
       <paper-button
         on-click='handleHomeTap'
         hidden$='[[!armHomeButtonVisible]]'
-        disabled=[[!codeValid]]>Arm Home</paper-button>
+        disabled='[[!codeValid]]'
+      >Arm Home</paper-button>
       <paper-button
         on-click='handleAwayTap'
         hidden$='[[!armAwayButtonVisible]]'
-        disabled='[[!codeValid]]'>Arm Away</paper-button>
+        disabled='[[!codeValid]]'
+      >Arm Away</paper-button>
+      <paper-button
+        on-tap='handleNightTap'
+        hidden$='[[!armNightButtonVisible]]'
+        disabled='[[!codeValid]]'
+      >Arm Night</paper-button>
+      <paper-button
+        on-tap='handleCustomBypassTap'
+        hidden$='[[!armCustomBypassButtonVisible]]'
+        disabled='[[!codeValid]]'
+      >Arm Custom Bypass</paper-button>
     </div>
   </template>
 </dom-module>
@@ -66,6 +83,14 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
         value: false,
       },
       armAwayButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
+      armNightButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
+      armCustomBypassButtonVisible: {
         type: Boolean,
         value: false,
       },
@@ -117,6 +142,8 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
         newVal.state === 'triggered');
       this.armHomeButtonVisible = newVal.state === 'disarmed';
       this.armAwayButtonVisible = newVal.state === 'disarmed';
+      this.armNightButtonVisible = newVal.state === 'disarmed';
+      this.armCustomBypassButtonVisible = newVal.state === 'disarmed';
     }
     if (oldVal) {
       setTimeout(() => {
@@ -135,6 +162,14 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
 
   handleAwayTap() {
     this.callService('alarm_arm_away', { code: this.enteredCode });
+  }
+
+  handleNightTap() {
+    this.callService('alarm_arm_night', { code: this.enteredCode });
+  }
+
+  handleCustomBypassTap() {
+    this.callService('alarm_arm_custom_bypass', { code: this.enteredCode });
   }
 
   callService(service, data) {
