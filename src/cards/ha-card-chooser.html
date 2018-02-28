@@ -38,6 +38,7 @@ class HaCardChooser extends Polymer.Element {
         this.observer.unobserve(this);
         this.observer = null;
       }
+      this.style.height = '';
       this._updateCard(newData);
       return;
     }
