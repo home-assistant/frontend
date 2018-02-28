@@ -66,7 +66,7 @@
             <div>
               Password:
               <paper-checkbox checked='{{snapshotHasPassword}}'>Password protected</paper-checkbox>
-              <paper-input hidden='[[!snapshotHasPassword]]' autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
+              <paper-input hidden='[[!snapshotHasPassword]]' label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
             </div>
             <template is='dom-if' if='[[error]]'>
               <p class='error'>[[error]]</p>
