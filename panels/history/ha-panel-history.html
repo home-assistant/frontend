@@ -14,6 +14,7 @@
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/data/ha-state-history-data.html">
 <link rel="import" href="../../src/resources/ha-style.html">
+<link rel="import" href="../../src/resources/ha-date-picker-style.html">
 <link rel='import' href='../../src/util/hass-mixins.html'>
 
 <dom-module id="ha-panel-history">
@@ -24,10 +25,6 @@
       }
 
       vaadin-date-picker {
-        --vaadin-date-picker-clear-icon: {
-          display: none;
-        }
-        margin-bottom: 24px;
         margin-right: 16px;
         max-width: 200px;
       }
@@ -64,6 +61,7 @@
             value='{{_currentDate}}'
             label="[[localize('ui.panel.history.showing_entries')]]"
             disabled='[[isLoadingData]]'
+            required
           ></vaadin-date-picker>
 
           <paper-dropdown-menu
