@@ -158,7 +158,7 @@
     filterChangedDebouncer(...args) {
       this._debounceFilterChanged = Polymer.Debouncer.debounce(
         this._debounceFilterChanged,
-        Polymer.Async.timeOut.after(10),
+        Polymer.Async.timeOut.after(0),
         () => {
           this.filterChanged(...args);
         }

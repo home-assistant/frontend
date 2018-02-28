@@ -46,7 +46,7 @@
       filter-type='[[_filterType]]'
       start-time='[[_computeStartTime(_currentDate)]]'
       end-time='[[endTime]]'
-      data='{{stateHistoryInput}}'
+      data='{{stateHistory}}'
       is-loading='{{isLoadingData}}'
     ></ha-state-history-data>
     <app-header-layout has-scrolling-region>
@@ -83,7 +83,7 @@
         </div>
         <state-history-charts
           hass='[[hass]]'
-          history-data="[[stateHistoryOutput]]"
+          history-data="[[stateHistory]]"
           is-loading-data="[[isLoadingData]]"
           end-time="[[endTime]]"
           no-single>
@@ -115,13 +115,7 @@ class HaPanelHistory extends window.hassMixins.LocalizeMixin(Polymer.Element) {
         value: false,
       },
 
-      stateHistoryInput: {
-        type: Object,
-        value: null,
-        observer: 'stateHistoryObserver'
-      },
-
-      stateHistoryOutput: {
+      stateHistory: {
         type: Object,
         value: null,
       },
@@ -198,15 +192,6 @@ class HaPanelHistory extends window.hassMixins.LocalizeMixin(Polymer.Element) {
         return 7;
       default: return 1;
     }
-  }
-
-  stateHistoryObserver(newVal) {
-    setTimeout(() => {
-      if (newVal !== this.stateHistoryOutput) {
-        // Data did change
-        this.stateHistoryOutput = newVal;
-      }
-    }, 1);
   }
 }
 
