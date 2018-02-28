@@ -70,6 +70,9 @@
         margin-right: 6px;
         width: 10px;
       }
+      paper-icon-button {
+        color: var(--secondary-text-color);
+      }
     </style>
     <template is="dom-if" if="[[unit]]">
       <div class="chartHeader">
@@ -87,7 +90,7 @@
         <template is="dom-if" if="[[isZoomable]]">
           <div class="chartZoomInline">
             <paper-icon-button
-              icon='mdi:arrow-expand-all'
+              icon='mdi:image-filter-center-focus'
               on-click='resetZoom'
             ></paper-icon-button>
           </div>
