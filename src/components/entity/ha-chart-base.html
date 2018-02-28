@@ -144,7 +144,7 @@
         yPadding: '0'
       });
       if (!this._chart) {
-        this.onPropsChange();
+        requestAnimationFrame(() => requestAnimationFrame(() => this.onPropsChange()));
       }
       this._resizeListener = () => {
         this._debouncer = Polymer.Debouncer.debounce(
