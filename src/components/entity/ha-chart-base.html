@@ -200,16 +200,23 @@
       } else {
         this.set(['tooltip', 'yAlign'], 'no-transform');
       }
+
       const title = tooltip.title ? tooltip.title[0] || '' : '';
-      let str1;
+      let titleDate = null;
+      let formattedTitle;
       if (title instanceof Date) {
-        str1 = moment(title).format('L LTS');
+        titleDate = title;
       } else if (title instanceof moment) {
-        str1 = title.format('L LTS');
-      } else {
-        str1 = title;
+        titleDate = title.toDate();
       }
-      this.set(['tooltip', 'title'], str1);
+
+      if (titleDate === null) {
+        formattedTitle = title;
+      } else {
+        formattedTitle = window.hassUtil.formatDateTime(titleDate);
+      }
+      this.set(['tooltip', 'title'], formattedTitle);
+
       const bodyLines = tooltip.body.map(n => n.lines);
 
       // Set Text
@@ -261,6 +268,13 @@
         hidden: chart.isDatasetVisible(i)
       })));
       this.set('unit', this.data.unit);
+    }
+    _formatTickValue(value, index, values) {
+      if (values.length === 0) {
+        return value;
+      }
+      const date = new Date(values[index].value);
+      return window.hassUtil.formatTime(date);
     }
     drawChart() {
       const data = this.data.data;
@@ -321,6 +335,7 @@
           }
         };
         options = Chart.helpers.merge(options, this.data.options);
+        options.scales.xAxes[0].ticks.callback = this._formatTickValue;
         if (this.data.type === 'timeline') {
           // timeline is not zoomable, so dont capture mouse
           this.set('isZoomable', false);
