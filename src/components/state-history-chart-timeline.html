@@ -129,9 +129,24 @@ class StateHistoryChartTimeline extends Polymer.Element {
       labels.push(entityDisplay);
     });
 
+    const formatTooltipLabel = function (item, data) {
+      const values = data.datasets[item.datasetIndex].data[item.index];
+
+      const start = window.hassUtil.formatDateTime(values[0]);
+      const end = window.hassUtil.formatDateTime(values[1]);
+      const state = values[2];
+
+      return [state, start, end];
+    };
+
     const chartOptions = {
       type: 'timeline',
       options: {
+        tooltips: {
+          callbacks: {
+            label: formatTooltipLabel
+          }
+        },
         scales: {
           xAxes: [{
             ticks: {
