@@ -99,11 +99,22 @@ class PartialPanelResolver extends Polymer.Element {
       },
 
       () => {
-        this.errorLoading = true;
+        // a single retry of importHref in the error callback fixes a webkit refresh issue
+        if (!this.retrySetPanelForWebkit(panel)) {
+          this.errorLoading = true;
+        }
       },
 
       true /* async */
     );
+  }
+
+  retrySetPanelForWebkit(panel) {
+    if (this._retryingPanelChanged) {
+      return false;
+    }
+    this._retryingPanelChanged = true;
+    return this.panelChanged(panel);
   }
 
   updateAttributes() {
