@@ -1,7 +1,4 @@
-"""Frontend for Home Assistant.
-
-AUTO-GENERATED. DO NOT MODIFY.
-"""
+"""Frontend for Home Assistant."""
 import os
 from user_agents import parse
 
