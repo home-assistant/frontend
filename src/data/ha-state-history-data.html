@@ -131,9 +131,10 @@
       };
     }
 
+    // debounce the observer because attribute changes are sequential.
     static get observers() {
       return [
-        'filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language)',
+        'filterChangedDebouncer(filterType, entityId, startTime, endTime, cacheConfig, localize, language)',
       ];
     }
 
@@ -147,11 +148,21 @@
 
     hassChanged(newHass, oldHass) {
       if (!oldHass && !this._madeFirstCall) {
-        this.filterChanged(
+        this.filterChangedDebouncer(
           this.filterType, this.entityId, this.startTime, this.endTime,
           this.cacheConfig, this.localize, this.language
         );
       }
+    }
+
+    filterChangedDebouncer(...args) {
+      this._debounceFilterChanged = Polymer.Debouncer.debounce(
+        this._debounceFilterChanged,
+        Polymer.Async.timeOut.after(10),
+        () => {
+          this.filterChanged(...args);
+        }
+      );
     }
 
     filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language) {
@@ -174,11 +185,12 @@
       } else {
         return;
       }
-
+    console.log('going to wait for data()')
       this._setIsLoading(true);
 
       data.then((stateHistory) => {
         this._setData(stateHistory);
+        console.log('done')
         this._setIsLoading(false);
       });
     }
