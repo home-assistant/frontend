@@ -134,16 +134,8 @@
 
     static get observers() {
       return [
-        'filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language)',
+        'filterChangedDebouncer(filterType, entityId, startTime, endTime, cacheConfig, localize, language)',
       ];
-    }
-
-    connectedCallback() {
-      super.connectedCallback();
-      this.filterChanged(
-        this.filterType, this.entityId, this.startTime, this.endTime,
-        this.cacheConfig, this.localize, this.language
-      );
     }
 
     disconnectedCallback() {
@@ -156,11 +148,21 @@
 
     hassChanged(newHass, oldHass) {
       if (!oldHass && !this._madeFirstCall) {
-        this.filterChanged(
+        this.filterChangedDebouncer(
           this.filterType, this.entityId, this.startTime, this.endTime,
           this.cacheConfig, this.localize, this.language
         );
       }
+    }
+
+    filterChangedDebouncer(...args) {
+      this._debounceFilterChanged = Polymer.Debouncer.debounce(
+        this._debounceFilterChanged,
+        Polymer.Async.timeOut.after(0),
+        () => {
+          this.filterChanged(...args);
+        }
+      );
     }
 
     filterChanged(filterType, entityId, startTime, endTime, cacheConfig, localize, language) {
@@ -183,7 +185,6 @@
       } else {
         return;
       }
-
       this._setIsLoading(true);
 
       data.then((stateHistory) => {
