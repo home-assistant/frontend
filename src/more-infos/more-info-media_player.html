@@ -106,6 +106,18 @@
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
+      <!-- SOUND MODE PICKER -->
+      <div class='controls layout horizontal justified'
+           hidden$='[[computeHideSelectSoundMode(isOff, supportsSelectSoundMode)]]'>
+        <iron-icon class="source-input" icon="mdi:music-note"></iron-icon>
+        <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
+          <paper-listbox slot="dropdown-content" selected="{{soundModeIndex}}">
+            <template is='dom-repeat' items='[[stateObj.attributes.sound_mode_list]]'>
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
       <!-- TTS -->
       <div hidden$='[[computeHideTTS(ttsLoaded, supportsPlayMedia)]]' class='layout horizontal end'>
         <paper-input
@@ -170,6 +182,17 @@
           observer: 'handleSourceChanged',
         },
 
+        soundMode: {
+          type: String,
+          value: '',
+        },
+
+        soundModeIndex: {
+          type: Number,
+          value: 0,
+          observer: 'handleSoundModeChanged',
+        },
+
         volumeSliderValue: {
           type: Number,
           value: 0,
@@ -230,6 +253,11 @@
           value: false,
         },
 
+        supportsSelectSoundMode: {
+          type: Boolean,
+          value: false,
+        },
+
         supportsPlay: {
           type: Boolean,
           value: false,
@@ -251,6 +279,7 @@
         this.volumeSliderValue = newVal.attributes.volume_level * 100;
         this.isMuted = newVal.attributes.is_volume_muted;
         this.source = newVal.attributes.source;
+        this.soundMode = newVal.attributes.sound_mode;
         this.supportsPause = (newVal.attributes.supported_features & 1) !== 0;
         this.supportsVolumeSet = (newVal.attributes.supported_features & 4) !== 0;
         this.supportsVolumeMute = (newVal.attributes.supported_features & 8) !== 0;
@@ -262,9 +291,14 @@
         this.supportsVolumeButtons = (newVal.attributes.supported_features & 1024) !== 0;
         this.supportsSelectSource = (newVal.attributes.supported_features & 2048) !== 0;
         this.supportsPlay = (newVal.attributes.supported_features & 16384) !== 0;
+        this.supportsSelectSoundMode = (newVal.attributes.supported_features & 65536) !== 0;
 
         if (newVal.attributes.source_list !== undefined) {
           this.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
+        }
+
+        if (newVal.attributes.sound_mode_list !== undefined) {
+          this.soundModeIndex = newVal.attributes.sound_mode_list.indexOf(this.soundMode);
         }
       }
 
@@ -314,6 +348,10 @@
       return stateObj.attributes.source_list.indexOf(stateObj.attributes.source);
     }
 
+    computeHideSelectSoundMode(isOff, supportsSelectSoundMode) {
+      return isOff || !supportsSelectSoundMode;
+    }
+
     computeHideTTS(ttsLoaded, supportsPlayMedia) {
       return !ttsLoaded || !supportsPlayMedia;
     }
@@ -357,6 +395,27 @@
       }
 
       this.callService('select_source', { source: sourceInput });
+    }
+
+    handleSoundModeChanged(soundModeIndex, soundModeIndexOld) {
+      var soundModeInput;
+      // Selected Option will transition to '' before transitioning to new value
+      if (!this.stateObj
+          || this.stateObj.attributes.sound_mode_list === undefined
+          || soundModeIndex < 0
+          || soundModeIndex >= this.stateObj.attributes.sound_mode_list.length
+          || soundModeIndexOld === undefined
+      ) {
+        return;
+      }
+
+      soundModeInput = this.stateObj.attributes.sound_mode_list[soundModeIndex];
+
+      if (soundModeInput === this.stateObj.attributes.sound_mode) {
+        return;
+      }
+
+      this.callService('select_sound_mode', { sound_mode: soundModeInput });
     }
 
     handleVolumeTap() {
