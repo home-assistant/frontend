@@ -114,6 +114,10 @@
         "off": "[%key:state::binary_sensor::battery::off%]",
         "on": "Hot"
       },
+      "lock": {
+        "off": "[%key:state::lock::locked%]",
+        "on": "[%key:state::lock::unlocked%]"
+      },
       "moisture": {
         "off": "Dry",
         "on": "Wet"
