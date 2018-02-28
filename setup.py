@@ -13,5 +13,8 @@ setup(name='home-assistant-frontend',
           'hass_frontend.*',
           'hass_frontend_es5.*'
       ]),
+      install_requires=[
+          'user-agents==1.1.0',
+      ],
       include_package_data=True,
       zip_safe=False)
