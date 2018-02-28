@@ -4,7 +4,7 @@ import formatDate from './format_date.js';
 import formatTime from './format_time.js';
 
 export default function computeStateDisplay(localize, stateObj, language) {
-  if (!stateObj._stateDisplay) {
+  if (stateObj._stateDisplay === undefined) {
     const domain = computeStateDomain(stateObj);
     if (domain === 'binary_sensor') {
       // Try device class translation, then default binary sensor translation
@@ -16,7 +16,7 @@ export default function computeStateDisplay(localize, stateObj, language) {
         stateObj._stateDisplay = localize(`state.${domain}.default.${stateObj.state}`);
       }
     } else if (stateObj.attributes.unit_of_measurement && !['unknown', 'unavailable'].includes(stateObj.state)) {
-      stateObj._stateDisplay = stateObj.state + ' ' + stateObj.attributes.unit_of_measurement;
+      stateObj._stateDisplay = `${stateObj.state}&nbsp${stateObj.attributes.unit_of_measurement}`;
     } else if (domain === 'input_datetime') {
       let date;
       if (!stateObj.attributes.has_time) {
