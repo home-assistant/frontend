@@ -185,12 +185,10 @@
       } else {
         return;
       }
-    console.log('going to wait for data()')
       this._setIsLoading(true);
 
       data.then((stateHistory) => {
         this._setData(stateHistory);
-        console.log('done')
         this._setIsLoading(false);
       });
     }
