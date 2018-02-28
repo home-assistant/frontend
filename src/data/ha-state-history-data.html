@@ -4,6 +4,8 @@
 <link rel='import' href='../../src/util/hass-util.html'>
 
 <script>
+'use strict';
+
 {
   const RECENT_THRESHOLD = 60000; // 1 minute
   const RECENT_CACHE = {};
@@ -14,7 +16,6 @@
   function computeHistory(stateHistory, localize, language) {
     const lineChartDevices = {};
     const timelineDevices = [];
-
     if (!stateHistory) {
       return { line: [], timeline: [] };
     }
@@ -310,7 +311,9 @@
           }
           return cache.data;
         })
-        .catch(() => {
+        .catch((err) => {
+          /* eslint-disable no-console */
+          console.error(err);
           window.stateHistoryCache[cacheKey] = undefined;
         });
       cache.prom = prom;
