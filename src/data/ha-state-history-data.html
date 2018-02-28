@@ -131,7 +131,6 @@
       };
     }
 
-    // debounce the observer because attribute changes are sequential.
     static get observers() {
       return [
         'filterChangedDebouncer(filterType, entityId, startTime, endTime, cacheConfig, localize, language)',
