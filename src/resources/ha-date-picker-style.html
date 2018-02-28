@@ -1,13 +1,14 @@
 <dom-module id="ha-date-picker-vaadin-date-picker-styles" theme-for="vaadin-date-picker">
   <template>
     <style>
-      [part~="clear-button"] {
+      :host([required]) [part~="clear-button"] {
         display: none;
       }
 
       [part~="toggle-button"] {
-        color: var(--disabled-text-color);
+        color: var(--secondary-text-color);
         font-size: var(--paper-font-subhead_-_font-size);
+        margin-right: 5px;
       }
 
       :host([opened]) [part~="toggle-button"] {

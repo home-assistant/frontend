@@ -71,6 +71,7 @@
           value='{{_currentDate}}'
           label="[[localize('ui.panel.logbook.showing_entries')]]"
           disabled='[[isLoading]]'
+          required
         ></vaadin-date-picker>
 
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
