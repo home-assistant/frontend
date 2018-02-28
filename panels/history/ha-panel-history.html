@@ -204,7 +204,6 @@ class HaPanelHistory extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     setTimeout(() => {
       if (newVal !== this.stateHistoryOutput) {
         // Data did change
-        console.log('data did change')
         this.stateHistoryOutput = newVal;
       }
     }, 1);
