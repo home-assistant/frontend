@@ -14,7 +14,8 @@
 <dom-module id="hassio-snapshots">
   <template>
     <style include="ha-style hassio-style">
-      paper-checkbox {
+      paper-checkbox,
+      paper-input[type="password"] {
         display: block;
         margin: 4px 0 4px 48px;
       }
@@ -36,8 +37,7 @@
         </div>
         <paper-card>
           <div class='card-content'>
-            <paper-input autofocus label='Name' value='{{snapshotName}}'>
-            </paper-input>
+            <paper-input autofocus label='Name' value='{{snapshotName}}'></paper-input>
             <label id='lbltype'>Type:</label>
             <paper-radio-group selected='{{snapshotType}}' aria-labelledby='lbltype' on-paper-radio-group-changed='typeChanged'>
               <paper-radio-button name='full'>
@@ -63,12 +63,19 @@
                 </paper-checkbox>
               </template>
             </div>
-          </div>
-          <div class='card-actions'>
-            <paper-button disabled='[[creatingSnapshot]]' on-click='createSnapshot'>Create</paper-button>
+            <div>
+              Password:
+              <paper-checkbox checked='{{snapshotHasPassword}}'>Password protected</paper-checkbox>
+              <template is='dom-if' if='[[snapshotHasPassword]]'>
+                <paper-input label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
+              </template>
+            </div>
             <template is='dom-if' if='[[error]]'>
               <p class='error'>[[error]]</p>
             </template>
+          </div>
+          <div class='card-actions'>
+            <paper-button disabled='[[creatingSnapshot]]' on-click='createSnapshot'>Create</paper-button>
           </div>
         </paper-card>
       </div>
@@ -85,7 +92,7 @@
             <div class='card-content'>
               <hassio-card-content
                 title='[[computeName(snapshot)]]'
-                description='[[computeType(snapshot.type)]]'
+                description='[[computeDetails(snapshot)]]'
                 datetime='[[snapshot.date]]'
                 icon='[[computeIcon(snapshot.type)]]'
                 icon-class='snapshot'
@@ -105,7 +112,15 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get properties() {
     return {
       hass: Object,
-      snapshotName: String,
+      snapshotName: {
+        type: String,
+        value: '',
+      },
+      snapshotPassword: {
+        type: String,
+        value: '',
+      },
+      snapshotHasPassword: Boolean,
       snapshotType: {
         type: String,
         value: 'full',
@@ -165,9 +180,14 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   createSnapshot() {
+    this.error = '';
+    if (this.snapshotHasPassword && !this.snapshotPassword.length) {
+      this.error = 'Please enter a password.';
+      return;
+    }
     this.creatingSnapshot = true;
     let name = this.snapshotName;
-    if (!name || name.length === 0) {
+    if (!name.length) {
       name = new Date().toLocaleDateString(navigator.language, {
         weekday: 'long',
         year: 'numeric',
@@ -185,6 +205,9 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
 
       data = { name: name, folders: folders, addons: addons };
       path = 'hassio/snapshots/new/partial';
+    }
+    if (this.snapshotHasPassword) {
+      data.password = this.snapshotPassword;
     }
 
     this.hass.callApi('post', path, data)
@@ -213,8 +236,9 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     return snapshot.name || snapshot.slug;
   }
 
-  computeType(type) {
-    return type === 'full' ? 'Full snapshot' : 'Partial snapshot';
+  computeDetails(snapshot) {
+    const type = snapshot.type === 'full' ? 'Full snapshot' : 'Partial snapshot';
+    return snapshot.protected ? `${type}, password protected` : type;
   }
 
   computeIcon(type) {

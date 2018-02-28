@@ -2,6 +2,7 @@
 <link rel='import' href='../../bower_components/paper-dialog/paper-dialog.html'>
 <link rel='import' href='../../bower_components/paper-checkbox/paper-checkbox.html'>
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
+<link rel="import" href='../../bower_components/paper-input/paper-input.html'>
 
 <dom-module id='hassio-snapshot'>
   <template>
@@ -63,6 +64,9 @@
             </template>
           </div>
         </template>
+        <template is='dom-if' if='[[snapshot.protected]]'>
+          <paper-input autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
+        </template>
         <template is='dom-if' if='[[error]]'>
           <p class='error'>Error: [[error]]</p>
         </template>
@@ -99,6 +103,7 @@ class HassioSnapshot extends Polymer.Element {
         type: Boolean,
         value: true,
       },
+      snapshotPassword: String,
       error: String,
     };
   }
@@ -142,11 +147,14 @@ class HassioSnapshot extends Polymer.Element {
     const folders =
       this.snapshot.folders.filter(folder => folder.checked).map(folder => folder.slug);
 
-    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/partial`, {
+    const data = {
       homeassistant: this.restoreHass,
       addons: addons,
       folders: folders
-    }).then(() => {
+    };
+    if (this.snapshot.protected) data.password = this.snapshotPassword;
+
+    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/partial`, data).then(() => {
       alert('Snapshot restored!');
       this.$.dialog.close();
     }, (error) => {
@@ -158,7 +166,8 @@ class HassioSnapshot extends Polymer.Element {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
-    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/full`)
+    const data = this.snapshot.protected ? { password: this.snapshotPassword } : null;
+    this.hass.callApi('post', `hassio/snapshots/${this.snapshotSlug}/restore/full`, data)
       .then(() => {
         alert('Snapshot restored!');
         this.$.dialog.close();
