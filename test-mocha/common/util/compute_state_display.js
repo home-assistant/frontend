@@ -85,6 +85,20 @@ describe('computeStateDisplay', () => {
     assert.strictEqual(computeStateDisplay(altLocalize, stateObj, 'en'), 'state.default.unavailable');
   });
 
+  it('Localizes sensor value with component translation', () => {
+    const altLocalize = function (message, ...args) {
+      if (message !== 'component.sensor.state.custom_state') return null;
+      return localize(message, ...args);
+    };
+    const stateObj = {
+      entity_id: 'sensor.test',
+      state: 'custom_state',
+      attributes: {
+      },
+    };
+    assert.strictEqual(computeStateDisplay(altLocalize, stateObj, 'en'), 'component.sensor.state.custom_state');
+  });
+
   it('Localizes input_datetime with full date time', () => {
     const stateObj = {
       entity_id: 'input_datetime.test',
