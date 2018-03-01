@@ -41,7 +41,6 @@ class HassioAddonStore extends Polymer.Element {
   ready() {
     super.ready();
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
-    this.addEventListener('hassio-store-refresh', ev => this.refreshData(ev));
     this.loadData();
   }
 
