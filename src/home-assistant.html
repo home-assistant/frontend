@@ -119,6 +119,18 @@ class HomeAssistant extends Polymer.Element {
     });
   }
 
+  loadBackendTranslations() {
+    if (!this.hass.language) return;
+
+    const language = this.hass.selectedLanguage;
+    this.hass.callApi('get', `translations/${language}`).then((result) => {
+      // If we've switched selected languages just ignore this response
+      if (!this.hass.selectedLanguage === language) return;
+
+      this._updateResources(language, result.resources);
+    });
+  }
+
   _updateResources(language, data) {
     // Update the language in hass, and update the resources with the newly
     // loaded resources. This merges the new data on top of the old data for
@@ -201,6 +213,7 @@ class HomeAssistant extends Polymer.Element {
 
     var reconnected = () => {
       this._updateHass({ connected: true });
+      this.loadBackendTranslations();
     };
 
     conn.addEventListener('ready', reconnected);
@@ -239,6 +252,8 @@ class HomeAssistant extends Polymer.Element {
     }, 'themes_updated').then(function (unsub) {
       unsubThemes = unsub;
     });
+
+    this.loadBackendTranslations();
 
     this.unsubConnection = function () {
       conn.removeEventListener('ready', reconnected);
@@ -307,6 +322,7 @@ class HomeAssistant extends Polymer.Element {
     this._updateHass({ selectedLanguage: event.detail.language });
     this.$.storage.storeState();
     this.loadResources();
+    this.loadBackendTranslations();
     this.loadTranslationFragment(this.panelUrl);
   }
 
