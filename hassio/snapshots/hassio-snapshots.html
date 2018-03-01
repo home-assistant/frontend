@@ -265,6 +265,13 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
       this.snapshotDeleted = false;
     }
   }
+
+  refreshData() {
+    this.hass.callApi('post', 'hassio/snapshots/reload')
+      .then(() => {
+        this.updateSnapshots();
+      });
+  }
 }
 
 customElements.define(HassioSnapshots.is, HassioSnapshots);
