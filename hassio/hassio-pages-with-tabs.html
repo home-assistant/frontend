@@ -125,7 +125,11 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
   }
 
   refreshClicked() {
-    this.fire(`hassio-${this.page}-refresh`);
+    if (this.page === 'snapshots') {
+      this.shadowRoot.querySelector('hassio-snapshots').refreshData();
+    } else {
+      this.shadowRoot.querySelector('hassio-addon-store').refreshData();
+    }
   }
 }
 

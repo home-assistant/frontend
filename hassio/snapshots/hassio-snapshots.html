@@ -146,7 +146,6 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
   ready() {
     super.ready();
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
-    document.addEventListener('hassio-snapshots-refresh', ev => this.refreshData(ev));
     this.updateSnapshots();
   }
 
