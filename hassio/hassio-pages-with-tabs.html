@@ -4,6 +4,7 @@
 <link rel='import' href='../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 <link rel='import' href='../bower_components/paper-tabs/paper-tabs.html'>
 <link rel='import' href='../bower_components/paper-tabs/paper-tab.html'>
+<link rel='import' href='../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <link rel='import' href='../src/components/ha-menu-button.html'>
 <link rel='import' href='../src/util/hass-mixins.html'>
@@ -33,6 +34,12 @@
         <app-toolbar>            
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>Hass.io</div>
+          <template is='dom-if' if='[[showRefreshButton(page)]]'>
+            <paper-icon-button
+              icon='mdi:refresh'
+              on-click='refreshClicked'
+            ></paper-icon-button>
+          </template>
         </app-toolbar>
         <paper-tabs
           scrollable
@@ -42,7 +49,7 @@
         >
           <paper-tab page-name='dashboard'>Dashboard</paper-tab>
           <paper-tab page-name='snapshots'>Snapshots</paper-tab>
-          <paper-tab page-name='store'>Add-on store</paper-tab>          
+          <paper-tab page-name='store'>Add-on store</paper-tab>
           <paper-tab page-name='system'>System</paper-tab>
         </paper-tabs>
       </app-header>
@@ -74,7 +81,7 @@
         ></hassio-system>
       </template>
     </app-header-layout>
-    <template is='dom-if' if='[[equals(page, "snapshots")]]'>      
+    <template is='dom-if' if='[[equals(page, "snapshots")]]'>
       <hassio-snapshot      
         hass='[[hass]]'
         snapshot-slug='{{snapshotSlug}}'
@@ -111,6 +118,18 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
 
   equals(a, b) {
     return a === b;
+  }
+
+  showRefreshButton(page) {
+    return page === 'store' || page === 'snapshots';
+  }
+
+  refreshClicked() {
+    if (this.page === 'snapshots') {
+      this.shadowRoot.querySelector('hassio-snapshots').refreshData();
+    } else {
+      this.shadowRoot.querySelector('hassio-addon-store').refreshData();
+    }
   }
 }
 
