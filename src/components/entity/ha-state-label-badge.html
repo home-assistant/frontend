@@ -1,6 +1,7 @@
 <link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
 
 <link rel='import' href='../../../src/util/hass-mixins.html'>
+<link rel="import" href="../../../src/util/hass-util.html">
 
 <link rel='import' href='../ha-label-badge.html'>
 
@@ -37,7 +38,7 @@
     </style>
 
     <ha-label-badge class$='[[computeClasses(state)]]'
-      value='[[computeValue(state)]]'
+      value='[[computeValue(localize, state)]]'
       icon='[[computeIcon(state)]]'
       image='[[computeImage(state)]]'
       label='[[computeLabel(localize, state, timerTimeRemaining)]]'
@@ -99,8 +100,9 @@ class HaStateLabelBadge extends
     }
   }
 
-  computeValue(state) {
-    switch (window.hassUtil.computeDomain(state)) {
+  computeValue(localize, state) {
+    const domain = window.hassUtil.computeDomain(state);
+    switch (domain) {
       case 'binary_sensor':
       case 'device_tracker':
       case 'updater':
@@ -110,7 +112,10 @@ class HaStateLabelBadge extends
         return null;
       case 'sensor':
       default:
-        return state.state === 'unknown' ? '-' : state.state;
+        return state.state === 'unknown' ? '-' : (
+          localize(`component.${domain}.state.${state.state}`)
+          || state.state
+        );
     }
   }
 
