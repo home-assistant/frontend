@@ -4,6 +4,7 @@
 <link rel='import' href='../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 <link rel='import' href='../bower_components/paper-tabs/paper-tabs.html'>
 <link rel='import' href='../bower_components/paper-tabs/paper-tab.html'>
+<link rel='import' href='../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <link rel='import' href='../src/components/ha-menu-button.html'>
 <link rel='import' href='../src/util/hass-mixins.html'>
@@ -33,6 +34,12 @@
         <app-toolbar>            
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>Hass.io</div>
+          <template is='dom-if' if='[[showRefreshButton(page)]]'>
+            <paper-icon-button
+              icon='mdi:refresh'
+              on-click='refreshClicked'
+            ></paper-icon-button>
+          </template>
         </app-toolbar>
         <paper-tabs
           scrollable
@@ -111,6 +118,14 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
 
   equals(a, b) {
     return a === b;
+  }
+
+  showRefreshButton(page) {
+    return page === 'store' || page === 'snapshots';
+  }
+
+  refreshClicked() {
+    this.fire(`hassio-${this.page}-refresh`);   
   }
 }
 

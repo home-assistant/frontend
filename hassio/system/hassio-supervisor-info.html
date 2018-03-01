@@ -1,6 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
@@ -62,7 +61,11 @@
             path="hassio/supervisor/update"
           >Update</ha-call-api-button>
         </template>
-        <paper-button on-click='reloadClicked'>Reload</paper-button>
+        <ha-call-api-button
+          class='warning'
+          hass='[[hass]]'
+          path="hassio/supervisor/reload"
+        >Reload</ha-call-api-button>
       </div>
     </paper-card>
   </template>
@@ -102,12 +105,6 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
 
   computeUpdateAvailable(data) {
     return data.version !== data.last_version;
-  }
-
-  reloadClicked() {
-    this.hass.callApi('post', 'hassio/snapshots/reload');
-    this.hass.callApi('post', 'hassio/addons/reload');
-    this.hass.callApi('post', 'hassio/supervisor/reload');
   }
 }
 
