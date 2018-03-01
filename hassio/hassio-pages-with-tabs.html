@@ -49,7 +49,7 @@
         >
           <paper-tab page-name='dashboard'>Dashboard</paper-tab>
           <paper-tab page-name='snapshots'>Snapshots</paper-tab>
-          <paper-tab page-name='store'>Add-on store</paper-tab>          
+          <paper-tab page-name='store'>Add-on store</paper-tab>
           <paper-tab page-name='system'>System</paper-tab>
         </paper-tabs>
       </app-header>
@@ -81,7 +81,7 @@
         ></hassio-system>
       </template>
     </app-header-layout>
-    <template is='dom-if' if='[[equals(page, "snapshots")]]'>      
+    <template is='dom-if' if='[[equals(page, "snapshots")]]'>
       <hassio-snapshot      
         hass='[[hass]]'
         snapshot-slug='{{snapshotSlug}}'
@@ -125,7 +125,7 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
   }
 
   refreshClicked() {
-    this.fire(`hassio-${this.page}-refresh`);   
+    this.fire(`hassio-${this.page}-refresh`);
   }
 }
 

@@ -82,7 +82,7 @@ class HassioAddonStore extends Polymer.Element {
   }
 
 
-  refreshData(ev) {
+  refreshData() {
     this.hass.callApi('post', 'hassio/addons/reload')
       .then(() => {
         this.loadData();
