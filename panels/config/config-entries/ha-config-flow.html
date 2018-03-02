@@ -107,6 +107,11 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
         this._submitStep();
       }
     });
+    this.$.dialog.addEventListener('iron-overlay-opened', (ev) => {
+      if (ev.target.withBackdrop) {
+        ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
+      }
+    });
   }
 
   _flowIdChanged(flowId) {
