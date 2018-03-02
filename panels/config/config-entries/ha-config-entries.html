@@ -116,6 +116,14 @@
     _createFlow(ev) {
       this.hass.callApi('post', 'config/config_entries/flow', { domain: ev.model.item })
         .then((flow) => {
+          // Some flows will instantly finish or abort.
+          if (flow.type == 'abort') {
+            alert(flow.reason);
+            return;
+          } else if (flow.type == 'success') {
+            alert(`Created ${flow.title}`);
+            return;
+          }
           this.userCreatedFlow = true;
           this.flowId = flow.flow_id;
         });
