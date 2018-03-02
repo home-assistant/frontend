@@ -3,6 +3,9 @@
 <link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
 <link rel="import" href='../../../bower_components/paper-slider/paper-slider.html'>
 <link rel="import" href='../../../bower_components/paper-checkbox/paper-checkbox.html'>
+<link rel='import' href='../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
+<link rel='import' href='../../../../bower_components/paper-listbox/paper-listbox.html'>
+<link rel='import' href='../../../../bower_components/paper-item/paper-item.html'>
 
 <dom-module id="ha-form">
   <template>
@@ -69,11 +72,18 @@
       </template>
 
       <template is='dom-if' if='[[_equals(schema.type, "select")]]' restamp>
-        <!--TODO-->
-        <paper-input
-          label='[[schema.name]]'
-          value='{{data}}'
-        ></paper-input>
+        <paper-dropdown-menu label='[[schema.name]]'>
+          <paper-listbox
+            slot="dropdown-content"
+            attr-for-selected="item-name"
+            selected="{{data}}"
+          >
+            <template is='dom-repeat'
+                      items='[[schema.options]]'>
+              <paper-item item-name='[[item]]'>[[item]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
       </template>
 
     </template>
