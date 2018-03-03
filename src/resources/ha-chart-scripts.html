@@ -63,14 +63,5 @@
     const ret = elements.filter(n => n !== undefined);
     return ret;
   };
-
-  // Fix infinite loop bug in Chart.js 2.7.1
-  const x = Chart.scaleService.constructors.time.prototype;
-  x._getLabelCapacity = x.getLabelCapacity;
-  x.getLabelCapacity = function () {
-    // eslint-disable-next-line prefer-rest-params
-    const ret = this._getLabelCapacity.apply(this, arguments);
-    return ret > 0 ? ret : 1;
-  };
 }
 </script>
