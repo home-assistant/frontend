@@ -121,9 +121,11 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   _stateObjChanged(newVal, oldVal) {
     if (!newVal) {
-      this._dialogOpen = false;
-      this._page = null;
-      this._registryInfo = null;
+      this.setProperties({
+        _dialogOpen: false,
+        _page: null,
+        _registryInfo: null,
+      });
       return;
     }
 
