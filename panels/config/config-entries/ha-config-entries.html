@@ -96,7 +96,6 @@
          * The step of the current selected flow, if available.
          */
         _flowStep: Object,
-        _userCreatedFlow: Boolean,
 
         /**
          * Existing entries.
@@ -121,8 +120,8 @@
     _createFlow(ev) {
       this.hass.callApi('post', 'config/config_entries/flow', { domain: ev.model.item })
         .then((flow) => {
+          this._userCreatedFlow = true;
           this.setProperties({
-            _userCreatedFlow: true,
             _flowStep: flow,
             _flowId: flow.flow_id,
           });
@@ -130,10 +129,10 @@
     }
 
     _continueFlow(ev) {
+      this._userCreatedFlow = false;
       this.setProperties({
         _flowId: ev.model.item.flow_id,
         _flowStep: null,
-        _userCreatedFlow: false,
       });
     }
 
