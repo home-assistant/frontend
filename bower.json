@@ -56,7 +56,7 @@
     "vaadin-date-picker": "vaadin/vaadin-date-picker#^2.0.0",
     "web-animations-js": "^2.2.5",
     "webcomponentsjs": "^1.0.10",
-    "chart.js": "~2.7.1",
+    "chart.js": "~2.7.2",
     "moment": "^2.20.0",
     "chartjs-chart-timeline": "fanthos/chartjs-chart-timeline#^0.1.4",
     "chartjs-plugin-zoom": "^0.6.3",
