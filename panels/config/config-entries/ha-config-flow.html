@@ -25,7 +25,7 @@
     <paper-dialog
       id='dialog'
       with-backdrop
-      opened='[[flowId]]'
+      opened='[[step]]'
       on-opened-changed='_openedChanged'
     >
       <h2>
@@ -91,11 +91,17 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get properties() {
     return {
       hass: Object,
-      step: Object,
+      step: {
+        type: Object,
+        notify: true,
+      },
       flowId: {
         type: String,
         observer: '_flowIdChanged'
       },
+      /*
+       * Store user entered data.
+       */
       stepData: Object,
     };
   }
@@ -107,6 +113,7 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
         this._submitStep();
       }
     });
+    // Fix for overlay showing on top of dialog.
     this.$.dialog.addEventListener('iron-overlay-opened', (ev) => {
       if (ev.target.withBackdrop) {
         ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
@@ -115,7 +122,19 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _flowIdChanged(flowId) {
-    if (!flowId) return;
+    if (!flowId) {
+      this.setProperties({
+        step: null,
+        stepData: {},
+      });
+      return;
+
+    // Check if parent passed in step data to use.
+    } else if (this.step) {
+      this._processStep(this.step);
+      return;
+    }
+
     this.hass.callApi('get', `config/config_entries/flow/${flowId}`)
       .then((step) => {
         this._processStep(step);
@@ -151,7 +170,7 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   _openedChanged(ev) {
     // Closed dialog by clicking on the overlay
-    if (!ev.detail.value) {
+    if (this.step && !ev.detail.value) {
       this.fire('flow-closed', {
         flowFinished: ['success', 'abort'].includes(this.step.type)
       });

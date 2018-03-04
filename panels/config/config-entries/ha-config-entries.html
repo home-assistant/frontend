@@ -58,7 +58,7 @@
 
         <h1>Add integration</h1>
         <div class='entries layout horizontal wrap'>
-          <template is='dom-repeat' items='[[handlers]]'>
+          <template is='dom-repeat' items='[[_handlers]]'>
             <paper-card heading='[[item]]'>
               <!-- <div class="card-content">Some content</div> -->
               <div class="card-actions">
@@ -72,7 +72,8 @@
 
     <ha-config-flow
       hass='[[hass]]'
-      flow-id='[[flowId]]'
+      flow-id='[[_flowId]]'
+      step='{{_flowStep}}'
       on-flow-closed='_flowClose'
     ></ha-config-flow>
   </template>
@@ -87,11 +88,15 @@
       return {
         hass: Object,
 
-        flowId: {
+        _flowId: {
           type: String,
           value: null,
         },
-        userCreatedFlow: Boolean,
+        /*
+         * The step of the current selected flow, if available.
+         */
+        _flowStep: Object,
+        _userCreatedFlow: Boolean,
 
         /**
          * Existing entries.
@@ -104,7 +109,7 @@
          */
         _progress: Array,
 
-        handlers: Array,
+        _handlers: Array,
       };
     }
 
@@ -116,21 +121,20 @@
     _createFlow(ev) {
       this.hass.callApi('post', 'config/config_entries/flow', { domain: ev.model.item })
         .then((flow) => {
-          // Some flows will instantly finish or abort.
-          if (flow.type === 'abort') {
-            alert(flow.reason);
-            return;
-          } else if (flow.type === 'success') {
-            alert(`Created ${flow.title}`);
-            return;
-          }
-          this.userCreatedFlow = true;
-          this.flowId = flow.flow_id;
+          this.setProperties({
+            _userCreatedFlow: true,
+            _flowStep: flow,
+            _flowId: flow.flow_id,
+          });
         });
     }
 
     _continueFlow(ev) {
-      this.flowId = ev.model.item.flow_id;
+      this.setProperties({
+        _flowId: ev.model.item.flow_id,
+        _flowStep: null,
+        _userCreatedFlow: false,
+      });
     }
 
     _removeEntry(ev) {
@@ -153,18 +157,20 @@
         this._loadData();
 
       // Remove a flow if it was not finished and was started by the user
-      } else if (this.userCreatedFlow) {
-        this.hass.callApi('delete', `config/config_entries/flow/${this.flowId}`);
+      } else if (this._userCreatedFlow) {
+        this.hass.callApi('delete', `config/config_entries/flow/${this._flowId}`);
       }
-      this.flowId = null;
-      this.userCreatedFlow = false;
+
+      this.setProperties({
+        _flowId: null,
+      });
     }
 
     _loadData() {
       this._loadEntries();
       this._loadDiscovery();
       this.hass.callApi('get', 'config/config_entries/flow_handlers')
-        .then((handlers) => { this.handlers = handlers; });
+        .then((handlers) => { this._handlers = handlers; });
     }
 
     _loadEntries() {
