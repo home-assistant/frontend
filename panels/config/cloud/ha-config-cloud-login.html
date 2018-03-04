@@ -1,7 +1,9 @@
 <link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
 <link rel="import" href='../../../bower_components/paper-card/paper-card.html'>
 <link rel="import" href='../../../bower_components/paper-button/paper-button.html'>
+<link rel="import" href='../../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
+<link rel="import" href='../../../bower_components/paper-ripple/paper-ripple.html'>
 
 <link rel="import" href="../../../src/layouts/hass-subpage.html">
 <link rel="import" href="../../../src/util/hass-mixins.html">
@@ -41,6 +43,15 @@
       [hidden] {
         display: none;
       }
+      .flash-msg {
+        padding-right: 44px;
+      }
+      .flash-msg paper-icon-button {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: var(--secondary-text-color);
+      }
     </style>
     <hass-subpage title='Cloud Login'>
       <div class='content'>
@@ -53,23 +64,37 @@
             <p><a href='https://home-assistant.io/components/cloud/' target='_blank'>Learn more</a></p>
           </span>
 
+          <paper-card hidden$='[[!flashMessage]]'>
+            <div class='card-content flash-msg'>
+              [[flashMessage]]
+              <paper-icon-button
+                icon='mdi:close'
+                on-click='_dismissFlash'
+              >Dismiss</paper-icon-button>
+              <paper-ripple id='flashRipple' noink></paper-ripple>
+            </div>
+          </paper-card>
+
           <paper-card>
             <div class='card-content'>
               <h1>Sign In</h1>
+              <div class='error' hidden$='[[!_error]]'>[[_error]]</div>
               <paper-input
                 label='Email'
-                id='emailInput'
+                id='email'
                 type='email'
                 value='{{email}}'
                 on-keydown='_keyDown'
+                error-message='Invalid email'
               ></paper-input>
               <paper-input
+                id='password'
                 label='Password'
                 value='{{_password}}'
                 type='password'
                 on-keydown='_keyDown'
+                error-message='Passwords are at least 8 characters'
               ></paper-input>
-              <div class='error' hidden$='[[!error]]'>[[error]]</div>
             </div>
             <div class='card-actions'>
               <ha-progress-button
@@ -120,6 +145,11 @@ class HaConfigCloudLogin extends
         type: Boolean,
         value: false,
       },
+      flashMessage: {
+        type: String,
+        notify: true,
+      },
+      _error: String,
     };
   }
 
@@ -129,8 +159,17 @@ class HaConfigCloudLogin extends
     ];
   }
 
+  ready() {
+    super.ready();
+    if (this.flashMessage) {
+      requestAnimationFrame(() => requestAnimationFrame(() => this.$.flashRipple.simulatedRipple()));
+    }
+  }
+
   _inputChanged() {
-    this.error = false;
+    this.$.email.invalid = false;
+    this.$.password.invalid = false;
+    this._error = false;
   }
 
   _keyDown(ev) {
@@ -142,13 +181,24 @@ class HaConfigCloudLogin extends
   }
 
   _handleLogin() {
-    if (!this.email) {
-      this.error = 'Email is required.';
-    } else if (!this._password) {
-      this.error = 'Password is required.';
+    let invalid = false;
+
+    if (!this.email || !this.email.includes('@')) {
+      this.$.email.invalid = true;
+      this.$.email.focus();
+      invalid = true;
     }
 
-    if (this.error) return;
+    if (this._password.length < 8) {
+      this.$.password.invalid = true;
+
+      if (!invalid) {
+        invalid = true;
+        this.$.password.focus();
+      }
+    }
+
+    if (invalid) return;
 
     this._requestInProgress = true;
 
@@ -157,32 +207,47 @@ class HaConfigCloudLogin extends
       password: this._password,
     }).then((account) => {
       this.fire('ha-account-refreshed', { account: account });
-      this.email = '';
-      this._password = '';
+      this.setProperties({
+        email: '',
+        _password: '',
+      });
     }, (err) => {
+      // Do this before setProperties because changing it clears errors.
       this._password = '';
-      this._requestInProgress = false;
-      if (!err || !err.body || !err.body.message) {
-        this.error = 'Unknown error';
-        return;
-      } else if (err.body.code === 'UserNotConfirmed') {
-        alert('You need to confirm your email before logging in.');
-        this.navigate('/config/cloud/register#confirm');
-        return;
-      } else if (err.body.code === 'PasswordChangeRequired') {
+
+      const errCode = err && err.body && err.body.code;
+      if (errCode === 'PasswordChangeRequired') {
         alert('You need to change your password before logging in.');
         this.navigate('/config/cloud/forgot-password');
       }
-      this.error = err.body.message;
+
+      const props = {
+        _requestInProgress: false,
+        _error: (err && err.body && err.body.message) ? err.body.message : 'Unknown error',
+      };
+
+      if (errCode === 'UserNotConfirmed') {
+        props._error = 'You need to confirm your email before logging in.';
+      }
+
+      this.setProperties(props);
+      this.$.email.focus();
     });
   }
 
   _handleRegister() {
+    this.flashMessage = '';
     this.navigate('/config/cloud/register');
   }
 
   _handleForgotPassword() {
+    this.flashMessage = '';
     this.navigate('/config/cloud/forgot-password');
+  }
+
+  _dismissFlash() {
+    // give some time to let the ripple finish.
+    setTimeout(() => { this.flashMessage = ''; }, 200);
   }
 }
 

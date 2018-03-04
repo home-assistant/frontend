@@ -1,6 +1,5 @@
 <link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
 <link rel="import" href='../../../bower_components/paper-card/paper-card.html'>
-<link rel="import" href='../../../bower_components/paper-button/paper-button.html'>
 <link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
 
 <link rel="import" href="../../../src/layouts/hass-subpage.html">
@@ -57,77 +56,42 @@
             </p>
           </span>
 
-          <template is='dom-if' if='[[!_hasConfirmationCode]]'>
-            <paper-card>
-              <div class='card-content'>
-                <div class='header'>
-                  <h1>Register</h1>
-                  <div class='error' hidden$='[[!_error]]'>[[_error]]</div>
-                </div>
-                <paper-input
-                  autofocus
-                  label='Email address'
-                  type='email'
-                  value='{{email}}'
-                  on-keydown='_keyDown'
-                ></paper-input>
-                <paper-input
-                  label='Password'
-                  value='{{_password}}'
-                  type='password'
-                  on-keydown='_keyDown'
-                ></paper-input>
+          <paper-card>
+            <div class='card-content'>
+              <div class='header'>
+                <h1>Register</h1>
+                <div class='error' hidden$='[[!_error]]'>[[_error]]</div>
               </div>
-              <div class='card-actions'>
-                <ha-progress-button
-                  on-click='_handleRegister'
-                  progress='[[_requestInProgress]]'
-                >Create Account</ha-progress-button>
-                <button
-                  class='link'
-                  hidden='[[_requestInProgress]]'
-                  on-click='_handleShowVerifyAccount'
-                >have confirmation code?</button>
-              </div>
-            </paper-card>
-          </template>
-
-          <template is='dom-if' if='[[_hasConfirmationCode]]'>
-            <paper-card>
-              <div class='card-content'>
-                <div class='header'>
-                  <h1>Verify email</h1>
-                  <div class='error' hidden$='[[!_error]]'>[[_error]]</div>
-                </div>
-                <p>
-                  Check your email address, we've emailed you a verification code to activate your account.
-                </p>
-                <template is='dom-if' if='[[_showEmailInputForConfirmation]]'>
-                  <paper-input
-                    label='Email address'
-                    type='email'
-                    value='{{email}}'
-                    on-keydown='_keyDown'
-                  ></paper-input>
-                </template>
-                <paper-input
-                  label='Confirmation code'
-                  value='{{_confirmationCode}}'
-                  on-keydown='_keyDown'
-                  type='number'
-                ></paper-input>
-              </div>
-              <div class='card-actions'>
-                <ha-progress-button
-                  on-click='_handleVerifyEmail'
-                  progress='[[_requestInProgress]]'
-                >Verify Email</ha-progress-button>
-                <paper-button
-                  on-click='_handleResendVerifyEmail'
-                >Resend Verify Email</paper-button>
-              </div>
-            </paper-card>
-          </template>
+              <paper-input
+                autofocus
+                id='email'
+                label='Email address'
+                type='email'
+                value='{{email}}'
+                on-keydown='_keyDown'
+                error-message='Invalid email'
+              ></paper-input>
+              <paper-input
+                id='password'
+                label='Password'
+                value='{{_password}}'
+                type='password'
+                on-keydown='_keyDown'
+                error-message='Your password needs to be at least 8 characters'
+              ></paper-input>
+            </div>
+            <div class='card-actions'>
+              <ha-progress-button
+                on-click='_handleRegister'
+                progress='[[_requestInProgress]]'
+              >Create Account</ha-progress-button>
+              <button
+                class='link'
+                hidden='[[_requestInProgress]]'
+                on-click='_handleResendVerifyEmail'
+              >Resend confirmation email</button>
+            </div>
+          </paper-card>
         </ha-config-section>
       </div>
     </hass-subpage>
@@ -156,14 +120,6 @@ class HaConfigCloudRegister extends
         type: String,
         value: '',
       },
-      _showEmailInputForConfirmation: {
-        type: Boolean,
-        value: false,
-      },
-      _hasConfirmationCode: {
-        type: Boolean,
-        value: () => document.location.hash === '#confirm'
-      }
     };
   }
 
@@ -175,92 +131,74 @@ class HaConfigCloudRegister extends
 
   _inputChanged() {
     this._error = false;
+    this.$.email.invalid = false;
+    this.$.password.invalid = false;
   }
 
   _keyDown(ev) {
     // validate on enter
     if (ev.keyCode === 13) {
-      if (this._hasConfirmationCode) {
-        this._handleVerifyEmail();
-      } else {
-        this._handleRegister();
-      }
+      this._handleRegister();
       ev.preventDefault();
     }
   }
 
   _handleRegister() {
-    if (!this.email) {
-      this._error = 'Email is required.';
-    } else if (!this._password) {
-      this._error = 'Password is required.';
+    let invalid = false;
+
+    if (!this.email || !this.email.includes('@')) {
+      this.$.email.invalid = true;
+      this.$.email.focus();
+      invalid = true;
     }
 
-    if (this._error) return;
+    if (this._password.length < 8) {
+      this.$.password.invalid = true;
+
+      if (!invalid) {
+        invalid = true;
+        this.$.password.focus();
+      }
+    }
+
+    if (invalid) return;
 
     this._requestInProgress = true;
 
     this.hass.callApi('post', 'cloud/register', {
       email: this.email,
       password: this._password,
-    }).then(() => {
-      this._requestInProgress = false;
-      this._hasConfirmationCode = true;
-    }, (err) => {
+    }).then(() => this._verificationEmailSent(), (err) => {
+      // Do this before setProperties because changing it clears errors.
       this._password = '';
-      this._requestInProgress = false;
-      this._error = err && err.body && err.body.message ?
-        err.body.message : 'Unknown error';
-    });
-  }
 
-  _handleShowVerifyAccount() {
-    this._error = '';
-    this._showEmailInputForConfirmation = true;
-    this._hasConfirmationCode = true;
-  }
-
-  _handleVerifyEmail() {
-    if (!this.email) {
-      this._error = 'Email is required.';
-    } else if (!this._confirmationCode) {
-      this._error = 'Confirmation code is required.';
-    }
-
-    if (this._error) return;
-
-    this._requestInProgress = true;
-
-    this.hass.callApi('post', 'cloud/confirm_register', {
-      email: this.email,
-      confirmation_code: this._confirmationCode,
-    }).then(() => {
-      // eslint-disable-next-line
-      alert('Confirmation successful. You can now login.');
-      this.navigate('config/cloud/login');
-    }, (err) => {
-      this._confirmationCode = '';
-      this._error = err && err.body && err.body.message ?
-        err.body.message : 'Unknown error';
-      this._requestInProgress = false;
+      this.setProperties({
+        _requestInProgress: false,
+        _error: err && err.body && err.body.message ? err.body.message : 'Unknown error'
+      });
     });
   }
 
   _handleResendVerifyEmail() {
     if (!this.email) {
-      this._error = 'Email is required.';
+      this.$.email.invalid = true;
+      return;
     }
-
-    if (this._error) return;
 
     this.hass.callApi('post', 'cloud/resend_confirm', {
       email: this.email,
-    }).then(() => {
-      // eslint-disable-next-line
-      alert('Email resend.');
-    }, (err) => {
-      this._error = err && err.body && err.body.message ?
-        err.body.message : 'Unknown error';
+    }).then(() => this._verificationEmailSent(), err => this.setProperties({
+      _error: err && err.body && err.body.message ? err.body.message : 'Unknown error'
+    }));
+  }
+
+  _verificationEmailSent() {
+    this.setProperties({
+      _requestInProgress: false,
+      _password: '',
+    });
+    this.fire('cloud-done', {
+      flashMessage: 'Account created successful! Check your email for instructions on how to activate your account.'
     });
   }
 }
