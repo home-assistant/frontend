@@ -159,10 +159,13 @@ class HaConfigCloudLogin extends
     ];
   }
 
-  ready() {
-    super.ready();
+  connectedCallback() {
+    super.connectedCallback();
     if (this.flashMessage) {
-      requestAnimationFrame(() => requestAnimationFrame(() => this.$.flashRipple.simulatedRipple()));
+      // Wait for DOM to be drawn
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() =>
+          this.$.flashRipple.simulatedRipple()));
     }
   }
 
