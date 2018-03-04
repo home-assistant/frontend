@@ -27,6 +27,32 @@ class HaCardChooser extends Polymer.Element {
     );
   }
 
+  createObserver() {
+    this.observer = new IntersectionObserver((entries) => {
+      if (!entries.length) return;
+      if (entries[0].isIntersecting) {
+        this.style.height = '';
+        if (this._detachedChild) {
+          this.appendChild(this._detachedChild);
+          this._detachedChild = null;
+        }
+        this._updateCard(this.cardData); // Don't use 'newData' as it might have chnaged.
+        this._updatesAllowed = true;
+      } else {
+        // Set the card to be 48px high. Otherwise if the card is kept as 0px height then all
+        // following cards would trigger the observer at once.
+        const offsetHeight = this.offsetHeight;
+        this.style.height = `${offsetHeight || 48}px`;
+        if (this.lastChild) {
+          this._detachedChild = this.lastChild;
+          this.removeChild(this.lastChild);
+        }
+        this._updatesAllowed = false;
+      }
+    });
+    this.observer.observe(this);
+  }
+
   cardDataChanged(newData) {
     if (!newData) return;
     // ha-entities-card is exempt from observer as it doesn't load heavy resources.
@@ -43,29 +69,9 @@ class HaCardChooser extends Polymer.Element {
       return;
     }
     if (!this.observer) {
-      this.observer = new IntersectionObserver((entries) => {
-        if (!entries.length) return;
-        if (entries[0].isIntersecting) {
-          this.style.height = '';
-          if (this._detachedChild) {
-            this.appendChild(this._detachedChild);
-            this._detachedChild = null;
-          }
-          this._updateCard(this.cardData); // Don't use 'newData' as it might have chnaged.
-        } else {
-          // Set the card to be 48px high. Otherwise if the card is kept as 0px height then all
-          // following cards would trigger the observer at once.
-          const offsetHeight = this.offsetHeight;
-          this.style.height = `${offsetHeight || 48}px`;
-          if (this.lastChild) {
-            this._detachedChild = this.lastChild;
-            this.removeChild(this.lastChild);
-          }
-        }
-      });
-      this.observer.observe(this);
+      this.createObserver();
     }
-    if (!this._detachedChild) {
+    if (this._updatesAllowed) {
       this._updateCard(newData);
     }
   }
