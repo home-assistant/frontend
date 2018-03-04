@@ -28,6 +28,7 @@ class HaCardChooser extends Polymer.Element {
   }
 
   createObserver() {
+    this._updatesAllowed = false;
     this.observer = new IntersectionObserver((entries) => {
       if (!entries.length) return;
       if (entries[0].isIntersecting) {
