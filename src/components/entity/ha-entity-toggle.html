@@ -9,11 +9,11 @@
         white-space: nowrap;
       }
       paper-icon-button {
-        color: var(--primary-text-color);
+        color: var(--paper-icon-button-inactive-color, var(--primary-text-color));
         transition: color .5s;
       }
       paper-icon-button[state-active] {
-        color: var(--primary-color);
+        color: var(--paper-icon-button-active-color, var(--primary-color));
       }
       paper-toggle-button {
         cursor: pointer;
