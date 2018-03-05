@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
 <link rel='import' href='../../src/components/hassio-card-content.html'>
@@ -35,10 +36,14 @@
               </template>
             </div>
             <div class='card-actions'>
+              <a
+                href='https://github.com/home-assistant/home-assistant/releases'
+                target='_blank'
+              ><paper-button>Check release notes</paper-button></a>
               <ha-call-api-button
                 hass='[[hass]]'
                 path='hassio/homeassistant/update'
-              >Update</ha-call-api-button>  
+              >Update</ha-call-api-button>
             </div>
           </paper-card>
         </div>

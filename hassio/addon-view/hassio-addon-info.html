@@ -71,6 +71,9 @@
           ></hassio-card-content>
         </div>
         <div class='card-actions'>
+          <template is='dom-if' if='[[addon.changelog]]'>
+            <paper-button on-click='openChangelog'>Open changelog</paper-button>
+          </template>          
           <ha-call-api-button
             hass='[[hass]]'
             path='hassio/addons/[[addonSlug]]/update'
@@ -234,6 +237,11 @@ class HassioAddonInfo extends Polymer.Element {
   autoUpdateToggled() {
     const data = { auto_update: !this.addon.auto_update };
     this.hass.callApi('POST', `hassio/addons/${this.addonSlug}/options`, data);
+  }
+
+  openChangelog() {
+    this.hass.callApi('get', `hassio/addons/${this.addonSlug}/changelog`)
+      .then(data => alert(data));
   }
 }
 customElements.define(HassioAddonInfo.is, HassioAddonInfo);
