@@ -4,7 +4,7 @@
 
 <dom-module id='state-history-chart-line'>
   <template>
-      <ha-chart-base publish data="[[chartData]]"></ha-chart-base>
+      <ha-chart-base data="[[chartData]]" identifier="[[identifier]]"></ha-chart-base>
   </template>
 </dom-module>
 <script>
@@ -12,22 +12,16 @@ class StateHistoryChartLine extends Polymer.Element {
   static get is() { return 'state-history-chart-line'; }
   static get properties() {
     return {
-      data: {
-        type: Object,
-      },
-
-      unit: {
-        type: String,
-      },
+      data: Object,
+      unit: String,
+      identifier: String,
 
       isSingleDevice: {
         type: Boolean,
         value: false,
       },
 
-      endTime: {
-        type: Object,
-      },
+      endTime: Object,
     };
   }
   static get observers() {

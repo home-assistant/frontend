@@ -54,6 +54,7 @@
 
     const unitStates = Object.keys(lineChartDevices).map(unit => ({
       unit: unit,
+      identifier: lineChartDevices[unit].map(states => states[0].entity_id).join(''),
       data: lineChartDevices[unit].map((states) => {
         const last = states[states.length - 1];
         const domain = window.hassUtil.computeDomain(last);
