@@ -113,6 +113,10 @@
             "window": {
                 "off": "Zaprto",
                 "on": "Odprto"
+            },
+            "lock": {
+                "off": "Zaklenjeno",
+                "on": "Odklenjeno"
             }
         },
         "calendar": {
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "Avtomatizacija",
-                    "description": "Ustvarite in uredite avtomatizacije"
+                    "description": "Ustvarite in uredite avtomatizacije",
+                    "picker": {
+                        "header": "Urejevalnik za avtomatizacijo",
+                        "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), da preverite, ali ste pravilno nastavili Home Assistent-a.",
+                        "pick_automation": "Izberite avtomatizacijo za urejanje",
+                        "no_automations": "Ne moremo najti nobene avtomatizacije za urejanje",
+                        "add_automation": "Dodaj avtomatizacijo"
+                    },
+                    "editor": {
+                        "introduction": "Uporabite avtomatizacije, da bo vaš dom \"živ\"",
+                        "default_name": "Nova avtomatizacija",
+                        "save": "Shrani",
+                        "unsaved_confirm": "Imate neshranjene spremembe. Ste prepričani, da želite zapustiti stran?",
+                        "alias": "Ime",
+                        "triggers": {
+                            "header": "Sprožilci",
+                            "introduction": "Sprožilci so tisto, kar začne postopek obdelave avtomatizacije pravila. Za isto pravilo je mogoče določiti več sprožilcev. Ko se začne sprožilec, bo Home Assistant potrdil pogoje, če so, in poklical dejanje. \n\n [Več o sprožilcih.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Dodaj sprožilec",
+                            "duplicate": "Podvoji",
+                            "delete": "Izbriši",
+                            "delete_confirm": "Ste prepričani, da želite izbrisati?",
+                            "unsupported_platform": "Nepodprta platforma: {platform}",
+                            "type_select": "Tip sprožilca",
+                            "type": {
+                                "event": {
+                                    "label": "Dogodek",
+                                    "event_type": "Vrsta dogodka",
+                                    "event_data": "Podatki o dogodku"
+                                },
+                                "state": {
+                                    "label": "Stanje",
+                                    "from": "Od",
+                                    "to": "Za"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Dogodek:",
+                                    "start": "Zagon",
+                                    "shutdown": "Zaustavitev"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Tema",
+                                    "payload": "Obremenitev (neobvezno)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerično stanje",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Vrednostna predloga (neobvezno)"
+                                },
+                                "sun": {
+                                    "label": "Sonce",
+                                    "event": "Dogodek:",
+                                    "sunrise": "Sončni vzhod",
+                                    "sunset": "Sončni zahod",
+                                    "offset": "Odmik (neobvezno)"
+                                },
+                                "template": {
+                                    "label": "Predloga",
+                                    "value_template": "Vrednostna predloga"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "at": "Ob"
+                                },
+                                "zone": {
+                                    "label": "Območje",
+                                    "entity": "Subjekt z lokacijo",
+                                    "zone": "Območje",
+                                    "event": "Dogodek:",
+                                    "enter": "Vnesite",
+                                    "leave": "Odidi"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Pogoji",
+                            "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \n\n [Več o pogojih.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Dodaj pogoj",
+                            "duplicate": "Podvoji",
+                            "delete": "Briši",
+                            "delete_confirm": "Ste sigurni, da želite pobrisati?",
+                            "unsupported_condition": "Nepodprti pogoj: {condition}",
+                            "type_select": "Vrsta pogoja",
+                            "type": {
+                                "state": {
+                                    "label": "Stanje",
+                                    "state": "Stanje"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerično stanje",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Vrednostna predloga"
+                                },
+                                "sun": {
+                                    "label": "Sonce",
+                                    "before": "Pred:",
+                                    "after": "Po:",
+                                    "before_offset": "Pred odmikom (neobvezno)",
+                                    "after_offset": "Po odmiku (neobvezno)",
+                                    "sunrise": "sončni vzhod",
+                                    "sunset": "Sončni zahod"
+                                },
+                                "template": {
+                                    "label": "Predloga",
+                                    "value_template": "Vrednostna predloga"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "after": "Po",
+                                    "before": "Pred"
+                                },
+                                "zone": {
+                                    "label": "Območje",
+                                    "entity": "Subjekti z lokacijo",
+                                    "zone": "Območje"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Akcije",
+                            "introduction": "Akcije so, kaj bo storil Home Assistent, ko se sproži avtomatizacija. \n\n [Več o dejavnostih.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Dodaj akcijo",
+                            "duplicate": "Podvoji",
+                            "delete": "Briši",
+                            "delete_confirm": "Res želite pobrisati?",
+                            "unsupported_action": "Nepodprta akcija: {action}",
+                            "type_select": "Vrsta ukrepa",
+                            "type": {
+                                "service": {
+                                    "label": "Kliči storitev",
+                                    "service_data": "Podatki storitve"
+                                },
+                                "delay": {
+                                    "label": "Zamik",
+                                    "delay": "Zamik"
+                                },
+                                "wait_template": {
+                                    "label": "Čakaj",
+                                    "wait_template": "Čakalna predloga",
+                                    "timeout": "Časovna omejitev (neobvezno)"
+                                },
+                                "condition": {
+                                    "label": "Stanje"
+                                },
+                                "event": {
+                                    "label": "Požarni dogodek",
+                                    "event": "Dogodek:",
+                                    "service_data": "Podatki storitve"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skripte",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Opusti"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Subjekt"
+                }
+            },
+            "service-picker": {
+                "service": "Storitev"
             }
         }
     },

@@ -19,7 +19,7 @@
             "off": "Desactivat",
             "on": "Activat",
             "unknown": "Desconegut",
-            "unavailable": "No trobat"
+            "unavailable": "No disponible"
         },
         "alarm_control_panel": {
             "armed": "Armada",
@@ -274,11 +274,226 @@
                 "empty": "No teniu cap missatge",
                 "playback_title": "Reproducció de missatges",
                 "delete_prompt": "Vols suprimir aquest missatge?",
-                "delete_button": "Suprimeix"
+                "delete_button": "Suprimir"
             },
             "config": {
+                "header": "Configurar Home Assistant",
+                "introduction": "Aquí és possible configurar els vostres components i Home Assistant. Encara no és possible configurar tot des de la interfície d'usuari, però estem treballant.",
+                "core": {
+                    "caption": "General",
+                    "description": "Validar la configuració i controlar el servidor",
+                    "section": {
+                        "core": {
+                            "header": "Configuració i control del servidor",
+                            "introduction": "Sabem que canviar la configuració pot ser un procés molest. Aquesta secció intentarà facilitar una mica més la vostra vida.",
+                            "validation": {
+                                "heading": "Validació de la configuració",
+                                "introduction": "Valideu la configuració si recentment heu fet alguns canvis a la vostra configuració i voleu assegurar-vos que sigui vàlida.",
+                                "check_config": "Comprovar la configuració",
+                                "valid": "La configuració és válida!",
+                                "invalid": "La configuració és invàlida"
+                            },
+                            "reloading": {
+                                "heading": "Recarregar configuració",
+                                "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Utilizant aquestes opcions, es descarregarà la configuració actual i es carregarà la nova.",
+                                "core": "Recarregar el nucli",
+                                "group": "Recarregar grups",
+                                "automation": "Recarregar automatismes",
+                                "script": "Recarregar programes"
+                            },
+                            "server_management": {
+                                "heading": "Gestió del servidor",
+                                "introduction": "Controlar el servidor de Home Assistant... desde Home Assistant.",
+                                "restart": "Reiniciar",
+                                "stop": "Aturar"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Configurar notificacions push",
+                            "introduction": "Habiliteu aquesta opció per rebre notificacions push en aquest dispositiu",
+                            "push_notifications": "Notificacions push"
+                        },
+                        "translation": {
+                            "header": "Triar una llengua",
+                            "introduction": "Trieu una llengua per a la interfície de Home Assistant en aquest dispositiu",
+                            "language": "Llengua"
+                        },
+                        "themes": {
+                            "header": "Estableix un tema",
+                            "introduction": "Trieu 'Backend-selected' per utilitzar el tema per defecte o trieu un tema desitjat per a aquest dispositiu",
+                            "theme": "Tema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Personalització",
+                    "description": "Personalitza les teves entitats (customization)"
+                },
+                "automation": {
+                    "caption": "Automatismes",
+                    "description": "Crear i editar automatismes",
+                    "picker": {
+                        "header": "Editor d'automatismes",
+                        "introduction": "L'editor d'automatismes permet crear i editar automatismes. Llegiu [les instruccions] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assegurar-vos que heu configurat Home Assistant correctament.",
+                        "pick_automation": "Seleccioneu l'automatisme per editar",
+                        "no_automations": "No hem pogut trobar cap automatisme editable",
+                        "add_automation": "Afegir automatisme"
+                    },
+                    "editor": {
+                        "introduction": "Useu automatismes per donar vida a la vostra casa",
+                        "default_name": "Nou automatisme",
+                        "save": "Desar",
+                        "unsaved_confirm": "Hi han canvis no desats. Segur que voleu sortir?",
+                        "alias": "Nom",
+                        "triggers": {
+                            "header": "Activadors",
+                            "introduction": "Els activadors són les regles que fan començar a processar un automatisme. És possible especificar diversos activadors pel mateix automatisme. Una vegada que s'iniciï un activador, Home Assistant validarà les condicions, si n'hi ha, i cridará l'acció.\n\n[Més informació sobre activadors] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Afegir activador",
+                            "duplicate": "Duplicar",
+                            "delete": "Suprimir",
+                            "delete_confirm": "Segur que voleu suprimir?",
+                            "unsupported_platform": "Plataforma no suportada: {platform}",
+                            "type_select": "Tipus d'activador",
+                            "type": {
+                                "event": {
+                                    "label": "Esdeveniment",
+                                    "event_type": "Tipus d'esdeveniment",
+                                    "event_data": "Dades de l'esdeveniment"
+                                },
+                                "state": {
+                                    "label": "Estat",
+                                    "from": "Des de",
+                                    "to": "A"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Esdeveniment:",
+                                    "start": "Inici",
+                                    "shutdown": "Aturada"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic",
+                                    "payload": "Dades (opcional)"
+                                },
+                                "numeric_state": {
+                                    "label": "Estat numèric",
+                                    "above": "Per sobre de",
+                                    "below": "Per sota de",
+                                    "value_template": "Plantilla (opcional)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "event": "Esdeveniment:",
+                                    "sunrise": "Alba",
+                                    "sunset": "Capvespre",
+                                    "offset": "Diferencial (opcional)"
+                                },
+                                "template": {
+                                    "label": "Plantilla",
+                                    "value_template": "Plantilla de condició"
+                                },
+                                "time": {
+                                    "label": "Temps",
+                                    "at": "A"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entitat amb ubicació",
+                                    "zone": "Zona",
+                                    "event": "Esdeveniment:",
+                                    "enter": "Entrar",
+                                    "leave": "Sortir"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Condicions",
+                            "introduction": "Les condicions són una part opcional d'un automatisme i es poden utilitzar per evitar que es produeixi una acció quan s'activi. Les condicions semblen molt similars als activadors però funcionen de forma diferent. Un activador analitzarà els esdeveniments que ocorren en el sistema mentre que una condició només observa com es veu el sistema en un moment donat. Un activador pot observar que s'està activant un interruptor mentres que una condició només pot veure si un commutador està activat o desactivat.\n\n[Més informació sobre les condicions.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Afegir condició",
+                            "duplicate": "Duplicar",
+                            "delete": "Suprimir",
+                            "delete_confirm": "Segur que voleu suprimir?",
+                            "unsupported_condition": "Condició no suportada: {condition}",
+                            "type_select": "Tipus de condició",
+                            "type": {
+                                "state": {
+                                    "label": "Estat",
+                                    "state": "Estat"
+                                },
+                                "numeric_state": {
+                                    "label": "Estat numèric",
+                                    "above": "Per sobre de",
+                                    "below": "Per sota de",
+                                    "value_template": "Plantilla (opcional)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "before": "Abans:",
+                                    "after": "Després:",
+                                    "before_offset": "Diferencial (opcional)",
+                                    "after_offset": "Diferencial (opcional)",
+                                    "sunrise": "Alba",
+                                    "sunset": "Capvespre"
+                                },
+                                "template": {
+                                    "label": "Plantilla",
+                                    "value_template": "Plantilla de condició"
+                                },
+                                "time": {
+                                    "label": "Temps",
+                                    "after": "Després",
+                                    "before": "Abans"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entitat amb ubicació",
+                                    "zone": "Zona"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Accions",
+                            "introduction": "Les accions són les que farà Home Assistant quan s'activi l'automatisme.\n\n[Més informació sobre les accions.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Afegir acció",
+                            "duplicate": "Duplicar",
+                            "delete": "Suprimir",
+                            "delete_confirm": "Segur que voleu suprimir?",
+                            "unsupported_action": "Acció no suportada: {action}",
+                            "type_select": "Tipus d'acció",
+                            "type": {
+                                "service": {
+                                    "label": "Cridar servei",
+                                    "service_data": "Dades de servei"
+                                },
+                                "delay": {
+                                    "label": "Retard",
+                                    "delay": "Retard"
+                                },
+                                "wait_template": {
+                                    "label": "Esperar",
+                                    "wait_template": "Plantilla d'espera",
+                                    "timeout": "Temps máxim d'espera (opcional)"
+                                },
+                                "condition": {
+                                    "label": "Condició"
+                                },
+                                "event": {
+                                    "label": "Disparar esdeveniment",
+                                    "event": "Esdeveniment:",
+                                    "service_data": "Dades de servei"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Programes",
+                    "description": "Crear i editar programes (scripts)"
+                },
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "description": "Gestiona la teva xarxa Z-Wave"
                 }
             }
         },
@@ -288,7 +503,7 @@
         },
         "common": {
             "loading": "Carregant",
-            "cancel": "Cancel·la"
+            "cancel": "Cancel·lar"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dia}\nother {dies}\n}",
@@ -299,11 +514,29 @@
             "password": "Contrasenya",
             "remember": "Recordar",
             "log_in": "Iniciar sessió"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Imatge no disponible"
+            },
+            "persistent_notification": {
+                "dismiss": "Desestimar"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entitat"
+                }
+            },
+            "service-picker": {
+                "service": "Servei"
+            }
         }
     },
     "domain": {
         "alarm_control_panel": "Panell d'alarmes",
-        "automation": "Automatitzacions",
+        "automation": "Automatismes",
         "binary_sensor": "Sensors binaris",
         "calendar": "Calendari",
         "camera": "Càmera",
@@ -311,7 +544,7 @@
         "configurator": "Configurador",
         "conversation": "Conversa",
         "cover": "Coberta",
-        "device_tracker": "Seguiment del dispositius",
+        "device_tracker": "Seguiment de dispositius",
         "fan": "Ventiladors",
         "history_graph": "Gràfics històrics",
         "group": "Grups",
@@ -328,14 +561,21 @@
         "notify": "Notificacions",
         "plant": "Plantes",
         "proximity": "Proximitat",
-        "remote": "Remoto",
-        "scene": "Escena",
-        "script": "",
+        "remote": "Comandaments",
+        "scene": "Escenes",
+        "script": "Programes",
         "sensor": "Sensors",
         "sun": "Sol",
         "switch": "Interruptor",
         "updater": "Actualitzador",
         "weblink": "Enllaç web",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Humitat",
+            "visibility": "Visibilitat",
+            "wind_speed": "Velocitat del vent"
+        }
     }
 }

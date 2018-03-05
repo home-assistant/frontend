@@ -113,6 +113,10 @@
             "window": {
                 "off": "Closed",
                 "on": "Open"
+            },
+            "lock": {
+                "off": "Locked",
+                "on": "Unlocked"
             }
         },
         "calendar": {

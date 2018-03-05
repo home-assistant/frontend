@@ -323,7 +323,38 @@
                 },
                 "automation": {
                     "caption": "Automatisering",
-                    "description": "Opret og rediger automatiseringer"
+                    "description": "Opret og rediger automatiseringer",
+                    "editor": {
+                        "triggers": {
+                            "delete": "Slet",
+                            "delete_confirm": "Sikker på, at du vil slette?",
+                            "type_select": "Udløser type",
+                            "type": {
+                                "event": {
+                                    "label": "Begivenhed",
+                                    "event_type": "Begivenhedstype",
+                                    "event_data": "Begivenhedsdata"
+                                },
+                                "state": {
+                                    "label": "Tilstand",
+                                    "from": "Fra",
+                                    "to": "Til"
+                                },
+                                "homeassistant": {
+                                    "event": "Begivenhed",
+                                    "start": "Start",
+                                    "shutdown": "Luk ned"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Emne"
+                                },
+                                "time": {
+                                    "at": "Klokken"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Script",

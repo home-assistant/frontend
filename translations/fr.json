@@ -113,6 +113,10 @@
             "window": {
                 "off": "Fermée",
                 "on": "Ouverte"
+            },
+            "lock": {
+                "off": "Verrouillé",
+                "on": "Déverrouillé"
             }
         },
         "calendar": {
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "Automatisation",
-                    "description": "Créer et modifier des automatisations"
+                    "description": "Créer et modifier des automatisations",
+                    "picker": {
+                        "header": "Éditeur d'automatisation",
+                        "introduction": "L'éditeur d'automatisation vous permet de créer et éditer des automatisations. Veuillez lire [les instructions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) pour être sûr d'avoir configuré Home-Assistant correctement.",
+                        "pick_automation": "Choisissez l'automatisation à éditer",
+                        "no_automations": "Il n'y a aucune automatisation modifiable.",
+                        "add_automation": "Ajouter une automatisation"
+                    },
+                    "editor": {
+                        "introduction": "Utilisez les automatisations pour rendre votre maison vivante",
+                        "default_name": "Nouvelle automatisation",
+                        "save": "sauvegarder",
+                        "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
+                        "alias": "Nom",
+                        "triggers": {
+                            "header": "Déclencheurs",
+                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Ajouter un déclencheur",
+                            "duplicate": "Dupliquer",
+                            "delete": "Éfface",
+                            "delete_confirm": "Voulez-vous éffacé?",
+                            "unsupported_platform": "Platefome non supportée : {platform}",
+                            "type_select": "Type de déclencheur",
+                            "type": {
+                                "event": {
+                                    "label": "Événement :",
+                                    "event_type": "Type d'événement",
+                                    "event_data": "Données de l'événement"
+                                },
+                                "state": {
+                                    "label": "État",
+                                    "from": "De",
+                                    "to": "À"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Événement :",
+                                    "start": "Démarrer",
+                                    "shutdown": "Arrêt"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Sujet",
+                                    "payload": "Payload (optionnel)"
+                                },
+                                "numeric_state": {
+                                    "label": "État numérique",
+                                    "above": "Au-dessus de",
+                                    "below": "En-dessous de",
+                                    "value_template": "Contenu du template (optionnel)"
+                                },
+                                "sun": {
+                                    "label": "Soleil",
+                                    "event": "Événement :",
+                                    "sunrise": "Lever du soleil",
+                                    "sunset": "Coucher de soleil",
+                                    "offset": "Décalage (optionnel)"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Contenu du template"
+                                },
+                                "time": {
+                                    "label": "Heure",
+                                    "at": "À"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entité avec emplacement",
+                                    "zone": "Zone",
+                                    "event": "Événement :",
+                                    "enter": "Entrez",
+                                    "leave": "Quitté"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Conditions",
+                            "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemble aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.\n\n[En apprendre plus sur les conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Ajouter une condition",
+                            "duplicate": "Dupliquer",
+                            "delete": "Éffacement",
+                            "delete_confirm": "Voulez-vous éffacé?",
+                            "unsupported_condition": "Condition non supportée : {condition}",
+                            "type_select": "Type de condition",
+                            "type": {
+                                "state": {
+                                    "label": "État",
+                                    "state": "État"
+                                },
+                                "numeric_state": {
+                                    "label": "État numérique",
+                                    "above": "Dessus",
+                                    "below": "Sous",
+                                    "value_template": "Contenu du template (optionnel)"
+                                },
+                                "sun": {
+                                    "label": "Soleil",
+                                    "before": "Avant :",
+                                    "after": "Après :",
+                                    "before_offset": "Décalage avant (optionnel)",
+                                    "after_offset": "Décalage après (optionnel)",
+                                    "sunrise": "Lever du soleil",
+                                    "sunset": "Coucher de soleil"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Contenu du template"
+                                },
+                                "time": {
+                                    "label": "Heure",
+                                    "after": "Après",
+                                    "before": "Avant"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entité avec localisation",
+                                    "zone": "Zone"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Actions",
+                            "introduction": "Les actions sont ce que Home Assistant fera quand une automatisation est déclenchée.\n\n[En apprendre plus sur les actions.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Ajouter une action",
+                            "duplicate": "Dupliquer",
+                            "delete": "Effacer",
+                            "delete_confirm": "Voulez-vous vraiment effacer ?",
+                            "unsupported_action": "Action non supportée : {action}",
+                            "type_select": "Type d'action",
+                            "type": {
+                                "service": {
+                                    "label": "Appeler un service",
+                                    "service_data": "Données du service"
+                                },
+                                "delay": {
+                                    "label": "Délai",
+                                    "delay": "Délais"
+                                },
+                                "wait_template": {
+                                    "label": "Attendre",
+                                    "wait_template": "Template d'attente",
+                                    "timeout": "Délai d'expiration (optionnel)"
+                                },
+                                "condition": {
+                                    "label": "Condition"
+                                },
+                                "event": {
+                                    "label": "Déclencher l'événement",
+                                    "event": "Événement :",
+                                    "service_data": "Données du service"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Script",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Ignorer"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entité"
+                }
+            },
+            "service-picker": {
+                "service": "Service"
             }
         }
     },

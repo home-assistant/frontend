@@ -113,6 +113,10 @@
             "window": {
                 "off": "Chiusa",
                 "on": "Aperta"
+            },
+            "lock": {
+                "off": "Bloccato",
+                "on": "Sbloccato"
             }
         },
         "calendar": {
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "Automazione",
-                    "description": "Crea e modifica automazioni"
+                    "description": "Crea e modifica automazioni",
+                    "picker": {
+                        "header": "Editor automazione",
+                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi [le istruzioni] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assicurarti di aver configurato correttamente Home Assistant.",
+                        "pick_automation": "Scegli l'automazione da modificare",
+                        "no_automations": "Nessuna automazioni modificabili trovata",
+                        "add_automation": "Aggiungi automazione"
+                    },
+                    "editor": {
+                        "introduction": "Usa le automazioni per rendere viva la tua casa",
+                        "default_name": "Nuova automazione",
+                        "save": "Salva",
+                        "unsaved_confirm": "Hai modifiche non salvate. Sei sicuro di voler uscire?",
+                        "alias": "Nome",
+                        "triggers": {
+                            "header": "Triggers",
+                            "introduction": "I trigger sono ciò che avvia l'elaborazione di una regola di automazione. È possibile specificare più trigger per la stessa regola. Una volta avviato il trigger, Home Assistant convaliderà le condizioni, se presenti, e chiamerà l'azione. \n\n [Ulteriori informazioni sui trigger.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Aggiungi trigger",
+                            "duplicate": "Duplica",
+                            "delete": "Cancella",
+                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "unsupported_platform": "Piattaforma non supportata: {platform}",
+                            "type_select": "Tipo di trigger",
+                            "type": {
+                                "event": {
+                                    "label": "Evento",
+                                    "event_type": "Tipo di evento",
+                                    "event_data": "Evento data"
+                                },
+                                "state": {
+                                    "label": "Stato",
+                                    "from": "Da",
+                                    "to": "A"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Evento:",
+                                    "start": "Avvio",
+                                    "shutdown": "Arresto del sistema"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Argomento",
+                                    "payload": "Carico (opzionale)"
+                                },
+                                "numeric_state": {
+                                    "label": "Valore numerico",
+                                    "above": "Superiore",
+                                    "below": "Inferiorre",
+                                    "value_template": "Valore modello (opzionale)"
+                                },
+                                "sun": {
+                                    "label": "Sole",
+                                    "event": "Evento",
+                                    "sunrise": "Alba",
+                                    "sunset": "Tramonto",
+                                    "offset": "Offset (opzionale)"
+                                },
+                                "template": {
+                                    "label": "Modello",
+                                    "value_template": "Valore modello"
+                                },
+                                "time": {
+                                    "label": "Ora",
+                                    "at": "A"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entità con posizione",
+                                    "zone": "Zona",
+                                    "event": "Evento",
+                                    "enter": "Ingresso",
+                                    "leave": "Uscita"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "condizioni",
+                            "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \n\n [Ulteriori informazioni sulle condizioni.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Aggiungi condizione",
+                            "duplicate": "Duplica",
+                            "delete": "Cancella",
+                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "unsupported_condition": "Condizione non supportata: {conditione}",
+                            "type_select": "Tipo di condizione",
+                            "type": {
+                                "state": {
+                                    "label": "Stato",
+                                    "state": "Stato"
+                                },
+                                "numeric_state": {
+                                    "label": "valore numerico",
+                                    "above": "Superiore",
+                                    "below": "Inferiore",
+                                    "value_template": "valore modello (opzionale)"
+                                },
+                                "sun": {
+                                    "label": "Sole",
+                                    "before": "Prima:",
+                                    "after": "Dopo:",
+                                    "before_offset": "Prima dell'offset (opzionale)",
+                                    "after_offset": "Dopo l'offset (opzionale)",
+                                    "sunrise": "Alba",
+                                    "sunset": "Tramonto"
+                                },
+                                "template": {
+                                    "label": "Modello",
+                                    "value_template": "Valore modello"
+                                },
+                                "time": {
+                                    "label": "Ora",
+                                    "after": "Dopo",
+                                    "before": "Prima"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entità con posizione",
+                                    "zone": "Zona"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Azioni",
+                            "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Aggiungi azione",
+                            "duplicate": "Duplica",
+                            "delete": "cancella",
+                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "unsupported_action": "Azione non supportata: {azione}",
+                            "type_select": "Tipo di azione",
+                            "type": {
+                                "service": {
+                                    "label": "Chiama servizio",
+                                    "service_data": "Dato servizio"
+                                },
+                                "delay": {
+                                    "label": "Ritardo",
+                                    "delay": "Ritardo"
+                                },
+                                "wait_template": {
+                                    "label": "Attendere",
+                                    "wait_template": "Attendi modello",
+                                    "timeout": "Timeout (opzionale)"
+                                },
+                                "condition": {
+                                    "label": "Condizione"
+                                },
+                                "event": {
+                                    "label": "Evento incendio",
+                                    "event": "Evento:",
+                                    "service_data": "Dato servizio"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Script",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Rimuovi"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entità"
+                }
+            },
+            "service-picker": {
+                "service": "Servizio"
             }
         }
     },

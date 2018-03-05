@@ -113,6 +113,10 @@
             "window": {
                 "off": "Stängt",
                 "on": "Öppet"
+            },
+            "lock": {
+                "off": "Låst",
+                "on": "Olåst"
             }
         },
         "calendar": {
@@ -278,23 +282,23 @@
             },
             "config": {
                 "header": "Konfigurera Home Assistant",
-                "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Allt är inte möjligt att ställa in från användargränssnittet ännu, men vi jobbar på det.",
+                "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
                 "core": {
                     "caption": "Allmänt",
                     "description": "Kontrollera din konfiguration och hantera servern.",
                     "section": {
                         "core": {
                             "header": "Konfiguration och serverhantering",
-                            "introduction": "Att ändra din konfiguration kan vara en tröttsam process. Vi vet. Den här avdelningen ska försöka göra ditt liv lite enklare.",
+                            "introduction": "Att ändra din konfiguration kan vara en tröttsam process. Vi vet. Den här avdelningen försöker göra ditt liv lite enklare.",
                             "validation": {
                                 "heading": "Validering av konfiguration",
-                                "introduction": "Kontrollera din konfiguration om du nyligen gjort ändringar och du vill säkerställa att den fortfarande är giltig",
+                                "introduction": "Kontrollera din konfiguration om du nyligen gjort ändringar och vill säkerställa att den fortfarande är giltig",
                                 "check_config": "Kontrollera konfigurationen",
                                 "valid": "Konfigurationen är giltig!",
                                 "invalid": "Konfigurationen är inte giltig"
                             },
                             "reloading": {
-                                "heading": "Konfigurationen uppdateras",
+                                "heading": "Uppdatering av konfigurationen",
                                 "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"Uppdatera\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                                 "core": "Uppdatera core",
                                 "group": "Uppdatera grupper",
@@ -330,8 +334,162 @@
                     "description": "Anpassa dina enheter"
                 },
                 "automation": {
-                    "caption": "Automation",
-                    "description": "Skapa och redigera automationer"
+                    "caption": "Automationer",
+                    "description": "Skapa och redigera automationer",
+                    "picker": {
+                        "header": "Automatiseringseditor",
+                        "introduction": "Automatiseringseditorn låter dig skapa och redigera automationer. Läs [instruktionerna] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) för att se till att du har konfigurerat Home Assistant korrekt.",
+                        "pick_automation": "Välj automation att redigera",
+                        "no_automations": "Vi kunde inte hitta några redigerbara automationer",
+                        "add_automation": "Lägg till automatisering"
+                    },
+                    "editor": {
+                        "introduction": "Använd automatiseringar för väcka liv i ditt hem",
+                        "default_name": "Ny automation",
+                        "save": "Spara",
+                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?",
+                        "alias": "Namn",
+                        "triggers": {
+                            "header": "Triggers",
+                            "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden\n\n[Läs mer om triggers.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Lägg till händelse",
+                            "duplicate": "Duplicera",
+                            "delete": "Radera",
+                            "delete_confirm": "Säker på att du vill radera?",
+                            "unsupported_platform": "Plattform stöds inte: {platform}",
+                            "type_select": "Aktiveringstyp",
+                            "type": {
+                                "event": {
+                                    "label": "Händelse",
+                                    "event_type": "Händelsetyp",
+                                    "event_data": "Händelsedata"
+                                },
+                                "state": {
+                                    "label": "Tillstånd",
+                                    "from": "Från",
+                                    "to": "Till"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Händelse",
+                                    "start": "Starta",
+                                    "shutdown": "Stoppa"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Ämne",
+                                    "payload": "Nyttolast (tillval)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numeriskt tillstånd",
+                                    "above": "Över",
+                                    "below": "Under",
+                                    "value_template": "Värdesmall (valfritt)"
+                                },
+                                "sun": {
+                                    "label": "Solen",
+                                    "event": "Händelse",
+                                    "sunrise": "Soluppgång",
+                                    "sunset": "Solnedgång",
+                                    "offset": "Förskjutning (valfritt)"
+                                },
+                                "template": {
+                                    "label": "Mall",
+                                    "value_template": "Värdemall"
+                                },
+                                "time": {
+                                    "label": "Tid",
+                                    "at": "När"
+                                },
+                                "zone": {
+                                    "label": "Zon",
+                                    "entity": "Enhet med position",
+                                    "zone": "Zon",
+                                    "event": "Händelse",
+                                    "enter": "Ankommer",
+                                    "leave": "Lämnar"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Villkor",
+                            "introduction": "Villkoren är en valfri del av en automatiseringsregel och kan användas för att förhindra att en åtgärd inträffar när den triggas. Villkoren liknar triggers men är väldigt olika. En trigger kommer att se på händelser som händer i systemet medan ett villkor bara tittar på hur systemet ser ut just nu. En trigger kan observera att en strömbrytare slås på. Ett villkor kan bara se om en strömbrytare är på eller av. \n\n [Lär dig mer om villkoren.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Lägg till villkor",
+                            "duplicate": "Duplicera",
+                            "delete": "Radera",
+                            "delete_confirm": "Säker på att du vill radera?",
+                            "unsupported_condition": "Villkor stöds inte: {{condition}}",
+                            "type_select": "Villkorstyp",
+                            "type": {
+                                "state": {
+                                    "label": "Tillstånd",
+                                    "state": "Tillstånd"
+                                },
+                                "numeric_state": {
+                                    "label": "Siffervärde",
+                                    "above": "Över",
+                                    "below": "Under",
+                                    "value_template": "Värdemall (valfritt)"
+                                },
+                                "sun": {
+                                    "label": "Solen",
+                                    "before": "Före:",
+                                    "after": "Efter:",
+                                    "before_offset": "Förskjutning innan (valfritt)",
+                                    "after_offset": "Förskjutning efter (valfritt)",
+                                    "sunrise": "Soluppgång",
+                                    "sunset": "Solnedgång"
+                                },
+                                "template": {
+                                    "label": "Mall",
+                                    "value_template": "Värdemall"
+                                },
+                                "time": {
+                                    "label": "Tid",
+                                    "after": "Efter",
+                                    "before": "Före"
+                                },
+                                "zone": {
+                                    "label": "Zon",
+                                    "entity": "Enhet med position",
+                                    "zone": "Zon"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Åtgärder",
+                            "introduction": "Åtgärderna är vad Home Assistent gör när automatiseringen utlöses. \n\n [Lär dig mer om åtgärder.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Lägg till åtgärd",
+                            "duplicate": "Duplicera",
+                            "delete": "Radera",
+                            "delete_confirm": "Är du säker på att du vill radera?",
+                            "unsupported_action": "Åtgärd stöds inte: {action}",
+                            "type_select": "Åtgärdstyp",
+                            "type": {
+                                "service": {
+                                    "label": "Kör tjänst",
+                                    "service_data": "Händelsedata"
+                                },
+                                "delay": {
+                                    "label": "Paus",
+                                    "delay": "Fördröjning"
+                                },
+                                "wait_template": {
+                                    "label": "paus",
+                                    "wait_template": "pause mall",
+                                    "timeout": "Timeout (valfritt)"
+                                },
+                                "condition": {
+                                    "label": "Villkor"
+                                },
+                                "event": {
+                                    "label": "Fire event",
+                                    "event": "Händelse",
+                                    "service_data": "Tjänstedata"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skript",
@@ -354,7 +512,7 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
             "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}",
-            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}"
+            "second": "{count} {count, plural,\nen {sekund}\nflera {sekunder}\n}"
         },
         "login-form": {
             "password": "Lösenord",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Avfärda"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Enhet"
+                }
+            },
+            "service-picker": {
+                "service": "Tjänst"
             }
         }
     },
