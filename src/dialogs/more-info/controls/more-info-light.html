@@ -160,21 +160,25 @@
     }
 
     stateObjChanged(newVal, oldVal) {
+      const props = {
+        brightnessSliderValue: 0
+      };
+
       if (newVal && newVal.state === 'on') {
-        this.brightnessSliderValue = newVal.attributes.brightness;
-        this.ctSliderValue = newVal.attributes.color_temp;
-        this.wvSliderValue = newVal.attributes.white_value;
+        props.brightnessSliderValue = newVal.attributes.brightness;
+        props.ctSliderValue = newVal.attributes.color_temp;
+        props.wvSliderValue = newVal.attributes.white_value;
         if (newVal.attributes.rgb_color) {
-          this.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
+          props.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
         }
         if (newVal.attributes.effect_list) {
-          this.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
+          props.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
         } else {
-          this.effectIndex = -1;
+          props.effectIndex = -1;
         }
-      } else {
-        this.brightnessSliderValue = 0;
       }
+
+      this.setProperties(props);
 
       if (oldVal) {
         setTimeout(() => {
