@@ -36,14 +36,14 @@
               </template>
             </div>
             <div class='card-actions'>
-              <a
-                href='https://github.com/home-assistant/home-assistant/releases'
-                target='_blank'
-              ><paper-button>Check release notes</paper-button></a>
               <ha-call-api-button
                 hass='[[hass]]'
                 path='hassio/homeassistant/update'
               >Update</ha-call-api-button>
+              <a
+                href='https://github.com/home-assistant/home-assistant/releases'
+                target='_blank'
+              ><paper-button>Release notes</paper-button></a>
             </div>
           </paper-card>
         </div>
