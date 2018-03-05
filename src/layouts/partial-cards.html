@@ -213,7 +213,7 @@
 
     ready() {
       this.handleWindowChange = this.handleWindowChange.bind(this);
-      this.mqls = [300, 600, 900, 1200].map(width => matchMedia('(min-width: ' + width + 'px)'));
+      this.mqls = [300, 600, 900, 1200].map(width => matchMedia(`(min-width: ${width}px)`));
       super.ready();
     }
 

@@ -98,14 +98,6 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
         armHomeButtonVisible: newVal.state === 'disarmed',
         armAwayButtonVisible: newVal.state === 'disarmed',
       };
-      props.codeInputEnabled = (
-        newVal.state === 'armed_home' ||
-        newVal.state === 'armed_away' ||
-        newVal.state === 'armed_night' ||
-        newVal.state === 'armed_custom_bypass' ||
-        newVal.state === 'disarmed' ||
-        newVal.state === 'pending' ||
-        newVal.state === 'triggered');
       props.disarmButtonVisible = (
         newVal.state === 'armed_home' ||
         newVal.state === 'armed_away' ||
@@ -113,6 +105,7 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
         newVal.state === 'armed_custom_bypass' ||
         newVal.state === 'pending' ||
         newVal.state === 'triggered');
+      props.codeInputEnabled = props.disarmButtonVisible || newVal.state === 'disarmed';
       this.setProperties(props);
     }
     if (oldVal) {
