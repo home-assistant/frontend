@@ -17,6 +17,49 @@
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "label": "Saulė",
+                                    "before": "Prieš:",
+                                    "after": "Po:",
+                                    "sunrise": "Saulėtekis",
+                                    "sunset": "Saulėlydis"
+                                },
+                                "time": {
+                                    "label": "Laikas",
+                                    "after": "Po",
+                                    "before": "Prieš"
+                                },
+                                "zone": {
+                                    "label": "Vieta",
+                                    "zone": "Vieta"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Veiksmai",
+                            "add": "Pridėti veiksmą",
+                            "duplicate": "Dublikuoti",
+                            "delete": "Trinti",
+                            "delete_confirm": "Ar tikrai norite ištrinti?",
+                            "type": {
+                                "delay": {
+                                    "delay": "Uždelsta"
+                                },
+                                "wait_template": {
+                                    "label": "Laukti"
+                                },
+                                "event": {
+                                    "label": "Sukurti įvykį",
+                                    "event": "Įvykiai"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

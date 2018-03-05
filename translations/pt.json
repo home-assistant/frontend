@@ -79,7 +79,7 @@
                 "on": "Inseguro"
             },
             "presence": {
-                "off": "Ausente",
+                "off": "Fora",
                 "on": "Casa"
             },
             "battery": {
@@ -113,6 +113,10 @@
             "window": {
                 "off": "Fechada",
                 "on": "Aberta"
+            },
+            "lock": {
+                "off": "Trancada",
+                "on": "Destrancada"
             }
         },
         "calendar": {
@@ -153,7 +157,7 @@
         },
         "device_tracker": {
             "home": "Casa",
-            "not_home": "Ausente"
+            "not_home": "Fora"
         },
         "fan": {
             "off": "Desligada",
@@ -163,7 +167,7 @@
             "off": "Desligado",
             "on": "Ligado",
             "home": "Casa",
-            "not_home": "Ausente",
+            "not_home": "Fora",
             "open": "Aberta",
             "opening": "A abrir",
             "closed": "Fechada",
@@ -253,7 +257,7 @@
         },
         "device_tracker": {
             "home": "Casa",
-            "not_home": "Ausente"
+            "not_home": "Fora"
         }
     },
     "ui": {
@@ -335,25 +339,25 @@
                     "picker": {
                         "header": "Editor de automação",
                         "introduction": "O editor de automação permite criar e editar automações. Leia [as instruções] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) para se certificar de que configurou o Home Assistant corretamente.",
-                        "pick_automation": "Escolha automação para editar",
+                        "pick_automation": "Escolha a automação a editar",
                         "no_automations": "Não foi possível encontrar nenhuma automação editável",
                         "add_automation": "Acrescentar automação"
                     },
                     "editor": {
-                        "introduction": "Use automatizações para tornar a sua casa viva",
+                        "introduction": "Crie automatizações para tornar a sua casa viva",
                         "default_name": "Nova Automação",
                         "save": "Guardar",
                         "unsaved_confirm": "Você tem alterações não guardas. Tem a certeza de que quer sair?",
                         "alias": "Nome",
                         "triggers": {
-                            "header": "Acionamentos",
-                            "introduction": "Os acionamentos são o que inicia o processamento de uma regra de automação. É possível especificar vários acionamentos para a mesma regra. Uma vez iniciado um acionamento, o Home Assistant irá validar as condições, e caso as mesmas ocorram, chamar a ação.\n\n[Saiba mais sobre acionamentos.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
-                            "add": "Acrescentar acionamento",
+                            "header": "Gatilhos",
+                            "introduction": "Os gatilhos são o que inicia o processamento de uma regra de automação. É possível especificar vários gatilhos para a mesma regra. Uma vez iniciado um gatilho, o Home Assistant irá validar as condições, e caso as mesmas ocorram, chamar a ação.\n\n[Saiba mais sobre gatilhos.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Acrescentar gatilho",
                             "duplicate": "Duplicar",
                             "delete": "Apagar",
                             "delete_confirm": "Tem certeza que deseja apagar?",
                             "unsupported_platform": "Plataforma não suportada: {platform}",
-                            "type_select": "Tipo de acionamento",
+                            "type_select": "Tipo de gatilho",
                             "type": {
                                 "event": {
                                     "label": "Evento",
@@ -362,13 +366,13 @@
                                 },
                                 "state": {
                                     "label": "Estado",
-                                    "from": "A partir de",
+                                    "from": "De",
                                     "to": "Para"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
                                     "event": "Evento:",
-                                    "start": "Começar",
+                                    "start": "Iniciar",
                                     "shutdown": "Desligar"
                                 },
                                 "mqtt": {
@@ -387,11 +391,11 @@
                                     "event": "Evento:",
                                     "sunrise": "Nascer do sol",
                                     "sunset": "Pôr do sol",
-                                    "offset": "Após desvio (opcional)"
+                                    "offset": "Desfasamento (opcional)"
                                 },
                                 "template": {
                                     "label": "Modelo",
-                                    "value_template": "Modelo de valor"
+                                    "value_template": "Modelo para o valor"
                                 },
                                 "time": {
                                     "label": "Tempo",
@@ -409,7 +413,7 @@
                         },
                         "conditions": {
                             "header": "Condições",
-                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação ocorra quando acionado. As condições parecem muito semelhantes aos desencadeantes, mas são muito diferentes. Um acionamento examinará os eventos que acontecem no sistema, enquanto uma condição apenas analisa a forma como o sistema parece agora. Um acionamento pode observar que um interruptor está sendo ligado. Uma condição só pode ver se um interruptor está ligado ou desligado. \n\n [Saiba mais sobre as condições.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação ocorra quando um gatilho dispara. As condições embora pareçam muito semelhantes aos gatilhos, são muito diferentes. Um gatilho examinará os eventos que acontecem no sistema, enquanto uma condição apenas analisa a forma como o sistema parece no momento. Um gatilho pode observar que um interruptor está a ser ligado. Uma condição só pode ver se um interruptor está ligado ou desligado. \n\n [Saiba mais sobre as condições.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Acrescentar condição",
                             "duplicate": "Duplicar",
                             "delete": "Apagar",
@@ -429,21 +433,21 @@
                                 },
                                 "sun": {
                                     "label": "Sol",
-                                    "before": "Antes de:",
-                                    "after": "Depois de:",
-                                    "before_offset": "Antes do desvio (opcional)",
-                                    "after_offset": "Após desvio (opcional)",
+                                    "before": "Antes do:",
+                                    "after": "Depois do:",
+                                    "before_offset": "Anterior ao desfasamento (opcional)",
+                                    "after_offset": "Posterior ao desfasamento (opcional)",
                                     "sunrise": "Nascer do sol",
                                     "sunset": "Pôr do sol"
                                 },
                                 "template": {
                                     "label": "Modelo",
-                                    "value_template": "Modelo de valor"
+                                    "value_template": "Modelo para o valor"
                                 },
                                 "time": {
                                     "label": "Tempo",
-                                    "after": "Depois de",
-                                    "before": "Antes de"
+                                    "after": "Depois das",
+                                    "before": "Antes das"
                                 },
                                 "zone": {
                                     "label": "Zona",
@@ -454,7 +458,7 @@
                         },
                         "actions": {
                             "header": "Ações",
-                            "introduction": "As ações são o que o Home Assistant fará quando a automação for acionada. \n\n [Saiba mais sobre ações.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "As ações são o que o Home Assistant executará quando a automação for disparada. \n\n [Saiba mais sobre ações.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Adicionar ação",
                             "duplicate": "Duplicar",
                             "delete": "Apagar",
@@ -464,7 +468,7 @@
                             "type": {
                                 "service": {
                                     "label": "Chamar serviço",
-                                    "service_data": "Dados de serviço"
+                                    "service_data": "Dados para o serviço"
                                 },
                                 "delay": {
                                     "label": "Atraso",

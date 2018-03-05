@@ -113,6 +113,10 @@
             "window": {
                 "off": "关闭",
                 "on": "开启"
+            },
+            "lock": {
+                "off": "上锁",
+                "on": "解锁"
             }
         },
         "calendar": {
@@ -332,55 +336,156 @@
                 "automation": {
                     "caption": "自动化",
                     "description": "创建和编辑自动化",
+                    "picker": {
+                        "header": "自动化编辑器",
+                        "introduction": "自动化编辑器方便你创建及编辑自动化。请阅读相关[说明](https:\/\/home-assistant.io\/docs\/automation\/editor\/)以确保正确配置。",
+                        "pick_automation": "选择要编辑的自动化",
+                        "no_automations": "未找到可编辑的自动化",
+                        "add_automation": "添加自动化"
+                    },
                     "editor": {
+                        "introduction": "使用自动化让你的家聪明起来",
+                        "default_name": "新自动化实例",
+                        "save": "保存",
+                        "unsaved_confirm": "有更改尚未保存，确定离开页面吗？",
+                        "alias": "名称",
                         "triggers": {
+                            "header": "触发条件",
+                            "introduction": "触发条件是整个自动化流程的起点。一个自动化实例中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证环境条件（Conditions）是否符合，如果符合，则执行动作（Actions）。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "添加触发条件",
+                            "duplicate": "复制",
+                            "delete": "删除",
+                            "delete_confirm": "确认删除？",
+                            "unsupported_platform": "不支持的平台：{platform}",
+                            "type_select": "触发条件类型",
                             "type": {
+                                "event": {
+                                    "label": "事件",
+                                    "event_type": "事件类型",
+                                    "event_data": "事件数据"
+                                },
+                                "state": {
+                                    "label": "状态",
+                                    "from": "从",
+                                    "to": "变为"
+                                },
                                 "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "事件：",
+                                    "start": "启动",
                                     "shutdown": "关闭"
                                 },
                                 "mqtt": {
-                                    "label": "MQTT"
+                                    "label": "MQTT",
+                                    "topic": "Topic",
+                                    "payload": "参数（可选）"
+                                },
+                                "numeric_state": {
+                                    "label": "数字类状态",
+                                    "above": "大于",
+                                    "below": "小于",
+                                    "value_template": "自定义值（可选）"
                                 },
                                 "sun": {
+                                    "label": "日出\/日落",
+                                    "event": "事件：",
                                     "sunrise": "日出",
-                                    "sunset": "日落"
+                                    "sunset": "日落",
+                                    "offset": "偏移（可选）"
+                                },
+                                "template": {
+                                    "label": "自定义模板",
+                                    "value_template": "自定义值"
                                 },
                                 "time": {
-                                    "label": "时间"
+                                    "label": "时间",
+                                    "at": "当"
+                                },
+                                "zone": {
+                                    "label": "地点",
+                                    "entity": "位置追踪设备",
+                                    "zone": "地点",
+                                    "event": "事件：",
+                                    "enter": "进入",
+                                    "leave": "离开"
                                 }
                             }
                         },
                         "conditions": {
+                            "header": "环境条件",
+                            "introduction": "环境条件是自动化流程中的可选条件，可用于避免触发条件满足时动作的执行。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统的状态。例如，“灯被打开”这个事件属于触发条件，“灯是开着的”这个状态就属于环境条件。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "添加条件",
                             "duplicate": "复制",
+                            "delete": "删除",
+                            "delete_confirm": "确认删除？",
+                            "unsupported_condition": "不支持的环境条件：{condition}",
+                            "type_select": "环境条件类型",
                             "type": {
+                                "state": {
+                                    "label": "状态",
+                                    "state": "状态"
+                                },
+                                "numeric_state": {
+                                    "label": "数字型状态",
+                                    "above": "大于",
+                                    "below": "小于",
+                                    "value_template": "自定义值（可选）"
+                                },
                                 "sun": {
+                                    "label": "日出\/日落",
+                                    "before": "早于：",
+                                    "after": "晚于：",
+                                    "before_offset": "提前：（可选）",
+                                    "after_offset": "延后：（可选）",
+                                    "sunrise": "日出",
                                     "sunset": "日落"
+                                },
+                                "template": {
+                                    "label": "模板",
+                                    "value_template": "自定义模板"
+                                },
+                                "time": {
+                                    "label": "时间",
+                                    "after": "晚于",
+                                    "before": "早于"
+                                },
+                                "zone": {
+                                    "label": "地点",
+                                    "entity": "位置追踪设备",
+                                    "zone": "地点"
                                 }
                             }
                         },
                         "actions": {
+                            "header": "动作",
+                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\n\n[了解更多关于 Actions 的信息](https:\/\/home-assistant.io\/docs\/automation\/action)",
                             "add": "添加动作",
                             "duplicate": "复制",
                             "delete": "删除",
-                            "delete_confirm": "确定删除？",
+                            "delete_confirm": "确认删除？",
                             "unsupported_action": "不支持的操作: {action}",
                             "type_select": "动作类型",
                             "type": {
+                                "service": {
+                                    "label": "调用服务",
+                                    "service_data": "服务数据"
+                                },
                                 "delay": {
                                     "label": "延迟",
                                     "delay": "延迟"
                                 },
                                 "wait_template": {
-                                    "label": "等待",
-                                    "wait_template": "等待模板",
+                                    "label": "延时",
+                                    "wait_template": "延时自定义值",
                                     "timeout": "超时（可选）"
                                 },
                                 "condition": {
-                                    "label": "条件"
+                                    "label": "环境条件"
                                 },
                                 "event": {
-                                    "label": "火灾事件"
+                                    "label": "触发事件",
+                                    "event": "事件：",
+                                    "service_data": "服务数据"
                                 }
                             }
                         }
@@ -420,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "忽略"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "设备"
+                }
+            },
+            "service-picker": {
+                "service": "服务"
             }
         }
     },

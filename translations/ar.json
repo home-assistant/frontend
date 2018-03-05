@@ -331,7 +331,42 @@
                 },
                 "automation": {
                     "caption": "التشغيل التلقائي",
-                    "description": "إنشاء وتحرير التشغيل الألي"
+                    "description": "إنشاء وتحرير التشغيل الألي",
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "sun": {
+                                    "sunset": "Zonsondergang"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "zone": "Zone",
+                                    "enter": "Betreedt",
+                                    "leave": "Verlaat"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "add": "إضافة شرط",
+                            "unsupported_condition": "شوط غير مدعوم: {شرط}",
+                            "type_select": "نوع الشرط",
+                            "type": {
+                                "sun": {
+                                    "before": "قبل",
+                                    "after": "بعد",
+                                    "before_offset": "بعد الإزاحة (اختياري)",
+                                    "after_offset": "بعد الإزاحة (اختياري)",
+                                    "sunrise": "شروق الشمس",
+                                    "sunset": "غروب الشمس"
+                                },
+                                "time": {
+                                    "label": "وقت",
+                                    "after": "بعد",
+                                    "before": "قبل"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "السكريبت",

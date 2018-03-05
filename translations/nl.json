@@ -87,7 +87,7 @@
                 "on": "Laag"
             },
             "problem": {
-                "off": "Oké",
+                "off": "OK",
                 "on": "Probleem"
             },
             "connectivity": {
@@ -113,6 +113,10 @@
             "window": {
                 "off": "Dicht",
                 "on": "Open"
+            },
+            "lock": {
+                "off": "Vergrendelt",
+                "on": "Ontgrendelt"
             }
         },
         "calendar": {
@@ -236,8 +240,8 @@
     },
     "state_badge": {
         "default": {
-            "unknown": "Onbekend",
-            "unavailable": "Niet beschikbaar"
+            "unknown": "Onbek.",
+            "unavailable": "Niet besch"
         },
         "alarm_control_panel": {
             "armed": "Actief",
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "Automatisering",
-                    "description": "Het maken en bewerken van automatiseringen"
+                    "description": "Het maken en bewerken van automatiseringen",
+                    "picker": {
+                        "header": "Automatisering editor",
+                        "introduction": "Met de automatiseringseditor kunt u automatiseringen maken en bewerken. Lees [de instructies] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) om te controleren of u Home Assistant juist hebt geconfigureerd.",
+                        "pick_automation": "Kies te bewerken automatisering",
+                        "no_automations": "We konden geen bewerkbare automatiseringen vinden",
+                        "add_automation": "Automatisering toevoegen"
+                    },
+                    "editor": {
+                        "introduction": "Gebruik automatiseringen om uw huis tot leven te brengen",
+                        "default_name": "Nieuwe automatisering",
+                        "save": "Opslaan",
+                        "unsaved_confirm": "U heeft niet-opgeslagen wijzigingen. Weet je zeker dat u wilt afsluiten?",
+                        "alias": "Naam",
+                        "triggers": {
+                            "header": "",
+                            "introduction": "Triggers zijn wat de verwerking van een automatiseringsregel begint. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert de Home Assistant de eventuele voorwaarden en roept hij de actie op. \n\n [Meer informatie over triggers.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Trigger toevoegen",
+                            "duplicate": "Dupliceren",
+                            "delete": "Verwijderen",
+                            "delete_confirm": "Zeker dat u wilt verwijderen?",
+                            "unsupported_platform": "Niet-ondersteund platform: {platform}",
+                            "type_select": "Trigger type",
+                            "type": {
+                                "event": {
+                                    "label": "Gebeurtenis",
+                                    "event_type": "Gebeurtenis type",
+                                    "event_data": "Gebeurtenis data"
+                                },
+                                "state": {
+                                    "label": "Staat",
+                                    "from": "Van",
+                                    "to": "Aan"
+                                },
+                                "homeassistant": {
+                                    "label": "",
+                                    "event": "Gebeurtenis:",
+                                    "start": "Opstarten",
+                                    "shutdown": "Afsluiten"
+                                },
+                                "mqtt": {
+                                    "label": "",
+                                    "topic": "Onderwerp",
+                                    "payload": "Payload (optioneel)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerieke staat",
+                                    "above": "Boven",
+                                    "below": "Onder",
+                                    "value_template": "Waarde template (optioneel)"
+                                },
+                                "sun": {
+                                    "label": "Zon",
+                                    "event": "Gebeurtenis:",
+                                    "sunrise": "Zonsopkomst",
+                                    "sunset": "Zonsondergang",
+                                    "offset": "Offset (optioneel)"
+                                },
+                                "template": {
+                                    "label": "Sjabloon",
+                                    "value_template": "Waarde template"
+                                },
+                                "time": {
+                                    "label": "Tijd",
+                                    "at": "Om"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entiteit met locatie",
+                                    "zone": "Zone",
+                                    "event": "Gebeurtenis:",
+                                    "enter": "Betreden",
+                                    "leave": "Verlaten"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Voorwaarden",
+                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn erg verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat. \n\n [Meer informatie over voorwaarden.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Voorwaarde toevoegen",
+                            "duplicate": "Dupliceren",
+                            "delete": "Verwijderen",
+                            "delete_confirm": "Zeker weten verwijderen?",
+                            "unsupported_condition": "Niet-ondersteunde voorwaarde: {voorwaarde}",
+                            "type_select": "Voorwaarde type",
+                            "type": {
+                                "state": {
+                                    "label": "Staat",
+                                    "state": "Staat"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerieke status",
+                                    "above": "Boven",
+                                    "below": "Onder",
+                                    "value_template": "Waarde template (optioneel)"
+                                },
+                                "sun": {
+                                    "label": "Zon",
+                                    "before": "Voor:",
+                                    "after": "Na:",
+                                    "before_offset": "Voor offset (optioneel)",
+                                    "after_offset": "Na offset (optioneel)",
+                                    "sunrise": "Zonsopkomst",
+                                    "sunset": "Zonsondergang"
+                                },
+                                "template": {
+                                    "label": "Sjabloon",
+                                    "value_template": "Waarde sjabloon"
+                                },
+                                "time": {
+                                    "label": "Tijd",
+                                    "after": "Nadat",
+                                    "before": "Voordat"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entiteit met locatie",
+                                    "zone": "Zone"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Acties",
+                            "introduction": "De acties wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd. \n\n [Meer informatie over acties.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Actie toevoegen",
+                            "duplicate": "Dupliceer",
+                            "delete": "Verwijder",
+                            "delete_confirm": "Wilt u echt verwijderen?",
+                            "unsupported_action": "Niet-ondersteunde actie: {action}",
+                            "type_select": "Type actie",
+                            "type": {
+                                "service": {
+                                    "label": "Dienst aanroepen",
+                                    "service_data": "Service data"
+                                },
+                                "delay": {
+                                    "label": "Vertraging",
+                                    "delay": "Vertraging"
+                                },
+                                "wait_template": {
+                                    "label": "Wacht",
+                                    "wait_template": "Wacht sjabloon",
+                                    "timeout": "Timeout (optioneel)"
+                                },
+                                "condition": {
+                                    "label": "Voorwaarde"
+                                },
+                                "event": {
+                                    "label": "Gebeurtenis afvuren",
+                                    "event": "Gebeurtenis:",
+                                    "service_data": "Service data"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Script",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Sluiten"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entiteit"
+                }
+            },
+            "service-picker": {
+                "service": "Service"
             }
         }
     },
