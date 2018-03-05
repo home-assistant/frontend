@@ -138,7 +138,8 @@
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
   const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
 
-  class PartialCards extends window.hassMixins.EventsMixin(Polymer.Element) {
+  // eslint-disable-next-line
+  class PartialCards extends window.hassMixins.EventsMixin(window.hassMixins.NavigateMixin(Polymer.Element)) {
     static get is() { return 'partial-cards'; }
 
     static get properties() {
@@ -210,27 +211,24 @@
       };
     }
 
-    constructor() {
-      super();
+    ready() {
       this.handleWindowChange = this.handleWindowChange.bind(this);
-      this.mqls = [300, 600, 900, 1200].map(function (width) {
-        var mql = window.matchMedia('(min-width: ' + width + 'px)');
-        mql.addListener(this.handleWindowChange);
-        return mql;
-      }.bind(this));
+      this.mqls = [300, 600, 900, 1200].map(width => matchMedia(`(min-width: ${width}px)`));
+      super.ready();
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+      this.mqls.forEach(mql => mql.addListener(this.handleWindowChange));
     }
 
     disconnectedCallback() {
       super.disconnectedCallback();
-      this.mqls.forEach((mql) => {
-        mql.removeListener(this.handleWindowChange);
-      });
+      this.mqls.forEach(mql => mql.removeListener(this.handleWindowChange));
     }
 
     handleWindowChange() {
-      var matchColumns = this.mqls.reduce(function (cols, mql) {
-        return cols + mql.matches;
-      }, 0);
+      const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
       // Do -1 column if the menu is docked and open
       this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
     }
@@ -279,16 +277,14 @@
     }
 
     handleViewSelected(ev) {
-      var view = ev.detail.item.getAttribute('data-entity') || null;
-      var current = this.currentView;
+      const view = ev.detail.item.getAttribute('data-entity') || null;
 
-      if (view !== current) {
-        var path = '/states';
+      if (view !== this.currentView) {
+        let path = '/states';
         if (view) {
           path += '/' + view;
         }
-        history.pushState(null, null, path);
-        this.fire('location-changed');
+        this.navigate(path);
       }
     }
 

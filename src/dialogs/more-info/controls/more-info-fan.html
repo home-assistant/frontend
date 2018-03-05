@@ -104,12 +104,12 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   stateObjChanged(newVal, oldVal) {
-    this.oscillationToggleChecked = newVal.attributes.oscillating;
-
-    if (newVal.attributes.speed_list) {
-      this.speedIndex = newVal.attributes.speed_list.indexOf(newVal.attributes.speed);
-    } else {
-      this.speedIndex = -1;
+    if (newVal) {
+      this.setProperties({
+        oscillationToggleChecked: newVal.attributes.oscillating,
+        speedIndex: newVal.attributes.speed_list ?
+          newVal.attributes.speed_list.indexOf(newVal.attributes.speed) : -1,
+      });
     }
 
     if (oldVal) {
