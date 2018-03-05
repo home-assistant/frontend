@@ -287,9 +287,13 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   stateObjChanged(newVal, oldVal) {
-    this.awayToggleChecked = newVal.attributes.away_mode === 'on';
-    this.auxToggleChecked = newVal.attributes.aux_heat === 'on';
-    this.onToggleChecked = newVal.state !== 'off';
+    if (newVal) {
+      this.setProperties({
+        awayToggleChecked: newVal.attributes.away_mode === 'on',
+        auxToggleChecked: newVal.attributes.aux_heat === 'on',
+        onToggleChecked: newVal.state !== 'off',
+      });
+    }
 
     if (oldVal) {
       this._debouncer = Polymer.Debouncer.debounce(

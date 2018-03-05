@@ -245,27 +245,29 @@
 
     stateObjChanged(newVal, oldVal) {
       if (newVal) {
-        this.isOff = newVal.state === 'off';
-        this.isPlaying = newVal.state === 'playing';
-        this.hasMediaControl = HAS_MEDIA_STATES.indexOf(newVal.state) !== -1;
-        this.volumeSliderValue = newVal.attributes.volume_level * 100;
-        this.isMuted = newVal.attributes.is_volume_muted;
-        this.source = newVal.attributes.source;
-        this.supportsPause = (newVal.attributes.supported_features & 1) !== 0;
-        this.supportsVolumeSet = (newVal.attributes.supported_features & 4) !== 0;
-        this.supportsVolumeMute = (newVal.attributes.supported_features & 8) !== 0;
-        this.supportsPreviousTrack = (newVal.attributes.supported_features & 16) !== 0;
-        this.supportsNextTrack = (newVal.attributes.supported_features & 32) !== 0;
-        this.supportsTurnOn = (newVal.attributes.supported_features & 128) !== 0;
-        this.supportsTurnOff = (newVal.attributes.supported_features & 256) !== 0;
-        this.supportsPlayMedia = (newVal.attributes.supported_features & 512) !== 0;
-        this.supportsVolumeButtons = (newVal.attributes.supported_features & 1024) !== 0;
-        this.supportsSelectSource = (newVal.attributes.supported_features & 2048) !== 0;
-        this.supportsPlay = (newVal.attributes.supported_features & 16384) !== 0;
-
+        const props = {
+          isOff: newVal.state === 'off',
+          isPlaying: newVal.state === 'playing',
+          hasMediaControl: HAS_MEDIA_STATES.indexOf(newVal.state) !== -1,
+          volumeSliderValue: newVal.attributes.volume_level * 100,
+          isMuted: newVal.attributes.is_volume_muted,
+          source: newVal.attributes.source,
+          supportsPause: (newVal.attributes.supported_features & 1) !== 0,
+          supportsVolumeSet: (newVal.attributes.supported_features & 4) !== 0,
+          supportsVolumeMute: (newVal.attributes.supported_features & 8) !== 0,
+          supportsPreviousTrack: (newVal.attributes.supported_features & 16) !== 0,
+          supportsNextTrack: (newVal.attributes.supported_features & 32) !== 0,
+          supportsTurnOn: (newVal.attributes.supported_features & 128) !== 0,
+          supportsTurnOff: (newVal.attributes.supported_features & 256) !== 0,
+          supportsPlayMedia: (newVal.attributes.supported_features & 512) !== 0,
+          supportsVolumeButtons: (newVal.attributes.supported_features & 1024) !== 0,
+          supportsSelectSource: (newVal.attributes.supported_features & 2048) !== 0,
+          supportsPlay: (newVal.attributes.supported_features & 16384) !== 0,
+        };
         if (newVal.attributes.source_list !== undefined) {
-          this.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
+          props.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
         }
+        this.setProperties(props);
       }
 
       if (oldVal) {
