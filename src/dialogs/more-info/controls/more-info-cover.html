@@ -95,8 +95,12 @@
     }
 
     stateObjChanged(newVal) {
-      this.coverPositionSliderValue = newVal.attributes.current_position;
-      this.coverTiltPositionSliderValue = newVal.attributes.current_tilt_position;
+      if (newVal) {
+        this.setProperties({
+          coverPositionSliderValue: newVal.attributes.current_position,
+          coverTiltPositionSliderValue: newVal.attributes.current_tilt_position,
+        });
+      }
     }
 
     computeClassNames(stateObj) {
