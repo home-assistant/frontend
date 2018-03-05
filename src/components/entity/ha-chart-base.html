@@ -80,7 +80,7 @@
         <div class="chartLegend">
           <ul>
             <template is="dom-repeat" items="[[metas]]">
-              <li data-lid$="[[itemsIndex]]" on-click="_legendClick" class$="[[item.hidden]]">
+              <li on-click="_legendClick" class$="[[item.hidden]]">
                 <em style$="background-color:[[item.bgColor]]"></em>
                 [[item.label]]
               </li>
@@ -126,14 +126,11 @@
     static get is() { return 'ha-chart-base'; }
     static get properties() {
       return {
-        publish: {
-          type: Boolean,
-          observer: 'onPropsChange'
-        },
         data: {
           type: Object,
           observer: 'onPropsChange'
         },
+        identifier: String,
       };
     }
     connectedCallback() {
@@ -183,7 +180,7 @@
       }
     }
     onPropsChange() {
-      if (!this._isAttached || !SCRIPT_LOADED || !this.publish || !this.data) {
+      if (!this._isAttached || !SCRIPT_LOADED || !this.data) {
         return;
       }
       this.drawChart();
@@ -246,13 +243,14 @@
       this.set(['tooltip', 'yPadding'], tooltip.yPadding);
       this.set(['tooltip', 'xPadding'], tooltip.xPadding);
     }
+
     _legendClick(event) {
       event = event || window.event;
       let target = event.target || event.srcElement;
       while (target.nodeName !== 'LI') {
         target = target.parentElement;
       }
-      const index = target.getAttribute('data-lid');
+      const index = event.model.itemsIndex;
 
       const meta = this._chart.getDatasetMeta(index);
       meta.hidden = meta.hidden === null ? !this._chart.data.datasets[index].hidden : null;
@@ -261,12 +259,28 @@
     }
     _drawLegend() {
       const chart = this._chart;
+      // New data for old graph. Keep metadata.
+      const preserveVisibility =
+          this._oldIdentifier && this.identifier === this._oldIdentifier;
+      this._oldIdentifier = this.identifier;
       this.set('metas', this._chart.data.datasets.map((x, i) => ({
         label: x.label,
         color: x.color,
         bgColor: x.backgroundColor,
-        hidden: chart.isDatasetVisible(i)
+        hidden: preserveVisibility && i < this.metas.length ?
+          this.metas[i].hidden : !chart.isDatasetVisible(i),
       })));
+      let updateNeeded = false;
+      if (preserveVisibility) {
+        for (let i = 0; i < this.metas.length; i++) {
+          const meta = chart.getDatasetMeta(i);
+          if (!!meta.hidden !== !!this.metas[i].hidden) updateNeeded = true;
+          meta.hidden = this.metas[i].hidden ? true : null;
+        }
+      }
+      if (updateNeeded) {
+        chart.update();
+      }
       this.set('unit', this.data.unit);
     }
     _formatTickValue(value, index, values) {
@@ -284,8 +298,7 @@
         return;
       }
       if (this.data.type !== 'timeline' && data.datasets.length > 0) {
-        let cnt = 0;
-        cnt = data.datasets.length;
+        const cnt = data.datasets.length;
         const colors = this.constructor.getColorList(cnt);
         for (let loopI = 0; loopI < cnt; loopI++) {
           data.datasets[loopI].borderColor = colors[loopI].rgbString();
