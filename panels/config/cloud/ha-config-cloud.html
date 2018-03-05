@@ -32,6 +32,7 @@
         hass='[[hass]]'
         is-wide='[[isWide]]'
         email='{{_loginEmail}}'
+        flash-message='{{_flashMessage}}'
       ></ha-config-cloud-login>
     </template>
 
@@ -80,6 +81,10 @@
         account: {
           type: Object,
         },
+        _flashMessage: {
+          type: String,
+          value: '',
+        },
 
         route: Object,
 
@@ -93,6 +98,14 @@
       return [
         '_checkRoute(route, account)'
       ];
+    }
+
+    ready() {
+      super.ready();
+      this.addEventListener('cloud-done', (ev) => {
+        this._flashMessage = ev.detail.flashMessage;
+        this.navigate('/config/cloud/login');
+      });
     }
 
     _checkRoute(route) {
