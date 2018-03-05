@@ -248,8 +248,8 @@ class HassioAddonInfo extends Polymer.Element {
 
   openChangelog() {
     this.hass.callApi('get', `hassio/addons/${this.addonSlug}/changelog`)
-      .then(data => this.changelog = data,
-      () => this.changelog = 'Error getting changelog');
+      .then((data) => { this.changelog = data },
+      () => { this.changelog = 'Error getting changelog' });
   
     this.shadowRoot.querySelector('hassio-addon-more-info').openDialog();
   }

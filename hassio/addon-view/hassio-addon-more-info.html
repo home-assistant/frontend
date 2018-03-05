@@ -77,7 +77,7 @@ class HassioAddonMoreInfo extends Polymer.Element {
     super.ready();
     this.$.dialog.addEventListener('iron-overlay-opened', (ev) => {
       if (ev.target.withBackdrop) {
-        this.parentNode.insertBefore(ev.target.backdropElement, ev.target);
+        ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
       }
     });
   }
