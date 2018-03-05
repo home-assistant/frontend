@@ -160,9 +160,7 @@
         this.hass.callApi('delete', `config/config_entries/flow/${this._flowId}`);
       }
 
-      this.setProperties({
-        _flowId: null,
-      });
+      this._flowId = null;
     }
 
     _loadData() {
