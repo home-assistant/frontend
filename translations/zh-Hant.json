@@ -22,13 +22,13 @@
             "unavailable": "不可用"
         },
         "alarm_control_panel": {
-            "armed": "已佈防",
-            "disarmed": "佈防解除",
-            "armed_home": "開啟告警場景",
-            "armed_away": "離家布防",
-            "armed_night": "夜間佈防",
-            "pending": "掛起",
-            "arming": "佈防中",
+            "armed": "已警戒",
+            "disarmed": "警戒解除",
+            "armed_home": "開啟警戒模式",
+            "armed_away": "離家警戒",
+            "armed_night": "夜間警戒",
+            "pending": "暫時等待",
+            "arming": "警戒中",
             "disarming": "警戒解除",
             "triggered": "警戒觸發",
             "armed_custom_bypass": "警戒模式狀態"
@@ -113,6 +113,10 @@
             "window": {
                 "off": "關閉",
                 "on": "開啟"
+            },
+            "lock": {
+                "off": "上鎖",
+                "on": "解鎖"
             }
         },
         "calendar": {
@@ -240,14 +244,14 @@
             "unavailable": "不可用"
         },
         "alarm_control_panel": {
-            "armed": "已解除",
-            "disarmed": "解除",
-            "armed_home": "家裡告警",
-            "armed_away": "離家告警",
-            "armed_night": "夜間告警",
+            "armed": "已解除警戒",
+            "disarmed": "解除警戒",
+            "armed_home": "已警戒",
+            "armed_away": "離家警戒",
+            "armed_night": "夜間警戒",
             "pending": "等待中",
-            "arming": "開啟告警場景中",
-            "disarming": "關閉告警場景",
+            "arming": "開啟警戒中",
+            "disarming": "關閉警戒",
             "triggered": "觸發",
             "armed_custom_bypass": "已開啟警戒模式"
         },
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "自動化設定",
-                    "description": "創建和編輯自動化"
+                    "description": "創建和編輯自動化",
+                    "picker": {
+                        "header": "自動化編輯器",
+                        "introduction": "自動化編輯器可以讓你編輯想要的自動化，請閱讀設定文件以確保自動化設定格式正確，否則無法正常啟用Home-assistant。常見的錯誤為前後多餘的空格與上下欄位的對齊。\n\n想知道更多關於編輯器的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/automation\/editor\/",
+                        "pick_automation": "選擇一個自動化來進行編輯",
+                        "no_automations": "沒有任何可編輯的自動化",
+                        "add_automation": "新增一個自動化"
+                    },
+                    "editor": {
+                        "introduction": "使用自動化來讓你的智能家居更有智慧吧",
+                        "default_name": "新的自動化",
+                        "save": "儲存",
+                        "unsaved_confirm": "設定尚未儲存，你確定要放棄嗎？",
+                        "alias": "名稱",
+                        "triggers": {
+                            "header": "觸發條件",
+                            "introduction": "觸發條件是可以使一個自動化開始執行，你可以指定一個或多個觸發條件。當觸發開始時，Home Assistant會開始檢查觸發判斷，如果判斷通過，就會開始執行事件動作\n\n想知道更多關於事件觸發，請參考文件\nhttps:\/\/home-assistant.io\/docs\/automation\/trigger\/",
+                            "add": "新增一個觸發條件",
+                            "duplicate": "複製",
+                            "delete": "刪除",
+                            "delete_confirm": "你確定要刪除嗎？",
+                            "unsupported_platform": "不支持的平台: {platform}",
+                            "type_select": "觸發條件類型",
+                            "type": {
+                                "event": {
+                                    "label": "事件",
+                                    "event_type": "事件類別",
+                                    "event_data": "事件資料"
+                                },
+                                "state": {
+                                    "label": "狀態",
+                                    "from": "從...狀態",
+                                    "to": "變為...狀態"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "事件：",
+                                    "start": "開始",
+                                    "shutdown": "關機"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "MQTT主題",
+                                    "payload": "MQTT資料"
+                                },
+                                "numeric_state": {
+                                    "label": "使用數值比對",
+                                    "above": "在...之上",
+                                    "below": "在...之下",
+                                    "value_template": "數值模板"
+                                },
+                                "sun": {
+                                    "label": "日出日落",
+                                    "event": "事件：",
+                                    "sunrise": "日出",
+                                    "sunset": "日落",
+                                    "offset": "偏移"
+                                },
+                                "template": {
+                                    "label": "模板",
+                                    "value_template": "數值模板"
+                                },
+                                "time": {
+                                    "label": "時間",
+                                    "at": "在...時間"
+                                },
+                                "zone": {
+                                    "label": "區域",
+                                    "entity": "位置元件",
+                                    "zone": "區域",
+                                    "event": "事件：",
+                                    "enter": "進入區域",
+                                    "leave": "離開區域"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "觸發判斷",
+                            "introduction": "你可以使用觸發判斷來使得自動化運作更為準確。但必須先透過觸發條件開啟自動化運作後，才能使用觸發判斷來決定是否繼續執行下去。\n\n想知道更多關於觸發判斷的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/scripts\/conditions\/",
+                            "add": "新增觸發判斷",
+                            "duplicate": "複製",
+                            "delete": "刪除",
+                            "delete_confirm": "你確定要刪除嗎？",
+                            "unsupported_condition": "不支援的觸發判斷: {condition}",
+                            "type_select": "觸發判斷類別",
+                            "type": {
+                                "state": {
+                                    "label": "狀態",
+                                    "state": "狀態"
+                                },
+                                "numeric_state": {
+                                    "label": "數值狀態",
+                                    "above": "在...之上",
+                                    "below": "在...之下",
+                                    "value_template": "數值模板"
+                                },
+                                "sun": {
+                                    "label": "日出日落",
+                                    "before": "在...之前",
+                                    "after": "在...之後",
+                                    "before_offset": "偏移前",
+                                    "after_offset": "偏移後",
+                                    "sunrise": "日出",
+                                    "sunset": "日落"
+                                },
+                                "template": {
+                                    "label": "模板",
+                                    "value_template": "數值模板"
+                                },
+                                "time": {
+                                    "label": "時間",
+                                    "after": "在...之後",
+                                    "before": "在...之前"
+                                },
+                                "zone": {
+                                    "label": "區域",
+                                    "entity": "區域元件",
+                                    "zone": "區域"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "觸發動作",
+                            "introduction": "當自動化通過觸發條件與觸發判斷後便會執行觸發動作\n\n想了解更多可參考文件\nhttps:\/\/home-assistant.io\/docs\/automation\/action\/",
+                            "add": "新增觸發動作",
+                            "duplicate": "複製",
+                            "delete": "刪除",
+                            "delete_confirm": "你確定要刪除嗎？",
+                            "unsupported_action": "不支援的觸發動作: {action}",
+                            "type_select": "觸發動作類別",
+                            "type": {
+                                "service": {
+                                    "label": "呼叫服務",
+                                    "service_data": "服務資料"
+                                },
+                                "delay": {
+                                    "label": "延後",
+                                    "delay": "延後"
+                                },
+                                "wait_template": {
+                                    "label": "等待",
+                                    "wait_template": "等待模板",
+                                    "timeout": "超時"
+                                },
+                                "condition": {
+                                    "label": "判斷式"
+                                },
+                                "event": {
+                                    "label": "執行事件",
+                                    "event": "事件：",
+                                    "service_data": "服務資料"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "腳本",
@@ -368,10 +526,20 @@
             "persistent_notification": {
                 "dismiss": "關閉"
             }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "物件"
+                }
+            },
+            "service-picker": {
+                "service": "服務"
+            }
         }
     },
     "domain": {
-        "alarm_control_panel": "告警控制面板",
+        "alarm_control_panel": "警戒模式控制面板",
         "automation": "自動化設定",
         "binary_sensor": "二進位傳感器",
         "calendar": "日曆",

@@ -113,6 +113,10 @@
             "window": {
                 "off": "Zou",
                 "on": "Op"
+            },
+            "lock": {
+                "off": "Gespaart",
+                "on": "Net gespaart"
             }
         },
         "calendar": {
@@ -298,7 +302,7 @@
                                 "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
                                 "core": "Kär nei lueden",
                                 "group": "Gruppe nei lueden",
-                                "automation": "Automatioune nei lueden",
+                                "automation": "Automatisme nei lueden",
                                 "script": "Skripte nei lueden"
                             },
                             "server_management": {
@@ -330,8 +334,162 @@
                     "description": "Är Entitéite personaliséieren"
                 },
                 "automation": {
-                    "caption": "Automatioun",
-                    "description": "Automatioun erstellen an änneren"
+                    "caption": "Automatisme",
+                    "description": "Automatisme erstellen an änneren",
+                    "picker": {
+                        "header": "Automatisme editéieren",
+                        "introduction": "Den Automatisme Editor erméiglecht et fir Automatismen z'erstellen an ze änneren. Liest w.e.g. [d'Instruktioune](https:\/\/home-assistant.io\/docs\/automation\/editor\/) fir sécher ze stellen dass den Home Assistant richteg agestallt ass.",
+                        "pick_automation": "Automatisme fir ze änneren auswielen",
+                        "no_automations": "Keen Automatisme fir ze änneren fonnt",
+                        "add_automation": "Automatisme dobäisetzen"
+                    },
+                    "editor": {
+                        "introduction": "Benotzt Automatismen fir äert Haus zum Liewen ze bréngen",
+                        "default_name": "Néien Automatisme",
+                        "save": "Späicheren",
+                        "unsaved_confirm": "Net gespäichert Ännerungen. Trotzdeem verloossen?",
+                        "alias": "Numm",
+                        "triggers": {
+                            "header": "Ausléiser",
+                            "introduction": "Een Ausléiser start de Prozess vun engem Automatisme. Et ass méiglech méi wéi een Ausléiser fir een Automatisme unzeginn. Wann een Ausléiser start validéiert Home Assistant d'Konditioune an, de Fall gesat, féiert eng Aktioun aus.\n\n[Léier méi iwwert Ausléiser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Ausléiser dobäisetzen",
+                            "duplicate": "Replikéieren",
+                            "delete": "Läschen",
+                            "delete_confirm": "Sëcher fir ze läschen?",
+                            "unsupported_platform": "Net ënnerstëtzte Plattform: {platform}",
+                            "type_select": "Typ vun Ausléiser",
+                            "type": {
+                                "event": {
+                                    "label": "Evenement",
+                                    "event_type": "Typ vun Evenement",
+                                    "event_data": "Evenement Donnée"
+                                },
+                                "state": {
+                                    "label": "Zoustand",
+                                    "from": "Vun",
+                                    "to": "Op"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Evenement:",
+                                    "start": "Starten",
+                                    "shutdown": "Ausmaachen"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Sujet",
+                                    "payload": "Payload (optional)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numereschen Zoustand",
+                                    "above": "Iwwert",
+                                    "below": "Ënnert",
+                                    "value_template": "Wäerte Modell (optional)"
+                                },
+                                "sun": {
+                                    "label": "Sonn",
+                                    "event": "Evenement",
+                                    "sunrise": "Sonnenopgank",
+                                    "sunset": "Sonnenënnergank",
+                                    "offset": "Versat (optional)"
+                                },
+                                "template": {
+                                    "label": "Modell",
+                                    "value_template": "Wäerte Modell"
+                                },
+                                "time": {
+                                    "label": "Zäit",
+                                    "at": "Um"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entitéit mam Standuert",
+                                    "zone": "Zone",
+                                    "event": "Evenement",
+                                    "enter": "Eran",
+                                    "leave": "Verloossen"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Konditioune",
+                            "introduction": "Konditioune sinn een optionalen Deel vun engem Automatisme a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. Konditioune gläichen den Ausléiser mee sinn awer ganz ënnerschiddlech. Een Ausléiser iwwerwaacht d'Evenementer am System, an eng Konditioun iwwerwaacht de Status vum System. Een Ausléiser gesäit wann ee Schalter ugeschalt gëtt. Eng Konditioun gesäit nëmmen op de Schalter un oder aus ass.\n\n[Léier méi iwwer Konditioune.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Konditioun dobäisetzen",
+                            "duplicate": "Replikéiere",
+                            "delete": "Läschen",
+                            "delete_confirm": "Sëcher fir ze läschen?",
+                            "unsupported_condition": "Net ënnerstëtzte Konditioun: {condition}",
+                            "type_select": "Typ vun Konditioun",
+                            "type": {
+                                "state": {
+                                    "label": "Zoustand",
+                                    "state": "Zoustand"
+                                },
+                                "numeric_state": {
+                                    "label": "Numereschen Zoustand",
+                                    "above": "Iwwert",
+                                    "below": "Ënnert",
+                                    "value_template": "Wäerte Modell (optional)"
+                                },
+                                "sun": {
+                                    "label": "Sonn",
+                                    "before": "Virdrun:",
+                                    "after": "No:",
+                                    "before_offset": "Virdrun versat (optional)",
+                                    "after_offset": "No versat (optional)",
+                                    "sunrise": "Sonnenopgank",
+                                    "sunset": "Sonnenënnergank"
+                                },
+                                "template": {
+                                    "label": "Modell",
+                                    "value_template": "Wäerte Modell"
+                                },
+                                "time": {
+                                    "label": "Zäit",
+                                    "after": "No",
+                                    "before": "Virdrun"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entitéit mam Standuert",
+                                    "zone": "Zone"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Aktioune",
+                            "introduction": "Aktioune déi den HomeAssistant ausféiert wann den Automatisme ausgeléist gouf.\n[Léier méi iwwert Aktioune.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Aktioun dobäisetzen",
+                            "duplicate": "Replikéiere",
+                            "delete": "Läschen",
+                            "delete_confirm": "Sécher fir ze läschen",
+                            "unsupported_action": "Net ënnerstëtzten Aktioun: {action}",
+                            "type_select": "Aktioun Typ",
+                            "type": {
+                                "service": {
+                                    "label": "Service opruffen",
+                                    "service_data": "Service Donnée"
+                                },
+                                "delay": {
+                                    "label": "Delai",
+                                    "delay": "Delai"
+                                },
+                                "wait_template": {
+                                    "label": "Waart",
+                                    "wait_template": "Waardenzäit Modell",
+                                    "timeout": "Zäitiwwerscheidung (optional)"
+                                },
+                                "condition": {
+                                    "label": "Konditioun"
+                                },
+                                "event": {
+                                    "label": "Evenement starten",
+                                    "event": "Evenement",
+                                    "service_data": "Service Donnée"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skript",
@@ -368,11 +526,21 @@
             "persistent_notification": {
                 "dismiss": "Verwerfen"
             }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entitéit"
+                }
+            },
+            "service-picker": {
+                "service": "Service"
+            }
         }
     },
     "domain": {
         "alarm_control_panel": "Kontroll Feld Alarm",
-        "automation": "Automatioun",
+        "automation": "Automatisme",
         "binary_sensor": "Binären Sensor",
         "calendar": "Kalenner",
         "camera": "Kamera",

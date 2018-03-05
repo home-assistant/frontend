@@ -113,6 +113,10 @@
             "window": {
                 "off": "Zárva",
                 "on": "Nyitva"
+            },
+            "lock": {
+                "off": "Lezárt",
+                "on": "Nyitott"
             }
         },
         "calendar": {
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "Automatizálás",
-                    "description": "Automatizálások létrehozása és szerkesztése"
+                    "description": "Automatizálások létrehozása és szerkesztése",
+                    "picker": {
+                        "header": "Automatizálás szerkesztő",
+                        "introduction": "Az automatizálás szerkesztővel automatizálási szabályokat tudsz létrehozni és szerkeszteni. Kérlek olvasd el az [útmutatót](https:\/\/home-assistant.io\/docs\/automation\/editor\/), hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
+                        "pick_automation": "Válassz ki egy automatizálást szerkesztésre",
+                        "no_automations": "Nem találtunk szerkeszthető automatizálást",
+                        "add_automation": "Automatizálás hozzáadása"
+                    },
+                    "editor": {
+                        "introduction": "Használj automatizálásokat otthonod életre keltéséhez",
+                        "default_name": "Új Automatizálás",
+                        "save": "Mentés",
+                        "unsaved_confirm": "Vannak nem mentett módosítások. Biztos, hogy elhagyod az oldalt?",
+                        "alias": "Név",
+                        "triggers": {
+                            "header": "Triggerek",
+                            "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindult, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet.\n\n[Tudj meg többet a triggerekről.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Trigger hozzáadása",
+                            "duplicate": "Megkettőzés",
+                            "delete": "Törlés",
+                            "delete_confirm": "Biztos, hogy törölni szeretnéd?",
+                            "unsupported_platform": "Nem támogatott platform: {platform}",
+                            "type_select": "Trigger típusa",
+                            "type": {
+                                "event": {
+                                    "label": "Esemény",
+                                    "event_type": "Esemény típusa",
+                                    "event_data": "Esemény adatai"
+                                },
+                                "state": {
+                                    "label": "Állapot",
+                                    "from": "Eredeti állapot",
+                                    "to": "Módosult állapot"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Esemény:",
+                                    "start": "Indulás",
+                                    "shutdown": "Leállás"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Téma",
+                                    "payload": "Payload (opcionális)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerikus állapot",
+                                    "above": "Felett",
+                                    "below": "Alatt",
+                                    "value_template": "Érték sablon (opcionális)"
+                                },
+                                "sun": {
+                                    "label": "Nap",
+                                    "event": "Esemény:",
+                                    "sunrise": "Napkelte",
+                                    "sunset": "Napnyugta",
+                                    "offset": "Eltolás (opcionális)"
+                                },
+                                "template": {
+                                    "label": "Sablon",
+                                    "value_template": "Érték sablon"
+                                },
+                                "time": {
+                                    "label": "Idő",
+                                    "at": "Mikor"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entitás helyszínnel",
+                                    "zone": "Zóna",
+                                    "event": "Esemény:",
+                                    "enter": "Érkezés",
+                                    "leave": "Távozás"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Feltételek",
+                            "introduction": "A feltételek opcionális részei az automatizálási szabályoknak és arra lehet őket használni, hogy meggátoljuk egy művelet végrehajtását, ha triggerelődik. A feltételek hasonlítanak a triggerekre, mégis teljesen máshogy működnek. A triggerek a rendszerben történő események bekövetkezését figyelik, míg a feltételek csak azt látják, hogy milyen a rendszer pillanatnyi állapota. Egy trigger például észre tudja venni, ha egy kapcsoló fel lett kapcsolva. Egy feltétel csak azt látja, hogy a kapcsoló éppen fel vagy le van kapcsolva.\n\n[Tudj meg többet a feltételekről.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Feltétel hozzáadása",
+                            "duplicate": "Megkettőzés",
+                            "delete": "Törlés",
+                            "delete_confirm": "Biztos, hogy törölni szeretnéd?",
+                            "unsupported_condition": "Nem támogatott feltétel: {condition}",
+                            "type_select": "Feltétel típusa",
+                            "type": {
+                                "state": {
+                                    "label": "Állapot",
+                                    "state": "Állapot"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerikus állapot",
+                                    "above": "Felett",
+                                    "below": "Alatt",
+                                    "value_template": "Érték sablon (opcionális)"
+                                },
+                                "sun": {
+                                    "label": "Nap",
+                                    "before": "Előtt:",
+                                    "after": "Után:",
+                                    "before_offset": "Eltolás előtte (opcionális)",
+                                    "after_offset": "Eltolás utána (opcionális)",
+                                    "sunrise": "Napkelte",
+                                    "sunset": "Napnyugta"
+                                },
+                                "template": {
+                                    "label": "Sablon",
+                                    "value_template": "Érték sablon"
+                                },
+                                "time": {
+                                    "label": "Idő",
+                                    "after": "Után",
+                                    "before": "Előtt"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entitás helyszínnel",
+                                    "zone": "Zóna"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Műveletek",
+                            "introduction": "A műveleteket hajtja végre a Home Assistant, ha egy automatizálás triggerelődik.\n\n[Tudj meg többet a műveletekről.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Művelet hozzáadása",
+                            "duplicate": "Megkettőzés",
+                            "delete": "Törlés",
+                            "delete_confirm": "Biztos, hogy törölni szeretnéd?",
+                            "unsupported_action": "Nem támogatott művelet: {action}",
+                            "type_select": "Művelet típusa",
+                            "type": {
+                                "service": {
+                                    "label": "Szolgáltatás meghívása",
+                                    "service_data": "Szolgáltatás adatai"
+                                },
+                                "delay": {
+                                    "label": "Késleltetés",
+                                    "delay": "Késleltetés"
+                                },
+                                "wait_template": {
+                                    "label": "Várakozás",
+                                    "wait_template": "Várakozási sablon",
+                                    "timeout": "Időtúllépés (opcionális)"
+                                },
+                                "condition": {
+                                    "label": "Feltétel"
+                                },
+                                "event": {
+                                    "label": "Esemény meghívása",
+                                    "event": "Esemény:",
+                                    "service_data": "Szolgáltatás adatai"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Szkript",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Elvetés"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entitás"
+                }
+            },
+            "service-picker": {
+                "service": "Szolgáltatás"
             }
         }
     },

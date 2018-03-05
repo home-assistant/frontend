@@ -59,7 +59,7 @@
                 "on": "Belegt"
             },
             "smoke": {
-                "off": "Rein",
+                "off": "OK",
                 "on": "Rauch erkannt"
             },
             "sound": {
@@ -113,6 +113,10 @@
             "window": {
                 "off": "Geschlossen",
                 "on": "Offen"
+            },
+            "lock": {
+                "off": "Verriegelt",
+                "on": "Entriegelt"
             }
         },
         "calendar": {
@@ -259,7 +263,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Abgehakte entfernen",
+                "clear_completed": "Erledigte entfernen",
                 "add_item": "Artikel hinzufügen",
                 "microphone_tip": "Tippe oben rechts auf das Mikrofon und sage “Add candy to my shopping list”"
             },
@@ -277,7 +281,7 @@
                 "delete_button": "Löschen"
             },
             "config": {
-                "header": "Home Assistant einstellen",
+                "header": "Home Assistant konfigurieren",
                 "introduction": "Hier ist es möglich deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
@@ -296,7 +300,7 @@
                             "reloading": {
                                 "heading": "Konfiguration neu laden",
                                 "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die Neue.",
-                                "core": "Kern neu laden",
+                                "core": "Hauptsystem neu laden",
                                 "group": "Gruppen neu laden",
                                 "automation": "Automatisierungen neu laden",
                                 "script": "Skripte neu laden"
@@ -319,9 +323,9 @@
                             "language": "Sprache"
                         },
                         "themes": {
-                            "header": "Thema festlegen",
+                            "header": "Aussehen festlegen",
                             "introduction": "Wähle \"Backend-selected\" für die Vorgabe vom Backend oder wähle ein Thema für dieses Gerät",
-                            "theme": "Thema"
+                            "theme": "Aussehen"
                         }
                     }
                 },
@@ -334,13 +338,13 @@
                     "description": "Automatisierungen erstellen und bearbeiten",
                     "picker": {
                         "header": "Automatisierungseditor",
-                        "introduction": "Der Automatisierungs-Editor erlaubt es dir Automatisierungen zu erstellen und zu bearbeiten. Bitte lies [die Instruktionen](https:\/\/home-assistant.io\/docs\/automation\/editor\/) um sicher zu stellen, dass du Home Assistant richtig konfiguriert hast.",
+                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte lies [die Anleitungen](https:\/\/home-assistant.io\/docs\/automation\/editor\/), um sicherzustellen, dass du den Home Assistant richtig konfiguriert hast.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
                         "add_automation": "Automatisierung hinzufügen"
                     },
                     "editor": {
-                        "introduction": "Benutze Automatisierungen, um deinem zu Hause Leben einzuhauchen",
+                        "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
                         "default_name": "Neue Automatisierung",
                         "save": "Speichern",
                         "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?",
@@ -380,7 +384,7 @@
                                     "label": "Numerischer Zustand",
                                     "above": "Über",
                                     "below": "Unter",
-                                    "value_template": "Wert Template (optional)"
+                                    "value_template": "Wert-Template (optional)"
                                 },
                                 "sun": {
                                     "label": "Sonne",
@@ -391,7 +395,7 @@
                                 },
                                 "template": {
                                     "label": "Template",
-                                    "value_template": "Wert Template"
+                                    "value_template": "Wert-Template"
                                 },
                                 "time": {
                                     "label": "Zeit",
@@ -399,7 +403,7 @@
                                 },
                                 "zone": {
                                     "label": "Zone",
-                                    "entity": "Entity mit Standort",
+                                    "entity": "Entität mit Standort",
                                     "zone": "Zone",
                                     "event": "Ereignis:",
                                     "enter": "Betreten",
@@ -409,7 +413,7 @@
                         },
                         "conditions": {
                             "header": "Bedingungen",
-                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, dass ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.\n\n[Erfahre mehr über Bedingungen.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, dass ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.\n\n[Erfahre mehr über Bedingungen.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Bedingung hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -425,7 +429,7 @@
                                     "label": "Numerischer Zustand",
                                     "above": "Über",
                                     "below": "Unter",
-                                    "value_template": "Wert Template (optional)"
+                                    "value_template": "Wert-Template (optional)"
                                 },
                                 "sun": {
                                     "label": "Sonne",
@@ -438,7 +442,7 @@
                                 },
                                 "template": {
                                     "label": "Template",
-                                    "value_template": "Wert Template"
+                                    "value_template": "Wert-Template"
                                 },
                                 "time": {
                                     "label": "Zeit",
@@ -447,7 +451,7 @@
                                 },
                                 "zone": {
                                     "label": "Zone",
-                                    "entity": "Entity mit Standort",
+                                    "entity": "Entität mit Standort",
                                     "zone": "Zone"
                                 }
                             }
@@ -472,7 +476,7 @@
                                 },
                                 "wait_template": {
                                     "label": "Warten",
-                                    "wait_template": "Warten Template",
+                                    "wait_template": "Warte-Template",
                                     "timeout": "Timeout (optional)"
                                 },
                                 "condition": {
@@ -502,7 +506,7 @@
             "developer_tools": "Entwicklerwerkzeuge"
         },
         "common": {
-            "loading": "Wird geladen",
+            "loading": "Laden",
             "cancel": "Abbrechen"
         },
         "duration": {
@@ -526,7 +530,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entity"
+                    "entity": "Entität"
                 }
             },
             "service-picker": {
@@ -556,7 +560,7 @@
         "input_text": "Texteingabe",
         "light": "Licht",
         "lock": "Schloss",
-        "mailbox": "Posteingang",
+        "mailbox": "Postfach",
         "media_player": "Mediaplayer",
         "notify": "Benachrichtigung",
         "plant": "Pflanze",
