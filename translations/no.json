@@ -113,6 +113,10 @@
             "window": {
                 "off": "Lukket",
                 "on": "Åpen"
+            },
+            "lock": {
+                "off": "Låst",
+                "on": "Ulåst"
             }
         },
         "calendar": {
@@ -248,7 +252,7 @@
             "pending": "Venter",
             "arming": "Slår på",
             "disarming": "Slå av",
-            "triggered": "Utløst",
+            "triggered": "Utløs",
             "armed_custom_bypass": "Påslått"
         },
         "device_tracker": {
@@ -272,7 +276,7 @@
             },
             "mailbox": {
                 "empty": "Du har ingen meldinger",
-                "playback_title": "Avspiller melding",
+                "playback_title": "Meldingsavspilling",
                 "delete_prompt": "Slette denne meldingen?",
                 "delete_button": "Slett"
             },
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "Automatisering",
-                    "description": "Opprett og rediger automasjoner"
+                    "description": "Opprett og rediger automatiseringer",
+                    "picker": {
+                        "header": "Automatiseringsredigering",
+                        "introduction": "Automatiseringsredigeringen lar deg lage og redigere automatiseringer. Vennligst les [instruksjonene](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
+                        "pick_automation": "Velg automatisering for å redigere",
+                        "no_automations": "Vi kunne ikke finne noen redigerbare automatiseringer",
+                        "add_automation": "Legg til automatisering"
+                    },
+                    "editor": {
+                        "introduction": "Bruk automatiseringer for å få liv i hjemmet ditt",
+                        "default_name": "Ny automatisering",
+                        "save": "Lagre",
+                        "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil forlate?",
+                        "alias": "Navn",
+                        "triggers": {
+                            "header": "Utløsere",
+                            "introduction": "Utløsere er det som starter en automatisering. Det er mulig å spesifisere flere utløsere for samme automatiseringen. Når en utløser starter, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Legg til utløser",
+                            "duplicate": "Dupliser",
+                            "delete": "Slett",
+                            "delete_confirm": "Er du sikker på at du vil slette?",
+                            "unsupported_platform": "Ustøttet plattform: {platform}",
+                            "type_select": "Utløser type",
+                            "type": {
+                                "event": {
+                                    "label": "Hendelse",
+                                    "event_type": "Hendelse type",
+                                    "event_data": "Hendelse data"
+                                },
+                                "state": {
+                                    "label": "Tilstand",
+                                    "from": "Fra",
+                                    "to": "Til"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Hendelse:",
+                                    "start": "Start",
+                                    "shutdown": "Slå av"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Emne",
+                                    "payload": "Nyttelast (valgfritt)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerisk tilstand",
+                                    "above": "Over",
+                                    "below": "Under",
+                                    "value_template": "Verdi mal (valgfritt)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "event": "Hendelse:",
+                                    "sunrise": "Soloppgang",
+                                    "sunset": "Solnedgang",
+                                    "offset": "Forskyvning (valgfritt)"
+                                },
+                                "template": {
+                                    "label": "Mal",
+                                    "value_template": "Verdi mal"
+                                },
+                                "time": {
+                                    "label": "Tid",
+                                    "at": "Klokken"
+                                },
+                                "zone": {
+                                    "label": "Sone",
+                                    "entity": "Enhet med posisjon",
+                                    "zone": "Sone",
+                                    "event": "Hendelse",
+                                    "enter": "Ankommer",
+                                    "leave": "Forlater"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Betingelser",
+                            "introduction": "Betingelser er en valgfri del av en automatisering og kan brukes til å forhindre at en handling skjer når den utløses. Betingelsene ser veldig ut som utløsere, men er veldig forskjellige. En utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av. \n\n[Lær mer om betingelser.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Legg til betingelse",
+                            "duplicate": "Dupliser",
+                            "delete": "Slett",
+                            "delete_confirm": "Er du sikker på at du ønsker å slette?",
+                            "unsupported_condition": "Ikke-støttet tilstand: {condition}",
+                            "type_select": "Betingelse type",
+                            "type": {
+                                "state": {
+                                    "label": "Tilstand",
+                                    "state": "Tilstand"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerisk tilstand",
+                                    "above": "Over",
+                                    "below": "Under",
+                                    "value_template": "Verdi mal (valgfritt)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "before": "Før:",
+                                    "after": "Etter:",
+                                    "before_offset": "Fremskynde (valgfritt)",
+                                    "after_offset": "Utsette (valgfritt)",
+                                    "sunrise": "Soloppgang",
+                                    "sunset": "Solnedgang"
+                                },
+                                "template": {
+                                    "label": "Mal",
+                                    "value_template": "Verdi mal"
+                                },
+                                "time": {
+                                    "label": "Tid",
+                                    "after": "Etter",
+                                    "before": "Før"
+                                },
+                                "zone": {
+                                    "label": "Sone",
+                                    "entity": "Enhet med posisjon",
+                                    "zone": "Sone"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Handlinger",
+                            "introduction": "Handlinger er det Home Assistant gjør når automatiseringen utløses.\n\n[Lær mer om handlinger.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Legg til handling",
+                            "duplicate": "Dupliser",
+                            "delete": "Slett",
+                            "delete_confirm": "Er du sikker på at du ønsker å slette?",
+                            "unsupported_action": "Ikke-støttet handling: {action}",
+                            "type_select": "Handlingstype",
+                            "type": {
+                                "service": {
+                                    "label": "Hent tjeneste",
+                                    "service_data": "Tjeneste data"
+                                },
+                                "delay": {
+                                    "label": "Forsinkelse",
+                                    "delay": "Forsinkelse"
+                                },
+                                "wait_template": {
+                                    "label": "Vent",
+                                    "wait_template": "Vent mal",
+                                    "timeout": "Tidsavbrudd (valgfritt)"
+                                },
+                                "condition": {
+                                    "label": "Betingelse"
+                                },
+                                "event": {
+                                    "label": "Kjør hendelse",
+                                    "event": "Hendelse",
+                                    "service_data": "Tjeneste data"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skript",
@@ -368,6 +526,16 @@
             "persistent_notification": {
                 "dismiss": "Avvis"
             }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Enhet"
+                }
+            },
+            "service-picker": {
+                "service": "Tjeneste"
+            }
         }
     },
     "domain": {
@@ -386,7 +554,7 @@
         "group": "Gruppe",
         "image_processing": "Bildebehandling",
         "input_boolean": "Angi boolsk",
-        "input_datetime": "Angi datotid",
+        "input_datetime": "Angi dato",
         "input_select": "Angi valg",
         "input_number": "Angi nummer",
         "input_text": "Angi tekst",

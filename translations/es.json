@@ -113,6 +113,10 @@
             "window": {
                 "off": "Cerrado",
                 "on": "Abierto"
+            },
+            "lock": {
+                "off": "Bloqueado",
+                "on": "Desbloqueado"
             }
         },
         "calendar": {
@@ -331,10 +335,164 @@
                 },
                 "automation": {
                     "caption": "Automatización",
-                    "description": "Crear y editar automatizaciones"
+                    "description": "Crear y editar automatizaciones",
+                    "picker": {
+                        "header": "Editor de automatizaciones",
+                        "introduction": "El editor de automatización le permite crear y editar automatizaciones. Lea [las instrucciones] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) para asegurarse de haber configurado correctamente Home Assistant.",
+                        "pick_automation": "Elija la automatización para editar",
+                        "no_automations": "No pudimos encontrar ninguna automatización editable",
+                        "add_automation": "Añadir automatización"
+                    },
+                    "editor": {
+                        "introduction": "Use automatizaciones para dar vida a su hogar.",
+                        "default_name": "Nueva automatizacón",
+                        "save": "Guardar",
+                        "unsaved_confirm": "Tiene cambios sin guardar, ¿está seguro de querer salir?",
+                        "alias": "Nombre",
+                        "triggers": {
+                            "header": "Disparadores",
+                            "introduction": "Los disparadores son los que inician el procesamiento de una regla de automatización. Es posible especificar múltiples disparadores para la misma regla. Una vez que se inicia un disparador, Home Assistant validará las condiciones, si las hay, y llamará a la acción. \n\n [Obtenga más información sobre los disparadores]. (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Añadir disparador",
+                            "duplicate": "Duplicar",
+                            "delete": "Borrar",
+                            "delete_confirm": "¿Está seguro de que desea borrar?",
+                            "unsupported_platform": "Plataforma no admitida: {platform}",
+                            "type_select": "Tipo de disparador",
+                            "type": {
+                                "event": {
+                                    "label": "Evento",
+                                    "event_type": "Tipo de evento",
+                                    "event_data": "Datos del evento"
+                                },
+                                "state": {
+                                    "label": "Estado",
+                                    "from": "De",
+                                    "to": "A"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Evento:",
+                                    "start": "Arranque",
+                                    "shutdown": "Apagado"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic",
+                                    "payload": "Payload (opcional)"
+                                },
+                                "numeric_state": {
+                                    "label": "Estado numérico",
+                                    "above": "Por encima de",
+                                    "below": "Por debajo de",
+                                    "value_template": "Plantilla del valor (opcional)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "event": "Evento:",
+                                    "sunrise": "Amanecer",
+                                    "sunset": "Puesta de sol",
+                                    "offset": "Desplazamiento (opcional)"
+                                },
+                                "template": {
+                                    "label": "Plantilla",
+                                    "value_template": "Plantilla del valor"
+                                },
+                                "time": {
+                                    "label": "Hora",
+                                    "at": "A las"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entidad con la ubicación",
+                                    "zone": "Zona",
+                                    "event": "Evento:",
+                                    "enter": "Entrar",
+                                    "leave": "Salir"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Condiciones",
+                            "introduction": "Las condiciones son una parte opcional de una regla de automatización y se pueden usar para evitar que ocurra una acción cuando se activa. Las condiciones parecen muy similares a los disparadores, pero son muy diferentes. Un disparador observará los eventos que suceden en el sistema, mientras que una condición solo observa cómo se ve el sistema en el momento. Un disparador puede observar que se está encendiendo un interruptor. Una condición solo puede ver si un interruptor está actualmente encendido o apagado. \n\n [Obtenga más información sobre las condiciones.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Añadir condición",
+                            "duplicate": "Duplicar",
+                            "delete": "Borrar",
+                            "delete_confirm": "¿Está seguro de querer borrar?",
+                            "unsupported_condition": "Condición no admitida: {condition}",
+                            "type_select": "Tipo de condición",
+                            "type": {
+                                "state": {
+                                    "label": "Estado",
+                                    "state": "Estado"
+                                },
+                                "numeric_state": {
+                                    "label": "Estado numérico",
+                                    "above": "Por encima de",
+                                    "below": "Por debajo de",
+                                    "value_template": "Plantilla del valor (opcional)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "before": "Antes de:",
+                                    "after": "Después de:",
+                                    "before_offset": "Tiempo antes (opcional)",
+                                    "after_offset": "Tiempo después (opcional)",
+                                    "sunrise": "Amanecer",
+                                    "sunset": "Puesta de sol"
+                                },
+                                "template": {
+                                    "label": "Plantilla",
+                                    "value_template": "Plantilla del valor"
+                                },
+                                "time": {
+                                    "label": "Hora",
+                                    "after": "Después de",
+                                    "before": "Antes de"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entidad con la  ubicación",
+                                    "zone": "Zona"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Acciones",
+                            "introduction": "Las acciones son lo que Home Assistant hará cuando la automatización sea disparada.\n\n [Obtenga más información sobre acciones.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Añadir acción",
+                            "duplicate": "Duplicar",
+                            "delete": "Borrar",
+                            "delete_confirm": "¿Está seguro de querer borrar?",
+                            "unsupported_action": "Acción no admitida : {acción}",
+                            "type_select": "Tipo de acción",
+                            "type": {
+                                "service": {
+                                    "label": "Llamar servicio",
+                                    "service_data": "Datos de servicio"
+                                },
+                                "delay": {
+                                    "label": "Retardo",
+                                    "delay": "Retardo"
+                                },
+                                "wait_template": {
+                                    "label": "Esperar",
+                                    "wait_template": "Plantilla de espera",
+                                    "timeout": "Límite de tiempo (opcional)"
+                                },
+                                "condition": {
+                                    "label": "Condición"
+                                },
+                                "event": {
+                                    "label": "Disparar evento",
+                                    "event": "Evento:",
+                                    "service_data": "Datos del servicio"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
-                    "caption": "Script",
+                    "caption": "Scripts",
                     "description": "Crear y editar scripts"
                 },
                 "zwave": {
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Descartar"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entidad"
+                }
+            },
+            "service-picker": {
+                "service": "Servicio"
             }
         }
     },

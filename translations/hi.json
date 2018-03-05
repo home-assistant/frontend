@@ -117,6 +117,45 @@
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "homeassistant": {
+                                    "start": "शुरू",
+                                    "shutdown": "शटडाउन"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "विषय"
+                                },
+                                "numeric_state": {
+                                    "above": "ऊपर",
+                                    "below": "नीचे"
+                                },
+                                "sun": {
+                                    "label": "सूरज",
+                                    "sunrise": "सूर्योदय",
+                                    "sunset": "सूर्यास्त"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "before": "पहले:",
+                                    "after": "बाद:",
+                                    "sunrise": "सूर्योदय",
+                                    "sunset": "सूर्यास्त"
+                                },
+                                "time": {
+                                    "after": "बाद",
+                                    "before": "पहले"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },

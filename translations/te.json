@@ -272,6 +272,141 @@
                 "delete_button": "తొలగించు"
             },
             "config": {
+                "header": "కాన్ఫిగర్ Home Assistant",
+                "core": {
+                    "section": {
+                        "core": {
+                            "validation": {
+                                "check_config": "కాన్ఫిగరేషన్ను తనిఖీ చేయండి",
+                                "valid": "మంచి కాన్ఫిగరేషన్!",
+                                "invalid": "చెల్లని కాన్ఫిగరేషన్"
+                            },
+                            "reloading": {
+                                "core": "రీలోడ్ కోర్",
+                                "group": "గ్రూప్స్  మళ్లీ లోడ్ చేయండి",
+                                "automation": "ఆటోమేషన్లను మళ్లీ లోడ్ చేయండి",
+                                "script": "స్క్రిప్ట్లను మళ్లీ లోడ్ చేయండి"
+                            },
+                            "server_management": {
+                                "heading": "సర్వర్ నిర్వహణ",
+                                "restart": "పునఃప్రారంభించు",
+                                "stop": "ఆపు"
+                            }
+                        },
+                        "translation": {
+                            "header": "భాషను ఎంచుకోండి",
+                            "introduction": "ఇచ్చట Home Assistant భాషను ఎంచుకోండి",
+                            "language": "భాష"
+                        },
+                        "themes": {
+                            "header": "థీమ్ను సెట్ చేయండి",
+                            "theme": "థీమ్"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "మార్పులు చేర్పులు"
+                },
+                "automation": {
+                    "caption": "ఆటోమేషన్",
+                    "description": "ఆటోమేషన్లను సృష్టించండి మరియు సవరించండి",
+                    "picker": {
+                        "header": "ఆటోమేషన్ ఎడిటర్",
+                        "pick_automation": "సవరించడానికి ఆటోమేషన్ను ఎంచుకోండి",
+                        "no_automations": "సవరించగలిగే ఆటోమేషన్లు లేవు",
+                        "add_automation": "కొత్త ఆటోమేషన్"
+                    },
+                    "editor": {
+                        "introduction": "ఆటోమేషన్ల ద్వారా మీ ఇంటికి ప్రాణం పోయండి",
+                        "default_name": "కొత్త ఆటోమేషన్",
+                        "save": "సేవ్",
+                        "triggers": {
+                            "add": "క్రొత్తది జోడించు",
+                            "duplicate": "నకిలీ",
+                            "delete_confirm": "ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?",
+                            "type_select": "ట్రిగ్గర్ రకం",
+                            "type": {
+                                "event": {
+                                    "label": "ఈవెంట్",
+                                    "event_type": "ఈవెంట్ రకం",
+                                    "event_data": "ఈవెంట్ డేటా"
+                                },
+                                "state": {
+                                    "label": "స్థితి",
+                                    "from": "నుండి",
+                                    "to": "టు"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "ఈవెంట్"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "విషయం",
+                                    "payload": "పేలోడ్ "
+                                },
+                                "numeric_state": {
+                                    "label": "సంఖ్యా స్థితి",
+                                    "above": "పైన",
+                                    "below": "క్రింద"
+                                },
+                                "sun": {
+                                    "sunrise": "సూర్యోదయం",
+                                    "sunset": "సూర్యాస్తమయం"
+                                },
+                                "template": {
+                                    "label": "టెంప్లేట్"
+                                },
+                                "time": {
+                                    "label": "సమయం",
+                                    "at": "At"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "add": "అంశాన్ని జోడించు",
+                            "type_select": "కండిషన్ రకం",
+                            "type": {
+                                "sun": {
+                                    "before": "ముందు",
+                                    "after": "తరువాత",
+                                    "before_offset": "ఆఫ్సెట్కు ముందు (ఐచ్ఛికం)",
+                                    "after_offset": "ఆఫ్సెట్ తర్వాత (ఐచ్ఛికం)",
+                                    "sunrise": "సూర్యోదయం",
+                                    "sunset": "సూర్యాస్తమయం"
+                                },
+                                "time": {
+                                    "after": "తరువాత",
+                                    "before": "ముందు"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "చర్యలు",
+                            "add": "అంశాన్ని జోడించు",
+                            "unsupported_action": "మద్దతు లేని చర్య: {action}",
+                            "type_select": "యాక్షన్ రకం",
+                            "type": {
+                                "delay": {
+                                    "label": "ఆలస్యము"
+                                },
+                                "wait_template": {
+                                    "timeout": "సమయం ముగిసింది (ఐచ్ఛికం)"
+                                },
+                                "condition": {
+                                    "label": "కండిషన్"
+                                },
+                                "event": {
+                                    "label": "ఫైర్ ఈవెంట్"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "స్క్రిప్ట్",
+                    "description": "స్క్రిప్ట్లను సృష్టించండి మరియు సవరించండి"
+                },
                 "zwave": {
                     "caption": "Z-Wave"
                 }
@@ -289,6 +424,19 @@
             "password": "పాస్వర్డ్",
             "remember": "గుర్తుంచుకో",
             "log_in": "లాగిన్"
+        },
+        "card": {
+            "camera": {
+                "not_available": "చిత్రం అందుబాటులో లేదు"
+            },
+            "persistent_notification": {
+                "dismiss": "తొలగించు"
+            }
+        },
+        "components": {
+            "service-picker": {
+                "service": "సర్వీస్"
+            }
         }
     },
     "domain": {
@@ -327,5 +475,12 @@
         "updater": "Updater",
         "weblink": "వెబ్ లింకు",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "తేమ",
+            "visibility": "దృష్టి గోచరత",
+            "wind_speed": "గాలి వేగం"
+        }
     }
 }

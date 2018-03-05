@@ -113,6 +113,10 @@
             "window": {
                 "off": "Zavřeno",
                 "on": "Otevřeno"
+            },
+            "lock": {
+                "off": "Zamčeno",
+                "on": "Odemčeno"
             }
         },
         "calendar": {
@@ -278,7 +282,7 @@
             },
             "config": {
                 "header": "Konfigurace Home Assistant",
-                "introduction": "Zde je možné konfigurovat komponenty a Home Assistant. Zatím není možné konfigurovat z uživatelského rozhraní vše, ale pracujeme na tom.",
+                "introduction": "Zde je možné konfigurovat komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
                 "core": {
                     "caption": "Obecné",
                     "description": "Ověřte konfigurační soubor a spravujte server",
@@ -331,11 +335,165 @@
                 },
                 "automation": {
                     "caption": "Automatizace",
-                    "description": "Vytvářejte a upravujte automatizaci"
+                    "description": "Vytvářejte a upravujte automatizaci",
+                    "picker": {
+                        "header": "Editor automatizací",
+                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), abyste se ujistili, že správně jste správně nakonfigurovali aplikaci Home Assistant.",
+                        "pick_automation": "Vyberte automatizaci kterou chcete upravit",
+                        "no_automations": "Nelze najít žádnou upravitelnou automatizaci",
+                        "add_automation": "Přidejte automatizaci"
+                    },
+                    "editor": {
+                        "introduction": "Použijte automatizaci, abyste svůj domov oživili",
+                        "default_name": "Nová automatizace",
+                        "save": "Uložit",
+                        "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?",
+                        "alias": "Název",
+                        "triggers": {
+                            "header": "Spouštěče",
+                            "introduction": "Spouštěče spouštějí zpracování automatizačního pravidla. Pro stejné pravidlo je možné zadat více spouštěčů. Po spuštění spouštěče ověří Home Assistant případné podmínky a zavolá akci. \n\n [Další informace o spouštěčích.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Přidat spouštěč",
+                            "duplicate": "Duplikát",
+                            "delete": "Odstranit",
+                            "delete_confirm": "Opravdu smazat?",
+                            "unsupported_platform": "Nepodporovaná platforma: {platform}",
+                            "type_select": "Typ spouštěče",
+                            "type": {
+                                "event": {
+                                    "label": "Událost",
+                                    "event_type": "Typ události",
+                                    "event_data": "Data události"
+                                },
+                                "state": {
+                                    "label": "Stav",
+                                    "from": "Od",
+                                    "to": "Do"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Událost:",
+                                    "start": "Spustit",
+                                    "shutdown": "Ukončit"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic",
+                                    "payload": "Datová část (volitelné)"
+                                },
+                                "numeric_state": {
+                                    "label": "Číselný stav",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Šablona hodnoty (volitelné)"
+                                },
+                                "sun": {
+                                    "label": "Slunce",
+                                    "event": "Událost:",
+                                    "sunrise": "Východ slunce",
+                                    "sunset": "Západ slunce",
+                                    "offset": "Posun"
+                                },
+                                "template": {
+                                    "label": "Šablona",
+                                    "value_template": "Šablona hodnoty"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "at": "v"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entita s umístěním",
+                                    "zone": "Zóna",
+                                    "event": "Událost:",
+                                    "enter": "Vstup",
+                                    "leave": "Opuštění"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Podmínky",
+                            "introduction": "Podmínky jsou volitelnou součástí automatizačního pravidla a mohou být použity k zabránění spuštění akce. Podmínky vypadají velmi podobně jako spouštěče, ale jsou velmi odlišné. Spouštěč se podívá na události, ke kterým dochází v systému, zatímco podmínka se zabývá pouze tím, jak systém vypadá právě teď. Pro spouštěč se může jevit že je spínač zapnutý. Stav může vidět pouze tehdy, je-li přepínač aktuálně zapnutý nebo vypnutý. \n\n [Další informace o podmínkách.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Přidat podmínku",
+                            "duplicate": "Duplikát",
+                            "delete": "Odstranit",
+                            "delete_confirm": "Opravdu smazat?",
+                            "unsupported_condition": "Nepodporovaná podmínka: {condition}",
+                            "type_select": "Typ podmínky",
+                            "type": {
+                                "state": {
+                                    "label": "Stav",
+                                    "state": "Stav"
+                                },
+                                "numeric_state": {
+                                    "label": "Číselný stav",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Šablona hodnoty (volitelné)"
+                                },
+                                "sun": {
+                                    "label": "Slunce",
+                                    "before": "Před:",
+                                    "after": "Po:",
+                                    "before_offset": "Prodleva před (volitelné)",
+                                    "after_offset": "Prodleva po (volitelné)",
+                                    "sunrise": "Východ slunce",
+                                    "sunset": "Západ slunce"
+                                },
+                                "template": {
+                                    "label": "Šablona",
+                                    "value_template": "Šablona hodnoty"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "after": "Po",
+                                    "before": "Před"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entita s umístěním",
+                                    "zone": "Zóna"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Akce",
+                            "introduction": "Akce jsou to, co domácí pomocník provede při spuštění automatizace. \n\n [Více informací o akcích.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Přidat akci",
+                            "duplicate": "Duplikát",
+                            "delete": "Odstranit",
+                            "delete_confirm": "Opravdu smazat?",
+                            "unsupported_action": "Nepodporovaná akce: {action}",
+                            "type_select": "Typ akce",
+                            "type": {
+                                "service": {
+                                    "label": "Zavolejte službu",
+                                    "service_data": "Data služby"
+                                },
+                                "delay": {
+                                    "label": "Zpoždění",
+                                    "delay": "Zpoždění"
+                                },
+                                "wait_template": {
+                                    "label": "Čekání",
+                                    "wait_template": "Čekací Šablona",
+                                    "timeout": "Časový limit (volitelné)"
+                                },
+                                "condition": {
+                                    "label": "Stav"
+                                },
+                                "event": {
+                                    "label": "Spustit událost",
+                                    "event": "Událost:",
+                                    "service_data": "Data služby"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skript",
-                    "description": "Vytvářet a upravovat skripty"
+                    "description": "Vytvářejte a upravujte skripty"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Zavřít"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entita"
+                }
+            },
+            "service-picker": {
+                "service": "Služba"
             }
         }
     },
