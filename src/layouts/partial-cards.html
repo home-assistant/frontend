@@ -228,7 +228,7 @@
     }
 
     handleWindowChange() {
-      var matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
+      const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
       // Do -1 column if the menu is docked and open
       this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
     }
