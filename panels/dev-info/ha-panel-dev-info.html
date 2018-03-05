@@ -251,6 +251,12 @@ class HaPanelDevInfo extends Polymer.Element {
   ready() {
     super.ready();
     this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
+    // Fix for overlay showing on top of dialog.
+    this.$.showlog.addEventListener('iron-overlay-opened', (ev) => {
+      if (ev.target.withBackdrop) {
+        ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
+      }
+    });
   }
 
   serviceCalled(ev) {
