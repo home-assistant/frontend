@@ -107,16 +107,17 @@
         </paper-dropdown-menu>
       </div>
       <!-- SOUND MODE PICKER -->
-      <div class='controls layout horizontal justified'
-           hidden$='[[computeHideSelectSoundMode(isOff, supportsSelectSoundMode)]]'>
-        <iron-icon class="source-input" icon="mdi:music-note"></iron-icon>
-        <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
-          <paper-listbox slot="dropdown-content" selected="{{soundModeIndex}}">
-            <template is='dom-repeat' items='[[stateObj.attributes.sound_mode_list]]'>
-              <paper-item>[[item]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
+      <div class='controls layout horizontal justified'>
+        <template is='dom-if' if='[[computeHideSelectSoundMode(isOff, supportsSelectSoundMode)]]'>
+          <iron-icon class="source-input" icon="mdi:music-note"></iron-icon>
+          <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
+            <paper-listbox slot="dropdown-content" selected="{{soundModeIndex}}">
+              <template is='dom-repeat' items='[[stateObj.attributes.sound_mode_list]]'>
+                <paper-item>[[item]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </template>
       </div>
       <!-- TTS -->
       <div hidden$='[[computeHideTTS(ttsLoaded, supportsPlayMedia)]]' class='layout horizontal end'>
@@ -398,7 +399,6 @@
     }
 
     handleSoundModeChanged(soundModeIndex, soundModeIndexOld) {
-      var soundModeInput;
       // Selected Option will transition to '' before transitioning to new value
       if (!this.stateObj
           || this.stateObj.attributes.sound_mode_list === undefined
@@ -409,7 +409,7 @@
         return;
       }
 
-      soundModeInput = this.stateObj.attributes.sound_mode_list[soundModeIndex];
+      const soundModeInput = this.stateObj.attributes.sound_mode_list[soundModeIndex];
 
       if (soundModeInput === this.stateObj.attributes.sound_mode) {
         return;
