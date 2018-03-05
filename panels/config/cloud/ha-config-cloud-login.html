@@ -222,6 +222,7 @@ class HaConfigCloudLogin extends
       if (errCode === 'PasswordChangeRequired') {
         alert('You need to change your password before logging in.');
         this.navigate('/config/cloud/forgot-password');
+        return;
       }
 
       const props = {

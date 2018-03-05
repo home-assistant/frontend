@@ -99,8 +99,7 @@
 </dom-module>
 
 <script>
-class HaConfigCloudRegister extends
-  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+class HaConfigCloudRegister extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-config-cloud-register'; }
 
   static get properties() {
@@ -120,6 +119,10 @@ class HaConfigCloudRegister extends
         type: String,
         value: '',
       },
+      _error: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -130,7 +133,7 @@ class HaConfigCloudRegister extends
   }
 
   _inputChanged() {
-    this._error = false;
+    this._error = '';
     this.$.email.invalid = false;
     this.$.password.invalid = false;
   }
