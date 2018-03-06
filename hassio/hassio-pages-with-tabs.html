@@ -139,7 +139,7 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
   }
 
   uploadClicked() {
-    this.hass.callApi('post', 'hassio/snapshots/new/upload', "test");
+    this.hass.callApi('post', 'hassio/snapshots/new/upload', 'test');
     this.shadowRoot.querySelector('hassio-snapshots').refreshData();
   }
 }

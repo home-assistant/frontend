@@ -13,7 +13,14 @@
 
 <dom-module id="hassio-snapshots">
   <template>
-    <style include="ha-style hassio-style">
+    <style include='ha-style hassio-style'>
+      paper-radio-group {
+        display: block;
+      }
+      paper-radio-button {
+        padding: 0 0 2px 2px;
+      }
+      paper-radio-button,
       paper-checkbox,
       paper-input[type="password"] {
         display: block;
@@ -22,14 +29,11 @@
       .pointer {
         cursor: pointer;
       }
-      .hidden {
-        display: none;
-      }
     </style>
     <div class='content'>
       <div class='card-group'>
         <div class='title'>
-          New snapshot
+          Create snapshot
           <div class='description'>
             Snapshots allow you to easily backup and
             restore all data of your Hass.io instance.
@@ -38,8 +42,8 @@
         <paper-card>
           <div class='card-content'>
             <paper-input autofocus label='Name' value='{{snapshotName}}'></paper-input>
-            <label id='lbltype'>Type:</label>
-            <paper-radio-group selected='{{snapshotType}}' aria-labelledby='lbltype' on-paper-radio-group-changed='typeChanged'>
+            Type:
+            <paper-radio-group selected='{{snapshotType}}' on-paper-radio-group-changed='typeChanged'>
               <paper-radio-button name='full'>
                 Full snapshot
               </paper-radio-button>
@@ -47,29 +51,25 @@
                 Partial snapshot
               </paper-radio-button>
             </paper-radio-group>
-            <div id='folders' class='hidden'>
+            <template is='dom-if' if='[[!fullSelected(snapshotType)]]'>
               Folders:
               <template is='dom-repeat' items='[[folderList]]'>
                 <paper-checkbox checked='{{item.checked}}'>
                   [[item.name]]
                 </paper-checkbox>
               </template>
-            </div>
-            <div id='addons' class='hidden'>
               Add-ons:
               <template is='dom-repeat' items='[[addonList]]' sort='sortAddons'>
                 <paper-checkbox checked='{{item.checked}}'>
                   [[item.name]]
                 </paper-checkbox>
               </template>
-            </div>
-            <div>
-              Password:
-              <paper-checkbox checked='{{snapshotHasPassword}}'>Password protected</paper-checkbox>
-              <template is='dom-if' if='[[snapshotHasPassword]]'>
-                <paper-input label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
-              </template>
-            </div>
+            </template>
+            Security:
+            <paper-checkbox checked='{{snapshotHasPassword}}'>Password protection</paper-checkbox>
+            <template is='dom-if' if='[[snapshotHasPassword]]'>
+              <paper-input label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
+            </template>
             <template is='dom-if' if='[[error]]'>
               <p class='error'>[[error]]</p>
             </template>
@@ -249,14 +249,8 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.snapshotSlug = ev.model.snapshot.slug;
   }
 
-  typeChanged() {
-    if (this.snapshotType === 'full') {
-      this.$.folders.classList.add('hidden');
-      this.$.addons.classList.add('hidden');
-    } else {
-      this.$.folders.classList.remove('hidden');
-      this.$.addons.classList.remove('hidden');
-    }
+  fullSelected(type) {
+    return type === 'full';
   }
 
   snapshotDeletedChanged(snapshotDeleted) {

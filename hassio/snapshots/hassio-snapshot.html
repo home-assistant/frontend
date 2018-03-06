@@ -1,5 +1,6 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/paper-dialog/paper-dialog.html'>
+<link rel='import' href='../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html'>
 <link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../../bower_components/paper-checkbox/paper-checkbox.html'>
@@ -12,7 +13,7 @@
   <template>
     <style include='ha-style-dialog'>
       paper-dialog {
-         min-width: 350px;
+        min-width: 350px;
         font-size: 14px;
         border-radius: 2px;
         --paper-dialog-scrollable: {
@@ -40,7 +41,7 @@
         margin-left: 16px;
       }
       paper-dialog-scrollable {
-        margin-bottom: 16px;
+        margin: 0;
       }
       paper-checkbox {
         display: block;
@@ -66,45 +67,39 @@
         ></paper-icon-button>
         <div main-title>[[computeName(snapshot)]]</div>
       </app-toolbar>
-      <div>
-        <div class='snapshot-details'>
-          [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
-          [[formatDatetime(snapshot.date)]]
-        </div>
-        <div>
-          Home Assistant:
-          <paper-checkbox checked='{{restoreHass}}'>
-            Home Assistant [[snapshot.homeassistant]]
-          </paper-checkbox>
-        </div>
-        <template is='dom-if' if='[[snapshot.addons.length]]'>
-          <div>
-            Folders:
-            <template is='dom-repeat' items='[[snapshot.folders]]'>
-              <paper-checkbox checked='{{item.checked}}'>
-                [[item.name]]
-              </paper-checkbox>
-            </template>
-          </div>
-        </template>
-        <template is='dom-if' if='[[snapshot.addons.length]]'>
-          <div>
-            Add-ons:
-            <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
-              <paper-checkbox checked='{{item.checked}}'>
-                [[item.name]]
-                <span class='addon-version'>([[item.version]])</span>
-              </paper-checkbox>
-            </template>
-          </div>
-        </template>
-        <template is='dom-if' if='[[snapshot.protected]]'>
-          <paper-input autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
-        </template>
-        <template is='dom-if' if='[[error]]'>
-          <p class='error'>Error: [[error]]</p>
-        </template>
+      <div class='snapshot-details'>
+        [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
+        [[formatDatetime(snapshot.date)]]
       </div>
+      <div>Home Assistant:</div>
+      <paper-checkbox checked='{{restoreHass}}'>
+        Home Assistant [[snapshot.homeassistant]]
+      </paper-checkbox>
+      <template is='dom-if' if='[[snapshot.addons.length]]'>
+        <div>Folders:</div>
+        <template is='dom-repeat' items='[[snapshot.folders]]'>
+          <paper-checkbox checked='{{item.checked}}'>
+            [[item.name]]
+          </paper-checkbox>
+        </template>
+      </template>
+      <template is='dom-if' if='[[snapshot.addons.length]]'>
+        <div>Add-ons:</div>
+        <paper-dialog-scrollable>
+          <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
+            <paper-checkbox checked='{{item.checked}}'>
+              [[item.name]]
+              <span class='addon-version'>([[item.version]])</span>
+            </paper-checkbox>
+          </template>
+        </paper-dialog-scrollable>
+      </template>
+      <template is='dom-if' if='[[snapshot.protected]]'>
+        <paper-input autofocus label='Password' type='password' value='{{snapshotPassword}}'></paper-input>
+      </template>
+      <template is='dom-if' if='[[error]]'>
+        <p class='error'>Error: [[error]]</p>
+      </template>
       <div class='buttons'>
         <paper-icon-button
           icon='mdi:delete'
