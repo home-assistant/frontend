@@ -1,12 +1,47 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
 <link rel='import' href='../../bower_components/paper-dialog/paper-dialog.html'>
+<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../../bower_components/paper-checkbox/paper-checkbox.html'>
 <link rel='import' href='../../bower_components/paper-button/paper-button.html'>
 <link rel="import" href='../../bower_components/paper-input/paper-input.html'>
 
+<link rel='import' href='../../src/resources/ha-style.html'>
+
 <dom-module id='hassio-snapshot'>
   <template>
-    <style include='ha-style'>
+    <style include='ha-style-dialog'>
+      paper-dialog {
+         min-width: 350px;
+        font-size: 14px;
+        border-radius: 2px;
+        --paper-dialog-scrollable: {
+          -webkit-overflow-scrolling: auto;
+        }
+        --more-info-header-background: var(--secondary-background-color);
+        --more-info-header-color: var(--primary-text-color);
+      }
+      /* overrule the ha-style-dialog max-height on small screens */
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        paper-dialog {
+          max-height: 100%;
+          height: 100%;
+          --more-info-header-background: var(--primary-color);
+          --more-info-header-color: var(--text-primary-color);
+        }
+      }
+      app-toolbar {
+        margin-top: 0;
+        color: var(--more-info-header-color);
+        background-color: var(--more-info-header-background);
+      }
+      app-toolbar [main-title] {
+        /* Design guideline states 24px, changed to 16 to align with state info */
+        margin-left: 16px;
+      }
+      paper-dialog-scrollable {
+        margin-bottom: 16px;
+      }
       paper-checkbox {
         display: block;
         margin: 4px;
@@ -22,18 +57,15 @@
       .error {
         color: var(--google-red-500);
       }
-      @media screen and (max-width: 600px) {
-        paper-dialog {
-          position: absolute !important;
-          bottom: 0; left: 0; right: 0;
-          border-bottom-left-radius: 0;
-          border-bottom-right-radius: 0;
-          margin: 0;
-        }
-      }
     </style>
     <paper-dialog id='dialog' with-backdrop on-iron-overlay-closed='dialogClosed'>
-      <h2>[[computeName(snapshot)]]</h2>
+      <app-toolbar>
+        <paper-icon-button
+          icon='mdi:close'
+          dialog-dismiss
+        ></paper-icon-button>
+        <div main-title>[[computeName(snapshot)]]</div>
+      </app-toolbar>
       <div>
         <div class='snapshot-details'>
           [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
@@ -45,14 +77,16 @@
             Home Assistant [[snapshot.homeassistant]]
           </paper-checkbox>
         </div>
-        <div>
-          Folders:
-          <template is='dom-repeat' items='[[snapshot.folders]]'>
-            <paper-checkbox checked='{{item.checked}}'>
-              [[item.name]]
-            </paper-checkbox>
-          </template>
-        </div>
+        <template is='dom-if' if='[[snapshot.addons.length]]'>
+          <div>
+            Folders:
+            <template is='dom-repeat' items='[[snapshot.folders]]'>
+              <paper-checkbox checked='{{item.checked}}'>
+                [[item.name]]
+              </paper-checkbox>
+            </template>
+          </div>
+        </template>
         <template is='dom-if' if='[[snapshot.addons.length]]'>
           <div>
             Add-ons:
@@ -72,10 +106,19 @@
         </template>
       </div>
       <div class='buttons'>
-        <paper-button class='warning' on-click='deleteTapped'>Delete</paper-button>
-        <paper-button on-click='partialRestoreTapped'>Partial restore</paper-button>
+        <paper-icon-button
+          icon='mdi:delete'
+          on-click='deleteClicked'
+          class='warning'
+        ></paper-icon-button>
+        <div class='buttons'>
+        <paper-icon-button
+          icon='mdi:download'
+          on-click='downloadClicked'
+        ></paper-icon-button>
+        <paper-button on-click='partialRestoreClicked'>Restore selected</paper-button>
         <template is='dom-if' if='[[isFullSnapshot(snapshot.type)]]'>
-          <paper-button on-click='fullRestoreTapped'>Full restore</paper-button>
+          <paper-button on-click='fullRestoreClicked'>Wipe &amp; restore</paper-button>
         </template>
       </div>
     </paper-dialog>
@@ -139,7 +182,7 @@ class HassioSnapshot extends Polymer.Element {
     return type === 'full';
   }
 
-  partialRestoreTapped() {
+  partialRestoreClicked() {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
@@ -162,7 +205,7 @@ class HassioSnapshot extends Polymer.Element {
     });
   }
 
-  fullRestoreTapped() {
+  fullRestoreClicked() {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
@@ -176,7 +219,7 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
-  deleteTapped() {
+  deleteClicked() {
     if (!confirm('Are you sure you want to delete this snapshot?')) {
       return;
     }
@@ -189,6 +232,19 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
+  downloadClicked() {
+    this.hass.callApi('get', `hassio/snapshots/${this.snapshotSlug}/download`)
+      .then((data) => {
+        const element = document.createElement('a');
+        element.setAttribute('href', 'data:application/tar;charset=utf-8,' + encodeURIComponent(data));
+        element.setAttribute('download', `${this.snapshotSlug}.tar`);
+        element.style.display = 'none';
+        Polymer.dom(this.root).appendChild(element);
+        element.click();
+        Polymer.dom(this.root).removeChild(element);
+      });
+  }
+
   computeName(snapshot) {
     return snapshot.name || snapshot.slug;
   }
@@ -198,7 +254,7 @@ class HassioSnapshot extends Polymer.Element {
   }
 
   computeSize(size) {
-    return Math.ceil(size) + ' MB';
+    return (Math.ceil(size * 10) / 10) + ' MB';
   }
 
   sortAddons(a, b) {
