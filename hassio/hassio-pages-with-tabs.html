@@ -34,12 +34,6 @@
         <app-toolbar>            
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>Hass.io</div>
-          <template is='dom-if' if='[[equals(page, "snapshots")]]'>
-            <paper-icon-button
-              icon='mdi:upload'
-              on-click='uploadClicked'
-            ></paper-icon-button> 
-          </template>
           <template is='dom-if' if='[[showRefreshButton(page)]]'>
             <paper-icon-button
               icon='mdi:refresh'
@@ -136,11 +130,6 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
     } else {
       this.shadowRoot.querySelector('hassio-addon-store').refreshData();
     }
-  }
-
-  uploadClicked() {
-    this.hass.callApi('post', 'hassio/snapshots/new/upload', 'test');
-    this.shadowRoot.querySelector('hassio-snapshots').refreshData();
   }
 }
 
