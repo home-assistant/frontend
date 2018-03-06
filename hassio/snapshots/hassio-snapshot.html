@@ -16,28 +16,14 @@
         min-width: 350px;
         font-size: 14px;
         border-radius: 2px;
-        --paper-dialog-scrollable: {
-          -webkit-overflow-scrolling: auto;
-        }
-        --more-info-header-background: var(--secondary-background-color);
-        --more-info-header-color: var(--primary-text-color);
-      }
-      /* overrule the ha-style-dialog max-height on small screens */
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        paper-dialog {
-          max-height: 100%;
-          height: 100%;
-          --more-info-header-background: var(--primary-color);
-          --more-info-header-color: var(--text-primary-color);
-        }
       }
       app-toolbar {
-        margin-top: 0;
-        color: var(--more-info-header-color);
-        background-color: var(--more-info-header-background);
+        margin: 0;
+        padding: 0 16px;
+        color: var(--primary-text-color);
+        background-color: var(--secondary-background-color);
       }
       app-toolbar [main-title] {
-        /* Design guideline states 24px, changed to 16 to align with state info */
         margin-left: 16px;
       }
       paper-dialog-scrollable {
@@ -47,11 +33,17 @@
         display: block;
         margin: 4px;
       }
-      .snapshot-details {
-        color: var(--secondary-text-color);
-        margin-bottom: 16px;
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        paper-dialog {
+          max-height: 100%;
+          height: 100%;
+        }
+        app-toolbar {
+          color: var(--text-primary-color);
+          background-color: var(--primary-color);
+        }
       }
-      .addon-version {
+      .details {
         color: var(--secondary-text-color);
       }
       .warning,
@@ -59,17 +51,17 @@
         color: var(--google-red-500);
       }
     </style>
-    <paper-dialog id='dialog' with-backdrop on-iron-overlay-closed='dialogClosed'>
+    <paper-dialog id='dialog' with-backdrop on-iron-overlay-closed='_dialogClosed'>
       <app-toolbar>
         <paper-icon-button
           icon='mdi:close'
           dialog-dismiss
         ></paper-icon-button>
-        <div main-title>[[computeName(snapshot)]]</div>
+        <div main-title>[[_computeName(snapshot)]]</div>
       </app-toolbar>
-      <div class='snapshot-details'>
-        [[computeType(snapshot.type)]] ([[computeSize(snapshot.size)]])<br/>
-        [[formatDatetime(snapshot.date)]]
+      <div class='details'>
+        [[_computeType(snapshot.type)]] ([[_computeSize(snapshot.size)]])<br/>
+        [[_formatDatetime(snapshot.date)]]
       </div>
       <div>Home Assistant:</div>
       <paper-checkbox checked='{{restoreHass}}'>
@@ -86,10 +78,10 @@
       <template is='dom-if' if='[[snapshot.addons.length]]'>
         <div>Add-ons:</div>
         <paper-dialog-scrollable>
-          <template is='dom-repeat' items='[[snapshot.addons]]' sort='sortAddons'>
+          <template is='dom-repeat' items='[[snapshot.addons]]' sort='_sortAddons'>
             <paper-checkbox checked='{{item.checked}}'>
               [[item.name]]
-              <span class='addon-version'>([[item.version]])</span>
+              <span class='details'>([[item.version]])</span>
             </paper-checkbox>
           </template>
         </paper-dialog-scrollable>
@@ -103,17 +95,17 @@
       <div class='buttons'>
         <paper-icon-button
           icon='mdi:delete'
-          on-click='deleteClicked'
+          on-click='_deleteClicked'
           class='warning'
         ></paper-icon-button>
         <div class='buttons'>
         <paper-icon-button
           icon='mdi:download'
-          on-click='downloadClicked'
+          on-click='_downloadClicked'
         ></paper-icon-button>
-        <paper-button on-click='partialRestoreClicked'>Restore selected</paper-button>
-        <template is='dom-if' if='[[isFullSnapshot(snapshot.type)]]'>
-          <paper-button on-click='fullRestoreClicked'>Wipe &amp; restore</paper-button>
+        <paper-button on-click='_partialRestoreClicked'>Restore selected</paper-button>
+        <template is='dom-if' if='[[_isFullSnapshot(snapshot.type)]]'>
+          <paper-button on-click='_fullRestoreClicked'>Wipe &amp; restore</paper-button>
         </template>
       </div>
     </paper-dialog>
@@ -130,7 +122,7 @@ class HassioSnapshot extends Polymer.Element {
       snapshotSlug: {
         type: String,
         notify: true,
-        observer: 'snapshotSlugChanged',
+        observer: '_snapshotSlugChanged',
       },
       snapshotDeleted: {
         type: Boolean,
@@ -146,12 +138,12 @@ class HassioSnapshot extends Polymer.Element {
     };
   }
 
-  snapshotSlugChanged(snapshotSlug) {
+  _snapshotSlugChanged(snapshotSlug) {
     if (!snapshotSlug || snapshotSlug === 'update') return;
     this.hass.callApi('get', `hassio/snapshots/${snapshotSlug}/info`)
       .then((info) => {
-        info.data.folders = this.computeFolders(info.data.folders);
-        info.data.addons = this.computeAddons(info.data.addons);
+        info.data.folders = this._computeFolders(info.data.folders);
+        info.data.addons = this._computeAddons(info.data.addons);
         this.snapshot = info.data;
         this.$.dialog.open();
       }, () => {
@@ -159,7 +151,7 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
-  computeFolders(folders) {
+  _computeFolders(folders) {
     const list = [];
     if (folders.includes('homeassistant')) list.push({ slug: 'homeassistant', name: 'Home Assistant configuration', checked: true });
     if (folders.includes('ssl')) list.push({ slug: 'ssl', name: 'SSL', checked: true });
@@ -168,16 +160,16 @@ class HassioSnapshot extends Polymer.Element {
     return list;
   }
 
-  computeAddons(addons) {
+  _computeAddons(addons) {
     return addons.map(addon => (
       { slug: addon.slug, name: addon.name, version: addon.version, checked: true }));
   }
 
-  isFullSnapshot(type) {
+  _isFullSnapshot(type) {
     return type === 'full';
   }
 
-  partialRestoreClicked() {
+  _partialRestoreClicked() {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
@@ -200,7 +192,7 @@ class HassioSnapshot extends Polymer.Element {
     });
   }
 
-  fullRestoreClicked() {
+  _fullRestoreClicked() {
     if (!confirm('Are you sure you want to restore this snapshot?')) {
       return;
     }
@@ -214,7 +206,7 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
-  deleteClicked() {
+  _deleteClicked() {
     if (!confirm('Are you sure you want to delete this snapshot?')) {
       return;
     }
@@ -227,7 +219,7 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
-  downloadClicked() {
+  _downloadClicked() {
     this.hass.callApi('get', `hassio/snapshots/${this.snapshotSlug}/download`)
       .then((data) => {
         const element = document.createElement('a');
@@ -240,23 +232,23 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
-  computeName(snapshot) {
+  _computeName(snapshot) {
     return snapshot.name || snapshot.slug;
   }
 
-  computeType(type) {
+  _computeType(type) {
     return type === 'full' ? 'Full snapshot' : 'Partial snapshot';
   }
 
-  computeSize(size) {
+  _computeSize(size) {
     return (Math.ceil(size * 10) / 10) + ' MB';
   }
 
-  sortAddons(a, b) {
+  _sortAddons(a, b) {
     return a.name < b.name ? -1 : 1;
   }
 
-  formatDatetime(datetime) {
+  _formatDatetime(datetime) {
     return new Date(datetime).toLocaleDateString(navigator.language, {
       weekday: 'long',
       year: 'numeric',
@@ -267,7 +259,7 @@ class HassioSnapshot extends Polymer.Element {
     });
   }
 
-  dialogClosed() {
+  _dialogClosed() {
     this.snapshotSlug = null;
   }
 }
