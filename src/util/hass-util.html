@@ -46,8 +46,9 @@ window.hassUtil.dynamicContentUpdater = function (root, newElementTag, attribute
 };
 
 window.hassUtil.relativeTime = function (dateObj) {
-  var delta = Math.abs(new Date() - dateObj) / 1000;
-  var format = new Date() >= dateObj ? '%s ago' : 'in %s';
+  var delta = new Date() - dateObj;
+  var format = delta >= 0 ? '%s ago' : 'in %s';
+  delta = Math.abs(delta) / 1000;
   var tests = window.hassUtil.relativeTime.tests;
   var i;
 
