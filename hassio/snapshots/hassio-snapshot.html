@@ -46,6 +46,9 @@
       .details {
         color: var(--secondary-text-color);
       }
+      .download {
+        color: var(--primary-color);
+      }
       .warning,
       .error {
         color: var(--google-red-500);
@@ -98,11 +101,12 @@
           on-click='_deleteClicked'
           class='warning'
         ></paper-icon-button>
-        <div class='buttons'>
-        <paper-icon-button
-          icon='mdi:download'
-          on-click='_downloadClicked'
-        ></paper-icon-button>
+        <a href='[[_computeDownload(snapshotSlug)]]' download='[[snapshotSlug]].tar'>
+          <paper-icon-button
+            icon='mdi:download'
+            class='download'
+          ></paper-icon-button>
+        </a>
         <paper-button on-click='_partialRestoreClicked'>Restore selected</paper-button>
         <template is='dom-if' if='[[_isFullSnapshot(snapshot.type)]]'>
           <paper-button on-click='_fullRestoreClicked'>Wipe &amp; restore</paper-button>
@@ -219,17 +223,9 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
-  _downloadClicked() {
-    this.hass.callApi('get', `hassio/snapshots/${this.snapshotSlug}/download`)
-      .then((data) => {
-        const element = document.createElement('a');
-        element.setAttribute('href', 'data:application/tar;charset=utf-8,' + encodeURIComponent(data));
-        element.setAttribute('download', `${this.snapshotSlug}.tar`);
-        element.style.display = 'none';
-        Polymer.dom(this.root).appendChild(element);
-        element.click();
-        Polymer.dom(this.root).removeChild(element);
-      });
+  _computeDownload(snapshotSlug) {
+    const password = encodeURI(this.hass.connection.options.authToken);
+    return `/api/hassio/snapshots/${snapshotSlug}/download?api_password=${password}`;
   }
 
   _computeName(snapshot) {
