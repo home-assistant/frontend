@@ -100,11 +100,13 @@
           icon='mdi:delete'
           on-click='_deleteClicked'
           class='warning'
+          title='Delete snapshot'
         ></paper-icon-button>
         <a href='[[_computeDownloadUrl(snapshotSlug)]]' download='[[_computeDownloadName(snapshot)]]'>
           <paper-icon-button
             icon='mdi:download'
             class='download'
+            title='Download snapshot'
           ></paper-icon-button>
         </a>
         <paper-button on-click='_partialRestoreClicked'>Restore selected</paper-button>
