@@ -101,7 +101,7 @@
           on-click='_deleteClicked'
           class='warning'
         ></paper-icon-button>
-        <a href='[[_computeDownload(snapshotSlug)]]' download='[[snapshotSlug]].tar'>
+        <a href='[[_computeDownloadUrl(snapshotSlug)]]' download='[[_computeDownloadName(snapshot)]]'>
           <paper-icon-button
             icon='mdi:download'
             class='download'
@@ -223,9 +223,14 @@ class HassioSnapshot extends Polymer.Element {
       });
   }
 
-  _computeDownload(snapshotSlug) {
+  _computeDownloadUrl(snapshotSlug) {
     const password = encodeURI(this.hass.connection.options.authToken);
     return `/api/hassio/snapshots/${snapshotSlug}/download?api_password=${password}`;
+  }
+
+  _computeDownloadName(snapshot) {
+    const name = this._computeName(snapshot).replace(/[^a-z0-9]+/gi, '_');
+    return `Hass_io_${name}.tar`;
   }
 
   _computeName(snapshot) {
