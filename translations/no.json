@@ -356,7 +356,7 @@
                             "duplicate": "Dupliser",
                             "delete": "Slett",
                             "delete_confirm": "Er du sikker på at du vil slette?",
-                            "unsupported_platform": "Ustøttet plattform: {platform}",
+                            "unsupported_platform": "Ikke-støttet plattform: {platform}",
                             "type_select": "Utløser type",
                             "type": {
                                 "event": {
@@ -476,7 +476,7 @@
                                 },
                                 "wait_template": {
                                     "label": "Vent",
-                                    "wait_template": "Vent mal",
+                                    "wait_template": "Ventemal",
                                     "timeout": "Tidsavbrudd (valgfritt)"
                                 },
                                 "condition": {

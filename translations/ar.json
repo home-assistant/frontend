@@ -113,6 +113,10 @@
             "window": {
                 "off": "مغلق",
                 "on": "مفتوح"
+            },
+            "lock": {
+                "off": "مقفل",
+                "on": "غير مقفل"
             }
         },
         "calendar": {
@@ -333,25 +337,86 @@
                     "caption": "التشغيل التلقائي",
                     "description": "إنشاء وتحرير التشغيل الألي",
                     "editor": {
+                        "save": "حفظ",
+                        "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟",
                         "triggers": {
+                            "duplicate": "نسخ",
+                            "delete": "حذف",
+                            "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "type_select": "نوع المشغل",
                             "type": {
+                                "event": {
+                                    "label": "الحدث",
+                                    "event_type": "نوع الحدث",
+                                    "event_data": "بيانات الحدث"
+                                },
+                                "state": {
+                                    "label": "الحالة",
+                                    "from": "من",
+                                    "to": "إلى"
+                                },
+                                "homeassistant": {
+                                    "event": "الحدث:",
+                                    "start": "بداية",
+                                    "shutdown": "إيقاف"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "الموضوع",
+                                    "payload": "المحتوى (إختياري)"
+                                },
+                                "numeric_state": {
+                                    "label": "القيمة الرقمية",
+                                    "above": "فوق",
+                                    "below": "تحت",
+                                    "value_template": "نموذج القيمة (اختياري)"
+                                },
                                 "sun": {
-                                    "sunset": "Zonsondergang"
+                                    "label": "الشمس",
+                                    "event": "الحدث",
+                                    "sunrise": "شروق الشمس",
+                                    "sunset": "Zonsondergang",
+                                    "offset": "إزاحة (اختياري)"
+                                },
+                                "template": {
+                                    "label": "نموذج",
+                                    "value_template": "نموذج القيمة"
+                                },
+                                "time": {
+                                    "label": "الوقت",
+                                    "at": "عند"
                                 },
                                 "zone": {
                                     "label": "Zone",
+                                    "entity": "الجهاز في المنطقة",
                                     "zone": "Zone",
+                                    "event": "الحدث",
                                     "enter": "Betreedt",
                                     "leave": "Verlaat"
                                 }
                             }
                         },
                         "conditions": {
+                            "header": "الشروط",
                             "add": "إضافة شرط",
+                            "duplicate": "نسخ",
+                            "delete": "حذف",
+                            "delete_confirm": "ها تريد الحذف فعلا؟",
                             "unsupported_condition": "شوط غير مدعوم: {شرط}",
                             "type_select": "نوع الشرط",
                             "type": {
+                                "state": {
+                                    "label": "الحالة",
+                                    "state": "الحالة"
+                                },
+                                "numeric_state": {
+                                    "label": "حالة القيمة الرقمية",
+                                    "above": "فوق",
+                                    "below": "تحت",
+                                    "value_template": "نموذج القيمة (إختياري)"
+                                },
                                 "sun": {
+                                    "label": "الشمس",
                                     "before": "قبل",
                                     "after": "بعد",
                                     "before_offset": "بعد الإزاحة (اختياري)",
@@ -359,10 +424,49 @@
                                     "sunrise": "شروق الشمس",
                                     "sunset": "غروب الشمس"
                                 },
+                                "template": {
+                                    "label": "النموذج",
+                                    "value_template": "نموذج القيمة"
+                                },
                                 "time": {
                                     "label": "وقت",
                                     "after": "بعد",
                                     "before": "قبل"
+                                },
+                                "zone": {
+                                    "label": "المنطقة",
+                                    "entity": "الجهاز في المنطقة",
+                                    "zone": "المنطقة"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "الإجراءات",
+                            "add": "أضف إجراء",
+                            "duplicate": "نسخ",
+                            "delete": "حذف",
+                            "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "type_select": "نوع الإجراء",
+                            "type": {
+                                "service": {
+                                    "label": "طلب خدمة",
+                                    "service_data": "بيانات الخدمة"
+                                },
+                                "delay": {
+                                    "label": "التأخير",
+                                    "delay": "تأخير"
+                                },
+                                "wait_template": {
+                                    "label": "الإنتظار",
+                                    "wait_template": "نموذج الانتظار",
+                                    "timeout": "الحد الأقصى (إختياري)"
+                                },
+                                "condition": {
+                                    "label": "الشرط"
+                                },
+                                "event": {
+                                    "event": "الحدث",
+                                    "service_data": "بيانات الخدمة"
                                 }
                             }
                         }
@@ -402,6 +506,16 @@
             },
             "persistent_notification": {
                 "dismiss": "رفض"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "الجهاز"
+                }
+            },
+            "service-picker": {
+                "service": "خدمة"
             }
         }
     },

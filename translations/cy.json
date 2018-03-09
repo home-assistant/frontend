@@ -4,40 +4,120 @@
             "dry": "Sych",
             "fan_only": "Fan yn unig"
         },
+        "switch": {
+            "on": "Ar"
+        },
+        "zwave": {
+            "default": {
+                "dead": "Marw",
+                "sleeping": "Cysgu",
+                "ready": "Barod"
+            },
+            "query_stage": {
+                "initializing": "Llwytho",
+                "dead": "Marw"
+            }
+        },
         "binary_sensor": {
+            "presence": {
+                "off": "Allan",
+                "on": "Cartref"
+            },
             "battery": {
+                "off": "Arferol",
                 "on": "Isel"
             },
+            "problem": {
+                "off": "iawn",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Wedi datgysylltu",
+                "on": "Cysylltiedig"
+            },
             "cold": {
+                "off": "i ffwrdd",
                 "on": "Oer"
             },
+            "door": {
+                "off": "Cau",
+                "on": "Agor"
+            },
+            "garage_door": {
+                "off": "Cau",
+                "on": "Agor"
+            },
             "heat": {
+                "off": "Arferol",
                 "on": "Poeth"
             },
             "window": {
+                "off": "Cau",
                 "on": "Agored"
+            },
+            "lock": {
+                "off": "Cloi",
+                "on": "Dad-gloi"
             }
         }
     },
-    "panel": {
-        "dev-mqtt": "MQTT"
-    },
-    "domain": {
-        "zwave": "Z-Wave"
+    "state_badge": {
+        "default": {
+            "unknown": "?",
+            "unavailable": "off"
+        },
+        "alarm_control_panel": {
+            "armed": "Arfogi",
+            "disarmed": "Diarfogi",
+            "armed_home": "Arfogi",
+            "armed_away": "Arfogi",
+            "armed_night": "Arfogi",
+            "pending": "Disgwyl",
+            "arming": "Arfogi",
+            "disarming": "Diarfogi",
+            "armed_custom_bypass": "Arfogi"
+        },
+        "device_tracker": {
+            "home": "Adra",
+            "not_home": "Allan"
+        }
     },
     "ui": {
         "panel": {
+            "shopping-list": {
+                "clear_completed": "Clir wedi'i gwblhau",
+                "add_item": "Ychwanegu eitem",
+                "microphone_tip": "Tarwch y meicroffon ar dde uchaf a dweud \"Candy ychwanegu i fy rhestr siopa\""
+            },
+            "history": {
+                "showing_entries": "Dangos cofnodion ar gyfer",
+                "period": "Cyfnod"
+            },
+            "logbook": {
+                "showing_entries": "Dangos endidau i"
+            },
             "mailbox": {
                 "empty": "Nid oes gennych negeseuon",
+                "playback_title": "Chwarae neges",
                 "delete_prompt": "Dileu'r neges hon?",
                 "delete_button": "Dileu"
             },
             "config": {
+                "header": "Ffurfweddu Cynorthwy-ydd Cartref",
                 "core": {
                     "caption": "Cyffredinol",
+                    "description": "Dilyswch eich ffeil ffurfweddu a rheoli'r gweinydd",
                     "section": {
                         "core": {
+                            "header": "Rheoli ffurfweddu a gweinydd",
+                            "validation": {
+                                "heading": "Dilysu ffurfweddu",
+                                "check_config": "Gwiriwch ffurfweddu",
+                                "valid": "Ffurfweddiad dilys!",
+                                "invalid": "Ffurfweddiad annilys"
+                            },
                             "reloading": {
+                                "heading": "Ail-lwytho ffurfweddu",
                                 "core": "Ail-lwytho craidd",
                                 "group": "Ail-lwytho grwpiau",
                                 "automation": "Ail-lwytho awtomeiddiau",
@@ -73,7 +153,158 @@
                 },
                 "automation": {
                     "caption": "Awtomeiddio",
-                    "description": "Creu a golygu awtomeiddio"
+                    "description": "Creu a golygu awtomeiddio",
+                    "picker": {
+                        "header": "Golygydd awtomeiddio",
+                        "pick_automation": "Dewiswch awtomeiddio i olygu",
+                        "no_automations": "Doeddem ddim yn gallu darganfod unrhyw awtomeiddiau",
+                        "add_automation": "Ychwanegwch awtomeiddiad"
+                    },
+                    "editor": {
+                        "introduction": "Defnyddiwch awtomeiddio i ddod â'ch cartref yn fyw",
+                        "default_name": "Awtomeiddiad Newydd",
+                        "save": "Arbed",
+                        "unsaved_confirm": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?",
+                        "alias": "Enw",
+                        "triggers": {
+                            "header": "Sbardunau",
+                            "add": "Ychwanegu sbardun",
+                            "duplicate": "Dyblyg",
+                            "delete": "Dileu",
+                            "delete_confirm": "Sicr bod chi eisiau dileu?",
+                            "unsupported_platform": "Llwyfan heb gymorth: {llwyfan}",
+                            "type_select": "Math sbardun",
+                            "type": {
+                                "event": {
+                                    "label": "Digwyddiad",
+                                    "event_type": "Math o ddigwyddiad",
+                                    "event_data": "Data Digwyddiad"
+                                },
+                                "state": {
+                                    "label": "Stad",
+                                    "from": "O",
+                                    "to": "I"
+                                },
+                                "homeassistant": {
+                                    "label": "Cynorthwy-ydd cartref",
+                                    "event": "Digwyddiad:",
+                                    "start": "Dechrau",
+                                    "shutdown": "Darfod"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Pwnc",
+                                    "payload": "Prif-lwyth (dewisol)"
+                                },
+                                "numeric_state": {
+                                    "label": "Cyflwr rhifol",
+                                    "above": "Uwch",
+                                    "below": "Llai",
+                                    "value_template": "Templed Gwerth (dewisol)"
+                                },
+                                "sun": {
+                                    "label": "Haul",
+                                    "event": "Digwyddiad",
+                                    "sunrise": "Gwawrio",
+                                    "sunset": "Machlud",
+                                    "offset": "Gwrthbwyso (dewisol)"
+                                },
+                                "template": {
+                                    "label": "Templed",
+                                    "value_template": "Templed gwerth"
+                                },
+                                "time": {
+                                    "label": "Amser",
+                                    "at": "Ar"
+                                },
+                                "zone": {
+                                    "label": "Parth",
+                                    "entity": "Endid gyda lleoliad",
+                                    "zone": "Parth",
+                                    "event": "Digwyddiad",
+                                    "enter": "Mewn",
+                                    "leave": "Gadael"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Amodau",
+                            "add": "Ychwanegu amodau",
+                            "duplicate": "Dyblygu",
+                            "delete": "Dileu",
+                            "delete_confirm": "Ydych yn siwr bod chi eisiau dileu?",
+                            "unsupported_condition": "Cyflwr heb gymorth: {cyflwr}",
+                            "type_select": "Math o gyflwr",
+                            "type": {
+                                "state": {
+                                    "label": "Cyflwr",
+                                    "state": "Cyflwr"
+                                },
+                                "numeric_state": {
+                                    "label": "Stad rhifol",
+                                    "above": "Uwch",
+                                    "below": "Llai",
+                                    "value_template": "Templed gwerth (opsiynol)"
+                                },
+                                "sun": {
+                                    "label": "Haul",
+                                    "before": "Cyn:",
+                                    "after": "Ar ôl:",
+                                    "before_offset": "Cyn gwrthbwyso (dewisol)",
+                                    "after_offset": "Ar ôl gwrthbwyso (dewisol)",
+                                    "sunrise": "Gwawrio",
+                                    "sunset": "Machlud"
+                                },
+                                "template": {
+                                    "label": "Templed",
+                                    "value_template": "Templed gwerth"
+                                },
+                                "time": {
+                                    "label": "Amser",
+                                    "after": "Ar ôl",
+                                    "before": "Cyn"
+                                },
+                                "zone": {
+                                    "label": "Ardal",
+                                    "entity": "Endid gyda lleoliad",
+                                    "zone": "Ardal"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Camau gweithredu",
+                            "introduction": "Y camau gweithredu yw'r hyn mae Cynorthwydd Cartref yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno",
+                            "add": "Ychwanegu camau",
+                            "duplicate": "Dyblygu",
+                            "delete": "Dileu",
+                            "delete_confirm": "Ydych yn siŵr bod chi eisiau dileu?",
+                            "unsupported_action": "Camau heb eu cefnogi: {action}",
+                            "type_select": "Math weithrediad",
+                            "type": {
+                                "service": {
+                                    "label": "Gwasanaeth galw",
+                                    "service_data": "Data gwasanaeth"
+                                },
+                                "delay": {
+                                    "label": "Oedi",
+                                    "delay": "Oedi"
+                                },
+                                "wait_template": {
+                                    "label": "Aros",
+                                    "wait_template": "Templed Aros",
+                                    "timeout": "Terfyn amser (dewisol)"
+                                },
+                                "condition": {
+                                    "label": "Cyflwr"
+                                },
+                                "event": {
+                                    "label": "Digwyddiad tân",
+                                    "event": "Digwyddiad",
+                                    "service_data": "Data gwasanaeth"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Sgript",
@@ -85,6 +316,19 @@
                 }
             }
         },
+        "sidebar": {
+            "log_out": "Allgofnodi",
+            "developer_tools": "Offer datblygwr"
+        },
+        "common": {
+            "loading": "Llwytho",
+            "cancel": "Canslo"
+        },
+        "duration": {
+            "day": "Dydd",
+            "week": "Wythnos",
+            "second": "Eiliad"
+        },
         "login-form": {
             "password": "Cyfrinair",
             "remember": "Cofiwch",
@@ -93,8 +337,66 @@
         "card": {
             "camera": {
                 "not_available": "Delwedd ddim ar gael"
+            },
+            "persistent_notification": {
+                "dismiss": "Anwybyddu"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Endid"
+                }
+            },
+            "service-picker": {
+                "service": "Gwasanaeth"
             }
         }
+    },
+    "panel": {
+        "dev-services": "Gwasanaethau",
+        "dev-states": "Cyflerau",
+        "dev-events": "Digwyddiadau",
+        "dev-templates": "Templedi",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Gwybodaeth"
+    },
+    "domain": {
+        "alarm_control_panel": "Panel rheoli larwm",
+        "automation": "Awtomeiddio",
+        "binary_sensor": "Synhwyrydd deuaidd",
+        "calendar": "Calendr",
+        "camera": "Camera",
+        "climate": "Hinsawdd",
+        "configurator": "Ffurfweddwr",
+        "conversation": "Sgwrs",
+        "cover": "Clawr",
+        "device_tracker": "Traciwr dyfais",
+        "fan": "Ffan",
+        "history_graph": "Hanes graff",
+        "group": "Grŵp",
+        "image_processing": "Prosesu delwedd",
+        "input_boolean": "Mewnbynnu boolean",
+        "input_datetime": "Mewnbynnu dyddiad\/amser",
+        "input_select": "Mewnbynnu dewis",
+        "input_number": "Mewnbynnu rhif",
+        "input_text": "Mewnbynnu testun",
+        "light": "Golau",
+        "lock": "Clo",
+        "mailbox": "Blwch post",
+        "media_player": "Chwaraewr cyfryngau",
+        "notify": "Hysbysu",
+        "plant": "Planhigion",
+        "proximity": "Agosrwydd",
+        "remote": "Symudol",
+        "scene": "Golygfa",
+        "script": "Sgript",
+        "sensor": "Synhwyrydd",
+        "sun": "Haul",
+        "switch": "Newid",
+        "updater": "Diweddarwr",
+        "weblink": "Cyswllt gwe",
+        "zwave": "Z-Wave"
     },
     "attribute": {
         "weather": {
