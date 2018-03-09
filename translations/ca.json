@@ -113,6 +113,10 @@
             "window": {
                 "off": "Tancat",
                 "on": "Obert"
+            },
+            "lock": {
+                "off": "Bloquejat",
+                "on": "Desbloquejat"
             }
         },
         "calendar": {

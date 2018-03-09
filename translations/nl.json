@@ -19,7 +19,7 @@
             "off": "Uit",
             "on": "Aan",
             "unknown": "Onbekend",
-            "unavailable": "Onbeschikbaar"
+            "unavailable": "Niet beschikbaar"
         },
         "alarm_control_panel": {
             "armed": "Ingeschakeld",
