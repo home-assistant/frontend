@@ -10,6 +10,8 @@
 <link rel='import' href='../../src/resources/ha-style.html'>
 <link rel='import' href='../../src/components/hassio-card-content.html'>
 
+<link rel='import' href='./hassio-addon-more-info.html'>
+
 <dom-module id="hassio-addon-info">
   <template>
     <style include='ha-style'>
@@ -75,8 +77,15 @@
             hass='[[hass]]'
             path='hassio/addons/[[addonSlug]]/update'
           >Update</ha-call-api-button>
+          <template is='dom-if' if='[[addon.changelog]]'>
+            <paper-button on-click='openChangelog'>Changelog</paper-button>
+          </template>
         </div>
       </paper-card>
+      <hassio-addon-more-info
+        title='Changelog'
+        content='[[changelog]]'
+      ></hassio-addon-more-info>
     </template>
 
     <paper-card>
@@ -199,6 +208,7 @@ class HassioAddonInfo extends Polymer.Element {
       hass: Object,
       addon: Object,
       addonSlug: String,
+      changelog: String,
       isRunning: {
         type: Boolean,
         computed: 'computeIsRunning(addon)',
@@ -234,6 +244,16 @@ class HassioAddonInfo extends Polymer.Element {
   autoUpdateToggled() {
     const data = { auto_update: !this.addon.auto_update };
     this.hass.callApi('POST', `hassio/addons/${this.addonSlug}/options`, data);
+  }
+
+  openChangelog() {
+    this.hass.callApi('get', `hassio/addons/${this.addonSlug}/changelog`)
+      .then((data) => {
+        this.changelog = data;
+      }, () => {
+        this.changelog = 'Error getting changelog';
+      });
+    this.shadowRoot.querySelector('hassio-addon-more-info').openDialog();
   }
 }
 customElements.define(HassioAddonInfo.is, HassioAddonInfo);
