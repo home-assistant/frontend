@@ -265,14 +265,14 @@ class HassioAddonInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
       path: path,
     };
     this.hass.callApi('post', path).then((resp) => {
-        eventData.success = true;
-        eventData.response = resp;
-      }, (resp) => {
-        eventData.success = false;
-        eventData.response = resp;
-      }).then(() => {
-        this.fire('hass-api-called', eventData);
-      });
+      eventData.success = true;
+      eventData.response = resp;
+    }, (resp) => {
+      eventData.success = false;
+      eventData.response = resp;
+    }).then(() => {
+      this.fire('hass-api-called', eventData);
+    });
   }
 }
 customElements.define(HassioAddonInfo.is, HassioAddonInfo);
