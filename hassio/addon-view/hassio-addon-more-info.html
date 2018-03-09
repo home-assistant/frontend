@@ -1,0 +1,90 @@
+<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<link rel='import' href='../../bower_components/paper-dialog/paper-dialog.html'>
+<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
+<link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
+<link rel='import' href='../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html'>
+
+<link rel='import' href='../../src/components/ha-markdown.html'>
+<link rel='import' href='../../src/resources/ha-style.html'>
+
+<dom-module id='hassio-addon-more-info'>
+  <template>
+    <style include='ha-style-dialog'>
+      paper-dialog {
+        font-size: 14px;
+        border-radius: 2px;
+        --paper-dialog-scrollable: {
+          -webkit-overflow-scrolling: auto;
+        }
+        --more-info-header-background: var(--secondary-background-color);
+        --more-info-header-color: var(--primary-text-color);
+      }
+      /* overrule the ha-style-dialog max-height on small screens */
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        paper-dialog {
+          max-height: 100%;
+          height: 100%;
+          --more-info-header-background: var(--primary-color);
+          --more-info-header-color: var(--text-primary-color);
+        }
+      }
+      app-toolbar {
+        margin-top: 0;
+        color: var(--more-info-header-color);
+        background-color: var(--more-info-header-background);
+      }
+      app-toolbar [main-title] {
+        /* Design guideline states 24px, changed to 16 to align with state info */
+        margin-left: 16px;
+      }
+      paper-dialog-scrollable {
+        margin-bottom: 16px;
+      }
+    </style>
+    <paper-dialog
+      id='dialog'
+      with-backdrop
+    >
+      <app-toolbar>
+        <paper-icon-button
+          icon='mdi:close'
+          dialog-dismiss
+        ></paper-icon-button>
+        <div main-title>[[title]]</div>
+      </app-toolbar>
+      <paper-dialog-scrollable>
+        <ha-markdown content='[[content]]'></ha-markdown>
+      </paper-dialog-scrollable>
+    </paper-dialog>
+  </template>
+</dom-module>
+
+<script>
+class HassioAddonMoreInfo extends Polymer.Element {
+  static get is() { return 'hassio-addon-more-info'; }
+
+  static get properties() {
+    return {
+      title: String,
+      content: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+    this.$.dialog.addEventListener('iron-overlay-opened', (ev) => {
+      if (ev.target.withBackdrop) {
+        ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
+      }
+    });
+  }
+
+  openDialog() {
+    this.$.dialog.open();
+  }
+}
+customElements.define(HassioAddonMoreInfo.is, HassioAddonMoreInfo);
+</script>
