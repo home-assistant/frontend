@@ -9,6 +9,7 @@
 <link rel='import' href='../../src/components/ha-markdown.html'>
 <link rel='import' href='../../src/resources/ha-style.html'>
 <link rel='import' href='../../src/components/hassio-card-content.html'>
+<link rel='import' href='../../src/util/hass-mixins.html'>
 
 <link rel='import' href='./hassio-addon-more-info.html'>
 
@@ -142,11 +143,10 @@
       </div>
       <div class='card-actions'>
         <template is='dom-if' if='[[addon.version]]'>
-          <ha-call-api-button
+          <paper-button
             class='warning'
-            hass='[[hass]]'
-            path='hassio/addons/[[addonSlug]]/uninstall'
-          >Uninstall</ha-call-api-button>
+            on-click='_unistallClicked'
+          >Uninstall</paper-button>
           <template is='dom-if' if='[[addon.build]]'>
             <ha-call-api-button
               class='warning'
@@ -166,7 +166,7 @@
               path='hassio/addons/[[addonSlug]]/stop'
             >Stop</ha-call-api-button>
           </template>
-          <template is='dom-if' if='[[!isRunning]]'>            
+          <template is='dom-if' if='[[!isRunning]]'>
             <ha-call-api-button
               hass='[[hass]]'
               path='hassio/addons/[[addonSlug]]/start'
@@ -200,7 +200,7 @@
 </dom-module>
 
 <script>
-class HassioAddonInfo extends Polymer.Element {
+class HassioAddonInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'hassio-addon-info'; }
 
   static get properties() {
@@ -254,6 +254,25 @@ class HassioAddonInfo extends Polymer.Element {
         this.changelog = 'Error getting changelog';
       });
     this.shadowRoot.querySelector('hassio-addon-more-info').openDialog();
+  }
+
+  _unistallClicked() {
+    if (!confirm('Are you sure you want to uninstall this add-on?')) {
+      return;
+    }
+    const path = `hassio/addons/${this.addonSlug}/uninstall`;
+    const eventData = {
+      path: path,
+    };
+    this.hass.callApi('post', path).then((resp) => {
+      eventData.success = true;
+      eventData.response = resp;
+    }, (resp) => {
+      eventData.success = false;
+      eventData.response = resp;
+    }).then(() => {
+      this.fire('hass-api-called', eventData);
+    });
   }
 }
 customElements.define(HassioAddonInfo.is, HassioAddonInfo);
