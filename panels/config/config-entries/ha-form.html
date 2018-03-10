@@ -17,6 +17,9 @@
     <template is='dom-if' if='[[_isArray(schema)]]' restamp>
       <template is='dom-repeat' items='[[schema]]'>
         <ha-form
+          hass='[[hass]]'
+          domain='[[domain]]'
+          step-id='[[stepId]]'
           data='[[_getValue(data, item)]]'
           schema='[[item]]'
           error='[[_getValue(error, item)]]'
@@ -26,12 +29,12 @@
     </template>
     <template is='dom-if' if='[[!_isArray(schema)]]' restamp>
       <template is='dom-if' if='[[error]]'>
-        <div class='error'>[[error]]</div>
+        <div class='error'>[[_computeError(localize, domain, error)]]</div>
       </template>
 
       <template is='dom-if' if='[[_equals(schema.type, "string")]]' restamp>
         <paper-input
-          label='[[schema.name]]'
+          label='[[_computeLabel(localize, domain, stepId, schema)]]'
           value='{{data}}'
         ></paper-input>
       </template>
@@ -39,7 +42,7 @@
       <template is='dom-if' if='[[_equals(schema.type, "integer")]]' restamp>
         <template is='dom-if' if='[[_isRange(schema)]]' restamp>
           <div>
-            [[schema.name]]
+            [[_computeLabel(localize, domain, stepId, schema)]]
             <paper-slider
               pin
               value='{{data}}'
@@ -50,7 +53,7 @@
         </template>
         <template is='dom-if' if='[[!_isRange(schema)]]' restamp>
           <paper-input
-            label='[[schema.name]]'
+            label='[[_computeLabel(localize, domain, stepId, schema)]]'
             value='{{data}}'
             type='number'
           ></paper-input>
@@ -60,7 +63,7 @@
       <template is='dom-if' if='[[_equals(schema.type, "float")]]' restamp>
         <!--TODO-->
         <paper-input
-          label='[[schema.name]]'
+          label='[[_computeLabel(localize, domain, stepId, schema)]]'
           value='{{data}}'
         ></paper-input>
       </template>
@@ -68,11 +71,11 @@
       <template is='dom-if' if='[[_equals(schema.type, "boolean")]]' restamp>
         <paper-checkbox
           checked='{{data}}'
-        >[[schema.name]]</paper-checkbox>
+        >[[_computeLabel(localize, domain, stepId, schema)]]</paper-checkbox>
       </template>
 
       <template is='dom-if' if='[[_equals(schema.type, "select")]]' restamp>
-        <paper-dropdown-menu label='[[schema.name]]'>
+        <paper-dropdown-menu label='[[_computeLabel(localize, domain, stepId, schema)]]'>
           <paper-listbox
             slot="dropdown-content"
             attr-for-selected="item-name"
@@ -91,15 +94,23 @@
 </dom-module>
 
 <script>
-class HaForm extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaForm extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-form'; }
 
   static get properties() {
     return {
+      hass: Object,
       data: {
         type: Object,
         notify: true,
       },
+      domain: String,
+      stepId: String,
       schema: Object,
       error: Object,
     };
@@ -123,6 +134,14 @@ class HaForm extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   _valueChanged(ev) {
     this.set(['data', ev.model.item.name], ev.detail.value);
+  }
+
+  _computeLabel(localize, domain, stepId, schema) {
+    return localize(`component.${domain}.config.step.${stepId}.data.${schema.name}`);
+  }
+
+  _computeError(localize, domain, error) {
+    return localize(`component.${domain}.config.error.${error}`);
   }
 }
 
