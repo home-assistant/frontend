@@ -120,7 +120,7 @@ class HomeAssistant extends Polymer.Element {
   }
 
   loadBackendTranslations() {
-    if (!this.hass.language) return;
+    if (!this.hass.selectedLanguage) return;
 
     const language = this.hass.selectedLanguage;
     this.hass.callApi('get', `translations/${language}`).then((result) => {
