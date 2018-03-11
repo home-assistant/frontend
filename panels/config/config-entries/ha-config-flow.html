@@ -36,7 +36,7 @@
           Success!
         </template>
         <template is='dom-if' if='[[_equals(step.type, "form")]]'>
-          [[step.title]]
+          [[_computeStepTitle(localize, step)]]
         </template>
       </h2>
       <paper-dialog-scrollable>
@@ -45,7 +45,7 @@
         </template>
         <template is='dom-if' if='[[step]]'>
           <template is='dom-if' if='[[_equals(step.type, "abort")]]'>
-            <p>[[step.reason]]</p>
+            <p>[[_computeStepAbortedReason(localize, step)]]</p>
           </template>
 
           <template is='dom-if' if='[[_equals(step.type, "create_entry")]]'>
@@ -53,18 +53,20 @@
           </template>
 
           <template is='dom-if' if='[[_equals(step.type, "form")]]'>
-            <template is='dom-if' if='[[step.description]]'>
-              <ha-markdown content='[[step.description]]'></ha-markdown>
+            <template is='dom-if' if='[[_computeStepDescription(localize, step)]]'>
+              <ha-markdown content='[[_computeStepDescription(localize, step)]]'></ha-markdown>
             </template>
 
             <template is='dom-if' if='[[step.errors.base]]'>
-              <div class='error'>[[step.errors.base]]</div>
+              <div class='error'>[[_computeBaseError(localize, step)]]</div>
             </template>
 
             <ha-form
               data='{{stepData}}'
               schema='[[step.data_schema]]'
               error='[[step.errors]]'
+              compute-label='[[_computeLabelCallback(localize, step)]]'
+              compute-error='[[_computeErrorCallback(localize, step)]]'
             ></ha-form>
           </template>
         </template>
@@ -85,7 +87,12 @@
 </dom-module>
 
 <script>
-class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaConfigFlow extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-config-flow'; }
 
   static get properties() {
@@ -175,6 +182,32 @@ class HaConfigFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
         flowFinished: ['success', 'abort'].includes(this.step.type)
       });
     }
+  }
+
+  _computeStepAbortedReason(localize, step) {
+    return localize(`component.${step.domain}.config.abort.${step.reason}`);
+  }
+
+  _computeStepTitle(localize, step) {
+    return localize(`component.${step.domain}.config.step.${step.step_id}.title`);
+  }
+
+  _computeStepDescription(localize, step) {
+    return localize(`component.${step.domain}.config.step.${step.step_id}.description`);
+  }
+
+  _computeBaseError(localize, step) {
+    return localize(`component.${step.domain}.config.error.${step.errors.base}`);
+  }
+
+  _computeLabelCallback(localize, step) {
+    // Returns a callback for ha-form to calculate labels per schema object
+    return schema => localize(`component.${step.domain}.config.step.${step.step_id}.data.${schema.name}`);
+  }
+
+  _computeErrorCallback(localize, step) {
+    // Returns a callback for ha-form to calculate error messages
+    return error => localize(`component.${step.domain}.config.error.${error}`);
   }
 }
 
