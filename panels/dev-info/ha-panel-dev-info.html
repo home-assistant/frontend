@@ -140,6 +140,19 @@
             <a href='https://www.polymer-project.org' target='_blank'>Polymer [[polymerVersion]]</a>,
             Icons by <a href='https://www.google.com/design/icons/' target='_blank'>Google</a> and <a href='https://MaterialDesignIcons.com' target='_blank'>MaterialDesignIcons.com</a>.
           </p>
+          <p>
+            Frontend JavaScript version: [[jsVersion]]
+            <template is='dom-if' if='[[customUiList.length]]'>
+              <div>
+                Custom UIs:
+                <template is='dom-repeat' items='[[customUiList]]'>
+                  <div>
+                    <a href='[[item.url]]' target='_blank'>[[item.name]]</a>: [[item.version]]
+                  </div>
+                </template>
+              </div>
+            </template>
+          </p>
         </div>
 
         <div class="system-log-intro">
@@ -208,9 +221,7 @@ class HaPanelDevInfo extends Polymer.Element {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
       narrow: {
         type: Boolean,
@@ -242,8 +253,16 @@ class HaPanelDevInfo extends Polymer.Element {
         value: [],
       },
 
-      selectedItem: {
-        type: Object,
+      selectedItem: Object,
+
+      jsVersion: {
+        type: String,
+        value: window.HASS_BUILD,
+      },
+
+      customUiList: {
+        type: Array,
+        value: window.CUSTOM_UI_LIST || [],
       },
     };
   }
