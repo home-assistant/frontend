@@ -123,19 +123,6 @@
           <p>
             Path to configuration.yaml: [[hass.config.core.config_dir]]
           </p>
-          <p>
-            Frontend JavaScript version: [[jsVersion]]
-            <template is='dom-if' if='[[customUiList.length]]'>
-              <div>
-                Custom UIs:
-                <template is='dom-repeat' items='[[customUiList]]'>
-                  <div>
-                    <a href='[[item.url]]' target='_blank'>[[item.name]]</a>: [[item.version]]
-                  </div>
-                </template>
-              </div>
-            </template>
-          </p>
           <p class='develop'>
             <a href='https://home-assistant.io/developers/credits/' target='_blank'>
               Developed by a bunch of awesome people.
@@ -152,6 +139,19 @@
             <a href='https://www.python.org'>Python 3</a>,
             <a href='https://www.polymer-project.org' target='_blank'>Polymer [[polymerVersion]]</a>,
             Icons by <a href='https://www.google.com/design/icons/' target='_blank'>Google</a> and <a href='https://MaterialDesignIcons.com' target='_blank'>MaterialDesignIcons.com</a>.
+          </p>
+          <p>
+            Frontend JavaScript version: [[jsVersion]]
+            <template is='dom-if' if='[[customUiList.length]]'>
+              <div>
+                Custom UIs:
+                <template is='dom-repeat' items='[[customUiList]]'>
+                  <div>
+                    <a href='[[item.url]]' target='_blank'>[[item.name]]</a>: [[item.version]]
+                  </div>
+                </template>
+              </div>
+            </template>
           </p>
         </div>
 
