@@ -32,7 +32,7 @@
           <template is='dom-repeat' items='[[_entries]]'>
             <paper-card heading='[[item.title]]'>
               <div class='card-content'>
-                Integration: [[item.domain]]<br>
+                Integration: [[_computeIntegrationTitle(localize, item.domain)]]<br>
                 State: [[item.state]]<br>
                 Added by: [[item.source]]
               </div>
@@ -47,7 +47,7 @@
           <h1>To be finished</h1>
           <div class='entries layout horizontal wrap'>
             <template is='dom-repeat' items='[[_progress]]'>
-              <paper-card heading='[[item.domain]]'>
+              <paper-card heading='[[_computeIntegrationTitle(localize, item.domain)]]'>
                 <div class="card-actions">
                   <paper-button on-click='_continueFlow'>Configure</paper-button>
                 </div>
@@ -59,7 +59,7 @@
         <h1>Add integration</h1>
         <div class='entries layout horizontal wrap'>
           <template is='dom-repeat' items='[[_handlers]]'>
-            <paper-card heading='[[item]]'>
+            <paper-card heading='[[_computeIntegrationTitle(localize, item)]]'>
               <!-- <div class="card-content">Some content</div> -->
               <div class="card-actions">
                 <paper-button on-click='_createFlow'>Configure</paper-button>
@@ -81,7 +81,12 @@
 
 <script>
 {
-  class HaConfigManager extends window.hassMixins.NavigateMixin(Polymer.Element) {
+  /*
+   * @appliesMixin window.hassMixins.LocalizeMixin
+   * @appliesMixin window.hassMixins.EventsMixin
+   */
+  class HaConfigManager extends
+    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
     static get is() { return 'ha-config-entries'; }
 
     static get properties() {
@@ -178,6 +183,10 @@
     _loadDiscovery() {
       this.hass.callApi('get', 'config/config_entries/flow')
         .then((progress) => { this._progress = progress; });
+    }
+
+    _computeIntegrationTitle(localize, integration) {
+      return localize(`component.${integration}.config.title`);
     }
   }
 
