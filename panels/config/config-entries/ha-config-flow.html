@@ -62,12 +62,11 @@
             </template>
 
             <ha-form
-              hass='[[hass]]'
               data='{{stepData}}'
-              domain='[[step.domain]]'
-              step-id='[[step.step_id]]'
               schema='[[step.data_schema]]'
               error='[[step.errors]]'
+              compute-label='[[_computeLabelCallback(localize, step)]]'
+              compute-error='[[_computeErrorCallback(localize, step)]]'
             ></ha-form>
           </template>
         </template>
@@ -199,6 +198,16 @@ class HaConfigFlow extends
 
   _computeBaseError(localize, step) {
     return localize(`component.${step.domain}.config.error.${step.errors.base}`);
+  }
+
+  _computeLabelCallback(localize, step) {
+    // Returns a callback for ha-form to calculate labels per schema object
+    return schema => localize(`component.${step.domain}.config.step.${step.step_id}.data.${schema.name}`);
+  }
+
+  _computeErrorCallback(localize, step) {
+    // Returns a callback for ha-form to calculate error messages
+    return error => localize(`component.${step.domain}.config.error.${error}`);
   }
 }
 

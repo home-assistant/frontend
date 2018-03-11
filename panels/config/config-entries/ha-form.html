@@ -17,24 +17,23 @@
     <template is='dom-if' if='[[_isArray(schema)]]' restamp>
       <template is='dom-repeat' items='[[schema]]'>
         <ha-form
-          hass='[[hass]]'
-          domain='[[domain]]'
-          step-id='[[stepId]]'
           data='[[_getValue(data, item)]]'
           schema='[[item]]'
           error='[[_getValue(error, item)]]'
           on-data-changed='_valueChanged'
+          compute-label='[[computeLabel]]'
+          compute-error='[[computeError]]'
         ></ha-form>
       </template>
     </template>
     <template is='dom-if' if='[[!_isArray(schema)]]' restamp>
       <template is='dom-if' if='[[error]]'>
-        <div class='error'>[[_computeError(localize, domain, error)]]</div>
+        <div class='error'>[[computeError(error, schema)]]</div>
       </template>
 
       <template is='dom-if' if='[[_equals(schema.type, "string")]]' restamp>
         <paper-input
-          label='[[_computeLabel(localize, domain, stepId, schema)]]'
+          label='[[computeLabel(schema)]]'
           value='{{data}}'
         ></paper-input>
       </template>
@@ -42,7 +41,7 @@
       <template is='dom-if' if='[[_equals(schema.type, "integer")]]' restamp>
         <template is='dom-if' if='[[_isRange(schema)]]' restamp>
           <div>
-            [[_computeLabel(localize, domain, stepId, schema)]]
+            [[computeLabel(schema)]]
             <paper-slider
               pin
               value='{{data}}'
@@ -53,7 +52,7 @@
         </template>
         <template is='dom-if' if='[[!_isRange(schema)]]' restamp>
           <paper-input
-            label='[[_computeLabel(localize, domain, stepId, schema)]]'
+            label='[[computeLabel(schema)]]'
             value='{{data}}'
             type='number'
           ></paper-input>
@@ -63,7 +62,7 @@
       <template is='dom-if' if='[[_equals(schema.type, "float")]]' restamp>
         <!--TODO-->
         <paper-input
-          label='[[_computeLabel(localize, domain, stepId, schema)]]'
+          label='[[computeLabel(schema)]]'
           value='{{data}}'
         ></paper-input>
       </template>
@@ -71,11 +70,11 @@
       <template is='dom-if' if='[[_equals(schema.type, "boolean")]]' restamp>
         <paper-checkbox
           checked='{{data}}'
-        >[[_computeLabel(localize, domain, stepId, schema)]]</paper-checkbox>
+        >[[computeLabel(schema)]]</paper-checkbox>
       </template>
 
       <template is='dom-if' if='[[_equals(schema.type, "select")]]' restamp>
-        <paper-dropdown-menu label='[[_computeLabel(localize, domain, stepId, schema)]]'>
+        <paper-dropdown-menu label='[[computeLabel(schema)]]'>
           <paper-listbox
             slot="dropdown-content"
             attr-for-selected="item-name"
@@ -94,25 +93,31 @@
 </dom-module>
 
 <script>
-/*
- * @appliesMixin window.hassMixins.LocalizeMixin
- * @appliesMixin window.hassMixins.EventsMixin
- */
-class HaForm extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+class HaForm extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-form'; }
 
   static get properties() {
     return {
-      hass: Object,
       data: {
         type: Object,
         notify: true,
       },
-      domain: String,
-      stepId: String,
       schema: Object,
       error: Object,
+
+      // A function that will computes the label to be displayed for a given
+      // schema object.
+      computeLabel: {
+        type: Function,
+        value: schema => schema && schema.name,
+      },
+
+      // A function that will computes an error message to be displayed for a
+      // given error ID, and relevant schema object
+      computeError: {
+        type: Function,
+        value: (error, schema) => error, // eslint-disable-line no-unused-vars
+      },
     };
   }
 
@@ -134,14 +139,6 @@ class HaForm extends
 
   _valueChanged(ev) {
     this.set(['data', ev.model.item.name], ev.detail.value);
-  }
-
-  _computeLabel(localize, domain, stepId, schema) {
-    return localize(`component.${domain}.config.step.${stepId}.data.${schema.name}`);
-  }
-
-  _computeError(localize, domain, error) {
-    return localize(`component.${domain}.config.error.${error}`);
   }
 }
 
