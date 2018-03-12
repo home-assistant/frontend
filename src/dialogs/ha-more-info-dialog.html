@@ -10,7 +10,7 @@
 <link rel='import' href='./more-info/more-info-controls.html'>
 <link rel='import' href='./more-info/more-info-settings.html'>
 
-<dom-module id="more-info-dialog">
+<dom-module id="ha-more-info-dialog">
   <template>
     <style include="ha-style-dialog">
       paper-dialog {
@@ -77,8 +77,8 @@
 </dom-module>
 
 <script>
-class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
-  static get is() { return 'more-info-dialog'; }
+class HaMoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-more-info-dialog'; }
   static get properties() {
     return {
       hass: Object,
@@ -155,5 +155,5 @@ class MoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
     return a === b;
   }
 }
-customElements.define(MoreInfoDialog.is, MoreInfoDialog);
+customElements.define(HaMoreInfoDialog.is, HaMoreInfoDialog);
 </script>
