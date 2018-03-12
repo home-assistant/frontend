@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../components/state-history-charts.html">
 <link rel="import" href="../data/ha-state-history-data.html">
@@ -12,8 +12,8 @@
 
 <dom-module id="ha-more-info-dialog">
   <template>
-    <style include="ha-style-dialog">
-      paper-dialog {
+    <style include="ha-style-dialog paper-dialog-shared-styles">
+      :host {
         font-size: 14px;
         width: 365px;
         border-radius: 2px;
@@ -33,66 +33,50 @@
           --more-info-header-background: var(--primary-color);
           --more-info-header-color: var(--text-primary-color);
         }
-        paper-dialog {
+        :host {
           max-height: 100%;
           height: 100%;
         }
       }
 
-      paper-dialog[data-domain=camera] {
+      :host[data-domain=camera] {
         width: auto;
       }
 
-      paper-dialog[data-domain=history_graph] {
+      :host[data-domain=history_graph] {
         width: 90%;
       }
     </style>
 
-    <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
-    <paper-dialog
-      id="dialog"
-      with-backdrop
-      opened='{{_dialogOpen}}'
-      data-domain$='[[_computeDomain(stateObj)]]'
-    >
-      <template is='dom-if' if='[[!_page]]'>
-        <more-info-controls
-          class='no-padding'
-          hass='[[hass]]'
-          state-obj='[[stateObj]]'
-          dialog-element='[[_dialogElement]]'
-          can-configure='[[_registryInfo]]'
-        ></more-info-controls>
-      </template>
-      <template is='dom-if' if='[[_equals(_page, "settings")]]'>
-        <more-info-settings
-          class='no-padding'
-          hass='[[hass]]'
-          state-obj='[[stateObj]]'
-          registry-info='{{_registryInfo}}'
-        ></more-info-settings>
-      </template>
-    </paper-dialog>
+    <template is='dom-if' if='[[!_page]]'>
+      <more-info-controls
+        class='no-padding'
+        hass='[[hass]]'
+        state-obj='[[stateObj]]'
+        dialog-element='[[_dialogElement]]'
+        can-configure='[[_registryInfo]]'
+      ></more-info-controls>
+    </template>
+    <template is='dom-if' if='[[_equals(_page, "settings")]]'>
+      <more-info-settings
+        class='no-padding'
+        hass='[[hass]]'
+        state-obj='[[stateObj]]'
+        registry-info='{{_registryInfo}}'
+      ></more-info-settings>
+    </template>
   </template>
 </dom-module>
 
 <script>
-class HaMoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HaMoreInfoDialog extends window.hassMixins.DialogMixin(Polymer.Element) {
   static get is() { return 'ha-more-info-dialog'; }
   static get properties() {
     return {
-      hass: Object,
-
       stateObj: {
         type: Object,
         computed: '_computeStateObj(hass)',
         observer: '_stateObjChanged',
-      },
-
-      _dialogOpen: {
-        type: Boolean,
-        value: false,
-        observer: '_dialogOpenChanged',
       },
 
       _dialogElement: Object,
@@ -102,12 +86,19 @@ class HaMoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
         type: String,
         value: null,
       },
+
+      dataDomain: {
+        computed: '_computeDomain(stateObj)',
+        reflectToAttribute: true
+      },
     };
   }
 
+  static get observers() { return ['_dialogOpenChanged(opened)']; }
+
   ready() {
     super.ready();
-    this._dialogElement = this.$.dialog;
+    this._dialogElement = this;
     this.addEventListener('more-info-page', (ev) => { this._page = ev.detail.page; });
   }
 
@@ -122,7 +113,7 @@ class HaMoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
   _stateObjChanged(newVal, oldVal) {
     if (!newVal) {
       this.setProperties({
-        _dialogOpen: false,
+        opened: false,
         _page: null,
         _registryInfo: null,
       });
@@ -141,7 +132,7 @@ class HaMoreInfoDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
     requestAnimationFrame(() => requestAnimationFrame(() => {
       // allow dialog to render content before showing it so it will be
       // positioned correctly.
-      this._dialogOpen = true;
+      this.opened = true;
     }));
   }
 

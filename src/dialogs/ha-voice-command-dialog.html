@@ -1,13 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
 
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <dom-module id="ha-voice-command-dialog">
   <template>
-    <style>
+    <style include="paper-dialog-shared-styles">
       iron-icon {
         margin-right: 8px;
       }
@@ -16,6 +16,7 @@
         width: 450px;
         min-height: 80px;
         font-size: 18px;
+        padding: 16px;
       }
 
       .messages {
@@ -75,12 +76,12 @@
         display: none;
       }
 
-      paper-dialog {
+      :host {
         border-radius: 2px;
       }
 
       @media all and (max-width: 450px) {
-        paper-dialog {
+        :host {
           margin: 0;
           width: 100%;
           max-height: calc(100% - 64px);
@@ -104,50 +105,38 @@
       }
     </style>
 
-    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
-      <div class='content'>
-        <div class='messages' id='messages'>
-          <template is='dom-repeat' items='[[_conversation]]' as='message'>
-            <div class$='[[_computeMessageClasses(message)]]'>[[message.text]]</div>
-          </template>
-        </div>
-        <template is='dom-if' if='[[results]]'>
-          <div class='messages'>
-            <div class='message user'>
-              <span>{{results.final}}</span>
-              <span class='interimTranscript'>[[results.interim]]</span>
-              …
-            </div>
-          </div>
+    <div class='content'>
+      <div class='messages' id='messages'>
+        <template is='dom-repeat' items='[[_conversation]]' as='message'>
+          <div class$='[[_computeMessageClasses(message)]]'>[[message.text]]</div>
         </template>
-        <div class='icon' hidden$="[[results]]">
-          <paper-icon-button
-            icon="mdi:text-to-speech"
-            on-click='startListening'
-          ></paper-icon-button>
-        </div>
       </div>
-    </paper-dialog>
+      <template is='dom-if' if='[[results]]'>
+        <div class='messages'>
+          <div class='message user'>
+            <span>{{results.final}}</span>
+            <span class='interimTranscript'>[[results.interim]]</span>
+            …
+          </div>
+        </div>
+      </template>
+      <div class='icon' hidden$="[[results]]">
+        <paper-icon-button
+          icon="mdi:text-to-speech"
+          on-click='startListening'
+        ></paper-icon-button>
+      </div>
+    </div>
   </template>
 
 </dom-module>
 
 <script>
-class HaVoiceCommandDialog extends Polymer.Element {
+class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(Polymer.Element) {
   static get is() { return 'ha-voice-command-dialog'; }
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      dialogOpen: {
-        type: Boolean,
-        value: false,
-        observer: 'dialogOpenChanged',
-      },
-
       results: {
         type: Object,
         value: null,
@@ -163,6 +152,8 @@ class HaVoiceCommandDialog extends Polymer.Element {
       }
     };
   }
+
+  static get observers() { return ['dialogOpenChanged(opened)']; }
 
   initRecognition() {
     /* eslint-disable new-cap */
