@@ -1,0 +1,36 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../components/entity/state-info.html">
+<link rel="import" href="../components/entity/ha-entity-lock.html">
+
+<dom-module id="state-card-lock">
+  <template>
+    <style include="iron-flex iron-flex-alignment"></style>
+
+    <div class='horizontal justified layout'>
+      <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
+      <ha-entity-lock state-obj="[[stateObj]]" hass='[[hass]]'></ha-entity-lock>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+class StateCardLock extends Polymer.Element {
+  static get is() { return 'state-card-lock'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      stateObj: Object,
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+}
+customElements.define(StateCardLock.is, StateCardLock);
+</script>

@@ -37,6 +37,7 @@
     <template is='dom-if' if='[[showMain]]' restamp>
       <home-assistant-main
         on-hass-more-info='handleMoreInfo'
+        on-hass-confirmation='handleConfirmation'
         on-hass-dock-sidebar='handleDockSidebar'
         on-hass-notification='handleNotification'
         on-hass-logout='handleLogout'
@@ -159,6 +160,7 @@ class HomeAssistant extends Polymer.Element {
         themes: null,
         dockedSidebar: false,
         moreInfoEntityId: null,
+        confirmationObj: null,
         callService: null,
         callApi: null,
       });
@@ -180,6 +182,7 @@ class HomeAssistant extends Polymer.Element {
       translationMetadata: window.translationMetadata,
       dockedSidebar: false,
       moreInfoEntityId: null,
+      confirmationObj: null,
       callService: (domain, service, serviceData) =>
         conn.callService(domain, service, serviceData || {})
           .then(
@@ -287,6 +290,11 @@ class HomeAssistant extends Polymer.Element {
     ev.stopPropagation();
 
     this._updateHass({ moreInfoEntityId: ev.detail.entityId });
+  }
+
+  handleConfirmation(ev) {
+    ev.stopPropagation();
+    this._updateHass({ confirmationObj: ev.detail.confirmationObj });
   }
 
   handleDockSidebar(ev) {

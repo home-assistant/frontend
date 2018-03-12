@@ -1,0 +1,103 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel='import' href='../util/hass-mixins.html'>
+
+<dom-module id="confirmation-dialog">
+  <template>
+    <style>
+      paper-dialog {
+        font-size: 14px;
+        width: 365px;
+        border-radius: 2px;
+      }
+
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        paper-dialog {
+          margin: 0;
+          width: 100%;
+          max-height: calc(100% - 64px);
+
+          position: fixed !important;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          overflow: no-display;
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+      }
+    </style>
+
+    <!-- entry-animation='slide-up-animation' exit-animation='slide-down-animation' -->
+    <paper-dialog id="dialog" with-backdrop opened='{{dialogOpen}}'>
+      <h2>{{confirmationObj.title}}</h2>
+      <p>{{confirmationObj.message}}</p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus>Accept</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+
+<script>
+  class ConfirmationDialog extends window.hassMixins.EventsMixin(Polymer.Element) {
+    static get is() { return 'confirmation-dialog'; }
+    static get properties() {
+      return {
+        hass: Object,
+
+        confirmationObj: {
+          type: Object,
+          computed: 'computeConfirmationObj(hass)',
+          observer: 'confirmationObjChanged',
+        },
+
+        dialogOpen: {
+          type: Boolean,
+          value: false,
+          observer: 'dialogOpenChanged',
+        },
+
+        delayedDialogOpen: {
+          type: Boolean,
+          value: false,
+        },
+      };
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+    }
+
+    dialogOpenChanged(newVal) {
+      if (newVal) {
+        window.setTimeout(() => { this.delayedDialogOpen = true; }, 100);
+      } else if (!newVal && this.confirmationObj) {
+        if (this.$.dialog.closingReason.confirmed) {
+          this.confirmationObj.acceptHandler();
+        }
+        this.fire('hass-confirmation', { confirmationObj: null });
+        this.delayedDialogOpen = false;
+      }
+    }
+
+    computeConfirmationObj(hass) {
+      return hass.confirmationObj || null;
+    }
+
+    confirmationObjChanged(newVal) {
+      if (!newVal) {
+        this.dialogOpen = false;
+        return;
+      }
+
+      window.setTimeout(() => {
+        // allow dialog to render content before showing it so it is
+        // positioned correctly.
+        this.dialogOpen = true;
+      }, 10);
+    }
+  }
+  customElements.define(ConfirmationDialog.is, ConfirmationDialog);
+</script>

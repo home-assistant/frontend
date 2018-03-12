@@ -1,0 +1,162 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="ha-entity-lock">
+  <template>
+    <style>
+      :host {
+        white-space: nowrap;
+      }
+
+      paper-icon-button {
+        color: var(--primary-text-color);
+        transition: color .5s;
+        cursor: pointer;
+        padding: 6px;
+      }
+
+      paper-icon-button[state-active] {
+        color: var(--primary-color);
+      }
+
+      paper-icon-button.openbutton {
+        padding: 5px;
+      }
+    </style>
+
+    <template is='dom-if' if='[[isOpenable]]'>
+      <paper-icon-button class="openbutton" icon="mdi:door-open" on-tap="open">Open</paper-icon-button>
+    </template>
+
+    <template is='dom-if' if='[[stateObj.attributes.assumed_state]]'>
+      <paper-icon-button icon="mdi:lock-open" on-tap="unlock" state-active$='[[!isLocked]]'></paper-icon-button>
+      <paper-icon-button icon="mdi:lock" on-tap="lock" state-active$='[[isLocked]]'></paper-icon-button>
+    </template>
+
+    <template is='dom-if' if='[[!stateObj.attributes.assumed_state]]'>
+      <template is='dom-if' if='[[isLocked]]'>
+        <paper-icon-button icon="mdi:lock-open" on-tap="unlock"></paper-icon-button>
+      </template>
+      <template is='dom-if' if='[[!isLocked]]'>
+        <paper-icon-button icon="mdi:lock" on-tap="lock"></paper-icon-button>
+      </template>
+    </template>
+
+  </template>
+</dom-module>
+
+<script>
+  class HaEntityLock extends
+    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+    static get is() {
+      return 'ha-entity-lock';
+    }
+
+    static get properties() {
+      return {
+        hass: Object,
+        stateObj: {
+          type: Object,
+          observer: 'stateObjObserver'
+        },
+
+        toggleChecked: {
+          type: Boolean,
+          value: false,
+        },
+
+        isLocked: {
+          type: Boolean,
+          computed: 'computeIsLocked(stateObj)',
+          observer: 'isLockedChanged',
+        },
+
+        isOpenable: {
+          type: Boolean,
+          computed: 'computeIsOpenable(stateObj)'
+        }
+      };
+    }
+
+    ready() {
+      super.ready();
+      this.addEventListener('tap', ev => this.onTap(ev));
+      this.forceStateChange();
+    }
+
+    onTap(ev) {
+      ev.stopPropagation();
+    }
+
+    isLockedChanged(newVal) {
+      this.toggleChecked = newVal;
+    }
+
+    forceStateChange() {
+      if (this.toggleChecked === this.isLocked) {
+        this.toggleChecked = !this.toggleChecked;
+      }
+      this.toggleChecked = this.isLocked;
+    }
+
+    unlock() {
+      this.callService('unlock');
+    }
+
+    lock() {
+      this.callService('lock');
+    }
+
+    open() {
+      const that = this;
+      // TODO: This needs translation.
+      this.fire('hass-confirmation', {
+        confirmationObj: {
+          title: 'Really open the door latch?',
+          message: 'Keep in mind that you can only close the door physically.',
+          acceptHandler: function () {
+            that.callService('open');
+          }
+        }
+      });
+    }
+
+    computeIsLocked(stateObj) {
+      return stateObj && !window.hassUtil.OFF_STATES.includes(stateObj.state);
+    }
+
+    computeIsOpenable(stateObj) {
+      return stateObj && (stateObj.attributes.supported_features & 1) !== 0;
+    }
+
+    stateObjObserver(newVal, oldVal) {
+      if (!oldVal || !newVal) return;
+      if (this.computeIsLocked(newVal) === this.computeIsLocked(oldVal)) {
+        // stateObj changed but isLocked is the same. Make sure toggle is in the right position.
+        this.forceStateChange();
+      }
+    }
+
+    // We call updateToggle after a successful call to re-sync the toggle
+    // with the state. It will be out of sync if our service call did not
+    // result in the entity to be turned on. Since the state is not changing,
+    // the resync is not called automatic.
+    callService(command) {
+      const currentState = this.stateObj;
+      const service = this.hass.callService('lock', command, {
+        entity_id: this.stateObj.entity_id
+      });
+      service.then(() => {
+        setTimeout(() => {
+          // If after 3 seconds we have not received a state update
+          // reset the lock to it's original state.
+          if (this.stateObj === currentState) {
+            this.forceStateChange();
+          }
+        }, 3000);
+      });
+    }
+  }
+
+  customElements.define(HaEntityLock.is, HaEntityLock);
+</script>

@@ -10,6 +10,7 @@ const DOMAINS_WITH_CARD = [
   'input_text',
   'media_player',
   'scene',
+  'lock',
   'script',
   'timer',
   'weblink',
