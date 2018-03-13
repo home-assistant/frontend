@@ -1,4 +1,5 @@
 <link rel='import' href='../../bower_components/app-localize-behavior/app-localize-behavior.html'>
+<link rel="import" href='../../bower_components/paper-dialog/paper-dialog-behavior.html'>
 
 <script>
 
@@ -108,4 +109,21 @@ window.hassMixins.LocalizeMixin = Polymer.dedupingMixin(superClass =>
     }
   });
 
+/**
+ * @polymerMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin Polymer.PaperDialogBehavior
+ */
+window.hassMixins.DialogMixin = Polymer.dedupingMixin(superClass =>
+  class extends Polymer.mixinBehaviors([window.hassMixins.EventsMixin,
+    Polymer.PaperDialogBehavior], superClass) {
+    static get properties() {
+      return {
+        withBackdrop: {
+          type: Boolean,
+          value: true,
+        },
+      };
+    }
+  });
 </script>
