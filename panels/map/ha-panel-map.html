@@ -94,8 +94,110 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     }
   }
 
+  drawZone(hass, entityId, mapItems, map) {
+    var entity = hass.states[entityId];
+    var icon;
+    var title = window.hassUtil.computeStateName(entity);
+
+    if (entity.attributes.passive) return;
+
+    // create icon
+    var iconHTML = '';
+    if (entity.attributes.icon) {
+      iconHTML = (
+        "<iron-icon icon='" + entity.attributes.icon + "'></iron-icon>");
+    } else {
+      iconHTML = title;
+    }
+
+    icon = window.L.divIcon({
+      html: iconHTML,
+      iconSize: [24, 24],
+      className: '',
+    });
+
+    // create market with the icon
+    mapItems.push(window.L.marker(
+      [entity.attributes.latitude, entity.attributes.longitude],
+      {
+        icon: icon,
+        interactive: false,
+        title: title,
+      }
+    ).addTo(map));
+
+    // create circle around it
+    mapItems.push(window.L.circle(
+      [entity.attributes.latitude, entity.attributes.longitude],
+      {
+        interactive: false,
+        color: '#FF9800',
+        radius: entity.attributes.radius,
+      }
+    ).addTo(map));
+  }
+
+  drawEntity(hass, entityId, mapItems, map, delta) {
+    var entity = hass.states[entityId];
+    var title = window.hassUtil.computeStateName(entity);
+    // create icon
+    var icon;
+    var entityPicture = entity.attributes.entity_picture || '';
+    var entityName = title.split(' ').map(function (part) { return part.substr(0, 1); }).join('');
+    /* Leaflet clones this element before adding it to the map. This messes up
+    our Poylmer object and we can't pass data through. Thus we hack like this. */
+    icon = window.L.divIcon({
+      html: "<ha-entity-marker entity-id='" + entity.entity_id + "' entity-name='" + entityName + "' entity-picture='" + entityPicture + "'></ha-entity-marker>",
+      iconSize: [45, 45],
+      className: '',
+    });
+
+    var latitude = entity.attributes.latitude;
+    var longitude = entity.attributes.longitude;
+    if (delta) {
+      latitude += delta.lat;
+      longitude += delta.lng;
+    }
+
+    // create market with the icon
+    mapItems.push(window.L.marker(
+      [latitude, longitude],
+      {
+        icon: icon,
+        title: window.hassUtil.computeStateName(entity),
+      }
+    ).addTo(map));
+
+    // create circle around if entity has accuracy
+    if (entity.attributes.gps_accuracy) {
+      mapItems.push(window.L.circle(
+        [latitude, longitude],
+        {
+          interactive: false,
+          color: '#0288D1',
+          radius: entity.attributes.gps_accuracy,
+        }
+      ).addTo(map));
+    }
+  }
+
+  displayable(entityId) {
+    var entity = this.hass.states[entityId];
+    return !(entity.attributes.hidden && window.hassUtil.computeDomain(entity) !== 'zone') &&
+       ('latitude' in entity.attributes) &&
+       ('longitude' in entity.attributes);
+  }
+
+  deltaLatLng(angle, radius, latitude) {
+    // good approximation of lat/long delta can be found on https://stackoverflow.com/a/1253545/277527
+    var latCorrection = (Math.sin(angle) * radius) / 110574;
+    var longCorrection = (Math.cos(angle) * radius) /
+        (111320 * Math.cos(latitude * (Math.PI / 180)));
+    return { lat: latCorrection, lng: longCorrection };
+  }
+
   drawEntities(hass) {
-    /* eslint-disable vars-on-top */
+  /* eslint-disable vars-on-top */
     var map = this._map;
     if (!map) return;
 
@@ -104,95 +206,51 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     }
     var mapItems = this._mapItems = [];
 
-    Object.keys(hass.states).forEach(function (entityId) {
-      var entity = hass.states[entityId];
-      var title = window.hassUtil.computeStateName(entity);
+    var entitiesByZone = Object.keys(hass.states)
+      .filter(this.displayable, { hass: hass })
+      .reduce(function (byZone, entityId) {
+        var zone = hass.states[entityId].state;
+        (byZone[zone] = byZone[zone] || []).push(entityId);
+        return byZone;
+      }, {});
 
-      if ((entity.attributes.hidden &&
-           window.hassUtil.computeDomain(entity) !== 'zone') ||
-          entity.state === 'home' ||
-          !('latitude' in entity.attributes) ||
-          !('longitude' in entity.attributes)) {
-        return;
-      }
-
-      var icon;
-
-      if (window.hassUtil.computeDomain(entity) === 'zone') {
-        // DRAW ZONE
-        if (entity.attributes.passive) return;
-
-        // create icon
-        var iconHTML = '';
-        if (entity.attributes.icon) {
-          iconHTML = (
-            "<iron-icon icon='" + entity.attributes.icon + "'></iron-icon>");
-        } else {
-          iconHTML = title;
-        }
-
-        icon = window.L.divIcon({
-          html: iconHTML,
-          iconSize: [24, 24],
-          className: '',
-        });
-
-        // create market with the icon
-        mapItems.push(window.L.marker(
-          [entity.attributes.latitude, entity.attributes.longitude],
-          {
-            icon: icon,
-            interactive: false,
-            title: title,
+    Object.entries(entitiesByZone).forEach(function (el) {
+      var zone = el[0];
+      var entities = el[1];
+      if (zone === 'zoning') {
+        entities.forEach(function (entityId) {
+          this.drawZone(hass, entityId, mapItems, map);
+        }, this);
+      } else if (zone === 'not_home') {
+        entities.forEach(function (entityId) {
+          this.drawEntity(hass, entityId, mapItems, map);
+        }, this);
+      } else { // entity is in a zone
+        var zoneEntity = hass.states['zone.' + zone];
+        var count = entities.length;
+        var i = 0;
+        var angle;
+        var entity;
+        var delta;
+        entities.forEach(function (entityId) {
+          entity = hass.states[entityId];
+          // devices located in the zone but having their own location are displayed
+          // at their exact location
+          if (entity.attributes.latitude === zoneEntity.attributes.latitude &&
+                  entity.attributes.longitude === zoneEntity.attributes.longitude) {
+            angle = (2 * Math.PI * i) / count;
+            delta = this.deltaLatLng(
+              angle, zoneEntity.attributes.radius,
+              zoneEntity.attributes.latitude
+            );
+            i += 1;
+          } else {
+            delta = undefined;
           }
-        ).addTo(map));
-
-        // create circle around it
-        mapItems.push(window.L.circle(
-          [entity.attributes.latitude, entity.attributes.longitude],
-          {
-            interactive: false,
-            color: '#FF9800',
-            radius: entity.attributes.radius,
-          }
-        ).addTo(map));
-
-        return;
+          this.drawEntity(hass, entityId, mapItems, map, delta);
+        }, this);
       }
-
-      // DRAW ENTITY
-      // create icon
-      var entityPicture = entity.attributes.entity_picture || '';
-      var entityName = title.split(' ').map(function (part) { return part.substr(0, 1); }).join('');
-      /* Leaflet clones this element before adding it to the map. This messes up
-         our Poylmer object and we can't pass data through. Thus we hack like this. */
-      icon = window.L.divIcon({
-        html: "<ha-entity-marker entity-id='" + entity.entity_id + "' entity-name='" + entityName + "' entity-picture='" + entityPicture + "'></ha-entity-marker>",
-        iconSize: [45, 45],
-        className: '',
-      });
-
-      // create market with the icon
-      mapItems.push(window.L.marker(
-        [entity.attributes.latitude, entity.attributes.longitude],
-        {
-          icon: icon,
-          title: window.hassUtil.computeStateName(entity),
-        }
-      ).addTo(map));
-
-      // create circle around if entity has accuracy
-      if (entity.attributes.gps_accuracy) {
-        mapItems.push(window.L.circle(
-          [entity.attributes.latitude, entity.attributes.longitude],
-          {
-            interactive: false,
-            color: '#0288D1',
-            radius: entity.attributes.gps_accuracy,
-          }
-        ).addTo(map));
-      }
-    });
+    }, this);
   }
 }
 
