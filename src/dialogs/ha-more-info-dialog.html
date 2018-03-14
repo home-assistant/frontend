@@ -2,8 +2,6 @@
 
 <link rel="import" href="../../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="../components/state-history-charts.html">
-<link rel="import" href="../data/ha-state-history-data.html">
 <link rel='import' href='../util/hass-mixins.html'>
 <link rel='import' href='../resources/ha-style.html'>
 
@@ -39,7 +37,7 @@
         width: auto;
       }
 
-      :host([data-domain=history_graph]) {
+      :host([data-domain=history_graph]), :host([large]) {
         width: 90%;
       }
     </style>
@@ -51,6 +49,7 @@
         state-obj='[[stateObj]]'
         dialog-element='[[_dialogElement]]'
         can-configure='[[_registryInfo]]'
+        large='{{large}}'
       ></more-info-controls>
     </template>
     <template is='dom-if' if='[[_equals(_page, "settings")]]'>
@@ -74,6 +73,12 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(Polymer.Element) {
         type: Object,
         computed: '_computeStateObj(hass)',
         observer: '_stateObjChanged',
+      },
+
+      large: {
+        type: Boolean,
+        reflectToAttribute: true,
+        observer: 'notifyResize',
       },
 
       _dialogElement: Object,
@@ -113,6 +118,7 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(Polymer.Element) {
         opened: false,
         _page: null,
         _registryInfo: null,
+        large: false,
       });
       return;
     }
