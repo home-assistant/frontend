@@ -62,17 +62,6 @@
 
     <div class$='[[computeClassNames(stateObj)]]'>
 
-      <div class='effect_list'>
-        <paper-dropdown-menu label-float dynamic-align label='Effect'>
-          <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
-            <template is='dom-repeat'
-                      items='[[stateObj.attributes.effect_list]]'>
-              <paper-item>[[item]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-
       <div class='brightness'>
         <ha-labeled-slider
           caption='Brightness' icon='mdi:brightness-5' max='255'
@@ -104,6 +93,17 @@
       >
       </ha-color-picker>
 
+      <div class='effect_list'>
+        <paper-dropdown-menu label-float dynamic-align label='Effect'>
+          <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
+            <template is='dom-repeat'
+                      items='[[stateObj.attributes.effect_list]]'>
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
+      
       <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
     </div>
   </template>
