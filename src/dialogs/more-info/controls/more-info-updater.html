@@ -9,7 +9,7 @@
     </style>
 
     <div>
-      <a class='link' href='../../https://home-assistant.io/getting-started/updating/' target='_blank'>Update Instructions</a>
+      <a class='link' href='https://home-assistant.io/docs/installation/updating/' target='_blank'>Update Instructions</a>
     </div>
   </template>
 </dom-module>
@@ -28,7 +28,7 @@ class MoreInfoUpdater extends Polymer.Element {
 
   computeReleaseNotes(stateObj) {
     return (stateObj.attributes.release_notes ||
-            'https://home-assistant.io/getting-started/updating/');
+            'https://home-assistant.io/docs/installation/updating/');
   }
 }
 
