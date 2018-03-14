@@ -1,7 +1,9 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-layout/app-toolbar/app-toolbar.html">
-<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../components/state-history-charts.html">
+<link rel="import" href="../../data/ha-state-history-data.html">
 <link rel="import" href="../../state-summary/state-card-content.html">
 <link rel='import' href='../../util/hass-mixins.html'>
 <link rel='import' href='../../resources/ha-style.html'>
@@ -28,8 +30,16 @@
       state-history-charts {
         position: relative;
         z-index: 1;
-        max-width: 365px;
+        max-width: 100%;
         margin-bottom: 16px;
+      }
+
+      @media all and (min-width: 451px) and (min-height: 501px) {
+        .main-title {
+          pointer-events: auto;
+          cursor: default;
+          line-height: 64px;
+        }
       }
 
       :host([domain=camera]) paper-dialog-scrollable {
@@ -42,7 +52,7 @@
         icon='mdi:close'
         dialog-dismiss
       ></paper-icon-button>
-      <div main-title>[[_computeStateName(stateObj)]]</div>
+      <div class="main-title" main-title on-click="enlarge">[[_computeStateName(stateObj)]]</div>
       <template is='dom-if' if='[[canConfigure]]'>
         <paper-icon-button
           icon='mdi:settings'
@@ -58,21 +68,21 @@
     </template>
 
     <template is='dom-if' if="[[_computeShowHistoryComponent(hass, stateObj)]]" restamp>
-      <div>
-        <ha-state-history-data
-          hass='[[hass]]'
-          filter-type='recent-entity'
-          entity-id='[[stateObj.entity_id]]'
-          data='{{_stateHistory}}'
-          is-loading='{{_stateHistoryLoading}}'
-          cache-config='[[_cacheConfig]]'
-        ></ha-state-history-data>
-        <state-history-charts
-          history-data="[[_stateHistory]]"
-          is-loading-data="[[_stateHistoryLoading]]"
-          up-to-now
-        ></state-history-charts>
-      </div>
+      <ha-state-history-data
+        hass='[[hass]]'
+        filter-type='recent-entity'
+        entity-id='[[stateObj.entity_id]]'
+        data='{{_stateHistory}}'
+        is-loading='{{_stateHistoryLoading}}'
+        cache-config='[[_cacheConfig]]'
+      ></ha-state-history-data>
+      <state-history-charts
+        history-data="[[_stateHistory]]"
+        is-loading-data="[[_stateHistoryLoading]]"
+        up-to-now
+        no-single=[[large]]
+        is-zoomable=[[large]]
+      ></state-history-charts>
     </template>
     <paper-dialog-scrollable dialog-element='[[dialogElement]]'>
       <more-info-content
@@ -110,6 +120,13 @@
 
         _stateHistory: Object,
         _stateHistoryLoading: Boolean,
+
+        large: {
+          type: Boolean,
+          value: false,
+          notify: true,
+        },
+
         _cacheConfig: {
           type: Object,
           value: {
@@ -119,6 +136,10 @@
           },
         },
       };
+    }
+
+    enlarge() {
+      this.large = !this.large;
     }
 
     _computeShowStateInfo(stateObj) {
