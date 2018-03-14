@@ -475,7 +475,7 @@
                                     "delay": "Zamik"
                                 },
                                 "wait_template": {
-                                    "label": "Čakaj",
+                                    "label": "počakajte",
                                     "wait_template": "Čakalna predloga",
                                     "timeout": "Časovna omejitev (neobvezno)"
                                 },

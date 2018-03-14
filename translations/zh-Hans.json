@@ -345,7 +345,7 @@
                     },
                     "editor": {
                         "introduction": "使用自动化让你的家聪明起来",
-                        "default_name": "新自动化实例",
+                        "default_name": "新建自动化",
                         "save": "保存",
                         "unsaved_confirm": "有更改尚未保存，确定离开页面吗？",
                         "alias": "名称",
@@ -414,7 +414,7 @@
                         "conditions": {
                             "header": "环境条件",
                             "introduction": "环境条件是自动化流程中的可选条件，可用于避免触发条件满足时动作的执行。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统的状态。例如，“灯被打开”这个事件属于触发条件，“灯是开着的”这个状态就属于环境条件。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
-                            "add": "添加条件",
+                            "add": "添加环境条件",
                             "duplicate": "复制",
                             "delete": "删除",
                             "delete_confirm": "确认删除？",
