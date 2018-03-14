@@ -115,8 +115,8 @@
                 "on": "Open"
             },
             "lock": {
-                "off": "Vergrendelt",
-                "on": "Ontgrendelt"
+                "off": "Vergrendeld",
+                "on": "Ontgrendeld"
             }
         },
         "calendar": {
@@ -337,17 +337,17 @@
                     "caption": "Automatisering",
                     "description": "Het maken en bewerken van automatiseringen",
                     "picker": {
-                        "header": "Automatisering editor",
-                        "introduction": "Met de automatiseringseditor kunt u automatiseringen maken en bewerken. Lees [de instructies] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) om te controleren of u Home Assistant juist hebt geconfigureerd.",
+                        "header": "Automatiseringsbewerker",
+                        "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Lees [de instructies](https:\/\/home-assistant.io\/docs\/automation\/editor\/) om er zeker van te zijn of je Home Assistant juist hebt geconfigureerd.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
                         "add_automation": "Automatisering toevoegen"
                     },
                     "editor": {
-                        "introduction": "Gebruik automatiseringen om uw huis tot leven te brengen",
+                        "introduction": "Gebruik automatiseringen om je huis tot leven te brengen",
                         "default_name": "Nieuwe automatisering",
                         "save": "Opslaan",
-                        "unsaved_confirm": "U heeft niet-opgeslagen wijzigingen. Weet je zeker dat u wilt afsluiten?",
+                        "unsaved_confirm": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten?",
                         "alias": "Naam",
                         "triggers": {
                             "header": "",
@@ -417,9 +417,9 @@
                             "add": "Voorwaarde toevoegen",
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
-                            "delete_confirm": "Zeker weten verwijderen?",
-                            "unsupported_condition": "Niet-ondersteunde voorwaarde: {voorwaarde}",
-                            "type_select": "Voorwaarde type",
+                            "delete_confirm": "Zeker weten dat je wilt verwijderen?",
+                            "unsupported_condition": "Niet-ondersteunde voorwaarde: {condition}",
+                            "type_select": "Type voorwaarde",
                             "type": {
                                 "state": {
                                     "label": "Staat",
@@ -458,7 +458,7 @@
                         },
                         "actions": {
                             "header": "Acties",
-                            "introduction": "De acties wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd. \n\n [Meer informatie over acties.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "De acties zijn wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd. \n\n [Leer meer over acties.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Actie toevoegen",
                             "duplicate": "Dupliceer",
                             "delete": "Verwijder",
@@ -483,7 +483,7 @@
                                     "label": "Voorwaarde"
                                 },
                                 "event": {
-                                    "label": "Gebeurtenis afvuren",
+                                    "label": "Gebeurtenis uitvoeren",
                                     "event": "Gebeurtenis:",
                                     "service_data": "Service data"
                                 }

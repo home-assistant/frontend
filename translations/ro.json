@@ -76,6 +76,33 @@
             "presence": {
                 "off": "Plecat",
                 "on": "Acasă"
+            },
+            "connectivity": {
+                "off": "Deconectat",
+                "on": "Conectat"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Rece"
+            },
+            "door": {
+                "off": "Închis",
+                "on": "Deschis"
+            },
+            "garage_door": {
+                "off": "Închis",
+                "on": "Deschis"
+            },
+            "heat": {
+                "on": "Fierbinte"
+            },
+            "window": {
+                "off": "Închis",
+                "on": "Deschis"
+            },
+            "lock": {
+                "off": "Blocat",
+                "on": "Deblocat"
             }
         },
         "calendar": {
@@ -223,15 +250,143 @@
         "sidebar": {
             "log_out": "Deconectare"
         },
+        "common": {
+            "loading": "Se încarcă"
+        },
         "panel": {
+            "history": {
+                "period": "Perioadă"
+            },
+            "mailbox": {
+                "empty": "Nu aveți mesaje",
+                "playback_title": "Redarea mesajelor",
+                "delete_prompt": "Ștergeți acest mesaj?",
+                "delete_button": "Șterge"
+            },
             "config": {
+                "core": {
+                    "description": "Validați fișierul de configurare și controlați serverul",
+                    "section": {
+                        "core": {
+                            "header": "Configurație și control server",
+                            "validation": {
+                                "heading": "Validare configurație",
+                                "introduction": "Validați configurația dvs. dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă"
+                            },
+                            "reloading": {
+                                "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
+                                "core": "Reîncărcați nucleul",
+                                "group": "Reîncărcați grupurile",
+                                "automation": "Reîncărcați automatizările"
+                            },
+                            "server_management": {
+                                "restart": "Repornire",
+                                "stop": "Oprire"
+                            }
+                        },
+                        "translation": {
+                            "header": "Alegeți o limbă"
+                        },
+                        "themes": {
+                            "header": "Setați o temă",
+                            "theme": "Temă"
+                        }
+                    }
+                },
+                "automation": {
+                    "caption": "Automatizări",
+                    "picker": {
+                        "introduction": "Editorul de automatizare vă permite să creați și să editați automatizări. Citiți [instrucțiunile] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) pentru a vă asigura că ați configurat corect Home Assistant.",
+                        "pick_automation": "Alegeți automatizarea pentru a o edita",
+                        "add_automation": "Adăugați o automatizare"
+                    },
+                    "editor": {
+                        "introduction": "Utilizați automatizări pentru a vă aduce casa în viață",
+                        "default_name": "Automatizare nouă",
+                        "save": "Salvați",
+                        "unsaved_confirm": "Aveți modificări nesalvate. Esti sigur ca vrei sa pâra",
+                        "alias": "Nume",
+                        "triggers": {
+                            "header": "Declanșatoare",
+                            "introduction": "Declanșatoarele sunt cele ce încep procesarea unei reguli de automatizare. Este posibil să specificați mai multe declanșatoare pentru aceeași regulă. Odată ce începe declanșarea, Home Assistant va valida condițiile, dacă este cazul, și va apela acțiunea. \n\n [Aflați mai multe despre declanșatoare.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "delete": "Ștergeți",
+                            "delete_confirm": "Sigur doriți să ștergeți?",
+                            "type": {
+                                "sun": {
+                                    "label": "Soare",
+                                    "event": "Eveniment",
+                                    "sunrise": "Răsărit de soare",
+                                    "sunset": "Apus de soare"
+                                },
+                                "zone": {
+                                    "zone": "Zona",
+                                    "enter": "Intră",
+                                    "leave": "Ieși"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "introduction": "Condițiile sunt o parte opțională a unei reguli de automatizare și pot fi folosite pentru a împiedica o acțiune să se întâmple atunci când este declanșată. Condițiile par foarte asemănătoare cu declanșatoarele, dar sunt foarte diferite. Un declanșator va privi evenimentele care se întâmplă în sistem, în timp ce o condiție va arăta numai cum arată sistemul acum. Un declanșator poate observa că un comutator este pornit. O condiție poate vedea numai dacă un comutator este în prezent pornit sau oprit. \n\n [Aflați mai multe despre condiții.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "delete": "Șterge",
+                            "delete_confirm": "Ești sigur că vrei să ștergi?",
+                            "type": {
+                                "sun": {
+                                    "label": "Soare",
+                                    "sunrise": "Răsărit de soare",
+                                    "sunset": "Apus de soare"
+                                },
+                                "time": {
+                                    "label": "Inainte",
+                                    "after": "După"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "zone": "Zone"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Acţiuni",
+                            "introduction": "Acțiunile sunt cele pe care Home Assistant le va face când se declanșează automatizarea. \n\n [Aflați mai multe despre acțiuni.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Adăugați o acțiune",
+                            "delete": "Șterge",
+                            "delete_confirm": "Ești sigur că vrei să ștergi?",
+                            "type": {
+                                "wait_template": {
+                                    "timeout": "Timeout (opțional)"
+                                },
+                                "condition": {
+                                    "label": "Condiție"
+                                },
+                                "event": {
+                                    "event": "Eveniment"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "description": "Creați și editați scripturi"
+                },
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "description": "Gestionați-vă rețeaua Z-Wave"
                 }
             }
+        },
+        "login-form": {
+            "password": "Parola",
+            "remember": "Reține"
         }
     },
     "domain": {
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Umiditate",
+            "visibility": "Vizibilitate",
+            "wind_speed": "Viteza vântului"
+        }
     }
 }
