@@ -60,8 +60,8 @@
         overflow: hidden;
         box-sizing: border-box;
       }
-      .chartLegend li:first-of-type:last-of-type {
-        // If there is a single item - allow it to take full width.
+      .chartLegend li:nth-child(odd):last-of-type {
+        /* Make last item take full width if it is add-numbered. */
         max-width: 100%;
       }
       .chartLegend li.hidden {

@@ -56,7 +56,7 @@
         icon='mdi:close'
         dialog-dismiss
       ></paper-icon-button>
-      <div class="main-title" main-title on-click="enlarge">[[_computeStateName(stateObj)]]</div>
+      <div class="main-title" main-title on-dblclick="enlarge">[[_computeStateName(stateObj)]]</div>
       <template is='dom-if' if='[[canConfigure]]'>
         <paper-icon-button
           icon='mdi:settings'
@@ -142,9 +142,9 @@
       };
     }
 
-    enlarge() {
+    enlarge(e) {
       this.large = !this.large;
-      this._cacheConfig = Object.assign({}, this._cacheConfig);
+      e.preventDefault();
     }
 
     _computeShowStateInfo(stateObj) {
