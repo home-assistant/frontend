@@ -15,9 +15,6 @@
         font-size: 14px;
         width: 365px;
         border-radius: 2px;
-        --paper-dialog-scrollable: {
-          -webkit-overflow-scrolling: auto;
-        }
       }
 
       more-info-controls, more-info-settings {
@@ -32,8 +29,7 @@
           --more-info-header-color: var(--text-primary-color);
         }
         :host {
-          max-height: 100%;
-          height: 100%;
+          @apply(--ha-dialog-fullscreen);
         }
       }
 
