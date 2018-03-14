@@ -1,4 +1,5 @@
 <link rel='import' href='../../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href="../../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel='import' href='../../../bower_components/paper-icon-button/paper-icon-button.html'>
 
 <dom-module id="ha-chart-base">
@@ -58,6 +59,10 @@
         white-space: nowrap;
         overflow: hidden;
         box-sizing: border-box;
+      }
+      .chartLegend li:first-of-type:last-of-type {
+        // If there is a single item - allow it to take full width.
+        max-width: 100%;
       }
       .chartLegend li.hidden {
         text-decoration: line-through;
@@ -119,20 +124,25 @@
 {
   let SCRIPT_LOADED = false;
 
-  class HaChartBase extends Polymer.Element {
+  class HaChartBase extends Polymer.mixinBehaviors([
+    Polymer.IronResizableBehavior
+  ], Polymer.Element) {
     get chart() {
       return this._chart;
     }
     static get is() { return 'ha-chart-base'; }
     static get properties() {
       return {
-        data: {
-          type: Object,
-          observer: 'onPropsChange'
-        },
+        data: Object,
         identifier: String,
+        isZoomable: Boolean,
       };
     }
+
+    static get observers() {
+      return ['onPropsChange(data, isZoomable)'];
+    }
+
     connectedCallback() {
       super.connectedCallback();
       this._isAttached = true;
@@ -157,7 +167,17 @@
           }
         );
       };
-      window.addEventListener('resize', this._resizeListener);
+
+      if (typeof ResizeObserver === 'function') {
+        this.resizeObserver = new ResizeObserver((entries) => {
+          entries.forEach(() => {
+            this._resizeListener();
+          });
+        });
+        this.resizeObserver.observe(this.$.chartTarget);
+      } else {
+        this.addEventListener('iron-resize', this._resizeListener);
+      }
 
       if (!SCRIPT_LOADED) {
         Polymer.importHref(
@@ -169,10 +189,15 @@
         );
       }
     }
+
     disconnectedCallback() {
       super.disconnectedCallback();
       this._isAttached = false;
-      window.removeEventListener('resize', this._resizeListener);
+      if (this.resizeObserver) {
+        this.resizeObserver.unobserve(this.$.chartTarget);
+      }
+
+      this.removeEventListener('iron-resize', this._resizeListener);
 
       if (this._resizeTimer !== undefined) {
         clearInterval(this._resizeTimer);
@@ -351,14 +376,12 @@
         options.scales.xAxes[0].ticks.callback = this._formatTickValue;
         if (this.data.type === 'timeline') {
           // timeline is not zoomable, so dont capture mouse
-          this.set('isZoomable', false);
           options = Chart.helpers.merge(options, {
             pan: { enabled: false },
             zoom: { enabled: false },
           });
         } else {
           // allow free zooming&moving around
-          this.set('isZoomable', true);
           options = Chart.helpers.merge(options, {
             pan: {
               enabled: true,
@@ -407,6 +430,7 @@
         this.updateZoomlimits();
       }
     }
+
     updateZoomlimits() {
       if (!this._chart) return;
       if (this.isTimeline) return;
@@ -432,10 +456,12 @@
 
       this._chart.options = Chart.helpers.merge(this._chart.options, {
         pan: {
+          enabled: !!this.isZoomable,
           rangeMin: { x: buffer.x.min, y: buffer.y.min },
           rangeMax: { x: buffer.x.max, y: buffer.y.max }
         },
         zoom: {
+          enabled: !!this.isZoomable,
           // x is nulled so users are able to "zoom in on time"
           rangeMin: { x: null /* buffer.x.min */, y: buffer.y.min },
           rangeMax: { x: null /* buffer.x.max */, y: buffer.y.max }
