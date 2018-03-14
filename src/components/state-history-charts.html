@@ -30,6 +30,7 @@
         data='[[item.data]]'
         identifier='[[item.identifier]]'
         is-single-device='[[_computeIsSingleLineChart(item.data, noSingle)]]'
+        is-zoomable='[[isZoomable]]'
         end-time='[[_computeEndTime(endTime, upToNow, historyData)]]'>
       </state-history-chart-line>
     </template>
@@ -41,9 +42,7 @@ class StateHistoryCharts extends Polymer.Element {
   static get is() { return 'state-history-charts'; }
   static get properties() {
     return {
-      hass: {
-        type: Object
-      },
+      hass: Object,
       historyData: {
         type: Object,
         value: null,
@@ -60,6 +59,7 @@ class StateHistoryCharts extends Polymer.Element {
 
       upToNow: Boolean,
       noSingle: Boolean,
+      isZoomable: Boolean,
     };
   }
 
