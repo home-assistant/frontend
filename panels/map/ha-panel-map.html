@@ -165,7 +165,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(Polymer.Element) {
       var entityPicture = entity.attributes.entity_picture || '';
       var entityName = title.split(' ').map(function (part) { return part.substr(0, 1); }).join('');
       /* Leaflet clones this element before adding it to the map. This messes up
-         our Poylmer object and we can't pass data through. Thus we hack like this. */
+         our Polymer object and we can't pass data through. Thus we hack like this. */
       icon = window.L.divIcon({
         html: "<ha-entity-marker entity-id='" + entity.entity_id + "' entity-name='" + entityName + "' entity-picture='" + entityPicture + "'></ha-entity-marker>",
         iconSize: [45, 45],
