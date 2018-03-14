@@ -148,8 +148,8 @@
 <dom-module id='ha-style-dialog'>
   <template>
     <style>
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        paper-dialog {
+      :host {
+        --ha-dialog-narrow: {
           margin: 0;
           width: 100% !important;
           max-height: calc(100% - 64px);
@@ -161,6 +161,31 @@
           overflow: scroll;
           border-bottom-left-radius: 0px;
           border-bottom-right-radius: 0px;
+        }
+
+        --ha-dialog-fullscreen: {
+          min-height: 100% !important;
+          width: 100% !important;
+          border-radius: 0px;
+          position: fixed !important;
+          margin: 0;
+        }
+
+        --paper-dialog-scrollable: {
+          -webkit-overflow-scrolling: auto;
+          margin-bottom: 16px;
+        }
+      }
+
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        paper-dialog {
+          @apply(--ha-dialog-narrow);
+        }
+        :host {
+          --paper-dialog-scrollable: {
+            -webkit-overflow-scrolling: auto;
+            margin-bottom: 0px;
+          }
         }
       }
     </style>
