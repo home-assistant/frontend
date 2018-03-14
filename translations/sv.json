@@ -371,7 +371,7 @@
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
-                                    "event": "Händelse",
+                                    "event": "Händelse:",
                                     "start": "Starta",
                                     "shutdown": "Stoppa"
                                 },

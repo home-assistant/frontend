@@ -412,7 +412,7 @@
                             }
                         },
                         "conditions": {
-                            "header": "condizioni",
+                            "header": "Condizioni",
                             "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \n\n [Ulteriori informazioni sulle condizioni.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Aggiungi condizione",
                             "duplicate": "Duplica",
@@ -426,10 +426,10 @@
                                     "state": "Stato"
                                 },
                                 "numeric_state": {
-                                    "label": "valore numerico",
+                                    "label": "Valore numerico",
                                     "above": "Superiore",
                                     "below": "Inferiore",
-                                    "value_template": "valore modello (opzionale)"
+                                    "value_template": "Valore modello (opzionale)"
                                 },
                                 "sun": {
                                     "label": "Sole",
@@ -461,7 +461,7 @@
                             "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Aggiungi azione",
                             "duplicate": "Duplica",
-                            "delete": "cancella",
+                            "delete": "Cancella",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "unsupported_action": "Azione non supportata: {azione}",
                             "type_select": "Tipo di azione",
