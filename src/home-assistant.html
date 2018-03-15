@@ -173,8 +173,8 @@ class HomeAssistant extends Polymer.Element {
       themes: null,
       panelUrl: this.panelUrl,
 
-      // If language and resources are already loaded, don't discard them
-      language: (this.hass && this.hass.language) || null,
+      language: window.getActiveTranslation(),
+      // If resources are already loaded, don't discard them
       resources: (this.hass && this.hass.resources) || null,
 
       translationMetadata: window.translationMetadata,
