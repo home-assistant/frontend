@@ -17,7 +17,7 @@
       }
       @media screen and (max-width: 830px) {
         paper-card {
-          width: 100%;          
+          width: 100%;
         }
         .card-content {
           height: 100%;
@@ -37,12 +37,6 @@
     <paper-card heading="Hass.io supervisor">
       <div class="card-content">
         <table class='info'>
-          <template is='dom-if' if='[[data.beta_channel]]'>
-            <tr>
-              <td>Beta channel</td>
-              <td>Active</td>
-            </tr>
-          </template>
           <tr>
             <td>Version</td>
             <td>
@@ -53,6 +47,12 @@
             <td>Latest version</td>
             <td>[[data.last_version]]</td>
           </tr>
+          <template is='dom-if' if='[[data.beta_channel]]'>
+            <tr>
+              <td>Beta channel</td>
+              <td>Active</td>
+            </tr>
+          </template>
         </table>
         <template is='dom-if' if='[[errors]]'>
           <div class='errors'>Error: [[errors]]</div>

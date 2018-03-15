@@ -9,13 +9,15 @@
       paper-card {
         display: inline-block;
         width: 400px;
+        margin-left: 8px;
       }
       .card-content {
         height: 110px;
       }
       @media screen and (max-width: 830px) {
         paper-card {
-          margin-top: 8px;     
+          margin-top: 8px;
+          margin-left: 0;
           width: 100%;
         }
         .card-content {
@@ -37,16 +39,16 @@
       <div class="card-content">
         <table class='info'>
           <tr>
-            <td>Type</td>
-            <td>[[data.type]] ([[data.os]])</td>
-          </tr>
-          <tr>
             <td>Version</td>
             <td>[[data.version]]</td>
           </tr>
           <tr>
             <td>Latest version</td>
             <td>[[data.last_version]]</td>
+          </tr>
+          <tr>
+            <td>Type</td>
+            <td>[[data.type]] ([[data.os]])</td>
           </tr>
         </table>
         <template is='dom-if' if='[[errors]]'>
