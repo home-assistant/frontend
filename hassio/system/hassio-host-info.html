@@ -8,19 +8,12 @@
     <style include="iron-flex ha-style">
       paper-card {
         display: inline-block;
-        width: 350px;
+        width: 400px;
       }
-      .card-content {
-        height: 110px;
-      }
-      @media screen and (max-width: 730px) {
+      @media screen and (max-width: 830px) {
         paper-card {
           margin-top: 8px;     
           width: 100%;
-          height: 100%;
-        }
-        .card-content {
-          height: 100%;
         }
       }
       .info {
@@ -42,7 +35,7 @@
             <td>[[data.type]] ([[data.os]])</td>
           </tr>
           <tr>
-            <td>Host controller version</td>
+            <td>Version</td>
             <td>[[data.version]]</td>
           </tr>
           <tr>

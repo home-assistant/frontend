@@ -9,17 +9,11 @@
     <style include="iron-flex ha-style">
       paper-card {
         display: inline-block;
-        width: 350px;
+        width: 400px;
       }
-      .card-content {
-        height: 110px;
-      }
-      @media screen and (max-width: 730px) {
+      @media screen and (max-width: 830px) {
         paper-card {
           width: 100%;          
-        }
-        .card-content {
-          height: 100%;
         }
       }
       .info {
@@ -37,12 +31,20 @@
       <div class="card-content">
         <table class='info'>
           <tr>
+            <td>Beta channel</td>
+            <td>
+              <template is='dom-if' if='[[data.beta_channel]]'>
+                Active
+              </template>
+              <template is='dom-if' if='[[!data.beta_channel]]'>
+                Not active
+              </template>
+            </td>
+          </tr>
+          <tr>
             <td>Version</td>
             <td>
               [[data.version]]
-              <template is='dom-if' if='[[data.beta_channel]]'>
-                (Beta)
-              </template>
             </td>
           </tr>
           <tr>
@@ -55,17 +57,31 @@
         </template>
       </div>
       <div class="card-actions">
+        <ha-call-api-button
+          hass='[[hass]]'
+          path="hassio/supervisor/reload"
+        >Reload</ha-call-api-button>
         <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
           <ha-call-api-button
             hass='[[hass]]'
             path="hassio/supervisor/update"
           >Update</ha-call-api-button>
         </template>
-        <ha-call-api-button
-          class='warning'
-          hass='[[hass]]'
-          path="hassio/supervisor/reload"
-        >Reload</ha-call-api-button>
+        <template is='dom-if' if='[[data.beta_channel]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path='hassio/supervisor/options'
+            data='[[leaveBeta]]'
+          >Leave beta channel</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[!data.beta_channel]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path='hassio/supervisor/options'
+            data='[[joinBeta]]'
+            title='Get beta updates for Home Assistant (RCs), supervisor and host'
+          >Join beta channel</ha-call-api-button>
+        </template>
       </div>
     </paper-card>
   </template>
@@ -80,6 +96,14 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
       hass: Object,
       data: Object,
       errors: String,
+      joinBeta: {
+        type: Object,
+        value: { beta_channel: true },
+      },
+      leaveBeta: {
+        type: Object,
+        value: { beta_channel: false },
+      },
     };
   }
 
