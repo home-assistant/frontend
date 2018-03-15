@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
@@ -11,9 +12,15 @@
         display: inline-block;
         width: 400px;
       }
+      .card-content {
+        height: 110px;
+      }
       @media screen and (max-width: 830px) {
         paper-card {
           width: 100%;          
+        }
+        .card-content {
+          height: 100%;
         }
       }
       .info {
@@ -30,17 +37,12 @@
     <paper-card heading="Hass.io supervisor">
       <div class="card-content">
         <table class='info'>
-          <tr>
-            <td>Beta channel</td>
-            <td>
-              <template is='dom-if' if='[[data.beta_channel]]'>
-                Active
-              </template>
-              <template is='dom-if' if='[[!data.beta_channel]]'>
-                Not active
-              </template>
-            </td>
-          </tr>
+          <template is='dom-if' if='[[data.beta_channel]]'>
+            <tr>
+              <td>Beta channel</td>
+              <td>Active</td>
+            </tr>
+          </template>
           <tr>
             <td>Version</td>
             <td>
@@ -75,12 +77,11 @@
           >Leave beta channel</ha-call-api-button>
         </template>
         <template is='dom-if' if='[[!data.beta_channel]]'>
-          <ha-call-api-button
-            hass='[[hass]]'
-            path='hassio/supervisor/options'
-            data='[[joinBeta]]'
+          <paper-button
+            on-click='_joinBeta'
+            class='warning'
             title='Get beta updates for Home Assistant (RCs), supervisor and host'
-          >Join beta channel</ha-call-api-button>
+          >Join beta channel</paper-button>
         </template>
       </div>
     </paper-card>
@@ -96,10 +97,6 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
       hass: Object,
       data: Object,
       errors: String,
-      joinBeta: {
-        type: Object,
-        value: { beta_channel: true },
-      },
       leaveBeta: {
         type: Object,
         value: { beta_channel: false },
@@ -129,6 +126,38 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
 
   computeUpdateAvailable(data) {
     return data.version !== data.last_version;
+  }
+
+  _joinBeta() {
+    if (!confirm(`WARNING:
+Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
+
+This inludes beta releases for:
+- Home Assistant (Release Candidates)
+- Hass.io supervisor
+- Host system`)) {
+      return;
+    }
+    const method = 'post';
+    const path = 'hassio/supervisor/options';
+    const data = { beta_channel: true };
+
+    const eventData = {
+      method: method,
+      path: path,
+      data: data,
+    };
+
+    this.hass.callApi(method, path, data)
+      .then((resp) => {
+        eventData.success = true;
+        eventData.response = resp;
+      }, (resp) => {
+        eventData.success = false;
+        eventData.response = resp;
+      }).then(() => {
+        this.fire('hass-api-called', eventData);
+      });
   }
 }
 
