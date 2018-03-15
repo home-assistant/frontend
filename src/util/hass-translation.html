@@ -1,7 +1,7 @@
 <link rel='import' href='../../build-translations/translationMetadata.html' />
 
 <script>
-function getActiveTranslation() {
+window.getActiveTranslation = function () {
   // Perform case-insenstive comparison since browser isn't required to
   // report languages with specific cases.
   const lookup = {};
@@ -59,7 +59,7 @@ function getActiveTranslation() {
 
   // Final fallback
   return 'en';
-}
+};
 
 // Store loaded translations in memory so translations are available immediately
 // when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
