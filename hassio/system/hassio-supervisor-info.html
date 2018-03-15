@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
@@ -9,14 +10,14 @@
     <style include="iron-flex ha-style">
       paper-card {
         display: inline-block;
-        width: 350px;
+        width: 400px;
       }
       .card-content {
         height: 110px;
       }
-      @media screen and (max-width: 730px) {
+      @media screen and (max-width: 830px) {
         paper-card {
-          width: 100%;          
+          width: 100%;
         }
         .card-content {
           height: 100%;
@@ -40,32 +41,48 @@
             <td>Version</td>
             <td>
               [[data.version]]
-              <template is='dom-if' if='[[data.beta_channel]]'>
-                (Beta)
-              </template>
             </td>
           </tr>
           <tr>
             <td>Latest version</td>
             <td>[[data.last_version]]</td>
           </tr>
+          <template is='dom-if' if='[[data.beta_channel]]'>
+            <tr>
+              <td>Beta channel</td>
+              <td>Active</td>
+            </tr>
+          </template>
         </table>
         <template is='dom-if' if='[[errors]]'>
           <div class='errors'>Error: [[errors]]</div>
         </template>
       </div>
       <div class="card-actions">
+        <ha-call-api-button
+          hass='[[hass]]'
+          path="hassio/supervisor/reload"
+        >Reload</ha-call-api-button>
         <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
           <ha-call-api-button
             hass='[[hass]]'
             path="hassio/supervisor/update"
           >Update</ha-call-api-button>
         </template>
-        <ha-call-api-button
-          class='warning'
-          hass='[[hass]]'
-          path="hassio/supervisor/reload"
-        >Reload</ha-call-api-button>
+        <template is='dom-if' if='[[data.beta_channel]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path='hassio/supervisor/options'
+            data='[[leaveBeta]]'
+          >Leave beta channel</ha-call-api-button>
+        </template>
+        <template is='dom-if' if='[[!data.beta_channel]]'>
+          <paper-button
+            on-click='_joinBeta'
+            class='warning'
+            title='Get beta updates for Home Assistant (RCs), supervisor and host'
+          >Join beta channel</paper-button>
+        </template>
       </div>
     </paper-card>
   </template>
@@ -80,6 +97,10 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
       hass: Object,
       data: Object,
       errors: String,
+      leaveBeta: {
+        type: Object,
+        value: { beta_channel: false },
+      },
     };
   }
 
@@ -105,6 +126,38 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
 
   computeUpdateAvailable(data) {
     return data.version !== data.last_version;
+  }
+
+  _joinBeta() {
+    if (!confirm(`WARNING:
+Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
+
+This inludes beta releases for:
+- Home Assistant (Release Candidates)
+- Hass.io supervisor
+- Host system`)) {
+      return;
+    }
+    const method = 'post';
+    const path = 'hassio/supervisor/options';
+    const data = { beta_channel: true };
+
+    const eventData = {
+      method: method,
+      path: path,
+      data: data,
+    };
+
+    this.hass.callApi(method, path, data)
+      .then((resp) => {
+        eventData.success = true;
+        eventData.response = resp;
+      }, (resp) => {
+        eventData.success = false;
+        eventData.response = resp;
+      }).then(() => {
+        this.fire('hass-api-called', eventData);
+      });
   }
 }
 
