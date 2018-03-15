@@ -269,7 +269,7 @@ window.hassUtil.binarySensorIcon = function (state) {
 };
 
 window.hassUtil.coverIcon = function (state) {
-  var open = state.state && state.state === 'open';
+  var open = state.state && state.state !== 'closed';
   switch (state.attributes.device_class) {
     case 'garage':
       return open ? 'mdi:garage-open' : 'mdi:garage';
