@@ -131,26 +131,24 @@ class HassioHostInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _showHardware() {
-    let data;
     this.hass.callApi('get', 'hassio/host/hardware')
       .then((resp) => {
-        data = this._objectToMarkdown(resp.data);
-      }, (resp) => {
-        data = 'Error getting hardware info';
-      }).then(() => {
-        const eventData = {
+        return this._objectToMarkdown(resp.data);
+      }, () => {
+        return 'Error getting hardware info';
+      }).then((content) => {
+        this.fire('hassio-markdown-dialog', {
           title: 'Hardware',
-          content: data,
-        };
-        this.fire('hassio-markdown-dialog', eventData);
+          content: content,
+        });
       });
   }
 
   _objectToMarkdown(obj, indent = '') {
     let data = '';
-    for (const key in obj) {
+    Object.keys(obj).map(key => {
       if (typeof obj[key] !== 'object') {
-        data += `${indent}- ${key}: ${obj[key]}\n`;      
+        data += `${indent}- ${key}: ${obj[key]}\n`;
       } else {
         data += `${indent}- ${key}:\n`;
         if (Array.isArray(obj[key])) {
@@ -161,7 +159,7 @@ class HassioHostInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
           data += this._objectToMarkdown(obj[key], `    ${indent}`);
         }
       }
-    }
+    });
     return data;
   }
 }
