@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
+<link rel='import' href='../../src/util/hass-mixins.html'>
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
 
 <dom-module id="hassio-host-info">
@@ -56,12 +58,6 @@
         </template>
       </div>
       <div class="card-actions">
-        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
-          <ha-call-api-button
-            hass='[[hass]]'
-            path="hassio/host/update"
-          >Update</ha-call-api-button>
-        </template>
         <template is='dom-if' if='[[computeRebootAvailable(data)]]'>
           <ha-call-api-button
             class='warning'
@@ -76,13 +72,22 @@
             path="hassio/host/shutdown"
           >Shutdown</ha-call-api-button>
         </template>
+        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="hassio/host/update"
+          >Update</ha-call-api-button>
+        </template>
+        <paper-button
+          on-click='_showHardware'
+        >Show hardware</paper-button>
       </div>
     </paper-card>
   </template>
 </dom-module>
 
 <script>
-class HassioHostInfo extends Polymer.Element {
+class HassioHostInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'hassio-host-info'; }
 
   static get properties() {
@@ -123,6 +128,43 @@ class HassioHostInfo extends Polymer.Element {
 
   computeShutdownAvailable(data) {
     return data.features && data.features.includes('shutdown');
+  }
+
+  _showHardware() {
+    let data;
+    this.hass.callApi('get', 'hassio/host/hardware')
+      .then((resp) => {
+        data = this._objectToMarkdown(resp.data);
+      }, (resp) => {
+        data = 'Error getting hardware info';
+      }).then(() => {
+        const eventData = {
+          title: 'Hardware',
+          content: data,
+        };
+        this.fire('hassio-markdown-dialog', eventData);
+      });
+  }
+
+  _objectToMarkdown(obj, indent = '') {
+    console.log("i: '" + indent + "'");
+    console.log(JSON.stringify(obj, null, 2));
+    let data = '';
+    for (const key in obj) {
+      if (typeof obj[key] !== 'object') {
+        data += `${indent}- ${key}: ${obj[key]}\n`;      
+      } else {
+        data += `${indent}- ${key}:\n`;
+        if (Array.isArray(obj[key])) {
+          if (obj[key].length) {
+            data += `${indent}    - ` + obj[key].join(`\n${indent}    - `) + '\n';
+          }
+        } else {
+          data += this._objectToMarkdown(obj[key], `    ${indent}`);
+        }
+      }
+    }
+    return data;
   }
 }
 
