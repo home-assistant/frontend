@@ -147,8 +147,6 @@ class HassioHostInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   _objectToMarkdown(obj, indent = '') {
-    console.log("i: '" + indent + "'");
-    console.log(JSON.stringify(obj, null, 2));
     let data = '';
     for (const key in obj) {
       if (typeof obj[key] !== 'object') {
