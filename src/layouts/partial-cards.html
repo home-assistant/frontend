@@ -183,7 +183,7 @@
 
         currentView: {
           type: String,
-          computed: '_computeCurrentView(routeMatch, routeData)',
+          computed: '_computeCurrentView(hass, routeMatch, routeData)',
         },
 
         views: {
@@ -288,8 +288,12 @@
       }
     }
 
-    _computeCurrentView(routeMatch, routeData) {
-      return routeMatch ? routeData.view : '';
+    _computeCurrentView(hass, routeMatch, routeData) {
+      if (!routeMatch) return '';
+      if (!hass.states[routeData.view] || !hass.states[routeData.view].attributes.view) {
+        return '';
+      }
+      return routeData.view;
     }
 
     computeTitle(views, defaultView, locationName) {
