@@ -94,9 +94,6 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'automation':
       return 'mdi:playlist-play';
 
-    case 'binary_sensor':
-      return state && state === 'off' ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
-
     case 'calendar':
       return 'mdi:calendar';
 
@@ -111,9 +108,6 @@ window.hassUtil.domainIcon = function (domain, state) {
 
     case 'conversation':
       return 'mdi:text-to-speech';
-
-    case 'cover':
-      return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
 
     case 'device_tracker':
       return 'mdi:account';
