@@ -6,5 +6,11 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+# Install node modules
+yarn install
+
+# Install bower web components. Allow to download the components as root since the user in docker is root.
+./node_modules/.bin/bower install --allow-root
+
 script/build_frontend
 python3 setup.py sdist upload
