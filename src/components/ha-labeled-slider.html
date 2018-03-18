@@ -45,30 +45,16 @@ class HaLabeledSlider extends Polymer.Element {
 
   static get properties() {
     return {
-      caption: {
-        type: String,
-      },
-
-      icon: {
-        type: String,
-      },
-
-      min: {
-        type: Number,
-      },
-
-      max: {
-        type: Number,
-      },
+      caption: String,
+      icon: String,
+      min: Number,
+      max: Number,
+      ignoreBarTouch: Boolean,
 
       value: {
         type: Number,
         notify: true,
       },
-
-      ignoreBarTouch: {
-        type: Boolean
-      }
     };
   }
 }
