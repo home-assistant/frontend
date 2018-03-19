@@ -41,7 +41,7 @@
     <div class='horizontal justified layout' id='input_number_card'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
         <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' step='[[step]]' hidden='[[hiddenslider]]' pin
-          on-change='selectedValueChanged' on-click='stopPropagation' id='slider'>
+          on-change='selectedValueChanged' on-click='stopPropagation' id='slider' ignore-bar-touch>
         </paper-slider>
       <paper-input
         no-label-float
