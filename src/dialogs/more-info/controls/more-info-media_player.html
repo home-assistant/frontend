@@ -91,7 +91,8 @@
           icon="[[computeMuteVolumeIcon(isMuted)]]"></paper-icon-button>
         <paper-slider disabled$='[[isMuted]]'
           min='0' max='100' value='[[volumeSliderValue]]'
-          on-change='volumeSliderChanged' class='flex'>
+          on-change='volumeSliderChanged' class='flex'
+          ignore-bar-touch>
         </paper-slider>
       </div>
       <!-- SOURCE PICKER -->
