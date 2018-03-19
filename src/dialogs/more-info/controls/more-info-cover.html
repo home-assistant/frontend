@@ -34,7 +34,8 @@
           value='{{coverPositionSliderValue}}'
           step='1' pin
           disabled='[[!entityObj.supportsSetPosition]]'
-          on-change='coverPositionSliderChanged'></paper-slider>
+          on-change='coverPositionSliderChanged'
+          ignore-bar-touch></paper-slider>
       </div>
 
       <div class='tilt'>
@@ -48,7 +49,8 @@
           value='{{coverTiltPositionSliderValue}}'
           step='1' pin
           disabled='[[!entityObj.supportsSetTiltPosition]]'
-          on-change='coverTiltPositionSliderChanged'></paper-slider>
+          on-change='coverTiltPositionSliderChanged'
+          ignore-bar-touch></paper-slider>
       </div>
 
     </div>

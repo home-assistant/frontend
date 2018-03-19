@@ -66,7 +66,8 @@
         <ha-labeled-slider
           caption='Brightness' icon='mdi:brightness-5' max='255'
           value='{{brightnessSliderValue}}'
-          on-change='brightnessSliderChanged'></ha-labeled-slider>
+          on-change='brightnessSliderChanged'
+          ignore-bar-touch></ha-labeled-slider>
       </div>
 
       <div class='color_temp'>
@@ -74,14 +75,16 @@
           caption='Color Temperature' icon='mdi:thermometer'
           min='[[stateObj.attributes.min_mireds]]' max='[[stateObj.attributes.max_mireds]]'
           value='{{ctSliderValue}}'
-          on-change='ctSliderChanged'></ha-labeled-slider>
+          on-change='ctSliderChanged'
+          ignore-bar-touch></ha-labeled-slider>
       </div>
 
       <div class='white_value'>
         <ha-labeled-slider
           caption='White Value' icon='mdi:file-word-box' max='255'
           value='{{wvSliderValue}}'
-          on-change='wvSliderChanged'></ha-labeled-slider>
+          on-change='wvSliderChanged'
+          ignore-bar-touch></ha-labeled-slider>
       </div>
 
       <ha-color-picker
@@ -103,7 +106,7 @@
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      
+
       <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
     </div>
   </template>

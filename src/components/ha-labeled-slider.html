@@ -33,7 +33,7 @@
     <div class='title'>[[caption]]</div>
     <iron-icon icon='[[icon]]'></iron-icon>
     <div class='slider-container'>
-      <paper-slider min='[[min]]' max='[[max]]' value='{{value}}'>
+      <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' ignore-bar-touch='[[ignoreBarTouch]]'>
       </paper-slider>
     </div>
   </template>
@@ -45,21 +45,11 @@ class HaLabeledSlider extends Polymer.Element {
 
   static get properties() {
     return {
-      caption: {
-        type: String,
-      },
-
-      icon: {
-        type: String,
-      },
-
-      min: {
-        type: Number,
-      },
-
-      max: {
-        type: Number,
-      },
+      caption: String,
+      icon: String,
+      min: Number,
+      max: Number,
+      ignoreBarTouch: Boolean,
 
       value: {
         type: Number,
