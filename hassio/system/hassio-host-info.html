@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel='import' href='../../src/util/hass-mixins.html'>
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
@@ -14,7 +14,7 @@
         margin-left: 8px;
       }
       .card-content {
-        height: 110px;
+        height: 150px;
       }
       @media screen and (max-width: 830px) {
         paper-card {
@@ -36,9 +36,22 @@
         color: var(--google-red-500);
         margin-top: 16px;
       }
+      paper-icon-button.hardware {
+        position: absolute;
+        top: 24px;
+        right: 8px;
+        color: var(--primary-color);
+      }
     </style>
-    <paper-card heading="Host system">
+    <paper-card>
       <div class="card-content">
+        <h2>Host system</h2>
+        <paper-icon-button
+          icon='mdi:raspberrypi'
+          on-click='_showHardware'
+          title='Show hardware'
+          class='hardware'
+        ></paper-icon-button>
         <table class='info'>
           <tr>
             <td>Version</td>
@@ -78,9 +91,6 @@
             path="hassio/host/update"
           >Update</ha-call-api-button>
         </template>
-        <paper-button
-          on-click='_showHardware'
-        >Show hardware</paper-button>
       </div>
     </paper-card>
   </template>
@@ -132,11 +142,9 @@ class HassioHostInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   _showHardware() {
     this.hass.callApi('get', 'hassio/host/hardware')
-      .then((resp) => {
-        return this._objectToMarkdown(resp.data);
-      }, () => {
-        return 'Error getting hardware info';
-      }).then((content) => {
+      .then((resp) => this._objectToMarkdown(resp.data)
+      , () => 'Error getting hardware info')
+      .then((content) => {
         this.fire('hassio-markdown-dialog', {
           title: 'Hardware',
           content: content,
@@ -146,7 +154,7 @@ class HassioHostInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   _objectToMarkdown(obj, indent = '') {
     let data = '';
-    Object.keys(obj).map(key => {
+    Object.keys(obj).forEach((key) => {
       if (typeof obj[key] !== 'object') {
         data += `${indent}- ${key}: ${obj[key]}\n`;
       } else {

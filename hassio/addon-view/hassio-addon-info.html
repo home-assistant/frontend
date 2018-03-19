@@ -241,11 +241,9 @@ class HassioAddonInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   openChangelog() {
     this.hass.callApi('get', `hassio/addons/${this.addonSlug}/changelog`)
-      .then((resp) => {
-        return resp;
-      }, () => {
-        return 'Error getting changelog';
-      }).then((content) => {
+      .then((resp) => resp
+      , () => 'Error getting changelog'
+      ).then((content) => {
         this.fire('hassio-markdown-dialog', {
           title: 'Changelog',
           content: content,
