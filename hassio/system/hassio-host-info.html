@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
+<link rel='import' href='../../src/util/hass-mixins.html'>
 <link rel="import" href="../../src/components/buttons/ha-call-api-button.html">
 
 <dom-module id="hassio-host-info">
@@ -12,7 +14,7 @@
         margin-left: 8px;
       }
       .card-content {
-        height: 110px;
+        height: 200px;
       }
       @media screen and (max-width: 830px) {
         paper-card {
@@ -34,9 +36,13 @@
         color: var(--google-red-500);
         margin-top: 16px;
       }
+      paper-button.info {
+        max-width: 50%;
+      }
     </style>
-    <paper-card heading="Host system">
+    <paper-card>
       <div class="card-content">
+        <h2>Host system</h2>
         <table class='info'>
           <tr>
             <td>Version</td>
@@ -51,17 +57,16 @@
             <td>[[data.type]] ([[data.os]])</td>
           </tr>
         </table>
+        <paper-button
+          raised
+          on-click='_showHardware'
+          class='info'
+        >Show hardware</paper-button>
         <template is='dom-if' if='[[errors]]'>
           <div class='errors'>Error: [[errors]]</div>
         </template>
       </div>
       <div class="card-actions">
-        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
-          <ha-call-api-button
-            hass='[[hass]]'
-            path="hassio/host/update"
-          >Update</ha-call-api-button>
-        </template>
         <template is='dom-if' if='[[computeRebootAvailable(data)]]'>
           <ha-call-api-button
             class='warning'
@@ -76,13 +81,19 @@
             path="hassio/host/shutdown"
           >Shutdown</ha-call-api-button>
         </template>
+        <template is='dom-if' if='[[computeUpdateAvailable(data)]]'>
+          <ha-call-api-button
+            hass='[[hass]]'
+            path="hassio/host/update"
+          >Update</ha-call-api-button>
+        </template>
       </div>
     </paper-card>
   </template>
 </dom-module>
 
 <script>
-class HassioHostInfo extends Polymer.Element {
+class HassioHostInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'hassio-host-info'; }
 
   static get properties() {
@@ -123,6 +134,38 @@ class HassioHostInfo extends Polymer.Element {
 
   computeShutdownAvailable(data) {
     return data.features && data.features.includes('shutdown');
+  }
+
+  _showHardware() {
+    this.hass.callApi('get', 'hassio/host/hardware')
+      .then(
+        resp => this._objectToMarkdown(resp.data)
+        , () => 'Error getting hardware info'
+      ).then((content) => {
+        this.fire('hassio-markdown-dialog', {
+          title: 'Hardware',
+          content: content,
+        });
+      });
+  }
+
+  _objectToMarkdown(obj, indent = '') {
+    let data = '';
+    Object.keys(obj).forEach((key) => {
+      if (typeof obj[key] !== 'object') {
+        data += `${indent}- ${key}: ${obj[key]}\n`;
+      } else {
+        data += `${indent}- ${key}:\n`;
+        if (Array.isArray(obj[key])) {
+          if (obj[key].length) {
+            data += `${indent}    - ` + obj[key].join(`\n${indent}    - `) + '\n';
+          }
+        } else {
+          data += this._objectToMarkdown(obj[key], `    ${indent}`);
+        }
+      }
+    });
+    return data;
   }
 }
 
