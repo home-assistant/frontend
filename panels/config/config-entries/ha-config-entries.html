@@ -34,7 +34,7 @@
                 <template is='dom-repeat' items='[[_progress]]'>
                   <paper-item>
                     <paper-item-body two-line>
-                      [[item.domain]]
+                      [[_computeIntegrationTitle(localize, item.domain)]]
                       <!--<div secondary>some subtitle content</div>-->
                     </paper-item-body>
                     <paper-button on-click='_continueFlow'>Configure</paper-button>
@@ -62,7 +62,7 @@
                 <paper-item>
                   <paper-item-body three-line>
                     [[item.title]]
-                    <div secondary>Integration: [[item.domain]]</div>
+                    <div secondary>Integration: [[_computeIntegrationTitle(localize, item.domain)]]</div>
                     <div secondary>Added by: [[item.source]]</div>
                     <div secondary>State: [[item.state]]</div>
                   </paper-item-body>
@@ -82,7 +82,7 @@
               <template is='dom-repeat' items='[[_handlers]]'>
                 <paper-item>
                   <paper-item-body two-line>
-                    [[item]]
+                    [[_computeIntegrationTitle(localize, item)]]
                     <!--<div secondary>some subtitle content</div>-->
                   </paper-item-body>
                   <paper-button on-click='_createFlow'>Configure</paper-button>
