@@ -12,6 +12,7 @@
 <link rel="import" href="./hassio-addon-config.html">
 <link rel="import" href="./hassio-addon-network.html">
 <link rel="import" href="./hassio-addon-logs.html">
+<link rel='import' href='../hassio-markdown-dialog.html'>
 
 <dom-module id="hassio-addon-view">
   <template>
@@ -77,6 +78,11 @@
         </template>
       </div>
     </app-header-layout>
+
+    <hassio-markdown-dialog
+      title='[[markdownTitle]]'
+      content='[[markdownContent]]'
+    ></hassio-markdown-dialog>
   </template>
 </dom-module>
 
@@ -96,12 +102,19 @@ class HassioAddonView extends Polymer.Element {
       },
       routeMatches: Boolean,
       addon: Object,
+
+      markdownTitle: String,
+      markdownContent: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   ready() {
     super.ready();
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
+    this.addEventListener('hassio-markdown-dialog', ev => this.openMarkdown(ev));
   }
 
   apiCalled(ev) {
@@ -128,6 +141,14 @@ class HassioAddonView extends Polymer.Element {
 
   backTapped() {
     history.back();
+  }
+
+  openMarkdown(ev) {
+    this.setProperties({
+      markdownTitle: ev.detail.title,
+      markdownContent: ev.detail.content,
+    });
+    this.shadowRoot.querySelector('hassio-markdown-dialog').openDialog();
   }
 }
 

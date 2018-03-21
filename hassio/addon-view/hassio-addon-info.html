@@ -11,8 +11,6 @@
 <link rel='import' href='../../src/components/hassio-card-content.html'>
 <link rel='import' href='../../src/util/hass-mixins.html'>
 
-<link rel='import' href='./hassio-addon-more-info.html'>
-
 <dom-module id="hassio-addon-info">
   <template>
     <style include='ha-style'>
@@ -83,10 +81,6 @@
           </template>
         </div>
       </paper-card>
-      <hassio-addon-more-info
-        title='Changelog'
-        content='[[changelog]]'
-      ></hassio-addon-more-info>
     </template>
 
     <paper-card>
@@ -208,7 +202,6 @@ class HassioAddonInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
       hass: Object,
       addon: Object,
       addonSlug: String,
-      changelog: String,
       isRunning: {
         type: Boolean,
         computed: 'computeIsRunning(addon)',
@@ -248,12 +241,15 @@ class HassioAddonInfo extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   openChangelog() {
     this.hass.callApi('get', `hassio/addons/${this.addonSlug}/changelog`)
-      .then((data) => {
-        this.changelog = data;
-      }, () => {
-        this.changelog = 'Error getting changelog';
+      .then(
+        resp => resp
+        , () => 'Error getting changelog'
+      ).then((content) => {
+        this.fire('hassio-markdown-dialog', {
+          title: 'Changelog',
+          content: content,
+        });
       });
-    this.shadowRoot.querySelector('hassio-addon-more-info').openDialog();
   }
 
   _unistallClicked() {
