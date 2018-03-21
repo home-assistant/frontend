@@ -15,6 +15,7 @@
 <link rel='import' href='./snapshots/hassio-snapshot.html'>
 <link rel='import' href='./addon-store/hassio-addon-store.html'>
 <link rel='import' href='./system/hassio-system.html'>
+<link rel='import' href='./hassio-markdown-dialog.html'>
 
 <dom-module id='hassio-pages-with-tabs'>
   <template>
@@ -81,6 +82,12 @@
         ></hassio-system>
       </template>
     </app-header-layout>
+
+    <hassio-markdown-dialog
+      title='[[markdownTitle]]'
+      content='[[markdownContent]]'
+    ></hassio-markdown-dialog>
+
     <template is='dom-if' if='[[equals(page, "snapshots")]]'>
       <hassio-snapshot      
         hass='[[hass]]'
@@ -106,7 +113,18 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
       hassInfo: Object,
       snapshotSlug: String,
       snapshotDeleted: Boolean,
+
+      markdownTitle: String,
+      markdownContent: {
+        type: String,
+        value: '',
+      },
     };
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('hassio-markdown-dialog', ev => this.openMarkdown(ev));
   }
 
   handlePageSelected(ev) {
@@ -130,6 +148,14 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(Polymer.Elemen
     } else {
       this.shadowRoot.querySelector('hassio-addon-store').refreshData();
     }
+  }
+
+  openMarkdown(ev) {
+    this.setProperties({
+      markdownTitle: ev.detail.title,
+      markdownContent: ev.detail.content,
+    });
+    this.shadowRoot.querySelector('hassio-markdown-dialog').openDialog();
   }
 }
 
