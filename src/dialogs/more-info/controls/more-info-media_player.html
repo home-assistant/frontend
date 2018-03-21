@@ -266,7 +266,7 @@
           supportsPlay: (newVal.attributes.supported_features & 16384) !== 0,
         };
         if (newVal.attributes.source_list !== undefined) {
-          props.sourceIndex = newVal.attributes.source_list.indexOf(this.source);
+          props.sourceIndex = newVal.attributes.source_list.indexOf(props.source);
         }
         this.setProperties(props);
       }
