@@ -82,23 +82,14 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   static get properties() {
     return {
-      hsvColor: {
-        type: Object,
-      },
-
-      rgbColor: {
+      hsColor: {
         type: Object,
       },
 
       // use these properties to update the state via attributes
-      desiredHsvColor: {
+      desiredHsColor: {
         type: Object,
-        observer: 'applyHsvColor'
-      },
-
-      desiredRgbColor: {
-        type: Object,
-        observer: 'applyRgbColor'
+        observer: 'applyHsColor'
       },
 
       // width, height and radius apply to the coordinates of
@@ -157,7 +148,6 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   ready() {
     super.ready();
-    this.applyRgbColor = this.applyRgbColor.bind(this);
     this.setupLayers();
     this.drawColorWheel();
     this.drawMarker();
@@ -250,18 +240,18 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   // Process user input to color
   processUserSelect(ev) {
     var canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
-    var hsv = this.getColor(canvasXY.x, canvasXY.y);
-    this.onColorSelect(hsv);
+    var hs = this.getColor(canvasXY.x, canvasXY.y);
+    this.onColorSelect(hs);
   }
 
   // apply color to marker position and canvas
-  onColorSelect(hsv) {
-    this.setMarkerOnColor(hsv); // marker always follows mounse 'raw' hsv value (= mouse position)
+  onColorSelect(hs) {
+    this.setMarkerOnColor(hs); // marker always follows mounse 'raw' hs value (= mouse position)
     if (!this.ignoreSegments) { // apply segments if needed
-      hsv = this.applySegmentFilter(hsv);
+      hs = this.applySegmentFilter(hs);
     }
     // always apply the new color to the interface / canvas
-    this.applyColorToCanvas(hsv);
+    this.applyColorToCanvas(hs);
     // throttling is applied to updating the exposed colors (properties)
     // and firing of events
     if (this.colorSelectIsThrottled) {
@@ -269,11 +259,11 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
       // eventually after throttle limit has passed
       clearTimeout(this.ensureFinalSelect);
       this.ensureFinalSelect = setTimeout(() => {
-        this.fireColorSelected(hsv); // do it for the final time
+        this.fireColorSelected(hs); // do it for the final time
       }, this.throttle);
       return;
     }
-    this.fireColorSelected(hsv); // do it
+    this.fireColorSelected(hs); // do it
     this.colorSelectIsThrottled = true;
     setTimeout(() => {
       this.colorSelectIsThrottled = false;
@@ -281,10 +271,9 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   // set color values and fire colorselected event
-  fireColorSelected(hsv) {
-    this.hsvColor = hsv;
-    this.rgbColor = this.HSVtoRGB(this.hsvColor);
-    this.fire('colorselected', { rgb: this.rgbColor, hsv: this.hsvColor });
+  fireColorSelected(hs) {
+    this.hsColor = hs;
+    this.fire('colorselected', { hs: { h: hs.h, s: hs.s } });
   }
 
 
@@ -293,9 +282,9 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   */
 
   // set marker position to the given color
-  setMarkerOnColor(hsv) {
-    var dist = hsv.s * this.radius;
-    var theta = ((hsv.h - 180) / 180) * Math.PI;
+  setMarkerOnColor(hs) {
+    var dist = hs.s * this.radius;
+    var theta = ((hs.h - 180) / 180) * Math.PI;
     var markerdX = -dist * Math.cos(theta);
     var markerdY = -dist * Math.sin(theta);
     var translateString = `translate(${markerdX},${markerdY})`;
@@ -304,49 +293,27 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   // apply given color to interface elements
-  applyColorToCanvas(hsv) {
-    // we're not really converting hsv to hsl here, but we keep it cheap
+  applyColorToCanvas(hs) {
+    // we're not really converting hs to hsl here, but we keep it cheap
     // setting the color on the interactionLayer, the svg elements can inherit
-    this.interactionLayer.style.color = `hsl(${hsv.h}, ${hsv.v * 100}%, ${100 - (hsv.s * 50)}%)`;
+    this.interactionLayer.style.color = `hsl(${hs.h}, 100%, ${100 - (hs.s * 50)}%)`;
   }
 
 
-  /*
-  * applyRgbColor and applyHsvColor are used for external updates
-  * (to prevent observer loops on this.hsvColor and this.rgbColor)
-  */
-
-  applyRgbColor(rgb) {
-    if (!rgb) {
-      return;
-    }
+  applyHsColor(hs) {
     // do nothing is we already have the same color
-    if (this.rgbColor &&
-        this.rgbColor.r === rgb.r &&
-        this.rgbColor.g === rgb.g &&
-        this.rgbColor.b === rgb.b) {
+    if (this.hsColor &&
+        this.hsColor.h === hs.h &&
+        this.hsColor.s === hs.s) {
       return;
     }
-    var hsv = this.RGBtoHSV(rgb);
-    this.applyHsvColor(hsv); // marker is always set on 'raw' hsv position
-  }
-
-  applyHsvColor(hsv) {
-    // do nothing is we already have the same color
-    if (this.hsvColor &&
-        this.hsvColor.h === hsv.h &&
-        this.hsvColor.s === hsv.s &&
-        this.hsvColor.v === hsv.v) {
-      return;
-    }
-    this.setMarkerOnColor(hsv); // marker is always set on 'raw' hsv position
+    this.setMarkerOnColor(hs); // marker is always set on 'raw' hs position
     if (!this.ignoreSegments) { // apply segments if needed
-      hsv = this.applySegmentFilter(hsv);
+      hs = this.applySegmentFilter(hs);
     }
-    this.hsvColor = hsv;
-    this.rgbColor = this.HSVtoRGB(hsv);
+    this.hsColor = hs;
     // always apply the new color to the interface / canvas
-    this.applyColorToCanvas(hsv);
+    this.applyColorToCanvas(hs);
   }
 
 
@@ -380,32 +347,32 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     var hue = this.getAngle(x, y); // degrees, clockwise from right
     var relativeDistance = this.getDistance(x, y); // edge of radius = 1
     var sat = Math.min(relativeDistance, 1); // Distance from center
-    return { h: hue, s: sat, v: 1 };
+    return { h: hue, s: sat };
   }
 
-  applySegmentFilter(hsv) {
+  applySegmentFilter(hs) {
     // apply hue segment steps
     if (this.hueSegments) {
       const angleStep = 360 / this.hueSegments;
       const halfAngleStep = angleStep / 2;
-      hsv.h -= halfAngleStep; // take the 'centered segemnts' into account
-      if (hsv.h < 0) { hsv.h += 360; } // don't end up below 0
-      const rest = hsv.h % angleStep;
-      hsv.h -= rest - angleStep;
+      hs.h -= halfAngleStep; // take the 'centered segemnts' into account
+      if (hs.h < 0) { hs.h += 360; } // don't end up below 0
+      const rest = hs.h % angleStep;
+      hs.h -= rest - angleStep;
     }
 
     // apply saturation segment steps
     if (this.saturationSegments) {
       if (this.saturationSegments === 1) {
-        hsv.s = 1;
+        hs.s = 1;
       } else {
         var segmentSize = 1 / this.saturationSegments;
         var saturationStep = 1 / (this.saturationSegments - 1);
-        var calculatedSat = Math.floor(hsv.s / segmentSize) * saturationStep;
-        hsv.s = Math.min(calculatedSat, 1);
+        var calculatedSat = Math.floor(hs.s / segmentSize) * saturationStep;
+        hs.s = Math.min(calculatedSat, 1);
       }
     }
-    return hsv;
+    return hs;
   }
 
   /*
@@ -557,63 +524,6 @@ class HaColorPicker extends window.hassMixins.EventsMixin(Polymer.Element) {
     this.tooltip = svgElement.tooltip;
     svgElement.appendChild(svgElement.tooltip);
   }
-
-  /**
-  * Color conversion helpers
-  *
-  * modified from:
-  * http://axonflux.com/handy-rgb-to-hsl-and-rgb-to-hsv-color-model-c
-  * these take/return h = hue (0-360), s = saturation (0-1), v = value (0-1)
-  */
-
-  /* eslint-disable */
-  HSVtoRGB(hsv) {
-    var r, g, b, i, f, p, q, t;
-    var h = hsv.h, s = hsv.s, v = hsv.v;
-    h /= 360;
-    i = Math.floor(h * 6);
-    f = h * 6 - i;
-    p = v * (1 - s);
-    q = v * (1 - f * s);
-    t = v * (1 - (1 - f) * s);
-    switch (i % 6) {
-      case 0: r = v, g = t, b = p; break;
-      case 1: r = q, g = v, b = p; break;
-      case 2: r = p, g = v, b = t; break;
-      case 3: r = p, g = q, b = v; break;
-      case 4: r = t, g = p, b = v; break;
-      case 5: r = v, g = p, b = q; break;
-    }
-    return {
-      r: Math.round(r * 255),
-      g: Math.round(g * 255),
-      b: Math.round(b * 255)
-    };
-  }
-
-  RGBtoHSV(rgb) {
-    var r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255;
-    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-    var h, s, v = max;
-    var d = max - min;
-    s = max === 0 ? 0 : d / max;
-    if (max === min) {
-      h = 0; // achromatic
-    } else {
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h *= 60; // hue values 0-360
-    }
-    return {
-      h: h,
-      s: s,
-      v: v
-    };
-  }
-  /* eslint-enable */
 }
 customElements.define(HaColorPicker.is, HaColorPicker);
 </script>
