@@ -45,7 +45,7 @@
         max-height: 84px;
       }
 
-      .has-rgb_color.is-on ha-color-picker {
+      .has-color.is-on ha-color-picker {
         max-height: 500px;
         overflow: visible;
         --ha-color-picker-wheel-borderwidth: 5;
@@ -89,7 +89,7 @@
 
       <ha-color-picker
         on-colorselected='colorPicked'
-        desired-rgb-color='{{colorPickerColor}}'
+        desired-hs-color='{{colorPickerColor}}'
         throttle='500'
         hue-segments='24'
         saturation-segments='8'
@@ -107,7 +107,7 @@
         </paper-dropdown-menu>
       </div>
 
-      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
+      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
     </div>
   </template>
 </dom-module>
@@ -118,7 +118,7 @@
     1: 'has-brightness',
     2: 'has-color_temp',
     4: 'has-effect_list',
-    16: 'has-rgb_color',
+    16: 'has-color',
     128: 'has-white_value',
   };
   class MoreInfoLight extends window.hassMixins.EventsMixin(Polymer.Element) {
@@ -171,8 +171,11 @@
         props.brightnessSliderValue = newVal.attributes.brightness;
         props.ctSliderValue = newVal.attributes.color_temp;
         props.wvSliderValue = newVal.attributes.white_value;
-        if (newVal.attributes.rgb_color) {
-          props.colorPickerColor = this.rgbArrToObj(newVal.attributes.rgb_color);
+        if (newVal.attributes.hs_color) {
+          props.colorPickerColor = {
+            h: newVal.attributes.hs_color[0],
+            s: newVal.attributes.hs_color[1] / 100,
+          };
         }
         if (newVal.attributes.effect_list) {
           props.effectIndex = newVal.attributes.effect_list.indexOf(newVal.attributes.effect);
@@ -254,12 +257,8 @@
     serviceChangeColor(hass, entityId, color) {
       hass.callService('light', 'turn_on', {
         entity_id: entityId,
-        rgb_color: [color.r, color.g, color.b],
+        hs_color: [color.h, color.s * 100],
       });
-    }
-
-    rgbArrToObj(rgbArr) {
-      return { r: rgbArr[0], g: rgbArr[1], b: rgbArr[2] };
     }
 
     /**
@@ -267,8 +266,7 @@
      * should be throttled with the 'throttle=' attribute of the color picker
      */
     colorPicked(ev) {
-      this.color = ev.detail.rgb;
-      this.serviceChangeColor(this.hass, this.stateObj.entity_id, this.color);
+      this.serviceChangeColor(this.hass, this.stateObj.entity_id, ev.detail.hs);
     }
   }
 
