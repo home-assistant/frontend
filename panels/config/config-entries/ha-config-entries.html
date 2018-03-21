@@ -13,60 +13,84 @@
   <template>
     <style include='iron-flex ha-style'>
       .content {
-        padding: 8px;
+        padding-bottom: 24px;
       }
-      .entries {
-        margin: 0 -4px;
-      }
-      .entries paper-card {
-        margin: 4px;
+      paper-button {
+        color: var(--primary-color);
+        font-weight: 500;
+        top: 3px;
+        height: 37px;
+        margin-right: -.57em;
       }
     </style>
+
     <hass-subpage title='Integrations'>
-      <div class='content'>
-        <h1>Configured</h1>
-        <template is='dom-if' if='[[!_entries.length]]'>
-          <i>Nothing configured.</i>
-        </template>
-        <div class='entries layout horizontal wrap'>
-          <template is='dom-repeat' items='[[_entries]]'>
-            <paper-card heading='[[item.title]]'>
+      <template is='dom-if' if='[[_progress.length]]'>
+        <div class='content'>
+          <ha-config-section>
+            <span slot='header'>In Progress</span>
+            <paper-card>
               <div class='card-content'>
-                Integration: [[_computeIntegrationTitle(localize, item.domain)]]<br>
-                State: [[item.state]]<br>
-                Added by: [[item.source]]
-              </div>
-              <div class="card-actions">
-                <paper-button on-click='_removeEntry'>Remove</paper-button>
-              </div>
-            </paper-card>
-          </template>
-        </div>
-
-        <template is='dom-if' if='[[_progress.length]]'>
-          <h1>To be finished</h1>
-          <div class='entries layout horizontal wrap'>
-            <template is='dom-repeat' items='[[_progress]]'>
-              <paper-card heading='[[_computeIntegrationTitle(localize, item.domain)]]'>
-                <div class="card-actions">
-                  <paper-button on-click='_continueFlow'>Configure</paper-button>
-                </div>
-              </paper-card>
-            </template>
-          </div>
-        </template>
-
-        <h1>Add integration</h1>
-        <div class='entries layout horizontal wrap'>
-          <template is='dom-repeat' items='[[_handlers]]'>
-            <paper-card heading='[[_computeIntegrationTitle(localize, item)]]'>
-              <!-- <div class="card-content">Some content</div> -->
-              <div class="card-actions">
-                <paper-button on-click='_createFlow'>Configure</paper-button>
+                <template is='dom-repeat' items='[[_progress]]'>
+                  <paper-item>
+                    <paper-item-body two-line>
+                      [[item.domain]]
+                      <!--<div secondary>some subtitle content</div>-->
+                    </paper-item-body>
+                    <paper-button on-click='_continueFlow'>Configure</paper-button>
+                  </paper-item>
+                </template>
               </div>
             </paper-card>
-          </template>
+          </ha-config-section>
         </div>
+      </template>
+
+      <div class='content'>
+        <ha-config-section>
+          <span slot='header'>Configured</span>
+          <paper-card>
+            <div class='card-content'>
+              <template is='dom-if' if='[[!_entries.length]]'>
+                <paper-item>
+                  <paper-item-body>
+                    Nothing configured yet
+                  </paper-item-body>
+                </paper-item>
+              </template>
+              <template is='dom-repeat' items='[[_entries]]'>
+                <paper-item>
+                  <paper-item-body three-line>
+                    [[item.title]]
+                    <div secondary>Integration: [[item.domain]]</div>
+                    <div secondary>Added by: [[item.source]]</div>
+                    <div secondary>State: [[item.state]]</div>
+                  </paper-item-body>
+                  <paper-button on-click='_removeEntry'>Remove</paper-button>
+                </paper-item>
+              </template>
+            </div>
+          </paper-card>
+        </ha-config-section>
+      </div>
+
+      <div class='content'>
+        <ha-config-section>
+          <span slot='header'>Available</span>
+          <paper-card>
+            <div class='card-content'>
+              <template is='dom-repeat' items='[[_handlers]]'>
+                <paper-item>
+                  <paper-item-body two-line>
+                    [[item]]
+                    <!--<div secondary>some subtitle content</div>-->
+                  </paper-item-body>
+                  <paper-button on-click='_createFlow'>Configure</paper-button>
+                </paper-item>
+              </template>
+            </div>
+          </paper-card>
+        </ha-config-section>
       </div>
     </hass-subpage>
 
