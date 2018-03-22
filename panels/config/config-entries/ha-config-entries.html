@@ -21,6 +21,10 @@
       paper-card:last-child {
         margin-top: 12px;
       }
+      .config-entry-row {
+        display: flex;
+        padding: 0 16px;
+      }
     </style>
 
     <hass-subpage title='Integrations'>
@@ -29,12 +33,12 @@
           <span slot='header'>In Progress</span>
           <paper-card>
             <template is='dom-repeat' items='[[_progress]]'>
-              <paper-item>
+              <div class='config-entry-row'>
                 <paper-item-body>
                   [[_computeIntegrationTitle(localize, item.domain)]]
                 </paper-item-body>
                 <paper-button on-click='_continueFlow'>Configure</paper-button>
-              </paper-item>
+              </div>
             </template>
           </paper-card>
         </ha-config-section>
@@ -44,14 +48,14 @@
         <span slot='header'>Configured</span>
         <paper-card>
           <template is='dom-if' if='[[!_entries.length]]'>
-            <paper-item>
+            <div class='config-entry-row'>
               <paper-item-body>
                 Nothing configured yet
               </paper-item-body>
-            </paper-item>
+            </div>
           </template>
           <template is='dom-repeat' items='[[_entries]]'>
-            <paper-item>
+            <div class='config-entry-row'>
               <paper-item-body three-line>
                 [[item.title]]
                 <div secondary>Integration: [[_computeIntegrationTitle(localize, item.domain)]]</div>
@@ -59,7 +63,7 @@
                 <div secondary>State: [[item.state]]</div>
               </paper-item-body>
               <paper-button on-click='_removeEntry'>Remove</paper-button>
-            </paper-item>
+            </div>
           </template>
         </paper-card>
       </ha-config-section>
@@ -68,12 +72,12 @@
         <span slot='header'>Available</span>
         <paper-card>
           <template is='dom-repeat' items='[[_handlers]]'>
-            <paper-item>
+            <div class='config-entry-row'>
               <paper-item-body>
                 [[_computeIntegrationTitle(localize, item)]]
               </paper-item-body>
               <paper-button on-click='_createFlow'>Configure</paper-button>
-            </paper-item>
+            </div>
           </template>
         </paper-card>
       </ha-config-section>
