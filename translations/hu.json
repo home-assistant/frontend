@@ -351,7 +351,7 @@
                         "alias": "Név",
                         "triggers": {
                             "header": "Triggerek",
-                            "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindult, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet.\n\n[Tudj meg többet a triggerekről.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindul, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet.\n\n[Tudj meg többet a triggerekről.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Trigger hozzáadása",
                             "duplicate": "Megkettőzés",
                             "delete": "Törlés",

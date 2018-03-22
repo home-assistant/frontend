@@ -113,6 +113,10 @@
             "window": {
                 "off": "Fechada",
                 "on": "Aberta"
+            },
+            "lock": {
+                "off": "Bloqueado",
+                "on": "Desbloqueado"
             }
         },
         "calendar": {
@@ -331,7 +335,32 @@
                 },
                 "automation": {
                     "caption": "Automação",
-                    "description": ""
+                    "description": "",
+                    "editor": {
+                        "conditions": {
+                            "type": {
+                                "time": {
+                                    "after": "Depois",
+                                    "before": "Antes"
+                                },
+                                "zone": {
+                                    "zone": "Zona"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Ações",
+                            "type": {
+                                "wait_template": {
+                                    "label": "Espere"
+                                },
+                                "event": {
+                                    "event": "Evento:",
+                                    "service_data": "Informações do serviço"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "",
