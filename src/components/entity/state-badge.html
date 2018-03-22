@@ -63,35 +63,39 @@ class StateBadge extends Polymer.Element {
 
 
   updateIconAppearance(newVal) {
-    const icon = this.$.icon;
-    // hide icon if we have entity picture
-    if (newVal.attributes.entity_picture) {
-      this.style.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
-      icon.style.display = 'none';
-      return;
-    }
-    this.style.backgroundImage = '';
-    icon.style.display = 'inline';
+    const iconStyle = {
+      display: 'inline',
+      color: '',
+      filter: '',
+    };
+    const hostStyle = {
+      backgroundImage: '',
+    };
+    /* eslint-disable no-labels, no-restricted-syntax */
+    calcProps: {
+      // hide icon if we have entity picture
+      if (newVal.attributes.entity_picture) {
+        hostStyle.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
+        iconStyle.display = 'none';
+        break calcProps;
+      }
 
-    if (newVal.state === 'unavailable') return;
+      if (newVal.state === 'unavailable') break calcProps;
 
-    if (newVal.attributes.hs_color) {
-      const hue = newVal.attributes.hs_color[0];
-      const sat = newVal.attributes.hs_color[1];
-      if (sat > 10) {
-        icon.style.color = `hsl(${hue}, 100%, ${100 - (sat / 2)}%)`;
-      } else { // color almost white -> show default color
-        icon.style.color = '';
+      if (newVal.attributes.hs_color) {
+        const hue = newVal.attributes.hs_color[0];
+        const sat = newVal.attributes.hs_color[1];
+        if (sat > 10) iconStyle.color = `hsl(${hue}, 100%, ${100 - (sat / 2)}%)`;
+      }
+
+      if (newVal.attributes.brightness) {
+        const brightness = newVal.attributes.brightness;
+        // lowest brighntess will be around 50% (that's pretty dark)
+        iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
       }
     }
-
-    if (newVal.attributes.brightness) {
-      const brightness = newVal.attributes.brightness;
-      // lowest brighntess will be around 36%
-      icon.style.filter = `brightness(${(brightness + 145) / 4}%)`;
-    } else {
-      icon.style.filter = '';
-    }
+    Object.assign(this.$.icon.style, iconStyle);
+    Object.assign(this.style, hostStyle);
   }
 }
 customElements.define(StateBadge.is, StateBadge);
