@@ -30,7 +30,7 @@
           <paper-card>
             <template is='dom-repeat' items='[[_progress]]'>
               <paper-item>
-                <paper-item-body two-line>
+                <paper-item-body>
                   [[_computeIntegrationTitle(localize, item.domain)]]
                 </paper-item-body>
                 <paper-button on-click='_continueFlow'>Configure</paper-button>
@@ -69,7 +69,7 @@
         <paper-card>
           <template is='dom-repeat' items='[[_handlers]]'>
             <paper-item>
-              <paper-item-body two-line>
+              <paper-item-body>
                 [[_computeIntegrationTitle(localize, item)]]
               </paper-item-body>
               <paper-button on-click='_createFlow'>Configure</paper-button>
