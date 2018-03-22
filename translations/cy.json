@@ -4,11 +4,82 @@
             "dry": "Sych",
             "fan_only": "Fan yn unig"
         },
+        "cover": {
+            "closed": "Ar gau",
+            "closing": "Cau",
+            "stopped": "Stopio"
+        },
+        "device_tracker": {
+            "home": "Gartref",
+            "not_home": "Diim gartref"
+        },
+        "fan": {
+            "off": "i ffwrdd",
+            "on": "Ar"
+        },
+        "group": {
+            "off": "i ffwrdd",
+            "on": "Ar",
+            "home": "Gartref",
+            "not_home": "Dim gartref",
+            "open": "Agored",
+            "opening": "Agor",
+            "closed": "Wedi cau",
+            "closing": "Yn cau",
+            "stopped": "Stopio",
+            "locked": " Cloi",
+            "unlocked": "Dadgloi",
+            "ok": "Iawn",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "i ffwrdd",
+            "on": "Ar"
+        },
+        "light": {
+            "off": "i ffwrdd"
+        },
+        "lock": {
+            "locked": "Wedi cloi",
+            "unlocked": "Datgloi"
+        },
+        "media_player": {
+            "off": "i ffwrdd",
+            "on": "Ar",
+            "playing": "Chwarae",
+            "paused": "Wedi rhewi",
+            "standby": "Gorffwys"
+        },
+        "plant": {
+            "ok": "Iawn",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "i ffwrdd",
+            "on": "Ar"
+        },
+        "scene": {
+            "scening": "Sefyllfa"
+        },
+        "script": {
+            "off": "i ffwrdd",
+            "on": "Ar"
+        },
+        "sensor": {
+            "off": "i ffwrdd",
+            "on": "Ar"
+        },
+        "sun": {
+            "above_horizon": "Dros y gorwel",
+            "below_horizon": "Islaw'r gorwel"
+        },
         "switch": {
+            "off": "i ffwrdd",
             "on": "Ar"
         },
         "zwave": {
             "default": {
+                "initializing": "Wrthi'n ymgychwyn",
                 "dead": "Marw",
                 "sleeping": "Cysgu",
                 "ready": "Barod"
@@ -17,6 +88,9 @@
                 "initializing": "Llwytho",
                 "dead": "Marw"
             }
+        },
+        "alarm_control_panel": {
+            "armed_custom_bypass": "Ffordd osgoi larwm personol"
         },
         "binary_sensor": {
             "presence": {
@@ -75,6 +149,7 @@
             "pending": "Disgwyl",
             "arming": "Arfogi",
             "disarming": "Diarfogi",
+            "triggered": "Sbarduno",
             "armed_custom_bypass": "Arfogi"
         },
         "device_tracker": {
@@ -104,20 +179,24 @@
             },
             "config": {
                 "header": "Ffurfweddu Cynorthwy-ydd Cartref",
+                "introduction": "Yma mae'n bosib ffurfweddu'ch cydrannau a'ch Cynorthwy-ydd Cartref. Nid yw popeth yn bosibl i'w ffurfweddu o'r UI eto, ond rydym yn gweithio arno.",
                 "core": {
                     "caption": "Cyffredinol",
                     "description": "Dilyswch eich ffeil ffurfweddu a rheoli'r gweinydd",
                     "section": {
                         "core": {
                             "header": "Rheoli ffurfweddu a gweinydd",
+                            "introduction": "Gellir newid ffurfweddiad eich proses ddiflas. Rydym yn gwybod. Bydd yr adran hon yn ceisio gwneud eich bywyd ychydig yn haws.",
                             "validation": {
                                 "heading": "Dilysu ffurfweddu",
+                                "introduction": "Dilyswch eich ffurfweddiad os gwnaethoch rai newidiadau yn ddiweddar i'ch cyfluniad ac rydych eisiau gwneud yn siŵr ei fod yn hollol ddilys",
                                 "check_config": "Gwiriwch ffurfweddu",
                                 "valid": "Ffurfweddiad dilys!",
                                 "invalid": "Ffurfweddiad annilys"
                             },
                             "reloading": {
                                 "heading": "Ail-lwytho ffurfweddu",
+                                "introduction": "Gall rhai rhannau o Gynorthwy-ydd Cartref ail-lwytho heb orfod ailgychwyn. Bydd taro ail-lwytho yn dadlwytho eu cyfluniad cyfredol a llwytho'r un newydd.",
                                 "core": "Ail-lwytho craidd",
                                 "group": "Ail-lwytho grwpiau",
                                 "automation": "Ail-lwytho awtomeiddiau",
