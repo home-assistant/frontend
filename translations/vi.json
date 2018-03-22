@@ -308,7 +308,127 @@
                 },
                 "automation": {
                     "caption": "Tự động hóa",
-                    "description": "Tạo và chỉnh sửa Tự động hóa"
+                    "description": "Tạo và chỉnh sửa Tự động hóa",
+                    "picker": {
+                        "header": "Trình biên tập tự động hóa",
+                        "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng đọc [hướng dẫn] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
+                        "pick_automation": "Chọn tự động hóa để chỉnh sửa",
+                        "no_automations": "Chúng tôi không thể tìm thấy tự động hóa nào có thể chỉnh sửa",
+                        "add_automation": "Thêm Tự động hóa"
+                    },
+                    "editor": {
+                        "introduction": "Sử dụng tự động hóa để mang sự sống cho nhà bạn",
+                        "default_name": "Thêm Tự động hóa",
+                        "save": "Lưu",
+                        "unsaved_confirm": "Bạn có thay đổi chưa được lưu. Bạn có chắc anh muốn bỏ đi?",
+                        "alias": "Tên",
+                        "triggers": {
+                            "header": "Bộ khởi động",
+                            "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \n\n [Tìm hiểu thêm về Bộ khởi động] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Thêm Bộ khởi động",
+                            "duplicate": "Bản sao",
+                            "delete_confirm": "Chắc chắn bạn muốn xóa?",
+                            "unsupported_platform": "Nền tảng không được hỗ trợ: {platform}",
+                            "type_select": "Loại Bộ khởi động",
+                            "type": {
+                                "event": {
+                                    "label": "Sự kiện",
+                                    "event_type": "Loại sự kiện",
+                                    "event_data": "Dữ liệu sự kiện"
+                                },
+                                "state": {
+                                    "label": "Trạng thái",
+                                    "from": "Từ",
+                                    "to": "Đến"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Sự kiện:",
+                                    "start": "Bắt đầu",
+                                    "shutdown": "Tắt"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Chủ đề",
+                                    "payload": "Phụ tải (tùy chọn)"
+                                },
+                                "numeric_state": {
+                                    "label": "Trạng thái số",
+                                    "above": "Trên",
+                                    "below": "Dưới",
+                                    "value_template": "Mẫu giá trị (tùy chọn)"
+                                },
+                                "sun": {
+                                    "label": "Mặt trời",
+                                    "sunrise": "Bình minh",
+                                    "sunset": "Hoàng hôn",
+                                    "offset": "Bù đắp (tùy chọn)"
+                                },
+                                "template": {
+                                    "label": "Mẫu",
+                                    "value_template": "Mẫu giá trị (tùy chọn)"
+                                },
+                                "time": {
+                                    "label": "Thời gian",
+                                    "at": "Lúc"
+                                },
+                                "zone": {
+                                    "label": "Khu vực",
+                                    "entity": "Thực thể với vị trí",
+                                    "enter": "Vào",
+                                    "leave": "Ra"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Điều kiện",
+                            "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \n\n [Tìm hiểu thêm về điều kiện] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Thêm điều kiện",
+                            "unsupported_condition": "Điều kiện không được hỗ trợ: {condition}",
+                            "type_select": "Loại điều kiện",
+                            "type": {
+                                "sun": {
+                                    "before": "Trước khi:",
+                                    "after": "Sau khi:",
+                                    "before_offset": "Trước khi bù đắp (tùy chọn)",
+                                    "after_offset": "Sau khi bù đắp (tùy chọn)",
+                                    "sunrise": "Bình minh",
+                                    "sunset": "Hoàng hôn"
+                                },
+                                "time": {
+                                    "after": "Sau",
+                                    "before": "Trước"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Hành động",
+                            "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \n\n [Tìm hiểu thêm về các hành động.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Thêm hành động",
+                            "unsupported_action": "Hành động không được hỗ trợ: {action}",
+                            "type_select": "Loại hành động",
+                            "type": {
+                                "service": {
+                                    "label": "Gọi dịch vụ",
+                                    "service_data": "Dữ liệu dịch vụ"
+                                },
+                                "delay": {
+                                    "label": "Chậm trễ"
+                                },
+                                "wait_template": {
+                                    "label": "Chờ",
+                                    "wait_template": "Mẫu chờ",
+                                    "timeout": "Thời gian chờ (tùy chọn)"
+                                },
+                                "condition": {
+                                    "label": "Điều kiện"
+                                },
+                                "event": {
+                                    "label": "Kích hoạt Sự kiện"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Kịch bản",
@@ -325,7 +445,13 @@
             "developer_tools": "Công cụ Nhà phát triển"
         },
         "common": {
+            "loading": "Đang tải",
             "cancel": "Hủy bỏ"
+        },
+        "duration": {
+            "day": "{count}{count, plural,\n  one {ngày}\n  other {ngày}\n}",
+            "week": "{count}{count, plural,\n  one { tuần }\n  other { tuần }\n}",
+            "second": "{count}{count, plural,\n  one {giây }\n  other {giây}\n}"
         },
         "login-form": {
             "password": "Mật khẩu",
@@ -338,6 +464,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Bỏ qua"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Thực thể"
+                }
+            },
+            "service-picker": {
+                "service": "Dịch vụ"
             }
         }
     },

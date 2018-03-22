@@ -113,6 +113,10 @@
             "window": {
                 "off": "Zatvorené",
                 "on": "Otvorené"
+            },
+            "lock": {
+                "off": "Zamknuté",
+                "on": "Odomknuté"
             }
         },
         "calendar": {
@@ -331,7 +335,161 @@
                 },
                 "automation": {
                     "caption": "Automatizácia",
-                    "description": "Vytvárajte a upravujte skripty"
+                    "description": "Vytvárajte a upravujte skripty",
+                    "picker": {
+                        "header": "Editor automatizácií",
+                        "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
+                        "pick_automation": "Vyberte automatizáciu, ktorú chcete upraviť",
+                        "no_automations": "Nepodarilo sa nájsť žiadne editovateľné automatizácie",
+                        "add_automation": "Pridať automatizáciu"
+                    },
+                    "editor": {
+                        "introduction": "Použite automatizácie, aby váš domov ožil",
+                        "default_name": "Nová automatizácia",
+                        "save": "Uložiť",
+                        "unsaved_confirm": "Máte neuložené zmeny. Naozaj chcete odísť?",
+                        "alias": "Názov",
+                        "triggers": {
+                            "header": "Spúšťače",
+                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \n\n [Viac informácií o spúšťačov.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Pridať spúšťač",
+                            "duplicate": "Duplikovať",
+                            "delete": "Odstrániť",
+                            "delete_confirm": "Ste si istý odstránením ? ",
+                            "unsupported_platform": "Nepodporovaná platforma: {platform}",
+                            "type_select": "Typ spúšťača",
+                            "type": {
+                                "event": {
+                                    "label": "Udalosť",
+                                    "event_type": "Typ udalosti",
+                                    "event_data": "Dáta udalosti"
+                                },
+                                "state": {
+                                    "label": "Stav",
+                                    "from": "Z",
+                                    "to": "Na"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Udalosť:",
+                                    "start": "Štart",
+                                    "shutdown": "Vypnutie"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic",
+                                    "payload": "Správa (voliteľné)"
+                                },
+                                "numeric_state": {
+                                    "label": "Číselná hodnota",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Šablóna hodnoty (voliteľné)"
+                                },
+                                "sun": {
+                                    "label": "Slnko",
+                                    "event": "Udalosť:",
+                                    "sunrise": "Východ slnka",
+                                    "sunset": "Západ slnka",
+                                    "offset": "Kompenzácia (voliteľné)"
+                                },
+                                "template": {
+                                    "label": "Šablóna",
+                                    "value_template": "Šablóna hodnoty"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "at": "Čas o"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entita s umiestnením",
+                                    "zone": "Zóna",
+                                    "event": "Udalosť:",
+                                    "enter": "Vstúpenie",
+                                    "leave": "Opustenie"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Podmienky",
+                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \n\n [Viac informácií o podmienkach.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Pridať podmienku",
+                            "duplicate": "Duplikovať",
+                            "delete": "Odstrániť",
+                            "delete_confirm": "Ste si istý odstránením ? ",
+                            "unsupported_condition": "Nepodporovaná podmienka: {condition}",
+                            "type_select": "Typ podmienky",
+                            "type": {
+                                "state": {
+                                    "label": "Stav",
+                                    "state": "Stav"
+                                },
+                                "numeric_state": {
+                                    "label": "Číselná hodnota",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Šablóna hodnoty (voliteľné)"
+                                },
+                                "sun": {
+                                    "label": "Slnko",
+                                    "before": "Pred:",
+                                    "after": "Po:",
+                                    "before_offset": "Predstih pred (voliteľné)",
+                                    "after_offset": "Oneskorenie po (voliteľné)",
+                                    "sunrise": "Východ slnka",
+                                    "sunset": "Západ slnka"
+                                },
+                                "template": {
+                                    "label": "Šablóna",
+                                    "value_template": "Šablóna hodnoty"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "after": "Po",
+                                    "before": "Pred"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entita s umiestnením",
+                                    "zone": "Zóna"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Akcie",
+                            "introduction": "Akcie, ktoré vykoná domáci asistent, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Pridať akciu",
+                            "duplicate": "Duplikovať",
+                            "delete": "Odstrániť",
+                            "delete_confirm": "Ste si istý odstránením ? ",
+                            "unsupported_action": "Nepodporovaná akcia: {action}",
+                            "type_select": "Typ akcie",
+                            "type": {
+                                "service": {
+                                    "label": "Zavolať službu",
+                                    "service_data": "Dáta služby"
+                                },
+                                "delay": {
+                                    "label": "Oneskorenie",
+                                    "delay": "Oneskorenie"
+                                },
+                                "wait_template": {
+                                    "label": "Čakať",
+                                    "wait_template": "Šablóna čakania",
+                                    "timeout": "Časový limit (voliteľné)"
+                                },
+                                "condition": {
+                                    "label": "Podmienka"
+                                },
+                                "event": {
+                                    "label": "Odpáliť udalosť",
+                                    "event": "Udalosť",
+                                    "service_data": "Dáta služby"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Skript",
@@ -367,6 +525,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Zrušiť"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entita"
+                }
+            },
+            "service-picker": {
+                "service": "Služba"
             }
         }
     },

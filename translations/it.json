@@ -383,7 +383,7 @@
                                 "numeric_state": {
                                     "label": "Valore numerico",
                                     "above": "Superiore",
-                                    "below": "Inferiorre",
+                                    "below": "Inferiore",
                                     "value_template": "Valore modello (opzionale)"
                                 },
                                 "sun": {
@@ -418,7 +418,7 @@
                             "duplicate": "Duplica",
                             "delete": "Cancella",
                             "delete_confirm": "Sicuro di voler eliminare?",
-                            "unsupported_condition": "Condizione non supportata: {conditione}",
+                            "unsupported_condition": "Condizione non supportata: {condizione}",
                             "type_select": "Tipo di condizione",
                             "type": {
                                 "state": {
