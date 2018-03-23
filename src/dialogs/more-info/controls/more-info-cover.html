@@ -2,8 +2,8 @@
 
 <link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel='import' href='../../../../bower_components/paper-slider/paper-slider.html'>
 
+<link rel="import" href='../../../components/ha-paper-slider.html'>
 <link rel='import' href='../../../util/cover-model.html'>
 
 <dom-module id='more-info-cover'>
@@ -29,13 +29,13 @@
 
       <div class='current_position'>
         <div>Position</div>
-        <paper-slider
+        <ha-paper-slider
           min='0' max='100'
           value='{{coverPositionSliderValue}}'
           step='1' pin
           disabled='[[!entityObj.supportsSetPosition]]'
           on-change='coverPositionSliderChanged'
-          ignore-bar-touch></paper-slider>
+          ignore-bar-touch></ha-paper-slider>
       </div>
 
       <div class='tilt'>
@@ -44,13 +44,13 @@
           <ha-cover-tilt-controls hidden$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]">
           </ha-cover-tilt-controls>
         </div>
-        <paper-slider
+        <ha-paper-slider
           min='0' max='100'
           value='{{coverTiltPositionSliderValue}}'
           step='1' pin
           disabled='[[!entityObj.supportsSetTiltPosition]]'
           on-change='coverTiltPositionSliderChanged'
-          ignore-bar-touch></paper-slider>
+          ignore-bar-touch></ha-paper-slider>
       </div>
 
     </div>
