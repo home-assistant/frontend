@@ -71,23 +71,16 @@ class StateBadge extends Polymer.Element {
     const hostStyle = {
       backgroundImage: '',
     };
-    /* eslint-disable no-labels, no-restricted-syntax */
-    calcProps: {
-      // hide icon if we have entity picture
-      if (newVal.attributes.entity_picture) {
-        hostStyle.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
-        iconStyle.display = 'none';
-        break calcProps;
-      }
-
-      if (newVal.state === 'unavailable') break calcProps;
-
+    // hide icon if we have entity picture
+    if (newVal.attributes.entity_picture) {
+      hostStyle.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
+      iconStyle.display = 'none';
+    } else {
       if (newVal.attributes.hs_color) {
         const hue = newVal.attributes.hs_color[0];
         const sat = newVal.attributes.hs_color[1];
         if (sat > 10) iconStyle.color = `hsl(${hue}, 100%, ${100 - (sat / 2)}%)`;
       }
-
       if (newVal.attributes.brightness) {
         const brightness = newVal.attributes.brightness;
         // lowest brighntess will be around 50% (that's pretty dark)
