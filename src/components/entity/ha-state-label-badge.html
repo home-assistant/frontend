@@ -43,6 +43,7 @@
       image='[[computeImage(state)]]'
       label='[[computeLabel(localize, state, timerTimeRemaining)]]'
       description='[[computeDescription(state)]]'
+      label-is-state$='[[!state.attributes.unit_of_measurement]]'
     ></ha-label-badge>
   </template>
 </dom-module>
