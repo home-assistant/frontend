@@ -48,10 +48,10 @@
             <td>Latest version</td>
             <td>[[data.last_version]]</td>
           </tr>
-          <template is='dom-if' if='[[data.beta_channel]]'>
+          <template is='dom-if' if='[[!_equals(data.channel, "stable")]]'>
             <tr>
-              <td>Beta channel</td>
-              <td>Active</td>
+              <td>Channel</td>
+              <td>[[data.channel]]</td>
             </tr>
           </template>
         </table>
@@ -70,14 +70,14 @@
             path="hassio/supervisor/update"
           >Update</ha-call-api-button>
         </template>
-        <template is='dom-if' if='[[data.beta_channel]]'>
+        <template is='dom-if' if='[[_equals(data.channel, "beta")]]'>
           <ha-call-api-button
             hass='[[hass]]'
             path='hassio/supervisor/options'
             data='[[leaveBeta]]'
           >Leave beta channel</ha-call-api-button>
         </template>
-        <template is='dom-if' if='[[!data.beta_channel]]'>
+        <template is='dom-if' if='[[_equals(data.channel, "stable")]]'>
           <paper-button
             on-click='_joinBeta'
             class='warning'
@@ -100,7 +100,7 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
       errors: String,
       leaveBeta: {
         type: Object,
-        value: { beta_channel: false },
+        value: { channel: 'stable' },
       },
     };
   }
@@ -129,6 +129,10 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(Polymer.Element
     return data.version !== data.last_version;
   }
 
+  _equals(a, b) {
+    return a === b;
+  }
+
   _joinBeta() {
     if (!confirm(`WARNING:
 Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
@@ -141,7 +145,7 @@ This inludes beta releases for:
     }
     const method = 'post';
     const path = 'hassio/supervisor/options';
-    const data = { beta_channel: true };
+    const data = { channel: 'beta' };
 
     const eventData = {
       method: method,
