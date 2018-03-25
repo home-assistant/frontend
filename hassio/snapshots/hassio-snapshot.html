@@ -226,7 +226,7 @@ class HassioSnapshot extends Polymer.Element {
   }
 
   _computeDownloadUrl(snapshotSlug) {
-    const password = encodeURI(this.hass.connection.options.authToken);
+    const password = encodeURIComponent(this.hass.connection.options.authToken);
     return `/api/hassio/snapshots/${snapshotSlug}/download?api_password=${password}`;
   }
 
