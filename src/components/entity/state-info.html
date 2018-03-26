@@ -31,7 +31,7 @@
       line-height: 20px;
     }
 
-    .time-ago, ::slotted(*) {
+    .time-ago, .extra-info, .extra-info > * {
       @apply --paper-font-common-nowrap;
       color: var(--secondary-text-color);
     }
@@ -48,7 +48,9 @@
           </div>
         </template>
         <template is='dom-if' if='[[!inDialog]]'>
-          <slot>
+          <div class='extra-info'>
+            <slot>
+          </div>
         </template>
       </div>
   </template>
