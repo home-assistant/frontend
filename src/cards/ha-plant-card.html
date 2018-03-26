@@ -102,9 +102,6 @@
     }
 
     computeValue(stateObj, sensor) {
-      if ((sensor === 'brightness') && ('max_brightness' in stateObj.attributes)) {
-        return stateObj.attributes.max_brightness;
-      }
       if (sensor in stateObj.attributes) {
         return stateObj.attributes[sensor];
       }
