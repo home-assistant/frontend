@@ -365,7 +365,10 @@ window.hassUtil.applyThemesOnElement = function (element, themes, localTheme, up
       styles[prefixedKey] = theme[key];
     });
   }
-  element.updateStyles(styles);
+  // implement updateStyles() method of Polemer elements
+  if (window.ShadyCSS) {
+    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */(element), styles);
+  }
 
   if (!updateMeta) return;
 
