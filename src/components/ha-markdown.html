@@ -11,7 +11,7 @@ class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
     this._resize = () => this.fire('iron-resize');
 
     Polymer.importHref(
-      '/static/pagedown-js.html',
+      '/static/markdown-js.html',
       () => { this._scriptLoaded = 1; this._render(); },
       () => { this._scriptLoaded = 2; this._render(); },
     );
@@ -32,8 +32,11 @@ class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
       this._renderScheduled = false;
 
       if (this._scriptLoaded === 1) {
-        const converter = window.Markdown.getSanitizingConverter();
-        this.innerHTML = converter.makeHtml(this._content);
+        this.innerHTML = window.filterXSS(window.marked(this._content, {
+          gfm: true,
+          tables: true,
+          breaks: true
+        }));
         this._resize();
 
         const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
