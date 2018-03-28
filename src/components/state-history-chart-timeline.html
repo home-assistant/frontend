@@ -4,7 +4,21 @@
 
 <dom-module id='state-history-chart-timeline'>
   <template>
-      <ha-chart-base data="[[chartData]]"></ha-chart-base>
+    <style>
+      :host {
+        display: block;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+      :host([rendered]) {
+        opacity: 1;
+      }
+
+    </style>
+    <ha-chart-base
+      data="[[chartData]]"
+      rendered="{{rendered}}"
+    ></ha-chart-base>
   </template>
 </dom-module>
 <script>
@@ -23,6 +37,11 @@ class StateHistoryChartTimeline extends Polymer.Element {
       },
       noSingle: Boolean,
       endTime: Date,
+      rendered: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      }
     };
   }
 
