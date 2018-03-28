@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# Set XSS_VERSION or MARKED_VERSION to set package versions. If unset, the latest version will be used.
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+output="public/markdown-js.html"
+
+echo "<script>" > $output
+
+pkgs="xss:dist/xss.min.js marked:marked.min.js"
+
+for pkg in $pkgs; do
+    name="$(cut -d':' -f1 <<< "$pkg")"
+    js_path="$(cut -d':' -f2 <<< "$pkg")"
+
+    # Check env variable for version
+    version=$(eval "echo \$$(echo $name | tr "a-z" "A-Z")_VERSION")
+    if [ -z "$version" ]; then
+        version=$(yarn -s info $name dist-tags.latest)
+    fi
+
+    homepage=$(yarn -s info "$name@$version" homepage)
+    license=$(yarn -s info "$name@$version" license)
+    tarball=$(yarn -s info "$name@$version" dist.tarball)
+
+    cat >>$output <<EOF
+/*
+* $name@$version ($license)
+* $homepage
+*/
+EOF
+    echo "Downloading $name@$version"
+    echo "$(curl -s "$tarball" | tar -xzO "package/$js_path" | ./node_modules/.bin/uglifyjs -c -m)" >> $output
+done
+
+echo "</script>" >> $output
+
+size=$(wc -c < $output)
+gzip_size=$(cat $output | gzip | wc -c)
+
+echo "$size bytes ($gzip_size bytes gzipped) written to $output"
