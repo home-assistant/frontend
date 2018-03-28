@@ -4,11 +4,21 @@
 
 <dom-module id='state-history-chart-line'>
   <template>
+    <style>
+      :host {
+        display: block;
+        overflow: hidden;
+        height: 0;
+        transition: height 0.3s ease-in-out;
+      }
+    </style>
       <ha-chart-base
+        id='chart'
         data="[[chartData]]"
         is-zoomable="[[isZoomable]]"
-        identifier="[[identifier]]">
-      </ha-chart-base>
+        identifier="[[identifier]]"
+        rendered="{{rendered}}"
+      ></ha-chart-base>
   </template>
 </dom-module>
 <script>
@@ -27,6 +37,11 @@ class StateHistoryChartLine extends Polymer.Element {
       },
 
       endTime: Object,
+      rendered: {
+        type: Boolean,
+        value: false,
+        observer: '_onRenderedChanged'
+      }
     };
   }
   static get observers() {
@@ -41,6 +56,16 @@ class StateHistoryChartLine extends Polymer.Element {
 
   dataChanged() {
     this.drawChart();
+  }
+
+  _onRenderedChanged(rendered) {
+    if (rendered) this.animateHeight();
+  }
+
+  animateHeight() {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      this.style.height = this.$.chart.scrollHeight + 'px';
+    }));
   }
 
   drawChart() {
