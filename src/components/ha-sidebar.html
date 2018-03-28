@@ -16,7 +16,7 @@
     <style include="iron-flex iron-flex-alignment iron-positioning">
       :host {
         --sidebar-text: {
-          color: var(--primary-text-color);
+          color: var(--sidebar-text-color);
           font-weight: 500;
           font-size: 14px;
         };
@@ -27,7 +27,7 @@
         -webkit-user-select: none;
         -moz-user-select: none;
         border-right: 1px solid var(--divider-color);
-        background: var(--paper-listbox-background-color, var(--primary-background-color));
+        background-color: var(--sidebar-background-color, var(--primary-background-color));
       }
 
       app-toolbar {
@@ -47,28 +47,23 @@
         };
 
         --paper-item-icon: {
-          color: #000;
-          opacity: var(--dark-secondary-opacity);
-        };
-
-        --paper-item-selected: {
-          color: var(--primary-color);
-          background-color: var(--paper-grey-200);
-          opacity: 1;
+          color: var(--sidebar-icon-color);
         };
       }
+
       paper-icon-item.iron-selected {
+        --paper-icon-item: {
+          color: var(--sidebar-selected-icon-color);
+          background-color: var(--sidebar-selected-background-color);
+        };
+
         --paper-item-icon: {
-          color: var(--primary-color);
-          opacity: 1;
+          color: var(--sidebar-selected-icon-color);
         };
       }
 
       paper-icon-item .item-text {
         @apply --sidebar-text;
-      }
-      paper-icon-item.iron-selected .item-text {
-        opacity: 1;
       }
 
       paper-icon-item.logout {
@@ -77,9 +72,8 @@
 
       .divider {
         height: 1px;
-        background-color: #000;
+        background-color: var(--divider-color);
         margin: 4px 0;
-        opacity: var(--dark-divider-opacity)
       }
 
       .setting {
@@ -92,8 +86,8 @@
       }
 
       .dev-tools {
+        color: var(--sidebar-icon-color);
         padding: 0 8px;
-        opacity: var(--dark-secondary-opacity);
       }
     </style>
 
