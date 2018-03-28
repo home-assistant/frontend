@@ -5,10 +5,14 @@
 <dom-module id="ha-chart-base">
   <template>
     <style>
+      :host {
+        display: block;
+      }
       .chartHeader {
-        display: flex;
         padding: 6px 0 0 0;
-        width: 100%
+        width: 100%;
+        display: flex;
+        flex-direction: row;
       }
       .chartHeader > div {
         vertical-align: top;
@@ -16,9 +20,12 @@
       }
       .chartHeader > div.chartTitle {
         padding-top: 8px;
+        flex: 0 0 0;
+        max-width: 30%;
       }
       .chartHeader > div.chartLegend {
-        flex: auto;
+        flex: 1 1 1;
+        min-width: 70%;
       }
       :root{
         user-select: none;
@@ -27,15 +34,17 @@
         -ms-user-select: none;
       }
       .chartTooltip {
+        font-size: 90%;
         opacity: 1;
         position: absolute;
-        background: rgba(0, 0, 0, .7);
+        background: rgba(80, 80, 80, .9);
         color: white;
         border-radius: 3px;
         pointer-events: none;
-        transform: translate(-50%, 0);
+        transform: translate(-50%, 5px);
         z-index: 1000;
         width: 200px;
+        transition: opacity 0.15s ease-in-out;
       }
       .chartLegend ul,
       .chartTooltip ul {
@@ -54,17 +63,17 @@
       .chartLegend li {
         display: inline-block;
         padding: 0 5px;
-        max-width: 49%;
+        width: 49%;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
         box-sizing: border-box;
       }
       .chartLegend li:nth-child(odd):last-of-type {
-        /* Make last item take full width if it is add-numbered. */
-        max-width: 100%;
+        /* Make last item take full width if it is odd-numbered. */
+        width: 100%;
       }
-      .chartLegend li.hidden {
+      .chartLegend li[data-hidden] {
         text-decoration: line-through;
       }
       .chartLegend em,
@@ -85,7 +94,7 @@
         <div class="chartLegend">
           <ul>
             <template is="dom-repeat" items="[[metas]]">
-              <li on-click="_legendClick" class$="[[item.hidden]]">
+              <li on-click="_legendClick" data-hidden$="[[item.hidden]]">
                 <em style$="background-color:[[item.bgColor]]"></em>
                 [[item.label]]
               </li>
@@ -136,6 +145,12 @@
         data: Object,
         identifier: String,
         isZoomable: Boolean,
+        rendered: {
+          type: Boolean,
+          notify: true,
+          value: false,
+          readOnly: true,
+        },
       };
     }
 
@@ -153,9 +168,7 @@
         xPadding: '0',
         yPadding: '0'
       });
-      if (!this._chart) {
-        requestAnimationFrame(() => requestAnimationFrame(() => this.onPropsChange()));
-      }
+      this.onPropsChange();
       this._resizeListener = () => {
         this._debouncer = Polymer.Debouncer.debounce(
           this._debouncer,
@@ -271,8 +284,9 @@
 
     _legendClick(event) {
       event = event || window.event;
+      event.stopPropagation();
       let target = event.target || event.srcElement;
-      while (target.nodeName !== 'LI') {
+      while (target.nodeName !== 'LI') { // user clicked child, find parent LI
         target = target.parentElement;
       }
       const index = event.model.itemsIndex;
@@ -345,6 +359,9 @@
           return;
         }
         this._customTooltips({ opacity: 0 });
+        const plugins = [
+          { afterRender: () => this._setRendered(true) }
+        ];
         let options = {
           responsive: true,
           maintainAspectRatio: false,
@@ -419,7 +436,8 @@
         const chartData = {
           type: this.data.type,
           data: this.data.data,
-          options: options
+          options: options,
+          plugins: plugins,
         };
         // Async resize after dom update
         this._chart = new Chart(ctx, chartData);
