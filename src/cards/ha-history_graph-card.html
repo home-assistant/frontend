@@ -17,6 +17,8 @@
       }
       paper-card {
         width: 100%;
+        /* prevent new stacking context, chart tooltip needs to overflow */
+        position: static;
       }
       .header {
         @apply --paper-font-headline;
