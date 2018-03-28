@@ -15,8 +15,8 @@
   <template>
     <style include="iron-flex iron-flex-alignment iron-positioning">
       :host {
-        color: var(--sidebar-text-color);
         --sidebar-text: {
+          color: var(--sidebar-text-color);
           font-weight: 500;
           font-size: 14px;
         };
@@ -53,7 +53,6 @@
 
       paper-icon-item.iron-selected {
         --paper-icon-item: {
-          color: var(--sidebar-selected-text-color);
           background-color: var(--sidebar-selected-background-color, var(--paper-grey-200));
         };
 
@@ -64,6 +63,9 @@
 
       paper-icon-item .item-text {
         @apply --sidebar-text;
+      }
+      paper-icon-item.iron-selected .item-text {
+          color: var(--sidebar-selected-text-color);
       }
 
       paper-icon-item.logout {
