@@ -41,9 +41,9 @@ class HaClimateState extends Polymer.Element {
   }
 
   computeCurrentStatus(stateObj) {
-    if (stateObj.attributes.current_temperature) {
+    if ('current_temperature' in stateObj.attributes) {
       return `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.current_humidity) {
+    } else if ('current_humidity' in stateObj.attributes) {
       return `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
     }
 
@@ -51,15 +51,15 @@ class HaClimateState extends Polymer.Element {
   }
 
   computeTarget(stateObj) {
-    if (stateObj.attributes.target_temp_low &&
-        stateObj.attributes.target_temp_high) {
+    if ('target_temp_low' in stateObj.attributes &&
+        'target_temp_high' in stateObj.attributes) {
       return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.temperature) {
+    } else if ('temperature' in stateObj.attributes) {
       return `${stateObj.attributes.temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.target_humidity_low &&
-        stateObj.attributes.target_humidity_high) {
+    } else if ('target_humidity_low' in stateObj.attributes &&
+        'target_humidity_high' in stateObj.attributes) {
       return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.humidity) {
+    } else if ('humidity' in stateObj.attributes) {
       return `${stateObj.attributes.humidity} ${stateObj.attributes.unit_of_measurement}`;
     }
 
