@@ -77,6 +77,7 @@
         cursor: pointer;
         min-height: var(--paper-item-min-height, 48px);
         padding: 0px 16px;
+        color: inherit;
       }
 
       [part~="button"]:focus {
@@ -89,18 +90,31 @@
   <template>
     <style include="vaadin-date-picker-overlay-default-theme">
       :host {
-        background-color: var(--paper-dialog-background-color, var(--primary-background-color));
+        background-color: var(--paper-card-background-color, var(--primary-background-color));
       }
 
       [part~="toolbar"] {
         padding: 0.3em;
+        background-color: var(--secondary-background-color);
       }
 
-      /*[part="years"] {
-        background-color: var(--paper-card-background-color, var(--primary-background-color));
-      }*/
+      [part="years"] {
+        background-color: var(--paper-grey-200);
+      }
 
-
+    </style>
+  </template>
+</dom-module>
+<dom-module id="ha-date-picker-month-styles" theme-for="vaadin-month-calendar">
+  <template>
+    <style include="vaadin-month-calendar-default-theme">
+      :host([focused]) [part="date"][focused],
+      [part="date"][selected] {
+        background-color: var(--paper-grey-200);
+      }
+      [part="date"][today] {
+        color: var(--primary-color);
+      }
     </style>
   </template>
 </dom-module>
