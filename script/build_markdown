@@ -34,7 +34,7 @@ for pkg in $pkgs; do
 */
 EOF
     echo "Downloading $name@$version"
-    echo "$(curl -s "$tarball" | tar -xzO "package/$js_path" | ./node_modules/.bin/uglifyjs -c -m)" >> $output
+    curl -s "$tarball" | tar -xzO "package/$js_path" | ./node_modules/.bin/uglifyjs -c -m >> $output
 done
 
 echo "</script>" >> $output
