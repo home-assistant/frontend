@@ -14,6 +14,7 @@
       :host([opened]) [part~="toggle-button"] {
         color: var(--primary-color);
       }
+
     </style>
   </template>
 </dom-module>
@@ -53,6 +54,7 @@
       [part~="value"] {
         font-size: var(--paper-font-subhead_-_font-size);
         font-family: inherit;
+        color: inherit;
         border: none;
         background: transparent;
       }
@@ -86,9 +88,19 @@
 <dom-module id="ha-date-picker-overlay-styles" theme-for="vaadin-date-picker-overlay">
   <template>
     <style include="vaadin-date-picker-overlay-default-theme">
+      :host {
+        background-color: var(--paper-dialog-background-color, var(--primary-background-color));
+      }
+
       [part~="toolbar"] {
         padding: 0.3em;
       }
+
+      /*[part="years"] {
+        background-color: var(--paper-card-background-color, var(--primary-background-color));
+      }*/
+
+
     </style>
   </template>
 </dom-module>
