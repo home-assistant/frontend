@@ -41,7 +41,7 @@ class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
       this._renderScheduled = false;
 
       if (this._scriptLoaded === 1) {
-        this.innerHTML = window.filterXSS(window.marked(this._content, {
+        this.innerHTML = window.filterXSS(window.marked(this.content, {
           gfm: true,
           tables: true,
           breaks: true
@@ -64,7 +64,7 @@ class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
           }
         }
       } else if (this._scriptLoaded === 2) {
-        this.innerText = this._content;
+        this.innerText = this.content;
       }
     });
   }
