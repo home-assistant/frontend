@@ -24,9 +24,11 @@
       [[computeTarget(stateObj)]]
     </div>
 
-    <div class='current'>
-      Currently: [[computeCurrentStatus(stateObj)]]
-    </div>
+    <template is='dom-if' if='[[currentStatus]]'>
+      <div class='current'>
+        Currently: [[currentStatus]]
+      </div>
+    </template>
   </template>
 </dom-module>
 
@@ -36,18 +38,22 @@ class HaClimateState extends Polymer.Element {
 
   static get properties() {
     return {
-      stateObj: Object,
+      stateObj: {
+        type: Object,
+        observer: 'computeCurrentStatus'
+      },
+      currentStatus: String
     };
   }
 
   computeCurrentStatus(stateObj) {
-    if ('current_temperature' in stateObj.attributes) {
-      return `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if ('current_humidity' in stateObj.attributes) {
-      return `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
+    if (stateObj.attributes.current_temperature) {
+      this.currentStatus = `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
+    } else if (stateObj.attributes.current_humidity) {
+      this.currentStatus = `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
+    } else {
+      this.currentStatus = null;
     }
-
-    return '';
   }
 
   computeTarget(stateObj) {
