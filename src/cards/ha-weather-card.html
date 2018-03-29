@@ -95,7 +95,9 @@
     'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
     'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
   ];
-
+  /*
+   * @appliesMixin window.hassMixins.LocalizeMixin
+   */
   class HaWeatherCard extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     static get is() { return 'ha-weather-card'; }
     static get properties() {

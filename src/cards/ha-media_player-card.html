@@ -206,6 +206,10 @@
 </dom-module>
 
 <script>
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
 class HaMediaPlayerCard extends
   window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-media_player-card'; }
