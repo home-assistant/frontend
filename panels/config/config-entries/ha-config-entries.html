@@ -8,6 +8,8 @@
 <link rel='import' href='../../../src/resources/ha-style.html'>
 <link rel='import' href='../../../src/layouts/hass-subpage.html'>
 
+<link rel='import' href='../ha-config-section.html'>
+
 <link rel='import' href='./ha-config-flow.html'>
 
 <dom-module id="ha-config-entries">
@@ -106,6 +108,7 @@
     static get properties() {
       return {
         hass: Object,
+        isWide: Boolean,
 
         _flowId: {
           type: String,

@@ -151,6 +151,21 @@
           value: false,
           readOnly: true,
         },
+        metas: {
+          type: Array,
+          value: () => [],
+        },
+        tooltip: {
+          type: Object,
+          value: () => ({
+            opacity: '0',
+            left: '0',
+            top: '0',
+            xPadding: '0',
+            yPadding: '0'
+          })
+        },
+        unit: Object,
       };
     }
 
@@ -161,13 +176,6 @@
     connectedCallback() {
       super.connectedCallback();
       this._isAttached = true;
-      this.set('tooltip', {
-        opacity: '0',
-        left: '0',
-        top: '0',
-        xPadding: '0',
-        yPadding: '0'
-      });
       this.onPropsChange();
       this._resizeListener = () => {
         this._debouncer = Polymer.Debouncer.debounce(
@@ -275,11 +283,11 @@
       }
       positionX += this._chart.canvas.offsetLeft;
       // Display, position, and set styles for font
-      this.set(['tooltip', 'opacity'], 1);
-      this.set(['tooltip', 'left'], positionX + 'px');
-      this.set(['tooltip', 'top'], positionY + 'px');
-      this.set(['tooltip', 'yPadding'], tooltip.yPadding);
-      this.set(['tooltip', 'xPadding'], tooltip.xPadding);
+      this.tooltip = Object.assign({}, this.tooltip, {
+        opacity: 1,
+        left: `${positionX}px`,
+        top: `${positionY}px`,
+      });
     }
 
     _legendClick(event) {
@@ -320,7 +328,7 @@
       if (updateNeeded) {
         chart.update();
       }
-      this.set('unit', this.data.unit);
+      this.unit = this.data.unit;
     }
     _formatTickValue(value, index, values) {
       if (values.length === 0) {
