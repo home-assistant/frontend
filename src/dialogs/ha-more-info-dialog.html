@@ -90,7 +90,7 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(Polymer.Element) {
       large: {
         type: Boolean,
         reflectToAttribute: true,
-        observer: 'notifyResize',
+        observer: '_largeChanged',
       },
 
       _dialogElement: Object,
@@ -159,6 +159,10 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(Polymer.Element) {
 
   _equals(a, b) {
     return a === b;
+  }
+
+  _largeChanged() {
+    this.notifyResize();
   }
 }
 customElements.define(HaMoreInfoDialog.is, HaMoreInfoDialog);

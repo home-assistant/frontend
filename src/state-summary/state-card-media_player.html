@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../components/entity/state-info.html">
+<link rel="import" href="../util/hass-mixins.html">
 
 <dom-module id="state-card-media_player">
   <template>
@@ -46,6 +47,9 @@
 </dom-module>
 
 <script>
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
 class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-card-media_player'; }
 
