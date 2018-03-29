@@ -1,8 +1,22 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
 <link rel='import' href='../util/hass-mixins.html'>
 
 <script>
-class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
+/*
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-markdown'; }
+
+  static get properties() {
+    return {
+      content: {
+        type: String,
+        observer: '_render',
+      }
+    };
+  }
 
   connectedCallback() {
     // 0 = not loaded, 1 = success, 2 = error
@@ -15,11 +29,6 @@ class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
       () => { this._scriptLoaded = 1; this._render(); },
       () => { this._scriptLoaded = 2; this._render(); },
     );
-  }
-
-  set content(value) {
-    this._content = value;
-    this._render();
   }
 
   _render() {

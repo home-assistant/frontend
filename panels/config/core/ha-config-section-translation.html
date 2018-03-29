@@ -20,7 +20,7 @@
           <paper-dropdown-menu label="[[localize('ui.panel.config.core.section.translation.language')]]" dynamic-align>
             <paper-listbox slot="dropdown-content" on-selected-item-changed="handleLanguageSelect" attr-for-selected="language-tag" selected="[[language]]">
               <template is='dom-repeat' items='[[languages]]'>
-                <paper-item language-tag="[[item.tag]]">[[item.nativeName]]</paper-item>
+                <paper-item language-tag$="[[item.tag]]">[[item.nativeName]]</paper-item>
               </template>
             </paper-listbox>
           ></paper-dropdown-menu>
