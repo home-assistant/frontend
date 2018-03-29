@@ -3,6 +3,12 @@
 <dom-module id="ha-climate-state">
   <template>
     <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
       .target {
         color: var(--primary-text-color);
       }
@@ -47,9 +53,9 @@ class HaClimateState extends Polymer.Element {
   }
 
   computeCurrentStatus(stateObj) {
-    if (stateObj.attributes.current_temperature) {
+    if (stateObj.attributes.current_temperature || stateObj.attributes.current_temperature === 0) {
       this.currentStatus = `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.current_humidity) {
+    } else if (stateObj.attributes.current_humidity || stateObj.attributes.current_humidity === 0) {
       this.currentStatus = `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
     } else {
       this.currentStatus = null;
