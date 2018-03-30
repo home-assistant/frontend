@@ -15,6 +15,14 @@
       ha-label-badge {
         --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
       }
+      ha-label-badge.has-unit_of_measurement {
+        --ha-label-badge-label-text-transform: none;
+      }
+
+      ha-label-badge.binary_sensor,
+      ha-label-badge.updater {
+        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+      }
 
       .red {
         --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
@@ -37,7 +45,7 @@
       }
     </style>
 
-    <ha-label-badge class$='[[computeClasses(state)]]'
+    <ha-label-badge class$='[[computeClassNames(state)]]'
       value='[[computeValue(localize, state)]]'
       icon='[[computeIcon(state)]]'
       image='[[computeImage(state)]]'
@@ -90,14 +98,10 @@ class HaStateLabelBadge extends
     this.fire('hass-more-info', { entityId: this.state.entity_id });
   }
 
-  computeClasses(state) {
-    switch (window.hassUtil.computeDomain(state)) {
-      case 'binary_sensor':
-      case 'updater':
-        return 'blue';
-      default:
-        return '';
-    }
+  computeClassNames(state) {
+    const classes = [window.hassUtil.computeDomain(state)];
+    classes.push(window.hassUtil.attributeClassNames(state, ['unit_of_measurement']));
+    return classes.join(' ');
   }
 
   computeValue(localize, state) {
