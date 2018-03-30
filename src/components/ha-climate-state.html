@@ -44,22 +44,22 @@ class HaClimateState extends Polymer.Element {
 
   static get properties() {
     return {
-      stateObj: {
-        type: Object,
-        observer: 'computeCurrentStatus'
+      stateObj: Object,
+      currentStatus: {
+        type: String,
+        computed: 'computeCurrentStatus(stateObj)',
       },
-      currentStatus: String
     };
   }
 
   computeCurrentStatus(stateObj) {
     if ('current_temperature' in stateObj.attributes) {
-      this.currentStatus = `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if ('current_humidity' in stateObj.attributes) {
-      this.currentStatus = `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
-    } else {
-      this.currentStatus = null;
+      return `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
     }
+    if ('current_humidity' in stateObj.attributes) {
+      return `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
+    }
+    return null;
   }
 
   computeTarget(stateObj) {
