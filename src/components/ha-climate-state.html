@@ -53,9 +53,9 @@ class HaClimateState extends Polymer.Element {
   }
 
   computeCurrentStatus(stateObj) {
-    if (stateObj.attributes.current_temperature || stateObj.attributes.current_temperature === 0) {
+    if ('current_temperature' in stateObj.attributes) {
       this.currentStatus = `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.current_humidity || stateObj.attributes.current_humidity === 0) {
+    } else if ('current_humidity' in stateObj.attributes) {
       this.currentStatus = `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
     } else {
       this.currentStatus = null;
