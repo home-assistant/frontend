@@ -51,15 +51,16 @@ class HaClimateState extends Polymer.Element {
   }
 
   computeTarget(stateObj) {
-    if ('target_temp_low' in stateObj.attributes &&
-        'target_temp_high' in stateObj.attributes) {
+    // We're using "!= null" on purpose so that we match both null and undefined.
+    if (stateObj.attributes.target_temp_low != null &&
+        stateObj.attributes.target_temp_high != null) {
       return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${stateObj.attributes.unit_of_measurement}`;
-    } else if ('temperature' in stateObj.attributes) {
+    } else if (stateObj.attributes.temperature != null) {
       return `${stateObj.attributes.temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if ('target_humidity_low' in stateObj.attributes &&
-        'target_humidity_high' in stateObj.attributes) {
+    } else if (stateObj.attributes.target_humidity_low != null &&
+               stateObj.attributes.target_humidity_high != null) {
       return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} ${stateObj.attributes.unit_of_measurement}`;
-    } else if ('humidity' in stateObj.attributes) {
+    } else if (stateObj.attributes.humidity != null) {
       return `${stateObj.attributes.humidity} ${stateObj.attributes.unit_of_measurement}`;
     }
 
