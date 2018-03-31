@@ -20,7 +20,7 @@
           <paper-dropdown-menu label="[[localize('ui.panel.config.core.section.translation.language')]]" dynamic-align>
             <paper-listbox slot="dropdown-content" on-selected-item-changed="handleLanguageSelect" attr-for-selected="language-tag" selected="[[language]]">
               <template is='dom-repeat' items='[[languages]]'>
-                <paper-item language-tag="[[item.tag]]">[[item.nativeName]]</paper-item>
+                <paper-item language-tag$="[[item.tag]]">[[item.nativeName]]</paper-item>
               </template>
             </paper-listbox>
           ></paper-dropdown-menu>
@@ -69,8 +69,8 @@ class HaConfigSectionTranslation extends
   handleLanguageSelect(ev) {
     // Only fire event if language was changed. This prevents select updates when
     // responding to hass changes.
-    if (ev.detail.value && ev.detail.value.languageTag !== this.language) {
-      this.fire('hass-language-select', { language: ev.detail.value.languageTag });
+    if (ev.detail.value && ev.detail.value.attributes['language-tag'].value !== this.language) {
+      this.fire('hass-language-select', { language: ev.detail.value.attributes['language-tag'].value });
     }
   }
 }
