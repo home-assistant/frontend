@@ -18,7 +18,7 @@
       <paper-card>
         <div class='card-content'>
           <paper-dropdown-menu label="[[localize('ui.panel.config.core.section.translation.language')]]" dynamic-align>
-            <paper-listbox slot="dropdown-content" on-selected-item-changed="handleLanguageSelect" attr-for-selected="language-tag" selected="[[language]]">
+            <paper-listbox slot="dropdown-content" attr-for-selected="language-tag" selected="{{languageSelection}}">
               <template is='dom-repeat' items='[[languages]]'>
                 <paper-item language-tag$="[[item.tag]]">[[item.nativeName]]</paper-item>
               </template>
@@ -48,13 +48,17 @@ class HaConfigSectionTranslation extends
       isWide: {
         type: Boolean,
       },
-
+      languageSelection: {
+        type: String,
+        observer: 'languageSelectionChanged',
+      },
       languages: {
         type: Array,
         computed: 'computeLanguages(hass)',
       },
     };
   }
+  static get observers() { return ['setLanguageSelection(language)']; }
 
   computeLanguages(hass) {
     if (!hass || !hass.translationMetadata) {
@@ -66,11 +70,15 @@ class HaConfigSectionTranslation extends
     }));
   }
 
-  handleLanguageSelect(ev) {
+  setLanguageSelection(language) {
+    this.languageSelection = language;
+  }
+
+  languageSelectionChanged(newVal) {
     // Only fire event if language was changed. This prevents select updates when
     // responding to hass changes.
-    if (ev.detail.value && ev.detail.value.attributes['language-tag'].value !== this.language) {
-      this.fire('hass-language-select', { language: ev.detail.value.attributes['language-tag'].value });
+    if (newVal !== this.language) {
+      this.fire('hass-language-select', { language: newVal });
     }
   }
 }
