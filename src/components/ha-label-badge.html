@@ -48,7 +48,7 @@
       max-width: 68%; /* Parent width minus two times 16% padding */
       display: inline-block;
       background-color: var(--ha-label-badge-color, var(--primary-color));
-      color: white;
+      color: var(--ha-label-badge-label-color, white);
       border-radius: 1em;
       padding: 8% 16%;
       font-weight: 500;
@@ -82,7 +82,7 @@
           <iron-icon icon='[[icon]]' hidden$='[[computeHideIcon(icon, value, image)]]'></iron-icon>
           <span hidden$='[[computeHideValue(value, image)]]'>[[value]]</span>
         </div>
-        <div hidden$='[[!label]]' class$='[[computeLabelClasses(label)]]'>
+        <div hidden$='[[computeHideLabel(label)]]' class$='[[computeLabelClasses(label)]]'>
           <span>[[label]]</span>
         </div>
       </div>
@@ -114,6 +114,10 @@ class HaLabelBadge extends Polymer.Element {
 
   computeLabelClasses(label) {
     return label && label.length > 5 ? 'label big' : 'label';
+  }
+
+  computeHideLabel(label) {
+    return !label || !label.trim();
   }
 
   computeHideIcon(icon, value, image) {
