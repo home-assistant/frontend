@@ -234,7 +234,7 @@
             },
             "query_stage": {
                 "initializing": "قيد الانشاء ({query_stage})",
-                "dead": "منفصل ({query_stage})"
+                "dead": "مفصول ({query_stage})"
             }
         }
     },
@@ -307,7 +307,7 @@
                             },
                             "server_management": {
                                 "heading": "إدارة الخادم",
-                                "introduction": "التحكم بخادم نظام مساعد البيت ... من الواجهة الأساسية.",
+                                "introduction": "تحكم بسيرفر Home Assistant ... من Home Assistant.",
                                 "restart": "إعادة تشغيل",
                                 "stop": "إيقاف"
                             }
@@ -336,13 +336,27 @@
                 "automation": {
                     "caption": "التشغيل التلقائي",
                     "description": "إنشاء وتحرير التشغيل الألي",
+                    "picker": {
+                        "header": "محرر المتحكم الآلي",
+                        "introduction": "محرر المتحكم الآلي يسمح لك بإنشاء وتحرير المتحكمات الآلية. يرجى قراءة [الإرشادات] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) للتأكد من إعدادك Home Assistant بشكل صحيح.",
+                        "pick_automation": "أختر متحكم آلي للتعديل",
+                        "no_automations": "لم تعثر على أي متحكم آلي قابل للتعديل",
+                        "add_automation": "أضف متحكم آلي"
+                    },
                     "editor": {
+                        "introduction": "استخدم المتحكمات الآلية لتجعل منزلك ينبض بالحياة",
+                        "default_name": "متحكم آلي جديد",
                         "save": "حفظ",
                         "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟",
+                        "alias": "الاسم",
                         "triggers": {
-                            "duplicate": "نسخ",
+                            "header": "المشغلات",
+                            "introduction": "المشغلات هي ما يبدأ تشغيل قاعدة المتحكم الآلي. من الممكن تحديد مشغلات متعددة لنفس القاعدة. بمجرد بدء المشغل ، سيقوم Home Assistant بالتحقق من الشروط ، إن وجدت ، واستدعاء الإجراء. \n\n [مزيد من المعلومات حول المشغلات.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "أضف مشغل",
+                            "duplicate": "تكرار",
                             "delete": "حذف",
                             "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "unsupported_platform": "منصة غير مدعومة: {platform}",
                             "type_select": "نوع المشغل",
                             "type": {
                                 "event": {
@@ -356,9 +370,10 @@
                                     "to": "إلى"
                                 },
                                 "homeassistant": {
+                                    "label": "Home Assistant",
                                     "event": "الحدث:",
-                                    "start": "بداية",
-                                    "shutdown": "إيقاف"
+                                    "start": "بدء",
+                                    "shutdown": "إيقاف التشغيل"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -375,7 +390,7 @@
                                     "label": "الشمس",
                                     "event": "الحدث",
                                     "sunrise": "شروق الشمس",
-                                    "sunset": "Zonsondergang",
+                                    "sunset": "غروب الشمس",
                                     "offset": "إزاحة (اختياري)"
                                 },
                                 "template": {
@@ -387,22 +402,23 @@
                                     "at": "عند"
                                 },
                                 "zone": {
-                                    "label": "Zone",
-                                    "entity": "الجهاز في المنطقة",
-                                    "zone": "Zone",
+                                    "label": "المنطقة",
+                                    "entity": "اسم الجهاز مع المنطقة",
+                                    "zone": "المنطقة",
                                     "event": "الحدث",
-                                    "enter": "Betreedt",
-                                    "leave": "Verlaat"
+                                    "enter": "دخول",
+                                    "leave": "مغادرة"
                                 }
                             }
                         },
                         "conditions": {
                             "header": "الشروط",
+                            "introduction": "الشروط هي جزء اختياري من قواعد المتحكم الآلي ويمكن استخدامها لمنع تفعّل الإجراء بالمشغل. الشروط تبدو متشابهة جدًا مع المشغلات ولكنها مختلفة جدًا. سينظر المشغل في الأحداث التي تحدث في النظام بينما ينظر الشرط فقط إلى كيفية ظهور النظام الآن. يستطيع المشغل ملاحظة أن مفتاح التشغيل تم تشغيله. بينما الشرط يرى فقط ما إذا كان أحد المفاتيح هل هو قيد التشغيل أو الإيقاف حاليًا. \n\n [مزيد من المعلومات حول الشروط.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "إضافة شرط",
-                            "duplicate": "نسخ",
+                            "duplicate": "تكرار",
                             "delete": "حذف",
-                            "delete_confirm": "ها تريد الحذف فعلا؟",
-                            "unsupported_condition": "شوط غير مدعوم: {شرط}",
+                            "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "unsupported_condition": "شرط غير مدعوم: {condition}",
                             "type_select": "نوع الشرط",
                             "type": {
                                 "state": {
@@ -419,8 +435,8 @@
                                     "label": "الشمس",
                                     "before": "قبل",
                                     "after": "بعد",
-                                    "before_offset": "بعد الإزاحة (اختياري)",
-                                    "after_offset": "بعد الإزاحة (اختياري)",
+                                    "before_offset": "تأخير الوقت (اختياري)",
+                                    "after_offset": "تقديم الوقت (اختياري)",
                                     "sunrise": "شروق الشمس",
                                     "sunset": "غروب الشمس"
                                 },
@@ -442,10 +458,12 @@
                         },
                         "actions": {
                             "header": "الإجراءات",
+                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عندما يتفعّل الجهاز المُتحَكم به.\n\n [مزيد من المعلومات حول الإجراءات.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "أضف إجراء",
-                            "duplicate": "نسخ",
+                            "duplicate": "تكرار",
                             "delete": "حذف",
                             "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "unsupported_action": "إجراء غير مدعوم: {action}",
                             "type_select": "نوع الإجراء",
                             "type": {
                                 "service": {
@@ -465,6 +483,7 @@
                                     "label": "الشرط"
                                 },
                                 "event": {
+                                    "label": "إجراء الحريق",
                                     "event": "الحدث",
                                     "service_data": "بيانات الخدمة"
                                 }
@@ -478,7 +497,7 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "إدارة شبكة موجة-Z"
+                    "description": "إدارة شبكة Z-Wave"
                 }
             }
         },

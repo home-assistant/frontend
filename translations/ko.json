@@ -153,7 +153,7 @@
             "opening": "여는중",
             "closed": "닫힘",
             "closing": "닫는중",
-            "stopped": "정지됨"
+            "stopped": "멈춤"
         },
         "device_tracker": {
             "home": "재실",
@@ -172,7 +172,7 @@
             "opening": "여는중",
             "closed": "닫힘",
             "closing": "닫는중",
-            "stopped": "정지됨",
+            "stopped": "멈춤",
             "locked": "잠김",
             "unlocked": "해제",
             "ok": "좋음",
@@ -547,7 +547,7 @@
         "climate": "공조장치",
         "configurator": "구성",
         "conversation": "대화",
-        "cover": "커버",
+        "cover": "여닫이",
         "device_tracker": "추적장치",
         "fan": "송풍기",
         "history_graph": "기록그래프",
