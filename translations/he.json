@@ -279,6 +279,20 @@
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "type": {
+                                "condition": {
+                                    "label": "תנאי"
+                                },
+                                "event": {
+                                    "event": "ארוע"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },

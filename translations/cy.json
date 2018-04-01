@@ -1,10 +1,87 @@
 {
     "state": {
+        "binary_sensor": {
+            "opening": {
+                "off": "Cau",
+                "on": "Agor"
+            },
+            "safety": {
+                "off": "Diogel",
+                "on": "Anniogel"
+            },
+            "presence": {
+                "off": "Allan",
+                "on": "Cartref"
+            },
+            "battery": {
+                "off": "Arferol",
+                "on": "Isel"
+            },
+            "problem": {
+                "off": "iawn",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Wedi datgysylltu",
+                "on": "Cysylltiedig"
+            },
+            "cold": {
+                "off": "i ffwrdd",
+                "on": "Oer"
+            },
+            "door": {
+                "off": "Cau",
+                "on": "Agor"
+            },
+            "garage_door": {
+                "off": "Cau",
+                "on": "Agor"
+            },
+            "heat": {
+                "off": "Arferol",
+                "on": "Poeth"
+            },
+            "window": {
+                "off": "Cau",
+                "on": "Agored"
+            },
+            "lock": {
+                "off": "Cloi",
+                "on": "Dad-gloi"
+            }
+        },
+        "calendar": {
+            "off": "i ffwrdd",
+            "on": "Ar"
+        },
+        "camera": {
+            "recording": "Recordio",
+            "streaming": "Ffrydio",
+            "idle": "Segur"
+        },
         "climate": {
+            "off": "i ffwrdd",
+            "on": "Ar",
+            "heat": "Gwres",
+            "cool": "Sefydlog",
+            "idle": "Segur",
+            "auto": "Awto",
             "dry": "Sych",
-            "fan_only": "Fan yn unig"
+            "fan_only": "Fan yn unig",
+            "eco": "Eco",
+            "electric": "Trydan",
+            "performance": "Perfformiad",
+            "high_demand": "Galw uchel",
+            "heat_pump": "Pwmp gwres",
+            "gas": "Nwy"
+        },
+        "configurator": {
+            "configure": "Ffurfweddu",
+            "configured": "Wedi'i ffurfweddu"
         },
         "cover": {
+            "open": "Agor",
+            "opening": "Yn agor",
             "closed": "Ar gau",
             "closing": "Cau",
             "stopped": "Stopio"
@@ -37,7 +114,8 @@
             "on": "Ar"
         },
         "light": {
-            "off": "i ffwrdd"
+            "off": "i ffwrdd",
+            "on": "Ar"
         },
         "lock": {
             "locked": "Wedi cloi",
@@ -48,6 +126,7 @@
             "on": "Ar",
             "playing": "Chwarae",
             "paused": "Wedi rhewi",
+            "idle": "Segur",
             "standby": "Gorffwys"
         },
         "plant": {
@@ -91,48 +170,6 @@
         },
         "alarm_control_panel": {
             "armed_custom_bypass": "Ffordd osgoi larwm personol"
-        },
-        "binary_sensor": {
-            "presence": {
-                "off": "Allan",
-                "on": "Cartref"
-            },
-            "battery": {
-                "off": "Arferol",
-                "on": "Isel"
-            },
-            "problem": {
-                "off": "iawn",
-                "on": "Problem"
-            },
-            "connectivity": {
-                "off": "Wedi datgysylltu",
-                "on": "Cysylltiedig"
-            },
-            "cold": {
-                "off": "i ffwrdd",
-                "on": "Oer"
-            },
-            "door": {
-                "off": "Cau",
-                "on": "Agor"
-            },
-            "garage_door": {
-                "off": "Cau",
-                "on": "Agor"
-            },
-            "heat": {
-                "off": "Arferol",
-                "on": "Poeth"
-            },
-            "window": {
-                "off": "Cau",
-                "on": "Agored"
-            },
-            "lock": {
-                "off": "Cloi",
-                "on": "Dad-gloi"
-            }
         }
     },
     "state_badge": {
@@ -247,6 +284,7 @@
                         "alias": "Enw",
                         "triggers": {
                             "header": "Sbardunau",
+                            "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Cynorthwydd-Cartref yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \n\n[dysgwch mwy am sbardunau.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Ychwanegu sbardun",
                             "duplicate": "Dyblyg",
                             "delete": "Dileu",
@@ -308,6 +346,7 @@
                         },
                         "conditions": {
                             "header": "Amodau",
+                            "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \n\n [Dysgwch fwy am amodau.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Ychwanegu amodau",
                             "duplicate": "Dyblygu",
                             "delete": "Dileu",

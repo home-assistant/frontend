@@ -115,8 +115,8 @@
                 "on": "Открыто"
             },
             "lock": {
-                "off": "Зеперто",
-                "on": "Отперто"
+                "off": "Закрыто",
+                "on": "Открыто"
             }
         },
         "calendar": {
@@ -429,7 +429,7 @@
                                     "label": "Числовое состояние",
                                     "above": "Выше",
                                     "below": "Ниже",
-                                    "value_template": "Значение шаблона"
+                                    "value_template": "Значение шаблона (опционально)"
                                 },
                                 "sun": {
                                     "label": "Солнце",
@@ -553,12 +553,12 @@
         "history_graph": "График",
         "group": "Группа",
         "image_processing": "Обработка изображения",
-        "input_boolean": "Логика",
+        "input_boolean": "Переключатель",
         "input_datetime": "Дата и время",
         "input_select": "Список",
         "input_number": "Число",
         "input_text": "Текст",
-        "light": "Освещение",
+        "light": "Свет",
         "lock": "Замок",
         "mailbox": "Почтовый ящик",
         "media_player": "Медиа плеер",
