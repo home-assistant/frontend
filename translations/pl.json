@@ -403,7 +403,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Jednostka z lokalizacji",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa",
                                     "event": "Zdarzenie",
                                     "enter": "Wprowadź",
@@ -451,7 +451,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Jednostka z lokalizacji",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa"
                                 }
                             }
@@ -530,7 +530,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Jednostka"
+                    "entity": "Encja"
                 }
             },
             "service-picker": {
