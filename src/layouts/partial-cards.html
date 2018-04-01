@@ -321,7 +321,8 @@
     }
 
     isView(currentView, defaultView) {
-      return currentView || defaultView;
+      return (currentView || defaultView) &&
+        this.hass.states[currentView || DEFAULT_VIEW_ENTITY_ID];
     }
 
     _defaultViewFilter(hass, entityId) {
