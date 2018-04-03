@@ -54,7 +54,9 @@
   </template>
 
   <script>
-    customElements.whenDefined('paper-slider').then(() => {
+    'use strict';
+
+    {
       const PaperSliderClass = customElements.get('paper-slider');
       let myTemplate;
       class HaPaperSlider extends PaperSliderClass {
@@ -75,6 +77,6 @@
         }
       }
       customElements.define(HaPaperSlider.is, HaPaperSlider);
-    });
+    }
   </script>
 </dom-module>
