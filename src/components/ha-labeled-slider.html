@@ -7,43 +7,31 @@
     <style>
       :host {
         display: block;
-        padding-bottom: 20px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
+        padding-bottom: 16px;
       }
 
       .title {
-        font-size: 90%;
+        margin-bottom: 16px;
         opacity: var(--dark-primary-opacity);
-        line-height: 1.2em;
-        padding-top: 0.3em;
-
       }
 
-      .icon-container {
-        flex: 1 1 50px;
-        text-align: center;
+      iron-icon {
+        float: left;
+        margin-top: 4px;
         opacity: var(--dark-secondary-opacity);
-        width: 60px;
-        margin-top: 5px;
       }
 
       .slider-container {
-        flex: 1 1 200px;
-        border-radius: 50%;
-      }
-      paper-slider {
-        width: 100%;
-        background-image: var(--ha-slider-background);
+        margin-left: 24px;
       }
 
+      paper-slider {
+        background-image: var(--ha-slider-background);
+      }
     </style>
-    <div class='icon-container'>
-      <iron-icon icon='[[icon]]'></iron-icon>
-      <div class='title'>[[caption]]</div>
-    </div>
+
+    <div class='title'>[[caption]]</div>
+    <iron-icon icon='[[icon]]'></iron-icon>
     <div class='slider-container'>
       <paper-slider min='[[min]]' max='[[max]]' value='{{value}}' ignore-bar-touch='[[ignoreBarTouch]]'>
       </paper-slider>
