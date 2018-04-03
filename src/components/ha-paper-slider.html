@@ -59,6 +59,12 @@
     {
       const PaperSliderClass = customElements.get('paper-slider');
       let myTemplate;
+
+      /**
+      * @polymer
+      * @customElement
+      * @extends {PaperSliderClass}
+      */
       class HaPaperSlider extends PaperSliderClass {
         static get is() { return 'ha-paper-slider'; }
 
