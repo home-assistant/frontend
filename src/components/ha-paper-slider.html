@@ -65,7 +65,7 @@
         static get template() {
           if (!myTemplate) {
             // Retrieve this element's dom-module template
-            myTemplate = Polymer.DomModule.import(this.is, 'template');
+            myTemplate = Polymer.DomModule.import(HaPaperSlider.is, 'template');
             // Clone the contents of the superclass template
             const superTemplateContents = document.importNode(PaperSliderClass.template.content, true);
             // Remove the style from superclass contents, we already included them in our own <style>
