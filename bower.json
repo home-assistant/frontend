@@ -52,6 +52,7 @@
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
     "polymer": "^2.1.1",
+    "shadycss": "^1.1.0",
     "vaadin-combo-box": "vaadin/vaadin-combo-box#^3.0.2",
     "vaadin-date-picker": "vaadin/vaadin-date-picker#^2.0.0",
     "web-animations-js": "^2.2.5",

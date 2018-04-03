@@ -84,6 +84,22 @@
     --light-primary-opacity: 1.0;
   }
 </style>
+
+  <style shady-unscoped>
+    /*
+      prevent clipping of positioned elements in a small scrollable
+      force smooth scrolling if can scroll
+      use non-shady selectors so this only targets iOS 9
+      conditional mixin set in ha-style-dialog does not work with shadyCSS
+    */
+    paper-dialog-scrollable:not(.can-scroll) > .scrollable {
+      -webkit-overflow-scrolling: auto !important;
+    }
+    paper-dialog-scrollable.can-scroll > .scrollable {
+      -webkit-overflow-scrolling: touch !important;
+    }
+  </style>
+
 </custom-style>
 
 <dom-module id='ha-style'>
@@ -169,22 +185,24 @@
           position: fixed !important;
           margin: 0;
         }
+      }
 
+      /* prevent clipping of positioned elements */
+      paper-dialog-scrollable {
+        --paper-dialog-scrollable: {
+          -webkit-overflow-scrolling: auto;
+        }
+      }
+      /* force smooth scrolling for iOS 10 */
+      paper-dialog-scrollable.can-scroll {
         --paper-dialog-scrollable: {
           -webkit-overflow-scrolling: touch;
-          margin-bottom: 16px;
         }
       }
 
       @media all and (max-width: 450px), all and (max-height: 500px) {
         paper-dialog {
           @apply(--ha-dialog-narrow);
-        }
-        :host {
-          --paper-dialog-scrollable: {
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 0px;
-          }
         }
       }
     </style>
