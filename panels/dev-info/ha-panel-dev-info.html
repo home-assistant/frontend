@@ -57,6 +57,7 @@
         @apply --paper-font-code)
         clear: both;
         white-space: pre-wrap;
+		margin: 16px;
       }
 
       .system-log-intro {
@@ -173,7 +174,7 @@
                       [[item.message]]
                     </div>
                     <div secondary>
-                      [[formatDateTime(item.timestamp)]] [[item.source]] ([[item.level]])
+					  [[formatTimeOrDateTime(item.timestamp)]] [[item.source]] ([[item.level]])
                     </div>
                   </paper-item-body>
                 </paper-item>
@@ -314,6 +315,17 @@ class HaPanelDevInfo extends Polymer.Element {
   
   formatDateTime(date) {
 	return window.hassUtil.formatDateTime(new Date(date * 1000));
+  }
+  
+  formatTimeOrDateTime(date) {
+	//If date is today, only return the time, otherwise return the date too
+    var today = new Date()
+	var compare = new Date(date * 1000)
+	if (today.setHours(0,0,0,0) == compare.setHours(0,0,0,0)) {
+      return window.hassUtil.formatTime(new Date(date * 1000))
+	} else {
+	  return window.hassUtil.formatDateTime(new Date(date * 1000))
+	}
   }
 
   openLog(event) {
