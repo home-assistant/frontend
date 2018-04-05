@@ -318,9 +318,9 @@ class HaPanelDevInfo extends Polymer.Element {
   }
 
   formatTimeOrDateTime(date) {
-    //If date is today, only return the time, otherwise return the date too
-    var today = new Date()
-    var compare = new Date(date * 1000)
+    // If date is today, only return the time, otherwise return the date too
+    var today = new Date();
+    var compare = new Date(date * 1000);
     if (today.setHours(0, 0, 0, 0) === compare.setHours(0, 0, 0, 0)) {
       return window.hassUtil.formatTime(new Date(date * 1000));
     }
