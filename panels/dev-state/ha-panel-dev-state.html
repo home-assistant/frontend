@@ -109,7 +109,7 @@
           <template is='dom-repeat' items='[[_entities]]' as='entity'>
             <tr>
               <td><a href='#' on-click='entitySelected'>[[entity.entity_id]]</a></td>
-              <td>[[entity.state]]</td>
+              <td><a href='#' on-click='entityHistory'>[[entity.state]]</a></td>
               <template is='dom-if' if='[[computeShowAttributes(narrow, _showAttributes)]]'>
                 <td>[[attributeString(entity)]]</td>
               </template>
@@ -122,7 +122,7 @@
 </dom-module>
 
 <script>
-class HaPanelDevState extends Polymer.Element {
+class HaPanelDevState extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-panel-dev-state'; }
 
   static get properties() {
@@ -189,6 +189,11 @@ class HaPanelDevState extends Polymer.Element {
     this._state = state.state;
     this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
     ev.preventDefault();
+  }
+
+  entityHistory(ev) {
+    ev.preventDefault();
+    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
   }
 
   handleSetState() {
