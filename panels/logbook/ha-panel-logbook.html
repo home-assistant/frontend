@@ -31,6 +31,12 @@
       left: 186px;
     }
 
+    #refresh-logbook {
+      position: absolute;
+      top: 15px;
+      left: 186px;
+    }
+
     vaadin-date-picker {
       --vaadin-date-picker-clear-icon: {
         display: none;
@@ -73,6 +79,7 @@
           disabled='[[isLoading]]'
           required
         ></vaadin-date-picker>
+        <paper-icon-button id='refresh-logbook' icon='mdi:refresh' on-click='refreshLogbook' hidden$='[[_isRefreshHidden(isLoading, _currentDate,_today)]]'></paper-icon-button>
 
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
       </div>
@@ -112,6 +119,15 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(Polymer.Element) {
           return today.toISOString().split('T')[0];
         },
       },
+      _today: {
+        type: String,
+        value: function () {
+          var value = new Date();
+          var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
+          return today.toISOString().split('T')[0];
+        },
+      },
+
 
       isLoading: {
         type: Boolean,
@@ -146,6 +162,15 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     var parts = _currentDate.split('-');
     parts[1] = parseInt(parts[1]) - 1;
     return new Date(parts[0], parts[1], parts[2]).toISOString();
+  }
+
+  refreshLogbook() {
+    this.shadowRoot.querySelector('ha-logbook-data').refreshLogbook();
+  }
+
+  _isRefreshHidden(isLoading, _currentDate, _today) {
+    // if (this.isLoading) return true;
+    return (_currentDate !== _today) || this.isLoading;
   }
 }
 
