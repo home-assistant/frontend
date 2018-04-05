@@ -174,7 +174,7 @@
                       [[item.message]]
                     </div>
                     <div secondary>
-                      [[formatTimeOrDateTime(item.timestamp)]] [[item.source]] ([[item.level]])
+                      [[formatTime(item.timestamp)]] [[item.source]] ([[item.level]])
                     </div>
                   </paper-item-body>
                 </paper-item>
@@ -312,8 +312,9 @@ class HaPanelDevInfo extends Polymer.Element {
   formatTime(date) {
     const today = new Date().setHours(0, 0, 0, 0);
     const dateTime = new Date(date * 1000);
+    const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
 
-    return dateTime.setHours(0, 0, 0, 0) < today ? 
+    return dateTimeDay < today ? 
       window.hassUtil.formatDateTime(dateTime) : window.hassUtil.formatTime(dateTime);
   }
 
