@@ -312,20 +312,19 @@ class HaPanelDevInfo extends Polymer.Element {
   formatTime(date) {
     return window.hassUtil.formatTime(new Date(date * 1000));
   }
-  
+
   formatDateTime(date) {
-	return window.hassUtil.formatDateTime(new Date(date * 1000));
+    return window.hassUtil.formatDateTime(new Date(date * 1000));
   }
-  
+
   formatTimeOrDateTime(date) {
-	//If date is today, only return the time, otherwise return the date too
+    //If date is today, only return the time, otherwise return the date too
     var today = new Date()
-	var compare = new Date(date * 1000)
-	if (today.setHours(0,0,0,0) == compare.setHours(0,0,0,0)) {
-      return window.hassUtil.formatTime(new Date(date * 1000))
-	} else {
-	  return window.hassUtil.formatDateTime(new Date(date * 1000))
-	}
+    var compare = new Date(date * 1000)
+    if (today.setHours(0, 0, 0, 0) === compare.setHours(0, 0, 0, 0)) {
+      return window.hassUtil.formatTime(new Date(date * 1000));
+    }
+    return window.hassUtil.formatDateTime(new Date(date * 1000));
   }
 
   openLog(event) {
