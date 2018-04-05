@@ -169,7 +169,6 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   }
 
   _isRefreshHidden(isLoading, _currentDate, _today) {
-    // if (this.isLoading) return true;
     return (_currentDate !== _today) || this.isLoading;
   }
 }
