@@ -318,10 +318,6 @@ class HaPanelDevInfo extends Polymer.Element {
       window.hassUtil.formatDateTime(dateTime) : window.hassUtil.formatTime(dateTime);
   }
 
-  formatDateTime(date) {
-    return window.hassUtil.formatDateTime(new Date(date * 1000));
-  }
-
   openLog(event) {
     this.selectedItem = event.model.item;
     this.$.showlog.open();
