@@ -75,6 +75,8 @@ class StateBadge extends Polymer.Element {
     if (newVal.attributes.entity_picture) {
       hostStyle.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
       iconStyle.display = 'none';
+    } else if (newVal.attributes.icon_color) {
+      iconStyle.color = newVal.attributes.icon_color;
     } else {
       if (newVal.attributes.hs_color) {
         const hue = newVal.attributes.hs_color[0];
@@ -87,8 +89,8 @@ class StateBadge extends Polymer.Element {
         iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
       }
     }
-    Object.assign(this.$.icon.style, iconStyle);
-    Object.assign(this.style, hostStyle);
+    this.$.icon.updateStyles(iconStyle);
+    this.updateStyles(hostStyle);
   }
 }
 customElements.define(StateBadge.is, StateBadge);
