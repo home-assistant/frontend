@@ -79,7 +79,12 @@
           disabled='[[isLoading]]'
           required
         ></vaadin-date-picker>
-        <paper-icon-button id='refresh-logbook' icon='mdi:refresh' on-click='refreshLogbook' hidden$='[[_isRefreshHidden(isLoading, _currentDate)]]'></paper-icon-button>
+        <paper-icon-button
+          id='refresh-logbook'
+          icon='mdi:refresh'
+          on-click='refreshLogbook'
+          hidden$='[[_isRefreshHidden(isLoading, _currentDate)]]'
+        ></paper-icon-button>
 
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
       </div>
