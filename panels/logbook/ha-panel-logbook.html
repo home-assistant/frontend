@@ -25,13 +25,7 @@
       padding: 0 16px 16px;
     }
 
-    paper-spinner {
-      position: absolute;
-      top: 15px;
-      left: 186px;
-    }
-
-    #refresh-logbook {
+    paper-spinner, paper-icon-button {
       position: absolute;
       top: 15px;
       left: 186px;
@@ -80,7 +74,6 @@
           required
         ></vaadin-date-picker>
         <paper-icon-button
-          id='refresh-logbook'
           icon='mdi:refresh'
           on-click='refreshLogbook'
           hidden$='[[_isRefreshHidden(isLoading, _currentDate)]]'
