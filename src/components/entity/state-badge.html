@@ -75,14 +75,13 @@ class StateBadge extends Polymer.Element {
     if (newVal.attributes.entity_picture) {
       hostStyle.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
       iconStyle.display = 'none';
+    } else if (newVal.attributes.icon_color) {
+      iconStyle.color = `${newVal.attributes.icon_color}`;
     } else {
       if (newVal.attributes.hs_color) {
         const hue = newVal.attributes.hs_color[0];
         const sat = newVal.attributes.hs_color[1];
         if (sat > 10) iconStyle.color = `hsl(${hue}, 100%, ${100 - (sat / 2)}%)`;
-      } else if (newVal.attributes.rgb_color) {
-        const rgb = newVal.attributes.rgb_color;
-        iconStyle.color = `rgb(${rgb[0]}, ${rgb[1]},${rgb[2]})`;
       }
       if (newVal.attributes.brightness) {
         const brightness = newVal.attributes.brightness;
