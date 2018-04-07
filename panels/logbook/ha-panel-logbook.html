@@ -25,7 +25,7 @@
       padding: 0 16px 16px;
     }
 
-    paper-spinner, paper-icon-button {
+    paper-spinner {
       position: absolute;
       top: 15px;
       left: 186px;
@@ -56,6 +56,11 @@
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[localize('panel.logbook')]]</div>
+          <paper-icon-button
+            icon='mdi:refresh'
+            on-click='refreshLogbook'
+            hidden$='[[isLoading]]'
+          ></paper-icon-button>
         </app-toolbar>
       </app-header>
 
@@ -73,11 +78,7 @@
           disabled='[[isLoading]]'
           required
         ></vaadin-date-picker>
-        <paper-icon-button
-          icon='mdi:refresh'
-          on-click='refreshLogbook'
-          hidden$='[[_isRefreshHidden(isLoading, _currentDate)]]'
-        ></paper-icon-button>
+
 
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
       </div>
@@ -111,10 +112,11 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(Polymer.Element) {
       // ISO8601 formatted date string
       _currentDate: {
         type: String,
-        value: function () {
-          var value = new Date();
-          var today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
-          return today.toISOString().split('T')[0];
+        value: () => {
+          const now = new Date();
+          const month = now.getMonth() < 9 ? `0${now.getMonth() + 1}` : now.getMonth() + 1;
+          const day = now.getDate() < 10 ? `0${now.getDate()}` : now.getDate();
+          return `${now.getFullYear()}-${month}-${day}`;
         },
       },
 
@@ -155,11 +157,6 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(Polymer.Element) {
 
   refreshLogbook() {
     this.shadowRoot.querySelector('ha-logbook-data').refreshLogbook();
-  }
-
-  _isRefreshHidden(isLoading, _currentDate) {
-    var today = new Date().toISOString().split('T')[0];
-    return (_currentDate !== today) || this.isLoading;
   }
 }
 
