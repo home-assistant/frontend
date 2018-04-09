@@ -112,12 +112,11 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(Polymer.Element) {
       // ISO8601 formatted date string
       _currentDate: {
         type: String,
-        value: () => {
-          const now = new Date();
-          const month = now.getMonth() < 9 ? `0${now.getMonth() + 1}` : now.getMonth() + 1;
-          const day = now.getDate() < 10 ? `0${now.getDate()}` : now.getDate();
-          return `${now.getFullYear()}-${month}-${day}`;
-        },
+        value: function () {
+          const value = new Date();
+          const today = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate()));
+          return today.toISOString().split('T')[0];
+        }
       },
 
       isLoading: {
