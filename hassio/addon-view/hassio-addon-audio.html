@@ -88,28 +88,34 @@ class HassioAddonAudio extends Polymer.Element {
   }
 
   addonChanged(addon) {
-    this.selectedInput = addon.audio_input ? addon.audio_input : 'null';
-    this.selectedOutput = addon.audio_output ? addon.audio_output : 'null';
+    this.setProperties({
+      selectedInput: addon.audio_input || 'null',
+      selectedOutput: addon.audio_output || 'null'
+    });
     if (this.listOutput) return;
 
-    const input = [{ device: 'null', name: '-' }];
-    const output = [{ device: 'null', name: '-' }];
+    const listInput = [{ device: 'null', name: '-' }];
+    const listOutput = [{ device: 'null', name: '-' }];
     this.hass.callApi('get', 'hassio/host/hardware').then((resp) => {
       const data = resp.data.audio;
       Object.keys(data).forEach((audio) => {
         Object.keys(data[audio].devices).forEach((device) => {
           if (data[audio].devices[device] === 'digital audio capture') {
-            input.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
+            listInput.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
           } else if (data[audio].devices[device] === 'digital audio playback') {
-            output.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
+            listOutput.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
           }
         });
       });
-      this.listInput = input;
-      this.listOutput = output;
+      this.setProperties({
+        listInput,
+        listOutput
+      });
     }, () => {
-      this.listInput = input;
-      this.listOutput = output;
+      this.setProperties({
+        listInput,
+        listOutput
+      });
     });
   }
 
