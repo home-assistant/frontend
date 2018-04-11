@@ -44,16 +44,16 @@
         </template>
         
         <paper-dropdown-menu label="Input">
-          <paper-listbox slot="dropdown-content" attr-for-selected="item-device" selected="{{selectedInput}}">
+          <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedInput}}">
             <template is='dom-repeat' items='[[listInput]]'>
-              <paper-item item-device="[[item.device]]">[[item.name]]</paper-item>
+              <paper-item device$="[[item.device]]">[[item.name]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu label="Output">
-          <paper-listbox slot="dropdown-content" attr-for-selected="item-device" selected="{{selectedOutput}}">
+          <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedOutput}}">
             <template is='dom-repeat' items='[[listOutput]]'>
-              <paper-item item-device="[[item.device]]">[[item.name]]</paper-item>
+              <paper-item device$="[[item.device]]">[[item.name]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
