@@ -94,8 +94,8 @@ class HassioAddonAudio extends Polymer.Element {
     const output = [{ device: 'null', name: '-' }];
     this.hass.callApi('get', 'hassio/host/hardware').then((resp) => {
       const data = resp.data.audio;
-      Object.keys(data).forEach(audio => {
-        Object.keys(data[audio].devices).forEach(device => {
+      Object.keys(data).forEach((audio) => {
+        Object.keys(data[audio].devices).forEach((device) => {
           if (data[audio].devices[device] === 'digital audio capture') {
             input.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
           } else if (data[audio].devices[device] === 'digital audio playback') {
@@ -105,7 +105,7 @@ class HassioAddonAudio extends Polymer.Element {
       });
       this.listInput = input;
       this.listOutput = output;
-    }, (resp) => {
+    }, () => {
       this.listInput = input;
       this.listOutput = output;
     });
@@ -113,8 +113,8 @@ class HassioAddonAudio extends Polymer.Element {
 
   saveTapped() {
     this.error = null;
-
-    this.hass.callApi('post', `hassio/addons/${this.addonSlug}/options`, {
+    const path = `hassio/addons/${this.addonSlug}/options`;
+    this.hass.callApi('post', path, {
       audio_input: this.selectedInput === 'null' ? null : this.selectedInput,
       audio_output: this.selectedOutput === 'null' ? null : this.selectedOutput
     }).then(() => {
