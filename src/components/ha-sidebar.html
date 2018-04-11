@@ -95,6 +95,14 @@
         padding: 0 8px;
         opacity: var(--dark-secondary-opacity);
       }
+      
+      .dev-section {
+        display:var(--display-dev)!important;
+      }
+      
+      [data-panel="config"] {
+        display:var(--display-dev, var(--layout-horizontal_-_display))!important;
+      }
     </style>
 
     <app-toolbar>
@@ -121,7 +129,7 @@
       </paper-icon-item>
     </paper-listbox>
 
-    <div>
+    <div class="dev-section">
       <div class='divider'></div>
 
       <div class='subheader'>[[localize('ui.sidebar.developer_tools')]]</div>
