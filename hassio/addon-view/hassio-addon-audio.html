@@ -1,0 +1,129 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
+<link rel='import' href='../../bower_components/neon-animation/web-animations.html'>
+
+<link rel='import' href='../../src/resources/ha-style.html'>
+
+<dom-module id="hassio-addon-audio">
+  <template>
+    <style include="ha-style">
+      :host {
+        display: block;
+      }
+      paper-card {
+        display: block;
+      }
+      .errors {
+        color: var(--google-red-500);
+        margin-bottom: 16px;
+      }
+      paper-dropdown-menu {
+        width: 100%;
+      }
+      paper-item {
+        width: 450px;
+      }
+      .card-actions {
+        @apply --layout;
+        @apply --layout-justified;
+      }
+      paper-button {
+        margin-right: 0;
+        margin-left: auto;
+      }
+    </style>
+    <paper-card heading='Audio'>
+      <div class="card-content">
+        <template is='dom-if' if='[[error]]'>
+          <div class='errors'>[[error]]</div>
+        </template>
+        
+        <paper-dropdown-menu label="Input">
+          <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedInput}}">
+            <template is='dom-repeat' items='[[listInput]]'>
+              <paper-item device="[[item.device]]">[[item.name]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu label="Output">
+          <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedOutput}}">
+            <template is='dom-repeat' items='[[listOutput]]'>
+              <paper-item device="[[item.device]]">[[item.name]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
+      <div class="card-actions">
+        <paper-button
+          on-click='saveTapped'
+        >Save</paper-button>
+      </div>
+    </paper-card>
+  </template>
+</dom-module>
+
+<script>
+class HassioAddonAudio extends Polymer.Element {
+  static get is() { return 'hassio-addon-audio'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      addonSlug: String,
+      addon: {
+        type: Object,
+        observer: 'addonChanged'
+      },
+      listInput: Array,
+      listOutput: Array,
+      selectedInput: String,
+      selectedOutput: String,
+      error: String,
+    };
+  }
+
+  addonChanged(addon) {
+    this.selectedInput = addon.audio_input ? addon.audio_input : 'null';
+    this.selectedOutput = addon.audio_output ? addon.audio_output : 'null';
+    if (this.listOutput) return;
+
+    const input = [{ device: 'null', name: '-' }];
+    const output = [{ device: 'null', name: '-' }];
+    this.hass.callApi('get', 'hassio/host/hardware').then((resp) => {
+      const data = resp.data.audio;
+      Object.keys(data).forEach(audio => {
+        Object.keys(data[audio].devices).forEach(device => {
+          if (data[audio].devices[device] === 'digital audio capture') {
+            input.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
+          } else if (data[audio].devices[device] === 'digital audio playback') {
+            output.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
+          }
+        });
+      });
+      this.listInput = input;
+      this.listOutput = output;
+    }, (resp) => {
+      this.listInput = input;
+      this.listOutput = output;
+    });
+  }
+
+  saveTapped() {
+    this.error = null;
+
+    this.hass.callApi('post', `hassio/addons/${this.addonSlug}/options`, {
+      audio_input: this.selectedInput === 'null' ? null : this.selectedInput,
+      audio_output: this.selectedOutput === 'null' ? null : this.selectedOutput
+    }).then(() => {
+      this.fire('hass-api-called', { success: true, path: path });
+    }, (resp) => {
+      this.error = resp.body.message;
+    });
+  }
+}
+
+customElements.define(HassioAddonAudio.is, HassioAddonAudio);
+</script>
