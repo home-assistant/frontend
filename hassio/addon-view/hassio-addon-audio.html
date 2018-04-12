@@ -12,29 +12,20 @@
 <dom-module id="hassio-addon-audio">
   <template>
     <style include="ha-style">
-      :host {
-        display: block;
-      }
-      paper-card {
+      :host,
+      paper-card,
+      paper-dropdown-menu {
         display: block;
       }
       .errors {
         color: var(--google-red-500);
         margin-bottom: 16px;
       }
-      paper-dropdown-menu {
-        width: 100%;
-      }
       paper-item {
         width: 450px;
       }
       .card-actions {
-        @apply --layout;
-        @apply --layout-justified;
-      }
-      paper-button {
-        margin-right: 0;
-        margin-left: auto;
+        text-align: right;
       }
     </style>
     <paper-card heading='Audio'>
@@ -45,14 +36,14 @@
         
         <paper-dropdown-menu label="Input">
           <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedInput}}">
-            <template is='dom-repeat' items='[[listInput]]'>
+            <template is='dom-repeat' items='[[inputDevices]]'>
               <paper-item device$="[[item.device]]">[[item.name]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
         <paper-dropdown-menu label="Output">
           <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedOutput}}">
-            <template is='dom-repeat' items='[[listOutput]]'>
+            <template is='dom-repeat' items='[[outputDevices]]'>
               <paper-item device$="[[item.device]]">[[item.name]]</paper-item>
             </template>
           </paper-listbox>
@@ -60,7 +51,7 @@
       </div>
       <div class="card-actions">
         <paper-button
-          on-click='saveTapped'
+          on-click='_saveSettings'
         >Save</paper-button>
       </div>
     </paper-card>
@@ -74,13 +65,12 @@ class HassioAddonAudio extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-      addonSlug: String,
       addon: {
         type: Object,
         observer: 'addonChanged'
       },
-      listInput: Array,
-      listOutput: Array,
+      inputDevices: Array,
+      outputDevices: Array,
       selectedInput: String,
       selectedOutput: String,
       error: String,
@@ -92,36 +82,28 @@ class HassioAddonAudio extends Polymer.Element {
       selectedInput: addon.audio_input || 'null',
       selectedOutput: addon.audio_output || 'null'
     });
-    if (this.listOutput) return;
+    if (this.outputDevices) return;
 
-    const listInput = [{ device: 'null', name: '-' }];
-    const listOutput = [{ device: 'null', name: '-' }];
-    this.hass.callApi('get', 'hassio/host/hardware').then((resp) => {
-      const data = resp.data.audio;
-      Object.keys(data).forEach((audio) => {
-        Object.keys(data[audio].devices).forEach((device) => {
-          if (data[audio].devices[device] === 'digital audio capture') {
-            listInput.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
-          } else if (data[audio].devices[device] === 'digital audio playback') {
-            listOutput.push({ device: `${audio},${device}`, name: `${data[audio].name}: ${device}` });
-          }
-        });
-      });
+    const noDevice = [{ device: 'null', name: '-' }];
+    this.hass.callApi('get', 'hassio/hardware/audio').then((resp) => {
+      const audio = resp.data.audio;
       this.setProperties({
-        listInput,
-        listOutput
+        inputDevices: noDevice.concat(
+          Object.keys(audio.input).map(key => ({ device: key, name: audio.input[key] }))),
+        outputDevices: noDevice.concat(
+          Object.keys(audio.output).map(key => ({ device: key, name: audio.output[key] })))
       });
     }, () => {
       this.setProperties({
-        listInput,
-        listOutput
+        inputDevices: noDevice,
+        outputDevices: noDevice
       });
     });
   }
 
-  saveTapped() {
+  _saveSettings() {
     this.error = null;
-    const path = `hassio/addons/${this.addonSlug}/options`;
+    const path = `hassio/addons/${this.addon.slug}/options`;
     this.hass.callApi('post', path, {
       audio_input: this.selectedInput === 'null' ? null : this.selectedInput,
       audio_output: this.selectedOutput === 'null' ? null : this.selectedOutput
