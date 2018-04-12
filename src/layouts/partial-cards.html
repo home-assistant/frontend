@@ -110,7 +110,6 @@
         <ha-cards
           data-view=''
           states='[[viewStates]]'
-          columns='[[_columns]]'
           hass='[[hass]]'
           panel-visible='[[panelVisible]]'
           ordered-group-entities='[[orderedGroupEntities]]'
@@ -120,7 +119,6 @@
           <ha-cards
             data-view$='[[item.entity_id]]'
             states='[[viewStates]]'
-            columns='[[_columns]]'
             hass='[[hass]]'
             panel-visible='[[panelVisible]]'
             ordered-group-entities='[[orderedGroupEntities]]'
@@ -156,10 +154,7 @@
           value: false,
         },
 
-        showMenu: {
-          type: Boolean,
-          observer: 'handleWindowChange',
-        },
+        showMenu: Boolean,
 
         panelVisible: {
           type: Boolean,
@@ -169,11 +164,6 @@
         route: Object,
         routeData: Object,
         routeMatch: Boolean,
-
-        _columns: {
-          type: Number,
-          value: 1,
-        },
 
         locationName: {
           type: String,
