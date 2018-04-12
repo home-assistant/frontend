@@ -211,27 +211,6 @@
       };
     }
 
-    ready() {
-      this.handleWindowChange = this.handleWindowChange.bind(this);
-      this.mqls = [300, 600, 900, 1200].map(width => matchMedia(`(min-width: ${width}px)`));
-      super.ready();
-    }
-
-    connectedCallback() {
-      super.connectedCallback();
-      this.mqls.forEach(mql => mql.addListener(this.handleWindowChange));
-    }
-
-    disconnectedCallback() {
-      super.disconnectedCallback();
-      this.mqls.forEach(mql => mql.removeListener(this.handleWindowChange));
-    }
-
-    handleWindowChange() {
-      const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
-      // Do -1 column if the menu is docked and open
-      this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
-    }
 
     areTabsHidden(views, showTabs) {
       return !views || !views.length || !showTabs;
