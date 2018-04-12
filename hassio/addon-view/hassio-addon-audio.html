@@ -88,10 +88,8 @@ class HassioAddonAudio extends Polymer.Element {
     this.hass.callApi('get', 'hassio/hardware/audio').then((resp) => {
       const audio = resp.data.audio;
       this.setProperties({
-        inputDevices: noDevice.concat(
-          Object.keys(audio.input).map(key => ({ device: key, name: audio.input[key] }))),
-        outputDevices: noDevice.concat(
-          Object.keys(audio.output).map(key => ({ device: key, name: audio.output[key] })))
+        inputDevices: noDevice.concat(Object.keys(audio.input).map(key => ({ device: key, name: audio.input[key] }))),
+        outputDevices: noDevice.concat(Object.keys(audio.output).map(key => ({ device: key, name: audio.output[key] })))
       });
     }, () => {
       this.setProperties({
