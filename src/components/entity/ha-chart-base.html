@@ -24,7 +24,7 @@
         max-width: 30%;
       }
       .chartHeader > div.chartLegend {
-        flex: 1 1 1;
+        flex: 1 1;
         min-width: 70%;
       }
       :root{
@@ -62,8 +62,8 @@
       }
       .chartLegend li {
         display: inline-block;
-        padding: 0 5px;
-        width: 49%;
+        padding: 0 6px;
+        max-width: 49%;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
@@ -71,7 +71,7 @@
       }
       .chartLegend li:nth-child(odd):last-of-type {
         /* Make last item take full width if it is odd-numbered. */
-        width: 100%;
+        max-width: 100%;
       }
       .chartLegend li[data-hidden] {
         text-decoration: line-through;
@@ -81,7 +81,7 @@
         border-radius: 5px;
         display: inline-block;
         height: 10px;
-        margin-right: 6px;
+        margin-right: 4px;
         width: 10px;
       }
       paper-icon-button {
