@@ -25,7 +25,13 @@
       }
 
       .cards {
-        column-width: 295px; /* allow two columns untill forced sidbar docking */
+        /* sidebar is 256px and collapes at 870px
+          taking 4px container padding into account column
+          width should be between 286px and 303px to
+          not flicker between 2 and 3 columns around
+          sidebar collapse
+        */
+        column-width: 295px;
         column-gap: 0;
         column-count: 4;
         max-width: 1800px;
