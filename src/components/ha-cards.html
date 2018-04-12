@@ -24,12 +24,15 @@
         text-align: center;
       }
 
-      .columns {
+      .cards {
         column-width: 295px; /* allow two columns untill forced sidbar docking */
         column-gap: 0;
-        align: center;
+        column-count: 4;
+        max-width: 1800px;
+        margin: auto;
       }
-
+      .cards.no-columns { max-width: 500px; }
+      .cards.two-columns { max-width: 800px; }
       ha-card-chooser {
         display: inline-block;
         break-inside: avoid-column;
@@ -49,7 +52,6 @@
       @media (min-width: 1000px) {
         .columns {
           column-width: 330px; /* force wider columns on bigger screens */
-          column-count: 4;
         }
       }
     </style>
@@ -65,7 +67,7 @@
         </div>
       </template>
 
-      <div class='columns'>
+      <div class$='[[computeClasses(cards)]]'>
         <template is='dom-repeat' items='[[cards.cards]]' as='card'>
             <!-- <template is='dom-repeat' items='[[column]]' as='card'> -->
               <ha-card-chooser card-data='[[card]]'></ha-card-chooser>
@@ -210,6 +212,12 @@
       };
     }
 
+    computeClasses(cards) {
+      if (cards.cards.length < 2) return 'cards no-columns';
+      if (cards.cards.length < 5) return 'cards two-columns';
+      return 'cards';
+    }
+
     computeCards(states, orderedGroupEntities) {
       const hass = this.hass;
 
@@ -326,8 +334,6 @@
       iterateDomainSorted(afterGroupedColl, (domain) => {
         addEntitiesCard(domain.domain, domain.states);
       });
-
-      // Remove empty columns
 
       return cards;
     }
