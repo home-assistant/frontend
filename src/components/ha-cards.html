@@ -63,18 +63,18 @@
     </style>
 
     <div id='main'>
-      <template is='dom-if' if='[[cards.badges]]'>
+      <template is='dom-if' if='[[view.badges]]'>
         <div class='badges'>
-          <template is='dom-if' if='[[cards.demo]]'>
+          <template is='dom-if' if='[[view.demo]]'>
             <ha-demo-badge></ha-demo-badge>
           </template>
 
-          <ha-badges-card states='[[cards.badges]]' hass='[[hass]]'></ha-badges-card>
+          <ha-badges-card states='[[view.badges]]' hass='[[hass]]'></ha-badges-card>
         </div>
       </template>
 
-      <div class$='[[computeClasses(cards)]]'>
-        <template is='dom-repeat' items='[[cards.cards]]' as='card'>
+      <div class$='[[computeClasses(view.cards)]]'>
+        <template is='dom-repeat' items='[[view.cards]]' as='card'>
             <!-- <template is='dom-repeat' items='[[column]]' as='card'> -->
               <ha-card-chooser card-data='[[card]]'></ha-card-chooser>
             <!-- </template> -->
@@ -173,17 +173,17 @@
 
         orderedGroupEntities: Array,
 
-        cards: Object,
+        view: Object,
       };
     }
 
     static get observers() {
       return [
-        'updateCards(states, panelVisible, viewVisible, orderedGroupEntities)',
+        'updateView(states, panelVisible, viewVisible, orderedGroupEntities)',
       ];
     }
 
-    updateCards(
+    updateView(
       states,
       panelVisible,
       viewVisible,
@@ -204,13 +204,13 @@
         () => {
           // Things might have changed since it got scheduled.
           if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(states, orderedGroupEntities);
+            this.view = this.computeCards(states, orderedGroupEntities);
           }
         }
       );
     }
 
-    emptyCards() {
+    emptyView() {
       return {
         demo: false,
         badges: [],
@@ -219,15 +219,15 @@
     }
 
     computeClasses(cards) {
-      if (cards.cards.length < 2) return 'cards no-columns';
-      if (cards.cards.length < 5) return 'cards two-columns';
+      if (cards.length < 2) return 'cards no-columns';
+      if (cards.length < 5) return 'cards two-columns';
       return 'cards';
     }
 
     computeCards(states, orderedGroupEntities) {
       const hass = this.hass;
 
-      const cards = this.emptyCards();
+      const view = this.emptyView();
 
       const entityCount = [];
 
@@ -249,7 +249,7 @@
         });
 
         if (other.length > 0) {
-          cards.cards.push({
+          view.cards.push({
             hass: hass,
             cardType: 'entities',
             states: other,
@@ -258,7 +258,7 @@
         }
 
         owncard.forEach((entity) => {
-          cards.cards.push({
+          view.cards.push({
             hass: hass,
             cardType: computeDomain(entity),
             stateObj: entity,
@@ -283,7 +283,7 @@
         const domain = computeDomain(state);
 
         if (domain === 'a') {
-          cards.demo = true;
+          view.demo = true;
           return;
         }
 
@@ -313,14 +313,14 @@
         Object.keys(badgesColl)
           .map(key => badgesColl[key])
           .forEach((domain) => {
-            cards.badges.push.apply(cards.badges, domain.states);
+            view.badges.push.apply(view.badges, domain.states);
           });
 
-        cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
+        view.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
           orderedGroupEntities[e2.entity_id]);
       } else {
         iterateDomainSorted(badgesColl, (domain) => {
-          cards.badges.push.apply(cards.badges, domain.states);
+          view.badges.push.apply(view.badges, domain.states);
         });
       }
 
@@ -341,7 +341,7 @@
         addEntitiesCard(domain.domain, domain.states);
       });
 
-      return cards;
+      return view;
     }
   }
   customElements.define(HaCards.is, HaCards);
