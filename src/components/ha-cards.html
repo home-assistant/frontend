@@ -313,14 +313,14 @@
         Object.keys(badgesColl)
           .map(key => badgesColl[key])
           .forEach((domain) => {
-            view.badges.push.apply(view.badges, domain.states);
+            view.badges.push(...domain.states);
           });
 
         view.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
           orderedGroupEntities[e2.entity_id]);
       } else {
         iterateDomainSorted(badgesColl, (domain) => {
-          view.badges.push.apply(view.badges, domain.states);
+          view.badges.push(...domain.states);
         });
       }
 
