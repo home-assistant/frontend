@@ -59,7 +59,7 @@
 </dom-module>
 
 <script>
-class HassioAddonAudio extends Polymer.Element {
+class HassioAddonAudio extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'hassio-addon-audio'; }
 
   static get properties() {
