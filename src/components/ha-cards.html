@@ -37,8 +37,11 @@
         max-width: 1800px;
         margin: auto;
       }
-      .cards.no-columns { max-width: 500px; }
-      .cards.two-columns { max-width: 800px; }
+
+      .cards.cols-1 { max-width: 500px; }
+      .cards.cols-2 { max-width: 883px; } /* 3 * 295px - 2px */
+      .cards.cols-3 { max-width: 1177px; } /* 4 * 295px - 3px */
+
       ha-card-chooser {
         display: inline-block;
         break-inside: avoid-column;
@@ -219,8 +222,7 @@
     }
 
     computeClasses(cards) {
-      if (cards.length < 2) return 'cards no-columns';
-      if (cards.length < 5) return 'cards two-columns';
+      if (cards.length < 4) return `cards cols-${cards.length}`;
       return 'cards';
     }
 
