@@ -10,6 +10,7 @@
 
 <link rel="import" href="./hassio-addon-info.html">
 <link rel="import" href="./hassio-addon-config.html">
+<link rel="import" href="./hassio-addon-audio.html">
 <link rel="import" href="./hassio-addon-network.html">
 <link rel="import" href="./hassio-addon-logs.html">
 <link rel='import' href='../hassio-markdown-dialog.html'>
@@ -28,6 +29,7 @@
       }
       hassio-addon-info,
       hassio-addon-network,
+      hassio-addon-audio,
       hassio-addon-config {
         margin-bottom: 24px;
       }
@@ -62,6 +64,13 @@
             addon='[[addon]]'
             addon-slug='[[routeData.slug]]'
           ></hassio-addon-config>
+
+          <template is='dom-if' if='[[addon.audio]]'>
+            <hassio-addon-audio
+              hass='[[hass]]'
+              addon='[[addon]]'
+            ></hassio-addon-audio>
+          </template>
 
           <template is='dom-if' if='[[addon.network]]'>
             <hassio-addon-network
