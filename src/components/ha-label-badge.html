@@ -38,19 +38,20 @@
     .label-badge .label {
       position: absolute;
       bottom: -1em;
-      /* Make the label as wide as container+border. */
-      left: -0.1em;
-      right: -0.1em;
+      /* Make the label as wide as container+border. (parent_borderwidth / font-size) */
+      left: -0.2em;
+      right: -0.2em;
       line-height: 1em;
       font-size: 0.5em;
     }
     .label-badge .label span {
-      max-width: 68%; /* Parent width minus two times 16% padding */
+      box-sizing: border-box;
+      max-width: 100%;
       display: inline-block;
       background-color: var(--ha-label-badge-color, var(--primary-color));
       color: var(--ha-label-badge-label-color, white);
       border-radius: 1em;
-      padding: 8% 16%;
+      padding: 9% 16% 8% 16%; /* mostly apitalized text, not much descenders => bit more top margin */
       font-weight: 500;
       overflow: hidden;
       text-transform: uppercase;
@@ -60,6 +61,7 @@
     }
     .label-badge .label.big span {
       font-size: 90%;
+      padding: 10% 12% 7% 12%; /* push smaller text a bit down to center vertically */
     }
     .badge-container .title {
       margin-top: 1em;
