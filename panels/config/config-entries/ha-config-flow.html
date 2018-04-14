@@ -185,29 +185,29 @@ class HaConfigFlow extends
   }
 
   _computeStepAbortedReason(localize, step) {
-    return localize(`component.${step.domain}.config.abort.${step.reason}`);
+    return localize(`component.${step.handler}.config.abort.${step.reason}`);
   }
 
   _computeStepTitle(localize, step) {
-    return localize(`component.${step.domain}.config.step.${step.step_id}.title`);
+    return localize(`component.${step.handler}.config.step.${step.step_id}.title`);
   }
 
   _computeStepDescription(localize, step) {
-    return localize(`component.${step.domain}.config.step.${step.step_id}.description`);
+    return localize(`component.${step.handler}.config.step.${step.step_id}.description`);
   }
 
   _computeBaseError(localize, step) {
-    return localize(`component.${step.domain}.config.error.${step.errors.base}`);
+    return localize(`component.${step.handler}.config.error.${step.errors.base}`);
   }
 
   _computeLabelCallback(localize, step) {
     // Returns a callback for ha-form to calculate labels per schema object
-    return schema => localize(`component.${step.domain}.config.step.${step.step_id}.data.${schema.name}`);
+    return schema => localize(`component.${step.handler}.config.step.${step.step_id}.data.${schema.name}`);
   }
 
   _computeErrorCallback(localize, step) {
     // Returns a callback for ha-form to calculate error messages
-    return error => localize(`component.${step.domain}.config.error.${error}`);
+    return error => localize(`component.${step.handler}.config.error.${error}`);
   }
 }
 
