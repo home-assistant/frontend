@@ -13,6 +13,8 @@
 <link rel="import" href="../../src/components/entity/ha-entity-picker.html">
 <link rel="import" href="../../src/resources/ha-style.html">
 
+<link rel='import' href='../../src/util/hass-mixins.html'>
+
 <dom-module id="ha-panel-dev-state">
   <template>
     <style include="ha-style">
@@ -46,7 +48,13 @@
       .entities tr:nth-child(even) {
         background-color: var(--table-row-alternative-background-color, #eee)
       }
-
+      .entities td {
+        padding: 4px;
+      }
+      .entities paper-icon-button {
+        height: 24px;
+        padding: 0;
+      }
       .entities td:nth-child(3) {
         white-space: pre-wrap;
         word-break: break-word;
@@ -108,7 +116,15 @@
           </tr>
           <template is='dom-repeat' items='[[_entities]]' as='entity'>
             <tr>
-              <td><a href='#' on-click='entitySelected'>[[entity.entity_id]]</a></td>
+              <td>
+                <paper-icon-button
+                  on-click='entityMoreInfo'
+                  icon='mdi:open-in-new'
+                  alt="More Info" title="More Info"
+                  >
+                </paper-icon-button>
+                <a href='#' on-click='entitySelected'>[[entity.entity_id]]</a>
+              </td>
               <td>[[entity.state]]</td>
               <template is='dom-if' if='[[computeShowAttributes(narrow, _showAttributes)]]'>
                 <td>[[attributeString(entity)]]</td>
@@ -122,7 +138,7 @@
 </dom-module>
 
 <script>
-class HaPanelDevState extends Polymer.Element {
+class HaPanelDevState extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-panel-dev-state'; }
 
   static get properties() {
@@ -189,6 +205,11 @@ class HaPanelDevState extends Polymer.Element {
     this._state = state.state;
     this._stateAttributes = JSON.stringify(state.attributes, null, '  ');
     ev.preventDefault();
+  }
+
+  entityMoreInfo(ev) {
+    ev.preventDefault();
+    this.fire('hass-more-info', { entityId: ev.model.entity.entity_id });
   }
 
   handleSetState() {
