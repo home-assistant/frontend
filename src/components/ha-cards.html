@@ -15,8 +15,7 @@
     <style>
       :host {
         display: block;
-        padding-top: 8px;
-        padding-right: 8px;
+        padding: 4px 4px;
         transform: translateZ(0);
       }
 
@@ -25,51 +24,63 @@
         text-align: center;
       }
 
-      .column {
-        max-width: 500px;
-        overflow-x: hidden;
+      .cards {
+        /* sidebar is 256px and collapes at 870px
+          taking 4px container padding into account column
+          width should be between 286px and 303px to
+          not flicker between 2 and 3 columns around
+          sidebar collapse
+        */
+        column-width: 295px;
+        column-gap: 0;
+        column-count: 4;
+        max-width: 1800px;
+        margin: auto;
       }
 
+      .cards.cols-1 { max-width: 500px; }
+      .cards.cols-2 { max-width: 883px; } /* 3 * 295px - 2px */
+      .cards.cols-3 { max-width: 1177px; } /* 4 * 295px - 3px */
+
       ha-card-chooser {
-        display: block;
-        margin-left: 8px;
-        margin-bottom: 8px;
+        display: inline-block;
+        break-inside: avoid-column;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 4px;
       }
 
       @media (max-width: 500px) {
-        :host {
-          padding-right: 0;
-        }
-
         ha-card-chooser {
-          margin-left: 0;
+          padding: 4px 0;
+        }
+        :host {
+          padding: 8px 0;
         }
       }
-
-      @media (max-width: 599px) {
-        .column {
-          max-width: 600px;
+      @media (min-width: 1000px) {
+        .columns {
+          column-width: 330px; /* force wider columns on bigger screens */
         }
       }
     </style>
 
     <div id='main'>
-      <template is='dom-if' if='[[cards.badges]]'>
+      <template is='dom-if' if='[[view.badges]]'>
         <div class='badges'>
-          <template is='dom-if' if='[[cards.demo]]'>
+          <template is='dom-if' if='[[view.demo]]'>
             <ha-demo-badge></ha-demo-badge>
           </template>
 
-          <ha-badges-card states='[[cards.badges]]' hass='[[hass]]'></ha-badges-card>
+          <ha-badges-card states='[[view.badges]]' hass='[[hass]]'></ha-badges-card>
         </div>
       </template>
 
-      <div class='horizontal layout center-justified'>
-        <template is='dom-repeat' items='[[cards.columns]]' as='column'>
-          <div class='column flex-1'>
-            <template is='dom-repeat' items='[[column]]' as='card'>
+      <div class$='[[computeClasses(view.cards)]]'>
+        <template is='dom-repeat' items='[[view.cards]]' as='card'>
+            <!-- <template is='dom-repeat' items='[[column]]' as='card'> -->
               <ha-card-chooser card-data='[[card]]'></ha-card-chooser>
-            </template>
+            <!-- </template> -->
           </div>
         </template>
     </div>
@@ -165,18 +176,17 @@
 
         orderedGroupEntities: Array,
 
-        cards: Object,
+        view: Object,
       };
     }
 
     static get observers() {
       return [
-        'updateCards(columns, states, panelVisible, viewVisible, orderedGroupEntities)',
+        'updateView(states, panelVisible, viewVisible, orderedGroupEntities)',
       ];
     }
 
-    updateCards(
-      columns,
+    updateView(
       states,
       panelVisible,
       viewVisible,
@@ -197,48 +207,29 @@
         () => {
           // Things might have changed since it got scheduled.
           if (this.panelVisible && this.viewVisible) {
-            this.cards = this.computeCards(columns, states, orderedGroupEntities);
+            this.view = this.computeCards(states, orderedGroupEntities);
           }
         }
       );
     }
 
-    emptyCards() {
+    emptyView() {
       return {
         demo: false,
         badges: [],
-        columns: [],
+        cards: [],
       };
     }
 
-    computeCards(columns, states, orderedGroupEntities) {
+    computeClasses(cards) {
+      if (cards.length < 4) return `cards cols-${cards.length}`;
+      return 'cards';
+    }
+
+    computeCards(states, orderedGroupEntities) {
       const hass = this.hass;
 
-      const cards = this.emptyCards();
-
-      const entityCount = [];
-      for (let i = 0; i < columns; i++) {
-        cards.columns.push([]);
-        entityCount.push(0);
-      }
-
-      // Find column with < 5 entities, else column with lowest count
-      function getIndex(size) {
-        let minIndex = 0;
-        for (let i = 0; i < entityCount.length; i++) {
-          if (entityCount[i] < 5) {
-            minIndex = i;
-            break;
-          }
-          if (entityCount[i] < entityCount[minIndex]) {
-            minIndex = i;
-          }
-        }
-
-        entityCount[minIndex] += size;
-
-        return minIndex;
-      }
+      const view = this.emptyView();
 
       function addEntitiesCard(name, entities, groupEntity) {
         if (entities.length === 0) return;
@@ -246,27 +237,19 @@
         const owncard = [];
         const other = [];
 
-        let size = 0;
 
         entities.forEach((entity) => {
           const domain = computeDomain(entity);
 
           if (domain in DOMAINS_WITH_CARD) {
             owncard.push(entity);
-            size += DOMAINS_WITH_CARD[domain];
           } else {
             other.push(entity);
-            size++;
           }
         });
 
-        // Add 1 to the size if we're rendering entities card
-        size += other.length > 0;
-
-        const curIndex = getIndex(size);
-
         if (other.length > 0) {
-          cards.columns[curIndex].push({
+          view.cards.push({
             hass: hass,
             cardType: 'entities',
             states: other,
@@ -275,7 +258,7 @@
         }
 
         owncard.forEach((entity) => {
-          cards.columns[curIndex].push({
+          view.cards.push({
             hass: hass,
             cardType: computeDomain(entity),
             stateObj: entity,
@@ -300,7 +283,7 @@
         const domain = computeDomain(state);
 
         if (domain === 'a') {
-          cards.demo = true;
+          view.demo = true;
           return;
         }
 
@@ -330,14 +313,14 @@
         Object.keys(badgesColl)
           .map(key => badgesColl[key])
           .forEach((domain) => {
-            cards.badges.push.apply(cards.badges, domain.states);
+            view.badges.push(...domain.states);
           });
 
-        cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
+        view.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
           orderedGroupEntities[e2.entity_id]);
       } else {
         iterateDomainSorted(badgesColl, (domain) => {
-          cards.badges.push.apply(cards.badges, domain.states);
+          view.badges.push(...domain.states);
         });
       }
 
@@ -358,10 +341,7 @@
         addEntitiesCard(domain.domain, domain.states);
       });
 
-      // Remove empty columns
-      cards.columns = cards.columns.filter(val => val.length > 0);
-
-      return cards;
+      return view;
     }
   }
   customElements.define(HaCards.is, HaCards);
