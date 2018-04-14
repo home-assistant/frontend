@@ -6,7 +6,7 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../../bower_components/paper-progress/paper-progress.html'>
 
-<link rel='import' href='../util/media-player-model.html'>
+<link rel='import' href='../util/hass-media-player-model.html'>
 <link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id='ha-media_player-card'>
@@ -309,7 +309,7 @@ class HaMediaPlayerCard extends
   }
 
   computePlayerObj(hass, stateObj) {
-    return new window.MediaPlayerEntity(hass, stateObj);
+    return new window.HassMediaPlayerEntity(hass, stateObj);
   }
 
   computePrimaryText(localize, playerObj) {
