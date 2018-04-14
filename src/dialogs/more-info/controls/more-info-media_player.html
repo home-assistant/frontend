@@ -80,10 +80,10 @@
           hidden$='[[computeHideVolumeButtons(playerObj)]]'>
         <paper-icon-button on-click="handleVolumeTap"
           icon="mdi:volume-off"></paper-icon-button>
-        <paper-icon-button id="volumeDown" disabled$='[[isMuted]]'
+        <paper-icon-button id="volumeDown" disabled$='[[playerObj.isMuted]]'
           on-mousedown="handleVolumeDown" on-touchstart="handleVolumeDown"
           icon="mdi:volume-medium"></paper-icon-button>
-        <paper-icon-button id="volumeUp" disabled$='[[isMuted]]'
+        <paper-icon-button id="volumeUp" disabled$='[[playerObj.isMuted]]'
           on-mousedown="handleVolumeUp" on-touchstart="handleVolumeUp"
           icon="mdi:volume-high"></paper-icon-button>
       </div>
