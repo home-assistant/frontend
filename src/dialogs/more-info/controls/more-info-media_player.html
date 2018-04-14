@@ -11,6 +11,7 @@
 <link rel='import' href='../../../../bower_components/paper-item/paper-item.html'>
 
 <link rel='import' href='../../../../src/util/hass-mixins.html'>
+<link rel='import' href='../../../../src/util/hass-media-player-model.html'>
 
 <dom-module id='more-info-media_player'>
   <template>
@@ -57,25 +58,26 @@
     <div class$='[[computeClassNames(stateObj)]]'>
       <div class='layout horizontal'>
         <div class='flex'>
-          <paper-icon-button icon='mdi:power' highlight$='[[isOff]]'
+          <paper-icon-button icon='mdi:power' highlight$='[[playerObj.isOff]]'
             on-click='handleTogglePower'
-            hidden$='[[computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff)]]'></paper-icon-button>
+            hidden$='[[computeHidePowerButton(playerObj)]]'
+          ></paper-icon-button>
         </div>
         <div>
-          <template is='dom-if' if='[[computeShowPlaybackControls(isOff, hasMediaControl)]]'>
+          <template is='dom-if' if='[[computeShowPlaybackControls(playerObj)]]'>
             <paper-icon-button icon='mdi:skip-previous' on-click='handlePrevious'
-              hidden$='[[!supportsPreviousTrack]]'></paper-icon-button>
-            <paper-icon-button icon='[[computePlaybackControlIcon(isPlaying)]]'
+              hidden$='[[!playerObj.supportsPreviousTrack]]'></paper-icon-button>
+            <paper-icon-button icon='[[computePlaybackControlIcon(playerObj)]]'
               on-click='handlePlaybackControl'
-              hidden$='[[!computePlaybackControlIcon(isPlaying)]]' highlight></paper-icon-button>
+              hidden$='[[!computePlaybackControlIcon(playerObj)]]' highlight></paper-icon-button>
             <paper-icon-button icon='mdi:skip-next' on-click='handleNext'
-              hidden$='[[!supportsNextTrack]]'></paper-icon-button>
+              hidden$='[[!playerObj.supportsNextTrack]]'></paper-icon-button>
           </template>
         </div>
       </div>
       <!-- VOLUME -->
       <div class='volume_buttons center horizontal layout'
-          hidden$='[[computeHideVolumeButtons(isOff, supportsVolumeButtons)]]'>
+          hidden$='[[computeHideVolumeButtons(playerObj)]]'>
         <paper-icon-button on-click="handleVolumeTap"
           icon="mdi:volume-off"></paper-icon-button>
         <paper-icon-button id="volumeDown" disabled$='[[isMuted]]'
@@ -85,30 +87,30 @@
           on-mousedown="handleVolumeUp" on-touchstart="handleVolumeUp"
           icon="mdi:volume-high"></paper-icon-button>
       </div>
-      <div class='volume center horizontal layout' hidden$='[[!supportsVolumeSet]]'>
+      <div class='volume center horizontal layout' hidden$='[[!playerObj.supportsVolumeSet]]'>
         <paper-icon-button on-click="handleVolumeTap"
-          hidden$="[[supportsVolumeButtons]]"
-          icon="[[computeMuteVolumeIcon(isMuted)]]"></paper-icon-button>
-        <paper-slider disabled$='[[isMuted]]'
-          min='0' max='100' value='[[volumeSliderValue]]'
+          hidden$="[[playerObj.supportsVolumeButtons]]"
+          icon="[[computeMuteVolumeIcon(playerObj)]]"></paper-icon-button>
+        <paper-slider disabled$='[[playerObj.isMuted]]'
+          min='0' max='100' value='[[playerObj.volumeSliderValue]]'
           on-change='volumeSliderChanged' class='flex'
           ignore-bar-touch>
         </paper-slider>
       </div>
       <!-- SOURCE PICKER -->
       <div class='controls layout horizontal justified'
-           hidden$='[[computeHideSelectSource(isOff, supportsSelectSource)]]'>
+           hidden$='[[computeHideSelectSource(playerObj)]]'>
         <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
         <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Source'>
           <paper-listbox slot="dropdown-content" selected="{{sourceIndex}}">
-            <template is='dom-repeat' items='[[stateObj.attributes.source_list]]'>
+            <template is='dom-repeat' items='[[playerObj.sourceList]]'>
               <paper-item>[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
       <!-- TTS -->
-      <div hidden$='[[computeHideTTS(ttsLoaded, supportsPlayMedia)]]' class='layout horizontal end'>
+      <div hidden$='[[computeHideTTS(ttsLoaded, playerObj)]]' class='layout horizontal end'>
         <paper-input
           id='ttsInput'
           label='Text to speak'
@@ -124,45 +126,17 @@
 
 <script>
 {
-  const HAS_MEDIA_STATES = ['playing', 'paused', 'unknown'];
-
   class MoreInfoMediaPlayer extends window.hassMixins.EventsMixin(Polymer.Element) {
     static get is() { return 'more-info-media_player'; }
 
     static get properties() {
       return {
-        ttsLoaded: {
-          type: Boolean,
-          computed: 'computeTTSLoaded(hass)',
-        },
-
-        hass: {
+        hass: Object,
+        stateObj: Object,
+        playerObj: {
           type: Object,
-        },
-
-        stateObj: {
-          type: Object,
-          observer: 'stateObjChanged',
-        },
-
-        isOff: {
-          type: Boolean,
-          value: false,
-        },
-
-        isPlaying: {
-          type: Boolean,
-          value: false,
-        },
-
-        isMuted: {
-          type: Boolean,
-          value: false,
-        },
-
-        source: {
-          type: String,
-          value: '',
+          computed: 'computePlayerObj(hass, stateObj)',
+          observer: 'playerObjChanged',
         },
 
         sourceIndex: {
@@ -171,9 +145,9 @@
           observer: 'handleSourceChanged',
         },
 
-        volumeSliderValue: {
-          type: Number,
-          value: 0,
+        ttsLoaded: {
+          type: Boolean,
+          computed: 'computeTTSLoaded(hass)',
         },
 
         ttsMessage: {
@@ -181,94 +155,16 @@
           value: '',
         },
 
-        supportsPause: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsVolumeSet: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsVolumeMute: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsPreviousTrack: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsNextTrack: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsTurnOn: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsTurnOff: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsPlayMedia: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsVolumeButtons: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsSelectSource: {
-          type: Boolean,
-          value: false,
-        },
-
-        supportsPlay: {
-          type: Boolean,
-          value: false,
-        },
-
-        hasMediaControl: {
-          type: Boolean,
-          value: false,
-        },
-
       };
     }
 
-    stateObjChanged(newVal, oldVal) {
-      if (newVal) {
-        const props = {
-          isOff: newVal.state === 'off',
-          isPlaying: newVal.state === 'playing',
-          hasMediaControl: HAS_MEDIA_STATES.indexOf(newVal.state) !== -1,
-          volumeSliderValue: newVal.attributes.volume_level * 100,
-          isMuted: newVal.attributes.is_volume_muted,
-          source: newVal.attributes.source,
-          supportsPause: (newVal.attributes.supported_features & 1) !== 0,
-          supportsVolumeSet: (newVal.attributes.supported_features & 4) !== 0,
-          supportsVolumeMute: (newVal.attributes.supported_features & 8) !== 0,
-          supportsPreviousTrack: (newVal.attributes.supported_features & 16) !== 0,
-          supportsNextTrack: (newVal.attributes.supported_features & 32) !== 0,
-          supportsTurnOn: (newVal.attributes.supported_features & 128) !== 0,
-          supportsTurnOff: (newVal.attributes.supported_features & 256) !== 0,
-          supportsPlayMedia: (newVal.attributes.supported_features & 512) !== 0,
-          supportsVolumeButtons: (newVal.attributes.supported_features & 1024) !== 0,
-          supportsSelectSource: (newVal.attributes.supported_features & 2048) !== 0,
-          supportsPlay: (newVal.attributes.supported_features & 16384) !== 0,
-        };
-        if (newVal.attributes.source_list !== undefined) {
-          props.sourceIndex = newVal.attributes.source_list.indexOf(props.source);
-        }
-        this.setProperties(props);
+    computePlayerObj(hass, stateObj) {
+      return new window.HassMediaPlayerEntity(hass, stateObj);
+    }
+
+    playerObjChanged(newVal, oldVal) {
+      if (newVal && newVal.sourceList !== undefined) {
+        this.sourceIndex = newVal.sourceList.indexOf(newVal.source);
       }
 
       if (oldVal) {
@@ -282,43 +178,35 @@
       return window.hassUtil.attributeClassNames(stateObj, ['volume_level']);
     }
 
-    computeIsOff(stateObj) {
-      return stateObj.state === 'off';
+    computeMuteVolumeIcon(playerObj) {
+      return playerObj.isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
     }
 
-    computeMuteVolumeIcon(isMuted) {
-      return isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
+    computeHideVolumeButtons(playerObj) {
+      return !playerObj.supportsVolumeButtons || playerObj.isOff;
     }
 
-    computeHideVolumeButtons(isOff, supportsVolumeButtons) {
-      return !supportsVolumeButtons || isOff;
+    computeShowPlaybackControls(playerObj) {
+      return !playerObj.isOff && playerObj.hasMediaControl;
     }
 
-    computeShowPlaybackControls(isOff, hasMedia) {
-      return !isOff && hasMedia;
-    }
-
-    computePlaybackControlIcon(isPlaying) {
-      if (isPlaying) {
-        return this.supportsPause ? 'mdi:pause' : 'mdi:stop';
+    computePlaybackControlIcon(playerObj) {
+      if (playerObj.isPlaying) {
+        return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
       }
-      return this.supportsPlay ? 'mdi:play' : null;
+      return playerObj.supportsPlay ? 'mdi:play' : null;
     }
 
-    computeHidePowerButton(isOff, supportsTurnOn, supportsTurnOff) {
-      return isOff ? !supportsTurnOn : !supportsTurnOff;
+    computeHidePowerButton(playerObj) {
+      return playerObj.isOff ? !playerObj.supportsTurnOn : !playerObj.supportsTurnOff;
     }
 
-    computeHideSelectSource(isOff, supportsSelectSource) {
-      return isOff || !supportsSelectSource;
+    computeHideSelectSource(playerObj) {
+      return playerObj.isOff || !playerObj.supportsSelectSource || !playerObj.soureList;
     }
 
-    computeSelectedSource(stateObj) {
-      return stateObj.attributes.source_list.indexOf(stateObj.attributes.source);
-    }
-
-    computeHideTTS(ttsLoaded, supportsPlayMedia) {
-      return !ttsLoaded || !supportsPlayMedia;
+    computeHideTTS(ttsLoaded, playerObj) {
+      return !ttsLoaded || !playerObj.supportsPlayMedia;
     }
 
     computeTTSLoaded(hass) {
@@ -326,70 +214,70 @@
     }
 
     handleTogglePower() {
-      this.callService(this.isOff ? 'turn_on' : 'turn_off');
+      this.playerObj.togglePower();
     }
 
     handlePrevious() {
-      this.callService('media_previous_track');
+      this.playerObj.previousTrack();
     }
 
     handlePlaybackControl() {
-      this.callService('media_play_pause');
+      this.playerObj.mediaPlayPause();
     }
 
     handleNext() {
-      this.callService('media_next_track');
+      this.playerObj.nextTrack();
     }
 
     handleSourceChanged(sourceIndex, sourceIndexOld) {
-      var sourceInput;
       // Selected Option will transition to '' before transitioning to new value
-      if (!this.stateObj
-          || this.stateObj.attributes.source_list === undefined
+      if (!this.playerObj
+          || !this.playerObj.supportsSelectSource
+          || this.playerObj.sourceList === undefined
           || sourceIndex < 0
-          || sourceIndex >= this.stateObj.attributes.source_list.length
+          || sourceIndex >= this.playerObj.sourceList
           || sourceIndexOld === undefined
       ) {
         return;
       }
 
-      sourceInput = this.stateObj.attributes.source_list[sourceIndex];
+      const sourceInput = this.playerObj.sourceList[sourceIndex];
 
-      if (sourceInput === this.stateObj.attributes.source) {
+      if (sourceInput === this.playerObj.source) {
         return;
       }
 
-      this.callService('select_source', { source: sourceInput });
+      this.playerObj.selectSource(sourceInput);
     }
 
     handleVolumeTap() {
-      if (!this.supportsVolumeMute) {
+      if (!this.playerObj.supportsVolumeMute) {
         return;
       }
-      this.callService('volume_mute', { is_volume_muted: !this.isMuted });
+      this.playerObj.volumeMute(!this.playerObj.isMuted);
     }
 
     handleVolumeUp() {
-      var obj = this.$.volumeUp;
+      const obj = this.$.volumeUp;
       this.handleVolumeWorker('volume_up', obj, true);
     }
 
     handleVolumeDown() {
-      var obj = this.$.volumeDown;
+      const obj = this.$.volumeDown;
       this.handleVolumeWorker('volume_down', obj, true);
     }
 
     handleVolumeWorker(service, obj, force) {
       if (force || (obj !== undefined && obj.pointerDown)) {
-        this.callService(service);
+        this.playerObj.callService(service);
         setTimeout(() => this.handleVolumeWorker(service, obj, false), 500);
       }
     }
 
     volumeSliderChanged(ev) {
-      var volPercentage = parseFloat(ev.target.value);
-      var vol = volPercentage > 0 ? volPercentage / 100 : 0;
-      this.callService('volume_set', { volume_level: vol });
+      const volPercentage = parseFloat(ev.target.value);
+      const volume = volPercentage > 0 ? volPercentage / 100 : 0;
+      this.playerObj.setVolume(volume);
     }
 
     ttsCheckForEnter(ev) {
@@ -397,10 +285,10 @@
     }
 
     sendTTS() {
-      var services = this.hass.config.services.tts;
-      var serviceKeys = Object.keys(services).sort();
-      var service;
-      var i;
+      const services = this.hass.config.services.tts;
+      const serviceKeys = Object.keys(services).sort();
+      let service;
+      let i;
 
       for (i = 0; i < serviceKeys.length; i++) {
         if (serviceKeys[i].indexOf('_say') !== -1) {
@@ -419,12 +307,6 @@
       });
       this.ttsMessage = '';
       this.$.ttsInput.focus();
-    }
-
-    callService(service, data) {
-      var serviceData = data || {};
-      serviceData.entity_id = this.stateObj.entity_id;
-      this.hass.callService('media_player', service, serviceData);
     }
   }
 
