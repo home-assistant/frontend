@@ -3,13 +3,13 @@
 
 <custom-style>
 <style is="custom-style">/* remove is= on Polymer 2 */
-/*
-  Home Assistant default styles.
+  /*
+    Home Assistant default styles.
 
-  In Polymer 2.0, default styles should to be set on the html selector.
-  (Setting all default styles only on body breaks shadyCSS polyfill.)
-  See: https://github.com/home-assistant/home-assistant-polymer/pull/901
-*/
+    In Polymer 2.0, default styles should to be set on the html selector.
+    (Setting all default styles only on body breaks shadyCSS polyfill.)
+    See: https://github.com/home-assistant/home-assistant-polymer/pull/901
+  */
   html {
     font-size: 14px;
     height: 100vh;
@@ -61,7 +61,16 @@
     --label-badge-yellow: #f4b400;
     --label-badge-grey: var(--paper-grey-500);
 
-    /* Taken from paper-styles/color.html */
+    /*
+      Paper-styles color.html depency is stripped on build.
+      When a default paper-style color is used, it needs to be copied
+      from paper-styles/color.html to here.
+    */
+
+    --paper-grey-50: #fafafa; /* default for: --paper-toggle-button-unchecked-button-color */
+    --paper-grey-200: #eeeeee;  /* for ha-date-picker-style */
+    --paper-grey-500: #9e9e9e;  /* --label-badge-grey */
+
     /* for paper-spinner */
     --google-red-500: #db4437;
     --google-blue-500: #4285f4;
@@ -88,10 +97,8 @@
     /* derived colors, to keep existing themes mostly working */
     --paper-card-background-color: var(--card-background-color);
     --paper-listbox-background-color: var(--card-background-color);
-
     --paper-item-icon-color: var(--state-icon-color);
     --paper-item-icon-active-color: var(--state-icon-active-color);
-
     --table-row-background-color: var(--primary-background-color);
     --table-row-alternative-background-color: var(--secondary-background-color);
 
@@ -108,10 +115,8 @@
     --paper-slider-active-color: var(--slider-color);
     --paper-slider-secondary-color: var(--slider-secondary-color);
     --paper-slider-container-color: var(--slider-bar-color);
-
-
   }
-</style>
+  </style>
 
   <style shady-unscoped>
     /*
@@ -123,11 +128,11 @@
     paper-dialog-scrollable:not(.can-scroll) > .scrollable {
       -webkit-overflow-scrolling: auto !important;
     }
+
     paper-dialog-scrollable.can-scroll > .scrollable {
       -webkit-overflow-scrolling: touch !important;
     }
   </style>
-
 </custom-style>
 
 <dom-module id='ha-style'>
@@ -188,7 +193,6 @@
   </template>
 </dom-module>
 
-
 <dom-module id='ha-style-dialog'>
   <template>
     <style>
@@ -221,6 +225,7 @@
           -webkit-overflow-scrolling: auto;
         }
       }
+
       /* force smooth scrolling for iOS 10 */
       paper-dialog-scrollable.can-scroll {
         --paper-dialog-scrollable: {
