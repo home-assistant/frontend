@@ -7,7 +7,12 @@
         "history": "Historia",
         "mailbox": "Postilaatikko",
         "shopping_list": "Ostoslista",
-        "dev-mqtt": "MQTT"
+        "dev-services": "Palvelut",
+        "dev-states": "Tilat",
+        "dev-events": "Tapahtumat",
+        "dev-templates": "Mallit",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Tiedot"
     },
     "state": {
         "default": {
@@ -56,6 +61,32 @@
             "safety": {
                 "off": "Turvallinen",
                 "on": "Vaarallinen"
+            },
+            "battery": {
+                "off": "Normaali"
+            },
+            "cold": {
+                "off": "Normaali",
+                "on": "Kylmä"
+            },
+            "door": {
+                "off": "Suljettu",
+                "on": "Auki"
+            },
+            "garage_door": {
+                "off": "Suljettu",
+                "on": "Auki"
+            },
+            "heat": {
+                "on": "Kuuma"
+            },
+            "window": {
+                "off": "Suljettu",
+                "on": "Auki"
+            },
+            "lock": {
+                "off": "Lukittu",
+                "on": "Auki"
             }
         },
         "calendar": {
@@ -188,17 +219,80 @@
     },
     "ui": {
         "sidebar": {
-            "log_out": "Kirjaudu ulos"
+            "log_out": "Kirjaudu ulos",
+            "developer_tools": "Kehittäjän työkalut"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
+            "week": "{count} {count, plural,\n  one {viikkoa}\n  other {viikkoa}\n}"
         },
         "panel": {
+            "history": {
+                "showing_entries": "Näytetään tapahtumat alkaen",
+                "period": "aika"
+            },
             "config": {
+                "core": {
+                    "section": {
+                        "core": {
+                            "header": "Asetusten ja palvelimen hallinta",
+                            "validation": {
+                                "check_config": "Tarkista asetukset",
+                                "valid": "Asetukset kunnossa!",
+                                "invalid": "Asetukset ei kelpaa"
+                            },
+                            "reloading": {
+                                "heading": "Asetusten uudelleenlataus",
+                                "core": "Lataa ydin uudelleen",
+                                "group": "Lataa ryhmät uudelleen",
+                                "automation": "Lataa automaatiot uudelleen"
+                            },
+                            "server_management": {
+                                "heading": "Palvelimen hallinta",
+                                "restart": "Käynnistä uudelleen",
+                                "stop": "Pysäytä"
+                            }
+                        },
+                        "translation": {
+                            "header": "Valitse kieli",
+                            "language": "Kieli"
+                        }
+                    }
+                },
+                "automation": {
+                    "caption": "Automaatiot",
+                    "editor": {
+                        "actions": {
+                            "type": {
+                                "delay": {
+                                    "label": "Viive",
+                                    "delay": "Viive"
+                                },
+                                "wait_template": {
+                                    "label": "Odota"
+                                }
+                            }
+                        }
+                    }
+                },
                 "zwave": {
                     "caption": "Z-Wave"
                 }
             }
+        },
+        "login-form": {
+            "password": "Salasana",
+            "remember": "Muista"
         }
     },
     "domain": {
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Kosteus",
+            "visibility": "Näkyvyys",
+            "wind_speed": "Tuulennopeus"
+        }
     }
 }
