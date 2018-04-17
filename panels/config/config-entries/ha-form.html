@@ -1,13 +1,14 @@
 <link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
 
 <link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
-<link rel="import" href='../../../bower_components/paper-slider/paper-slider.html'>
 <link rel="import" href='../../../bower_components/paper-checkbox/paper-checkbox.html'>
 <link rel='import' href='../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel='import' href='../../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
 
 <link rel='import' href='../../../src/util/hass-mixins.html'>
+<link rel="import" href='../../../src/components/ha-paper-slider.html'>
+
 
 <dom-module id="ha-form">
   <template>
@@ -44,12 +45,12 @@
         <template is='dom-if' if='[[_isRange(schema)]]' restamp>
           <div>
             [[computeLabel(schema)]]
-            <paper-slider
+            <ha-paper-slider
               pin
               value='{{data}}'
               min='[[schema.valueMin]]'
               max='[[schema.valueMax]]'
-            ></paper-slider>
+            ></ha-paper-slider>
           </div>
         </template>
         <template is='dom-if' if='[[!_isRange(schema)]]' restamp>
