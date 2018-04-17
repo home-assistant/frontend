@@ -13,4 +13,6 @@ yarn install
 ./node_modules/.bin/bower install --allow-root
 
 script/build_frontend
-python3 setup.py sdist upload
+python3 setup.py sdist
+python3 -m twine upload dist/* --skip-existing
+
