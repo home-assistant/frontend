@@ -3,7 +3,6 @@
 
 <link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<link rel='import' href='../../../../bower_components/paper-slider/paper-slider.html'>
 <link rel='import' href='../../../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../../../bower_components/paper-item/paper-item.html'>
 <link rel='import' href='../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
@@ -12,6 +11,7 @@
 <link rel='import' href='../../../../src/util/hass-mixins.html'>
 
 <link rel="import" href='../../../components/ha-climate-control.html'>
+<link rel="import" href='../../../components/ha-paper-slider.html'>
 
 <dom-module id='more-info-climate'>
   <template>
@@ -64,7 +64,7 @@
         cursor: pointer;
       }
 
-      paper-slider {
+      ha-paper-slider {
         width: 100%;
       }
 
@@ -164,7 +164,7 @@
           <div>Target Humidity</div>
             <div class="single-row">
               <div class="target-humidity">[[stateObj.attributes.humidity]] %</div>
-              <paper-slider
+              <ha-paper-slider
                 class='humidity'
                 min='[[stateObj.attributes.min_humidity]]'
                 max='[[stateObj.attributes.max_humidity]]'
@@ -173,7 +173,7 @@
                 value='[[stateObj.attributes.humidity]]'
                 on-change='targetHumiditySliderChanged'
                 ignore-bar-touch>
-              </paper-slider>
+              </ha-paper-slider>
           </div>
         </div>
       </template>
