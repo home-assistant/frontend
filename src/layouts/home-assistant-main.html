@@ -151,8 +151,8 @@
     connectedCallback() {
       super.connectedCallback();
       window.removeInitMsg();
-      if (document.location.pathname === '/') {
-        history.replaceState(null, null, '/states');
+      if (document.location.hash === '') {
+        history.replaceState(null, null, '#/states');
       }
     }
 
