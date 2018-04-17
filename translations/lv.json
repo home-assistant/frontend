@@ -67,12 +67,17 @@
             "below_horizon": "Zem horizonta"
         }
     },
-    "domain": {
-        "zwave": "Z-Wave"
-    },
     "ui": {
+        "sidebar": {
+            "log_out": "Iziet",
+            "developer_tools": "Izstrādātāju rīki"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}"
+        },
         "panel": {
             "history": {
+                "showing_entries": "Rāda ierakstus par",
                 "period": "Periods"
             },
             "mailbox": {
@@ -82,11 +87,42 @@
                 "delete_button": "Dzēst"
             },
             "config": {
+                "header": "Configure Home pārvaldība",
                 "core": {
                     "section": {
+                        "core": {
+                            "header": "Konfigurācijas un servera pārvaldība",
+                            "validation": {
+                                "heading": "Konfigurācijas pārbaude",
+                                "introduction": "Veidiet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta",
+                                "check_config": "Pārbaudīt",
+                                "valid": "Konfigurācija korekta!",
+                                "invalid": "Konfigurācija kļūdaina"
+                            },
+                            "reloading": {
+                                "core": "Pārlādēt kodolu",
+                                "group": "Pārlādēt grupas",
+                                "script": "Pārlādēt skriptus"
+                            },
+                            "server_management": {
+                                "heading": "Servera pārvaldība",
+                                "introduction": "Pārvaldiet Home Assistant serveri no Home Assistant saskarnes.",
+                                "restart": "Restartēt",
+                                "stop": "Apturēt"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfigurēt pašpiegādes paziņojumus",
+                            "push_notifications": "Pašpiegādes paziņojumi"
+                        },
                         "translation": {
                             "header": "Izvēlēties valodu",
+                            "introduction": "Izvēlieties Home Assistant saskarnes valodu šajā ierīcē",
                             "language": "Valoda"
+                        },
+                        "themes": {
+                            "header": "Iestatīt motīvu",
+                            "theme": "Motīvs"
                         }
                     }
                 },
@@ -102,6 +138,9 @@
             "password": "Parole",
             "remember": "Atcerēties"
         }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
     },
     "attribute": {
         "weather": {

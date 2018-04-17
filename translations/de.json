@@ -116,7 +116,7 @@
             },
             "lock": {
                 "off": "Verriegelt",
-                "on": "Entriegelt"
+                "on": "nicht gesperrt"
             }
         },
         "calendar": {
@@ -292,7 +292,7 @@
                             "introduction": "Die Konfiguration zu ändern ist ein mühsamer Prozess. Das wissen wir. Dieser Bereich versucht dir das Leben etwas leichter zu gestalten.",
                             "validation": {
                                 "heading": "Konfiguration überprüfen",
-                                "introduction": "Überprüfe deine Konfiguration wenn du kürzlich Änderungen vorgenommen hast und sicherstellen möchtest, dass alles ordnungsgemäß ist",
+                                "introduction": "Überprüfe deine Konfiguration, wenn du kürzlich Änderungen vorgenommen hast und sicherstellen möchtest, dass alles ordnungsgemäß ist",
                                 "check_config": "Konfiguration prüfen",
                                 "valid": "Konfiguration in Ordnung",
                                 "invalid": "Konfiguration fehlerhaft"

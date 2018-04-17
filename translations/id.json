@@ -3,14 +3,15 @@
         "config": "Konfigurasi",
         "states": "Ikhtisar",
         "map": "Peta",
-        "logbook": "Buku catatan",
+        "logbook": "Buku Catatan",
         "history": "Riwayat",
         "mailbox": "Kotak pesan",
         "shopping_list": "Daftar belanja",
         "dev-services": "Layanan",
         "dev-states": "Status",
         "dev-events": "Event",
-        "dev-templates": "Template"
+        "dev-templates": "Template",
+        "dev-info": "Info"
     },
     "state": {
         "default": {
@@ -54,6 +55,10 @@
                 "off": "Aman",
                 "on": "Tidak aman"
             },
+            "presence": {
+                "off": "di luar",
+                "on": "di rumah"
+            },
             "battery": {
                 "off": "Normal",
                 "on": "Rendah"
@@ -91,6 +96,18 @@
                 "on": "Terbuka"
             }
         },
+        "calendar": {
+            "off": "Off",
+            "on": "On"
+        },
+        "camera": {
+            "recording": "Merekam",
+            "streaming": "Streaming",
+            "idle": "Siaga"
+        },
+        "climate": {
+            "gas": "Gas"
+        },
         "configurator": {
             "configure": "Konfigurasi",
             "configured": "Terkonfigurasi"
@@ -106,7 +123,13 @@
             "home": "Di rumah",
             "not_home": "Keluar"
         },
+        "fan": {
+            "off": "Off",
+            "on": "On"
+        },
         "group": {
+            "off": "Off",
+            "on": "On",
             "home": "Di rumah",
             "not_home": "Keluar",
             "open": "Terbuka",
@@ -116,27 +139,66 @@
             "stopped": "Tertutup",
             "locked": "Terkunci",
             "unlocked": "Terbuka",
+            "ok": "OK",
             "problem": "Malasah"
+        },
+        "input_boolean": {
+            "off": "Off",
+            "on": "On"
+        },
+        "light": {
+            "off": "Off",
+            "on": "On"
         },
         "lock": {
             "locked": "Terkunci",
             "unlocked": "Terbuka"
         },
+        "media_player": {
+            "off": "Off",
+            "on": "On"
+        },
         "plant": {
             "problem": "Masalah"
+        },
+        "sensor": {
+            "on": "On"
         },
         "sun": {
             "above_horizon": "Terbit",
             "below_horizon": "Tenggelam"
+        },
+        "switch": {
+            "off": "Off",
+            "on": "On"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Inisialisasi",
+                "dead": "Mati",
+                "sleeping": "Tidur",
+                "ready": "Siap"
+            }
+        }
+    },
+    "state_badge": {
+        "device_tracker": {
+            "home": "di rumah",
+            "not_home": "di luar"
         }
     },
     "ui": {
         "panel": {
             "shopping-list": {
-                "add_item": "Tambah item"
+                "add_item": "Tambah item",
+                "microphone_tip": "Sentuh mikrofon di kanan atas dan ucapkan \"Tambahkan permen ke daftar belanjaku\""
             },
             "history": {
+                "showing_entries": "Menampilkan daftar dari",
                 "period": "Periode"
+            },
+            "logbook": {
+                "showing_entries": "Menampilkan daftar dari"
             },
             "mailbox": {
                 "empty": "Anda tidak memiliki pesan apa pun",
@@ -218,9 +280,11 @@
                             "duplicate": "Gandakan",
                             "delete": "Hapus",
                             "delete_confirm": "Anda yakin ingin menghapus?",
+                            "unsupported_platform": "Platform tidak terdukung",
                             "type_select": "Jenis pemicu",
                             "type": {
                                 "event": {
+                                    "label": "Event",
                                     "event_type": "Jenis event",
                                     "event_data": "Data event"
                                 },
@@ -352,6 +416,10 @@
                 }
             }
         },
+        "sidebar": {
+            "log_out": "Keluar",
+            "developer_tools": "Alat pengembang"
+        },
         "common": {
             "loading": "Memuat",
             "cancel": "Batalkan"
@@ -392,6 +460,8 @@
         "fan": "Kipas angin",
         "history_graph": "Riwayat Grafik",
         "group": "Grup",
+        "image_processing": "Pengolahan gambar",
+        "input_boolean": "Masukan boolean",
         "input_datetime": "Masukkan tanggal waktu",
         "input_select": "Pilih input",
         "input_number": "Masukkan angka",
@@ -404,7 +474,8 @@
         "script": "Script",
         "sensor": "Sensor",
         "sun": "Matahari",
-        "switch": "Sakelar"
+        "switch": "Sakelar",
+        "updater": "Updater"
     },
     "attribute": {
         "weather": {

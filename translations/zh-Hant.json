@@ -1,7 +1,7 @@
 {
     "panel": {
         "config": "設定",
-        "states": "概覽",
+        "states": "總覽",
         "map": "地圖",
         "logbook": "日誌",
         "history": "歷史",
@@ -24,13 +24,13 @@
         "alarm_control_panel": {
             "armed": "已警戒",
             "disarmed": "警戒解除",
-            "armed_home": "開啟警戒模式",
+            "armed_home": "在家警戒",
             "armed_away": "離家警戒",
             "armed_night": "夜間警戒",
-            "pending": "暫時等待",
+            "pending": "等待中",
             "arming": "警戒中",
-            "disarming": "警戒解除",
-            "triggered": "警戒觸發",
+            "disarming": "已解除",
+            "triggered": "已觸發",
             "armed_custom_bypass": "警戒模式狀態"
         },
         "automation": {
@@ -63,12 +63,12 @@
                 "on": "已觸發"
             },
             "sound": {
-                "off": "未觸發",
+                "off": "已解除",
                 "on": "已觸發"
             },
             "vibration": {
-                "off": "正常",
-                "on": "觸發"
+                "off": "未偵測",
+                "on": "偵測"
             },
             "opening": {
                 "off": "關閉",
@@ -80,7 +80,7 @@
             },
             "presence": {
                 "off": "離家",
-                "on": "首頁"
+                "on": "在家"
             },
             "battery": {
                 "off": "電量正常",
@@ -99,12 +99,12 @@
                 "on": "冷"
             },
             "door": {
-                "off": "關閉",
-                "on": "開啟"
+                "off": "已關閉",
+                "on": "已開啟"
             },
             "garage_door": {
-                "off": "關閉",
-                "on": "開啟"
+                "off": "已關閉",
+                "on": "已開啟"
             },
             "heat": {
                 "off": "不熱",
@@ -115,8 +115,8 @@
                 "on": "開啟"
             },
             "lock": {
-                "off": "上鎖",
-                "on": "解鎖"
+                "off": "已上鎖",
+                "on": "已解鎖"
             }
         },
         "calendar": {
@@ -124,15 +124,15 @@
             "on": "開啟"
         },
         "camera": {
-            "recording": "錄製中",
+            "recording": "錄影中",
             "streaming": "監控中",
             "idle": "待命"
         },
         "climate": {
             "off": "關閉",
             "on": "開啟",
-            "heat": "制熱模式",
-            "cool": "製冷模式",
+            "heat": "暖氣",
+            "cool": "冷氣",
             "idle": "待命",
             "auto": "自動模式",
             "dry": "除濕模式",
@@ -141,8 +141,8 @@
             "electric": "電動模式",
             "performance": "效能",
             "high_demand": "高用量",
-            "heat_pump": "熱泵",
-            "gas": "燃氣模式"
+            "heat_pump": "暖氣",
+            "gas": "瓦斯模式"
         },
         "configurator": {
             "configure": "設定",
@@ -179,8 +179,8 @@
             "problem": "異常"
         },
         "input_boolean": {
-            "off": "已關閉",
-            "on": "已開啟"
+            "off": "關閉",
+            "on": "開啟"
         },
         "light": {
             "off": "已關燈",
@@ -207,7 +207,7 @@
             "on": "開啓"
         },
         "scene": {
-            "scening": "當前場景"
+            "scening": "目前場景"
         },
         "script": {
             "off": "關閉",
@@ -228,13 +228,13 @@
         "zwave": {
             "default": {
                 "initializing": "正在初始化",
-                "dead": "失去溝通",
+                "dead": "失去連線",
                 "sleeping": "休眠中",
                 "ready": "準備就緒"
             },
             "query_stage": {
                 "initializing": "初始化 ({query_stage})",
-                "dead": "失去溝通 ({query_stage})"
+                "dead": "失去連線 ({query_stage})"
             }
         }
     },
@@ -244,9 +244,9 @@
             "unavailable": "不可用"
         },
         "alarm_control_panel": {
-            "armed": "已解除警戒",
+            "armed": "已警戒",
             "disarmed": "解除警戒",
-            "armed_home": "已警戒",
+            "armed_home": "在家警戒",
             "armed_away": "離家警戒",
             "armed_night": "夜間警戒",
             "pending": "等待中",
@@ -264,15 +264,15 @@
         "panel": {
             "shopping-list": {
                 "clear_completed": "清理完成",
-                "add_item": "新增項目",
+                "add_item": "新加入清單",
                 "microphone_tip": "點擊右上角的麥克風圖示，並說\"加入糖果到我的購物清單內\""
             },
             "history": {
-                "showing_entries": "選擇查看時間",
-                "period": "選擇週期"
+                "showing_entries": "選擇要查看的時間",
+                "period": "選擇要查看的期間"
             },
             "logbook": {
-                "showing_entries": "選擇查看時間"
+                "showing_entries": "選擇要查看的時間"
             },
             "mailbox": {
                 "empty": "目前沒有任何訊息",
@@ -282,44 +282,44 @@
             },
             "config": {
                 "header": "設定 Home Assistant",
-                "introduction": "此處為 Home Assistant 和組件配置區域。目前尚未支持所有設定，但是我們在努力建設中啦。",
+                "introduction": "此處為 Home Assistant 和相關配置區域",
                 "core": {
-                    "caption": "常規",
-                    "description": "配置文件驗證及服務器控制",
+                    "caption": "一般性設定",
+                    "description": "驗證設定內容及服務器控制",
                     "section": {
                         "core": {
                             "header": "設定和服務器控制",
-                            "introduction": "我們知道，填寫或改變設定可能是個令人厭煩的事情。\n這裡將嘗試讓您做這些事情更輕鬆一些。",
+                            "introduction": "新增或改變設定後導致無法正常運作Home-assistant是一件令人沮喪的事情。\n這一頁功能邊嘗試讓你能更簡單的找出設定問題與更新為新設定。",
                             "validation": {
                                 "heading": "設定驗證",
-                                "introduction": "如果您最近對設定進行了一些更改, 並且想要確保這些設定有無錯誤, 這可以驗證您的設定。",
-                                "check_config": "檢查設定",
-                                "valid": "設定有效！",
-                                "invalid": "設定無效"
+                                "introduction": "如果您對設定進行了一些更改，並且想要確保這些設定有無錯誤\n可以選擇先驗證您的設定內容。",
+                                "check_config": "檢查設定內容",
+                                "valid": "設定檔內容檢查正確",
+                                "invalid": "設定檔內容檢查錯誤"
                             },
                             "reloading": {
-                                "heading": "重新加載設定",
-                                "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點擊重載按鈕即可更新為最新設定。",
-                                "core": "重新加載核心設定",
-                                "group": "重新加載群組",
-                                "automation": "重新加載自動化",
-                                "script": "重新加載腳本"
+                                "heading": "重新加載設定檔(configuration)",
+                                "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。\n點擊對應的重載按鈕即可更新為最新設定。",
+                                "core": "重新載入服務核心設定(core)",
+                                "group": "重新載入群組(group)",
+                                "automation": "重新載入自動化(automation)",
+                                "script": "重新載入腳本（script）"
                             },
                             "server_management": {
                                 "heading": "服務器管理",
-                                "introduction": "控制 Home Assistant 服務器",
+                                "introduction": "控制 Home Assistant 服務",
                                 "restart": "重啟",
                                 "stop": "停止"
                             }
                         },
                         "push_notifications": {
-                            "header": "通知推送設定",
-                            "introduction": "在此設備啟用通知推送",
+                            "header": "設定通知推送",
+                            "introduction": "啟用通知推送",
                             "push_notifications": "通知推送"
                         },
                         "translation": {
-                            "header": "選擇一種語言",
-                            "introduction": "選擇本設備 Home Assistant 顯示的語言",
+                            "header": "選擇語言",
+                            "introduction": "選擇想顯示的介面語言",
                             "language": "語言"
                         },
                         "themes": {
@@ -330,39 +330,39 @@
                     }
                 },
                 "customize": {
-                    "caption": "客製化",
-                    "description": "客製化設備"
+                    "caption": "自定義",
+                    "description": "自定義元件內容與中文化"
                 },
                 "automation": {
-                    "caption": "自動化設定",
-                    "description": "創建和編輯自動化",
+                    "caption": "設定自動化",
+                    "description": "新增和編輯自動化內容",
                     "picker": {
                         "header": "自動化編輯器",
-                        "introduction": "自動化編輯器可以讓你編輯想要的自動化，請閱讀設定文件以確保自動化設定格式正確，否則無法正常啟用Home-assistant。常見的錯誤為前後多餘的空格與上下欄位的對齊。\n\n想知道更多關於編輯器的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/automation\/editor\/",
+                        "introduction": "自動化編輯器可以讓你編輯想要的自動化內容\n請閱讀設定文件以確保自動化設定格式正確\n常見的錯誤為前後多餘的空格與上下欄位的對齊\n否則無法正常啟用。\n\n想知道更多關於自動化編輯器的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/automation\/editor\/",
                         "pick_automation": "選擇一個自動化來進行編輯",
                         "no_automations": "沒有任何可編輯的自動化",
                         "add_automation": "新增一個自動化"
                     },
                     "editor": {
-                        "introduction": "使用自動化來讓你的智能家居更有智慧吧",
-                        "default_name": "新的自動化",
+                        "introduction": "使用自動化來讓你的智能家居更有魅力吧!",
+                        "default_name": "建立新的自動化",
                         "save": "儲存",
-                        "unsaved_confirm": "設定尚未儲存，你確定要放棄嗎？",
+                        "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？",
                         "alias": "名稱",
                         "triggers": {
-                            "header": "觸發條件",
-                            "introduction": "觸發條件是可以使一個自動化開始執行，你可以指定一個或多個觸發條件。當觸發開始時，Home Assistant會開始檢查觸發判斷，如果判斷通過，就會開始執行事件動作\n\n想知道更多關於事件觸發，請參考文件\nhttps:\/\/home-assistant.io\/docs\/automation\/trigger\/",
-                            "add": "新增一個觸發條件",
+                            "header": "觸發",
+                            "introduction": "觸發條件可使你設定好的自動化開始運作\n你可以指定針對一個自動化設定一個或多個觸發條件\n當觸發通過後，Home Assistant會開始檢查下一步的觸發判斷式，如果判斷通過，就會開始執行觸發後動作\n\n想知道更多關於事件觸發，可參考文件\nhttps:\/\/home-assistant.io\/docs\/automation\/trigger\/",
+                            "add": "新增一個觸發",
                             "duplicate": "複製",
                             "delete": "刪除",
-                            "delete_confirm": "你確定要刪除嗎？",
+                            "delete_confirm": "確定要刪除嗎？",
                             "unsupported_platform": "不支持的平台: {platform}",
                             "type_select": "觸發條件類型",
                             "type": {
                                 "event": {
                                     "label": "事件",
                                     "event_type": "事件類別",
-                                    "event_data": "事件資料"
+                                    "event_data": "資料"
                                 },
                                 "state": {
                                     "label": "狀態",
@@ -378,20 +378,20 @@
                                 "mqtt": {
                                     "label": "MQTT",
                                     "topic": "MQTT主題",
-                                    "payload": "MQTT資料"
+                                    "payload": "MQTT資料（選項）"
                                 },
                                 "numeric_state": {
-                                    "label": "使用數值比對",
+                                    "label": "數值變動觸發",
                                     "above": "在...之上",
                                     "below": "在...之下",
-                                    "value_template": "數值模板"
+                                    "value_template": "數值模板（選項）"
                                 },
                                 "sun": {
                                     "label": "日出日落",
                                     "event": "事件：",
                                     "sunrise": "日出",
                                     "sunset": "日落",
-                                    "offset": "偏移"
+                                    "offset": "偏移（選項）"
                                 },
                                 "template": {
                                     "label": "模板",
@@ -403,7 +403,7 @@
                                 },
                                 "zone": {
                                     "label": "區域",
-                                    "entity": "位置元件",
+                                    "entity": "區域元件",
                                     "zone": "區域",
                                     "event": "事件：",
                                     "enter": "進入區域",
@@ -414,29 +414,29 @@
                         "conditions": {
                             "header": "觸發判斷",
                             "introduction": "你可以使用觸發判斷來使得自動化運作更為準確。但必須先透過觸發條件開啟自動化運作後，才能使用觸發判斷來決定是否繼續執行下去。\n\n想知道更多關於觸發判斷的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/scripts\/conditions\/",
-                            "add": "新增觸發判斷",
+                            "add": "新增一個判斷式",
                             "duplicate": "複製",
                             "delete": "刪除",
-                            "delete_confirm": "你確定要刪除嗎？",
+                            "delete_confirm": "確定要刪除嗎？",
                             "unsupported_condition": "不支援的觸發判斷: {condition}",
                             "type_select": "觸發判斷類別",
                             "type": {
                                 "state": {
                                     "label": "狀態",
-                                    "state": "狀態"
+                                    "state": "狀態判斷"
                                 },
                                 "numeric_state": {
-                                    "label": "數值狀態",
+                                    "label": "數值判斷",
                                     "above": "在...之上",
                                     "below": "在...之下",
-                                    "value_template": "數值模板"
+                                    "value_template": "數值模板後（選項）"
                                 },
                                 "sun": {
                                     "label": "日出日落",
                                     "before": "在...之前",
                                     "after": "在...之後",
-                                    "before_offset": "偏移前",
-                                    "after_offset": "偏移後",
+                                    "before_offset": "偏移前（選項）",
+                                    "after_offset": "偏移後（選項）",
                                     "sunrise": "日出",
                                     "sunset": "日落"
                                 },
@@ -457,27 +457,27 @@
                             }
                         },
                         "actions": {
-                            "header": "觸發動作",
+                            "header": "觸發後動作",
                             "introduction": "當自動化通過觸發條件與觸發判斷後便會執行觸發動作\n\n想了解更多可參考文件\nhttps:\/\/home-assistant.io\/docs\/automation\/action\/",
-                            "add": "新增觸發動作",
+                            "add": "新增一個動作",
                             "duplicate": "複製",
                             "delete": "刪除",
-                            "delete_confirm": "你確定要刪除嗎？",
+                            "delete_confirm": "確定要刪除嗎？",
                             "unsupported_action": "不支援的觸發動作: {action}",
-                            "type_select": "觸發動作類別",
+                            "type_select": "觸發後動作類別",
                             "type": {
                                 "service": {
-                                    "label": "呼叫服務",
-                                    "service_data": "服務資料"
+                                    "label": "執行服務",
+                                    "service_data": "資料"
                                 },
                                 "delay": {
-                                    "label": "延後",
-                                    "delay": "延後"
+                                    "label": "延遲",
+                                    "delay": "延遲"
                                 },
                                 "wait_template": {
                                     "label": "等待",
                                     "wait_template": "等待模板",
-                                    "timeout": "超時"
+                                    "timeout": "超時（選項）"
                                 },
                                 "condition": {
                                     "label": "判斷式"
@@ -485,7 +485,7 @@
                                 "event": {
                                     "label": "執行事件",
                                     "event": "事件：",
-                                    "service_data": "服務資料"
+                                    "service_data": "資料"
                                 }
                             }
                         }
@@ -521,7 +521,7 @@
         },
         "card": {
             "camera": {
-                "not_available": "影像無法使用"
+                "not_available": "無法載入影像"
             },
             "persistent_notification": {
                 "dismiss": "關閉"
@@ -540,14 +540,14 @@
     },
     "domain": {
         "alarm_control_panel": "警戒模式控制面板",
-        "automation": "自動化設定",
+        "automation": "自動化",
         "binary_sensor": "二進位傳感器",
         "calendar": "日曆",
         "camera": "攝影機",
         "climate": "氣象監控",
-        "configurator": "組態編輯器",
+        "configurator": "設定檔編輯器",
         "conversation": "語音互動",
-        "cover": "開關按鈕",
+        "cover": "Cover開關按鈕",
         "device_tracker": "追蹤裝置ID",
         "fan": "風扇",
         "history_graph": "歷史圖",

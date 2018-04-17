@@ -74,8 +74,11 @@
                 "on": "Inseguro"
             },
             "presence": {
-                "off": "Casa Vacía",
+                "off": "Fuera de Casa",
                 "on": "Casa"
+            },
+            "window": {
+                "on": "Abierta"
             }
         },
         "calendar": {

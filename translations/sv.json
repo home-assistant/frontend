@@ -338,7 +338,7 @@
                     "description": "Skapa och redigera automationer",
                     "picker": {
                         "header": "Automatiseringseditor",
-                        "introduction": "Automatiseringseditorn låter dig skapa och redigera automationer. Läs [instruktionerna] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) för att se till att du har konfigurerat Home Assistant korrekt.",
+                        "introduction": "Automatiseringseditorn låter dig skapa och redigera automationer. Läs [instruktionerna](https:\/\/home-assistant.io\/docs\/automation\/editor\/) för att se till att du har konfigurerat Home Assistant korrekt.",
                         "pick_automation": "Välj automation att redigera",
                         "no_automations": "Vi kunde inte hitta några redigerbara automationer",
                         "add_automation": "Lägg till automatisering"
