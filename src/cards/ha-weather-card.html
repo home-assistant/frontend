@@ -128,10 +128,11 @@
       for (i = 0; i < data.length; i++) {
         var d = data[i];
         if (!d.condition) {
-          dataArray.push([new Date(d.datetime), null, d.temperature, d.templow]);
+          dataArray.push([new Date(d.datetime), null, d.temperature, d.templow,
+            d.precipitation]);
         } else {
           dataArray.push([new Date(d.datetime), _WEATHER_TO_ICON[data[i].condition],
-            d.temperature, d.templow]);
+            d.temperature, d.templow, d.precipitation]);
         }
       }
 
@@ -157,7 +158,7 @@
       }
 
       if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(this.$.chart_id);
+        this.chartEngine = new window.google.visualization.ComboChart(this.$.chart_id);
       }
 
       if (!this.attr.forecast) {
@@ -183,18 +184,21 @@
         },
         curveType: 'function',
         focusTarget: 'category',
-        colors: ['red', 'blue'],
+        colors: ['red', 'blue', 'DeepSkyBlue'],
         annotations: {
           textStyle: {
             fontSize: '24',
           }
-        }
+        },
+        seriesType: 'line',
+        series: {2: {type: 'bars', targetAxisIndex: 1}}
       };
 
       dataGrid.addColumn('datetime', 'Time');
       dataGrid.addColumn({ type: 'string', role: 'annotation' });
       dataGrid.addColumn('number', 'Temperature');
       dataGrid.addColumn('number', 'Temperature Low');
+      dataGrid.addColumn('number', 'Precipitation');
 
       var dataArray = this.getDataArray();
       dataGrid.addRows(dataArray);
