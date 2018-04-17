@@ -95,7 +95,7 @@
  * @appliesMixin window.hassMixins.EventsMixin
  */
 class HaScriptPicker extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+  window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(Polymer.Element)) {
   static get is() { return 'ha-script-picker'; }
 
   static get properties() {
@@ -124,13 +124,11 @@ class HaScriptPicker extends
   }
 
   scriptTapped(ev) {
-    history.pushState(null, null, '/config/script/edit/' + this.scripts[ev.model.index].entity_id);
-    this.fire('location-changed');
+    this.navigate('/config/script/edit/' + this.scripts[ev.model.index].entity_id);
   }
 
   addScript() {
-    history.pushState(null, null, '/config/script/new');
-    this.fire('location-changed');
+    this.navigate('/config/script/new');
   }
 
   computeName(script) {

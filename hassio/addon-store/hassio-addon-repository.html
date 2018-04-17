@@ -45,7 +45,7 @@
 </dom-module>
 
 <script>
-class HassioAddonRepository extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HassioAddonRepository extends window.hassMixins.NavigateMixin(Polymer.Element) {
   static get is() { return 'hassio-addon-repository'; }
 
   static get properties() {
@@ -74,8 +74,7 @@ class HassioAddonRepository extends window.hassMixins.EventsMixin(Polymer.Elemen
   }
 
   addonTapped(ev) {
-    history.pushState(null, null, '/hassio/addon/' + ev.model.addon.slug);
-    this.fire('location-changed');
+    this.navigate(`/hassio/addon/${ev.model.addon.slug}`);
   }
 }
 

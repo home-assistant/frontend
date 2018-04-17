@@ -39,7 +39,7 @@
 </dom-module>
 
 <script>
-class HassioAddons extends window.hassMixins.EventsMixin(Polymer.Element) {
+class HassioAddons extends window.hassMixins.NavigateMixin(Polymer.Element) {
   static get is() { return 'hassio-addons'; }
 
   static get properties() {
@@ -68,14 +68,12 @@ class HassioAddons extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   addonTapped(ev) {
-    history.pushState(null, null, '/hassio/addon/' + ev.model.addon.slug);
-    this.fire('location-changed');
+    this.navigate('/hassio/addon/' + ev.model.addon.slug);
     ev.target.blur();
   }
 
   openStore(ev) {
-    history.pushState(null, null, '/hassio/store');
-    this.fire('location-changed');
+    this.navigate('/hassio/store');
     ev.target.blur();
   }
 }

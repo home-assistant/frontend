@@ -99,7 +99,7 @@
  * @appliesMixin window.hassMixins.EventsMixin
  */
 class HaAutomationPicker extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+  window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(Polymer.Element)) {
   static get is() { return 'ha-automation-picker'; }
 
   static get properties() {
@@ -128,13 +128,11 @@ class HaAutomationPicker extends
   }
 
   automationTapped(ev) {
-    history.pushState(null, null, '/config/automation/edit/' + this.automations[ev.model.index].attributes.id);
-    this.fire('location-changed');
+    this.navigate('/config/automation/edit/' + this.automations[ev.model.index].attributes.id);
   }
 
   addAutomation() {
-    history.pushState(null, null, '/config/automation/new');
-    this.fire('location-changed');
+    this.navigate('/config/automation/new');
   }
 
   computeName(automation) {
