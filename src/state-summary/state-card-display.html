@@ -16,12 +16,17 @@
         @apply(--layout-baseline);
       }
 
+      state-info {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
       .state {
         @apply --paper-font-body1;
         color: var(--primary-text-color);
         margin-left: 16px;
         text-align: right;
-        flex: 1 0 50px;
+        max-width: 40%;
+        flex: 0 0 auto;
       }
       .state.has-unit_of_measurement {
         white-space: nowrap;
