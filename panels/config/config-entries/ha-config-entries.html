@@ -38,7 +38,7 @@
             <template is='dom-repeat' items='[[_progress]]'>
               <div class='config-entry-row'>
                 <paper-item-body>
-                  [[_computeIntegrationTitle(localize, item.domain)]]
+                  [[_computeIntegrationTitle(localize, item.handler)]]
                 </paper-item-body>
                 <paper-button on-click='_continueFlow'>Configure</paper-button>
               </div>
@@ -140,7 +140,7 @@
     }
 
     _createFlow(ev) {
-      this.hass.callApi('post', 'config/config_entries/flow', { domain: ev.model.item })
+      this.hass.callApi('post', 'config/config_entries/flow', { handler: ev.model.item })
         .then((flow) => {
           this._userCreatedFlow = true;
           this.setProperties({
