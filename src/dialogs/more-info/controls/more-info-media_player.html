@@ -5,11 +5,11 @@
 <link rel='import' href='../../../../bower_components/iron-icon/iron-icon.html'>
 
 <link rel='import' href='../../../../bower_components/paper-icon-button/paper-icon-button.html'>
-<link rel='import' href='../../../../bower_components/paper-slider/paper-slider.html'>
 <link rel='import' href='../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
 <link rel='import' href='../../../../bower_components/paper-listbox/paper-listbox.html'>
 <link rel='import' href='../../../../bower_components/paper-item/paper-item.html'>
 
+<link rel="import" href='../../../../src/components/ha-paper-slider.html'>
 <link rel='import' href='../../../../src/util/hass-mixins.html'>
 <link rel='import' href='../../../../src/util/hass-media-player-model.html'>
 
@@ -91,11 +91,11 @@
         <paper-icon-button on-click="handleVolumeTap"
           hidden$="[[playerObj.supportsVolumeButtons]]"
           icon="[[computeMuteVolumeIcon(playerObj)]]"></paper-icon-button>
-        <paper-slider disabled$='[[playerObj.isMuted]]'
+        <ha-paper-slider disabled$='[[playerObj.isMuted]]'
           min='0' max='100' value='[[playerObj.volumeSliderValue]]'
           on-change='volumeSliderChanged' class='flex'
           ignore-bar-touch>
-        </paper-slider>
+        </ha-paper-slider>
       </div>
       <!-- SOURCE PICKER -->
       <div class='controls layout horizontal justified'
