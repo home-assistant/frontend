@@ -245,20 +245,7 @@
       }
 
       const title = tooltip.title ? tooltip.title[0] || '' : '';
-      let titleDate = null;
-      let formattedTitle;
-      if (title instanceof Date) {
-        titleDate = title;
-      } else if (title instanceof moment) {
-        titleDate = title.toDate();
-      }
-
-      if (titleDate === null) {
-        formattedTitle = title;
-      } else {
-        formattedTitle = window.hassUtil.formatDateTime(titleDate);
-      }
-      this.set(['tooltip', 'title'], formattedTitle);
+      this.set(['tooltip', 'title'], title);
 
       const bodyLines = tooltip.body.map(n => n.lines);
 
