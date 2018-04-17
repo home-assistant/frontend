@@ -19,7 +19,7 @@
             "off": "Off",
             "on": "On",
             "unknown": "Teadmata",
-            "unavailable": "Kadund"
+            "unavailable": "Kadunud"
         },
         "alarm_control_panel": {
             "armed": "Valves",
@@ -209,7 +209,7 @@
     "state_badge": {
         "default": {
             "unknown": "?",
-            "unavailable": "Kadund"
+            "unavailable": "Kadunud"
         },
         "alarm_control_panel": {
             "armed": "Valves",
@@ -234,6 +234,13 @@
                 "clear_completed": "Tühjenda täidetud",
                 "add_item": "Lisa toode",
                 "microphone_tip": "Puudutage paremas ülanurgas asuvat mikrofoni ikooni ja öelge: \"Add candy to my shopping list\""
+            },
+            "history": {
+                "showing_entries": "Näita kuupäeva",
+                "period": "Periood"
+            },
+            "logbook": {
+                "showing_entries": "Näita kuupäeva"
             },
             "config": {
                 "zwave": {

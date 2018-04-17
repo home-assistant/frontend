@@ -530,7 +530,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "设备"
+                    "entity": "设备\/实体"
                 }
             },
             "service-picker": {

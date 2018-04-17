@@ -289,7 +289,7 @@
                     "section": {
                         "core": {
                             "header": "Konfigurasjon og serverkontroll",
-                            "introduction": "Vi viet at endringar i konfigurasjonen kan vere ein slitsam prosess. Denne delen vil forsøke å gjere livet ditt litt lettare.",
+                            "introduction": "Vi veit at endringar i konfigurasjonen kan vere ein slitsam prosess. Denne delen vil forsøke å gjere livet ditt litt lettare.",
                             "validation": {
                                 "heading": "Konfigurasjonsvalidering",
                                 "introduction": "Sjekk konfigurasjonen din dersom du nyleg har gjort endringar og ønsker å vere sikker på at den er gyldig ved å køyre ein valideringstest",
