@@ -41,7 +41,7 @@
         color: white;
         border-radius: 3px;
         pointer-events: none;
-        transform: translate(-50%, 5px);
+        transform: translate(-50%, 12px);
         z-index: 1000;
         width: 200px;
         transition: opacity 0.15s ease-in-out;
@@ -50,7 +50,7 @@
       .chartTooltip ul {
         display: inline-block;
         padding: 0 0px;
-        margin: 8px 0 0 0;
+        margin: 5px 0 0 0;
         width: 100%
       }
       .chartTooltip li {
@@ -59,6 +59,7 @@
       }
       .chartTooltip .title {
         text-align: center;
+        font-weight: 500;
       }
       .chartLegend li {
         display: inline-block;
@@ -161,8 +162,8 @@
             opacity: '0',
             left: '0',
             top: '0',
-            xPadding: '0',
-            yPadding: '0'
+            xPadding: '5',
+            yPadding: '3'
           })
         },
         unit: Object,
