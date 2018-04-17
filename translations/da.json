@@ -113,6 +113,10 @@
             "window": {
                 "off": "Lukket",
                 "on": "Åben"
+            },
+            "lock": {
+                "off": "Låst",
+                "on": "Ulåst"
             }
         },
         "calendar": {
@@ -284,6 +288,7 @@
                         "core": {
                             "header": "Konfiguration og server kontrol",
                             "validation": {
+                                "heading": "Konfigurations validering ",
                                 "check_config": "Tjek konfiguration",
                                 "valid": "Konfiguration gyldig!",
                                 "invalid": "Konfigurationen ugyldig"
@@ -297,6 +302,7 @@
                             },
                             "server_management": {
                                 "heading": "Serveradministration",
+                                "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                                 "restart": "Genstart",
                                 "stop": "Stop"
                             }
@@ -324,8 +330,21 @@
                 "automation": {
                     "caption": "Automatisering",
                     "description": "Opret og rediger automatiseringer",
+                    "picker": {
+                        "pick_automation": "Vælg automatisering for at redigere",
+                        "no_automations": "Vi kunne ikke finde nogen redigerbare automatiseringer",
+                        "add_automation": "Tilføj automatisering"
+                    },
                     "editor": {
+                        "introduction": "Brug automatiseringer til at vække dit hjem til live",
+                        "default_name": "Ny automatisering",
+                        "save": "Gem",
+                        "unsaved_confirm": "Du har ikke-gemte ændringer. Er du sikker på, at du vil forlade?",
+                        "alias": "Navn",
                         "triggers": {
+                            "header": "Udløser",
+                            "add": "Tilføj udløser",
+                            "duplicate": "Kopier",
                             "delete": "Slet",
                             "delete_confirm": "Sikker på, at du vil slette?",
                             "type_select": "Udløser type",
@@ -341,6 +360,7 @@
                                     "to": "Til"
                                 },
                                 "homeassistant": {
+                                    "label": "Home Assistant",
                                     "event": "Begivenhed",
                                     "start": "Start",
                                     "shutdown": "Luk ned"
@@ -349,8 +369,83 @@
                                     "label": "MQTT",
                                     "topic": "Emne"
                                 },
+                                "numeric_state": {
+                                    "above": "Over",
+                                    "below": "Under"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "sunrise": "Solopgang",
+                                    "sunset": "Solnedgang"
+                                },
+                                "template": {
+                                    "label": "Skabelon",
+                                    "value_template": "Værdi skabelon"
+                                },
                                 "time": {
+                                    "label": "Tid",
                                     "at": "Klokken"
+                                },
+                                "zone": {
+                                    "entity": "Enhed med placering",
+                                    "event": "Begivenhed",
+                                    "enter": "Ankom",
+                                    "leave": "Forlade"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Betingelser",
+                            "add": "Tilføj betingelse",
+                            "duplicate": "Kopier",
+                            "delete": "Slet",
+                            "delete_confirm": "Er du sikker på du vil slette?",
+                            "unsupported_condition": "Ikke-understøttet betingelse: {betingelse}",
+                            "type_select": "Betingelsestype",
+                            "type": {
+                                "state": {
+                                    "label": "Tilstand",
+                                    "state": "Tilstand"
+                                },
+                                "numeric_state": {
+                                    "above": "Over",
+                                    "below": "Under",
+                                    "value_template": "Værdi skabelon (ikke krævet)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "before": "Før:",
+                                    "after": "Efter:",
+                                    "sunrise": "Solopgang",
+                                    "sunset": "Solnedgang"
+                                },
+                                "template": {
+                                    "label": "Skabelon"
+                                },
+                                "time": {
+                                    "label": "Tid",
+                                    "after": "Efter",
+                                    "before": "Før"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "duplicate": "Kopier",
+                            "delete": "Slet",
+                            "delete_confirm": "Er du sikker på du vil slette?",
+                            "type": {
+                                "service": {
+                                    "label": "Kald service"
+                                },
+                                "delay": {
+                                    "label": "Forsinkelse",
+                                    "delay": "Forsinkelse"
+                                },
+                                "wait_template": {
+                                    "label": "Vent"
+                                },
+                                "condition": {
+                                    "label": "Betingelse"
                                 }
                             }
                         }
@@ -390,6 +485,16 @@
             },
             "persistent_notification": {
                 "dismiss": "Afvis"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Enhed"
+                }
+            },
+            "service-picker": {
+                "service": "Service"
             }
         }
     },

@@ -115,8 +115,8 @@
                 "on": "Nyitva"
             },
             "lock": {
-                "off": "Lezárt",
-                "on": "Nyitott"
+                "off": "Bezárva",
+                "on": "Kinyitva"
             }
         },
         "calendar": {

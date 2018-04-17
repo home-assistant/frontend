@@ -53,7 +53,10 @@
 <script>
 {
   const UPDATE_INTERVAL = 10000; // ms
-
+  /*
+   * @appliesMixin window.hassMixins.LocalizeMixin
+   * @appliesMixin window.hassMixins.EventsMixin
+   */
   class HaCameraCard extends
     window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
     static get is() { return 'ha-camera-card'; }

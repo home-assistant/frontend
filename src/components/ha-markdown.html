@@ -1,8 +1,22 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
 <link rel='import' href='../util/hass-mixins.html'>
 
 <script>
-class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
+/*
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaMarkdown extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-markdown'; }
+
+  static get properties() {
+    return {
+      content: {
+        type: String,
+        observer: '_render',
+      }
+    };
+  }
 
   connectedCallback() {
     // 0 = not loaded, 1 = success, 2 = error
@@ -11,15 +25,10 @@ class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
     this._resize = () => this.fire('iron-resize');
 
     Polymer.importHref(
-      '/static/pagedown-js.html',
+      '/static/markdown-js.html',
       () => { this._scriptLoaded = 1; this._render(); },
       () => { this._scriptLoaded = 2; this._render(); },
     );
-  }
-
-  set content(value) {
-    this._content = value;
-    this._render();
   }
 
   _render() {
@@ -32,8 +41,11 @@ class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
       this._renderScheduled = false;
 
       if (this._scriptLoaded === 1) {
-        const converter = window.Markdown.getSanitizingConverter();
-        this.innerHTML = converter.makeHtml(this._content);
+        this.innerHTML = window.filterXSS(window.marked(this.content, {
+          gfm: true,
+          tables: true,
+          breaks: true
+        }));
         this._resize();
 
         const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
@@ -52,7 +64,7 @@ class HaMarkdown extends window.hassMixins.EventsMixin(HTMLElement) {
           }
         }
       } else if (this._scriptLoaded === 2) {
-        this.innerText = this._content;
+        this.innerText = this.content;
       }
     });
   }

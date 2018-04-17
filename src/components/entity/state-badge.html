@@ -18,7 +18,7 @@
     }
 
     ha-state-icon {
-      transition: color .3s ease-in-out;
+      transition: color .3s ease-in-out, filter .3s ease-in-out;
     }
 
     /* Color the icon if light or sun is on */
@@ -32,7 +32,7 @@
 
     /* Color the icon if unavailable */
     ha-state-icon[data-state=unavailable] {
-      color: var(--disabled-text-color);
+      color: var(--state-icon-unavailable);
     }
     </style>
 
@@ -52,7 +52,7 @@ class StateBadge extends Polymer.Element {
     return {
       stateObj: {
         type: Object,
-        observer: 'updateIconColor',
+        observer: 'updateIconAppearance',
       },
     };
   }
@@ -61,79 +61,34 @@ class StateBadge extends Polymer.Element {
     return window.hassUtil.computeDomain(stateObj);
   }
 
-  _rgbFromBrightness(brightness) {
-    // Set icon bbroghtness to a scale between 15% bright to 100% bright.
-    const iconBrightness = (brightness + 45) / (255 + 45);
-    const hostBrightness = 1 - iconBrightness;
-    const re = /rgb\((\d+), (\d+), (\d+)\)/;
-    const rgbIconMatch = window.getComputedStyle(this.$.icon).color.match(re);
-    const rgbHostMatch = window.getComputedStyle(this).color.match(re);
-    let rgb;
-    if (rgbIconMatch && rgbHostMatch) {
-      const rgbIcon = rgbIconMatch.slice(1).map(v => Number.parseInt(v, 10));
-      const rgbHost = rgbHostMatch.slice(1).map(v => Number.parseInt(v, 10));
-      rgb = [
-        Math.round((rgbIcon[0] * iconBrightness) + (rgbHost[0] * hostBrightness)),
-        Math.round((rgbIcon[1] * iconBrightness) + (rgbHost[1] * hostBrightness)),
-        Math.round((rgbIcon[2] * iconBrightness) + (rgbHost[2] * hostBrightness)),
-      ];
-      if (rgb.some(v => Number.isNaN(v))) {
-        return undefined;
-      }
-    }
-    return rgb;
-  }
 
-  /**
-   * Called when an attribute changes that influences the color of the icon.
-   */
-  updateIconColor(newVal) {
-    const icon = this.$.icon;
+  updateIconAppearance(newVal) {
+    const iconStyle = {
+      display: 'inline',
+      color: '',
+      filter: '',
+    };
+    const hostStyle = {
+      backgroundImage: '',
+    };
     // hide icon if we have entity picture
     if (newVal.attributes.entity_picture) {
-      this.style.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
-      icon.style.display = 'none';
-      return;
-    }
-
-    if (this._timeoutId) {
-      window.clearTimeout(this._timeoutId);
-      this._timeoutId = null;
-    }
-
-    this.style.backgroundImage = '';
-    icon.style.display = 'inline';
-    if (newVal.state === 'unavailable') return;
-    let rgb;
-    let oldColor;
-    if (newVal.attributes.rgb_color) {
-      rgb = newVal.attributes.rgb_color;
-    } else if (newVal.attributes.brightness && newVal.attributes.brightness !== 255) {
-      if (icon.style.color !== '') {
-        oldColor = icon.style.color;
-        icon.style.transition = 'none';
-        icon.style.color = '';
-      }
-      rgb = this._rgbFromBrightness(newVal.attributes.brightness);
-    }
-    // Set color of icon to rgb color if available and it is not very white (sum rgb colors < 730)
-    if (rgb && rgb.reduce((cur, tot) => cur + tot, 0) < 730) {
-      if (oldColor) {
-        icon.style.color = oldColor;
-      }
-      // If we had to cancel transition - wait after restoring old color so transition will start
-      // from oldColor and not from css 'on' color.
-      if (icon.style.transition && oldColor) {
-        this._timeoutId = window.setTimeout(() => {
-          icon.style.transition = '';
-          icon.style.color = 'rgb(' + rgb.join(',') + ')';
-        }, 10);
-      } else {
-        icon.style.color = 'rgb(' + rgb.join(',') + ')';
-      }
+      hostStyle.backgroundImage = 'url(' + newVal.attributes.entity_picture + ')';
+      iconStyle.display = 'none';
     } else {
-      icon.style.color = '';
+      if (newVal.attributes.hs_color) {
+        const hue = newVal.attributes.hs_color[0];
+        const sat = newVal.attributes.hs_color[1];
+        if (sat > 10) iconStyle.color = `hsl(${hue}, 100%, ${100 - (sat / 2)}%)`;
+      }
+      if (newVal.attributes.brightness) {
+        const brightness = newVal.attributes.brightness;
+        // lowest brighntess will be around 50% (that's pretty dark)
+        iconStyle.filter = `brightness(${(brightness + 245) / 5}%)`;
+      }
     }
+    Object.assign(this.$.icon.style, iconStyle);
+    Object.assign(this.style, hostStyle);
   }
 }
 customElements.define(StateBadge.is, StateBadge);

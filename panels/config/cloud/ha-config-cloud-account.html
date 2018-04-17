@@ -7,6 +7,8 @@
 <link rel="import" href="../../../src/util/hass-mixins.html">
 <link rel="import" href='../../../src/resources/ha-style.html'>
 
+<link rel="import" href="../ha-config-section.html">
+
 <dom-module id="ha-config-cloud-account">
   <template>
     <style include="iron-flex ha-style">
@@ -43,7 +45,7 @@
         font-weight: 500;
       }
     </style>
-    <hass-subpage title='Cloud Account'>
+    <hass-subpage header='Cloud Account'>
       <div class='content'>
         <ha-config-section
           is-wide='[[isWide]]'
@@ -116,6 +118,7 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(Polymer.Element
   static get properties() {
     return {
       hass: Object,
+      isWide: Boolean,
       account: {
         type: Object,
         observer: '_accountChanged',

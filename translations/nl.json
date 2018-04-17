@@ -7,7 +7,7 @@
         "history": "Geschiedenis",
         "mailbox": "Postvak",
         "shopping_list": "Boodschappenlijst",
-        "dev-services": "Diensten",
+        "dev-services": "Services",
         "dev-states": "Toestanden",
         "dev-events": "Gebeurtenissen",
         "dev-templates": "Sjablonen",
@@ -196,7 +196,7 @@
             "playing": "Afspelen",
             "paused": "Gepauzeerd",
             "idle": "Inactief",
-            "standby": "Stand-by"
+            "standby": "Standby"
         },
         "plant": {
             "ok": "OK",
@@ -207,7 +207,7 @@
             "on": "Aan"
         },
         "scene": {
-            "scening": "Scenarios"
+            "scening": "Scènes"
         },
         "script": {
             "off": "Uit",
@@ -282,24 +282,24 @@
             },
             "config": {
                 "header": "Configureer Home Assistant",
-                "introduction": "Hier kunt u uw componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
+                "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "core": {
                     "caption": "Algemeen",
-                    "description": "Valideer uw configuratiebestand en beheer de server",
+                    "description": "Valideer je configuratiebestand en beheer de server",
                     "section": {
                         "core": {
                             "header": "Configuratie en serverbeheer",
-                            "introduction": "Het aanpassen van uw configuratie kan een moeizaam proces zijn.  Dat weten we. Dit onderdeel probeert u het leven iets makkelijker te maken.",
+                            "introduction": "Het aanpassen van je configuratie kan een moeizaam proces zijn. Dat weten we. Dit onderdeel probeert je het leven iets makkelijker te maken.",
                             "validation": {
                                 "heading": "Valideer configuratie",
-                                "introduction": "Controleer uw configuratie als u onlangs wijzigingen heeft aangebracht en er zeker van wil zijn dat deze geldig is",
+                                "introduction": "Controleer je configuratie als je onlangs wijzigingen hebt aangebracht en zeker wilt weten dat ze geldig zijn",
                                 "check_config": "Controleer configuratie",
                                 "valid": "Geldige configuratie!",
                                 "invalid": "Ongeldige configuratie"
                             },
                             "reloading": {
                                 "heading": "Configuratie herladen",
-                                "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als u reload gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
+                                "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
                                 "core": "Herlaad kern",
                                 "group": "Herlaad groepen",
                                 "automation": "Herlaad automatiseringen",
@@ -307,15 +307,15 @@
                             },
                             "server_management": {
                                 "heading": "Serverbeheer",
-                                "introduction": "Beheer uw Home Assistant-server ... via Home Assistant.",
+                                "introduction": "Beheer je Home Assistant-server ... vanuit Home Assistant.",
                                 "restart": "Herstarten",
                                 "stop": "Stop"
                             }
                         },
                         "push_notifications": {
-                            "header": "Configureer push-meldingen",
+                            "header": "Configureer pushmeldingen",
                             "introduction": "Schakel deze instelling in om pushmeldingen op dit apparaat te ontvangen",
-                            "push_notifications": "Push-meldingen"
+                            "push_notifications": "Pushmeldingen"
                         },
                         "translation": {
                             "header": "Kies een taal",
@@ -331,14 +331,14 @@
                 },
                 "customize": {
                     "caption": "Aanpassingen",
-                    "description": "Pas uw entiteiten aan"
+                    "description": "Pas je entiteiten aan"
                 },
                 "automation": {
                     "caption": "Automatisering",
                     "description": "Het maken en bewerken van automatiseringen",
                     "picker": {
                         "header": "Automatiseringsbewerker",
-                        "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Lees [de instructies](https:\/\/home-assistant.io\/docs\/automation\/editor\/) om er zeker van te zijn of je Home Assistant juist hebt geconfigureerd.",
+                        "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Lees [de instructies](https:\/\/home-assistant.io\/docs\/automation\/editor\/) om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
                         "add_automation": "Automatisering toevoegen"
@@ -351,7 +351,7 @@
                         "alias": "Naam",
                         "triggers": {
                             "header": "",
-                            "introduction": "Triggers zijn wat de verwerking van een automatiseringsregel begint. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert de Home Assistant de eventuele voorwaarden en roept hij de actie op. \n\n [Meer informatie over triggers.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan. \n\n [Meer informatie over triggers.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Trigger toevoegen",
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
@@ -361,8 +361,8 @@
                             "type": {
                                 "event": {
                                     "label": "Gebeurtenis",
-                                    "event_type": "Gebeurtenis type",
-                                    "event_data": "Gebeurtenis data"
+                                    "event_type": "Gebeurtenistype",
+                                    "event_data": "Gebeurtenisdata"
                                 },
                                 "state": {
                                     "label": "Staat",
@@ -384,7 +384,7 @@
                                     "label": "Numerieke staat",
                                     "above": "Boven",
                                     "below": "Onder",
-                                    "value_template": "Waarde template (optioneel)"
+                                    "value_template": "Waardesjabloon (optioneel)"
                                 },
                                 "sun": {
                                     "label": "Zon",
@@ -395,7 +395,7 @@
                                 },
                                 "template": {
                                     "label": "Sjabloon",
-                                    "value_template": "Waarde template"
+                                    "value_template": "Waardesjabloon"
                                 },
                                 "time": {
                                     "label": "Tijd",
@@ -429,7 +429,7 @@
                                     "label": "Numerieke status",
                                     "above": "Boven",
                                     "below": "Onder",
-                                    "value_template": "Waarde template (optioneel)"
+                                    "value_template": "Waardetemplate (optioneel)"
                                 },
                                 "sun": {
                                     "label": "Zon",
@@ -442,7 +442,7 @@
                                 },
                                 "template": {
                                     "label": "Sjabloon",
-                                    "value_template": "Waarde sjabloon"
+                                    "value_template": "Waardesjabloon"
                                 },
                                 "time": {
                                     "label": "Tijd",
@@ -462,12 +462,12 @@
                             "add": "Actie toevoegen",
                             "duplicate": "Dupliceer",
                             "delete": "Verwijder",
-                            "delete_confirm": "Wilt u echt verwijderen?",
+                            "delete_confirm": "Wil je echt verwijderen?",
                             "unsupported_action": "Niet-ondersteunde actie: {action}",
                             "type_select": "Type actie",
                             "type": {
                                 "service": {
-                                    "label": "Dienst aanroepen",
+                                    "label": "Service aanroepen",
                                     "service_data": "Service data"
                                 },
                                 "delay": {
@@ -476,7 +476,7 @@
                                 },
                                 "wait_template": {
                                     "label": "Wacht",
-                                    "wait_template": "Wacht sjabloon",
+                                    "wait_template": "Wachtsjabloon",
                                     "timeout": "Timeout (optioneel)"
                                 },
                                 "condition": {
@@ -497,7 +497,7 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Beheer uw Z-Wave-netwerk"
+                    "description": "Beheer je Z-Wave-netwerk"
                 }
             }
         },

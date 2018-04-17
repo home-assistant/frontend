@@ -57,6 +57,10 @@
         --ha-color-picker-marker-bordercolor: white;
       }
 
+      .is-unavailable .control {
+        max-height: 0px;
+      }
+
       paper-item {
         cursor: pointer;
       }
@@ -64,7 +68,7 @@
 
     <div class$='[[computeClassNames(stateObj)]]'>
 
-      <div class='brightness'>
+      <div class='control brightness'>
         <ha-labeled-slider
           caption='Brightness' icon='mdi:brightness-5' max='255'
           value='{{brightnessSliderValue}}'
@@ -72,7 +76,7 @@
           ignore-bar-touch></ha-labeled-slider>
       </div>
 
-      <div class='color_temp'>
+      <div class='control color_temp'>
         <ha-labeled-slider
           caption='Color Temperature' icon='mdi:thermometer'
           min='[[stateObj.attributes.min_mireds]]' max='[[stateObj.attributes.max_mireds]]'
@@ -81,7 +85,7 @@
           ignore-bar-touch></ha-labeled-slider>
       </div>
 
-      <div class='white_value'>
+      <div class='control white_value'>
         <ha-labeled-slider
           caption='White Value' icon='mdi:file-word-box' max='255'
           value='{{wvSliderValue}}'
@@ -90,6 +94,7 @@
       </div>
 
       <ha-color-picker
+        class='control color'
         on-colorselected='colorPicked'
         desired-hs-color='{{colorPickerColor}}'
         throttle='500'
@@ -98,7 +103,7 @@
       >
       </ha-color-picker>
 
-      <div class='effect_list'>
+      <div class='control effect_list'>
         <paper-dropdown-menu label-float dynamic-align label='Effect'>
           <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
             <template is='dom-repeat'
@@ -199,6 +204,9 @@
       const classes = [window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
       if (stateObj && stateObj.state === 'on') {
         classes.push('is-on');
+      }
+      if (stateObj && stateObj.state === 'unavailable') {
+        classes.push('is-unavailable');
       }
       return classes.join(' ');
     }

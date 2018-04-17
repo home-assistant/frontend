@@ -17,6 +17,7 @@
         display: block;
         padding-top: 8px;
         padding-right: 8px;
+        transform: translateZ(0);
       }
 
       .badges {
@@ -67,8 +68,7 @@
         <template is='dom-repeat' items='[[cards.columns]]' as='column'>
           <div class='column flex-1'>
             <template is='dom-repeat' items='[[column]]' as='card'>
-              <ha-card-chooser card-data='[[card]]' hass='[[hass]]'
-              ></ha-card-chooser>
+              <ha-card-chooser card-data='[[card]]'></ha-card-chooser>
             </template>
           </div>
         </template>

@@ -6,7 +6,7 @@
 <link rel='import' href='../../bower_components/paper-icon-button/paper-icon-button.html'>
 <link rel='import' href='../../bower_components/paper-progress/paper-progress.html'>
 
-<link rel='import' href='../util/media-player-model.html'>
+<link rel='import' href='../util/hass-media-player-model.html'>
 <link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id='ha-media_player-card'>
@@ -17,8 +17,6 @@
         position: relative;
         font-size: 0px;
         border-radius: 2px;
-
-        overflow: hidden;
       }
 
       .banner {
@@ -103,8 +101,10 @@
 
       .progress {
         width: 100%;
+        height: var(--paper-progress-height, 4px);
+        margin-top: calc(-1*var(--paper-progress-height, 4px));
         --paper-progress-active-color: var(--accent-color);
-        --paper-progress-container-color: #FFF;
+        --paper-progress-container-color: rgba(200,200,200,0.5);
       }
 
       .controls {
@@ -206,6 +206,10 @@
 </dom-module>
 
 <script>
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
 class HaMediaPlayerCard extends
   window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-media_player-card'; }
@@ -307,7 +311,7 @@ class HaMediaPlayerCard extends
   }
 
   computePlayerObj(hass, stateObj) {
-    return new window.MediaPlayerEntity(hass, stateObj);
+    return new window.HassMediaPlayerEntity(hass, stateObj);
   }
 
   computePrimaryText(localize, playerObj) {

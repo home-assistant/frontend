@@ -4,11 +4,21 @@
 
 <dom-module id='state-history-chart-line'>
   <template>
+    <style>
+      :host {
+        display: block;
+        overflow: hidden;
+        height: 0;
+        transition: height 0.3s ease-in-out;
+      }
+    </style>
       <ha-chart-base
+        id='chart'
         data="[[chartData]]"
         is-zoomable="[[isZoomable]]"
-        identifier="[[identifier]]">
-      </ha-chart-base>
+        identifier="[[identifier]]"
+        rendered="{{rendered}}"
+      ></ha-chart-base>
   </template>
 </dom-module>
 <script>
@@ -16,6 +26,7 @@ class StateHistoryChartLine extends Polymer.Element {
   static get is() { return 'state-history-chart-line'; }
   static get properties() {
     return {
+      chartData: Object,
       data: Object,
       unit: String,
       identifier: String,
@@ -27,6 +38,11 @@ class StateHistoryChartLine extends Polymer.Element {
       },
 
       endTime: Object,
+      rendered: {
+        type: Boolean,
+        value: false,
+        observer: '_onRenderedChanged'
+      }
     };
   }
   static get observers() {
@@ -41,6 +57,16 @@ class StateHistoryChartLine extends Polymer.Element {
 
   dataChanged() {
     this.drawChart();
+  }
+
+  _onRenderedChanged(rendered) {
+    if (rendered) this.animateHeight();
+  }
+
+  animateHeight() {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      this.style.height = this.$.chart.scrollHeight + 'px';
+    }));
   }
 
   drawChart() {
@@ -227,16 +253,6 @@ class StateHistoryChartLine extends Polymer.Element {
             ticks: {
               maxTicksLimit: 7,
             },
-            // Add space to prevent cut-off.
-            afterDataLimits: (axis) => {
-              const min = axis.min;
-              const max = axis.max;
-              if (isFinite(min) && isFinite(max)) {
-                const padding = (max - min) * 0.05;
-                axis.min -= padding;
-                axis.max += padding;
-              }
-            },
           }],
         },
         tooltips: {
@@ -244,6 +260,11 @@ class StateHistoryChartLine extends Polymer.Element {
         },
         hover: {
           mode: 'neareach',
+        },
+        layout: {
+          padding: {
+            top: 5
+          },
         },
         elements: {
           line: {

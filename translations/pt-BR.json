@@ -87,7 +87,7 @@
                 "on": "Fraca"
             },
             "problem": {
-                "off": "",
+                "off": "OK",
                 "on": "Problema"
             },
             "connectivity": {
@@ -301,60 +301,189 @@
                                 "heading": "Recarregando configuração",
                                 "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Recarregando irá substituir a sua configuração atual por uma nova.",
                                 "core": "Recarregar sistema",
-                                "group": "",
-                                "automation": "",
-                                "script": ""
+                                "group": "Recarregar grupos",
+                                "automation": "Recarregar automações",
+                                "script": "Recarregar scripts"
                             },
                             "server_management": {
                                 "heading": "Gerenciamento do servidor",
                                 "introduction": "Controle seu servidor do Home Assistant... A partir do Home Assistant.",
-                                "restart": "",
-                                "stop": ""
+                                "restart": "Reiniciar",
+                                "stop": "Parar"
                             }
                         },
                         "push_notifications": {
                             "header": "Configurar notificações push",
                             "introduction": "Habilite essa configuração para receber notificações push neste dispositivo",
-                            "push_notifications": ""
+                            "push_notifications": "Notificações push"
                         },
                         "translation": {
                             "header": "Definir idioma",
                             "introduction": "Escolha um idioma para a \"interface\" do Home Assistant neste dispositivo",
-                            "language": ""
+                            "language": "Idioma"
                         },
                         "themes": {
-                            "header": "",
+                            "header": "Definir um tema",
                             "introduction": "Selecione 'Backend-selected' para usar qualquer tema escolhido pelo backend ou selecione um tema para este dispositivo.",
-                            "theme": ""
+                            "theme": "Tema"
                         }
                     }
                 },
                 "customize": {
-                    "caption": "",
+                    "caption": "Costumização",
                     "description": "Personalizar suas entidades"
                 },
                 "automation": {
                     "caption": "Automação",
-                    "description": "",
+                    "description": "Criar e editar automações",
+                    "picker": {
+                        "header": "Editor de automação",
+                        "introduction": "O editor de automação permite que você crie e edite automações. Por favor leia [as instruções](https:\/\/home-assistant.io\/docs\/automation\/editor\/) para certificar-se que configurou o Home Assistant corretamente.",
+                        "pick_automation": "Escolha uma automação para editar",
+                        "no_automations": "Não encontramos nenhuma automação editável",
+                        "add_automation": "Adicionar automação"
+                    },
                     "editor": {
-                        "conditions": {
+                        "introduction": "Use automações para trazer sua casa a vida",
+                        "default_name": "Nova Automação",
+                        "save": "Salvar",
+                        "unsaved_confirm": "Você tem alterações não salvas. Tem certeza que deseja sair?",
+                        "alias": "Nome",
+                        "triggers": {
+                            "header": "Gatilhos",
+                            "introduction": "Os gatilhos são o que iniciam o processamento das regras de automações. É possível especificar múltiplos gatilhos para a mesma regra. Quando o gatilho inicia, o Home Assistant vai validar as condições, se existirem, e iniciar as ações.\n\n[Veja mais sobre gatilhos.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Adicionar gatilho",
+                            "duplicate": "Duplicar",
+                            "delete": "Apagar",
+                            "delete_confirm": "Tem certeza que deseja excluir?",
+                            "unsupported_platform": "Plataforma não suportada: {plataforma}",
+                            "type_select": "Tipo de gatilho",
                             "type": {
+                                "event": {
+                                    "label": "Evento",
+                                    "event_type": "Tipo de evento",
+                                    "event_data": "Dados de evento"
+                                },
+                                "state": {
+                                    "label": "Estado",
+                                    "from": "De",
+                                    "to": "Para"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Evento:",
+                                    "start": "Iniciar",
+                                    "shutdown": "Desligar"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Tópico",
+                                    "payload": "Valor (opcional)"
+                                },
+                                "numeric_state": {
+                                    "label": "Estado numérico",
+                                    "above": "Acima",
+                                    "below": "Abaixo",
+                                    "value_template": "Valor de exemplo (opcional)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "event": "Evento",
+                                    "sunrise": "Nascer do sol",
+                                    "sunset": "Pôr do Sol",
+                                    "offset": "Diferença de tempo (opcional)"
+                                },
+                                "template": {
+                                    "label": "Modelo",
+                                    "value_template": "Valor modelo"
+                                },
                                 "time": {
+                                    "label": "Tempo",
+                                    "at": "Em"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entidade com localização",
+                                    "zone": "Zona",
+                                    "event": "Evento:",
+                                    "enter": "Entrar",
+                                    "leave": "Sair"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Condições",
+                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação aconteça quando acionada. As condições são muito semelhantes aos gatilhos, mas são muito diferentes. Um gatilho examinará os eventos que estão ocorrendo no sistema, enquanto uma condição examina apenas a aparência do sistema no momento. Um disparador pode observar que um interruptor está sendo ligado. Uma condição só pode ver se um switch está atualmente ativado ou desativado. \n\n [Saiba mais sobre as condições.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Adicionar condição",
+                            "duplicate": "Duplicar",
+                            "delete": "Apagar",
+                            "delete_confirm": "Tem certeza que quer apagar?",
+                            "unsupported_condition": "Condição não suportada: {condição}",
+                            "type_select": "Tipo de Condição",
+                            "type": {
+                                "state": {
+                                    "label": "Estado",
+                                    "state": "Estado"
+                                },
+                                "numeric_state": {
+                                    "label": "Estado numérico",
+                                    "above": "Acima",
+                                    "below": "Abaixo",
+                                    "value_template": "Valor de exemplo (opcional)"
+                                },
+                                "sun": {
+                                    "label": "Sol",
+                                    "before": "Antes:",
+                                    "after": "Depois:",
+                                    "before_offset": "Tempo a adiantar (opcional)",
+                                    "after_offset": "Tempo a atrasar (opcional)",
+                                    "sunrise": "Nascer do sol",
+                                    "sunset": "Pôr do Sol"
+                                },
+                                "template": {
+                                    "label": "Modelo",
+                                    "value_template": "Valor de exemplo"
+                                },
+                                "time": {
+                                    "label": "Tempo",
                                     "after": "Depois",
                                     "before": "Antes"
                                 },
                                 "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entidade com localização",
                                     "zone": "Zona"
                                 }
                             }
                         },
                         "actions": {
                             "header": "Ações",
+                            "introduction": "As ações são as que o Home Assistant irá executar quando a automação for iniciada.",
+                            "add": "Adicionar ação",
+                            "duplicate": "Duplicar",
+                            "delete": "Apagar",
+                            "delete_confirm": "Está certo que deseja apagar?",
+                            "unsupported_action": "Ação não suportada: {ação}",
+                            "type_select": "Tipo de acão",
                             "type": {
+                                "service": {
+                                    "label": "Iniciar Serviço",
+                                    "service_data": "Dados do Serviço"
+                                },
+                                "delay": {
+                                    "label": "Atraso",
+                                    "delay": "Atraso"
+                                },
                                 "wait_template": {
-                                    "label": "Espere"
+                                    "label": "Espere",
+                                    "wait_template": "Modelo de Espera",
+                                    "timeout": "Tempo limite (opcional)"
+                                },
+                                "condition": {
+                                    "label": "Condição"
                                 },
                                 "event": {
+                                    "label": "Iniciar evento",
                                     "event": "Evento:",
                                     "service_data": "Informações do serviço"
                                 }
@@ -363,8 +492,8 @@
                     }
                 },
                 "script": {
-                    "caption": "",
-                    "description": ""
+                    "caption": "Script",
+                    "description": "Criar e editar scripts"
                 },
                 "zwave": {
                     "caption": "",
@@ -397,6 +526,16 @@
             "persistent_notification": {
                 "dismiss": "Dispensar"
             }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entidade"
+                }
+            },
+            "service-picker": {
+                "service": "Serviço"
+            }
         }
     },
     "domain": {
@@ -428,8 +567,8 @@
         "proximity": "Proximidade",
         "remote": "Remoto",
         "scene": "Cena",
-        "script": "",
-        "sensor": "",
+        "script": "Script",
+        "sensor": "Sensor",
         "sun": "Sol",
         "switch": "Interruptor",
         "updater": "Atualizador",

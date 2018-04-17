@@ -14,7 +14,7 @@
             icon='mdi:arrow-left'
             on-click='_backTapped'
           ></paper-icon-button>
-          <div main-title>[[title]]</div>
+          <div main-title>[[header]]</div>
         </app-toolbar>
       </app-header>
 
@@ -29,7 +29,7 @@ class HassSubpage extends Polymer.Element {
 
   static get properties() {
     return {
-      title: String
+      header: String
     };
   }
 

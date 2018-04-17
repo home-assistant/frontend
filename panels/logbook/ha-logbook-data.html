@@ -68,6 +68,11 @@
 
       return DATE_CACHE[date];
     }
+
+    refreshLogbook() {
+      DATE_CACHE[this.filterDate] = null;
+      this.filterDateChanged(this.filterDate);
+    }
   }
 
   customElements.define(HaLogbookData.is, HaLogbookData);

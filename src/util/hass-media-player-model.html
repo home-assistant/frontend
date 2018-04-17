@@ -1,13 +1,13 @@
 <script>
 (function () {
-  window.MediaPlayerEntity = function (hass, stateObj) {
+  window.HassMediaPlayerEntity = function (hass, stateObj) {
     this.hass = hass;
     this.stateObj = stateObj;
   };
 
   function addGetter(name, getter) {
     Object.defineProperty(
-      window.MediaPlayerEntity.prototype, name,
+      window.HassMediaPlayerEntity.prototype, name,
       { get: getter }
     );
   }
@@ -103,6 +103,10 @@
     return (this.stateObj.attributes.supported_features & 1024) !== 0;
   });
 
+  addGetter('supportsSelectSource', function () {
+    return (this.stateObj.attributes.supported_features & 2048) !== 0;
+  });
+
   addGetter('supportsPlay', function () {
     return (this.stateObj.attributes.supported_features & 16384) !== 0;
   });
@@ -134,7 +138,15 @@
     return '';
   });
 
-  Object.assign(window.MediaPlayerEntity.prototype, {
+  addGetter('source', function () {
+    return this.stateObj.attributes.source;
+  });
+
+  addGetter('sourceList', function () {
+    return this.stateObj.attributes.source_list;
+  });
+
+  Object.assign(window.HassMediaPlayerEntity.prototype, {
     mediaPlayPause: function () {
       this.callService('media_play_pause');
     },
@@ -184,6 +196,10 @@
 
     volumeUp: function () {
       this.callService('volume_up');
+    },
+
+    selectSource: function (sourceInput) {
+      this.callService('select_source', { source: sourceInput });
     },
 
     // helper method
