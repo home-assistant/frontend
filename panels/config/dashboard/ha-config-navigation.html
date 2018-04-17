@@ -43,7 +43,7 @@
    * @appliesMixin window.hassMixins.EventsMixin
    */
   class HaConfigNavigation extends
-    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+    window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(Polymer.Element)) {
     static get is() { return 'ha-config-navigation'; }
 
     static get properties() {
@@ -78,8 +78,7 @@
     }
 
     _navigate(ev) {
-      history.pushState(null, null, '/config/' + ev.model.item);
-      this.fire('location-changed');
+      this.navigate('/config/' + ev.model.item);
     }
   }
 
