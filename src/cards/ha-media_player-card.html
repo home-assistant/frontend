@@ -101,8 +101,10 @@
 
       .progress {
         width: 100%;
+        height: var(--paper-progress-height, 4px);
+        margin-top: calc(-1*var(--paper-progress-height, 4px));
         --paper-progress-active-color: var(--accent-color);
-        --paper-progress-container-color: #FFF;
+        --paper-progress-container-color: rgba(200,200,200,0.5);
       }
 
       .controls {
