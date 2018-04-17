@@ -74,7 +74,7 @@ class HassioAddonRepository extends window.hassMixins.NavigateMixin(Polymer.Elem
   }
 
   addonTapped(ev) {
-    this.navigate('/hassio/addon/' + ev.model.addon.slug);
+    this.navigate(`/hassio/addon/${ev.model.addon.slug}`);
   }
 }
 
