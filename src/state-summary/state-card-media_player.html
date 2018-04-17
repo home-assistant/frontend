@@ -69,7 +69,7 @@ class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(Polymer.Eleme
   }
 
   computePlayerObj(hass, stateObj) {
-    return new window.MediaPlayerEntity(hass, stateObj);
+    return new window.HassMediaPlayerEntity(hass, stateObj);
   }
 
   computePrimaryText(localize, playerObj) {
