@@ -160,7 +160,7 @@
  * @appliesMixin window.hassMixins.EventsMixin
  */
 class HaSidebar extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+  window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(Polymer.Element)) {
   static get is() { return 'ha-sidebar'; }
 
   static get properties() {
@@ -259,8 +259,7 @@ class HaSidebar extends
     if (path === document.location.pathname) {
       return;
     }
-    history.pushState(null, null, path);
-    this.fire('location-changed');
+    this.navigate(path);
   }
 
   handleLogOut() {
