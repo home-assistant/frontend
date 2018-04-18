@@ -8,8 +8,4 @@ set -eu -o pipefail
 
 cd "$(dirname "$0")/.."
 
-if git diff "${TRAVIS_COMMIT_RANGE}" --name-only | grep -Fxq "src/translations/en.json" ; then
-    script/translations_upload_base
-else
-    echo "No changes to src/translations/en.json. Skipping translation upload."
-fi
+script/translations_upload_base
