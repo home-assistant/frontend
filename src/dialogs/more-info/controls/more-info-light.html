@@ -217,13 +217,15 @@
       const min = stateObj.attributes.min_mireds;
       const max = stateObj.attributes.max_mireds;
       const now = stateObj.attributes.color_temp;
-      return ((now - min) / (max - min)) * 100;
+      const scaled = ((now - min) / (max - min)) * 100;
+      return (100 - scaled);
     }
 
     computeColorTemp(sliderValue) {
       const min = this.stateObj.attributes.min_mireds;
       const max = this.stateObj.attributes.max_mireds;
-      return ((sliderValue / 100) * (max - min)) + min;
+      const scaled = 100 - sliderValue;
+      return ((scaled / 100) * (max - min)) + min;
     }
 
     effectChanged(effectIndex) {
