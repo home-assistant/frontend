@@ -15,14 +15,36 @@
   <template>
     <style is="custom-style" include="iron-flex"></style>
     <style>
-      .effect_list {
-        padding-bottom: 16px;
+      .control {
+        display:none;
       }
 
-      .effect_list, .brightness, .color_temp, .white_value {
+      .has-effect_list .effect_list,
+      .has-brightness .brightness,
+      .has-color_temp .color_temp,
+      .has-white_value .white_value,
+      .has-color .color {
+        display: block;
         max-height: 0px;
         overflow: hidden;
-        transition: max-height .5s ease-in;
+        opacity: 0;
+        transition: max-height .3s ease-in-out .1s, opacity .3s ease-in-out 0s;
+      }
+
+      .is-on .control {
+        max-height: 84px;
+        opacity: 1;
+        transition: max-height .3s ease-in-out 0s, opacity .3s ease-in-out 0.1s;
+      }
+
+      .is-on .control.color {
+        max-height: 500px;
+        opacity: 1;
+      }
+
+      .is-unavailable .control {
+        max-height: 0px;
+        opacity: 0;
       }
 
       .color_temp {
@@ -32,37 +54,12 @@
       }
 
       ha-color-picker {
-        display: block;
-        margin: auto;
-
-        max-height: 0px;
-        overflow: hidden;
-        opacity: 0;
-        transition: max-height .5s ease-in-out 0s, opacity .5s ease-in-out .3s;
-      }
-
-      .has-effect_list.is-on .effect_list,
-      .has-brightness .brightness,
-      .has-color_temp.is-on .color_temp,
-      .has-white_value.is-on .white_value {
-        max-height: 84px;
-        opacity: 1;
-      }
-
-      .has-color.is-on ha-color-picker {
-        max-height: 500px;
-        opacity: 1;
         overflow: visible;
         --ha-color-picker-wheel-borderwidth: 5;
         --ha-color-picker-wheel-bordercolor: white;
         --ha-color-picker-wheel-shadow: none;
         --ha-color-picker-marker-borderwidth: 2;
         --ha-color-picker-marker-bordercolor: white;
-        transition: max-height .5s ease-in-out .3s, opacity .5s ease-in-out 0s;
-      }
-
-      .is-unavailable .control {
-        max-height: 0px;
       }
 
       paper-item {
