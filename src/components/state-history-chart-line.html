@@ -235,6 +235,13 @@ class StateHistoryChartLine extends Polymer.Element {
       Array.prototype.push.apply(datasets, data);
     });
 
+    const formatTooltipTitle = function (items, data) {
+      const item = items[0];
+      const date = data.datasets[item.datasetIndex].data[item.index].x;
+
+      return window.hassUtil.formatDateTime(date);
+    };
+
     const chartOptions = {
       type: 'line',
       unit: unit,
@@ -257,6 +264,9 @@ class StateHistoryChartLine extends Polymer.Element {
         },
         tooltips: {
           mode: 'neareach',
+          callbacks: {
+            title: formatTooltipTitle
+          },
         },
         hover: {
           mode: 'neareach',
