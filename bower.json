@@ -58,9 +58,7 @@
     "webcomponentsjs": "^1.0.10",
     "chart.js": "~2.7.2",
     "moment": "^2.20.0",
-    "chartjs-chart-timeline": "fanthos/chartjs-chart-timeline#^0.1.5",
-    "chartjs-plugin-zoom": "^0.6.3",
-    "hammerjs": "^2.0.8"
+    "chartjs-chart-timeline": "fanthos/chartjs-chart-timeline#^0.1.5"
   },
   "devDependencies": {
     "web-component-tester": "^6.3.0"
