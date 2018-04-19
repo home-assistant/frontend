@@ -34,13 +34,13 @@
             "armed_custom_bypass": "Armed custom bypass"
         },
         "automation": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "binary_sensor": {
             "default": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Off",
+                "on": "On"
             },
             "moisture": {
                 "off": "Dry",
@@ -51,36 +51,36 @@
                 "on": "Detected"
             },
             "motion": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Clear",
+                "on": "Detected"
             },
             "occupancy": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Clear",
+                "on": "Detected"
             },
             "smoke": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Clear",
+                "on": "Detected"
             },
             "sound": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Clear",
+                "on": "Detected"
             },
             "vibration": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Clear",
+                "on": "Detected"
             },
             "opening": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Closed",
+                "on": "Open"
             },
             "safety": {
                 "off": "Safe",
                 "on": "Unsafe"
             },
             "presence": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Away",
+                "on": "Home"
             },
             "battery": {
                 "off": "Normal",
@@ -95,33 +95,33 @@
                 "on": "Connected"
             },
             "cold": {
-                "off": "[%1$s]",
+                "off": "Normal",
                 "on": "Cold"
             },
             "door": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Closed",
+                "on": "Open"
             },
             "garage_door": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Closed",
+                "on": "Open"
             },
             "heat": {
-                "off": "[%1$s]",
+                "off": "Normal",
                 "on": "Hot"
             },
             "window": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Closed",
+                "on": "Open"
             },
             "lock": {
-                "off": "[%1$s]",
-                "on": "[%1$s]"
+                "off": "Locked",
+                "on": "Unlocked"
             }
         },
         "calendar": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "camera": {
             "recording": "Recording",
@@ -129,8 +129,8 @@
             "idle": "Idle"
         },
         "climate": {
-            "off": "[%1$s]",
-            "on": "[%1$s]",
+            "off": "Off",
+            "on": "On",
             "heat": "Heat",
             "cool": "Cool",
             "idle": "Idle",
@@ -160,70 +160,70 @@
             "not_home": "Away"
         },
         "fan": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "group": {
-            "off": "[%1$s]",
-            "on": "[%1$s]",
-            "home": "[%1$s]",
-            "not_home": "[%1$s]",
-            "open": "[%1$s]",
-            "opening": "[%1$s]",
-            "closed": "[%1$s]",
-            "closing": "[%1$s]",
-            "stopped": "[%1$s]",
-            "locked": "[%1$s]",
-            "unlocked": "[%1$s]",
-            "ok": "[%1$s]",
-            "problem": "[%1$s]"
+            "off": "Off",
+            "on": "On",
+            "home": "Home",
+            "not_home": "Away",
+            "open": "Open",
+            "opening": "Opening",
+            "closed": "Closed",
+            "closing": "Closing",
+            "stopped": "Stopped",
+            "locked": "Locked",
+            "unlocked": "Unlocked",
+            "ok": "OK",
+            "problem": "Problem"
         },
         "input_boolean": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "light": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "lock": {
             "locked": "Locked",
             "unlocked": "Unlocked"
         },
         "media_player": {
-            "off": "[%1$s]",
-            "on": "[%1$s]",
+            "off": "Off",
+            "on": "On",
             "playing": "Playing",
             "paused": "Paused",
             "idle": "Idle",
             "standby": "Standby"
         },
         "plant": {
-            "ok": "[%1$s]",
-            "problem": "[%1$s]"
+            "ok": "OK",
+            "problem": "Problem"
         },
         "remote": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "scene": {
             "scening": "Scening"
         },
         "script": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "sensor": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "sun": {
             "above_horizon": "Above horizon",
             "below_horizon": "Below horizon"
         },
         "switch": {
-            "off": "[%1$s]",
-            "on": "[%1$s]"
+            "off": "Off",
+            "on": "On"
         },
         "zwave": {
             "default": {
@@ -233,8 +233,8 @@
                 "ready": "Ready"
             },
             "query_stage": {
-                "initializing": "[%1$s] (%1$s)",
-                "dead": "[%1$s] (%1$s)"
+                "initializing": "Initializing ({query_stage})",
+                "dead": "Dead ({query_stage})"
             }
         }
     },
@@ -246,18 +246,18 @@
         "alarm_control_panel": {
             "armed": "Armed",
             "disarmed": "Disarm",
-            "armed_home": "[%1$s]",
-            "armed_away": "[%1$s]",
-            "armed_night": "[%1$s]",
+            "armed_home": "Armed",
+            "armed_away": "Armed",
+            "armed_night": "Armed",
             "pending": "Pend",
             "arming": "Arming",
             "disarming": "Disarm",
             "triggered": "Trig",
-            "armed_custom_bypass": "[%1$s]"
+            "armed_custom_bypass": "Armed"
         },
         "device_tracker": {
-            "home": "[%1$s]",
-            "not_home": "[%1$s]"
+            "home": "Home",
+            "not_home": "Away"
         }
     },
     "ui": {
@@ -272,7 +272,7 @@
                 "period": "Period"
             },
             "logbook": {
-                "showing_entries": "[%1$s]"
+                "showing_entries": "Showing entries for"
             },
             "mailbox": {
                 "empty": "You do not have any messages",
@@ -360,9 +360,9 @@
                             "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.\n\n[Learn more about triggers.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Add trigger",
                             "duplicate": "Duplicate",
-                            "delete": "[%1$s]",
+                            "delete": "Delete",
                             "delete_confirm": "Sure you want to delete?",
-                            "unsupported_platform": "Unsupported platform: %1$s",
+                            "unsupported_platform": "Unsupported platform: {platform}",
                             "type_select": "Trigger type",
                             "type": {
                                 "event": {
@@ -394,7 +394,7 @@
                                 },
                                 "sun": {
                                     "label": "Sun",
-                                    "event": "[%1$s]",
+                                    "event": "Event:",
                                     "sunrise": "Sunrise",
                                     "sunset": "Sunset",
                                     "offset": "Offset (optional)"
@@ -410,8 +410,8 @@
                                 "zone": {
                                     "label": "Zone",
                                     "entity": "Entity with location",
-                                    "zone": "[%1$s]",
-                                    "event": "[%1$s]",
+                                    "zone": "Zone",
+                                    "event": "Event:",
                                     "enter": "Enter",
                                     "leave": "Leave"
                                 }
@@ -421,24 +421,24 @@
                             "header": "Conditions",
                             "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.\n\n[Learn more about conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Add condition",
-                            "duplicate": "[%1$s]",
-                            "delete": "[%1$s]",
-                            "delete_confirm": "[%1$s]",
-                            "unsupported_condition": "Unsupported condition: %1$s",
+                            "duplicate": "Duplicate",
+                            "delete": "Delete",
+                            "delete_confirm": "Sure you want to delete?",
+                            "unsupported_condition": "Unsupported condition: {condition}",
                             "type_select": "Condition type",
                             "type": {
                                 "state": {
-                                    "label": "[%1$s]",
-                                    "state": "[%1$s]"
+                                    "label": "State",
+                                    "state": "State"
                                 },
                                 "numeric_state": {
-                                    "label": "[%1$s]",
-                                    "above": "[%1$s]",
-                                    "below": "[%1$s]",
-                                    "value_template": "[%1$s]"
+                                    "label": "Numeric state",
+                                    "above": "Above",
+                                    "below": "Below",
+                                    "value_template": "Value template (optional)"
                                 },
                                 "sun": {
-                                    "label": "[%1$s]",
+                                    "label": "Sun",
                                     "before": "Before:",
                                     "after": "After:",
                                     "before_offset": "Before offset (optional)",
@@ -447,18 +447,18 @@
                                     "sunset": "Sunset"
                                 },
                                 "template": {
-                                    "label": "[%1$s]",
-                                    "value_template": "[%1$s]"
+                                    "label": "Template",
+                                    "value_template": "Value template"
                                 },
                                 "time": {
-                                    "label": "[%1$s]",
+                                    "label": "Time",
                                     "after": "After",
                                     "before": "Before"
                                 },
                                 "zone": {
-                                    "label": "[%1$s]",
-                                    "entity": "[%1$s]",
-                                    "zone": "[%1$s]"
+                                    "label": "Zone",
+                                    "entity": "Entity with location",
+                                    "zone": "Zone"
                                 }
                             }
                         },
@@ -466,10 +466,10 @@
                             "header": "Actions",
                             "introduction": "The actions are what Home Assistant will do when the automation is triggered.\n\n[Learn more about actions.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Add action",
-                            "duplicate": "[%1$s]",
-                            "delete": "[%1$s]",
-                            "delete_confirm": "[%1$s]",
-                            "unsupported_action": "Unsupported action: %1$s",
+                            "duplicate": "Duplicate",
+                            "delete": "Delete",
+                            "delete_confirm": "Sure you want to delete?",
+                            "unsupported_action": "Unsupported action: {action}",
                             "type_select": "Action type",
                             "type": {
                                 "service": {
@@ -478,7 +478,7 @@
                                 },
                                 "delay": {
                                     "label": "Delay",
-                                    "delay": "[%1$s]"
+                                    "delay": "Delay"
                                 },
                                 "wait_template": {
                                     "label": "Wait",
@@ -490,8 +490,8 @@
                                 },
                                 "event": {
                                     "label": "Fire event",
-                                    "event": "[%1$s]",
-                                    "service_data": "[%1$s]"
+                                    "event": "Event:",
+                                    "service_data": "Service data"
                                 }
                             }
                         }
@@ -516,9 +516,9 @@
             "cancel": "Cancel"
         },
         "duration": {
-            "day": "%1$s {count, plural,\n  one %1$s\n  other %1$s\n}",
-            "week": "%1$s {count, plural,\n  one %1$s\n  other %1$s\n}",
-            "second": "%1$s {count, plural,\n  one %1$s\n  other %1$s\n}"
+            "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+            "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}",
+            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}"
         },
         "login-form": {
             "password": "Password",
