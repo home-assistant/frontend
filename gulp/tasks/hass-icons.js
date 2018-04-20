@@ -53,6 +53,7 @@ async function generateHassIcons() {
   defs.childNodes = defs.childNodes.filter(icon => icons.has(icon.attrs[0].value));
 
   fs.writeFileSync('hass_frontend/hass_icons.html', parse5.serialize(iconDoc));
+  // eslint-disable-next-line
   console.log(`Home Assistant has ${icons.size} icons.`);
 }
 
