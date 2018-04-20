@@ -70,7 +70,7 @@
 
       <div class='control brightness'>
         <ha-labeled-slider
-          caption='Brightness' icon='mdi:brightness-5' max='255'
+          caption='Brightness' icon='hass:brightness-5' max='255'
           value='{{brightnessSliderValue}}'
           on-change='brightnessSliderChanged'
           ignore-bar-touch></ha-labeled-slider>
@@ -78,7 +78,7 @@
 
       <div class='control color_temp'>
         <ha-labeled-slider
-          caption='Color Temperature' icon='mdi:thermometer'
+          caption='Color Temperature' icon='hass:thermometer'
           min='[[stateObj.attributes.min_mireds]]' max='[[stateObj.attributes.max_mireds]]'
           value='{{ctSliderValue}}'
           on-change='ctSliderChanged'
@@ -87,7 +87,7 @@
 
       <div class='control white_value'>
         <ha-labeled-slider
-          caption='White Value' icon='mdi:file-word-box' max='255'
+          caption='White Value' icon='hass:file-word-box' max='255'
           value='{{wvSliderValue}}'
           on-change='wvSliderChanged'
           ignore-bar-touch></ha-labeled-slider>

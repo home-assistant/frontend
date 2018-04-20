@@ -7,7 +7,7 @@ collection of utility functions.
 <script>
 window.hassUtil = window.hassUtil || {};
 
-window.hassUtil.DEFAULT_ICON = 'mdi:bookmark';
+window.hassUtil.DEFAULT_ICON = 'hass:bookmark';
 
 window.hassUtil.OFF_STATES = ['off', 'closed', 'unlocked'];
 
@@ -80,139 +80,139 @@ window.hassUtil.domainIcon = function (domain, state) {
     case 'alarm_control_panel':
       switch (state) {
         case 'armed_home':
-          return 'mdi:bell-plus';
+          return 'hass:bell-plus';
         case 'armed_night':
-          return 'mdi:bell-sleep';
+          return 'hass:bell-sleep';
         case 'disarmed':
-          return 'mdi:bell-outline';
+          return 'hass:bell-outline';
         case 'triggered':
-          return 'mdi:bell-ring';
+          return 'hass:bell-ring';
         default:
-          return 'mdi:bell';
+          return 'hass:bell';
       }
 
     case 'automation':
-      return 'mdi:playlist-play';
+      return 'hass:playlist-play';
 
     case 'binary_sensor':
-      return state && state === 'off' ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
+      return state && state === 'off' ? 'hass:radiobox-blank' : 'hass:checkbox-marked-circle';
 
     case 'calendar':
-      return 'mdi:calendar';
+      return 'hass:calendar';
 
     case 'camera':
-      return 'mdi:video';
+      return 'hass:video';
 
     case 'climate':
-      return 'mdi:thermostat';
+      return 'hass:thermostat';
 
     case 'configurator':
-      return 'mdi:settings';
+      return 'hass:settings';
 
     case 'conversation':
-      return 'mdi:text-to-speech';
+      return 'hass:text-to-speech';
 
     case 'cover':
-      return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
+      return state && state === 'open' ? 'hass:window-open' : 'hass:window-closed';
 
     case 'device_tracker':
-      return 'mdi:account';
+      return 'hass:account';
 
     case 'fan':
-      return 'mdi:fan';
+      return 'hass:fan';
 
     case 'history_graph':
-      return 'mdi:chart-line';
+      return 'hass:chart-line';
 
     case 'group':
-      return 'mdi:google-circles-communities';
+      return 'hass:google-circles-communities';
 
     case 'homeassistant':
-      return 'mdi:home-assistant';
+      return 'hass:home-assistant';
 
     case 'image_processing':
-      return 'mdi:image-filter-frames';
+      return 'hass:image-filter-frames';
 
     case 'input_boolean':
-      return 'mdi:drawing';
+      return 'hass:drawing';
 
     case 'input_datetime':
-      return 'mdi:calendar-clock';
+      return 'hass:calendar-clock';
 
     case 'input_select':
-      return 'mdi:format-list-bulleted';
+      return 'hass:format-list-bulleted';
 
     case 'input_number':
-      return 'mdi:ray-vertex';
+      return 'hass:ray-vertex';
 
     case 'input_text':
-      return 'mdi:textbox';
+      return 'hass:textbox';
 
     case 'light':
-      return 'mdi:lightbulb';
+      return 'hass:lightbulb';
 
     case 'lock':
-      return state && state === 'unlocked' ? 'mdi:lock-open' : 'mdi:lock';
+      return state && state === 'unlocked' ? 'hass:lock-open' : 'hass:lock';
 
     case 'mailbox':
-      return 'mdi:mailbox';
+      return 'hass:mailbox';
 
     case 'media_player':
       return state && state !== 'off' && state !== 'idle' ?
-        'mdi:cast-connected' : 'mdi:cast';
+        'hass:cast-connected' : 'hass:cast';
 
     case 'notify':
-      return 'mdi:comment-alert';
+      return 'hass:comment-alert';
 
     case 'plant':
-      return 'mdi:flower';
+      return 'hass:flower';
 
     case 'proximity':
-      return 'mdi:apple-safari';
+      return 'hass:apple-safari';
 
     case 'remote':
-      return 'mdi:remote';
+      return 'hass:remote';
 
     case 'scene':
-      return 'mdi:google-pages';
+      return 'hass:google-pages';
 
     case 'script':
-      return 'mdi:file-document';
+      return 'hass:file-document';
 
     case 'sensor':
-      return 'mdi:eye';
+      return 'hass:eye';
 
     case 'simple_alarm':
-      return 'mdi:bell';
+      return 'hass:bell';
 
     case 'sun':
-      return 'mdi:white-balance-sunny';
+      return 'hass:white-balance-sunny';
 
     case 'switch':
-      return 'mdi:flash';
+      return 'hass:flash';
 
     case 'timer':
-      return 'mdi:timer';
+      return 'hass:timer';
 
     case 'updater':
-      return 'mdi:cloud-upload';
+      return 'hass:cloud-upload';
 
     case 'vacuum':
       return 'mdi:robot-vacuum';
 
     case 'weblink':
-      return 'mdi:open-in-new';
+      return 'hass:open-in-new';
 
     case 'zwave':
       switch (state) {
         case 'dead':
-          return 'mdi:emoticon-dead';
+          return 'hass:emoticon-dead';
         case 'sleeping':
-          return 'mdi:sleep';
+          return 'hass:sleep';
         case 'initializing':
-          return 'mdi:timer-sand';
+          return 'hass:timer-sand';
         default:
-          return 'mdi:nfc';
+          return 'hass:nfc';
       }
 
     default:
@@ -227,47 +227,47 @@ window.hassUtil.binarySensorIcon = function (state) {
   var activated = state.state && state.state === 'off';
   switch (state.attributes.device_class) {
     case 'battery':
-      return activated ? 'mdi:battery' : 'mdi:battery-outline';
+      return activated ? 'hass:battery' : 'hass:battery-outline';
     case 'cold':
-      return activated ? 'mdi:thermometer' : 'mdi:snowflake';
+      return activated ? 'hass:thermometer' : 'hass:snowflake';
     case 'connectivity':
-      return activated ? 'mdi:server-network-off' : 'mdi:server-network';
+      return activated ? 'hass:server-network-off' : 'hass:server-network';
     case 'door':
-      return activated ? 'mdi:door-closed' : 'mdi:door-open';
+      return activated ? 'hass:door-closed' : 'hass:door-open';
     case 'garage_door':
-      return activated ? 'mdi:garage' : 'mdi:garage-open';
+      return activated ? 'hass:garage' : 'hass:garage-open';
     case 'gas':
     case 'power':
     case 'problem':
     case 'safety':
     case 'smoke':
-      return activated ? 'mdi:verified' : 'mdi:alert';
+      return activated ? 'hass:verified' : 'hass:alert';
     case 'heat':
-      return activated ? 'mdi:thermometer' : 'mdi:fire';
+      return activated ? 'hass:thermometer' : 'hass:fire';
     case 'light':
-      return activated ? 'mdi:brightness-5' : 'mdi:brightness-7';
+      return activated ? 'hass:brightness-5' : 'hass:brightness-7';
     case 'lock':
-      return activated ? 'mdi:lock' : 'mdi:lock-open';
+      return activated ? 'hass:lock' : 'hass:lock-open';
     case 'moisture':
-      return activated ? 'mdi:water-off' : 'mdi:water';
+      return activated ? 'hass:water-off' : 'hass:water';
     case 'motion':
-      return activated ? 'mdi:walk' : 'mdi:run';
+      return activated ? 'hass:walk' : 'hass:run';
     case 'occupancy':
-      return activated ? 'mdi:home-outline' : 'mdi:home';
+      return activated ? 'hass:home-outline' : 'hass:home';
     case 'opening':
-      return activated ? 'mdi:square' : 'mdi:square-outline';
+      return activated ? 'hass:square' : 'hass:square-outline';
     case 'plug':
-      return activated ? 'mdi:power-plug-off' : 'mdi:power-plug';
+      return activated ? 'hass:power-plug-off' : 'hass:power-plug';
     case 'presence':
-      return activated ? 'mdi:home-outline' : 'mdi:home';
+      return activated ? 'hass:home-outline' : 'hass:home';
     case 'sound':
-      return activated ? 'mdi:music-note-off' : 'mdi:music-note';
+      return activated ? 'hass:music-note-off' : 'hass:music-note';
     case 'vibration':
-      return activated ? 'mdi:crop-portrait' : 'mdi:vibrate';
+      return activated ? 'hass:crop-portrait' : 'hass:vibrate';
     case 'window':
-      return activated ? 'mdi:window-closed' : 'mdi:window-open';
+      return activated ? 'hass:window-closed' : 'hass:window-open';
     default:
-      return activated ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
+      return activated ? 'hass:radiobox-blank' : 'hass:checkbox-marked-circle';
   }
 };
 
@@ -275,9 +275,9 @@ window.hassUtil.coverIcon = function (state) {
   var open = state.state && state.state !== 'closed';
   switch (state.attributes.device_class) {
     case 'garage':
-      return open ? 'mdi:garage-open' : 'mdi:garage';
+      return open ? 'hass:garage-open' : 'hass:garage';
     default:
-      return open ? 'mdi:window-open' : 'mdi:window-closed';
+      return open ? 'hass:window-open' : 'hass:window-closed';
   }
 };
 
@@ -319,9 +319,9 @@ window.hassUtil.stateIcon = function (state) {
     return window.hassUtil.sensorIcon(state);
   } else if (domain === 'sensor' && unit) {
     if (unit === '°C' || unit === '°F') {
-      return 'mdi:thermometer';
+      return 'hass:thermometer';
     } else if (unit === 'Mice') {
-      return 'mdi:mouse-variant';
+      return 'hass:mouse-variant';
     }
   } else if (domain === 'binary_sensor') {
     return window.hassUtil.binarySensorIcon(state);
@@ -329,9 +329,9 @@ window.hassUtil.stateIcon = function (state) {
     return window.hassUtil.coverIcon(state);
   } else if (domain === 'input_datetime') {
     if (!state.attributes.has_date) {
-      return 'mdi:clock';
+      return 'hass:clock';
     } else if (!state.attributes.has_time) {
-      return 'mdi:calendar';
+      return 'hass:calendar';
     }
   }
 

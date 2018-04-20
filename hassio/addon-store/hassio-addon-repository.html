@@ -60,7 +60,7 @@ class HassioAddonRepository extends window.hassMixins.NavigateMixin(Polymer.Elem
   }
 
   computeIcon(addon) {
-    return addon.installed && addon.installed !== addon.version ? 'mdi:arrow-up-bold-circle' : 'mdi:puzzle';
+    return addon.installed && addon.installed !== addon.version ? 'hass:arrow-up-bold-circle' : 'hass:puzzle';
   }
 
   computeIconTitle(addon) {

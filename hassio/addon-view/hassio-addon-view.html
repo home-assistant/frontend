@@ -21,7 +21,7 @@
       :host {
         color: var(--primary-text-color);
         --paper-card-header-color: var(--primary-text-color);
-      }      
+      }
       .content {
         padding: 24px 0 32px;
         max-width: 600px;
@@ -42,10 +42,10 @@
     ></app-route>
     <app-header-layout has-scrolling-region>
       <app-header fixed slot='header'>
-        <app-toolbar>            
+        <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <paper-icon-button
-            icon='mdi:arrow-left'
+            icon='hass:arrow-left'
             on-click='backTapped'
           ></paper-icon-button>
           <div main-title>Hass.io: add-on details</div>

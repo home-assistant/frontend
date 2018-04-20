@@ -57,7 +57,7 @@
     <paper-dialog id='dialog' with-backdrop on-iron-overlay-closed='_dialogClosed'>
       <app-toolbar>
         <paper-icon-button
-          icon='mdi:close'
+          icon='hass:close'
           dialog-dismiss
         ></paper-icon-button>
         <div main-title>[[_computeName(snapshot)]]</div>
@@ -97,14 +97,14 @@
       </template>
       <div class='buttons'>
         <paper-icon-button
-          icon='mdi:delete'
+          icon='hass:delete'
           on-click='_deleteClicked'
           class='warning'
           title='Delete snapshot'
         ></paper-icon-button>
         <a href='[[_computeDownloadUrl(snapshotSlug)]]' download='[[_computeDownloadName(snapshot)]]'>
           <paper-icon-button
-            icon='mdi:download'
+            icon='hass:download'
             class='download'
             title='Download snapshot'
           ></paper-icon-button>

@@ -34,7 +34,7 @@
         <paper-icon-button
           slot="suffix"
           class="clear-button"
-          icon="mdi:close"
+          icon="hass:close"
           hidden$='[[!value]]'
         >Clear</paper-icon-button>
         <paper-icon-button
@@ -97,7 +97,7 @@ class HaComboBox extends Polymer.Element {
   }
 
   _computeToggleIcon(opened) {
-    return opened ? 'mdi:menu-up' : 'mdi:menu-down';
+    return opened ? 'hass:menu-up' : 'hass:menu-down';
   }
 
   _computeItemLabel(item, itemLabelPath) {

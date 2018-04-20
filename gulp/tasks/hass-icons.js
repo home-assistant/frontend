@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const parse5 = require('parse5');
 
-const iconRegEx = /mdi:[\w-]+/g;
+const iconRegEx = /hass:[\w-]+/g;
 
 function mapFiles(startPath, filter, mapFunc) {
   const files = fs.readdirSync(startPath);
@@ -26,7 +26,8 @@ function findIcons() {
     let match;
     // eslint-disable-next-line
     while (match = iconRegEx.exec(content)) {
-      icons.add(match[0].substr(4));
+      // strip off "hass:" and add to set
+      icons.add(match[0].substr(5));
     }
   }
   mapFiles('src', '.html', processFile);
