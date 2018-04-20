@@ -24,9 +24,10 @@ function findIcons() {
   function processFile(filename) {
     const content = fs.readFileSync(filename);
     let match;
+    // eslint-disable-next-line
     while (match = iconRegEx.exec(content)) {
       icons.add(match[0].substr(4));
-    };
+    }
   }
   mapFiles('src', '.html', processFile);
   mapFiles('panels', '.html', processFile);
@@ -38,12 +39,11 @@ function findIcons() {
 async function generateHassIcons() {
   const icons = findIcons();
 
-  const iconDoc = parse5.parseFragment(
-    fs.readFileSync('hass_frontend/mdi.html', { encoding: 'utf-8' }));
+  const iconDoc = parse5.parseFragment(fs.readFileSync('hass_frontend/mdi.html', { encoding: 'utf-8' }));
 
   const ironIconset = iconDoc.childNodes[0];
-  ironIconset.attrs.forEach(attr => {
-    if (attr.name == 'name') {
+  ironIconset.attrs.forEach((attr) => {
+    if (attr.name === 'name') {
       attr.value = 'hass';
     }
   });
