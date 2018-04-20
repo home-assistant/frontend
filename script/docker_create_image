@@ -1,7 +1,0 @@
-#!/bin/bash
-# Building the basic image for compiling the production frontend
-
-IMAGE_NAME=home_assistant_fe_image
-IMAGE_TAG=latest
-
-docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .

@@ -18,7 +18,9 @@
     "lint_js": "eslint src panels js hassio test-mocha --ext js,html",
     "lint_html": "find src panels hassio -name '*.html' | grep -v hassio/index.html | xargs polymer lint --input",
     "mocha": "node_modules/.bin/mocha --opts test-mocha/mocha.opts",
-    "test": "npm run lint_js && npm run lint_html && npm run mocha"
+    "test": "npm run lint_js && npm run lint_html && npm run mocha",
+    "docker_build": "sh ./script/docker_run.sh build $npm_package_version",
+    "bash": "sh ./script/docker_run.sh bash $npm_package_version"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
