@@ -30,7 +30,7 @@
         <ha-entity-toggle state-obj='[[stateObj]]' hass='[[hass]]'></ha-entity-toggle>
       </template>
       <template is='dom-if' if='[[!stateObj.attributes.can_cancel]]'>
-        <paper-button on-click='fireScript'>ACTIVATE</paper-button>
+        <paper-button on-click='fireScript'>[[_getText()]]</paper-button>
       </template>
     </div>
   </template>
@@ -57,6 +57,14 @@ class StateCardScript extends Polymer.Element {
       'script', 'turn_on',
       { entity_id: this.stateObj.entity_id }
     );
+  }
+  
+  _getText() {
+    if(this.stateObj.attributes.custom_text) {
+      return this.stateObj.attributes.custom_text;
+    } else {
+      return 'ACTIVATE';
+    }
   }
 }
 customElements.define(StateCardScript.is, StateCardScript);
