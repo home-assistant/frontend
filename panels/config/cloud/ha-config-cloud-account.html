@@ -6,6 +6,7 @@
 <link rel="import" href="../../../src/layouts/hass-subpage.html">
 <link rel="import" href="../../../src/util/hass-mixins.html">
 <link rel="import" href='../../../src/resources/ha-style.html'>
+<link rel="import" href='../../../src/components/buttons/ha-call-api-button.html'>
 
 <link rel="import" href="../ha-config-section.html">
 
@@ -43,6 +44,9 @@
       paper-button {
         color: var(--primary-color);
         font-weight: 500;
+      }
+      a {
+        color: var(--primary-color);
       }
     </style>
     <hass-subpage header='Cloud Account'>
@@ -90,19 +94,44 @@
           <paper-card heading='Alexa'>
             <div class="card-content">
               With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.
+              <ul>
+                <li>
+                  <a href='https://alexa.amazon.com/spa/index.html#skills/dp/B0772J1QKB/?ref=skill_dsk_skb_sr_2' target='_blank'>
+                    Activate the Home Assistant skill for Alexa
+                  </a>
+                </li>
+                <li>
+                  <a href='https://home-assistant.io/cloud/alexa/' target='_blank'>
+                    Config documentation
+                  </a>
+                </li>
+              </ul>
               <p><em>This integration requires an Alexa-enabled device like the Amazon Echo.</em></p>
             </div>
+          </paper-card>
+
+          <paper-card heading='Google Assistant'>
+            <div class="card-content">
+              With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.
+              <ul>
+                <li>
+                  <a href='https://assistant.google.com/services/a/uid/00000091fd5fb875' target='_blank'>
+                    Activate the Home Assistant skill for Google Assistant
+                  </a>
+                </li>
+                <li>
+                  <a href='https://home-assistant.io/cloud/google_assistant/' target='_blank'>
+                    Config documentation
+                  </a>
+                </li>
+              </ul>
+              <p><em>This integration requires a Google Assistant-enabled device like the Google Home or Android phone.</em></p>
+            </div>
             <div class='card-actions'>
-              <a href='https://alexa.amazon.com/spa/index.html#skills/dp/B0772J1QKB/?ref=skill_dsk_skb_sr_2' target='_blank'>
-                <paper-button>
-                  Home Assistant Alexa skill
-                </paper-button>
-              </a>
-              <a href='https://home-assistant.io/components/cloud.alexa/' target='_blank'>
-                <paper-button>
-                  Documentation
-                </paper-button>
-              </a>
+              <ha-call-api-button
+                hass='[[hass]]'
+                path='cloud/google_actions/sync'
+              >Sync devices</ha-call-api-button>
             </div>
           </paper-card>
         </ha-config-section>
