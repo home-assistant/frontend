@@ -281,20 +281,21 @@ window.hassUtil.coverIcon = function (state) {
   }
 };
 
-window.hassUtil.sensorIcon = function (state) {
+window.hassUtil.sensorIcon = (state) => {
   switch (state.attributes.device_class) {
-    case 'battery':
+    case 'battery': {
       if (isNaN(state.state)) {
         return 'mdi:battery-unknown';
       }
-      var batteryRound = Math.round(state.state / 10) * 10;
+      const batteryRound = Math.round(state.state / 10) * 10;
       if (batteryRound >= 100) {
         return 'mdi:battery';
       }
       if (batteryRound <= 0) {
         return 'mdi:battery-alert';
       }
-      return 'mdi:battery-' + batteryRound;
+      return `mdi:battery-${batteryRound}`;
+    }
     case 'humidity':
       return 'mdi:water-percent';
     case 'temperature':
@@ -311,8 +312,8 @@ window.hassUtil.stateIcon = function (state) {
     return state.attributes.icon;
   }
 
-  var unit = state.attributes.unit_of_measurement;
-  var domain = window.hassUtil.computeDomain(state);
+  const unit = state.attributes.unit_of_measurement;
+  const domain = window.hassUtil.computeDomain(state);
 
   if (domain === 'sensor' && state.attributes.device_class) {
     return window.hassUtil.sensorIcon(state);
