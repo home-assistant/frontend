@@ -1,6 +1,4 @@
 <link rel='import' href='../../bower_components/polymer/polymer-element.html'>
-<link rel='import' href='../../bower_components/iron-flex-layout/iron-flex-layout-classes.html'>
-<link rel='import' href='../../bower_components/google-apis/google-legacy-loader.html'>
 <link rel='import' href='../components/ha-card.html'>
 
 <link rel='import' href='../util/hass-mixins.html'>
@@ -8,65 +6,131 @@
 <dom-module id='ha-weather-card'>
   <template>
     <style>
-        .content {
-          padding: 0 16px 16px;
-        }
+      .content {
+        padding: 0 16px 16px;
+      }
 
-        .attribution {
-          color: var(--secondary-text-color);
-          text-align: right;
-        }
-        .condicon {
-          text-align: center;
-          font-size: 4em;
-        }
-        .condtemp {
-          text-align: center;
-          font-size: 4em;
-        }
-        div.cond {
-          display: inline;
-        }
-        div.conddetails {
-          float: right;
-          display: block table;
-          overflow: auto;
-          text-align: right;
-        }
-        span.line {
-          display: block;
-        }
-        .condsmall {
-          font-size: 1em;
-        }
-        .clear {
-          clear: both;
-        }
+      iron-icon {
+        color: var(--paper-item-icon-color);
+      }
+
+      .flex {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .now iron-icon,
+      .now div,
+      .attributes div,
+      .forecast div {
+        flex: 1;
+      }
+
+      .now .state {
+        --iron-icon-height: 48px;
+        --iron-icon-width: 48px;
+        font-size: 32px;
+        text-transform: capitalize;
+      }
+
+      .now .temp {
+        font-size: 48px;
+        text-align: right;
+      }
+
+      .attributes,
+      .forecast {
+        margin-top: 24px;
+      }
+
+      .attribute {
+        min-width: calc(50% - 16px);
+      }
+
+      .icon-container {
+        width: 50%;
+        margin-right: 8px;
+        text-align: center;
+      }
+
+      .weekday,
+      .temp,
+      .templow {
+        text-align: center;
+      }
+
+      .attributes iron-icon,
+      .forecast iron-icon {
+        width: 100%;
+      }
+
+      .forecast iron-icon {
+        margin: 8px auto;
+      }
+
+      .weekday {
+        font-weight: bold;
+      }
+
+      .templow {
+        color: var(--secondary-text-color);
+      }
     </style>
-    <google-legacy-loader on-api-load='googleApiLoaded'></google-legacy-loader>
-    <ha-card header='[[computeTitle(stateObj)]]'>
+    <ha-card header='[[stateObj.attributes.friendly_name]]'>
       <div class='content'>
-        <div class='condpanel'>
-          <div class='cond condicon'>[[nowCond]]</div>
-          <div class='cond condtemp'>[[attr.temperature]]°</div>
-          <div class='cond conddetails'>
-            <div class="condsmall" hidden$="[[!attr.wind_speed]]">
-              [[localize('attribute.weather.wind_speed')]]:
-              <span hidden$="[[!attr.wind_speed]]">
-                [[attr.wind_speed]]
-              </span>
-              <span hidden$="[[!windBearing]]">[[windBearing]]</span>
-            </div>
-            <div class="condsmall" hidden$="[[!attr.humidity]]">
-              [[localize('attribute.weather.humidity')]]: [[attr.humidity]]%
-            </div>
-            <div class="condsmall" hidden$="[[!attr.visibility]]">
-              [[localize('attribute.weather.visibility')]]: [[attr.visibility]]
-            </div>
+        <div class="now flex">
+          <div class="state">
+            <iron-icon icon="[[getWeatherIcon(stateObj.state)]]"></iron-icon>
+            [[stateObj.state]]
           </div>
-          <div class='clear'></div>
+          <div class="temp">[[getTemperature(stateObj.attributes.temperature)]]</div>
         </div>
-        <div id='chart_id' hidden$="[[!attr.forecast]]"></div>
+
+        <div class="attributes flex">
+          <div class="attribute flex">
+            <div class="icon-container">
+              <iron-icon icon="mdi:water-percent"></iron-icon>
+              <div>[[localize('attribute.weather.humidity')]]</div>
+            </div>
+            <div>[[stateObj.attributes.humidity]] %</div>
+          </div>
+          <div class="attribute flex">
+            <div class="icon-container">
+              <iron-icon icon="mdi:flag-variant"></iron-icon>
+              <div>[[localize('attribute.weather.wind_speed')]]</div>
+            </div>
+            <div>[[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing)]]</div>
+          </div>
+          <div class="attribute flex">
+            <div class="icon-container">
+              <iron-icon icon="mdi:eye"></iron-icon>
+              <div>[[localize('attribute.weather.visibility')]]</div>
+            </div>
+            <div>[[getVisibilty(stateObj.attributes.visibility)]]</div>
+          </div>
+          <div class="attribute flex">
+            <div class="icon-container">
+              <iron-icon icon="mdi:gauge"></iron-icon>
+              <div>Pressure</div>
+            </div>
+            <div>[[stateObj.attributes.pressure]] hPa</div>
+          </div>
+        </div>
+
+        <template is='dom-if' if='[[stateObj.attributes.forecast]]'>
+          <div class="forecast flex">
+            <template is='dom-repeat' items='[[stateObj.attributes.forecast]]'>
+              <div>
+                <div class="weekday">[[getWeekday(item.datetime)]]</div>
+                <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+                <div class="temp">[[item.temperature]]°</div>
+                <div class="templow">[[item.templow]]°</div>
+              </div>
+            </template>
+          </div>
+        </template>
       </div>
     </ha-card>
   </template>
@@ -74,24 +138,24 @@
 
 <script>
 {
-  var _WEATHER_TO_ICON = {
-    cloudy: '\u2601\ufe0f',
-    fog: '\uD83C\uDF2B\ufe0f',
-    hail: 'Hail',
-    lightning: '\uD83C\uDF29\ufe0f',
-    'lightning-rainy': '\u26c8\ufe0f',
-    partlycloudy: '\u26c5\ufe0f',
-    pouring: '\uD83D\uDCA7\ufe0f',
-    rainy: '\uD83C\uDF27\ufe0f',
-    snowy: '\uD83C\uDF28\ufe0f',
-    'snowy-rainy': '\uD83C\uDF28\ufe0f',
-    sunny: '\u2600\ufe0f',
-    windy: '\uD83C\uDF2C\ufe0f',
-    'windy-variant': '\uD83C\uDF2C\ufe0f',
-    exceptional: '\u2b55\ufe0f',
+  const _WEATHER_TO_ICON = {
+    cloudy: 'mdi:weather-cloudy',
+    fog: 'mdi:weather-fog',
+    hail: 'mdi:weather-hail',
+    lightning: 'mid:weather-lightning',
+    'lightning-rainy': 'mdi:weather-lightning-rainy',
+    partlycloudy: 'mdi:weather-partlycloudy',
+    pouring: 'mdi:weather-pouring',
+    rainy: 'mdi:weather-rainy',
+    snowy: 'mdi:weather-snowy',
+    'snowy-rainy': 'weather-snowy-rainy',
+    sunny: 'mdi:weather-sunny',
+    windy: 'mdi:weather-windy',
+    'windy-variant': 'mdi:weather-windy-variant',
+    exceptional: 'mdi:help',
   };
 
-  var _DEGREE_TEXT = [
+  const _DEGREE_TEXT = [
     'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
     'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
   ];
@@ -103,120 +167,41 @@
     static get properties() {
       return {
         hass: Object,
-        stateObj: {
-          type: Object,
-          observer: 'checkRequirements'
-        },
-        attr: Object,
-        windBearing: Object,
-        nowCond: Object,
+        stateObj: Object
       };
-    }
-
-    computeTitle(stateObj) {
-      return stateObj.attributes.friendly_name;
-    }
-    getDataArray() {
-      var dataArray = [];
-      var data = this.stateObj.attributes.forecast;
-      var i;
-
-      if (!this.stateObj.attributes.forecast) {
-        return [];
-      }
-
-      for (i = 0; i < data.length; i++) {
-        var d = data[i];
-        if (!d.condition) {
-          dataArray.push([new Date(d.datetime), null, d.temperature, d.templow]);
-        } else {
-          dataArray.push([new Date(d.datetime), _WEATHER_TO_ICON[data[i].condition],
-            d.temperature, d.templow]);
-        }
-      }
-
-      return dataArray;
-    }
-
-    checkRequirements() {
-      if (!this.stateObj) {
-        return;
-      }
-
-      if (!this.stateObj.attributes) {
-        return;
-      }
-
-      this.attr = this.stateObj.attributes;
-
-      this.nowCond = _WEATHER_TO_ICON[this.stateObj.state];
-      this.windBearing = this.windBearingToText(this.attr.wind_bearing);
-
-      if (!window.google || !window.google.visualization) {
-        return;
-      }
-
-      if (!this.chartEngine) {
-        this.chartEngine = new window.google.visualization.LineChart(this.$.chart_id);
-      }
-
-      if (!this.attr.forecast) {
-        return;
-      }
-
-      this.drawChart();
-    }
-    drawChart() {
-      var dataGrid = new window.google.visualization.DataTable();
-      var options = {
-        legend: {
-          position: 'top'
-        },
-        interpolateNulls: true,
-        titlePosition: 'none',
-        chartArea: {
-          left: 25,
-          top: 5,
-          height: '100%',
-          width: '90%',
-          bottom: 25,
-        },
-        curveType: 'function',
-        focusTarget: 'category',
-        colors: ['red', 'blue'],
-        annotations: {
-          textStyle: {
-            fontSize: '24',
-          }
-        }
-      };
-
-      dataGrid.addColumn('datetime', 'Time');
-      dataGrid.addColumn({ type: 'string', role: 'annotation' });
-      dataGrid.addColumn('number', 'Temperature');
-      dataGrid.addColumn('number', 'Temperature Low');
-
-      var dataArray = this.getDataArray();
-      dataGrid.addRows(dataArray);
-
-      this.chartEngine.draw(dataGrid, options);
-    }
-
-    googleApiLoaded() {
-      window.google.load('visualization', '1', {
-        packages: ['corechart'],
-        callback: function () {
-          this.checkRequirements();
-        }.bind(this),
-      });
     }
 
     windBearingToText(degree) {
-      var degreenum = parseInt(degree);
+      const degreenum = parseInt(degree);
       if (isFinite(degreenum)) {
         return _DEGREE_TEXT[(((degreenum + 11.25) / 22.5) | 0) % 16];
       }
       return '';
+    }
+
+    getUnit(unit) {
+      return this.hass.config.core.unit_system[unit] || '';
+    }
+
+    getWeatherIcon(weather) {
+      return _WEATHER_TO_ICON[weather];
+    }
+
+    getTemperature(temp) {
+      return `${temp}${this.getUnit('temperature')}`;
+    }
+
+    getWind(speed, bearing) {
+      return `${speed} ${this.getUnit('length')}/h${bearing != null ? ` (${this.windBearingToText(bearing)})`: ''}`;
+    }
+
+    getVisibilty(visibilty) {
+      return `${visibilty} ${this.getUnit('length')}`;
+    }
+
+    getWeekday(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString(window.navigator, { weekday: 'short' });
     }
   }
   customElements.define(HaWeatherCard.is, HaWeatherCard);
