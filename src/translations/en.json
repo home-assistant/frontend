@@ -1,6 +1,7 @@
 {
   "attribute": {
     "weather": {
+      "air_pressure": "Air pressure",
       "humidity": "Humidity",
       "visibility": "Visibility",
       "wind_speed": "Wind speed"

@@ -39,6 +39,7 @@
       .now .temp {
         font-size: 48px;
         text-align: right;
+        flex: 0 0 150px;
       }
 
       .attributes,
@@ -48,6 +49,7 @@
 
       .attribute {
         min-width: calc(50% - 16px);
+        max-width: calc(50% - 16px);
       }
 
       .icon-container {
@@ -111,13 +113,15 @@
             </div>
             <div>[[getVisibilty(stateObj.attributes.visibility)]]</div>
           </div>
-          <div class="attribute flex">
-            <div class="icon-container">
-              <iron-icon icon="mdi:gauge"></iron-icon>
-              <div>Pressure</div>
+          <template is='dom-if' if='[[stateObj.attributes.pressure]]'>
+            <div class="attribute flex">
+              <div class="icon-container">
+                <iron-icon icon="mdi:gauge"></iron-icon>
+                <div>[[localize('attribute.weather.air_pressure')]]</div>
+              </div>
+              <div>[[stateObj.attributes.pressure]] hPa</div>
             </div>
-            <div>[[stateObj.attributes.pressure]] hPa</div>
-          </div>
+          </template>
         </div>
 
         <template is='dom-if' if='[[stateObj.attributes.forecast]]'>
@@ -149,10 +153,11 @@
     pouring: 'mdi:weather-pouring',
     rainy: 'mdi:weather-rainy',
     snowy: 'mdi:weather-snowy',
-    'snowy-rainy': 'weather-snowy-rainy',
+    'snowy-rainy': 'mdi:weather-snowy-rainy',
     sunny: 'mdi:weather-sunny',
     windy: 'mdi:weather-windy',
     'windy-variant': 'mdi:weather-windy-variant',
+    'clear-night': 'mdi:weather-night',
     exceptional: 'mdi:help',
   };
 
