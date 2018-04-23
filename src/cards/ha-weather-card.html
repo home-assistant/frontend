@@ -168,7 +168,7 @@
 
     getWeekday(dateString) {
       const date = new Date(dateString);
-      return date.toLocaleDateString(window.navigator, { weekday: 'short' });
+      return date.toLocaleDateString(this.hass.selectedLanguage || this.hass.language, { weekday: 'short' });
     }
   }
   customElements.define(HaWeatherCard.is, HaWeatherCard);
