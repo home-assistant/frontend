@@ -4,6 +4,7 @@
       "air_pressure": "Air pressure",
       "humidity": "Humidity",
       "visibility": "Visibility",
+      "wind_bearing": "[\"N\", \"NNE\", \"NE\", \"ENE\", \"E\", \"ESE\", \"SE\", \"SSE\", \"S\", \"SSW\", \"SW\", \"WSW\", \"W\", \"WNW\", \"NW\", \"NNW\", \"N\"]",
       "wind_speed": "Wind speed"
     }
   },
@@ -269,6 +270,22 @@
     "switch": {
       "off": "[%key:state::default::off%]",
       "on": "[%key:state::default::on%]"
+    },
+    "weather": {
+      "clear_night": "Clear, night",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "hail": "Hail",
+      "lightning": "Lightning",
+      "lightning_rainy": "Lightning, rainy",
+      "partlycloudy": "Partly cloudy",
+      "pouring": "Pouring",
+      "rainy": "Rainy",
+      "snowy": "Snowy",
+      "snowy_rainy": "Snowy, rainy",
+      "sunny": "Sunny",
+      "windy": "Windy",
+      "windy_variant": "Windy"
     },
     "zwave": {
       "default": {

@@ -33,7 +33,6 @@
         --iron-icon-height: 48px;
         --iron-icon-width: 48px;
         font-size: 32px;
-        text-transform: capitalize;
       }
 
       .now .temp {
@@ -86,7 +85,7 @@
         <div class="now flex">
           <div class="state">
             <iron-icon icon="[[getWeatherIcon(stateObj.state)]]"></iron-icon>
-            [[stateObj.state]]
+            [[computeState(stateObj.state, localize)]]
           </div>
           <div class="temp">[[getTemperature(stateObj.attributes.temperature)]]</div>
         </div>
@@ -104,7 +103,7 @@
               <iron-icon icon="mdi:flag-variant"></iron-icon>
               <div>[[localize('attribute.weather.wind_speed')]]</div>
             </div>
-            <div>[[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing)]]</div>
+            <div>[[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]</div>
           </div>
           <div class="attribute flex">
             <div class="icon-container">
@@ -144,6 +143,7 @@
 <script>
 {
   const _WEATHER_TO_ICON = {
+    'clear-night': 'mdi:weather-night',
     cloudy: 'mdi:weather-cloudy',
     fog: 'mdi:weather-fog',
     hail: 'mdi:weather-hail',
@@ -156,15 +156,9 @@
     'snowy-rainy': 'mdi:weather-snowy-rainy',
     sunny: 'mdi:weather-sunny',
     windy: 'mdi:weather-windy',
-    'windy-variant': 'mdi:weather-windy-variant',
-    'clear-night': 'mdi:weather-night',
-    exceptional: 'mdi:help',
+    'windy-variant': 'mdi:weather-windy-variant'
   };
 
-  const _DEGREE_TEXT = [
-    'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-    'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
-  ];
   /*
    * @appliesMixin window.hassMixins.LocalizeMixin
    */
@@ -177,16 +171,12 @@
       };
     }
 
-    windBearingToText(degree) {
-      const degreenum = parseInt(degree);
-      if (isFinite(degreenum)) {
-        return _DEGREE_TEXT[(((degreenum + 11.25) / 22.5) | 0) % 16];
-      }
-      return '';
-    }
-
     getUnit(unit) {
       return this.hass.config.core.unit_system[unit] || '';
+    }
+
+    computeState(state, localize) {
+      return localize(`state.weather.${state.replace('-', '_')}`) || state;
     }
 
     getWeatherIcon(weather) {
@@ -197,8 +187,13 @@
       return `${temp}${this.getUnit('temperature')}`;
     }
 
-    getWind(speed, bearing) {
-      return `${speed} ${this.getUnit('length')}/h${bearing != null ? ` (${this.windBearingToText(bearing)})` : ''}`;
+    getWind(speed, bearing, localize) {
+      if (!bearing) {
+        return `${speed} ${this.getUnit('length')}/h`;
+      }
+      const degreeTranslation = JSON.parse(localize('attribute.weather.wind_bearing'));
+      const degreeText =  degreeTranslation[(((parseInt(bearing) + 11.25) / 22.5) | 0) % 16];
+      return `${speed} ${this.getUnit('length')}/h (${degreeText})`;
     }
 
     getVisibilty(visibilty) {
