@@ -281,6 +281,30 @@ window.hassUtil.coverIcon = function (state) {
   }
 };
 
+window.hassUtil.sensorIcon = (state) => {
+  switch (state.attributes.device_class) {
+    case 'battery': {
+      if (isNaN(state.state)) {
+        return 'mdi:battery-unknown';
+      }
+      const batteryRound = Math.round(state.state / 10) * 10;
+      if (batteryRound >= 100) {
+        return 'mdi:battery';
+      }
+      if (batteryRound <= 0) {
+        return 'mdi:battery-alert';
+      }
+      return `mdi:battery-${batteryRound}`;
+    }
+    case 'humidity':
+      return 'mdi:water-percent';
+    case 'temperature':
+      return 'mdi:thermometer';
+    default:
+      return 'mdi:eye';
+  }
+};
+
 window.hassUtil.stateIcon = function (state) {
   if (!state) {
     return window.hassUtil.DEFAULT_ICON;
@@ -288,10 +312,12 @@ window.hassUtil.stateIcon = function (state) {
     return state.attributes.icon;
   }
 
-  var unit = state.attributes.unit_of_measurement;
-  var domain = window.hassUtil.computeDomain(state);
+  const unit = state.attributes.unit_of_measurement;
+  const domain = window.hassUtil.computeDomain(state);
 
-  if (unit && domain === 'sensor') {
+  if (domain === 'sensor' && state.attributes.device_class) {
+    return window.hassUtil.sensorIcon(state);
+  } else if (domain === 'sensor' && unit) {
     if (unit === '°C' || unit === '°F') {
       return 'mdi:thermometer';
     } else if (unit === 'Mice') {
