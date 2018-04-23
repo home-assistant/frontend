@@ -15,61 +15,46 @@
         color: var(--paper-item-icon-color);
       }
 
-      .flex {
+      .now {
         display: flex;
-        flex-wrap: wrap;
         justify-content: space-between;
-        align-items: center;
+        padding: 0 8px;
       }
 
-      .now iron-icon,
-      .now div,
-      .attributes div,
+      .state {
+        --iron-icon-height: 72px;
+        --iron-icon-width: 72px;
+        font-size: 52px;
+      }
+
+      .now-text {
+        font-size: 24px;
+        margin-left: 8px;
+      }
+
+      .attributes {
+        color: var(--secondary-text-color);
+        max-width: 200px;
+      }
+
+      .forecast {
+        display: flex;
+        margin-top: 24px;
+      }
+
       .forecast div {
         flex: 1;
       }
 
-      .now .state {
-        --iron-icon-height: 48px;
-        --iron-icon-width: 48px;
-        font-size: 32px;
-      }
-
-      .now .temp {
-        font-size: 48px;
-        text-align: right;
-        flex: 0 0 150px;
-      }
-
-      .attributes,
-      .forecast {
-        margin-top: 24px;
-      }
-
-      .attribute {
-        min-width: calc(50% - 16px);
-        max-width: calc(50% - 16px);
-      }
-
-      .icon-container {
-        width: 50%;
-        margin-right: 8px;
-        text-align: center;
+      .forecast iron-icon {
+        margin: 8px auto;
+        width: 100%;
       }
 
       .weekday,
       .temp,
       .templow {
         text-align: center;
-      }
-
-      .attributes iron-icon,
-      .forecast iron-icon {
-        width: 100%;
-      }
-
-      .forecast iron-icon {
-        margin: 8px auto;
       }
 
       .weekday {
@@ -82,59 +67,35 @@
     </style>
     <ha-card header='[[stateObj.attributes.friendly_name]]'>
       <div class='content'>
-        <div class="now flex">
+        <div class="now">
           <div class="state">
             <iron-icon icon="[[getWeatherIcon(stateObj.state)]]"></iron-icon>
-            [[computeState(stateObj.state, localize)]]
+            [[getTemperature(stateObj.attributes.temperature)]]
           </div>
-          <div class="temp">[[getTemperature(stateObj.attributes.temperature)]]</div>
+          <div class="attributes">
+            <div>
+              [[localize('attribute.weather.humidity')]]: [[stateObj.attributes.humidity]] %
+            </div>
+            <div>
+              [[localize('attribute.weather.wind_speed')]]: [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
+            </div>
+            <div>
+              [[localize('attribute.weather.visibility')]]: [[getVisibilty(stateObj.attributes.visibility)]]
+            </div>
+          </div>
         </div>
+        <div class="now-text">[[computeState(stateObj.state, localize)]]</div>
 
-        <div class="attributes flex">
-          <div class="attribute flex">
-            <div class="icon-container">
-              <iron-icon icon="mdi:water-percent"></iron-icon>
-              <div>[[localize('attribute.weather.humidity')]]</div>
-            </div>
-            <div>[[stateObj.attributes.humidity]] %</div>
-          </div>
-          <div class="attribute flex">
-            <div class="icon-container">
-              <iron-icon icon="mdi:flag-variant"></iron-icon>
-              <div>[[localize('attribute.weather.wind_speed')]]</div>
-            </div>
-            <div>[[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]</div>
-          </div>
-          <div class="attribute flex">
-            <div class="icon-container">
-              <iron-icon icon="mdi:eye"></iron-icon>
-              <div>[[localize('attribute.weather.visibility')]]</div>
-            </div>
-            <div>[[getVisibilty(stateObj.attributes.visibility)]]</div>
-          </div>
-          <template is='dom-if' if='[[stateObj.attributes.pressure]]'>
-            <div class="attribute flex">
-              <div class="icon-container">
-                <iron-icon icon="mdi:gauge"></iron-icon>
-                <div>[[localize('attribute.weather.air_pressure')]]</div>
-              </div>
-              <div>[[stateObj.attributes.pressure]] hPa</div>
+        <div class="forecast">
+          <template is='dom-repeat' items='[[forecast]]'>
+            <div>
+              <div class="weekday">[[getWeekday(item.datetime)]]</div>
+              <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+              <div class="temp">[[item.temperature]]°</div>
+              <div class="templow">[[item.templow]]°</div>
             </div>
           </template>
         </div>
-
-        <template is='dom-if' if='[[stateObj.attributes.forecast]]'>
-          <div class="forecast flex">
-            <template is='dom-repeat' items='[[stateObj.attributes.forecast]]'>
-              <div>
-                <div class="weekday">[[getWeekday(item.datetime)]]</div>
-                <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
-                <div class="temp">[[item.temperature]]°</div>
-                <div class="templow">[[item.templow]]°</div>
-              </div>
-            </template>
-          </div>
-        </template>
       </div>
     </ha-card>
   </template>
@@ -167,8 +128,16 @@
     static get properties() {
       return {
         hass: Object,
-        stateObj: Object
+        stateObj: Object,
+        forecast: {
+          type: Array,
+          computed: 'computeForecast(stateObj.attributes.forecast)'
+        }
       };
+    }
+
+    computeForecast(forecast) {
+      return forecast.slice(0, 7);
     }
 
     getUnit(unit) {
