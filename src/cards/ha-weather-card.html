@@ -30,11 +30,6 @@
         font-size: 24px;
       }
 
-      .attributes {
-        color: var(--secondary-text-color);
-        max-width: 200px;
-      }
-
       .forecast {
         margin-top: 24px;
         display: flex;
@@ -59,6 +54,7 @@
         font-weight: bold;
       }
 
+      .attributes,
       .templow {
         color: var(--secondary-text-color);
       }
@@ -72,13 +68,16 @@
           </div>
           <div class="attributes">
             <div>
-              [[localize('attribute.weather.humidity')]]: [[stateObj.attributes.humidity]] %
+              [[localize('attribute.weather.humidity')]]:
+              [[stateObj.attributes.humidity]] %
             </div>
             <div>
-              [[localize('attribute.weather.wind_speed')]]: [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
+              [[localize('attribute.weather.visibility')]]:
+              [[getVisibilty(stateObj.attributes.visibility)]]
             </div>
             <div>
-              [[localize('attribute.weather.visibility')]]: [[getVisibilty(stateObj.attributes.visibility)]]
+              [[localize('attribute.weather.wind_speed')]]:
+              [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
             </div>
           </div>
         </div>
