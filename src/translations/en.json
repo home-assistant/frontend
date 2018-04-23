@@ -311,6 +311,12 @@
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
+      },
+      "scene": {
+        "activate": "Activate"
+      },
+      "script": {
+        "execute": "Execute"
       }
     },
     "common": {
