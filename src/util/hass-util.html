@@ -224,7 +224,7 @@ window.hassUtil.domainIcon = function (domain, state) {
 };
 
 window.hassUtil.binarySensorIcon = function (state) {
-  var activated = state.state && state.state === 'off';
+  const activated = state.state && state.state === 'off';
   switch (state.attributes.device_class) {
     case 'battery':
       return activated ? 'mdi:battery' : 'mdi:battery-outline';
@@ -236,6 +236,7 @@ window.hassUtil.binarySensorIcon = function (state) {
       return activated ? 'mdi:door-closed' : 'mdi:door-open';
     case 'garage_door':
       return activated ? 'mdi:garage' : 'mdi:garage-open';
+    case 'co2':
     case 'gas':
     case 'power':
     case 'problem':
@@ -296,8 +297,14 @@ window.hassUtil.sensorIcon = (state) => {
       }
       return `mdi:battery-${batteryRound}`;
     }
+    case 'co2':
+      return 'mdi:periodic-table-co2';
     case 'humidity':
       return 'mdi:water-percent';
+    case 'light':
+      return 'mdi:lightbulb-on-outline';
+    case 'pm25':
+      return 'mdi:factory';
     case 'temperature':
       return 'mdi:thermometer';
     default:
