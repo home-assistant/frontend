@@ -164,6 +164,10 @@ Custom property | Description | Default
         return this.icon || !this.src;
       },
 
+      // This method has been adjusted from the original method.
+      //  - If iconset returns `null` for an icon, assume it's because iconset
+      //    children are not being done parsing and try again.
+      //  - Load the mdi iconset on demand if it's not loaded.
       /** @suppress {visibility} */
       _updateIcon: function() {
         if (this._usesIconset()) {
@@ -178,8 +182,28 @@ Custom property | Description | Default
             this._iconset = /** @type {?Polymer.Iconset} */ (
                 this._meta.byKey(this._iconsetName));
             if (this._iconset) {
-              this._iconset.applyIcon(this, this._iconName, this.theme);
               this.unlisten(window, 'iron-iconset-added', '_updateIcon');
+              const rendered = this._iconset.applyIcon(this, this._iconName, this.theme);
+              if (rendered !== null) return;
+              // We got duped! Iconset still parsing. Reschedule.
+              // Check if another icon is already rescheduling this iconset.
+              if ('__ha_icon_reset_owner' in this._iconset &&
+                  this._iconset.__ha_icon_reset_owner !== this) {
+                return;
+              }
+              this._iconset.__ha_icon_reset_owner = this;
+
+              if (this._iconset.__ha_icon_reset_count === undefined) {
+                this._iconset.__ha_icon_reset_count = 0;
+              } else if (this._iconset.__ha_icon_reset_count > 10) {
+                // We've tried enough.
+                return;
+              }
+
+              // Reset icon cache and schedule retry.
+              this._iconset.__ha_icon_reset_count++;
+              this._iconset._icons = null;
+              setTimeout(() => this._updateIcon(), 100);
             } else {
               this.listen(window, 'iron-iconset-added', '_updateIcon');
               if (this._iconsetName === 'mdi' && !window.MDI_LOADED) {
