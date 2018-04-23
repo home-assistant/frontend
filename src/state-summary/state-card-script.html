@@ -6,6 +6,7 @@
 
 <link rel="import" href="../components/entity/state-info.html">
 <link rel="import" href="../components/entity/ha-entity-toggle.html">
+<link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id="state-card-script">
   <template>
@@ -30,14 +31,14 @@
         <ha-entity-toggle state-obj='[[stateObj]]' hass='[[hass]]'></ha-entity-toggle>
       </template>
       <template is='dom-if' if='[[!stateObj.attributes.can_cancel]]'>
-        <paper-button on-click='fireScript'>ACTIVATE</paper-button>
+        <paper-button on-click='fireScript'>[[localize('ui.card.script.run')]]</paper-button>
       </template>
     </div>
   </template>
 </dom-module>
 
 <script>
-class StateCardScript extends Polymer.Element {
+class StateCardScript extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-card-script'; }
 
   static get properties() {
