@@ -192,7 +192,7 @@
         return `${speed} ${this.getUnit('length')}/h`;
       }
       const degreeTranslation = JSON.parse(localize('attribute.weather.wind_bearing'));
-      const degreeText =  degreeTranslation[(((parseInt(bearing) + 11.25) / 22.5) | 0) % 16];
+      const degreeText = degreeTranslation[(((parseInt(bearing) + 11.25) / 22.5) | 0) % 16];
       return `${speed} ${this.getUnit('length')}/h (${degreeText})`;
     }
 
