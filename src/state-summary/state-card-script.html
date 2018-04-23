@@ -31,7 +31,7 @@
         <ha-entity-toggle state-obj='[[stateObj]]' hass='[[hass]]'></ha-entity-toggle>
       </template>
       <template is='dom-if' if='[[!stateObj.attributes.can_cancel]]'>
-        <paper-button on-click='fireScript'>[[localize('ui.card.script.run')]]</paper-button>
+        <paper-button on-click='fireScript'>[[localize('ui.card.script.execute')]]</paper-button>
       </template>
     </div>
   </template>

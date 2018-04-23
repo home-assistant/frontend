@@ -316,7 +316,7 @@
         "activate": "Activate"
       },
       "script": {
-        "run": "Run"
+        "execute": "Execute"
       }
     },
     "common": {
