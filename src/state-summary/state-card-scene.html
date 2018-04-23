@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="../components/entity/state-info.html">
+<link rel='import' href='../util/hass-mixins.html'>
 
 <dom-module id="state-card-scene">
   <template>
@@ -21,13 +22,16 @@
 
     <div class='horizontal justified layout'>
       <state-info state-obj="[[stateObj]]" in-dialog='[[inDialog]]'></state-info>
-      <paper-button on-click='activateScene'>ACTIVATE</paper-button>
+      <paper-button on-click='activateScene'>[[localize('ui.card.scene.activate')]]</paper-button>
     </div>
   </template>
 </dom-module>
 
 <script>
-class StateCardScene extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class StateCardScene extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get is() { return 'state-card-scene'; }
 
   static get properties() {
