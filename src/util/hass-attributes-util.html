@@ -28,6 +28,11 @@ window.hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     'window'
   ],
   cover: ['garage'],
+  sensor: [
+    'battery',
+    'humidity',
+    'temperature'
+  ],
 };
 
 window.hassAttributeUtil.UNKNOWN_TYPE = 'json';
@@ -70,7 +75,7 @@ window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
       type: 'array',
       options: window.hassAttributeUtil.DOMAIN_DEVICE_CLASS,
       description: 'Device class',
-      domains: ['binary_sensor', 'cover']
+      domains: ['binary_sensor', 'cover', 'sensor']
     },
     hidden: { type: 'boolean', description: 'Hide from UI' },
     assumed_state: {
