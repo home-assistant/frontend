@@ -72,31 +72,38 @@
           </div>
           <div class="attributes">
             <div>
-              [[localize('ui.card.weather.humidity')]]:
+              [[localize('ui.card.weather.attributes.humidity')]]:
               [[stateObj.attributes.humidity]] %
             </div>
+            <template is="dom-if" if="[[stateObj.attributes.visibility]]">
+              <div>
+                [[localize('ui.card.weather.attributes.visibility')]]:
+                [[getVisibilty(stateObj.attributes.visibility)]]
+              </div>
+            </template>
             <div>
-              [[localize('ui.card.weather.visibility')]]:
-              [[getVisibilty(stateObj.attributes.visibility)]]
-            </div>
-            <div>
-              [[localize('ui.card.weather.wind_speed')]]:
+              [[localize('ui.card.weather.attributes.wind_speed')]]:
               [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
             </div>
           </div>
         </div>
         <div class="now-text">[[computeState(stateObj.state, localize)]]</div>
-
-        <div class="forecast">
-          <template is='dom-repeat' items='[[forecast]]'>
-            <div>
-              <div class="weekday">[[getWeekday(item.datetime)]]</div>
-              <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
-              <div class="temp">[[item.temperature]]°</div>
-              <div class="templow">[[item.templow]]°</div>
-            </div>
-          </template>
-        </div>
+        <template is="dom-if" if="[[forecast]]">
+          <div class="forecast">
+            <template is='dom-repeat' items='[[forecast]]'>
+              <div>
+                <div class="weekday">[[getWeekday(item.datetime)]]</div>
+                <template is="dom-if" if="[[item.condition]]">
+                  <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+                </template>
+                <div class="temp">[[item.temperature]]°</div>
+                <template is="dom-if" if="[[item.templow]]">
+                  <div class="templow">[[item.templow]]°</div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
       </div>
     </ha-card>
   </template>
@@ -104,8 +111,8 @@
 
 <script>
 /*
-  * @appliesMixin window.hassMixins.LocalizeMixin
-  */
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
 class HaWeatherCard extends
   window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'ha-weather-card'; }
@@ -120,29 +127,13 @@ class HaWeatherCard extends
     };
   }
 
-  ready() {
-    this.addEventListener('click', this._onClick);
-    super.ready();
-  }
-
-  _onClick() {
-    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
-  }
-
-  computeForecast(forecast) {
-    return forecast.slice(0, 7);
-  }
-
-  getUnit(unit) {
-    return this.hass.config.core.unit_system[unit] || '';
-  }
-
-  computeState(state, localize) {
-    return localize(`state.weather.${state.replace('-', '_')}`) || state;
-  }
-
-  getWeatherIcon(condition) {
-    const icons = {
+  constructor() {
+    super();
+    this.cardinalDirections = [
+      'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+      'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
+    ];
+    this.weatherIcons = {
       'clear-night': 'mdi:weather-night',
       cloudy: 'mdi:weather-cloudy',
       fog: 'mdi:weather-fog',
@@ -158,20 +149,51 @@ class HaWeatherCard extends
       windy: 'mdi:weather-windy',
       'windy-variant': 'mdi:weather-windy-variant'
     };
-    return icons[condition];
+  }
+
+  ready() {
+    this.addEventListener('click', this._onClick);
+    super.ready();
+  }
+
+  _onClick() {
+    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+  }
+
+  computeForecast(forecast) {
+    return forecast && forecast.slice(0, 7);
+  }
+
+  getUnit(unit) {
+    return this.hass.config.core.unit_system[unit] || '';
+  }
+
+  computeState(state, localize) {
+    return localize(`state.weather.${state.replace('-', '_')}`) || state;
+  }
+
+  getWeatherIcon(condition) {
+    return this.weatherIcons[condition];
   }
 
   getTemperature(temp) {
     return `${temp}${this.getUnit('temperature')}`;
   }
 
-  getWind(speed, bearing, localize) {
-    if (!bearing) {
-      return `${speed} ${this.getUnit('length')}/h`;
+  windBearingToText(degree) {
+    const degreenum = parseInt(degree);
+    if (isFinite(degreenum)) {
+      return this.cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
     }
-    const degreeTranslation = JSON.parse(localize('ui.card.weather.wind_bearing'));
-    const degreeText = degreeTranslation[(((parseInt(bearing) + 11.25) / 22.5) | 0) % 16];
-    return `${speed} ${this.getUnit('length')}/h (${degreeText})`;
+    return degree;
+  }
+
+  getWind(speed, bearing, localize) {
+    if (bearing != null) {
+      const cardinalDirection = this.windBearingToText(bearing);
+      return `${speed} ${this.getUnit('length')}/h (${localize(cardinalDirection.toLowerCase()) || cardinalDirection})`;
+    }
+    return `${speed} ${this.getUnit('length')}/h`;
   }
 
   getVisibilty(visibilty) {

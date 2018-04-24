@@ -322,14 +322,32 @@
         "dismiss": "Dismiss"
       },
       "weather": {
-        "air_pressure": "Air pressure",
-        "forecast": "Forecast",
-        "humidity": "Humidity",
-        "now": "Now",
-        "temperature": "Temperature",
-        "visibility": "Visibility",
-        "wind_bearing": "[\"N\", \"NNE\", \"NE\", \"ENE\", \"E\", \"ESE\", \"SE\", \"SSE\", \"S\", \"SSW\", \"SW\", \"WSW\", \"W\", \"WNW\", \"NW\", \"NNW\", \"N\"]",
-        "wind_speed": "Wind speed"
+        "attributes": {
+          "air_pressure": "Air pressure",
+          "humidity": "Humidity",
+          "temperature": "Temperature",
+          "visibility": "Visibility",
+          "wind_speed": "Wind speed"
+        },
+        "cardinal_direction": {
+          "e": "E",
+          "ene": "ENE",
+          "ese": "ESE",
+          "n": "N",
+          "ne": "NE",
+          "nne": "NNE",
+          "nw": "NW",
+          "nnw": "NNW",
+          "s": "S",
+          "se": "SE",
+          "sse": "SSE",
+          "ssw": "SSW",
+          "sw": "SW",
+          "w": "W",
+          "wnw": "WNW",
+          "wsw": "WSW"
+        },
+        "forecast": "Forecast"
       }
     },
     "common": {
