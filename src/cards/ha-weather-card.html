@@ -63,7 +63,9 @@
       <div class='content'>
         <div class="now">
           <div class="state">
-            <iron-icon icon="[[getWeatherIcon(stateObj.state)]]"></iron-icon>
+            <template is="dom-if" if="[[showWeatherIcon(stateObj.state)]]">
+              <iron-icon icon="[[getWeatherIcon(stateObj.state)]]"></iron-icon>
+            </template>
             [[getTemperature(stateObj.attributes.temperature)]]
           </div>
           <div class="attributes">
@@ -170,6 +172,10 @@ class HaWeatherCard extends
     return localize(`state.weather.${state.replace('-', '_')}`) || state;
   }
 
+  showWeatherIcon(condition) {
+    return condition in this.weatherIcons;
+  }
+
   getWeatherIcon(condition) {
     return this.weatherIcons[condition];
   }
@@ -201,7 +207,7 @@ class HaWeatherCard extends
   computeDateTime(data) {
     const date = new Date(data);
     const provider = this.stateObj.attributes.attribution;
-    if ( provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
+    if (provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
       return date.toLocaleTimeString(
         this.hass.selectedLanguage || this.hass.language,
         { hour: 'numeric' }
