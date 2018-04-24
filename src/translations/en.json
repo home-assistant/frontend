@@ -1,13 +1,4 @@
 {
-  "attribute": {
-    "weather": {
-      "air_pressure": "Air pressure",
-      "humidity": "Humidity",
-      "visibility": "Visibility",
-      "wind_bearing": "[\"N\", \"NNE\", \"NE\", \"ENE\", \"E\", \"ESE\", \"SE\", \"SSE\", \"S\", \"SSW\", \"SW\", \"WSW\", \"W\", \"WNW\", \"NW\", \"NNW\", \"N\"]",
-      "wind_speed": "Wind speed"
-    }
-  },
   "domain": {
     "alarm_control_panel": "Alarm control panel",
     "automation": "Automation",
@@ -329,6 +320,16 @@
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
+      },
+      "weather": {
+        "air_pressure": "Air pressure",
+        "forecast": "Forecast",
+        "humidity": "Humidity",
+        "now": "Now",
+        "temperature": "Temperature",
+        "visibility": "Visibility",
+        "wind_bearing": "[\"N\", \"NNE\", \"NE\", \"ENE\", \"E\", \"ESE\", \"SE\", \"SSE\", \"S\", \"SSW\", \"SW\", \"WSW\", \"W\", \"WNW\", \"NW\", \"NNW\", \"N\"]",
+        "wind_speed": "Wind speed"
       }
     },
     "common": {
