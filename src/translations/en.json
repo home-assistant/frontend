@@ -321,6 +321,12 @@
       "persistent_notification": {
         "dismiss": "Dismiss"
       },
+      "scene": {
+        "activate": "Activate"
+      },
+      "script": {
+        "execute": "Execute"
+      },
       "weather": {
         "attributes": {
           "air_pressure": "Air pressure",
