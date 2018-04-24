@@ -42,15 +42,11 @@
 
       .forecast div {
         flex: 0 0 auto;
+        text-align: center;
       }
 
-      .forecast iron-icon {
-        margin: 8px auto;
-      }
-
-      .weekday,
-      .temp,
-      .templow {
+      .forecast .icon {
+        margin: 8px 0;
         text-align: center;
       }
 
@@ -92,9 +88,11 @@
           <div class="forecast">
             <template is='dom-repeat' items='[[forecast]]'>
               <div>
-                <div class="weekday">[[getWeekday(item.datetime)]]</div>
+                <div class="weekday">[[computeDateTime(item.datetime)]]</div>
                 <template is="dom-if" if="[[item.condition]]">
-                  <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+                  <div class="icon">
+                    <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+                  </div>
                 </template>
                 <div class="temp">[[item.temperature]]°</div>
                 <template is="dom-if" if="[[item.templow]]">
@@ -200,8 +198,15 @@ class HaWeatherCard extends
     return `${visibilty} ${this.getUnit('length')}`;
   }
 
-  getWeekday(dateString) {
-    const date = new Date(dateString);
+  computeDateTime(data) {
+    const date = new Date(data);
+    const provider = this.stateObj.attributes.attribution;
+    if ( provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
+      return date.toLocaleTimeString(
+        this.hass.selectedLanguage || this.hass.language,
+        { hour: 'numeric' }
+      );
+    }
     return date.toLocaleDateString(this.hass.selectedLanguage || this.hass.language, { weekday: 'short' });
   }
 }
