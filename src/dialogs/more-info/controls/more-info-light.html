@@ -19,7 +19,7 @@
         padding-bottom: 16px;
       }
 
-      .effect_list, .brightness, .color_temp, .white_value {
+      .effect_list, .brightness, .color_temp, .white_value, .speed {
         max-height: 0px;
         overflow: hidden;
         transition: max-height .5s ease-in;
@@ -43,7 +43,8 @@
       .has-effect_list.is-on .effect_list,
       .has-brightness .brightness,
       .has-color_temp.is-on .color_temp,
-      .has-white_value.is-on .white_value {
+      .has-white_value.is-on .white_value,
+      .has-speed.is-on .speed {
         max-height: 84px;
       }
 
@@ -93,6 +94,14 @@
           ignore-bar-touch></ha-labeled-slider>
       </div>
 
+      <div class='control speed'>
+        <ha-labeled-slider
+          caption='Speed' icon='mdi:transition' max='100'
+          value='{{speedSliderValue}}'
+          on-change='speedSliderChanged'
+          ignore-bar-touch></ha-labeled-slider>
+      </div>
+
       <ha-color-picker
         class='control color'
         on-colorselected='colorPicked'
@@ -114,7 +123,7 @@
         </paper-dropdown-menu>
       </div>
 
-      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
+      <ha-attributes state-obj="[[stateObj]]" extra-filters="brightness,color_temp,white_value,speed,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds"></ha-attributes>
     </div>
   </template>
 </dom-module>
@@ -127,6 +136,7 @@
     4: 'has-effect_list',
     16: 'has-color',
     128: 'has-white_value',
+    100: 'has-speed',
   };
   class MoreInfoLight extends window.hassMixins.EventsMixin(Polymer.Element) {
     static get is() { return 'more-info-light'; }
@@ -163,6 +173,11 @@
           value: 0,
         },
 
+        speedSliderValue: {
+          type: Number,
+          value: 0,
+        },
+
         colorPickerColor: {
           type: Object,
         }
@@ -178,6 +193,7 @@
         props.brightnessSliderValue = newVal.attributes.brightness;
         props.ctSliderValue = newVal.attributes.color_temp;
         props.wvSliderValue = newVal.attributes.white_value;
+        props.speedSliderValue = newVal.attributes.speed;
         if (newVal.attributes.hs_color) {
           props.colorPickerColor = {
             h: newVal.attributes.hs_color[0],
@@ -261,6 +277,17 @@
       this.hass.callService('light', 'turn_on', {
         entity_id: this.stateObj.entity_id,
         white_value: wv,
+      });
+    }
+
+    speedSliderChanged(ev) {
+      var speed = parseInt(ev.target.value, 10);
+
+      if (isNaN(speed)) return;
+
+      this.hass.callService('light', 'turn_on', {
+        entity_id: this.stateObj.entity_id,
+        speed: speed,
       });
     }
 
