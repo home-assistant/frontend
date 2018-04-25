@@ -347,7 +347,7 @@
                         "introduction": "Usa le automazioni per rendere viva la tua casa",
                         "default_name": "Nuova automazione",
                         "save": "Salva",
-                        "unsaved_confirm": "Hai modifiche non salvate. Sei sicuro di voler uscire?",
+                        "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?",
                         "alias": "Nome",
                         "triggers": {
                             "header": "Triggers",
@@ -525,6 +525,12 @@
             },
             "persistent_notification": {
                 "dismiss": "Rimuovi"
+            },
+            "scene": {
+                "activate": "Attiva"
+            },
+            "script": {
+                "execute": "Esegui"
             }
         },
         "components": {

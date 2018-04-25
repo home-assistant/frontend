@@ -116,7 +116,7 @@
             },
             "lock": {
                 "off": "Verriegelt",
-                "on": "nicht gesperrt"
+                "on": "Entriegelt"
             }
         },
         "calendar": {
@@ -525,6 +525,12 @@
             },
             "persistent_notification": {
                 "dismiss": "Ausblenden"
+            },
+            "scene": {
+                "activate": "Aktivieren"
+            },
+            "script": {
+                "execute": "Ausführen"
             }
         },
         "components": {
