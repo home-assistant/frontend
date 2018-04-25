@@ -56,7 +56,7 @@ class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     };
   }
 
-  constructor(){
+  constructor() {
     super();
     this.sensors = {
       moisture: 'mdi:water',
@@ -72,13 +72,7 @@ class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeAttributes(data) {
-    const attributes = [];
-    for (const key in this.sensors) {
-      if (key in data) {
-        attributes.push(key);
-      }
-    }
-    return attributes;
+    return Object.keys(this.sensors).filter(key => key in data);
   }
 
   computeIcon(attr) {
