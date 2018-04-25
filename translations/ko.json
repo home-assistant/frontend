@@ -384,7 +384,7 @@
                                     "label": "수치 상태",
                                     "above": "이상",
                                     "below": "이하",
-                                    "value_template": "템플릿 값 (선택 사항)"
+                                    "value_template": "값 템플릿 (선택 사항)"
                                 },
                                 "sun": {
                                     "label": "태양",
@@ -395,7 +395,7 @@
                                 },
                                 "template": {
                                     "label": "템플릿",
-                                    "value_template": "템플릿 값"
+                                    "value_template": "값 템플릿"
                                 },
                                 "time": {
                                     "label": "시간",
@@ -429,7 +429,7 @@
                                     "label": "수치 상태",
                                     "above": "이상",
                                     "below": "이하",
-                                    "value_template": "템플릿 값 (선택 사항)"
+                                    "value_template": "값 템플릿 (선택 사항)"
                                 },
                                 "sun": {
                                     "label": "태양",
@@ -442,7 +442,7 @@
                                 },
                                 "template": {
                                     "label": "템플릿",
-                                    "value_template": "템플릿 값"
+                                    "value_template": "값 템플릿"
                                 },
                                 "time": {
                                     "label": "시간",
@@ -525,6 +525,12 @@
             },
             "persistent_notification": {
                 "dismiss": "해제"
+            },
+            "scene": {
+                "activate": "활성화"
+            },
+            "script": {
+                "execute": "실행"
             }
         },
         "components": {
