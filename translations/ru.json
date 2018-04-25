@@ -525,6 +525,12 @@
             },
             "persistent_notification": {
                 "dismiss": "Отклонить"
+            },
+            "scene": {
+                "activate": "Активировать"
+            },
+            "script": {
+                "execute": "Выполнить"
             }
         },
         "components": {

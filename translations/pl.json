@@ -525,6 +525,12 @@
             },
             "persistent_notification": {
                 "dismiss": "Odrzuć"
+            },
+            "scene": {
+                "activate": "Aktywuj"
+            },
+            "script": {
+                "execute": "Wykonaj"
             }
         },
         "components": {
