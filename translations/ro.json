@@ -47,28 +47,28 @@
                 "on": "Umed"
             },
             "gas": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "motion": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "occupancy": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "smoke": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "sound": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "vibration": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "opening": {
                 "off": "Închis",
