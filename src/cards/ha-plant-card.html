@@ -34,7 +34,7 @@
       <div class='content'>
         <template is="dom-repeat" items="[[computeAttributes(stateObj.attributes)]]">
           <div class="attributes" on-click="attributeClicked">
-            <div><iron-icon icon="[[computeIcon(item)]]"></iron-icon></div>
+            <div><iron-icon icon="[[computeIcon(item, stateObj.attributes.battery)]]"></iron-icon></div>
             <div class$="[[computeClass(stateObj.attributes.problem, item)]]">
               [[computeValue(stateObj.attributes, item)]]
             </div>
@@ -75,11 +75,10 @@ class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
     return Object.keys(this.sensors).filter(key => key in data);
   }
 
-  computeIcon(attr) {
+  computeIcon(attr, batLvl) {
     if (attr === 'battery') {
-      const level = this.stateObj.attributes.battery;
-      return level <= 5 ? `${this.sensors[attr]}-alert` :
-        `${this.sensors[attr]}-${(Math.round((level / 10) - 0.01) * 10).toString()}`;
+      return batLvl <= 5 ? `${this.sensors[attr]}-alert` :
+        `${this.sensors[attr]}-${(Math.round((batLvl / 10) - 0.01) * 10).toString()}`;
     }
     return this.sensors[attr];
   }
