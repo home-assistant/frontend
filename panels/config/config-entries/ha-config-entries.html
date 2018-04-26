@@ -8,6 +8,8 @@
 <link rel='import' href='../../../src/resources/ha-style.html'>
 <link rel='import' href='../../../src/layouts/hass-subpage.html'>
 
+<link rel='import' href='../ha-config-section.html'>
+
 <link rel='import' href='./ha-config-flow.html'>
 
 <dom-module id="ha-config-entries">
@@ -28,7 +30,7 @@
       }
     </style>
 
-    <hass-subpage title='Integrations'>
+    <hass-subpage header='Integrations'>
       <template is='dom-if' if='[[_progress.length]]'>
         <ha-config-section is-wide='[[isWide]]'>
           <span slot='header'>In Progress</span>
@@ -36,7 +38,7 @@
             <template is='dom-repeat' items='[[_progress]]'>
               <div class='config-entry-row'>
                 <paper-item-body>
-                  [[_computeIntegrationTitle(localize, item.domain)]]
+                  [[_computeIntegrationTitle(localize, item.handler)]]
                 </paper-item-body>
                 <paper-button on-click='_continueFlow'>Configure</paper-button>
               </div>
@@ -106,6 +108,7 @@
     static get properties() {
       return {
         hass: Object,
+        isWide: Boolean,
 
         _flowId: {
           type: String,
@@ -137,7 +140,7 @@
     }
 
     _createFlow(ev) {
-      this.hass.callApi('post', 'config/config_entries/flow', { domain: ev.model.item })
+      this.hass.callApi('post', 'config/config_entries/flow', { handler: ev.model.item })
         .then((flow) => {
           this._userCreatedFlow = true;
           this.setProperties({

@@ -265,7 +265,7 @@
             "shopping-list": {
                 "clear_completed": "Pulizia completata",
                 "add_item": "Aggiungi articolo",
-                "microphone_tip": "Tocca il microfono in alto a destra e dì \"Add candy to my shopping list\""
+                "microphone_tip": "Tocca il microfono in alto a destra e dì \"Aggiungi caramelle alla mia lista della spesa\""
             },
             "history": {
                 "showing_entries": "Mostra registrazioni per",
@@ -347,7 +347,7 @@
                         "introduction": "Usa le automazioni per rendere viva la tua casa",
                         "default_name": "Nuova automazione",
                         "save": "Salva",
-                        "unsaved_confirm": "Hai modifiche non salvate. Sei sicuro di voler uscire?",
+                        "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?",
                         "alias": "Nome",
                         "triggers": {
                             "header": "Triggers",
@@ -525,6 +525,12 @@
             },
             "persistent_notification": {
                 "dismiss": "Rimuovi"
+            },
+            "scene": {
+                "activate": "Attiva"
+            },
+            "script": {
+                "execute": "Esegui"
             }
         },
         "components": {

@@ -7,7 +7,12 @@
         "history": "Istoric",
         "mailbox": "Cutie poștală",
         "shopping_list": "Listă de cumpărături",
-        "dev-mqtt": "MQTT"
+        "dev-services": "Servicii",
+        "dev-states": "Status",
+        "dev-events": "Evenimente",
+        "dev-templates": "Sabloane",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
     },
     "state": {
         "default": {
@@ -42,28 +47,28 @@
                 "on": "Umed"
             },
             "gas": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "motion": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "occupancy": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "smoke": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "sound": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "vibration": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "opening": {
                 "off": "Închis",
@@ -76,6 +81,14 @@
             "presence": {
                 "off": "Plecat",
                 "on": "Acasă"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Scăzuta"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problemă"
             },
             "connectivity": {
                 "off": "Deconectat",
@@ -94,6 +107,7 @@
                 "on": "Deschis"
             },
             "heat": {
+                "off": "Normal",
                 "on": "Fierbinte"
             },
             "window": {
@@ -214,13 +228,13 @@
         "zwave": {
             "default": {
                 "initializing": "Se inițializează",
-                "dead": "Mort",
+                "dead": "Inactiv",
                 "sleeping": "Adormit",
                 "ready": "Disponibil"
             },
             "query_stage": {
                 "initializing": "Se inițializează ( {query_stage} )",
-                "dead": "Mort ({query_stage})"
+                "dead": "Inactiv ({query_stage})"
             }
         }
     },
@@ -236,7 +250,7 @@
             "armed_away": "Armat",
             "armed_night": "Armat",
             "pending": "În curs",
-            "arming": "Armar",
+            "arming": "Armare",
             "disarming": "Dezar",
             "triggered": "Decl",
             "armed_custom_bypass": "Armat"
@@ -247,15 +261,18 @@
         }
     },
     "ui": {
-        "sidebar": {
-            "log_out": "Deconectare"
-        },
-        "common": {
-            "loading": "Se încarcă"
-        },
         "panel": {
+            "shopping-list": {
+                "clear_completed": "Stergere finalizată",
+                "add_item": "Adaugare element",
+                "microphone_tip": "Atingeți microfonul din partea dreaptă sus și spuneți \"Add candy to my shopping list\""
+            },
             "history": {
+                "showing_entries": "Se afișează intrările pentru",
                 "period": "Perioadă"
+            },
+            "logbook": {
+                "showing_entries": "Arata intrări pentru"
             },
             "mailbox": {
                 "empty": "Nu aveți mesaje",
@@ -264,83 +281,177 @@
                 "delete_button": "Șterge"
             },
             "config": {
+                "header": "Configurați Home Assistant",
+                "introduction": "Aici este posibil să vă configurați componentele și Home Assistant. Nu este posibilă configurarea de la UI, dar lucrăm la asta.",
                 "core": {
+                    "caption": "General",
                     "description": "Validați fișierul de configurare și controlați serverul",
                     "section": {
                         "core": {
                             "header": "Configurație și control server",
+                            "introduction": "Modificarea configurației poate fi un proces obositor. Noi stim. Această secțiune va încerca să vă facă viața un pic mai ușoară.",
                             "validation": {
                                 "heading": "Validare configurație",
-                                "introduction": "Validați configurația dvs. dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă"
+                                "introduction": "Validați configurația dvs. dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă",
+                                "check_config": "Verificați configurația",
+                                "valid": "Configurația este validă!",
+                                "invalid": "Configurația este invalidă"
                             },
                             "reloading": {
+                                "heading": "Refresh configurații",
                                 "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
-                                "core": "Reîncărcați nucleul",
-                                "group": "Reîncărcați grupurile",
-                                "automation": "Reîncărcați automatizările"
+                                "core": "Refresh procesor",
+                                "group": "Refresh grupuri",
+                                "automation": "Refresh automatizări",
+                                "script": "Refresh scenarii"
                             },
                             "server_management": {
+                                "heading": "Server de gestionare",
+                                "introduction": "Controlează-ți serverul Home Assistant ... chiar din Home Assistant.",
                                 "restart": "Repornire",
                                 "stop": "Oprire"
                             }
                         },
+                        "push_notifications": {
+                            "header": "Configurați notificările push",
+                            "introduction": "Activați această setare pentru a primi notificări push pe acest dispozitiv",
+                            "push_notifications": "Notificări push"
+                        },
                         "translation": {
-                            "header": "Alegeți o limbă"
+                            "header": "Alegeți o limbă",
+                            "introduction": "Alegeți limba pentru interfața Home Assistant de pe acest dispozitiv",
+                            "language": "Limba"
                         },
                         "themes": {
                             "header": "Setați o temă",
+                            "introduction": "Alegeți \"Backend-selected\" pentru a utiliza orice temă pe care o alege opțiunea de backend sau alegeți o temă pentru acest dispozitiv",
                             "theme": "Temă"
                         }
                     }
                 },
+                "customize": {
+                    "caption": "Personalizare",
+                    "description": "Personalizați-vă entitățile"
+                },
                 "automation": {
                     "caption": "Automatizări",
+                    "description": "Creați și editați scripturi",
                     "picker": {
+                        "header": "Editor de automatizare",
                         "introduction": "Editorul de automatizare vă permite să creați și să editați automatizări. Citiți [instrucțiunile] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) pentru a vă asigura că ați configurat corect Home Assistant.",
                         "pick_automation": "Alegeți automatizarea pentru a o edita",
+                        "no_automations": "Nu am putut găsi automatizări editabile",
                         "add_automation": "Adăugați o automatizare"
                     },
                     "editor": {
                         "introduction": "Utilizați automatizări pentru a vă aduce casa în viață",
                         "default_name": "Automatizare nouă",
                         "save": "Salvați",
-                        "unsaved_confirm": "Aveți modificări nesalvate. Esti sigur ca vrei sa pâra",
+                        "unsaved_confirm": "Aveți modificări nesalvate. Esti sigur ca vrei sa nu modifici?",
                         "alias": "Nume",
                         "triggers": {
                             "header": "Declanșatoare",
                             "introduction": "Declanșatoarele sunt cele ce încep procesarea unei reguli de automatizare. Este posibil să specificați mai multe declanșatoare pentru aceeași regulă. Odată ce începe declanșarea, Home Assistant va valida condițiile, dacă este cazul, și va apela acțiunea. \n\n [Aflați mai multe despre declanșatoare.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Adăugați acțiune",
+                            "duplicate": "Dublura",
                             "delete": "Ștergeți",
                             "delete_confirm": "Sigur doriți să ștergeți?",
+                            "unsupported_platform": "Platformă neacceptată: {platforma}",
+                            "type_select": "Tip acțiune",
                             "type": {
+                                "event": {
+                                    "label": "Eveniment",
+                                    "event_type": "Tip eveniment",
+                                    "event_data": "Date eveniment"
+                                },
+                                "state": {
+                                    "label": "Status",
+                                    "from": "De la",
+                                    "to": "La"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Eveniment:",
+                                    "start": "Începe",
+                                    "shutdown": "Închide"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Subiect",
+                                    "payload": "Incarcare (opțional)"
+                                },
+                                "numeric_state": {
+                                    "label": "Stare numerică",
+                                    "above": "Mai sus de",
+                                    "below": "Mai jos de",
+                                    "value_template": "Valoarea şablon (opţional)"
+                                },
                                 "sun": {
                                     "label": "Soare",
                                     "event": "Eveniment",
                                     "sunrise": "Răsărit de soare",
-                                    "sunset": "Apus de soare"
+                                    "sunset": "Apus de soare",
+                                    "offset": "Offset (opțional)"
+                                },
+                                "template": {
+                                    "label": "Şablon",
+                                    "value_template": "Valoare șablon"
+                                },
+                                "time": {
+                                    "label": "Timp",
+                                    "at": "La"
                                 },
                                 "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entitate cu localizare",
                                     "zone": "Zona",
+                                    "event": "Eveniment",
                                     "enter": "Intră",
                                     "leave": "Ieși"
                                 }
                             }
                         },
                         "conditions": {
+                            "header": "Condiții",
                             "introduction": "Condițiile sunt o parte opțională a unei reguli de automatizare și pot fi folosite pentru a împiedica o acțiune să se întâmple atunci când este declanșată. Condițiile par foarte asemănătoare cu declanșatoarele, dar sunt foarte diferite. Un declanșator va privi evenimentele care se întâmplă în sistem, în timp ce o condiție va arăta numai cum arată sistemul acum. Un declanșator poate observa că un comutator este pornit. O condiție poate vedea numai dacă un comutator este în prezent pornit sau oprit. \n\n [Aflați mai multe despre condiții.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Adăugați o condiție",
+                            "duplicate": "Dublura",
                             "delete": "Șterge",
                             "delete_confirm": "Ești sigur că vrei să ștergi?",
+                            "unsupported_condition": "Stare neacceptată: {condition}",
+                            "type_select": "Tip condiționare",
                             "type": {
+                                "state": {
+                                    "label": "Status",
+                                    "state": "Status"
+                                },
+                                "numeric_state": {
+                                    "label": "Status numeric",
+                                    "above": "Mai mare ca:",
+                                    "below": "Mai mic ca:",
+                                    "value_template": "Valoare sablon (optional)"
+                                },
                                 "sun": {
                                     "label": "Soare",
+                                    "before": "Inainte de:",
+                                    "after": "După:",
+                                    "before_offset": "Înainte de offset (opțional)",
+                                    "after_offset": "După offset (opţional)",
                                     "sunrise": "Răsărit de soare",
                                     "sunset": "Apus de soare"
                                 },
+                                "template": {
+                                    "label": "Sablon",
+                                    "value_template": "Valoare sablon"
+                                },
                                 "time": {
-                                    "label": "Inainte",
-                                    "after": "După"
+                                    "label": "Timp",
+                                    "after": "După",
+                                    "before": "Dupa"
                                 },
                                 "zone": {
                                     "label": "Zone",
+                                    "entity": "Entitate cu localizare",
                                     "zone": "Zone"
                                 }
                             }
@@ -349,24 +460,40 @@
                             "header": "Acţiuni",
                             "introduction": "Acțiunile sunt cele pe care Home Assistant le va face când se declanșează automatizarea. \n\n [Aflați mai multe despre acțiuni.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Adăugați o acțiune",
+                            "duplicate": "Duplicat",
                             "delete": "Șterge",
                             "delete_confirm": "Ești sigur că vrei să ștergi?",
+                            "unsupported_action": "Acțiune nesuportată: {action}",
+                            "type_select": "Tip acțiune",
                             "type": {
+                                "service": {
+                                    "label": "Cheama serviciu",
+                                    "service_data": "Date serviciu"
+                                },
+                                "delay": {
+                                    "label": "Întârziere",
+                                    "delay": "Întârziere"
+                                },
                                 "wait_template": {
+                                    "label": "Asteptare",
+                                    "wait_template": "Sablon Asteptare",
                                     "timeout": "Timeout (opțional)"
                                 },
                                 "condition": {
                                     "label": "Condiție"
                                 },
                                 "event": {
-                                    "event": "Eveniment"
+                                    "label": "Eveniment declansare",
+                                    "event": "Eveniment",
+                                    "service_data": "Date serviciu"
                                 }
                             }
                         }
                     }
                 },
                 "script": {
-                    "description": "Creați și editați scripturi"
+                    "caption": "Scenariu",
+                    "description": "Creați și editați scenarii"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -374,12 +501,78 @@
                 }
             }
         },
+        "sidebar": {
+            "log_out": "Deconectare",
+            "developer_tools": "Instrumente de dezvoltare"
+        },
+        "common": {
+            "loading": "Se încarcă",
+            "cancel": "Revocare"
+        },
+        "duration": {
+            "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
+            "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}",
+            "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}"
+        },
         "login-form": {
             "password": "Parola",
-            "remember": "Reține"
+            "remember": "Reține",
+            "log_in": "Conectare"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Imaginea nu este disponibila"
+            },
+            "persistent_notification": {
+                "dismiss": "Ascunde"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entitate"
+                }
+            },
+            "service-picker": {
+                "service": "Serviciu"
+            }
         }
     },
     "domain": {
+        "alarm_control_panel": "Panoul de control alarma",
+        "automation": "Automatizări",
+        "binary_sensor": "Senzor binar",
+        "calendar": "Calendar",
+        "camera": "Camera",
+        "climate": "Clima",
+        "configurator": "Configurator",
+        "conversation": "Conversaţie",
+        "cover": "Jaluzea",
+        "device_tracker": "Dispozitiv tracker",
+        "fan": "Ventilator",
+        "history_graph": "Istorie grafic",
+        "group": "Grup",
+        "image_processing": "Procesarea imaginii",
+        "input_boolean": "Selectie On\/Off",
+        "input_datetime": "Selectați o data",
+        "input_select": "Selectați",
+        "input_number": "Selectați numarul",
+        "input_text": "Introduceti un text",
+        "light": "Lumina",
+        "lock": "Blocare",
+        "mailbox": "Cutie poștală",
+        "media_player": "Media Player",
+        "notify": "Notifica",
+        "plant": "Plantă",
+        "proximity": "Proximitate",
+        "remote": "La distanţă",
+        "scene": "Scenă",
+        "script": "Scenariu",
+        "sensor": "Senzor",
+        "sun": "Soare",
+        "switch": "Comutator",
+        "updater": "Updater",
+        "weblink": "Legătură web",
         "zwave": "Z-Wave"
     },
     "attribute": {

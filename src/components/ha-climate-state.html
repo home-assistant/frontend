@@ -3,6 +3,13 @@
 <dom-module id="ha-climate-state">
   <template>
     <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
       .target {
         color: var(--primary-text-color);
       }
@@ -24,9 +31,11 @@
       [[computeTarget(stateObj)]]
     </div>
 
-    <div class='current'>
-      Currently: [[computeCurrentStatus(stateObj)]]
-    </div>
+    <template is='dom-if' if='[[currentStatus]]'>
+      <div class='current'>
+        Currently: [[currentStatus]]
+      </div>
+    </template>
   </template>
 </dom-module>
 
@@ -37,29 +46,34 @@ class HaClimateState extends Polymer.Element {
   static get properties() {
     return {
       stateObj: Object,
+      currentStatus: {
+        type: String,
+        computed: 'computeCurrentStatus(stateObj)',
+      },
     };
   }
 
   computeCurrentStatus(stateObj) {
-    if (stateObj.attributes.current_temperature) {
+    if (stateObj.attributes.current_temperature != null) {
       return `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.current_humidity) {
+    }
+    if (stateObj.attributes.current_humidity != null) {
       return `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
     }
-
-    return '';
+    return null;
   }
 
   computeTarget(stateObj) {
-    if (stateObj.attributes.target_temp_low &&
-        stateObj.attributes.target_temp_high) {
+    // We're using "!= null" on purpose so that we match both null and undefined.
+    if (stateObj.attributes.target_temp_low != null &&
+        stateObj.attributes.target_temp_high != null) {
       return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.temperature) {
+    } else if (stateObj.attributes.temperature != null) {
       return `${stateObj.attributes.temperature} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.target_humidity_low &&
-        stateObj.attributes.target_humidity_high) {
+    } else if (stateObj.attributes.target_humidity_low != null &&
+               stateObj.attributes.target_humidity_high != null) {
       return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} ${stateObj.attributes.unit_of_measurement}`;
-    } else if (stateObj.attributes.humidity) {
+    } else if (stateObj.attributes.humidity != null) {
       return `${stateObj.attributes.humidity} ${stateObj.attributes.unit_of_measurement}`;
     }
 

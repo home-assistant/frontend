@@ -19,11 +19,11 @@
             "off": "Aus",
             "on": "Un",
             "unknown": "Onbekannt",
-            "unavailable": "Net Ereechbar"
+            "unavailable": "Net erreechbar"
         },
         "alarm_control_panel": {
             "armed": "Aktivéiert",
-            "disarmed": "Désaktivéiert",
+            "disarmed": "Desaktivéiert",
             "armed_home": "Aktivéiert Doheem",
             "armed_away": "Aktivéiert Ënnerwee",
             "armed_night": "Aktivéiert Nuecht",
@@ -48,27 +48,27 @@
             },
             "gas": {
                 "off": "Kloer",
-                "on": "Détektéiert"
+                "on": "Detektéiert"
             },
             "motion": {
                 "off": "Roueg",
-                "on": "Détektéiert"
+                "on": "Detektéiert"
             },
             "occupancy": {
                 "off": "Kloer",
-                "on": "Détektéiert"
+                "on": "Detektéiert"
             },
             "smoke": {
                 "off": "Kloer",
-                "on": "Détektéiert"
+                "on": "Detektéiert"
             },
             "sound": {
                 "off": "Kloer",
-                "on": "Détektéiert"
+                "on": "Detektéiert"
             },
             "vibration": {
                 "off": "Kloer",
-                "on": "Détektéiert"
+                "on": "Detektéiert"
             },
             "opening": {
                 "off": "Zou",
@@ -136,7 +136,7 @@
             "idle": "Leerlauf",
             "auto": "Auto",
             "dry": "Dréchen",
-            "fan_only": "Nëmmen Ventilator",
+            "fan_only": "Nëmme Ventilator",
             "eco": "Eco",
             "electric": "Elektresch",
             "performance": "Leeschtung",
@@ -404,15 +404,15 @@
                                 "zone": {
                                     "label": "Zone",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Zone",
-                                    "event": "Evenement",
+                                    "zone": "Zon",
+                                    "event": "Evenement:",
                                     "enter": "Eran",
                                     "leave": "Verloossen"
                                 }
                             }
                         },
                         "conditions": {
-                            "header": "Konditioune",
+                            "header": "Konditiounen",
                             "introduction": "Konditioune sinn een optionalen Deel vun engem Automatisme a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. Konditioune gläichen den Ausléiser mee sinn awer ganz ënnerschiddlech. Een Ausléiser iwwerwaacht d'Evenementer am System, an eng Konditioun iwwerwaacht de Status vum System. Een Ausléiser gesäit wann ee Schalter ugeschalt gëtt. Eng Konditioun gesäit nëmmen op de Schalter un oder aus ass.\n\n[Léier méi iwwer Konditioune.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Konditioun dobäisetzen",
                             "duplicate": "Replikéiere",
@@ -446,29 +446,29 @@
                                 },
                                 "time": {
                                     "label": "Zäit",
-                                    "after": "No",
+                                    "after": "Duerno",
                                     "before": "Virdrun"
                                 },
                                 "zone": {
-                                    "label": "Zone",
+                                    "label": "Zon",
                                     "entity": "Entitéit mam Standuert",
-                                    "zone": "Zone"
+                                    "zone": "Zon"
                                 }
                             }
                         },
                         "actions": {
-                            "header": "Aktioune",
+                            "header": "Aktiounen",
                             "introduction": "Aktioune déi den HomeAssistant ausféiert wann den Automatisme ausgeléist gouf.\n[Léier méi iwwert Aktioune.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Aktioun dobäisetzen",
                             "duplicate": "Replikéiere",
                             "delete": "Läschen",
-                            "delete_confirm": "Sécher fir ze läschen",
+                            "delete_confirm": "Element sécher läschen?",
                             "unsupported_action": "Net ënnerstëtzten Aktioun: {action}",
                             "type_select": "Aktioun Typ",
                             "type": {
                                 "service": {
                                     "label": "Service opruffen",
-                                    "service_data": "Service Donnée"
+                                    "service_data": "Service-Donnéeën"
                                 },
                                 "delay": {
                                     "label": "Delai",
@@ -477,15 +477,15 @@
                                 "wait_template": {
                                     "label": "Waart",
                                     "wait_template": "Waardenzäit Modell",
-                                    "timeout": "Zäitiwwerscheidung (optional)"
+                                    "timeout": "Zäitiwwerschreidung (optional)"
                                 },
                                 "condition": {
                                     "label": "Konditioun"
                                 },
                                 "event": {
                                     "label": "Evenement starten",
-                                    "event": "Evenement",
-                                    "service_data": "Service Donnée"
+                                    "event": "Evenement:",
+                                    "service_data": "Service-Donnéeën"
                                 }
                             }
                         }
@@ -525,6 +525,12 @@
             },
             "persistent_notification": {
                 "dismiss": "Verwerfen"
+            },
+            "scene": {
+                "activate": "Aktivéieren"
+            },
+            "script": {
+                "execute": "Ausféieren"
             }
         },
         "components": {
@@ -553,11 +559,11 @@
         "history_graph": "Verlafs Grafik",
         "group": "Gruppe",
         "image_processing": "Bildveraarbechtung",
-        "input_boolean": "Angab Boolean",
-        "input_datetime": "Angab Datum-Zäit",
-        "input_select": "Angab Auswiel",
-        "input_number": "Angab Ziffer",
-        "input_text": "Angab Text",
+        "input_boolean": "Boolean-Agab",
+        "input_datetime": "Datum-\/Zäit-Agab",
+        "input_select": "Auswiel-Agab",
+        "input_number": "Zuelen-Agab",
+        "input_text": "Text-Agab",
         "light": "Luucht",
         "lock": "Schlass",
         "mailbox": "Bréifkëscht",

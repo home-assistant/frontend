@@ -403,7 +403,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Jednostka z lokalizacji",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa",
                                     "event": "Zdarzenie",
                                     "enter": "Wprowadź",
@@ -451,7 +451,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Jednostka z lokalizacji",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa"
                                 }
                             }
@@ -525,12 +525,18 @@
             },
             "persistent_notification": {
                 "dismiss": "Odrzuć"
+            },
+            "scene": {
+                "activate": "Aktywuj"
+            },
+            "script": {
+                "execute": "Wykonaj"
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Jednostka"
+                    "entity": "Encja"
                 }
             },
             "service-picker": {

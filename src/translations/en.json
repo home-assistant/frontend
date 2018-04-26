@@ -1,11 +1,4 @@
 {
-  "attribute": {
-    "weather": {
-      "humidity": "Humidity",
-      "visibility": "Visibility",
-      "wind_speed": "Wind speed"
-    }
-  },
   "domain": {
     "alarm_control_panel": "Alarm control panel",
     "automation": "Automation",
@@ -269,6 +262,22 @@
       "off": "[%key:state::default::off%]",
       "on": "[%key:state::default::on%]"
     },
+    "weather": {
+      "clear_night": "Clear, night",
+      "cloudy": "Cloudy",
+      "fog": "Fog",
+      "hail": "Hail",
+      "lightning": "Lightning",
+      "lightning_rainy": "Lightning, rainy",
+      "partlycloudy": "Partly cloudy",
+      "pouring": "Pouring",
+      "rainy": "Rainy",
+      "snowy": "Snowy",
+      "snowy_rainy": "Snowy, rainy",
+      "sunny": "Sunny",
+      "windy": "Windy",
+      "windy_variant": "Windy"
+    },
     "zwave": {
       "default": {
         "initializing": "Initializing",
@@ -311,6 +320,40 @@
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
+      },
+      "scene": {
+        "activate": "Activate"
+      },
+      "script": {
+        "execute": "Execute"
+      },
+      "weather": {
+        "attributes": {
+          "air_pressure": "Air pressure",
+          "humidity": "Humidity",
+          "temperature": "Temperature",
+          "visibility": "Visibility",
+          "wind_speed": "Wind speed"
+        },
+        "cardinal_direction": {
+          "e": "E",
+          "ene": "ENE",
+          "ese": "ESE",
+          "n": "N",
+          "ne": "NE",
+          "nne": "NNE",
+          "nw": "NW",
+          "nnw": "NNW",
+          "s": "S",
+          "se": "SE",
+          "sse": "SSE",
+          "ssw": "SSW",
+          "sw": "SW",
+          "w": "W",
+          "wnw": "WNW",
+          "wsw": "WSW"
+        },
+        "forecast": "Forecast"
       }
     },
     "common": {

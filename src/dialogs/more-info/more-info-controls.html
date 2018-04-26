@@ -11,15 +11,14 @@
 
 <dom-module id="more-info-controls">
   <template>
-    <style>
+    <style include='ha-style-dialog'>
       app-toolbar {
         color: var(--more-info-header-color);
         background-color: var(--more-info-header-background);
       }
 
       app-toolbar [main-title] {
-        /* Design guideline states 24px, changed to 16 to align with state info */
-        margin-left: 16px;
+        @apply --ha-more-info-app-toolbar-title;
       }
 
       state-card-content {
@@ -28,8 +27,6 @@
       }
 
       state-history-charts {
-        position: relative;
-        z-index: 1;
         max-width: 100%;
         margin-bottom: 16px;
       }
@@ -38,7 +35,6 @@
         .main-title {
           pointer-events: auto;
           cursor: default;
-          line-height: 64px;
         }
       }
 
