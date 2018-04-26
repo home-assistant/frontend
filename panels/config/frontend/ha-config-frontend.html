@@ -1,0 +1,436 @@
+<dom-module id="ha-config-frontend">
+<template>
+  <style>
+    .flex {
+      display: flex;
+    }
+    .views {
+      flex: 1;
+    }
+    .view {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    .view.hidden {
+      text-decoration: line-through;
+    }
+    paper-button iron-icon {
+      margin-right: 8px;
+    }
+    paper-button.new,
+    paper-button.save {
+      color: white;
+      background-color: var(--google-green-500);
+    }
+    paper-button.delete {
+      color: white;
+      background-color: var(--google-red-500);
+    }
+    paper-card {
+      margin: 8px;
+      display: block;
+    }
+    paper-card paper-item {
+      display: block;
+    }
+    paper-input {
+      max-width: 300px;
+    }
+  </style>
+  <paper-button raised class="delete" on-click="deleteAllViews"><iron-icon icon="mdi:delete"></iron-icon>Delete all views</paper-button>
+  <paper-button raised on-click="importFromHaConfig"><iron-icon icon="mdi:import"></iron-icon>Import from HA config</paper-button>
+  <paper-button raised class="save" on-click="saveAllViews"><iron-icon icon="mdi:content-save"></iron-icon>Save views</paper-button>
+  <textarea>[[_toStr(views)]]</textarea>
+  <hr>
+  <div class="flex">
+    <div class="views">
+      <paper-card heading="Views">
+        <div class="card-content">
+          <template is="dom-repeat" items="[[views]]">
+            <paper-button class$="[[computeViewClass(item.hidden)]]" raised on-click="selectView" draggable="true" on-dragstart="dragFromViews" on-drop="dropInViews" on-dragover="canDropInViews">
+              <template is="dom-if" if="[[item.icon]]">
+                <iron-icon icon="[[item.icon]]"></iron-icon>
+              </template>
+              [[item.name]]
+            </paper-button>
+          </template>
+          <paper-button class="new" raised on-click="addNewView" class="new">
+            <iron-icon icon="mdi:plus"></iron-icon>
+            Add new view
+          </paper-button>
+        </div>
+      </paper-card>
+      <hr>
+
+      <template is="dom-if" if="[[selectedView]]">
+        <paper-card heading="Selected view">
+          <div class="card-content">
+            <paper-input label="Icon" value="{{selectedView.icon}}">
+              <iron-icon icon="[[selectedView.icon]]" slot="prefix"></iron-icon>
+            </paper-input>
+            <paper-input label="Name" value="{{selectedView.name}}"></paper-input>
+            <paper-checkbox checked="{{selectedView.hidden}}">Hidden</paper-checkbox>
+          </div>
+          <div class="card-actions">
+            <paper-button class="delete" on-click="deleteSelectedView" raised><iron-icon icon="mdi:delete"></iron-icon>Delete view</paper-button>
+            <paper-button class="save" on-click="saveSelectedView" raised><iron-icon icon="mdi:content-save"></iron-icon>Save changes</paper-button>
+          </div>
+        </paper-card>
+
+        <paper-card heading="Badges" on-dragover="canDropInBadgesBox" on-drop="dropInBadgesBox">
+          <div class="card-content">
+            <template is="dom-repeat" items="[[selectedView.badges]]">
+              <paper-item draggable="true" on-dragstart="dragFromBadges">
+                <iron-icon icon="[[getEntityIcon(item)]]"></iron-icon>
+                [[item.name]]
+              </paper-item>
+            </template>
+          </div>
+        </paper-card>
+
+        <paper-card heading="Cards" on-dragover="canDropInCardsBox" on-drop="dropInCardsBox">
+          <div class="card-content">
+            <paper-button class="new" on-click="addGroupCardToView" raised><iron-icon icon="mdi:plus"></iron-icon>Add group card</paper-button>
+            <template is="dom-repeat" items="[[selectedView.cards]]">
+              <paper-item>
+                <template is="dom-if" if="[[equals(item.type, 'group')]]">
+                  [[item.name]]
+                  <template is="dom-repeat" items="[[item.entities]]">
+                    <paper-item>
+                      <iron-icon icon="[[getEntityIcon(item)]]"></iron-icon>
+                      [[item.name]]
+                    </paper-item>
+                  </template>
+                </template>
+                <template is="dom-if" if="[[equals(item.type, 'entity')]]">
+                  <iron-icon icon="[[getEntityIcon(item)]]"></iron-icon>
+                  [[item.name]]
+                </template>
+                <template is="dom-if" if="[[equals(item.type, 'divider')]]">
+                  <iron-icon icon="mdi:numeric-[[item.column_count]]-box"></iron-icon>
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                </template>
+              </paper-item>
+            </template>
+          </div>
+        </paper-card>
+      </template>
+    </div>
+
+    <paper-card heading="Entities">
+      <div class="card-content">
+        <template is="dom-repeat" items="[[entities]]">
+          <paper-item draggable="true" on-dragstart="dragFromEntities">
+            <iron-icon icon="[[item.icon]]"></iron-icon>
+            [[item.name]]
+          </paper-item>
+        </template>
+      </div>
+    </paper-card>
+  </div>
+</template>
+</dom-module>
+
+<script>
+class HaConfigFrontend extends Polymer.Element {
+  static get is() { return 'ha-config-frontend'; }
+  static get properties() {
+    return {
+      hass: Object,
+
+      views: {
+        type: Array,
+        value: localStorage.test_views ? JSON.parse(localStorage.test_views) : []
+      },
+      selectedView: Object,
+      selectedViewIndex: Number,
+      entities: {
+        type: Array,
+        computed: 'computeEntities(hass.states)'
+      }
+    };
+  }
+
+  constructor() {
+    super();
+    this.entityFilter = ['group', 'zone'];
+    this.importFilter = ['zone'];
+    this.badges = ['updater', 'sun', 'device_tracker', 'alarm_control_panel', 'timer', 'sensor', 'binary_sensor', 'mailbox'];
+    this.domainsWithCards = ['camera', 'history_graph', 'media_player', 'persistent_notification', 'plant', 'weather'];
+  }
+
+  computeEntities(states) {
+    return Object.keys(states)
+      .filter(id => !this.entityFilter.includes(this.getDomain(id)))
+      .map(id => {
+        return {
+          id,
+          name: states[id].attributes.friendly_name || id,
+          icon: window.hassUtil.stateIcon(states[id])
+        }
+      });
+  }
+
+  equals(a, b) {
+    return a === b;
+  }
+
+  computeViewClass(hidden) {
+    return hidden ? 'view hidden' : 'view';
+  }
+
+  addNewView() {
+    this.push('views', {
+      name: 'New view',
+      icon: 'mdi:new-box',
+      badges: [],
+      cards: [],
+      hidden: false
+    });
+  }
+
+  deleteAllViews() {
+    this.setProperties({
+      views: [],
+      selectedView: null,
+      selectedViewIndex: null
+    });
+  }
+
+  importFromHaConfig() {
+    const states = this.hass.states;
+    const addedEntities = new Set();
+    let defaultView = null;
+    let i = 0;
+
+    const mapEntity = (id) => {
+      addedEntities.add(id);
+      const domain = this.getDomain(id);
+      if(domain === 'group') {
+        return {
+          type: 'group',
+          name: states[id].attributes.friendly_name || id,
+          hidden: false,
+        }
+      }
+      return {
+        type: 'entity',
+        name: states[id] && states[id].attributes && states[id].attributes.friendly_name ?
+          states[id].attributes.friendly_name : id,
+        icon: states[id].attributes.icon || null,
+        hidden: false,
+        entity_id: id,
+        config: {},
+        custom: {}
+      };
+    };
+    const getCards = (arr) => {
+      return arr.filter(id => !this.badges.includes(this.getDomain(id)))
+        .map(id => {
+          const data = mapEntity(id);
+          if (this.getDomain(id) === 'group') {
+            data.entities = states[id].attributes.entity_id
+              .filter(id2 => this.getDomain(id2) !== 'group')
+              .map(id2 => mapEntity(id2));
+          }
+          return data;
+        });
+    }
+    const getBadges = (arr) => {
+      return arr.filter(id => this.badges.includes(this.getDomain(id)))
+        .map(id => mapEntity(id));
+    }
+
+    const views = Object.keys(states)
+      .filter(id => this.getDomain(id) === 'group' && states[id].attributes.view)
+      .map(id => {
+        if (id === 'group.default_view') {
+          defaultView = i;
+        } else {
+          i++;
+        }
+        addedEntities.add(id);
+        const badges = getBadges(states[id].attributes.entity_id);
+        const cards = getCards(states[id].attributes.entity_id);
+        return {
+          name: states[id].attributes.friendly_name || id,
+          icon: this.getIconFromEntityId(id),
+          hidden: false,
+          badges,
+          cards
+        };
+      });
+
+    if (defaultView) {
+      views.splice(0, 0, views.splice(defaultView, 1)[0]);
+    }
+
+    const viewlessEntities = Object.keys(states).filter(id => !addedEntities.has(id) && !this.importFilter.includes(id));
+    const badges = getBadges(viewlessEntities);
+    const cards = getCards(viewlessEntities);
+    if (badges || cards) {
+      if(defaultView) {
+        for (let j = 0; j < badges.length; j++) {
+          views[0].badges.push(badges[j]);
+        }
+        for (let j = 0; j < cards.length; j++) {
+          views[0].cards.push(cards[j]);
+        }
+      } else {
+        views.splice(0, 0, {
+          name: 'Default',
+          icon: 'mdi:home',
+          hidden: false,
+          badges,
+          cards
+        });
+      }
+    }
+
+    this.setProperties({
+      views,
+      selectedView: null,
+      selectedViewIndex: null
+    });
+  }
+
+  saveAllViews() {
+    localStorage.test_views = JSON.stringify(this.views);
+  }
+
+  selectView(ev) {
+    const i = ev.model.index;
+    this.setProperties({
+      selectedViewIndex: i,
+      selectedView: this.views[i]
+    });
+  }
+
+  deleteSelectedView() {
+    this.splice('views', this.selectedViewIndex, 1);
+    this.setProperties({
+      selectedViewIndex: null,
+      selectedView: null
+    });
+  }
+
+  saveSelectedView() {
+    this.splice('views', this.selectedViewIndex, 1, this.selectedView);
+  }
+
+  addGroupCardToView() {
+    this.push('selectedView.cards', {
+      type: 'group',
+      name: 'New Group',
+      entities: [],
+      hidden: false
+    });
+  }
+
+  getIconFromEntityId(id) {
+    return window.hassUtil.stateIcon(this.hass.states[id]);
+  }
+
+  getEntityIcon(item) {
+    return item.icon || this.getIconFromEntityId(item.entity_id);
+  }
+
+  getDomain(id) {
+    return id.split('.')[0];
+  }
+
+  dragFromViews(ev) {
+    this.dndTransfer = {
+      type: 'view',
+      index: ev.model.index
+    }
+  }
+
+  dragFromBadges(ev) {
+    this.dndTransfer = {
+      type: 'entity',
+      src: 'badges',
+      index: ev.model.index
+    }
+  }
+
+  dragFromCards(ev) {
+    this.dndTransfer = {
+      type: 'entity',
+      src: 'cards',
+      index: ev.model.index
+    }
+  }
+
+  dragFromEntities(ev) {
+    this.dndTransfer = {
+      type: 'entity',
+      src: 'entities',
+      index: ev.model.index
+    }
+  }
+
+  canDropInViews(ev) {
+    const dnd = this.dndTransfer;
+    if(dnd.type === 'view' && dnd.index !== ev.model.index) {
+      ev.preventDefault();
+    }
+  }
+
+  canDropInBadgesBox(ev) {
+    const dnd = this.dndTransfer;
+    if(dnd.type === 'entity') {
+      ev.preventDefault();
+    }
+  }
+
+  canDropInCardsBox(ev) {
+    const type = this.dndTransfer.type;
+    if(type === 'entity' || type === 'group') {
+      ev.preventDefault();
+    }
+  }
+
+  canDropInGroupCardBox(ev) {
+    if(this.dndTransfer.type === 'entity') {
+      ev.preventDefault();
+    }
+  }
+
+  dropInViews(ev) {
+    if(this.dndTransfer.type === 'view') {
+      const newIndex = ev.model.index;
+      const oldIndex = this.dndTransfer.index;
+      this.splice('views', newIndex, 0, this.views.splice(oldIndex, 1)[0]);
+
+      const selected = this.selectedViewIndex;
+      if (oldIndex === selected) {
+        this.selectedViewIndex = newIndex;
+      } else if (oldIndex < selected && newIndex >= selected) {
+        this.selectedViewIndex--;
+      } else if (oldIndex > selected && newIndex <= selected) {
+        this.selectedViewIndex++;
+      }
+    }
+  }
+
+  dropInBadgesBox(ev) {
+    const dnd = this.dndTransfer;
+    if(dnd.src === 'entities') {
+      this.push('selectedView.badges', this.entities[dnd.index]);
+    }
+  }
+
+  dropInCardsBox(ev) {
+    const dnd = this.dndTransfer;
+    if(dnd.src === 'entities') {
+      this.push('selectedView.cards', this.entities[dnd.index]);
+    }
+  }
+
+  _toStr(obj) {
+    return JSON.stringify(obj, null, 2);
+  }
+}
+customElements.define(HaConfigFrontend.is, HaConfigFrontend);
+</script>

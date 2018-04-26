@@ -13,6 +13,7 @@
 <link rel="import" href="./zwave/ha-config-zwave.html">
 <link rel="import" href="./customize/ha-config-customize.html">
 <link rel="import" href="./config-entries/ha-config-entries.html">
+<link rel="import" href="./frontend/ha-config-frontend.html">
 
 <dom-module id="ha-panel-config">
   <template>
@@ -96,6 +97,14 @@
         hass='[[hass]]'
         is-wide='[[isWide]]'
       ></ha-config-entries>
+    </template>
+
+    <template is="dom-if" if='[[_equals(_routeData.page, "frontend")]]' restamp>
+      <ha-config-frontend
+        page-name='frontend'
+        hass='[[hass]]'
+        is-wide='[[isWide]]'
+      ></ha-config-frontend>
     </template>
   </template>
 </dom-module>
