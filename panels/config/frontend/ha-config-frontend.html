@@ -12,6 +12,7 @@
           background-color: var(--primary-color);
           color: white;
         };
+        --paper-item-body-two-line-min-height: 56px;
       }
       iron-icon.icon {
         color: var(--paper-item-icon-color);
@@ -28,6 +29,7 @@
       .content {
         display: flex;
         flex-direction: column;
+        height: 100%;
       }
       .views .card-content {
         display: flex;
@@ -40,10 +42,12 @@
       .selected-view {
         flex: 1;
       }
-      .selected-view .card-content,
-      .entities .card-content {
-        overflow-y: auto;
-        height: 500px;
+      .view-entities paper-card {
+        display: flex;
+        flex-direction: column;
+      }
+      .view-entities paper-card .card-content {
+        flex: 1;
       }
       .options {
         display: flex;
@@ -56,16 +60,36 @@
         display: flex;
         flex-wrap: wrap;
       }
+      .cards {
+        height: 300px;
+        overflow-x: scroll;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+      }
       .box {
         border: 1px dotted var(--secondary-text-color);
         margin-bottom: 4px;
+      }
+      .box h2 {
+        margin-left: 8px;
+      }
+      paper-item-body.group {
+        color: red;
+      }
+      .group-content {
+        flex: 1;
+      }
+      .entities .card-content {
+        padding: 16px 0;
+        overflow-y: auto;
       }
     </style>
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>Configure status page</div>
+          <div main-title>Use these buttons --></div>
           <paper-icon-button title="Import from HA config" icon="mdi:download" on-click="importFromHaConfig"></paper-icon-button>
           <paper-icon-button title="Save to localStorage" icon="mdi:content-save" on-click="saveAllViews"></paper-icon-button>
         </app-toolbar>
@@ -105,7 +129,7 @@
                   <h2>Badges</h2>
                   <div class="badges">
                     <template is="dom-repeat" items="[[selectedView.badges]]">
-                      <paper-item draggable="true" on-dragstart="dragEntityFromBadges">
+                      <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromBadges">
                         <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
                         <paper-item-body two-line>
                           <div>[[getEntityName(item)]]</div>
@@ -118,43 +142,45 @@
 
                 <div class="box" on-dragover="canDropInCards" on-drop="dropInCards">
                   <h2>Cards</h2>
-                  <template is="dom-repeat" items="[[selectedView.cards]]">
-                    <template is="dom-if" if="[[equals(item.type, 'group')]]">
-                      <paper-item draggable="true" on-dragstart="dragGroupFromCards" on-dragover="canDropInGroup" on-drop="dropInGroup">
-                        <paper-item-body two-line>
-                          <div>[[item.name]]</div>
-                          <div secondary>Group</div>
-                        </paper-item-body>
-                        <div>
-                          <template is="dom-repeat" items="[[item.entities]]">
-                            <paper-item draggable="true" on-dragstart="dragEntityFromGroup">
-                              <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
-                              <paper-item-body two-line>
-                                <div>[[getEntityName(item)]]</div>
-                                <div secondary>[[item.entity_id]]</div>
-                              </paper-item-body>
-                            </paper-item>
-                          </template>
-                        </div>
-                      </paper-item>
+                  <div class="cards">
+                    <template is="dom-repeat" items="[[selectedView.cards]]">
+                      <template is="dom-if" if="[[equals(item.type, 'group')]]">
+                        <paper-item draggable="true" on-dragstart="dragGroupFromCards" on-dragover="canDropInGroup" on-drop="dropInGroup">
+                          <paper-item-body class="group" two-line>
+                            <div>[[item.name]]</div>
+                            <div secondary>Group</div>
+                          </paper-item-body>
+                          <div class="group-content">
+                            <template is="dom-repeat" items="[[item.entities]]">
+                              <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromGroup">
+                                <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
+                                <paper-item-body two-line>
+                                  <div>[[getEntityName(item)]]</div>
+                                  <div secondary>[[item.entity_id]]</div>
+                                </paper-item-body>
+                              </paper-item>
+                            </template>
+                          </div>
+                        </paper-item>
+                      </template>
+                      <template is="dom-if" if="[[equals(item.type, 'entity')]]">
+                        <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromCards">
+                          <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
+                          <paper-item-body two-line>
+                            <div>[[getEntityName(item)]]</div>
+                            <div secondary>[[item.entity_id]]</div>
+                          </paper-item-body>
+                        </paper-item>
+                      </template>
+                      <template is="dom-if" if="[[equals(item.type, 'divider')]]">
+                        <paper-item>
+                          ~~~
+                          <iron-icon icon="mdi:numeric-[[item.column_count]]-box"></iron-icon>
+                          ~~~
+                        </paper-item>
+                      </template>
                     </template>
-                    <template is="dom-if" if="[[equals(item.type, 'entity')]]">
-                      <paper-item draggable="true" on-dragstart="dragEntityFromCards">
-                        <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
-                        <paper-item-body two-line>
-                          <div>[[getEntityName(item)]]</div>
-                          <div secondary>[[item.entity_id]]</div>
-                        </paper-item-body>
-                      </paper-item>
-                    </template>
-                    <template is="dom-if" if="[[equals(item.type, 'divider')]]">
-                      <paper-item>
-                        ~~~
-                        <iron-icon icon="mdi:numeric-[[item.column_count]]-box"></iron-icon>
-                        ~~~
-                      </paper-item>
-                    </template>
-                  </template>
+                  </div>
                 </div>
               </template>
             </div>
@@ -169,7 +195,7 @@
           <paper-card class="entities" heading="Entities">
             <div class="card-content">
               <template is="dom-repeat" items="[[entities]]">
-                <paper-item draggable="true" on-dragstart="dragEntityFromEntities">
+                <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromEntities">
                   <iron-icon class="icon" icon="[[item.icon]]"></iron-icon>
                   <paper-item-body two-line>
                     <div>[[item.friendly_name]]</div>
@@ -191,7 +217,7 @@
 </dom-module>
 
 <script>
-class HaConfigFrontend extends Polymer.Element {
+class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'ha-config-frontend'; }
   static get properties() {
     return {
@@ -219,8 +245,8 @@ class HaConfigFrontend extends Polymer.Element {
   constructor() {
     super();
     this.importFilter = ['zone'];
-    this.badges = ['updater', 'sun', 'device_tracker', 'alarm_control_panel', 'timer', 'sensor', 'binary_sensor', 'mailbox'];
-    this.domainsWithCards = ['camera', 'history_graph', 'media_player', 'persistent_notification', 'plant', 'weather'];
+    this.domainsWithBadge = ['updater', 'sun', 'device_tracker', 'alarm_control_panel', 'timer', 'sensor', 'binary_sensor', 'mailbox'];
+    this.domainsWithCard = ['camera', 'history_graph', 'media_player', 'persistent_notification', 'plant', 'weather'];
   }
 
   computeEntities(states, entitiesFilter) {
@@ -288,7 +314,7 @@ class HaConfigFrontend extends Polymer.Element {
       };
     };
     const getCards = (arr) => {
-      return arr.filter(id => !this.badges.includes(this.getDomain(id)))
+      return arr.filter(id => !this.domainsWithBadge.includes(this.getDomain(id)))
         .map(id => {
           const data = mapEntity(id);
           if (this.getDomain(id) === 'group') {
@@ -300,7 +326,7 @@ class HaConfigFrontend extends Polymer.Element {
         });
     }
     const getBadges = (arr) => {
-      return arr.filter(id => this.badges.includes(this.getDomain(id)))
+      return arr.filter(id => this.domainsWithBadge.includes(this.getDomain(id)))
         .map(id => mapEntity(id));
     }
 
@@ -407,6 +433,10 @@ class HaConfigFrontend extends Polymer.Element {
 
   getDomain(id) {
     return id.split('.')[0];
+  }
+
+  fireMoreInfo(ev) {
+    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
   }
 
 
