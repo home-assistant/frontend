@@ -76,11 +76,15 @@ class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   computeIcon(attr, batLvl) {
+    const icon = this.sensors[attr];
     if (attr === 'battery') {
-      return batLvl <= 5 ? `${this.sensors[attr]}-alert` :
-        `${this.sensors[attr]}-${(Math.round((batLvl / 10) - 0.01) * 10).toString()}`;
+      if (batLvl <= 5) {
+        return `${icon}-alert`;
+      } else if (batLvl < 95) {
+        return `${icon}-${Math.round((batLvl / 10) - 0.01) * 10}`;
+      }
     }
-    return this.sensors[attr];
+    return icon;
   }
 
   computeValue(attributes, attr) {
