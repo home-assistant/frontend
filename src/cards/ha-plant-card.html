@@ -78,7 +78,7 @@ class HaPlantCard extends window.hassMixins.EventsMixin(Polymer.Element) {
   computeIcon(attr, batLvl) {
     const icon = this.sensors[attr];
     if (attr === 'battery') {
-      if (batLvl <= 5 ) {
+      if (batLvl <= 5) {
         return `${icon}-alert`;
       } else if (batLvl < 95) {
         return `${icon}-${Math.round((batLvl / 10) - 0.01) * 10}`;
