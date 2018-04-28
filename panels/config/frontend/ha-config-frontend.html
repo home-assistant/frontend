@@ -259,7 +259,7 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
       },
       defaultViewIndex: {
         type: Number,
-        value: 'test_defaultViewIndex' in localStorage ? localStorage.test_defaultViewIndex : null
+        value: 'test_defaultViewIndex' in localStorage ? Number(localStorage.test_defaultViewIndex) : null
       },
 
       selectedView: Object,
