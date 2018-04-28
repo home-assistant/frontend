@@ -1,11 +1,15 @@
 <dom-module id="ha-config-frontend">
   <template>
     <style include="ha-style">
-      .view-hidden {
-        text-decoration: line-through;
-      }
       paper-card {
         margin: 4px;
+      }
+      paper-card .card-actions paper-button {
+        font-weight: 500;
+        color: var(--primary-color);
+      }
+      paper-card .card-actions paper-button.delete {
+        color: var(--google-red-500);
       }
       paper-card paper-item {
         --paper-item-focused: {
@@ -18,29 +22,29 @@
         color: var(--paper-item-icon-color);
         margin-right: 8px;
       }
-      .card-actions paper-button {
-        font-weight: 500;
-        color: var(--primary-color);
-      }
-      .card-actions paper-button.delete {
-        color: var(--google-red-500);
-      }
 
       .content {
         display: flex;
         flex-direction: column;
         height: 100%;
       }
-      .views .card-content {
+      paper-card.views .card-content {
         display: flex;
-        flex-wrap: wrap;
+        overflow-x: auto;
       }
+      paper-card.views .card-content paper-item {
+        flex: 0 0 auto;
+      }
+      paper-card.views .card-content paper-item.hidden-view {
+        text-decoration: line-through;
+      }
+      paper-card.views .card-content paper-item.default-view iron-icon {
+        color: var(--google-yellow-500);
+      }
+
       .view-entities {
         flex: 1;
         display: flex;
-      }
-      .selected-view {
-        flex: 1;
       }
       .view-entities paper-card {
         display: flex;
@@ -49,40 +53,63 @@
       .view-entities paper-card .card-content {
         flex: 1;
       }
+      .view-entities paper-card .card-actions {
+        height: 42px;
+      }
+      paper-card.selected-view {
+        flex: 1;
+      }
+      paper-card.selected-view .card-content {
+        display: flex;
+        flex-direction: column;
+      }
       .options {
+        flex: 0 0 auto;
         display: flex;
         align-items: center;
       }
       .options paper-input {
-        margin-right: 8px;
+        margin-right: 16px;
+        flex: 1;
+        max-width: 300px;
       }
-      .badges {
-        display: flex;
-        flex-wrap: wrap;
-      }
-      .cards {
-        height: 300px;
-        overflow-x: scroll;
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-      }
+
       .box {
-        border: 1px dotted var(--secondary-text-color);
+        border: 1px solid #e8e8e8;
         margin-bottom: 4px;
       }
       .box h2 {
-        margin-left: 8px;
+        margin: 8px;
       }
-      paper-item-body.group {
-        color: red;
+      .box .badges {
+        min-height: 56px;
+        display: flex;
+        overflow-x: auto;
       }
-      .group-content {
+      .box .badges paper-item {
+        flex: 0 0 auto;
+      }
+      .box.box-cards {
         flex: 1;
       }
-      .entities .card-content {
-        padding: 16px 0;
-        overflow-y: auto;
+      .box .cards {
+        display: flex;
+        flex-flow: column wrap;
+        align-content: flex-start;
+        overflow-x: auto;
+        height: calc(100% - 36px);
+      }
+      .box .cards paper-item {
+        width: 250px;
+      }
+      .box .cards paper-item-body.group {
+        color: red;
+        width: 20px
+      }
+
+      paper-card.entities .card-content {
+        padding: 0;
+        overflow-y: scroll;
       }
     </style>
     <app-header-layout has-scrolling-region>
@@ -96,17 +123,16 @@
       </app-header>
 
       <div class="content">
-        <paper-card class="views" heading="Views">
+        <paper-card class="views">
           <div class="card-content">
             <template is="dom-repeat" items="[[views]]">
-              <paper-item class$="[[computeViewClass(item.hidden)]]" raised on-click="selectView" draggable="true" on-dragstart="dragViewFromViews" on-drop="dropInView" on-dragover="canDropInView">
+              <paper-item class$="[[computeViewClass(index, item.hidden, defaultViewIndex)]]" raised on-click="selectView" draggable="true" on-dragstart="dragViewFromViews" on-drop="dropInView" on-dragover="canDropInView">
                 <template is="dom-if" if="[[item.icon]]">
                   <iron-icon class="icon" icon="[[item.icon]]"></iron-icon>
                 </template>
                 [[item.name]]
               </paper-item>
             </template>
-            <textarea>[[_toStr(views)]]</textarea>
           </div>
           <div class="card-actions">
             <paper-button on-click="addNewView">Add new view</paper-button>
@@ -114,15 +140,16 @@
         </paper-card>
 
         <div class="view-entities">
-          <paper-card class="selected-view" heading="Selected view">
+          <paper-card class="selected-view">
             <div class="card-content">
               <template is="dom-if" if="[[selectedView]]">
                 <div class="options">
                   <paper-input label="Name" value="{{selectedView.name}}"></paper-input>
-                  <paper-input label="Icon" value="{{selectedView.icon}}">
-                    <iron-icon icon="[[selectedView.icon]]" slot="prefix"></iron-icon>
-                  </paper-input>
-                  <paper-checkbox checked="{{selectedView.hidden}}">Hidden</paper-checkbox>
+                  <paper-input label="Icon" value="{{selectedView.icon}}"></paper-input>
+                  <paper-checkbox checked="{{selectedView.hidden}}">Hide view</paper-checkbox>
+                  <template is="dom-if" if="[[!equals(selectedViewIndex, defaultViewIndex)]]">
+                    <paper-button on-click="setDefaultView" raised>Set as default view</paper-button>
+                  </template>
                 </div>
 
                 <div class="box" on-dragover="canDropInBadges" on-drop="dropInBadges">
@@ -140,17 +167,18 @@
                   </div>
                 </div>
 
-                <div class="box" on-dragover="canDropInCards" on-drop="dropInCards">
+                <div class="box box-cards" on-dragover="canDropInCards" on-drop="dropInCards">
                   <h2>Cards</h2>
                   <div class="cards">
                     <template is="dom-repeat" items="[[selectedView.cards]]">
                       <template is="dom-if" if="[[equals(item.type, 'group')]]">
                         <paper-item draggable="true" on-dragstart="dragGroupFromCards" on-dragover="canDropInGroup" on-drop="dropInGroup">
+                          [[item.name]]
                           <paper-item-body class="group" two-line>
                             <div>[[item.name]]</div>
                             <div secondary>Group</div>
                           </paper-item-body>
-                          <div class="group-content">
+                          <div>
                             <template is="dom-repeat" items="[[item.entities]]">
                               <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromGroup">
                                 <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
@@ -212,7 +240,7 @@
           </paper-card>
         </div>
       </div>
-    </app-header-layout>
+    </app-header-layout><textarea style="width: 90%; height: 600px;">[[_getConfig()]]</textarea>
   </template>
 </dom-module>
 
@@ -227,8 +255,13 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
 
       views: {
         type: Array,
-        value: localStorage.test_views ? JSON.parse(localStorage.test_views) : []
+        value: 'test_views' in localStorage ? JSON.parse(localStorage.test_views) : []
       },
+      defaultViewIndex: {
+        type: Number,
+        value: 'test_defaultViewIndex' in localStorage ? localStorage.test_defaultViewIndex : null
+      },
+
       selectedView: Object,
       selectedViewIndex: Number,
       entities: {
@@ -244,7 +277,7 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   constructor() {
     super();
-    this.importFilter = ['zone'];
+    this.domainsNotInStates = ['zone'];
     this.domainsWithBadge = ['updater', 'sun', 'device_tracker', 'alarm_control_panel', 'timer', 'sensor', 'binary_sensor', 'mailbox'];
     this.domainsWithCard = ['camera', 'history_graph', 'media_player', 'persistent_notification', 'plant', 'weather'];
   }
@@ -272,19 +305,21 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
     return a === b;
   }
 
-  computeViewClass(hidden) {
-    return hidden ? 'view-hidden' : '';
+  computeViewClass(index, hidden, defaultViewIndex) {
+    if (index === defaultViewIndex) {
+      return `default-view${hidden ? ' hidden-view' : ''}`;
+    }
+    return hidden ? 'hidden-view' : '';
   }
 
   addNewView() {
     this.push('views', {
       name: 'New view',
       icon: 'mdi:new-box',
+      hidden: false,
       badges: [],
-      cards: [],
-      hidden: false
+      cards: []
     });
-    this.saveAllViews();
   }
 
   importFromHaConfig() {
@@ -301,14 +336,15 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
           type: 'group',
           name: this.getNameByEntityId(id),
           hidden: false,
+          entities: [],
+          config: {},
+          custom: {}
         }
       }
       return {
         type: 'entity',
-        name: null,
-        icon: null,
-        hidden: false,
         entity_id: id,
+        hidden: false,
         config: {},
         custom: {}
       };
@@ -319,8 +355,8 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
           const data = mapEntity(id);
           if (this.getDomain(id) === 'group') {
             data.entities = states[id].attributes.entity_id
-              .filter(id2 => this.getDomain(id2) !== 'group')
-              .map(id2 => mapEntity(id2));
+              .filter(id => this.getDomain(id) !== 'group')
+              .map(id => mapEntity(id));
           }
           return data;
         });
@@ -352,49 +388,53 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
 
     if (defaultView) {
       views.splice(0, 0, views.splice(defaultView, 1)[0]);
+    } else if (defaultView === null) {
+      views.splice(0, 0, {
+        name: 'Default',
+        icon: 'mdi:home',
+        hidden: false,
+        badges: [],
+        cards: []
+      });
     }
 
-    const viewlessEntities = Object.keys(states).filter(id => !addedEntities.has(id) && !this.importFilter.includes(id));
+    const viewlessEntities = Object.keys(states).filter(id => !addedEntities.has(id) && !this.domainsNotInStates.includes(id));
     const badges = getBadges(viewlessEntities);
     const cards = getCards(viewlessEntities);
-    if (badges || cards) {
-      if(defaultView) {
-        for (let j = 0; j < badges.length; j++) {
-          views[0].badges.push(badges[j]);
-        }
-        for (let j = 0; j < cards.length; j++) {
-          views[0].cards.push(cards[j]);
-        }
-      } else {
-        views.splice(0, 0, {
-          name: 'Default',
-          icon: 'mdi:home',
-          hidden: false,
-          badges,
-          cards
-        });
-      }
+    for (let j = 0; j < badges.length; j++) {
+      views[0].badges.push(badges[j]);
+    }
+    for (let j = 0; j < cards.length; j++) {
+      views[0].cards.push(cards[j]);
     }
 
     this.setProperties({
       views,
+      defaultViewIndex: 0,
       selectedView: null,
       selectedViewIndex: null
     });
-    this.saveAllViews();
   }
 
   saveAllViews() {
     localStorage.test_views = JSON.stringify(this.views);
+    localStorage.test_defaultViewIndex = this.defaultViewIndex;
   }
 
   selectView(ev) {
     const i = ev.model.index;
     if(i !== this.selectedViewIndex) {
       this.unlinkPaths('selectedView');
-      this.selectedView = this.views[i];
+      this.setProperties({
+        selectedView: this.views[i],
+        selectedViewIndex: i
+      });
       this.linkPaths('selectedView', `views.${i}`);
     }
+  }
+
+  setDefaultView() {
+    this.defaultViewIndex = this.selectedViewIndex;
   }
 
   deleteSelectedView() {
@@ -403,15 +443,16 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
       selectedViewIndex: null,
       selectedView: null
     });
-    this.saveAllViews();
   }
 
   addNewGroup() {
     this.push('selectedView.cards', {
       type: 'group',
       name: 'New group',
+      hidden: false,
       entities: [],
-      hidden: false
+      config: {},
+      custom: {}
     });
   }
 
@@ -424,11 +465,11 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   getEntityName(item) {
-    return item.name || this.getNameByEntityId(item.entity_id);
+    return item.config && item.config.name || this.getNameByEntityId(item.entity_id);
   }
 
   getEntityIcon(item) {
-    return item.icon || this.getIconByEntityId(item.entity_id);
+    return item.config && item.config.icon || this.getIconByEntityId(item.entity_id);
   }
 
   getDomain(id) {
@@ -532,17 +573,26 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
   dropInView(ev) {
     const dnd = this.dndData;
     if(dnd.type === 'view') {
-      const newIndex = ev.model.index;
-      const oldIndex = dnd.index;
-      this.splice('views', newIndex, 0, this.views.splice(oldIndex, 1)[0]);
+      const toIndex = ev.model.index;
+      const fromIndex = dnd.index;
+      this.splice('views', toIndex, 0, this.views.splice(fromIndex, 1)[0]);
 
-      const selected = this.selectedViewIndex;
-      if (oldIndex === selected) {
-        this.selectedViewIndex = newIndex;
-      } else if (oldIndex < selected && newIndex >= selected) {
+      const selIndex = this.selectedViewIndex;
+      if (fromIndex === selIndex) {
+        this.selectedViewIndex = toIndex;
+      } else if (fromIndex < selIndex && toIndex >= selIndex) {
         this.selectedViewIndex--;
-      } else if (oldIndex > selected && newIndex <= selected) {
+      } else if (fromIndex > selIndex && toIndex <= selIndex) {
         this.selectedViewIndex++;
+      }
+
+      const defIndex = this.defaultViewIndex;
+      if (fromIndex === defIndex) {
+        this.defaultViewIndex = toIndex;
+      } else if (fromIndex < defIndex && toIndex >= defIndex) {
+        this.defaultViewIndex--;
+      } else if (fromIndex > defIndex && toIndex <= defIndex) {
+        this.defaultViewIndex++;
       }
     }
   }
@@ -552,10 +602,10 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
     if(dnd.src === 'entities') {
       this.push('selectedView.badges', {
         type: 'entity',
-        name: null,
-        icon: null,
+        entity_id: this.entities[dnd.index].entity_id,
         hidden: false,
-        entity_id: this.entities[dnd.index].entity_id
+        config: {},
+        custom: {}
       });
     } else if(dnd.src === 'cards') {
       this.push('selectedView.badges', this.selectedView.cards[dnd.index]);
@@ -568,10 +618,10 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
     if(dnd.src === 'entities') {
       this.push('selectedView.cards', {
         type: 'entity',
-        name: null,
-        icon: null,
+        entity_id: this.entities[dnd.index].entity_id,
         hidden: false,
-        entity_id: this.entities[dnd.index].entity_id
+        config: {},
+        custom: {}
       });
     } else if(dnd.src === 'badges') {
       this.push('selectedView.cards', this.selectedView.badges[dnd.index]);
@@ -580,8 +630,12 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
 
-  _toStr(obj) {
-    return JSON.stringify(obj, null, 2);
+  _getConfig() { // todo
+    const views = this.views;
+    return JSON.stringify({
+      default_view_index: this.defaultViewIndex,
+      views: this.views
+    }, null, 2);
   }
 
   test(ev) {
