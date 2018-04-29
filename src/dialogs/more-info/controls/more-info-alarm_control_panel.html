@@ -9,8 +9,19 @@
 <dom-module id='more-info-alarm_control_panel'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
+    <style>
+      #codepanel {
+        margin-bottom: 10%;
+      }
+      
+      #codepanel[hidden] { display: none !important;}
 
-    <div class='layout horizontal'>
+     #codepanel span.spacer {
+       width: 25%;
+     }
+    </style>
+
+    <div class='layout horizontal center-justified'>
       <paper-input
         label='code'
         value='{{enteredCode}}'
@@ -20,6 +31,32 @@
         disabled='[[!codeInputEnabled]]'
       ></paper-input>
     </div>
+
+    <div id='codepanel' class$='horizontal layout center-justified {{getClass(panel_locked)}}' hidden$='[[!usePinCode]]'>
+      <div style='width:100%'>
+        <div class='digits horizontal layout center-justified'>
+          <paper-button on-click='callcode' data-digit=1 raised>1</paper-button>
+          <paper-button on-click='callcode' data-digit=2 raised>2</paper-button>
+          <paper-button on-click='callcode' data-digit=3 raised>3</paper-button>
+        </div>
+        <div class='digits horizontal layout center-justified'>
+          <paper-button on-click='callcode' data-digit=4 raised>4</paper-button>
+          <paper-button on-click='callcode' data-digit=5 raised>5</paper-button>
+          <paper-button on-click='callcode' data-digit=6 raised>6</paper-button>
+        </div>
+        <div class='digits horizontal layout center-justified'>
+          <paper-button on-click='callcode' data-digit=7 raised>7</paper-button>
+          <paper-button on-click='callcode' data-digit=8 raised>8</paper-button>
+          <paper-button on-click='callcode' data-digit=9 raised>9</paper-button>
+        </div>
+        <div class='digits horizontal layout center-justified'>
+          <span class="spacer"></span>
+          <paper-button on-click='callcode' data-digit=0 raised>0</paper-button>
+          <paper-button class='clear' on-click='callclearcode' raised>Clear</paper-button>
+        </div>
+      </div>
+    </div>
+
     <div class='layout horizontal'>
       <paper-button
         on-click='handleDisarmTap'
@@ -55,6 +92,10 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
       enteredCode: {
         type: String,
         value: '',
+      },
+      usePinCode: {
+        type: Boolean,
+        value: false,
       },
       disarmButtonVisible: {
         type: Boolean,
@@ -93,8 +134,10 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
 
   stateObjChanged(newVal, oldVal) {
     if (newVal) {
+      const pinCodeRegex = /^\[0\-9\]\{[\d]\}$/;
       const props = {
         codeFormat: newVal.attributes.code_format,
+        usePinCode: newVal.attributes.code_format.match(pinCodeRegex) != null,
         armHomeButtonVisible: newVal.state === 'disarmed',
         armAwayButtonVisible: newVal.state === 'disarmed',
       };
@@ -113,6 +156,16 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
         this.fire('iron-resize');
       }, 500);
     }
+  }
+
+  callcode(ev){
+    ev.stopPropagation();
+    var digit = ev.target.getAttribute('data-digit');
+    this.enteredCode = this.enteredCode + digit;
+  }
+  callclearcode(ev){
+    ev.stopPropagation();
+    this.enteredCode = '';
   }
 
   handleDisarmTap() {
