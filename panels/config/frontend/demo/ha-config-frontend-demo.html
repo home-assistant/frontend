@@ -1,0 +1,75 @@
+<link rel="import" href="./ha-badge-chooser.html">
+
+<dom-module id="ha-config-frontend-demo">
+  <template>
+    <style include="ha-style">
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Demo</div>
+        </app-toolbar>
+        <paper-tabs
+          selected="{{currentView}}"
+          attr-for-selected="data-view"
+        >
+          <template is="dom-repeat" items="[[views]]">
+            <template is="dom-if" if="[[!item.hidden]]">
+              <paper-tab data-view="[[index]]">
+                <template is="dom-if" if="[[item.icon]]">
+                  <iron-icon icon="[[item.icon]]"></iron-icon>
+                </template>
+                <template is="dom-if" if="[[!item.icon]]">
+                  [[item.name]]
+                </template>
+              </paper-tab>
+            </template>
+          </template>
+        </paper-tabs>
+      </app-header>
+
+      <iron-pages
+        selected="[[currentView]]"
+        attr-for-selected="data-view"
+      >
+        <template is="dom-repeat" items="[[views]]">
+          <template is="dom-if" if="[[!item.hidden]]">
+            <div data-view="[[index]]">
+              [[item.name]]<br>
+              <template is="dom-repeat" items="[[item.badges]]">
+                <ha-badge-chooser hass="[[hass]]" state="[[computeStateObj(hass, item.entity_id)]]" config="[[item.config]]"></ha-badge-chooser>
+              </template>
+            </div>
+          </template>
+        </template>
+      </iron-pages>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigFrontendDemo extends Polymer.Element {
+  static get is() { return 'ha-config-frontend-demo'; }
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      views: {
+        type: Array,
+        value: 'test_views' in localStorage ? JSON.parse(localStorage.test_views) : []
+      },
+      currentView: {
+        type: Number,
+        value: 0
+      }
+    };
+  }
+
+  computeStateObj(hass, entity_id) {
+    return hass.states[entity_id];
+  }
+}
+customElements.define(HaConfigFrontendDemo.is, HaConfigFrontendDemo);
+</script>

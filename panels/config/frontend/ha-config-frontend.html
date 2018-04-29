@@ -240,7 +240,11 @@
           </paper-card>
         </div>
       </div>
-    </app-header-layout><textarea style="width: 90%; height: 600px;">[[_getConfig()]]</textarea>
+    </app-header-layout>
+
+
+    <textarea id="cfg" style="width: 90%; height: 600px;">[[_getConfig()]]</textarea>
+    <button on-click="_setViews">set</button>
   </template>
 </dom-module>
 
@@ -285,7 +289,7 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
   computeEntities(states, entitiesFilter) {
     const excludedDomains = ['group', 'zone'];
     return Object.keys(states).filter(id => {
-        if(excludedDomains.includes(this.getDomain(id))) {
+        if (excludedDomains.includes(this.getDomain(id))) {
           return false;
         } else if (!entitiesFilter) {
           return true;
@@ -331,22 +335,20 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
     const mapEntity = (id) => {
       addedEntities.add(id);
       const domain = this.getDomain(id);
-      if(domain === 'group') {
+      if (domain === 'group') {
         return {
           type: 'group',
           name: this.getNameByEntityId(id),
           hidden: false,
           entities: [],
-          config: {},
-          custom: {}
+          config: {}
         }
       }
       return {
         type: 'entity',
         entity_id: id,
         hidden: false,
-        config: {},
-        custom: {}
+        config: {}
       };
     };
     const getCards = (arr) => {
@@ -423,7 +425,7 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   selectView(ev) {
     const i = ev.model.index;
-    if(i !== this.selectedViewIndex) {
+    if (i !== this.selectedViewIndex) {
       this.unlinkPaths('selectedView');
       this.setProperties({
         selectedView: this.views[i],
@@ -451,8 +453,7 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
       name: 'New group',
       hidden: false,
       entities: [],
-      config: {},
-      custom: {}
+      config: {}
     });
   }
 
@@ -546,33 +547,33 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
   }
 
   canDropInView(ev) {
-    if(this.dndData.type === 'view') {
+    if (this.dndData.type === 'view') {
       ev.preventDefault();
     }
   }
 
   canDropInBadges(ev) {
-    if(this.dndData.type === 'entity') {
+    if (this.dndData.type === 'entity') {
       ev.preventDefault();
     }
   }
 
   canDropInCards(ev) {
     const type = this.dndData.type;
-    if(type === 'entity' || type === 'group') {
+    if (type === 'entity' || type === 'group') {
       ev.preventDefault();
     }
   }
 
   canDropInGroup(ev) {
-    if(this.dndData.type === 'entity') {
+    if (this.dndData.type === 'entity') {
       ev.preventDefault();
     }
   }
 
   dropInView(ev) {
     const dnd = this.dndData;
-    if(dnd.type === 'view') {
+    if (dnd.type === 'view') {
       const toIndex = ev.model.index;
       const fromIndex = dnd.index;
       this.splice('views', toIndex, 0, this.views.splice(fromIndex, 1)[0]);
@@ -599,15 +600,14 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   dropInBadges(ev) {
     const dnd = this.dndData;
-    if(dnd.src === 'entities') {
+    if (dnd.src === 'entities') {
       this.push('selectedView.badges', {
         type: 'entity',
         entity_id: this.entities[dnd.index].entity_id,
         hidden: false,
-        config: {},
-        custom: {}
+        config: {}
       });
-    } else if(dnd.src === 'cards') {
+    } else if (dnd.src === 'cards') {
       this.push('selectedView.badges', this.selectedView.cards[dnd.index]);
       this.splice('selectedView.cards', dnd.index, 1);
     }
@@ -615,15 +615,14 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
 
   dropInCards(ev) {
     const dnd = this.dndData;
-    if(dnd.src === 'entities') {
+    if (dnd.src === 'entities') {
       this.push('selectedView.cards', {
         type: 'entity',
         entity_id: this.entities[dnd.index].entity_id,
         hidden: false,
-        config: {},
-        custom: {}
+        config: {}
       });
-    } else if(dnd.src === 'badges') {
+    } else if (dnd.src === 'badges') {
       this.push('selectedView.cards', this.selectedView.badges[dnd.index]);
       this.splice('selectedView.badges', dnd.index, 1);
     }
@@ -631,11 +630,16 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
 
 
   _getConfig() { // todo
-    const views = this.views;
+    return JSON.stringify(this.views, null, 2);
+    //
     return JSON.stringify({
       default_view_index: this.defaultViewIndex,
       views: this.views
     }, null, 2);
+  }
+  _setViews() {
+    this.views = JSON.parse(this.$.cfg.value);
+    localStorage.test_views = this.$.cfg.value;
   }
 
   test(ev) {

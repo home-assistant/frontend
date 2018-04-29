@@ -1,0 +1,27 @@
+<link rel="import" href="./custom-badge.html">
+
+<script>
+class HaBadgeChooser extends Polymer.Element {
+  static get is() { return 'ha-badge-chooser'; }
+  static get properties() {
+    return {
+      hass: Object,
+      state: Object,
+      config: Object
+    };
+  }
+
+  ready() {
+    super.ready();
+    const hass = this.hass;
+    const state = this.state;
+    const config = this.config;
+    window.hassUtil.dynamicContentUpdater(
+      this,
+      config && config.card || 'HA-STATE-LABEL-BADGE',
+      { hass, state, config }
+    );
+  }
+}
+customElements.define(HaBadgeChooser.is, HaBadgeChooser);
+</script>
