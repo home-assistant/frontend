@@ -8,7 +8,6 @@
 <link rel='import' href='../../../src/util/hass-mixins.html'>
 
 <link rel="import" href="./ha-config-section-core.html">
-<link rel="import" href="./ha-config-section-hassbian.html">
 <link rel="import" href="./ha-config-section-push-notifications.html">
 <link rel="import" href="./ha-config-section-translation.html">
 <link rel="import" href="./ha-config-section-themes.html">
@@ -72,13 +71,6 @@
           ></ha-config-section-themes>
         </template>
 
-        <template is='dom-if' if='[[computeIsHassbianLoaded(hass)]]'>
-          <div class='border'></div>
-          <ha-config-section-hassbian
-            is-wide='[[isWide]]'
-            hass='[[hass]]'
-          ></ha-config-section-hassbian>
-        </template>
       </div>
     </ha-app-layout>
   </template>
@@ -104,10 +96,6 @@ class HaConfigCore extends window.hassMixins.LocalizeMixin(Polymer.Element) {
 
   computeClasses(isWide) {
     return isWide ? 'content' : 'content narrow';
-  }
-
-  computeIsHassbianLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'config.hassbian');
   }
 
   computeIsZwaveLoaded(hass) {
