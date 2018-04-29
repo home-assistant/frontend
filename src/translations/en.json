@@ -431,12 +431,6 @@
               "header": "Set a theme",
               "introduction": "Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device",
               "theme": "Theme"
-            },
-            "hassbian": {
-              "header": "Bring Hassbian to the next level",
-              "introduction": "Discover exciting add-ons to enhance your Home Assistant installation. Add an MQTT server or control a connected TV via HDMI-CEC.",
-              "learn_more": "Learn more",
-              "install": "Install"
             }
           }
         },
