@@ -43,6 +43,7 @@ class MoreInfoContent extends Polymer.Element {
   }
 
   stateObjChanged(stateObj, hass) {
+    let moreInfoType;
     if (!stateObj || !hass) {
       if (this.lastChild) {
         this._detachedChild = this.lastChild;
@@ -55,8 +56,13 @@ class MoreInfoContent extends Polymer.Element {
       this.appendChild(this._detachedChild);
       this._detachedChild = null;
     }
+    if (stateObj.attributes && 'custom_ui_more_info' in stateObj.attributes) {
+      moreInfoType = stateObj.attributes.custom_ui_more_info;
+    } else {
+      moreInfoType = 'more-info-' + window.hassUtil.stateMoreInfoType(stateObj);
+    }
     window.hassUtil.dynamicContentUpdater(
-      this, 'MORE-INFO-' + window.hassUtil.stateMoreInfoType(stateObj).toUpperCase(),
+      this, moreInfoType.toUpperCase(),
       { hass: hass, stateObj: stateObj }
     );
   }
