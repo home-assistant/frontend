@@ -517,7 +517,7 @@
         "login-form": {
             "password": "Mot de passe",
             "remember": "Se rappeler",
-            "log_in": "Identifiant"
+            "log_in": "Connexion"
         },
         "card": {
             "camera": {
