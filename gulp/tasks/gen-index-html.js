@@ -19,8 +19,8 @@ function generateIndex(es6) {
   const toReplace = [
     // Needs to look like a color during CSS minifiaction
     ['{{ theme_color }}', '#THEME'],
-    ['/home-assistant-polymer/hass_frontend/mdi.html',
-      `/static/mdi-${md5(path.resolve(config.output, 'mdi.html'))}.html`],
+    ['/home-assistant-polymer/hass_frontend/hass_icons.html',
+      `/static/hass_icons-${md5(path.resolve(config.output, 'hass_icons.html'))}.html`],
   ];
 
   if (!es6) {

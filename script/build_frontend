@@ -42,7 +42,7 @@ cp bower_components/webcomponentsjs/webcomponents-lite.js $OUTPUT_DIR
 cp bower_components/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
 
 # Icons
-script/update_mdi.py
+gulp gen-icons
 
 # Leaflet
 mkdir $OUTPUT_DIR/images/leaflet
