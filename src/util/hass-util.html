@@ -198,7 +198,7 @@ window.hassUtil.domainIcon = function (domain, state) {
       return 'hass:cloud-upload';
 
     case 'vacuum':
-      return 'mdi:robot-vacuum';
+      return 'hass:robot-vacuum';
 
     case 'weblink':
       return 'hass:open-in-new';
@@ -285,23 +285,35 @@ window.hassUtil.sensorIcon = (state) => {
   switch (state.attributes.device_class) {
     case 'battery': {
       if (isNaN(state.state)) {
-        return 'mdi:battery-unknown';
+        return 'hass:battery-unknown';
       }
       const batteryRound = Math.round(state.state / 10) * 10;
       if (batteryRound >= 100) {
-        return 'mdi:battery';
+        return 'hass:battery';
       }
       if (batteryRound <= 0) {
-        return 'mdi:battery-alert';
+        return 'hass:battery-alert';
       }
-      return `mdi:battery-${batteryRound}`;
+      /*
+        Possible values (listed so we extract them):
+         - hass:battery-10
+         - hass:battery-20
+         - hass:battery-30
+         - hass:battery-40
+         - hass:battery-50
+         - hass:battery-60
+         - hass:battery-70
+         - hass:battery-80
+         - hass:battery-90
+      */
+      return `hass:battery-${batteryRound}`;
     }
     case 'humidity':
-      return 'mdi:water-percent';
+      return 'hass:water-percent';
     case 'temperature':
-      return 'mdi:thermometer';
+      return 'hass:thermometer';
     default:
-      return 'mdi:eye';
+      return 'hass:eye';
   }
 };
 
