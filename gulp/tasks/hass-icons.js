@@ -76,6 +76,7 @@ async function downloadMDIIcons() {
   const downloadMatch = content.match('(/api/download/polymer/v1/([A-Z0-9-]{36}))');
 
   if (!downloadMatch) {
+    // eslint-disable-next-line
     console.error('Unable to find Polymer v1 download link');
     return null;
   }
