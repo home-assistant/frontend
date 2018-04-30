@@ -6,20 +6,20 @@ class HaBadgeChooser extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-      state: Object,
-      config: Object
+      entity: Object
     };
   }
 
   ready() {
     super.ready();
     const hass = this.hass;
-    const state = this.state;
-    const config = this.config;
+    const entity = this.entity;
+    const state = hass.states[entity.entity_id];
+
     window.hassUtil.dynamicContentUpdater(
       this,
-      config && config.card || 'HA-STATE-LABEL-BADGE',
-      { hass, state, config }
+      (entity && entity.config && entity.config.card || 'ha-state-label-badge').toUpperCase(),
+      { hass, state, config: entity.config }
     );
   }
 }

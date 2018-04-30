@@ -1,4 +1,5 @@
 <link rel="import" href="./ha-badge-chooser.html">
+<link rel="import" href="./ha-card-chooser-z.html">
 
 <dom-module id="ha-config-frontend-demo">
   <template>
@@ -38,7 +39,10 @@
             <div data-view="[[index]]">
               [[item.name]]<br>
               <template is="dom-repeat" items="[[item.badges]]">
-                <ha-badge-chooser hass="[[hass]]" state="[[computeStateObj(hass, item.entity_id)]]" config="[[item.config]]"></ha-badge-chooser>
+                <ha-badge-chooser hass="[[hass]]" entity="[[item]]"></ha-badge-chooser>
+              </template>
+              <template is="dom-repeat" items="[[item.cards]]">
+                <ha-card-chooser-z hass="[[hass]]" entity="[[item]]"></ha-card-chooser-z>
               </template>
             </div>
           </template>
@@ -65,10 +69,6 @@ class HaConfigFrontendDemo extends Polymer.Element {
         value: 0
       }
     };
-  }
-
-  computeStateObj(hass, entity_id) {
-    return hass.states[entity_id];
   }
 }
 customElements.define(HaConfigFrontendDemo.is, HaConfigFrontendDemo);

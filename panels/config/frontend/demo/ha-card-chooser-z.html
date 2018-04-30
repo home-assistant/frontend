@@ -1,0 +1,35 @@
+<link rel="import" href="./ha-entities-card-z.html">
+
+<script>
+class HaCardChooserZ extends Polymer.Element {
+  static get is() { return 'ha-card-chooser-z'; }
+  static get properties() {
+    return {
+      hass: Object,
+      entity: Object
+    };
+  }
+
+  ready() {
+    super.ready();
+    const hass = this.hass;
+    const entity = this.entity;
+    if (entity.type === 'group') {
+      const states = entity.entities.map(item => hass.states[item.entity_id]);
+      window.hassUtil.dynamicContentUpdater(
+        this,
+        (entity && entity.config && entity.config.card || 'ha-entities-card-z').toUpperCase(),
+        { hass, states, groupEntity: entity }
+      );
+    } else if (entity.type === 'entity') {
+      const stateObj = hass.states[entity.entity_id];
+      window.hassUtil.dynamicContentUpdater(
+        this,
+        (entity && entity.config && entity.config.card || 'state-card-display').toUpperCase(),
+        { hass, stateObj, config: entity.config }
+      );
+    }
+  }
+}
+customElements.define(HaCardChooserZ.is, HaCardChooserZ);
+</script>
