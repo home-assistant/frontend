@@ -7,6 +7,16 @@ const getContent = require('../common/http').getContent;
 const outputDir = 'hass_frontend';
 const iconRegEx = /hass:[\w-]+/g;
 
+const BUILT_IN_PANEL_ICONS = [
+  'settings', // Config
+  'home-assistant', // Hass.io
+  'poll-box', // History panel
+  'format-list-bulleted-type', // Logbook
+  'mailbox', // Mailbox
+  'account-location', // Map
+  'cart', // Shopping List
+];
+
 function mapFiles(startPath, filter, mapFunc) {
   const files = fs.readdirSync(startPath);
   for (let i = 0; i < files.length; i++) {
@@ -22,7 +32,7 @@ function mapFiles(startPath, filter, mapFunc) {
 
 
 function findIcons() {
-  const icons = new Set();
+  const icons = new Set(BUILT_IN_PANEL_ICONS);
   function processFile(filename) {
     const content = fs.readFileSync(filename);
     let match;
@@ -42,7 +52,7 @@ function findIcons() {
 function generateHassIcons() {
   const icons = findIcons();
 
-  const iconDoc = parse5.parseFragment(fs.readFileSync('hass_frontend/mdi.html', { encoding: 'utf-8' }));
+  const iconDoc = parse5.parseFragment(fs.readFileSync(`${outputDir}/mdi.html`, { encoding: 'utf-8' }));
 
   const ironIconset = iconDoc.childNodes[0];
   ironIconset.attrs.forEach((attr) => {
@@ -54,7 +64,7 @@ function generateHassIcons() {
   const defs = ironIconset.childNodes[0].childNodes[0];
   defs.childNodes = defs.childNodes.filter(icon => icons.has(icon.attrs[0].value));
 
-  fs.writeFileSync('hass_frontend/hass_icons.html', parse5.serialize(iconDoc));
+  fs.writeFileSync(`${outputDir}/hass_icons.html`, parse5.serialize(iconDoc));
   // eslint-disable-next-line
   console.log(`Home Assistant has ${icons.size} icons.`);
 }
@@ -84,7 +94,7 @@ async function main() {
 
   if (iconSet === null) throw new Error('Download MDI failed!');
 
-  fs.writeFileSync('hass_frontend/mdi.html', iconSet);
+  fs.writeFileSync(`${outputDir}/mdi.html`, iconSet);
   generateHassIcons();
 }
 
