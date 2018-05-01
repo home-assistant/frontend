@@ -39,8 +39,11 @@
       }
     </style>
 
-    <img src='[[cameraFeedSrc]]' class='camera-feed' hidden$='[[!imageLoaded]]'
-      on-load='imageLoadSuccess' on-error='imageLoadFail' alt='[[computeStateName(stateObj)]]'>
+    <img
+      src='[[cameraFeedSrc]]'
+      class='camera-feed'
+      hidden$='[[!imageLoaded]]'
+      alt='[[computeStateName(stateObj)]]'>
     <div class='caption'>
       [[computeStateName(stateObj)]]
       <template is='dom-if' if='[[!imageLoaded]]'>
@@ -103,17 +106,17 @@
     }
 
     updateCameraFeedSrc() {
-      var attr = this.stateObj.attributes;
-      var time = (new Date()).getTime();
-      this.cameraFeedSrc = attr.entity_picture + '&time=' + time;
-    }
-
-    imageLoadSuccess() {
-      this.imageLoaded = true;
-    }
-
-    imageLoadFail() {
-      this.imageLoaded = false;
+      this.hass.connection.sendMessagePromise({
+        type: 'camera_thumbnail',
+        entity_id: this.stateObj.entity_id,
+      }).then((resp) => {
+        if (resp.success) {
+          this.imageLoaded = true;
+          this.cameraFeedSrc = `data:${resp.result.content_type};base64, ${resp.result.content}`;
+        } else {
+          this.imageLoaded = false;
+        }
+      });
     }
 
     computeStateName(stateObj) {
