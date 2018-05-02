@@ -134,10 +134,9 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(Polymer.El
 
   stateObjChanged(newVal, oldVal) {
     if (newVal) {
-      const pinCodeRegex = /^\[0\-9\]\{[\d]\}$/;
       const props = {
         codeFormat: newVal.attributes.code_format,
-        usePinCode: newVal.attributes.code_format.match(pinCodeRegex) != null,
+        usePinCode: newVal.attributes.code_format == '^\d+$',
         armHomeButtonVisible: newVal.state === 'disarmed',
         armAwayButtonVisible: newVal.state === 'disarmed',
       };
