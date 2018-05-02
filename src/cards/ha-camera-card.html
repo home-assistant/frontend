@@ -111,8 +111,10 @@
         entity_id: this.stateObj.entity_id,
       }).then((resp) => {
         if (resp.success) {
-          this.imageLoaded = true;
-          this.cameraFeedSrc = `data:${resp.result.content_type};base64, ${resp.result.content}`;
+          this.setProperties({
+            imageLoaded: true,
+            cameraFeedSrc: `data:${resp.result.content_type};base64, ${resp.result.content}`,
+          });
         } else {
           this.imageLoaded = false;
         }
