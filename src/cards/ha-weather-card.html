@@ -123,7 +123,11 @@ class HaWeatherCard extends
       forecast: {
         type: Array,
         computed: 'computeForecast(stateObj.attributes.forecast)'
-      }
+      },
+      hourly: {
+        type: Array,
+        computed: 'isHourly(stateObj.attributes.forecast)'
+      },
     };
   }
 
@@ -207,13 +211,26 @@ class HaWeatherCard extends
   computeDateTime(data) {
     const date = new Date(data);
     const provider = this.stateObj.attributes.attribution;
-    if (provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
+    if (this.hourly) {
       return date.toLocaleTimeString(
         this.hass.selectedLanguage || this.hass.language,
         { hour: 'numeric' }
       );
     }
     return date.toLocaleDateString(this.hass.selectedLanguage || this.hass.language, { weekday: 'short' });
+  }
+
+  isHourly(data) {
+    if (data.length < 3) {
+      return false;
+    }
+    const date1 = new Date(data[1]['datetime']);
+    const date2 = new Date(data[2]['datetime']);
+
+    if (date2 - date1 < 80000000) {
+      return true;
+    }
+    return false;
   }
 }
 customElements.define(HaWeatherCard.is, HaWeatherCard);

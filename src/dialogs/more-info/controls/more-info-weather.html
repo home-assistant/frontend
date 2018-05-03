@@ -104,7 +104,11 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object
+      stateObj: Object,
+      hourly: {
+        type: Array,
+        computed: 'isHourly(stateObj.attributes.forecast)'
+      },
     };
   }
 
@@ -135,7 +139,7 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   computeDateTime(data) {
     const date = new Date(data);
     const provider = this.stateObj.attributes.attribution;
-    if (provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
+    if (this.hourly) {
       if (new Date().getDay() === date.getDay()) {
         return date.toLocaleTimeString(
           this.hass.selectedLanguage || this.hass.language,
@@ -175,6 +179,19 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
 
   getWeatherIcon(condition) {
     return this.weatherIcons[condition];
+  }
+
+  isHourly(data) {
+    if (data.length < 3) {
+      return false;
+    }
+    const date1 = new Date(data[1]['datetime']);
+    const date2 = new Date(data[2]['datetime']);
+
+    if (date2 - date1 < 80000000) {
+      return true;
+    }
+    return false;
   }
 }
 
