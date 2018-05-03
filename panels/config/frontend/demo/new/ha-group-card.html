@@ -1,0 +1,56 @@
+<link rel="import" href="../ha-card-chooser-z.html">
+
+<dom-module id='ha-group-card'>
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      ha-card {
+        padding: 16px;
+      }
+      .state {
+        padding: 4px 0;
+      }
+      .header {
+        @apply --paper-font-headline;
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: 4px 0 12px;
+      }
+      .header .name {
+        @apply --paper-font-common-nowrap;
+      }
+    </style>
+
+    <ha-card>
+      <template is='dom-if' if='[[cardItem.name]]'>
+        <div>
+          <div class='flex name'>[[cardItem.name]]</div>
+        </div>
+      </template>
+      <div class='states'>
+        <template is='dom-repeat' items='[[cardItem.entities]]'>
+          <ha-card-chooser-z
+            hass='[[hass]]'
+            class='state-card'
+            card-item='[[item]]'
+          ></ha-card-chooser-z>
+        </template>
+      </div>
+    </ha-card>
+  </template>
+</dom-module>
+
+<script>
+class HaGroupCard extends Polymer.Element {
+  static get is() { return 'ha-group-card'; }
+  static get properties() {
+    return {
+      hass: Object,
+      cardItem: Object,
+    };
+  }
+}
+customElements.define(HaGroupCard.is, HaGroupCard);
+</script>

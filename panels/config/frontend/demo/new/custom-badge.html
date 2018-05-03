@@ -61,8 +61,10 @@ class CustomBadge extends
   static get properties() {
     return {
       hass: Object,
+      cardItem: Object,
       state: {
         type: Object,
+        computed: 'computeStateObj(hass, cardItem)',
         observer: 'stateChanged',
       },
       timerTimeRemaining: {
@@ -70,6 +72,10 @@ class CustomBadge extends
         value: 0,
       }
     };
+  }
+
+  computeStateObj(hass, cardItem) {
+    return hass && hass.states && cardItem && cardItem.entity_id && hass.states[cardItem.entity_id];
   }
 
   connectedCallback() {

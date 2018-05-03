@@ -1,5 +1,4 @@
-<link rel="import" href="./ha-badge-chooser.html">
-<link rel="import" href="./ha-card-chooser-z.html">
+<link rel="import" href="./ha-view-renderer.html">
 
 <dom-module id="ha-config-frontend-demo">
   <template>
@@ -13,11 +12,11 @@
         </app-toolbar>
         <paper-tabs
           selected="{{currentView}}"
-          attr-for-selected="data-view"
+          attr-for-selected="data-name"
         >
           <template is="dom-repeat" items="[[views]]">
             <template is="dom-if" if="[[!item.hidden]]">
-              <paper-tab data-view="[[index]]">
+              <paper-tab data-name="[[item.name]]">
                 <template is="dom-if" if="[[item.icon]]">
                   <iron-icon icon="[[item.icon]]"></iron-icon>
                 </template>
@@ -32,19 +31,16 @@
 
       <iron-pages
         selected="[[currentView]]"
-        attr-for-selected="data-view"
+        attr-for-selected="data-name"
       >
         <template is="dom-repeat" items="[[views]]">
           <template is="dom-if" if="[[!item.hidden]]">
-            <div data-view="[[index]]">
-              [[item.name]]<br>
-              <template is="dom-repeat" items="[[item.badges]]">
-                <ha-badge-chooser hass="[[hass]]" entity="[[item]]"></ha-badge-chooser>
-              </template>
-              <template is="dom-repeat" items="[[item.cards]]">
-                <ha-card-chooser-z hass="[[hass]]" entity="[[item]]"></ha-card-chooser-z>
-              </template>
-            </div>
+            <ha-view-renderer
+              data-name="[[item.name]]"
+              hass="[[hass]]"
+              badges="[[item.badges]]"
+              cards="[[item.cards]]"
+            ></ha-view-renderer>
           </template>
         </template>
       </iron-pages>
@@ -65,8 +61,8 @@ class HaConfigFrontendDemo extends Polymer.Element {
         value: 'test_views' in localStorage ? JSON.parse(localStorage.test_views) : []
       },
       currentView: {
-        type: Number,
-        value: 0
+        type: String,
+        value: ''
       }
     };
   }

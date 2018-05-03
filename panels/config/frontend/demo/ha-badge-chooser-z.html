@@ -1,9 +1,9 @@
-<link rel="import" href="./new/ha-group-card.html">
-<link rel="import" href="./new/ha-state-card.html">
+<link rel="import" href="./new/ha-badge.html">
+<link rel="import" href="./new/custom-badge.html">
 
 <script>
-class HaCardChooserZ extends Polymer.Element {
-  static get is() { return 'ha-card-chooser-z'; }
+class HaBadgeChooserZ extends Polymer.Element {
+  static get is() { return 'ha-badge-chooser-z'; }
   static get properties() {
     return {
       hass: {
@@ -13,8 +13,7 @@ class HaCardChooserZ extends Polymer.Element {
       cardItem: {
         type: Object,
         observer: 'cardItemChanged'
-      },
-      fullCard: Boolean // todo
+      }
     };
   }
 
@@ -31,13 +30,12 @@ class HaCardChooserZ extends Polymer.Element {
     while (cardRoot.lastChild) {
       cardRoot.removeChild(cardRoot.lastChild);
     }
-    const elementTag = cardItem && cardItem.config && cardItem.config.card ||
-      cardItem.type === 'group' ? 'ha-group-card' : 'ha-state-card';
+    const elementTag = cardItem && cardItem.config && cardItem.config.card || 'ha-badge';
     const element = document.createElement(elementTag);
     element.cardItem = cardItem;
     element.hass = this.hass;
     cardRoot.appendChild(element);
   }
 }
-customElements.define(HaCardChooserZ.is, HaCardChooserZ);
+customElements.define(HaBadgeChooserZ.is, HaBadgeChooserZ);
 </script>

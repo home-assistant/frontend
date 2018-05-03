@@ -1,0 +1,34 @@
+<link rel="import" href="./ha-badge-chooser-z.html">
+<link rel="import" href="./ha-card-chooser-z.html">
+
+<dom-module id="ha-view-renderer">
+  <template>
+    <template is="dom-repeat" items="[[badges]]">
+      <ha-badge-chooser-z
+        hass="[[hass]]"
+        card-item="[[item]]"
+      ></ha-badge-chooser-z>
+    </template>
+    <template is="dom-repeat" items="[[cards]]">
+      <ha-card-chooser-z
+        hass="[[hass]]"
+        card-item="[[item]]"
+        full-card
+      ></ha-card-chooser-z>
+    </template>
+  </template>
+</dom-module>
+
+<script>
+class HaViewRenderer extends Polymer.Element {
+  static get is() { return 'ha-view-renderer'; }
+  static get properties() {
+    return {
+      hass: Object,
+      badges: Array,
+      cards: Array
+    };
+  }
+}
+customElements.define(HaViewRenderer.is, HaViewRenderer);
+</script>

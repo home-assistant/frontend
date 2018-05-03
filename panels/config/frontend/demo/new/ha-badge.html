@@ -1,0 +1,213 @@
+<dom-module id='ha-badge'>
+  <template>
+    <style>
+      :host {
+        cursor: pointer;
+      }
+
+      ha-label-badge {
+        --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
+      }
+      ha-label-badge.has-unit_of_measurement {
+        --ha-label-badge-label-text-transform: none;
+      }
+
+      ha-label-badge.binary_sensor,
+      ha-label-badge.updater {
+        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+      }
+
+      .red {
+        --ha-label-badge-color: var(--label-badge-red, #DF4C1E);
+      }
+
+      .blue {
+        --ha-label-badge-color: var(--label-badge-blue, #039be5);
+      }
+
+      .green {
+        --ha-label-badge-color: var(--label-badge-green, #0DA035);
+      }
+
+      .yellow {
+        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+      }
+
+      .grey {
+        --ha-label-badge-color: var(--label-badge-grey, var(--paper-grey-500));
+      }
+    </style>
+
+    <ha-label-badge class$='[[computeClassNames(state)]]'
+      value='[[computeValue(localize, state)]]'
+      icon='[[computeIcon(state)]]'
+      image='[[computeImage(state)]]'
+      label='[[computeLabel(localize, state, timerTimeRemaining)]]'
+      description='[[computeDescription(state)]]'
+    ></ha-label-badge>
+  </template>
+</dom-module>
+
+<script>
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class HaBadge extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+  static get is() { return 'ha-badge'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      cardItem: Object,
+      state: {
+        type: Object,
+        computed: 'computeStateObj(hass, cardItem)',
+        observer: 'stateChanged',
+      },
+      timerTimeRemaining: {
+        type: Number,
+        value: 0,
+      }
+    };
+  }
+
+  computeStateObj(hass, cardItem) {
+    return hass && hass.states && cardItem && cardItem.entity_id && hass.states[cardItem.entity_id];
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.startInterval(this.state);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.clearInterval();
+  }
+
+  ready() {
+    super.ready();
+    this.addEventListener('click', ev => this.badgeTap(ev));
+  }
+
+  badgeTap(ev) {
+    ev.stopPropagation();
+    this.fire('hass-more-info', { entityId: this.state.entity_id });
+  }
+
+  computeClassNames(state) {
+    const classes = [window.hassUtil.computeDomain(state)];
+    classes.push(window.hassUtil.attributeClassNames(state, ['unit_of_measurement']));
+    return classes.join(' ');
+  }
+
+  computeValue(localize, state) {
+    const domain = window.hassUtil.computeDomain(state);
+    switch (domain) {
+      case 'binary_sensor':
+      case 'device_tracker':
+      case 'updater':
+      case 'sun':
+      case 'alarm_control_panel':
+      case 'timer':
+        return null;
+      case 'sensor':
+      default:
+        return state.state === 'unknown' ? '-' : (
+          localize(`component.${domain}.state.${state.state}`)
+          || state.state
+        );
+    }
+  }
+
+  computeIcon(state) {
+    if (state.state === 'unavailable') {
+      return null;
+    }
+    const domain = window.hassUtil.computeDomain(state);
+    switch (domain) {
+      case 'alarm_control_panel':
+        if (state.state === 'pending') {
+          return 'mdi:clock-fast';
+        } else if (state.state === 'armed_away') {
+          return 'mdi:nature';
+        } else if (state.state === 'armed_home') {
+          return 'mdi:home-variant';
+        } else if (state.state === 'armed_night') {
+          return 'mdi:weather-night';
+        } else if (state.state === 'armed_custom_bypass') {
+          return 'mdi:security-home';
+        } else if (state.state === 'triggered') {
+          return 'mdi:alert-circle';
+        }
+        // state == 'disarmed'
+        return window.hassUtil.domainIcon(domain, state.state);
+      case 'binary_sensor':
+      case 'device_tracker':
+      case 'updater':
+        return window.hassUtil.stateIcon(state);
+      case 'sun':
+        return state.state === 'above_horizon' ?
+          window.hassUtil.domainIcon(domain) : 'mdi:brightness-3';
+      case 'timer':
+        return state.state === 'active' ? 'mdi:timer' : 'mdi:timer-off';
+      default:
+        return null;
+    }
+  }
+
+  computeImage(state) {
+    return state.attributes.entity_picture || null;
+  }
+
+  computeLabel(localize, state, timerTimeRemaining) {
+    const domain = window.hassUtil.computeDomain(state);
+    if (state.state === 'unavailable' ||
+        ['device_tracker', 'alarm_control_panel'].includes(domain)) {
+      // Localize the state with a special state_badge namespace, which has variations of
+      // the state translations that are truncated to fit within the badge label. Translations
+      // are only added for device_tracker and alarm_control_panel.
+      return localize(`state_badge.${domain}.${state.state}`) || localize(`state_badge.default.${state.state}`) || state.state;
+    }
+    if (domain === 'timer') {
+      return window.hassUtil.secondsToDuration(timerTimeRemaining);
+    }
+    return state.attributes.unit_of_measurement || null;
+  }
+
+  computeDescription(state) {
+    return window.hassUtil.computeStateName(state);
+  }
+
+  stateChanged(stateObj) {
+    this.updateStyles();
+    this.startInterval(stateObj);
+  }
+
+  clearInterval() {
+    if (this._updateRemaining) {
+      clearInterval(this._updateRemaining);
+      this._updateRemaining = null;
+    }
+  }
+
+  startInterval(stateObj) {
+    this.clearInterval();
+    if (window.hassUtil.computeDomain(stateObj) === 'timer') {
+      this.calculateTimerRemaining(stateObj);
+
+      if (stateObj.state === 'active') {
+        this._updateRemaining = setInterval(() => this.calculateTimerRemaining(this.state), 1000);
+      }
+    }
+  }
+
+  calculateTimerRemaining(stateObj) {
+    this.timerTimeRemaining = window.hassUtil.timerTimeRemaining(stateObj);
+  }
+}
+
+customElements.define(HaBadge.is, HaBadge);
+</script>
