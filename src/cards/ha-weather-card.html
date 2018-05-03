@@ -210,7 +210,6 @@ class HaWeatherCard extends
 
   computeDateTime(data) {
     const date = new Date(data);
-    const provider = this.stateObj.attributes.attribution;
     if (this.hourly) {
       return date.toLocaleTimeString(
         this.hass.selectedLanguage || this.hass.language,
@@ -224,8 +223,8 @@ class HaWeatherCard extends
     if (data.length < 3) {
       return false;
     }
-    const date1 = new Date(data[1]['datetime']);
-    const date2 = new Date(data[2]['datetime']);
+    const date1 = new Date(data[1].datetime);
+    const date2 = new Date(data[2].datetime);
 
     if (date2 - date1 < 80000000) {
       return true;
