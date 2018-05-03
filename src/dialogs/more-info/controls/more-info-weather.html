@@ -157,7 +157,6 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   }
 
   computeForecast(forecast) {
-    let new_forecast = forecast;
     let hourly = false;
     if (forecast.length > 3) {
       const date1 = new Date(forecast[1].datetime);
@@ -168,9 +167,9 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
       }
     }
 
-    let me = this;
+    const me = this;
 
-    return new_forecast.map( item => ({
+    return forecast.map(item => ({
       datetime: me.computeDateTime(item.datetime, hourly),
       temphigh: item.temperature,
       templow: item.templow,

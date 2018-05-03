@@ -160,8 +160,8 @@ class HaWeatherCard extends
     this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   }
 
-  computeForecast(forecast) {
-    let new_forecast = forecast && forecast.slice(0, 7);
+  computeForecast(forecastdata) {
+    const forecast = forecastdata && forecastdata.slice(0, 7);
     let hourly = false;
     if (forecast.length > 3) {
       const date1 = new Date(forecast[1].datetime);
@@ -172,9 +172,9 @@ class HaWeatherCard extends
       }
     }
 
-    let me = this;
+    const me = this;
 
-    return new_forecast.map( item => ({
+    return forecast.map(item => ({
       datetime: me.computeDateTime(item.datetime, hourly),
       temphigh: item.temperature,
       templow: item.templow,
