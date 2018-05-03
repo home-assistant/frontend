@@ -238,37 +238,25 @@ class HaMediaPlayerCard extends
     };
   }
 
-  playerObjChanged(playerObj) {
-    var picture = playerObj.stateObj.attributes.entity_picture;
-    var dummy;
-    if (picture) {
-      dummy = document.createElement('IMG');
-      dummy.onload = () => {
-        this.$.cover.style.backgroundImage = 'url(' + picture + ')';
-        dummy.onerror = dummy.onload = null;
-        dummy.src = '';
-        dummy = null;
-      };
-      dummy.onerror = () => {
-        this.$.cover.style.backgroundImage = '';
-        this.$.cover.parentElement.classList.add('no-cover');
-        dummy.onerror = dummy.onload = null;
-        dummy.src = '';
-        dummy = null;
-      };
-      if (this._timeout_id) {
-        clearTimeout(this._timeout_id);
-      }
-      this._timeout_id = setTimeout(() => {
-        if (dummy) {
-          // Background load still inflight. Clear real image.
-          this.$.cover.style.backgroundImage = '';
-        }
-        this._timeout_id = null;
-      }, 5000);
-      dummy.src = picture;
-    } else {
+  playerObjChanged(playerObj, oldPlayerObj) {
+    const picture = playerObj.stateObj.attributes.entity_picture;
+    const oldPicture = oldPlayerObj && oldPlayerObj.stateObj.attributes.entity_picture;
+
+    if (picture !== oldPicture && !picture) {
       this.$.cover.style.backgroundImage = '';
+    } else if (picture !== oldPicture) {
+      // We have a new picture url
+      this.hass.connection.sendMessagePromise({
+        type: 'media_player_thumbnail',
+        entity_id: playerObj.stateObj.entity_id,
+      }).then((resp) => {
+        if (resp.success) {
+          this.$.cover.style.backgroundImage = `url(data:${resp.result.content_type};base64,${resp.result.content})`;
+        } else {
+          this.$.cover.style.backgroundImage = '';
+          this.$.cover.parentElement.classList.add('no-cover');
+        }
+      });
     }
 
     if (playerObj.isPlaying && playerObj.showProgress) {
