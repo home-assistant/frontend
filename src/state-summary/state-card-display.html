@@ -11,6 +11,7 @@
     <style>
 
       :host {
+        cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-justified);
         @apply(--layout-baseline);
@@ -41,19 +42,26 @@
 <script>
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
  */
-class StateCardDisplay extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class StateCardDisplay extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'state-card-display'; }
 
   static get properties() {
     return {
-      hass: Object,
       stateObj: Object,
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
+      inDialog: Boolean
     };
+  }
+
+  ready() {
+    this.addEventListener('click', ev => this._onCardClick(ev));
+    super.ready();
+  }
+
+  _onCardClick() {
+    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   }
 
   computeStateDisplay(localize, stateObj, language) {

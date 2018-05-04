@@ -1,16 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="../components/entity/state-info.html">
 
-<link rel="import" href="../util/hass-util.html">
-
 <dom-module id="state-card-input_text">
   <template>
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       paper-input {
         margin-left: 16px;
@@ -27,9 +23,8 @@
         auto-validate='[[stateObj.attributes.pattern]]'
         pattern='[[stateObj.attributes.pattern]]'
         type='[[stateObj.attributes.mode]]'
- 
+
         on-change='selectedValueChanged'
-        on-click='stopPropagation'
         placeholder='(empty value)'
       >
       </paper-input>
@@ -44,25 +39,13 @@ class StateCardInputText extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
-
+      inDialog: Boolean,
       stateObj: {
         type: Object,
         observer: 'stateObjectChanged',
       },
-
-      pattern: {
-        type: String,
-      },
-
-      value: {
-        type: String,
-      }
-
+      pattern: String,
+      value: String
     };
   }
 
@@ -78,10 +61,6 @@ class StateCardInputText extends Polymer.Element {
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });
-  }
-
-  stopPropagation(ev) {
-    ev.stopPropagation();
   }
 }
 

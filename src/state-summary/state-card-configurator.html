@@ -1,15 +1,17 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
+<link rel="import" href="../util/hass-mixins.html">
 <link rel="import" href="../components/entity/state-info.html">
 
 <dom-module id='state-card-configurator'>
   <template>
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
+      :host {
+        cursor: pointer;
+      }
       paper-button {
         color: var(--primary-color);
         font-weight: 500;
@@ -32,17 +34,26 @@
 </dom-module>
 
 <script>
-class StateCardConfigurator extends Polymer.Element {
+/*
+ * @appliesMixin window.hassMixins.EventsMixin
+ */
+class StateCardConfigurator extends window.hassMixins.EventsMixin(Polymer.Element) {
   static get is() { return 'state-card-configurator'; }
 
   static get properties() {
     return {
       stateObj: Object,
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
+      inDialog: Boolean
     };
+  }
+
+  ready() {
+    this.addEventListener('click', ev => this._onCardClick(ev));
+    super.ready();
+  }
+
+  _onCardClick() {
+    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   }
 }
 customElements.define(StateCardConfigurator.is, StateCardConfigurator);

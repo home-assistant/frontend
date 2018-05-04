@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="../components/entity/state-info.html">
@@ -33,16 +32,12 @@ class StateCardTimer extends window.hassMixins.LocalizeMixin(Polymer.Element) {
 
   static get properties() {
     return {
-      hass: Object,
       stateObj: {
         type: Object,
         observer: 'stateObjChanged',
       },
       timeRemaining: Number,
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
+      inDialog: Boolean
     };
   }
 
