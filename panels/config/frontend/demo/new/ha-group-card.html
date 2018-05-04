@@ -24,17 +24,17 @@
     </style>
 
     <ha-card>
-      <template is='dom-if' if='[[cardItem.name]]'>
+      <template is='dom-if' if='[[cardConfig.name]]'>
         <div>
-          <div class='flex name'>[[cardItem.name]]</div>
+          <div class='flex name'>[[cardConfig.name]]</div>
         </div>
       </template>
       <div class='states'>
-        <template is='dom-repeat' items='[[cardItem.entities]]'>
+        <template is='dom-repeat' items='[[cardConfig.entities]]'>
           <ha-card-chooser-z
             hass='[[hass]]'
             class='state-card'
-            card-item='[[item]]'
+            card-config='[[item]]'
           ></ha-card-chooser-z>
         </template>
       </div>
@@ -48,7 +48,7 @@ class HaGroupCard extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-      cardItem: Object,
+      cardConfig: Object,
     };
   }
 }

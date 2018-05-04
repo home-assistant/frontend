@@ -157,9 +157,9 @@
                   <div class="badges">
                     <template is="dom-repeat" items="[[selectedView.badges]]">
                       <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromBadges">
-                        <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
+                        <iron-icon class="icon" icon="[[getCardItemIcon(item)]]"></iron-icon>
                         <paper-item-body two-line>
-                          <div>[[getEntityName(item)]]</div>
+                          <div>[[getCartItemName(item)]]</div>
                           <div secondary>[[item.entity_id]]</div>
                         </paper-item-body>
                       </paper-item>
@@ -181,9 +181,9 @@
                           <div>
                             <template is="dom-repeat" items="[[item.entities]]">
                               <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromGroup">
-                                <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
+                                <iron-icon class="icon" icon="[[getCardItemIcon(item)]]"></iron-icon>
                                 <paper-item-body two-line>
-                                  <div>[[getEntityName(item)]]</div>
+                                  <div>[[getCartItemName(item)]]</div>
                                   <div secondary>[[item.entity_id]]</div>
                                 </paper-item-body>
                               </paper-item>
@@ -193,9 +193,9 @@
                       </template>
                       <template is="dom-if" if="[[equals(item.type, 'entity')]]">
                         <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromCards">
-                          <iron-icon class="icon" icon="[[getEntityIcon(item)]]"></iron-icon>
+                          <iron-icon class="icon" icon="[[getCardItemIcon(item)]]"></iron-icon>
                           <paper-item-body two-line>
-                            <div>[[getEntityName(item)]]</div>
+                            <div>[[getCartItemName(item)]]</div>
                             <div secondary>[[item.entity_id]]</div>
                           </paper-item-body>
                         </paper-item>
@@ -465,11 +465,11 @@ class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
     return window.hassUtil.stateIcon(this.hass.states[id]);
   }
 
-  getEntityName(item) {
+  getCartItemName(item) {
     return item.config && item.config.name || this.getNameByEntityId(item.entity_id);
   }
 
-  getEntityIcon(item) {
+  getCardItemIcon(item) {
     return item.config && item.config.icon || this.getIconByEntityId(item.entity_id);
   }
 

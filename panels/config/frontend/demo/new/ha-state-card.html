@@ -5,10 +5,10 @@ class HaStateCard extends Polymer.Element {
   static get properties() {
     return {
       hass: Object,
-      cardItem: Object,
+      cardConfig: Object,
       stateObj: {
         type: Object,
-        computed: 'computeStateObj(hass, cardItem)',
+        computed: 'computeStateObj(hass, cardConfig)',
         observer: 'stateChanged',
       },
       inDialog: {
@@ -18,8 +18,8 @@ class HaStateCard extends Polymer.Element {
     };
   }
 
-  computeStateObj(hass, cardItem) {
-    return hass && hass.states && cardItem && cardItem.entity_id && hass.states[cardItem.entity_id];
+  computeStateObj(hass, cardConfig) {
+    return hass && hass.states && cardConfig && cardConfig.entity_id && hass.states[cardConfig.entity_id];
   }
 
   static get observers() {
