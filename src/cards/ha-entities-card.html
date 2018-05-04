@@ -38,7 +38,7 @@
 
     <ha-card>
       <template is='dom-if' if='[[title]]'>
-        <div class$='[[computeTitleClass(groupEntity)]]' on-click='entityTapped'>
+        <div class$='[[computeTitleClass(groupEntity)]]' on-click='groupClicked'>
           <div class='flex name'>[[title]]</div>
           <template is='dom-if' if='[[showGroupToggle(groupEntity, states)]]'>
             <ha-entity-toggle
@@ -89,8 +89,10 @@ class HaEntitiesCard extends
     return `header horizontal layout center${groupEntity ? ' more-info' : ''}`;
   }
 
-  entityTapped() {
-    this.fire('hass-more-info', { entityId: this.groupEntity.entity_id });
+  groupClicked() {
+    if (this.groupEntity) {
+      this.fire('hass-more-info', { entityId: this.groupEntity.entity_id });
+    }
   }
 
   showGroupToggle(groupEntity, states) {
