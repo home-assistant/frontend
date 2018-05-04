@@ -8,6 +8,11 @@
 <dom-module id="ha-view-renderer">
   <template>
     <style>
+      #badges {
+        display: flex;
+        justify-content: center;
+        margin: 16px;
+      }
       #cards {
         column-count: 3;
       }
@@ -75,8 +80,6 @@ class HaViewRenderer extends Polymer.Element {
       cardRoot.children[i].hass = hass;
     }
   }
-
-
 }
 customElements.define(HaViewRenderer.is, HaViewRenderer);
 </script>

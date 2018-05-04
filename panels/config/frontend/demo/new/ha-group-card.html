@@ -1,5 +1,3 @@
-<link rel="import" href="../ha-card-chooser-z.html">
-
 <dom-module id='ha-group-card'>
   <template>
     <style is="custom-style" include="iron-flex"></style>
@@ -31,11 +29,11 @@
       </template>
       <div class='states'>
         <template is='dom-repeat' items='[[cardConfig.entities]]'>
-          <ha-card-chooser-z
+          <ha-state-card
             hass='[[hass]]'
             class='state-card'
             card-config='[[item]]'
-          ></ha-card-chooser-z>
+          ></ha-state-card>
         </template>
       </div>
     </ha-card>
