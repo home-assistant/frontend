@@ -23,7 +23,7 @@ const DEV = !!JSON.parse(process.env.BUILD_DEV || 'true');
 const dynamicUrlToDependencies = {};
 
 const staticFingerprinted = [
-  'mdi.html',
+  'hass_icons.html',
   'translations/en.json',
 ];
 
@@ -80,6 +80,7 @@ function generateServiceWorker(es6) {
       directoryIndex: '',
       dynamicUrlToDependencies: dynamicUrlToDependencies,
       staticFileGlobs: [
+        baseRootDir + '/mdi.html',
         baseRootDir + '/icons/favicon.ico',
         baseRootDir + '/icons/favicon-192x192.png',
         baseRootDir + '/webcomponents-lite.min.js',

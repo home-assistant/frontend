@@ -52,11 +52,11 @@
       }
       iron-icon.stopped {
         color: var(--google-red-300);
-      }      
+      }
       ha-call-api-button {
         font-weight: 500;
         color: var(--primary-color);
-      }      
+      }
       .right {
         float: right;
       }
@@ -67,7 +67,7 @@
           <hassio-card-content
             title='[[addon.name]] [[addon.last_version]] is available'
             description='You are currently running version [[addon.version]]'
-            icon='mdi:arrow-up-bold-circle'
+            icon='hass:arrow-up-bold-circle'
             icon-class='update'
           ></hassio-card-content>
         </div>
@@ -93,14 +93,14 @@
                 <iron-icon
                   title='Add-on is running'
                   class='running'
-                  icon='mdi:circle'
+                  icon='hass:circle'
                 ></iron-icon>
               </template>
               <template is='dom-if' if='[[!isRunning]]'>
                 <iron-icon
                   title='Add-on is stopped'
                   class='stopped'
-                  icon='mdi:circle'
+                  icon='hass:circle'
                 ></iron-icon>
               </template>
             </template>

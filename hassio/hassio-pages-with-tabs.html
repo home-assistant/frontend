@@ -32,12 +32,12 @@
     </style>
     <app-header-layout has-scrolling-region>
       <app-header fixed slot='header'>
-        <app-toolbar>            
+        <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>Hass.io</div>
           <template is='dom-if' if='[[showRefreshButton(page)]]'>
             <paper-icon-button
-              icon='mdi:refresh'
+              icon='hass:refresh'
               on-click='refreshClicked'
             ></paper-icon-button>
           </template>
@@ -89,7 +89,7 @@
     ></hassio-markdown-dialog>
 
     <template is='dom-if' if='[[equals(page, "snapshots")]]'>
-      <hassio-snapshot      
+      <hassio-snapshot
         hass='[[hass]]'
         snapshot-slug='{{snapshotSlug}}'
         snapshot-deleted='{{snapshotDeleted}}'

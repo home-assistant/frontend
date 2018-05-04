@@ -20,15 +20,15 @@
       }
     </style>
     <template is='dom-if' if='[[computeUpdateAvailable(hassInfo)]]'>
-      <div class='content'> 
+      <div class='content'>
         <div class='card-group'>
-          <div class='title'>Update available! 🎉</div>     
+          <div class='title'>Update available! 🎉</div>
           <paper-card>
             <div class='card-content'>
               <hassio-card-content
                 title='Home Assistant [[hassInfo.last_version]] is available'
                 description='You are currently running version [[hassInfo.version]]'
-                icon='mdi:home-assistant'
+                icon='hass:home-assistant'
                 icon-class='hassupdate'
               ></hassio-card-content>
               <template is='dom-if' if='[[error]]'>

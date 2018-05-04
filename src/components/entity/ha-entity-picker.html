@@ -40,7 +40,7 @@
         <paper-icon-button
           slot="suffix"
           class="clear-button"
-          icon="mdi:close"
+          icon="hass:close"
           no-ripple
           hidden$='[[!value]]'
         >Clear</paper-icon-button>
@@ -157,7 +157,7 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   }
 
   _computeToggleIcon(opened) {
-    return opened ? 'mdi:menu-up' : 'mdi:menu-down';
+    return opened ? 'hass:menu-up' : 'hass:menu-down';
   }
 }
 
