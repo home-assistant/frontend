@@ -236,6 +236,22 @@
                 "initializing": "กำลังเริ่มต้น ({query_stage})",
                 "dead": "ไม่พร้อมใช้งาน ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "เคลียร์, กลางคืน",
+            "cloudy": "มีเมฆมาก",
+            "fog": "หมอก",
+            "hail": "ลูกเห็บ",
+            "lightning": "ฟ้าแลบ",
+            "lightning_rainy": "ฟ้าแลบ, ฝนตก",
+            "partlycloudy": "มีเมฆบางส่วน",
+            "pouring": "เท",
+            "rainy": "ฝน",
+            "snowy": "หิมะ",
+            "snowy_rainy": "หิมะ, ฝน",
+            "sunny": "แดดจัด",
+            "windy": "ลมแรง",
+            "windy_variant": "ลมแรง"
         }
     },
     "state_badge": {
@@ -281,7 +297,11 @@
                 "delete_button": "ลบ"
             },
             "config": {
+                "header": "ปรับแต่ง Home Assistant",
+                "introduction": "เป็นไปได้ที่จะกำหนดค่าคอมโพเนนต์และ Home Assistant ของคุณที่ีนี่. ยังจะกำหนดค่าจาก UI ได้ทั้งหมด, แต่เรากำลังดำเนินการอยู่",
                 "core": {
+                    "caption": "ทั่วไป",
+                    "description": "ตรวจสอบไฟล์การกำหนดค่าและควบคุมเซิร์ฟเวอร์",
                     "section": {
                         "core": {
                             "header": "การปรับแต่งและควบคุมเซิร์ฟเวอร์",
@@ -510,6 +530,48 @@
             "remember": "จดจำ",
             "log_in": "ลงชื่อเข้า"
         },
+        "card": {
+            "camera": {
+                "not_available": "ไม่มีรูปภาพ"
+            },
+            "persistent_notification": {
+                "dismiss": "ยกเลิก"
+            },
+            "scene": {
+                "activate": "กระตุ้น"
+            },
+            "script": {
+                "execute": "ปฏิบัติ"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "ความดันอากาศ",
+                    "humidity": "ความชื้น",
+                    "temperature": "อุณหภูมิ",
+                    "visibility": "ความชัดเจน",
+                    "wind_speed": "ความเร็วลม"
+                },
+                "cardinal_direction": {
+                    "e": "ทิศตะวันออก",
+                    "ene": "ทิศอีสานเฉียงตะวันออก",
+                    "ese": "ทิศอาคเนย์เฉียงตะวันออก",
+                    "n": "ทิศเหนือ",
+                    "ne": "ทิศตะวันออกเฉียงเหนือ",
+                    "nne": "ทิศอีสานเฉียงเหนือ",
+                    "nw": "ทิศตะวันตกเฉียงเหนือ",
+                    "nnw": "ทิศพายัพเฉียงเหนือ",
+                    "s": "ทิศใต้",
+                    "se": "ทิศตะวันออกเฉียงใต้",
+                    "sse": "ทิศอาคเนย์เฉียงใต้",
+                    "ssw": "ทิศหรดีเฉียงใต้",
+                    "sw": "ทิศตะวันตกเฉียงใต้",
+                    "w": "ทิศตะวันตก",
+                    "wnw": "ทิศพายัพเฉียงตะวันตก",
+                    "wsw": "ทิศหรดีเฉียงตะวันตก"
+                },
+                "forecast": "พยากรณ์"
+            }
+        },
         "components": {
             "entity": {
                 "entity-picker": {
@@ -557,5 +619,12 @@
         "updater": "อัพเดต",
         "weblink": "เว็บลิงค์",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "ความชื้น",
+            "visibility": "ความชัดเจน",
+            "wind_speed": "ความเร็วลม"
+        }
     }
 }

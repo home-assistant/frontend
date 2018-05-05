@@ -236,6 +236,21 @@
                 "initializing": "Initialiserer ({query_stage})",
                 "dead": "Død  ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Klart, natt",
+            "cloudy": "Skyet",
+            "fog": "Tåke",
+            "hail": "Hagl",
+            "lightning": "Lyn",
+            "lightning_rainy": "Lyn, regnfull",
+            "partlycloudy": "Delvis skyet",
+            "rainy": "Regnfull",
+            "snowy": "Snø",
+            "snowy_rainy": "Sludd",
+            "sunny": "Solfylt",
+            "windy": "Vind",
+            "windy_variant": "Vind"
         }
     },
     "state_badge": {
@@ -525,6 +540,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Avvis"
+            },
+            "scene": {
+                "activate": "Aktiver"
+            },
+            "script": {
+                "execute": "Utfør"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Lufttrykk",
+                    "humidity": "Luftfuktighet",
+                    "temperature": "Temperatur",
+                    "visibility": "Sikt",
+                    "wind_speed": "Vindstyrke"
+                },
+                "cardinal_direction": {
+                    "e": "Ø",
+                    "ene": "ØNØ",
+                    "ese": "ØSØ",
+                    "n": "N",
+                    "ne": "NØ",
+                    "nne": "NNØ",
+                    "nw": "NV",
+                    "nnw": "NNV",
+                    "s": "S",
+                    "se": "SØ",
+                    "sse": "SSØ",
+                    "ssw": "SSV",
+                    "sw": "SV",
+                    "w": "V",
+                    "wnw": "VNV",
+                    "wsw": "VSV"
+                },
+                "forecast": "Prognose"
             }
         },
         "components": {

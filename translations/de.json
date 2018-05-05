@@ -236,6 +236,22 @@
                 "initializing": "Initialisiere ({query_stage})",
                 "dead": "Nicht erreichbar ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Klare Nacht",
+            "cloudy": "Bewölkt",
+            "fog": "Nebel",
+            "hail": "Hagel",
+            "lightning": "Gewitter",
+            "lightning_rainy": "Gewitter, Regnerisch",
+            "partlycloudy": "Teilweise bewölkt",
+            "pouring": "Strömend",
+            "rainy": "Regnerisch",
+            "snowy": "Verschneit",
+            "snowy_rainy": "Verschneit, Regnerisch",
+            "sunny": "Sonnig",
+            "windy": "Windig",
+            "windy_variant": "Windig"
         }
     },
     "state_badge": {
@@ -256,7 +272,7 @@
             "armed_custom_bypass": "Aktiv"
         },
         "device_tracker": {
-            "home": "Daheim",
+            "home": "Z. Hause",
             "not_home": "Abwes."
         }
     },
@@ -282,7 +298,7 @@
             },
             "config": {
                 "header": "Home Assistant konfigurieren",
-                "introduction": "Hier ist es möglich deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
+                "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
                     "description": "Überprüfe deine Konfigurationsdatei und steuer den Server",
@@ -338,7 +354,7 @@
                     "description": "Automatisierungen erstellen und bearbeiten",
                     "picker": {
                         "header": "Automatisierungseditor",
-                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte lies [die Anleitungen](https:\/\/home-assistant.io\/docs\/automation\/editor\/), um sicherzustellen, dass du den Home Assistant richtig konfiguriert hast.",
+                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte lies [die Anleitungen](https:\/\/home-assistant.io\/docs\/automation\/editor\/), um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
                         "add_automation": "Automatisierung hinzufügen"
@@ -351,7 +367,7 @@
                         "alias": "Name",
                         "triggers": {
                             "header": "Auslöser",
-                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist mögliche mehrere Auslöser für die selbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist mögliche, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Auslöser hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -531,6 +547,34 @@
             },
             "script": {
                 "execute": "Ausführen"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Luftdruck",
+                    "humidity": "Luftfeuchtigkeit",
+                    "temperature": "Temperatur",
+                    "visibility": "Sichtweite",
+                    "wind_speed": "Windgeschwindigkeit"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Prognose"
             }
         },
         "components": {
@@ -562,7 +606,7 @@
         "input_boolean": "Boolsche Eingabe",
         "input_datetime": "Eingabe Datum\/Uhrzeit",
         "input_select": "Auswahlfeld",
-        "input_number": "Nummerische Eingabe",
+        "input_number": "Numerische Eingabe",
         "input_text": "Texteingabe",
         "light": "Licht",
         "lock": "Schloss",

@@ -236,6 +236,22 @@
                 "initializing": "Initialiseren ({query_stage})",
                 "dead": "Onbereikbaar ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Helder, nacht",
+            "cloudy": "Bewolkt",
+            "fog": "Mist",
+            "hail": "Hagel",
+            "lightning": "Bliksem",
+            "lightning_rainy": "Bliksem, regenachtig",
+            "partlycloudy": "Gedeeltelijk bewolkt",
+            "pouring": "Gieten",
+            "rainy": "Regenachtig",
+            "snowy": "Sneeuwachtig",
+            "snowy_rainy": "Sneeuwachtig, regenachtig",
+            "sunny": "Zonnig",
+            "windy": "Winderig",
+            "windy_variant": "Winderig"
         }
     },
     "state_badge": {
@@ -525,6 +541,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Sluiten"
+            },
+            "scene": {
+                "activate": "Activeren"
+            },
+            "script": {
+                "execute": "Uitvoeren"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Luchtdruk",
+                    "humidity": "Vochtigheid",
+                    "temperature": "Temperatuur",
+                    "visibility": "Zichtbaarheid",
+                    "wind_speed": "Windsnelheid"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Weersvoorspelling"
             }
         },
         "components": {
