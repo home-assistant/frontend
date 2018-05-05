@@ -22,16 +22,16 @@
             "unavailable": "No disponible"
         },
         "alarm_control_panel": {
-            "armed": "Armada",
-            "disarmed": "Desarmada",
-            "armed_home": "Armada a casa",
-            "armed_away": "Armada fora de casa",
-            "armed_night": "Armada a la nit",
+            "armed": "Activada",
+            "disarmed": "Desactivada",
+            "armed_home": "Activada, casa",
+            "armed_away": "Activada, fora",
+            "armed_night": "Activada, nit",
             "pending": "Pendent",
             "arming": "Armant",
             "disarming": "Desarmant",
             "triggered": "Disparada",
-            "armed_custom_bypass": "Armada Zona Específica"
+            "armed_custom_bypass": "Activada, bypass personalitzat"
         },
         "automation": {
             "off": "Desactivat",
@@ -236,24 +236,40 @@
                 "initializing": "Inicialitzant ({query_stage})",
                 "dead": "No disponible ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Serè, nit",
+            "cloudy": "Ennuvolat",
+            "fog": "Boira",
+            "hail": "Calamarsa",
+            "lightning": "Llamps",
+            "lightning_rainy": "Tempesta",
+            "partlycloudy": "Parcialment ennuvolat",
+            "pouring": "Pluja",
+            "rainy": "Plujós",
+            "snowy": "Neu",
+            "snowy_rainy": "Aiguaneu",
+            "sunny": "Assolellat",
+            "windy": "Ventós",
+            "windy_variant": "Ventós"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Desc",
-            "unavailable": "Indisp"
+            "unavailable": "No disp."
         },
         "alarm_control_panel": {
-            "armed": "Armada",
-            "disarmed": "Desarm",
-            "armed_home": "Armada",
-            "armed_away": "Armada",
-            "armed_night": "Armada",
-            "pending": "Pend",
+            "armed": "Activada",
+            "disarmed": "Desactiv.",
+            "armed_home": "Activ.",
+            "armed_away": "Activ.",
+            "armed_night": "Activ.",
+            "pending": "Pend.",
             "arming": "Armant",
-            "disarming": "Desarm",
+            "disarming": "Desactiv.",
             "triggered": "Alarma",
-            "armed_custom_bypass": "Armada"
+            "armed_custom_bypass": "Activada"
         },
         "device_tracker": {
             "home": "A casa",
@@ -307,7 +323,7 @@
                             },
                             "server_management": {
                                 "heading": "Gestió del servidor",
-                                "introduction": "Controlar el servidor de Home Assistant... desde Home Assistant.",
+                                "introduction": "Controlar el servidor de Home Assistant... des de Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Aturar"
                             }
@@ -373,7 +389,7 @@
                                     "label": "Home Assistant",
                                     "event": "Esdeveniment:",
                                     "start": "Inici",
-                                    "shutdown": "Aturada"
+                                    "shutdown": "Aturar"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -525,6 +541,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Desestimar"
+            },
+            "scene": {
+                "activate": "Activar"
+            },
+            "script": {
+                "execute": "Executar"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pressió atmosfèrica",
+                    "humidity": "Humitat",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilitat",
+                    "wind_speed": "Velocitat del vent"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NO",
+                    "nnw": "NNO",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
+                },
+                "forecast": "Previsió"
             }
         },
         "components": {

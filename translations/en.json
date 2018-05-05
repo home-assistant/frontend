@@ -236,6 +236,22 @@
                 "initializing": "Initializing ({query_stage})",
                 "dead": "Dead ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Clear, night",
+            "cloudy": "Cloudy",
+            "fog": "Fog",
+            "hail": "Hail",
+            "lightning": "Lightning",
+            "lightning_rainy": "Lightning, rainy",
+            "partlycloudy": "Partly cloudy",
+            "pouring": "Pouring",
+            "rainy": "Rainy",
+            "snowy": "Snowy",
+            "snowy_rainy": "Snowy, rainy",
+            "sunny": "Sunny",
+            "windy": "Windy",
+            "windy_variant": "Windy"
         }
     },
     "state_badge": {
@@ -326,12 +342,6 @@
                             "header": "Set a theme",
                             "introduction": "Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device",
                             "theme": "Theme"
-                        },
-                        "hassbian": {
-                            "header": "Bring Hassbian to the next level",
-                            "introduction": "Discover exciting add-ons to enhance your Home Assistant installation. Add an MQTT server or control a connected TV via HDMI-CEC.",
-                            "learn_more": "Learn more",
-                            "install": "Install"
                         }
                     }
                 },
@@ -537,6 +547,34 @@
             },
             "script": {
                 "execute": "Execute"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Air pressure",
+                    "humidity": "Humidity",
+                    "temperature": "Temperature",
+                    "visibility": "Visibility",
+                    "wind_speed": "Wind speed"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Forecast"
             }
         },
         "components": {
