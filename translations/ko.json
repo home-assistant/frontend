@@ -236,6 +236,22 @@
                 "initializing": "초기화중 ({query_stage})",
                 "dead": "응답없음 ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "맑은 밤",
+            "cloudy": "흐림",
+            "fog": "안개",
+            "hail": "우박",
+            "lightning": "번개",
+            "lightning_rainy": "뇌우",
+            "partlycloudy": "대체로 흐림",
+            "pouring": "호우",
+            "rainy": "비",
+            "snowy": "눈",
+            "snowy_rainy": "진눈개비",
+            "sunny": "맑음",
+            "windy": "바람",
+            "windy_variant": "잦은바람"
         }
     },
     "state_badge": {
@@ -265,7 +281,7 @@
             "shopping-list": {
                 "clear_completed": "완료항목삭제",
                 "add_item": "항목추가",
-                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말하세요"
+                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말해보세요"
             },
             "history": {
                 "showing_entries": "다음 날짜의 항목을 표시",
@@ -531,6 +547,34 @@
             },
             "script": {
                 "execute": "실행"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "기압",
+                    "humidity": "습도",
+                    "temperature": "기온",
+                    "visibility": "시정",
+                    "wind_speed": "풍속"
+                },
+                "cardinal_direction": {
+                    "e": "동",
+                    "ene": "동북동",
+                    "ese": "동남동",
+                    "n": "북",
+                    "ne": "북동",
+                    "nne": "북북동",
+                    "nw": "북서",
+                    "nnw": "북북서",
+                    "s": "남",
+                    "se": "남동",
+                    "sse": "남남동",
+                    "ssw": "남남서",
+                    "sw": "남서",
+                    "w": "서",
+                    "wnw": "서북서",
+                    "wsw": "서남서"
+                },
+                "forecast": "일기 예보"
             }
         },
         "components": {
@@ -584,7 +628,7 @@
     "attribute": {
         "weather": {
             "humidity": "습도",
-            "visibility": "가시성",
+            "visibility": "시정",
             "wind_speed": "풍속"
         }
     }

@@ -236,6 +236,22 @@
                 "initializing": "A inicializar ({query_stage})",
                 "dead": "Morto ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Limpo, Noite",
+            "cloudy": "Nublado",
+            "fog": "Nevoeiro",
+            "hail": "Granizo",
+            "lightning": "Relâmpago",
+            "lightning_rainy": "Relâmpagos, chuva",
+            "partlycloudy": "Parcialmente nublado",
+            "pouring": "Chuva forte",
+            "rainy": "Chuva",
+            "snowy": "Neve",
+            "snowy_rainy": "Neve, chuva",
+            "sunny": "Sol",
+            "windy": "Vento fraco",
+            "windy_variant": "Vento fraco"
         }
     },
     "state_badge": {
@@ -289,7 +305,7 @@
                     "section": {
                         "core": {
                             "header": "Configuração e controlo do servidor",
-                            "introduction": "Alterar a configuração pode ser um processo repetitivo. Nós sabemos. Esta seção pretende tornar sua vida um pouco mais fácil.",
+                            "introduction": "Alterar a configuração pode ser um processo repetitivo. Nós sabemos. Esta seção pretende tornar a sua vida um pouco mais fácil.",
                             "validation": {
                                 "heading": "Validar a configuração",
                                 "introduction": "Valide sua configuração caso tenha alterado recentemente a mesma e quiser certificar-se de que tudo é válido.",
@@ -299,7 +315,7 @@
                             },
                             "reloading": {
                                 "heading": "Recarregar configuração",
-                                "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem necessidade de reiniciar. Ao carregar em Recarregar configuração irá descarregar a configuração atual e carregar a nova.",
+                                "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem necessidade de reiniciar. Ao pressionar em Recarregar irá descarregar a configuração atual e carregar a nova.",
                                 "core": "Recarregar núcleo",
                                 "group": "Recarregar grupos",
                                 "automation": "Recarregar automações",
@@ -525,6 +541,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Fechar"
+            },
+            "scene": {
+                "activate": "Activar"
+            },
+            "script": {
+                "execute": "Executar"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pressão atmosférica",
+                    "humidity": "Humidade",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilidade",
+                    "wind_speed": "Velocidade do vento"
+                },
+                "cardinal_direction": {
+                    "e": "",
+                    "ene": "",
+                    "ese": "",
+                    "n": "",
+                    "ne": "",
+                    "nne": "",
+                    "nw": "",
+                    "nnw": "",
+                    "s": "",
+                    "se": "",
+                    "sse": "",
+                    "ssw": "",
+                    "sw": "",
+                    "w": "",
+                    "wnw": "",
+                    "wsw": ""
+                },
+                "forecast": "Previsão"
             }
         },
         "components": {
