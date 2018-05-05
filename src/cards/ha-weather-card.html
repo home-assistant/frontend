@@ -90,13 +90,13 @@
           <div class="forecast">
             <template is='dom-repeat' items='[[forecast]]'>
               <div>
-                <div class="weekday">[[computeDateTime(item.datetime)]]</div>
-                <template is="dom-if" if="[[item.condition]]">
+                <div class="weekday">[[item.datetime]]</div>
+                <template is="dom-if" if="[[item.condicon]]">
                   <div class="icon">
-                    <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+                    <iron-icon icon="[[item.condicon]]"></iron-icon>
                   </div>
                 </template>
-                <div class="temp">[[item.temperature]]°</div>
+                <div class="temp">[[item.temphigh]]°</div>
                 <template is="dom-if" if="[[item.templow]]">
                   <div class="templow">[[item.templow]]°</div>
                 </template>
@@ -160,8 +160,26 @@ class HaWeatherCard extends
     this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   }
 
-  computeForecast(forecast) {
-    return forecast && forecast.slice(0, 7);
+  computeForecast(forecastdata) {
+    const forecast = forecastdata && forecastdata.slice(0, 7);
+    let hourly = false;
+    if (forecast.length > 3) {
+      const date1 = new Date(forecast[1].datetime);
+      const date2 = new Date(forecast[2].datetime);
+
+      if (date2 - date1 < 80000000) {
+        hourly = true;
+      }
+    }
+
+    const me = this;
+
+    return forecast.map(item => ({
+      datetime: me.computeDateTime(item.datetime, hourly),
+      temphigh: item.temperature,
+      templow: item.templow,
+      condicon: me.getWeatherIcon(item.condition)
+    }));
   }
 
   getUnit(unit) {
@@ -204,10 +222,9 @@ class HaWeatherCard extends
     return `${visibilty} ${this.getUnit('length')}`;
   }
 
-  computeDateTime(data) {
+  computeDateTime(data, hourly) {
     const date = new Date(data);
-    const provider = this.stateObj.attributes.attribution;
-    if (provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
+    if (hourly) {
       return date.toLocaleTimeString(
         this.hass.selectedLanguage || this.hass.language,
         { hour: 'numeric' }

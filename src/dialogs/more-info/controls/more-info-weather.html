@@ -74,16 +74,16 @@
 
     <template is="dom-if" if="[[stateObj.attributes.forecast]]">
       <div class="section">[[localize('ui.card.weather.forecast')]]:</div>
-      <template is='dom-repeat' items='[[stateObj.attributes.forecast]]'>
+      <template is='dom-repeat' items='[[forecast]]'>
         <div class="flex">
-          <template is="dom-if" if="[[item.condition]]">
-            <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+          <template is="dom-if" if="[[item.condicon]]">
+            <iron-icon icon="[[item.condicon]]"></iron-icon>
           </template>
-          <div class="main">[[computeDateTime(item.datetime)]]</div>
+          <div class="main">[[item.datetime]]</div>
           <template is="dom-if" if="[[item.templow]]">
             <div class="templow">[[item.templow]] [[getUnit('temperature')]]</div>
           </template>
-          <div class="temp">[[item.temperature]] [[getUnit('temperature')]]</div>
+          <div class="temp">[[item.temphigh]] [[getUnit('temperature')]]</div>
         </div>
       </template>
     </template>
@@ -104,7 +104,11 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object
+      stateObj: Object,
+      forecast: {
+        type: Array,
+        computed: 'computeForecast(stateObj.attributes.forecast)'
+      }
     };
   }
 
@@ -132,10 +136,9 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     };
   }
 
-  computeDateTime(data) {
+  computeDateTime(data, hourly) {
     const date = new Date(data);
-    const provider = this.stateObj.attributes.attribution;
-    if (provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
+    if (hourly) {
       if (new Date().getDay() === date.getDay()) {
         return date.toLocaleTimeString(
           this.hass.selectedLanguage || this.hass.language,
@@ -151,6 +154,27 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
       this.hass.selectedLanguage || this.hass.language,
       { weekday: 'long', month: 'short', day: 'numeric' }
     );
+  }
+
+  computeForecast(forecast) {
+    let hourly = false;
+    if (forecast.length > 3) {
+      const date1 = new Date(forecast[1].datetime);
+      const date2 = new Date(forecast[2].datetime);
+
+      if (date2 - date1 < 80000000) {
+        hourly = true;
+      }
+    }
+
+    const me = this;
+
+    return forecast.map(item => ({
+      datetime: me.computeDateTime(item.datetime, hourly),
+      temphigh: item.temperature,
+      templow: item.templow,
+      condicon: me.getWeatherIcon(item.condition)
+    }));
   }
 
   getUnit(unit) {
