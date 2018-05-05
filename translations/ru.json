@@ -236,6 +236,22 @@
                 "initializing": "Инициализация ({query_stage})",
                 "dead": "Неисправен ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Ясно, ночь",
+            "cloudy": "Облачно",
+            "fog": "Туман",
+            "hail": "Град",
+            "lightning": "Молния",
+            "lightning_rainy": "Молния, дождь",
+            "partlycloudy": "Переменная облачность",
+            "pouring": "Ливень",
+            "rainy": "Дождь",
+            "snowy": "Снег",
+            "snowy_rainy": "Снег с дождем",
+            "sunny": "Ясно",
+            "windy": "Ветрено",
+            "windy_variant": "Ветрено"
         }
     },
     "state_badge": {
@@ -531,6 +547,34 @@
             },
             "script": {
                 "execute": "Выполнить"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Атмосферное давление",
+                    "humidity": "Относительная влажность",
+                    "temperature": "Температура",
+                    "visibility": "Дальность видимости",
+                    "wind_speed": "Скорость ветра"
+                },
+                "cardinal_direction": {
+                    "e": "В",
+                    "ene": "ВСВ",
+                    "ese": "ВЮВ",
+                    "n": "С",
+                    "ne": "СВ",
+                    "nne": "ССВ",
+                    "nw": "СЗ",
+                    "nnw": "ССЗ",
+                    "s": "Ю",
+                    "se": "ЮВ",
+                    "sse": "ЮЮВ",
+                    "ssw": "ЮЮЗ",
+                    "sw": "ЮЗ",
+                    "w": "З",
+                    "wnw": "ЗСЗ",
+                    "wsw": "ЗЮЗ"
+                },
+                "forecast": "Прогноз"
             }
         },
         "components": {
