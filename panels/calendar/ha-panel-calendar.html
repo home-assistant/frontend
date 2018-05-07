@@ -11,6 +11,8 @@
 <link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+
 <link rel="import" href="../../bower_components/scheduler-component/scheduler-component.html">
 
 
@@ -18,7 +20,7 @@
 <link rel="import" href="../../src/components/ha-menu-button.html">
 <link rel="import" href="../../src/components/ha-start-voice-button.html">
 
-<dom-module id="ha-panel-scheduler">
+<dom-module id="ha-panel-calendar">
   <template>
     <style include="ha-style">
       :host {
@@ -68,7 +70,7 @@
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
-          <div main-title>[[localize('panel.scheduler')]]</div>
+          <div main-title>[[localize('panel.calendar')]]</div>
           <ha-start-voice-button hass='[[hass]]' can-listen='{{canListen}}'></ha-start-voice-button>
           <paper-menu-button
             horizontal-align="right"
@@ -79,7 +81,7 @@
       </app-header>
 
       <div class='content'>
-        <scheduler-component id="scheduler"
+        <scheduler-component id="calendar"
             header='{"right":"today","left":"prev,next","center":"month,agendaWeek,agendaDay,listWeek"}'
             default-view="month"
             height="1000"
@@ -87,7 +89,7 @@
         >
         </scheduler-component>
         <div class='tip' hidden$='[[!canListen]]'>
-          [[localize('ui.panel.scheduler.microphone_tip')]]
+          [[localize('ui.panel.calendar.microphone_tip')]]
         </div>
       </div>
     </app-header-layout>
@@ -98,8 +100,8 @@
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
-class HaPanelScheduler extends window.hassMixins.LocalizeMixin(Polymer.Element) {
-  static get is() { return 'ha-panel-scheduler'; }
+class HaPanelCalendar extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+  static get is() { return 'ha-panel-calendar'; }
 
   static get properties() {
     return {
@@ -118,7 +120,7 @@ class HaPanelScheduler extends window.hassMixins.LocalizeMixin(Polymer.Element) 
     super.connectedCallback();
     this._fetchData = this._fetchData.bind(this);
 
-    this.hass.connection.subscribeEvents(this._fetchData, 'scheduler_updated')
+    this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
       .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
     this._fetchData();
   }
@@ -129,7 +131,7 @@ class HaPanelScheduler extends window.hassMixins.LocalizeMixin(Polymer.Element) 
   }
 
   _fetchData() {
-    this.hass.callApi('get', 'scheduler')
+    this.hass.callApi('get', 'calendar')
       .then(function (events) {
         this.events = events;
       }.bind(this));
@@ -137,5 +139,5 @@ class HaPanelScheduler extends window.hassMixins.LocalizeMixin(Polymer.Element) 
 
 }
 
-customElements.define(HaPanelScheduler.is, HaPanelScheduler);
+customElements.define(HaPanelCalendar.is, HaPanelCalendar);
 </script>
