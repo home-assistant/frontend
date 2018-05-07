@@ -205,9 +205,17 @@ class HomeAssistant extends Polymer.Element {
             }
           ),
       callApi: (method, path, parameters) => {
-        var host = window.location.protocol + '//' + window.location.host;
-        var auth = conn.options.authToken ? conn.options : {};
-        return window.hassCallApi(host, auth, method, path, parameters);
+        const host = window.location.protocol + '//' + window.location.host;
+        const auth = conn.options;
+        return window.hassCallApi(host, auth, method, path, parameters).catch((err) => {
+          if (err.status_code !== 401 || !auth.accessToken) throw err;
+
+          // If we connect with access token and get 401, refresh token and try again
+          return window.refreshToken().then((accessToken) => {
+            conn.options.accessToken = accessToken;
+            return window.hassCallApi(host, auth, method, path, parameters);
+          });
+        });
       },
     }, this.$.storage.getStoredState());
 
@@ -216,12 +224,21 @@ class HomeAssistant extends Polymer.Element {
       this.loadBackendTranslations();
     };
 
-    conn.addEventListener('ready', reconnected);
-
-    var disconnected = () => {
+    const disconnected = () => {
       this._updateHass({ connected: false });
     };
 
+    conn.addEventListener('ready', reconnected);
+
+    // If we reconnect after losing connection and access token is no longer
+    // valid.
+    conn.addEventListener('reconnect-error', (_conn, err) => {
+      if (err !== window.HAWS.ERR_INVALID_AUTH) return;
+      disconnected();
+      this.unsubConnection();
+      window.refreshToken().then(accessToken =>
+        this.handleConnectionPromise(window.createHassConnection(null, accessToken)));
+    });
     conn.addEventListener('disconnected', disconnected);
 
     var unsubEntities;
@@ -310,16 +327,9 @@ class HomeAssistant extends Polymer.Element {
   }
 
   handleLogout() {
-    delete localStorage.authToken;
-    var conn = this.connection;
-    this.connectionPromise = null;
-    try {
-      this.connection = null;
-    } catch (err) {
-      // home-assistant-main crashes when hass is set to null.
-      // However, after it is done, home-assistant-main is removed from the DOM by this element.
-    }
-    conn.close();
+    this.connection.close();
+    localStorage.clear();
+    document.location = '/';
   }
 
   setTheme(event) {
