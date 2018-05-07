@@ -7,5 +7,21 @@
   </head>
   <body>
     <ha-authorize>Loading</ha-authorize>
+    <script>
+      var webComponentsSupported = (
+        'customElements' in window &&
+        'import' in document.createElement('link') &&
+        'content' in document.createElement('template'));
+      if (!webComponentsSupported) {
+        var e = document.createElement('script');
+        e.onerror = initError;
+        e.src = '/static/webcomponents-lite.js';
+        if ('import' in document.createElement('link')) {
+          document.write(e.outerHTML);
+        } else {
+          document.head.appendChild(e);
+        }
+      }
+    </script>
   </body>
 </html>
