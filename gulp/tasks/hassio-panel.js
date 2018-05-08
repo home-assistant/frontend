@@ -1,6 +1,7 @@
 const del = require('del');
 const gulp = require('gulp');
 const rename = require('gulp-rename');
+const replace = require('gulp-batch-replace');
 const gzip = require('gulp-gzip');
 const path = require('path');
 const runSequence = require('run-sequence');
@@ -20,6 +21,8 @@ const DEPS_TO_STRIP = [
   'bower_components/paper-styles/color.html',
 ];
 
+const es5Extra = "<script src='/frontend_es5/custom-elements-es5-adapter.js'></script>";
+
 async function buildHassioPanel() {
   const stream = await bundledStreamFromHTML('hassio/hassio-app.html', {
     strategy: stripImportsStrategy(DEPS_TO_STRIP)
@@ -32,6 +35,7 @@ async function buildHassioPanel() {
 
 function copyHassioIndex() {
   return gulp.src('hassio/index.html')
+    .pipe(replace([['<!--EXTRA_SCRIPTS-->', es5Extra]]))
     .pipe(gulp.dest(OUTPUT_DIR));
 }
 
