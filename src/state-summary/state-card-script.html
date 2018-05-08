@@ -10,8 +10,11 @@
 
 <dom-module id="state-card-script">
   <template>
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
+      :host {
+        cursor: pointer;
+      }
       paper-button {
         color: var(--primary-color);
         font-weight: 500;
@@ -40,19 +43,27 @@
 <script>
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin window.hassMixins.EventsMixin
  */
-class StateCardScript extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class StateCardScript extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
   static get is() { return 'state-card-script'; }
 
   static get properties() {
     return {
       hass: Object,
       stateObj: Object,
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
+      inDialog: Boolean
     };
+  }
+
+  ready() {
+    this.addEventListener('click', ev => this._onCardClick(ev));
+    super.ready();
+  }
+
+  _onCardClick() {
+    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   }
 
   fireScript(ev) {

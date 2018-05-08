@@ -7,8 +7,9 @@
     <style>
       :host {
         display: block;
+        cursor: pointer;
       }
-      .name {
+      a {
         @apply --paper-font-common-nowrap;
         @apply --paper-font-body1;
         color: var(--primary-color);
@@ -20,7 +21,7 @@
     </style>
 
     <state-badge state-obj='[[stateObj]]'></state-badge>
-    <a href$='[[stateObj.state]]' target='_blank' class='name' id='link'>[[computeStateName(stateObj)]]</a>
+    <a href$='[[stateObj.state]]' target='_blank'>[[computeStateName(stateObj)]]</a>
   </template>
 </dom-module>
 
@@ -30,27 +31,21 @@ class StateCardWeblink extends Polymer.Element {
 
   static get properties() {
     return {
-      stateObj: Object,
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
+      stateObj: Object
     };
   }
 
   ready() {
+    this.addEventListener('click', ev => this._onCardClick(ev));
     super.ready();
-    this.addEventListener('click', ev => this.onTap(ev));
+  }
+
+  _onCardClick() {
+    window.open(this.stateObj.state, '_blank');
   }
 
   computeStateName(stateObj) {
     return window.hassUtil.computeStateName(stateObj);
-  }
-
-  onTap(ev) {
-    ev.stopPropagation();
-    ev.preventDefault();
-    window.open(this.stateObj.state, '_blank');
   }
 }
 customElements.define(StateCardWeblink.is, StateCardWeblink);

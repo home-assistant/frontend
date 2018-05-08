@@ -29,7 +29,6 @@
 
     <state-badge state-obj='[[stateObj]]'></state-badge>
     <paper-dropdown-menu
-      on-click='stopPropagation'
       selected-item-label='{{selectedOption}}'
       label='[[computeStateName(stateObj)]]'>
       <paper-listbox slot="dropdown-content" selected="[[computeSelected(stateObj)]]">
@@ -49,10 +48,6 @@ class StateCardInputSelect extends Polymer.Element {
     return {
       hass: Object,
       stateObj: Object,
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
       selectedOption: {
         type: String,
         observer: 'selectedOptionChanged',
@@ -77,10 +72,6 @@ class StateCardInputSelect extends Polymer.Element {
       option: option,
       entity_id: this.stateObj.entity_id,
     });
-  }
-
-  stopPropagation(ev) {
-    ev.stopPropagation();
   }
 }
 customElements.define(StateCardInputSelect.is, StateCardInputSelect);
