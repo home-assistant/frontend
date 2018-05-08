@@ -11,6 +11,7 @@
         padding: 0;
       }
     </style>
+    <!--EXTRA_SCRIPTS-->
   </head>
   <body>
     <hassio-app></hassio-app>
@@ -19,9 +20,6 @@
         var e = document.createElement('script');
         e.src = src;
         document.head.appendChild(e);
-      }
-      if (!window.parent.HASS_DEV) {
-        addScript('/frontend_es5/custom-elements-es5-adapter.js');
       }
       var webComponentsSupported = (
         'customElements' in window &&
