@@ -3,9 +3,6 @@ const replace = require('gulp-batch-replace');
 const rename = require('gulp-rename');
 
 const config = require('../config');
-const {
-  stripImportsStrategy,
-} = require('../common/strategy');
 const minifyStream = require('../common/transform').minifyStream;
 const {
   bundledStreamFromHTML,
