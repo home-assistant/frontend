@@ -63,7 +63,10 @@ class HaAuthFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
       headers: {
         Authorization: `Basic ${btoa(`${this.clientId}:${this.clientSecret}`)}`
       },
-      body: JSON.stringify({ handler: [this.authProvider.type, this.authProvider.id] })
+      body: JSON.stringify({
+        handler: [this.authProvider.type, this.authProvider.id],
+        redirect_uri: this.redirectUri,
+      })
     }).then((response) => {
       if (!response.ok) throw new Error();
       return response.json();
