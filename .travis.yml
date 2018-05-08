@@ -7,13 +7,6 @@ cache:
 install:
   - yarn install
   - ./node_modules/.bin/bower install
-addons:
-  firefox: latest
-  apt:
-    sources:
-    - google-chrome
-    packages:
-    - google-chrome-stable
 script:
   - npm run build
   - npm run test
