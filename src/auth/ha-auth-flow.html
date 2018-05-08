@@ -67,11 +67,10 @@ class HaAuthFlow extends window.hassMixins.EventsMixin(Polymer.Element) {
     }).then((response) => {
       if (!response.ok) throw new Error();
       return response.json();
-    }).then((step) => this.setProperties({
-        _step: step,
-        _state: 'step',
-      })
-    ).catch(err => {
+    }).then(step => this.setProperties({
+      _step: step,
+      _state: 'step',
+    })).catch((err) => {
       // eslint-disable-next-line
       console.error('Error starting auth flow', err);
       this._state = 'error';
