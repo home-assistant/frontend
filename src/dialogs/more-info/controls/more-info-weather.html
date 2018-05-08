@@ -47,28 +47,32 @@
       <div class="main">[[localize('ui.card.weather.attributes.temperature')]]</div>
       <div>[[stateObj.attributes.temperature]] [[getUnit('temperature')]]</div>
     </div>
-    <div class="flex">
-      <iron-icon icon="mdi:water-percent"></iron-icon>
-      <div class="main">[[localize('ui.card.weather.attributes.humidity')]]</div>
-      <div>[[stateObj.attributes.humidity]] %</div>
-    </div>
-    <template is="dom-if" if="[[stateObj.attributes.visibility]]">
-      <div class="flex">
-        <iron-icon icon="mdi:eye"></iron-icon>
-        <div class="main">[[localize('ui.card.weather.attributes.visibility')]]</div>
-        <div>[[stateObj.attributes.visibility]] [[getUnit('length')]]</div>
-      </div>
-    </template>
-    <div class="flex">
-      <iron-icon icon="mdi:weather-windy"></iron-icon>
-      <div class="main">[[localize('ui.card.weather.attributes.wind_speed')]]</div>
-      <div>[[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]</div>
-    </div>
     <template is="dom-if" if="[[stateObj.attributes.pressure]]">
       <div class="flex">
         <iron-icon icon="mdi:gauge"></iron-icon>
         <div class="main">[[localize('ui.card.weather.attributes.air_pressure')]]</div>
         <div>[[stateObj.attributes.pressure]] hPa</div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[stateObj.attributes.humidity]]">
+      <div class="flex">
+        <iron-icon icon="mdi:water-percent"></iron-icon>
+        <div class="main">[[localize('ui.card.weather.attributes.humidity')]]</div>
+        <div>[[stateObj.attributes.humidity]] %</div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[stateObj.attributes.wind_speed]]">
+      <div class="flex">
+        <iron-icon icon="mdi:weather-windy"></iron-icon>
+        <div class="main">[[localize('ui.card.weather.attributes.wind_speed')]]</div>
+        <div>[[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]</div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[stateObj.attributes.visibility]]">
+      <div class="flex">
+        <iron-icon icon="mdi:eye"></iron-icon>
+        <div class="main">[[localize('ui.card.weather.attributes.visibility')]]</div>
+        <div>[[stateObj.attributes.visibility]] [[getUnit('length')]]</div>
       </div>
     </template>
 
@@ -168,7 +172,7 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   getWind(speed, bearing, localize) {
     if (bearing != null) {
       const cardinalDirection = this.windBearingToText(bearing);
-      return `${speed} ${this.getUnit('length')}/h (${localize(cardinalDirection.toLowerCase()) || cardinalDirection})`;
+      return `${speed} ${this.getUnit('length')}/h (${localize(`ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`) || cardinalDirection})`;
     }
     return `${speed} ${this.getUnit('length')}/h`;
   }
