@@ -1,4 +1,5 @@
 const gulp = require('gulp');
+const replace = require('gulp-batch-replace');
 const rename = require('gulp-rename');
 
 const config = require('../config');
@@ -10,8 +11,11 @@ const {
   bundledStreamFromHTML,
 } = require('../common/html');
 
+const es5Extra = "<script src='/frontend_es5/custom-elements-es5-adapter.js'></script>";
+
 async function buildAuth(es6) {
-  const stream = await bundledStreamFromHTML('src/authorize.html');
+  let stream = await bundledStreamFromHTML('src/authorize.html');
+  stream = stream.pipe(replace([['<!--EXTRA_SCRIPTS-->', es6 ? '' : es5Extra]]));
 
   return minifyStream(stream, /* es6= */ es6)
     .pipe(rename('authorize.html'))

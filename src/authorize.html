@@ -3,25 +3,23 @@
   <head>
     <meta charset="utf-8">
     <title>Home Assistant</title>
+    <!--EXTRA_SCRIPTS-->
   </head>
   <body>
     <ha-authorize>Loading</ha-authorize>
     <script>
-      function addScript(src) {
-        var e = document.createElement('script');
-        e.src = src;
-        document.head.appendChild(e);
-      }
-      if (document.location.pathname.indexOf('es5') !== -1) {
-        addScript('/frontend_es5/custom-elements-es5-adapter.js');
-      }
-      var webComponentsSupported = (
-        'customElements' in window &&
-        'import' in document.createElement('link') &&
-        'content' in document.createElement('template'));
-      if (!webComponentsSupported) {
-        addScript('/static/webcomponents-lite.js');
-      }
+        function addScript(src) {
+          var e = document.createElement('script');
+          e.src = src;
+          document.head.appendChild(e);
+        }
+        var webComponentsSupported = (
+          'customElements' in window &&
+          'import' in document.createElement('link') &&
+          'content' in document.createElement('template'));
+        if (!webComponentsSupported) {
+          addScript('/static/webcomponents-lite.js');
+        }
     </script>
     <link rel='import' href='./auth/ha-authorize.html'>
   </body>
