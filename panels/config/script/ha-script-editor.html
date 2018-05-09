@@ -209,7 +209,7 @@ class HaScriptEditor extends window.hassMixins.LocalizeMixin(Polymer.Element) {
     if (oldVal && oldVal.entity_id === newVal.entity_id) {
       return;
     }
-    this.hass.callApi('get', 'config/script/config/' + window.hassUtil.computeObjectId(newVal))
+    this.hass.callApi('get', 'config/script/config/' + window.hassUtil.computeObjectId(newVal.entity_id))
       .then((config) => {
         // Normalize data: ensure sequence is a list
         // Happens when people copy paste their scripts into the config
@@ -266,7 +266,8 @@ class HaScriptEditor extends window.hassMixins.LocalizeMixin(Polymer.Element) {
   }
 
   saveScript() {
-    var id = this.creatingNew ? '' + Date.now() : window.hassUtil.computeObjectId(this.script);
+    var id = this.creatingNew ?
+      '' + Date.now() : window.hassUtil.computeObjectId(this.script.entity_id);
     this.hass.callApi('post', 'config/script/config/' + id, this.config).then(() => {
       this.dirty = false;
 
