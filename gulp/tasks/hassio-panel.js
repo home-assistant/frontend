@@ -52,6 +52,7 @@ gulp.task('hassio-gzip-es5', gzipOutput);
 
 gulp.task('hassio-es5', () => runSequence.use(gulp)(
   'hassio-clean',
+  'run_rollup',
   'hassio-panel-es5',
   'hassio-index-es5',
   'hassio-gzip-es5',
