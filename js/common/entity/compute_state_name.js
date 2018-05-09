@@ -1,6 +1,6 @@
 import computeObjectId from './compute_object_id';
 
-export default function (stateObj) {
+export default function computeStateName(stateObj) {
   if (stateObj._entityDisplay === undefined) {
     stateObj._entityDisplay = (
       stateObj.attributes.friendly_name ||

@@ -23,7 +23,7 @@ export default function stateIcon(state) {
     return state.attributes.icon;
   }
 
-  const domain = computeDomain(state);
+  const domain = computeDomain(state.entity_id);
 
   if (domain in domainIcons) {
     return domainIcons[domain](state);
