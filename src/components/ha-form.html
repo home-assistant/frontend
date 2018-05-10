@@ -1,13 +1,13 @@
-<link rel="import" href='../../../bower_components/polymer/polymer-element.html'>
+<link rel="import" href='../../bower_components/polymer/polymer-element.html'>
 
-<link rel="import" href='../../../bower_components/paper-input/paper-input.html'>
-<link rel="import" href='../../../bower_components/paper-checkbox/paper-checkbox.html'>
-<link rel='import' href='../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
-<link rel='import' href='../../../bower_components/paper-listbox/paper-listbox.html'>
-<link rel='import' href='../../../bower_components/paper-item/paper-item.html'>
+<link rel="import" href='../../bower_components/paper-input/paper-input.html'>
+<link rel="import" href='../../bower_components/paper-checkbox/paper-checkbox.html'>
+<link rel='import' href='../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html'>
+<link rel='import' href='../../bower_components/paper-listbox/paper-listbox.html'>
+<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
 
-<link rel='import' href='../../../src/util/hass-mixins.html'>
-<link rel="import" href='../../../src/components/ha-paper-slider.html'>
+<link rel='import' href='../util/hass-mixins.html'>
+<link rel="import" href='./ha-paper-slider.html'>
 
 
 <dom-module id="ha-form">
@@ -18,6 +18,10 @@
       }
     </style>
     <template is='dom-if' if='[[_isArray(schema)]]' restamp>
+      <template is='dom-if' if='[[error.base]]'>
+          [[computeError(error.base, schema)]]
+      </template>
+
       <template is='dom-repeat' items='[[schema]]'>
         <ha-form
           data='[[_getValue(data, item)]]'
@@ -112,14 +116,14 @@ class HaForm extends window.hassMixins.EventsMixin(Polymer.Element) {
       // schema object.
       computeLabel: {
         type: Function,
-        value: schema => schema && schema.name,
+        value: () => schema => schema && schema.name,
       },
 
       // A function that will computes an error message to be displayed for a
       // given error ID, and relevant schema object
       computeError: {
         type: Function,
-        value: (error, schema) => error, // eslint-disable-line no-unused-vars
+        value: () => (error, schema) => error, // eslint-disable-line no-unused-vars
       },
     };
   }

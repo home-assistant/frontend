@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Home Assistant</title>
+    <!--EXTRA_SCRIPTS-->
+  </head>
+  <body>
+    <ha-authorize>Loading</ha-authorize>
+    <script>
+        function addScript(src) {
+          var e = document.createElement('script');
+          e.src = src;
+          document.head.appendChild(e);
+        }
+        var webComponentsSupported = (
+          'customElements' in window &&
+          'import' in document.createElement('link') &&
+          'content' in document.createElement('template'));
+        if (!webComponentsSupported) {
+          addScript('/static/webcomponents-lite.js');
+        }
+    </script>
+    <link rel='import' href='./auth/ha-authorize.html'>
+  </body>
+</html>
