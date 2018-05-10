@@ -12,7 +12,6 @@
     "app-localize-behavior": "PolymerElements/app-localize-behavior#~2.0.0",
     "app-route": "PolymerElements/app-route#^2.0.0",
     "app-storage": "^2.0.2",
-    "fecha": "~2.3.0",
     "font-roboto-local": "~1.0.1",
     "font-roboto": "PolymerElements/font-roboto-local#~1.0.1",
     "iron-autogrow-textarea": "PolymerElements/iron-autogrow-textarea#^2.0.0",
