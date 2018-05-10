@@ -25,7 +25,7 @@
   "dependencies": {
     "es6-object-assign": "^1.1.0",
     "fecha": "^2.3.3",
-    "home-assistant-js-websocket": "^1.1.2",
+    "home-assistant-js-websocket": "1.2.0",
     "mdn-polyfills": "^5.5.0",
     "preact": "^8.2.6",
     "unfetch": "^3.0.0"
