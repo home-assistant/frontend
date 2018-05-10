@@ -1,22 +1,22 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
 
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<script type="module" src="../../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-spinner/paper-spinner.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
 
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
 
-<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<script type="module" src="../../node_modules/@vaadin/vaadin-date-picker/vaadin-date-picker.js"></script>
 
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/resources/ha-style.html">
-<link rel="import" href="../../src/resources/ha-date-picker-style.html">
-<link rel='import' href='../../src/util/hass-mixins.html'>
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/resources/ha-style.js"></script>
+<script type="module" src="../../src/resources/ha-date-picker-style.js"></script>
+<script type="module" src="../../src/util/hass-mixins.js"></script>
 
-<link rel="import" href="./ha-logbook.html">
-<link rel="import" href="./ha-logbook-data.html">
+<script type="module" src="./ha-logbook.js"></script>
+<script type="module" src="./ha-logbook-data.js"></script>
 
 <dom-module id="ha-panel-logbook">
   <template>
@@ -86,11 +86,25 @@
   </template>
 </dom-module>
 
-<script>
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-spinner/paper-spinner.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+import '../../src/resources/ha-date-picker-style.js';
+import '../../src/util/hass-mixins.js';
+import './ha-logbook.js';
+import './ha-logbook-data.js';
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
-class HaPanelLogbook extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
   static get is() { return 'ha-panel-logbook'; }
 
   static get properties() {

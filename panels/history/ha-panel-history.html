@@ -1,21 +1,21 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-dropdown-menu/paper-dropdown-menu.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-listbox/paper-listbox.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-item/paper-item.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
 
-<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<script type="module" src="../../node_modules/@vaadin/vaadin-date-picker/vaadin-date-picker.js"></script>
 
-<link rel="import" href="../../src/components/state-history-charts.html">
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/data/ha-state-history-data.html">
-<link rel="import" href="../../src/resources/ha-style.html">
-<link rel="import" href="../../src/resources/ha-date-picker-style.html">
-<link rel='import' href='../../src/util/hass-mixins.html'>
+<script type="module" src="../../src/components/state-history-charts.js"></script>
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/data/ha-state-history-data.js"></script>
+<script type="module" src="../../src/resources/ha-style.js"></script>
+<script type="module" src="../../src/resources/ha-date-picker-style.js"></script>
+<script type="module" src="../../src/util/hass-mixins.js"></script>
 
 <dom-module id="ha-panel-history">
   <template>
@@ -91,11 +91,27 @@
   </template>
 </dom-module>
 
-<script>
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import '../../src/components/state-history-charts.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/data/ha-state-history-data.js';
+import '../../src/resources/ha-style.js';
+import '../../src/resources/ha-date-picker-style.js';
+import '../../src/util/hass-mixins.js';
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
-class HaPanelHistory extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
   static get is() { return 'ha-panel-history'; }
 
   static get properties() {

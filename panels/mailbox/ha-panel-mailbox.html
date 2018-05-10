@@ -1,20 +1,20 @@
-<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
 
-<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
-<link rel='import' href='../../bower_components/paper-dialog/paper-dialog.html'>
-<link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
-<link rel='import' href='../../bower_components/paper-item/paper-item.html'>
-<link rel='import' href='../../bower_components/paper-item/paper-item-body.html'>
-<link rel='import' href='../../bower_components/paper-card/paper-card.html'>
+<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-dialog/paper-dialog.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-item/paper-item.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-item/paper-item-body.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-card/paper-card.js"></script>
 
-<link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
-<link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
-<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
-<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-storage/app-localstorage/app-localstorage-document.js"></script>
 
-<link rel='import' href='../../src/components/ha-menu-button.html'>
-<link rel='import' href='../../src/resources/ha-style.html'>
-<link rel='import' href='../../src/util/hass-mixins.html'>
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/resources/ha-style.js"></script>
+<script type="module" src="../../src/util/hass-mixins.js"></script>
 
 
 <dom-module id='ha-panel-mailbox'>
@@ -149,11 +149,25 @@
   </template>
 </dom-module>
 
-<script>
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-dialog/paper-dialog.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+import '../../src/util/hass-mixins.js';
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
-class HaPanelMailbox extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
   static get is() { return 'ha-panel-mailbox'; }
 
   static get properties() {
@@ -272,5 +286,4 @@ class HaPanelMailbox extends window.hassMixins.LocalizeMixin(Polymer.Element) {
 }
 
 customElements.define(HaPanelMailbox.is, HaPanelMailbox);
-
 </script>

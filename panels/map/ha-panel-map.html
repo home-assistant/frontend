@@ -1,12 +1,12 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel='import' href='../../bower_components/iron-icon/iron-icon.html'>
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
+<script type="module" src="../../node_modules/@polymer/iron-icon/iron-icon.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
 
-<script src="../../bower_components/leaflet/dist/leaflet.js"></script>
+<script src="../../node_modules/leaflet/dist/leaflet.js"></script>
 
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel='import' href='../../src/util/hass-mixins.html'>
-<link rel="import" href="./ha-entity-marker.html">
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/util/hass-mixins.js"></script>
+<script type="module" src="./ha-entity-marker.js"></script>
 
 <dom-module id="ha-panel-map">
   <template>
@@ -27,13 +27,19 @@
   </template>
 </dom-module>
 
-<script>
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/util/hass-mixins.js';
+import './ha-entity-marker.js';
 window.L.Icon.Default.imagePath = '/static/images/leaflet';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
-class HaPanelMap extends window.hassMixins.LocalizeMixin(Polymer.Element) {
+class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
   static get is() { return 'ha-panel-map'; }
 
   static get properties() {

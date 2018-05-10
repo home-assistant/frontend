@@ -1,17 +1,17 @@
-<link rel='import' href='../../bower_components/polymer/polymer-element.html'>
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
 
-<link rel='import' href='../../bower_components/paper-button/paper-button.html'>
-<link rel='import' href='../../bower_components/paper-input/paper-textarea.html'>
+<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
 
-<link rel='import' href='../../bower_components/app-layout/app-header-layout/app-header-layout.html'>
-<link rel='import' href='../../bower_components/app-layout/app-header/app-header.html'>
-<link rel='import' href='../../bower_components/app-layout/app-toolbar/app-toolbar.html'>
-<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-storage/app-localstorage/app-localstorage-document.js"></script>
 
-<link rel='import' href='../../src/components/ha-menu-button.html'>
-<link rel='import' href='../../src/components/entity/ha-entity-picker.html'>
-<link rel='import' href='../../src/components/ha-service-picker.html'>
-<link rel='import' href='../../src/resources/ha-style.html'>
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/components/entity/ha-entity-picker.js"></script>
+<script type="module" src="../../src/components/ha-service-picker.js"></script>
+<script type="module" src="../../src/resources/ha-style.js"></script>
 
 <dom-module id='ha-panel-dev-service'>
   <template>
@@ -166,10 +166,21 @@
   </template>
 </dom-module>
 
-<script>
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/components/entity/ha-entity-picker.js';
+import '../../src/components/ha-service-picker.js';
+import '../../src/resources/ha-style.js';
 {
   const ERROR_SENTINEL = {};
-  class HaPanelDevService extends Polymer.Element {
+  class HaPanelDevService extends PolymerElement {
     static get is() { return 'ha-panel-dev-service'; }
 
     static get properties() {

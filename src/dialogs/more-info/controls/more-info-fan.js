@@ -1,0 +1,164 @@
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-toggle-button/paper-toggle-button.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '../../../util/hass-mixins.js';
+import '../../../components/ha-attributes.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
+  static get template() {
+    return html`
+    <style is="custom-style" include="iron-flex"></style>
+    <style>
+      .container-speed_list,
+      .container-direction,
+      .container-oscillating {
+        display: none;
+      }
+
+      .has-speed_list .container-speed_list,
+      .has-direction .container-direction,
+      .has-oscillating .container-oscillating {
+        display: block;
+      }
+
+      paper-dropdown-menu {
+        width: 100%;
+      }
+
+      paper-item {
+        cursor: pointer;
+      }
+    </style>
+
+    <div class\$="[[computeClassNames(stateObj)]]">
+
+      <div class="container-speed_list">
+        <paper-dropdown-menu label-float="" dynamic-align="" label="Speed">
+          <paper-listbox slot="dropdown-content" selected="{{speedIndex}}">
+            <template is="dom-repeat" items="[[stateObj.attributes.speed_list]]">
+              <paper-item>[[item]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+      </div>
+
+      <div class="container-oscillating">
+        <div class="center horizontal layout single-row">
+          <div class="flex">Oscillate</div>
+          <paper-toggle-button checked="[[oscillationToggleChecked]]" on-change="oscillationToggleChanged">
+          </paper-toggle-button>
+        </div>
+      </div>
+
+      <div class="container-direction">
+        <div class="direction">
+          <div>Direction</div>
+          <paper-icon-button icon="mdi:rotate-left" on-click="onDirectionLeft" title="Left" disabled="[[computeIsRotatingLeft(stateObj)]]"></paper-icon-button>
+          <paper-icon-button icon="mdi:rotate-right" on-click="onDirectionRight" title="Right" disabled="[[computeIsRotatingRight(stateObj)]]"></paper-icon-button>
+        </div>
+      </div>
+    </div>
+
+    <ha-attributes state-obj="[[stateObj]]" extra-filters="speed,speed_list,oscillating,direction"></ha-attributes>
+`;
+  }
+
+  static get is() { return 'more-info-fan'; }
+
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
+
+      stateObj: {
+        type: Object,
+        observer: 'stateObjChanged',
+      },
+
+      speedIndex: {
+        type: Number,
+        value: -1,
+        observer: 'speedChanged',
+      },
+
+      oscillationToggleChecked: {
+        type: Boolean,
+      },
+    };
+  }
+
+  stateObjChanged(newVal, oldVal) {
+    if (newVal) {
+      this.setProperties({
+        oscillationToggleChecked: newVal.attributes.oscillating,
+        speedIndex: newVal.attributes.speed_list ?
+          newVal.attributes.speed_list.indexOf(newVal.attributes.speed) : -1,
+      });
+    }
+
+    if (oldVal) {
+      setTimeout(() => {
+        this.fire('iron-resize');
+      }, 500);
+    }
+  }
+
+  computeClassNames(stateObj) {
+    return 'more-info-fan ' + window.hassUtil.attributeClassNames(stateObj, ['oscillating', 'speed_list', 'direction']);
+  }
+
+  speedChanged(speedIndex) {
+    var speedInput;
+    // Selected Option will transition to '' before transitioning to new value
+    if (speedIndex === '' || speedIndex === -1) return;
+
+    speedInput = this.stateObj.attributes.speed_list[speedIndex];
+    if (speedInput === this.stateObj.attributes.speed) return;
+
+    this.hass.callService('fan', 'turn_on', {
+      entity_id: this.stateObj.entity_id,
+      speed: speedInput,
+    });
+  }
+
+  oscillationToggleChanged(ev) {
+    var oldVal = this.stateObj.attributes.oscillating;
+    var newVal = ev.target.checked;
+
+    if (oldVal === newVal) return;
+
+    this.hass.callService('fan', 'oscillate', {
+      entity_id: this.stateObj.entity_id,
+      oscillating: newVal,
+    });
+  }
+
+  onDirectionLeft() {
+    this.hass.callService('fan', 'set_direction', {
+      entity_id: this.stateObj.entity_id,
+      direction: 'left'
+    });
+  }
+
+  onDirectionRight() {
+    this.hass.callService('fan', 'set_direction', {
+      entity_id: this.stateObj.entity_id,
+      direction: 'right'
+    });
+  }
+
+  computeIsRotatingLeft(stateObj) {
+    return stateObj.attributes.direction === 'left';
+  }
+
+  computeIsRotatingRight(stateObj) {
+    return stateObj.attributes.direction === 'right';
+  }
+}
+
+customElements.define(MoreInfoFan.is, MoreInfoFan);

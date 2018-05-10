@@ -1,0 +1,106 @@
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '../../../state-summary/state-card-content.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+class MoreInfoGroup extends PolymerElement {
+  static get template() {
+    return html`
+    <style>
+      .child-card {
+        margin-bottom: 8px;
+      }
+
+      .child-card:last-child {
+        margin-bottom: 0;
+      }
+    </style>
+
+    <div id="groupedControlDetails"></div>
+    <template is="dom-repeat" items="[[states]]" as="state">
+      <div class="child-card">
+        <state-card-content state-obj="[[state]]" hass="[[hass]]"></state-card-content>
+      </div>
+    </template>
+`;
+  }
+
+  static get is() { return 'more-info-group'; }
+
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+      },
+
+      stateObj: {
+        type: Object,
+      },
+
+      states: {
+        type: Array,
+        computed: 'computeStates(stateObj, hass)',
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'statesChanged(stateObj, states)',
+    ];
+  }
+
+  computeStates(stateObj, hass) {
+    var states = [];
+    var entIds = stateObj.attributes.entity_id;
+
+    for (var i = 0; i < entIds.length; i++) {
+      var state = hass.states[entIds[i]];
+
+      if (state) {
+        states.push(state);
+      }
+    }
+
+    return states;
+  }
+
+  statesChanged(stateObj, states) {
+    let groupDomainStateObj = false;
+
+    if (states && states.length > 0) {
+      const baseStateObj = states.find(s => s.state === 'on') || states[0];
+      const groupDomain = window.hassUtil.computeDomain(baseStateObj);
+
+      // Groups need to be filtered out or we'll show content of
+      // first child above the children of the current group
+      if (groupDomain !== 'group') {
+        groupDomainStateObj = Object.assign({}, baseStateObj, {
+          entity_id: stateObj.entity_id,
+          attributes: Object.assign({}, baseStateObj.attributes)
+        });
+
+        for (let i = 0; i < states.length; i++) {
+          if (groupDomain !== window.hassUtil.computeDomain(states[i])) {
+            groupDomainStateObj = false;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!groupDomainStateObj) {
+      const el = dom(this.$.groupedControlDetails);
+      if (el.lastChild) {
+        el.removeChild(el.lastChild);
+      }
+    } else {
+      window.hassUtil.dynamicContentUpdater(
+        this.$.groupedControlDetails,
+        'MORE-INFO-' + window.hassUtil.stateMoreInfoType(groupDomainStateObj).toUpperCase(),
+        { stateObj: groupDomainStateObj, hass: this.hass }
+      );
+    }
+  }
+}
+
+customElements.define(MoreInfoGroup.is, MoreInfoGroup);

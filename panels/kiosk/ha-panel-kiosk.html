@@ -1,6 +1,6 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
 
-<link rel='import' href='../../src/layouts/partial-cards.html'>
+<script type="module" src="../../src/layouts/partial-cards.js"></script>
 
 <dom-module id="ha-panel-kiosk">
   <template>
@@ -14,8 +14,10 @@
   </template>
 </dom-module>
 
-<script>
-class HaPanelKiosk extends Polymer.Element {
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '../../src/layouts/partial-cards.js';
+class HaPanelKiosk extends PolymerElement {
   static get is() { return 'ha-panel-kiosk'; }
 
   static get properties() {

@@ -1,19 +1,19 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
 
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<script type="module" src="../../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-dialog/paper-dialog.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-item/paper-item.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-item/paper-item-body.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-card/paper-card.js"></script>
 
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
 
-<link rel="import" href="../../src/components/buttons/ha-call-service-button.html">
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/resources/ha-style.html">
+<script type="module" src="../../src/components/buttons/ha-call-service-button.js"></script>
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/resources/ha-style.js"></script>
 
 <dom-module id="ha-panel-dev-info">
   <template>
@@ -216,8 +216,21 @@
   </template>
 </dom-module>
 
-<script>
-class HaPanelDevInfo extends Polymer.Element {
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-dialog/paper-dialog.js';
+import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '../../src/components/buttons/ha-call-service-button.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+class HaPanelDevInfo extends PolymerElement {
   static get is() { return 'ha-panel-dev-info'; }
 
   static get properties() {

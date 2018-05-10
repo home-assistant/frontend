@@ -1,20 +1,20 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
 
-<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<script type="module" src="../../node_modules/@polymer/iron-flex-layout/iron-flex-layout-classes.js"></script>
 
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
 
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
 
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/resources/ha-style.html">
-<link rel='import' href='../../src/util/hass-mixins.html'>
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/resources/ha-style.js"></script>
+<script type="module" src="../../src/util/hass-mixins.js"></script>
 
-<link rel="import" href="./events-list.html">
+<script type="module" src="./events-list.js"></script>
 
 <dom-module id="ha-panel-dev-event">
   <template>
@@ -71,8 +71,20 @@
   </template>
 </dom-module>
 
-<script>
-class HaPanelDevEvent extends window.hassMixins.EventsMixin(Polymer.Element) {
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+import '../../src/util/hass-mixins.js';
+import './events-list.js';
+class HaPanelDevEvent extends window.hassMixins.EventsMixin(PolymerElement) {
   static get is() { return 'ha-panel-dev-event'; }
 
   static get properties() {

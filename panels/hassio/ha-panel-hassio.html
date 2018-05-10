@@ -1,5 +1,5 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel='import' href='../../src/util/hass-mixins.html'>
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
+<script type="module" src="../../src/util/hass-mixins.js"></script>
 
 <dom-module id="ha-panel-hassio">
   <template>
@@ -18,9 +18,11 @@
   </template>
 </dom-module>
 
-<script>
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '../../src/util/hass-mixins.js';
 class HaPanelHassio extends
-  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(Polymer.Element)) {
+  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(PolymerElement)) {
   static get is() { return 'ha-panel-hassio'; }
 
   static get properties() {

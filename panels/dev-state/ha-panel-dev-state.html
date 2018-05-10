@@ -1,19 +1,19 @@
-<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
 
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
-<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
+<script type="module" src="../../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
 
-<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
+<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
 
-<link rel="import" href="../../src/components/ha-menu-button.html">
-<link rel="import" href="../../src/components/entity/ha-entity-picker.html">
-<link rel="import" href="../../src/resources/ha-style.html">
+<script type="module" src="../../src/components/ha-menu-button.js"></script>
+<script type="module" src="../../src/components/entity/ha-entity-picker.js"></script>
+<script type="module" src="../../src/resources/ha-style.js"></script>
 
-<link rel='import' href='../../src/util/hass-mixins.html'>
+<script type="module" src="../../src/util/hass-mixins.js"></script>
 
 <dom-module id="ha-panel-dev-state">
   <template>
@@ -137,8 +137,20 @@
   </template>
 </dom-module>
 
-<script>
-class HaPanelDevState extends window.hassMixins.EventsMixin(Polymer.Element) {
+<script type="module">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/paper-checkbox/paper-checkbox.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/components/entity/ha-entity-picker.js';
+import '../../src/resources/ha-style.js';
+import '../../src/util/hass-mixins.js';
+class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
   static get is() { return 'ha-panel-dev-state'; }
 
   static get properties() {
