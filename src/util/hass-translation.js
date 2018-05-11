@@ -1,4 +1,4 @@
-import translationMetadata from '../build-translations/translationMetadata.json';
+import translationMetadata from '../../build-translations/translationMetadata.json';
 
 window.getActiveTranslation = function () {
   // Perform case-insenstive comparison since browser isn't required to
