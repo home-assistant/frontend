@@ -10,6 +10,8 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     chunkFilename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'build/webpack')
+    path: path.resolve(__dirname, 'build/webpack'),
+    // Needs to be changed if running in prod.
+    publicPath: "/home-assistant-polymer/build/webpack/",
   }
 };
