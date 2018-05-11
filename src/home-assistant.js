@@ -16,6 +16,7 @@ import './resources/panel-imports.js';
 import './managers/notification-manager.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import translationMetadata from '../build-translations/translationMetadata.json';
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
 document.createElement = Document.prototype.createElement;
@@ -163,7 +164,7 @@ class HomeAssistant extends PolymerElement {
       // If resources are already loaded, don't discard them
       resources: (this.hass && this.hass.resources) || null,
 
-      translationMetadata: window.translationMetadata,
+      translationMetadata: translationMetadata,
       dockedSidebar: false,
       moreInfoEntityId: null,
       callService: (domain, service, serviceData) =>

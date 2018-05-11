@@ -1,9 +1,11 @@
+import translationMetadata from '../build-translations/translationMetadata.json';
+
 window.getActiveTranslation = function () {
   // Perform case-insenstive comparison since browser isn't required to
   // report languages with specific cases.
   const lookup = {};
   /* eslint-disable no-undef */
-  Object.keys(window.translationMetadata.translations).forEach((tr) => {
+  Object.keys(translationMetadata.translations).forEach((tr) => {
     lookup[tr.toLowerCase()] = tr;
   });
 
@@ -64,7 +66,7 @@ const translations = {};
 
 window.getTranslation = function (fragment, translationInput) {
   const translation = translationInput || getActiveTranslation();
-  const metadata = window.translationMetadata.translations[translation];
+  const metadata = translationMetadata.translations[translation];
   if (!metadata) {
     if (translationInput !== 'en') {
       return window.getTranslation(fragment, 'en');
