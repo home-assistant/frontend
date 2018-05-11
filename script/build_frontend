@@ -16,7 +16,8 @@ cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 # Build frontend
 BUILD_DEV=0 ./node_modules/.bin/gulp
-BUILD_DEV=0 ./node_modules/.bin/gulp authorize authorize-es5
+webpack
+# BUILD_DEV=0 ./node_modules/.bin/gulp authorize authorize-es5
 
 # Entry points
 cp build/*.js build/*.html $OUTPUT_DIR

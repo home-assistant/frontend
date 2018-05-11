@@ -104,10 +104,7 @@
     <!--<script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script>-->
     <!--EXTRA_SCRIPTS-->
     <script src='/home-assistant-polymer/build/core.js'></script>
-    <link rel='import' href='/home-assistant-polymer/src/home-assistant.html' onerror='initError()'>
-    {% if panel_url -%}
-      <link rel='import' href='{{ panel_url }}' async>
-    {% endif -%}
+    <script src='/home-assistant-polymer/build/webpack/index.bundle.js'></script>
     <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
     {% for extra_url in extra_urls -%}
       <link rel='import' href='{{ extra_url }}' async>
