@@ -1,6 +1,6 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../util/hass-mixins.js';
-import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
+// import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
 /*
  * @appliesMixin window.hassMixins.EventsMixin
  */

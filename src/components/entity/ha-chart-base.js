@@ -4,7 +4,7 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
+// import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
