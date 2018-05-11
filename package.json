@@ -73,11 +73,13 @@
     "fecha": "^2.3.3",
     "home-assistant-js-websocket": "^1.2.1",
     "leaflet": "^1.0.2",
+    "marked": "^0.3.19",
     "mdn-polyfills": "^5.5.0",
     "moment": "^2.20.0",
     "preact": "^8.2.6",
     "unfetch": "^3.0.0",
-    "web-animations-js": "^2.3.1"
+    "web-animations-js": "^2.3.1",
+    "xss": "^0.3.8"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

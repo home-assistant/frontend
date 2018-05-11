@@ -1,6 +1,8 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../util/hass-mixins.js';
-// import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
+
+let loaded = null;
+
 /*
  * @appliesMixin window.hassMixins.EventsMixin
  */
@@ -22,11 +24,13 @@ class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
     this._renderScheduled = false;
     this._resize = () => this.fire('iron-resize');
 
-    importHref(
-      '/static/markdown-js.html',
-      () => { this._scriptLoaded = 1; this._render(); },
-      () => { this._scriptLoaded = 2; this._render(); },
-    );
+    if (!loaded) {
+      loaded = import(/* webpackChunkName: "load_markdown" */ '../resources/load_markdown.js');
+    }
+    loaded.then(
+      () => { this._scriptLoaded = 1; },
+      () => { this._scriptLoaded = 2; },
+    ).then(() => this._render());
   }
 
   _render() {
