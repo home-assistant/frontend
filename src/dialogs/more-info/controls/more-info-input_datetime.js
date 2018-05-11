@@ -2,7 +2,7 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../../components/ha-relative-time.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
-import 'paper-time-input/paper-time-input.js';
+// import 'paper-time-input/paper-time-input.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class DatetimeInput extends PolymerElement {
