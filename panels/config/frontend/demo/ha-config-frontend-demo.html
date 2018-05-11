@@ -1,0 +1,71 @@
+<link rel="import" href="./ha-view-renderer.html">
+
+<dom-module id="ha-config-frontend-demo">
+  <template>
+    <style include="ha-style">
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Demo</div>
+        </app-toolbar>
+        <paper-tabs
+          selected="{{currentView}}"
+          attr-for-selected="data-name"
+        >
+          <template is="dom-repeat" items="[[views]]">
+            <template is="dom-if" if="[[!item.hidden]]">
+              <paper-tab data-name="[[item.name]]">
+                <template is="dom-if" if="[[item.icon]]">
+                  <iron-icon icon="[[item.icon]]"></iron-icon>
+                </template>
+                <template is="dom-if" if="[[!item.icon]]">
+                  [[item.name]]
+                </template>
+              </paper-tab>
+            </template>
+          </template>
+        </paper-tabs>
+      </app-header>
+
+      <iron-pages
+        selected="[[currentView]]"
+        attr-for-selected="data-name"
+      >
+        <template is="dom-repeat" items="[[views]]">
+          <template is="dom-if" if="[[!item.hidden]]">
+            <ha-view-renderer
+              data-name="[[item.name]]"
+              hass="[[hass]]"
+              badges="[[item.badges]]"
+              cards="[[item.cards]]"
+            ></ha-view-renderer>
+          </template>
+        </template>
+      </iron-pages>
+    </app-header-layout>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigFrontendDemo extends Polymer.Element {
+  static get is() { return 'ha-config-frontend-demo'; }
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+      views: {
+        type: Array,
+        value: 'test_views' in localStorage ? JSON.parse(localStorage.test_views) : []
+      },
+      currentView: {
+        type: String,
+        value: ''
+      }
+    };
+  }
+}
+customElements.define(HaConfigFrontendDemo.is, HaConfigFrontendDemo);
+</script>

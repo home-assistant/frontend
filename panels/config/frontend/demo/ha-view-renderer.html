@@ -1,0 +1,85 @@
+<link rel="import" href="./new/ha-badge.html">
+<link rel="import" href="./new/custom-badge.html">
+
+<link rel="import" href="./new/ha-group-card.html">
+<link rel="import" href="./new/ha-state-card.html">
+
+
+<dom-module id="ha-view-renderer">
+  <template>
+    <style>
+      #badges {
+        display: flex;
+        justify-content: center;
+        margin: 16px;
+      }
+      #cards {
+        column-count: 3;
+      }
+    </style>
+    <div id="badges"></div>
+    <div id="cards"></div>
+  </template>
+</dom-module>
+
+<script>
+class HaViewRenderer extends Polymer.Element {
+  static get is() { return 'ha-view-renderer'; }
+  static get properties() {
+    return {
+      hass: Object,
+      badges: {
+        type: Array,
+        observer: 'renderBadges'
+      },
+      cards: {
+        type: Array,
+        observer: 'renderCards'
+      }
+    };
+  }
+
+  renderBadges(badges) {
+    const badgeRoot = this.$.badges;
+    while (badgeRoot.lastChild) {
+      badgeRoot.removeChild(badgeRoot.lastChild);
+    }
+
+    for(let i = 0; i < badges.length; i++) {
+      const elementTag = badges[i].config && badges[i].config.card || 'ha-badge';
+      const element = document.createElement(elementTag);
+      element.cardConfig = badges[i];
+      element.hass = this.hass;
+      badgeRoot.appendChild(element);
+    }
+  }
+
+  renderCards(cards) {
+    const cardRoot = this.$.cards;
+    while (cardRoot.lastChild) {
+      cardRoot.removeChild(cardRoot.lastChild);
+    }
+
+    for(let i = 0; i < cards.length; i++) {
+      const elementTag = cards[i].config && cards[i].config.card ||
+        cards[i].type === 'group' ? 'ha-group-card' : 'ha-state-card';
+      const element = document.createElement(elementTag);
+      element.cardConfig = cards[i];
+      element.hass = this.hass;
+      cardRoot.appendChild(element);
+    }
+  }
+
+  hassChanged(hass) {
+    const badgeRoot = this.$.badges;
+    for(let i = 0; i < badgeRoot.children.length; i++) {
+      badgeRoot.children[i].hass = hass;
+    }
+    const cardRoot = this.$.cards;
+    for(let i = 0; i < cardRoot.children.length; i++) {
+      cardRoot.children[i].hass = hass;
+    }
+  }
+}
+customElements.define(HaViewRenderer.is, HaViewRenderer);
+</script>

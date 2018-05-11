@@ -1,0 +1,51 @@
+<script>
+class HaStateCard extends Polymer.Element {
+  static get is() { return 'ha-state-card'; }
+
+  static get properties() {
+    return {
+      hass: Object,
+      cardConfig: Object,
+      stateObj: {
+        type: Object,
+        computed: 'computeStateObj(hass, cardConfig)',
+        observer: 'stateChanged',
+      },
+      inDialog: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  computeStateObj(hass, cardConfig) {
+    return hass && hass.states && cardConfig && cardConfig.entity_id && hass.states[cardConfig.entity_id];
+  }
+
+  static get observers() {
+    return [
+      'inputChanged(hass, inDialog, stateObj)',
+    ];
+  }
+
+  inputChanged(hass, inDialog, stateObj) {
+    let stateCardType;
+    if (!stateObj || !hass) return;
+    if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
+      stateCardType = stateObj.attributes.custom_ui_state_card;
+    } else {
+      stateCardType = 'state-card-' + window.hassUtil.stateCardType(hass, stateObj);
+    }
+    window.hassUtil.dynamicContentUpdater(
+      this,
+      stateCardType.toUpperCase(),
+      {
+        hass: hass,
+        stateObj: stateObj,
+        inDialog: inDialog,
+      }
+    );
+  }
+}
+customElements.define(HaStateCard.is, HaStateCard);
+</script>

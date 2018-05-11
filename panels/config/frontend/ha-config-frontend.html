@@ -1,0 +1,651 @@
+<dom-module id="ha-config-frontend">
+  <template>
+    <style include="ha-style">
+      paper-card {
+        margin: 4px;
+      }
+      paper-card .card-actions paper-button {
+        font-weight: 500;
+        color: var(--primary-color);
+      }
+      paper-card .card-actions paper-button.delete {
+        color: var(--google-red-500);
+      }
+      paper-card paper-item {
+        --paper-item-focused: {
+          background-color: var(--primary-color);
+          color: white;
+        };
+        --paper-item-body-two-line-min-height: 56px;
+      }
+      iron-icon.icon {
+        color: var(--paper-item-icon-color);
+        margin-right: 8px;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      paper-card.views .card-content {
+        display: flex;
+        overflow-x: auto;
+      }
+      paper-card.views .card-content paper-item {
+        flex: 0 0 auto;
+      }
+      paper-card.views .card-content paper-item.hidden-view {
+        text-decoration: line-through;
+      }
+      paper-card.views .card-content paper-item.default-view iron-icon {
+        color: var(--google-yellow-500);
+      }
+
+      .view-entities {
+        flex: 1;
+        display: flex;
+      }
+      .view-entities paper-card {
+        display: flex;
+        flex-direction: column;
+      }
+      .view-entities paper-card .card-content {
+        flex: 1;
+      }
+      .view-entities paper-card .card-actions {
+        height: 42px;
+      }
+      paper-card.selected-view {
+        flex: 1;
+      }
+      paper-card.selected-view .card-content {
+        display: flex;
+        flex-direction: column;
+      }
+      .options {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+      }
+      .options paper-input {
+        margin-right: 16px;
+        flex: 1;
+        max-width: 300px;
+      }
+
+      .box {
+        border: 1px solid #e8e8e8;
+        margin-bottom: 4px;
+      }
+      .box h2 {
+        margin: 8px;
+      }
+      .box .badges {
+        min-height: 56px;
+        display: flex;
+        overflow-x: auto;
+      }
+      .box .badges paper-item {
+        flex: 0 0 auto;
+      }
+      .box.box-cards {
+        flex: 1;
+      }
+      .box .cards {
+        display: flex;
+        flex-flow: column wrap;
+        align-content: flex-start;
+        overflow-x: auto;
+        height: calc(100% - 36px);
+      }
+      .box .cards paper-item {
+        width: 250px;
+      }
+      .box .cards paper-item-body.group {
+        color: red;
+        width: 20px
+      }
+
+      paper-card.entities .card-content {
+        padding: 0;
+        overflow-y: scroll;
+      }
+    </style>
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>Use these buttons --></div>
+          <paper-icon-button title="Import from HA config" icon="mdi:download" on-click="importFromHaConfig"></paper-icon-button>
+          <paper-icon-button title="Save to localStorage" icon="mdi:content-save" on-click="saveAllViews"></paper-icon-button>
+        </app-toolbar>
+      </app-header>
+
+      <div class="content">
+        <paper-card class="views">
+          <div class="card-content">
+            <template is="dom-repeat" items="[[views]]">
+              <paper-item class$="[[computeViewClass(index, item.hidden, defaultViewIndex)]]" raised on-click="selectView" draggable="true" on-dragstart="dragViewFromViews" on-drop="dropInView" on-dragover="canDropInView">
+                <template is="dom-if" if="[[item.icon]]">
+                  <iron-icon class="icon" icon="[[item.icon]]"></iron-icon>
+                </template>
+                [[item.name]]
+              </paper-item>
+            </template>
+          </div>
+          <div class="card-actions">
+            <paper-button on-click="addNewView">Add new view</paper-button>
+          </div>
+        </paper-card>
+
+        <div class="view-entities">
+          <paper-card class="selected-view">
+            <div class="card-content">
+              <template is="dom-if" if="[[selectedView]]">
+                <div class="options">
+                  <paper-input label="Name" value="{{selectedView.name}}"></paper-input>
+                  <paper-input label="Icon" value="{{selectedView.icon}}"></paper-input>
+                  <paper-checkbox checked="{{selectedView.hidden}}">Hide view</paper-checkbox>
+                  <template is="dom-if" if="[[!equals(selectedViewIndex, defaultViewIndex)]]">
+                    <paper-button on-click="setDefaultView" raised>Set as default view</paper-button>
+                  </template>
+                </div>
+
+                <div class="box" on-dragover="canDropInBadges" on-drop="dropInBadges">
+                  <h2>Badges</h2>
+                  <div class="badges">
+                    <template is="dom-repeat" items="[[selectedView.badges]]">
+                      <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromBadges">
+                        <iron-icon class="icon" icon="[[getCardItemIcon(item)]]"></iron-icon>
+                        <paper-item-body two-line>
+                          <div>[[getCartItemName(item)]]</div>
+                          <div secondary>[[item.entity_id]]</div>
+                        </paper-item-body>
+                      </paper-item>
+                    </template>
+                  </div>
+                </div>
+
+                <div class="box box-cards" on-dragover="canDropInCards" on-drop="dropInCards">
+                  <h2>Cards</h2>
+                  <div class="cards">
+                    <template is="dom-repeat" items="[[selectedView.cards]]">
+                      <template is="dom-if" if="[[equals(item.type, 'group')]]">
+                        <paper-item draggable="true" on-dragstart="dragGroupFromCards" on-dragover="canDropInGroup" on-drop="dropInGroup">
+                          [[item.name]]
+                          <paper-item-body class="group" two-line>
+                            <div>[[item.name]]</div>
+                            <div secondary>Group</div>
+                          </paper-item-body>
+                          <div>
+                            <template is="dom-repeat" items="[[item.entities]]">
+                              <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromGroup">
+                                <iron-icon class="icon" icon="[[getCardItemIcon(item)]]"></iron-icon>
+                                <paper-item-body two-line>
+                                  <div>[[getCartItemName(item)]]</div>
+                                  <div secondary>[[item.entity_id]]</div>
+                                </paper-item-body>
+                              </paper-item>
+                            </template>
+                          </div>
+                        </paper-item>
+                      </template>
+                      <template is="dom-if" if="[[equals(item.type, 'entity')]]">
+                        <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromCards">
+                          <iron-icon class="icon" icon="[[getCardItemIcon(item)]]"></iron-icon>
+                          <paper-item-body two-line>
+                            <div>[[getCartItemName(item)]]</div>
+                            <div secondary>[[item.entity_id]]</div>
+                          </paper-item-body>
+                        </paper-item>
+                      </template>
+                      <template is="dom-if" if="[[equals(item.type, 'divider')]]">
+                        <paper-item>
+                          ~~~
+                          <iron-icon icon="mdi:numeric-[[item.column_count]]-box"></iron-icon>
+                          ~~~
+                        </paper-item>
+                      </template>
+                    </template>
+                  </div>
+                </div>
+              </template>
+            </div>
+            <div class="card-actions">
+              <template is="dom-if" if="[[selectedView]]">
+                <paper-button class="delete" on-click="deleteSelectedView">Delete view</paper-button>
+                <paper-button on-click="addNewGroup">Add new group</paper-button>
+              </template>
+            </div>
+          </paper-card>
+
+          <paper-card class="entities" heading="Entities">
+            <div class="card-content">
+              <template is="dom-repeat" items="[[entities]]">
+                <paper-item on-click="fireMoreInfo" draggable="true" on-dragstart="dragEntityFromEntities">
+                  <iron-icon class="icon" icon="[[item.icon]]"></iron-icon>
+                  <paper-item-body two-line>
+                    <div>[[item.friendly_name]]</div>
+                    <div secondary>[[item.entity_id]]</div>
+                  </paper-item-body>
+                </paper-item>
+              </template>
+            </div>
+            <div class="card-actions">
+              <paper-input no-label-float value="{{entitiesFilter}}">
+                <div slot="prefix">Filter:</div>
+              </paper-input>
+            </div>
+          </paper-card>
+        </div>
+      </div>
+    </app-header-layout>
+
+
+    <textarea id="cfg" style="width: 90%; height: 600px;">[[_getConfig()]]</textarea>
+    <button on-click="_setViews">set</button>
+  </template>
+</dom-module>
+
+<script>
+class HaConfigFrontend extends window.hassMixins.EventsMixin(Polymer.Element) {
+  static get is() { return 'ha-config-frontend'; }
+  static get properties() {
+    return {
+      hass: Object,
+      narrow: Boolean,
+      showMenu: Boolean,
+
+      views: {
+        type: Array,
+        value: 'test_views' in localStorage ? JSON.parse(localStorage.test_views) : []
+      },
+      defaultViewIndex: {
+        type: Number,
+        value: 'test_defaultViewIndex' in localStorage ? Number(localStorage.test_defaultViewIndex) : null
+      },
+
+      selectedView: Object,
+      selectedViewIndex: Number,
+      entities: {
+        type: Array,
+        computed: 'computeEntities(hass.states, entitiesFilter)'
+      },
+      entitiesFilter: {
+        type: String,
+        value: ''
+      }
+    };
+  }
+
+  constructor() {
+    super();
+    this.domainsNotInStates = ['zone'];
+    this.domainsWithBadge = ['updater', 'sun', 'device_tracker', 'alarm_control_panel', 'timer', 'sensor', 'binary_sensor', 'mailbox'];
+    this.domainsWithCard = ['camera', 'history_graph', 'media_player', 'persistent_notification', 'plant', 'weather'];
+  }
+
+  computeEntities(states, entitiesFilter) {
+    const excludedDomains = ['group', 'zone'];
+    return Object.keys(states).filter(id => {
+        if (excludedDomains.includes(this.getDomain(id))) {
+          return false;
+        } else if (!entitiesFilter) {
+          return true;
+        } else {
+          return id.indexOf(entitiesFilter) >= 0 || this.getNameByEntityId(id).indexOf(entitiesFilter) >= 0;
+        }
+      }).map(id => {
+        return {
+          friendly_name: states[id] && states[id].attributes && states[id].attributes.friendly_name || id,
+          entity_id: id,
+          icon: window.hassUtil.stateIcon(states[id])
+        }
+      });
+  }
+
+  equals(a, b) {
+    return a === b;
+  }
+
+  computeViewClass(index, hidden, defaultViewIndex) {
+    if (index === defaultViewIndex) {
+      return `default-view${hidden ? ' hidden-view' : ''}`;
+    }
+    return hidden ? 'hidden-view' : '';
+  }
+
+  addNewView() {
+    this.push('views', {
+      name: 'New view',
+      icon: 'mdi:new-box',
+      hidden: false,
+      badges: [],
+      cards: []
+    });
+  }
+
+  importFromHaConfig() {
+    const states = this.hass.states;
+    const addedEntities = new Set();
+    let defaultView = null;
+    let i = 0;
+
+    const mapEntity = (id) => {
+      addedEntities.add(id);
+      const domain = this.getDomain(id);
+      if (domain === 'group') {
+        return {
+          type: 'group',
+          name: this.getNameByEntityId(id),
+          hidden: false,
+          entities: [],
+          config: {}
+        }
+      }
+      return {
+        type: 'entity',
+        entity_id: id,
+        hidden: false,
+        config: {}
+      };
+    };
+    const getCards = (arr) => {
+      return arr.filter(id => !this.domainsWithBadge.includes(this.getDomain(id)))
+        .map(id => {
+          const data = mapEntity(id);
+          if (this.getDomain(id) === 'group') {
+            data.entities = states[id].attributes.entity_id
+              .filter(id => this.getDomain(id) !== 'group')
+              .map(id => mapEntity(id));
+          }
+          return data;
+        });
+    }
+    const getBadges = (arr) => {
+      return arr.filter(id => this.domainsWithBadge.includes(this.getDomain(id)))
+        .map(id => mapEntity(id));
+    }
+
+    const views = Object.keys(states)
+      .filter(id => this.getDomain(id) === 'group' && states[id].attributes.view)
+      .map(id => {
+        if (id === 'group.default_view') {
+          defaultView = i;
+        } else {
+          i++;
+        }
+        addedEntities.add(id);
+        const badges = getBadges(states[id].attributes.entity_id);
+        const cards = getCards(states[id].attributes.entity_id);
+        return {
+          name: states[id].attributes.friendly_name || id,
+          icon: this.getIconByEntityId(id),
+          hidden: false,
+          badges,
+          cards
+        };
+      });
+
+    if (defaultView) {
+      views.splice(0, 0, views.splice(defaultView, 1)[0]);
+    } else if (defaultView === null) {
+      views.splice(0, 0, {
+        name: 'Default',
+        icon: 'mdi:home',
+        hidden: false,
+        badges: [],
+        cards: []
+      });
+    }
+
+    const viewlessEntities = Object.keys(states).filter(id => !addedEntities.has(id) && !this.domainsNotInStates.includes(id));
+    const badges = getBadges(viewlessEntities);
+    const cards = getCards(viewlessEntities);
+    for (let j = 0; j < badges.length; j++) {
+      views[0].badges.push(badges[j]);
+    }
+    for (let j = 0; j < cards.length; j++) {
+      views[0].cards.push(cards[j]);
+    }
+
+    this.setProperties({
+      views,
+      defaultViewIndex: 0,
+      selectedView: null,
+      selectedViewIndex: null
+    });
+  }
+
+  saveAllViews() {
+    localStorage.test_views = JSON.stringify(this.views);
+    localStorage.test_defaultViewIndex = this.defaultViewIndex;
+  }
+
+  selectView(ev) {
+    const i = ev.model.index;
+    if (i !== this.selectedViewIndex) {
+      this.unlinkPaths('selectedView');
+      this.setProperties({
+        selectedView: this.views[i],
+        selectedViewIndex: i
+      });
+      this.linkPaths('selectedView', `views.${i}`);
+    }
+  }
+
+  setDefaultView() {
+    this.defaultViewIndex = this.selectedViewIndex;
+  }
+
+  deleteSelectedView() {
+    this.splice('views', this.selectedViewIndex, 1);
+    this.setProperties({
+      selectedViewIndex: null,
+      selectedView: null
+    });
+  }
+
+  addNewGroup() {
+    this.push('selectedView.cards', {
+      type: 'group',
+      name: 'New group',
+      hidden: false,
+      entities: [],
+      config: {}
+    });
+  }
+
+  getNameByEntityId(id) {
+    return this.hass.states[id] && this.hass.states[id].attributes && this.hass.states[id].attributes.friendly_name || id;
+  }
+
+  getIconByEntityId(id) {
+    return window.hassUtil.stateIcon(this.hass.states[id]);
+  }
+
+  getCartItemName(item) {
+    return item.config && item.config.name || this.getNameByEntityId(item.entity_id);
+  }
+
+  getCardItemIcon(item) {
+    return item.config && item.config.icon || this.getIconByEntityId(item.entity_id);
+  }
+
+  getDomain(id) {
+    return id.split('.')[0];
+  }
+
+  fireMoreInfo(ev) {
+    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
+  }
+
+
+
+  dragViewFromViews(ev) {
+    this.dndData = {
+      type: 'view',
+      index: ev.model.index
+    }
+  }
+
+  dragEntityFromEntities(ev) {
+    this.dndData = {
+      type: 'entity',
+      src: 'entities',
+      index: ev.model.index
+    }
+  }
+
+  dragEntityFromBadges(ev) {
+    this.dndData = {
+      type: 'entity',
+      src: 'badges',
+      index: ev.model.index
+    }
+  }
+
+  dragEntityFromCards(ev) {
+    this.dndData = {
+      type: 'entity',
+      src: 'cards',
+      index: ev.model.index
+    }
+  }
+
+  dragEntityFromGroup(ev) {
+    this.dndData = {
+      type: 'entity',
+      src: 'group',
+      index: ev.model.index
+    }
+  }
+
+  dragGroupFromCards(ev) {
+    this.dndData = {
+      type: 'group',
+      src: 'cards',
+      index: ev.model.index
+    }
+  }
+
+  dragFromBadges(ev) {
+    this.dndData = {
+      type: 'entity',
+      src: 'badges',
+      index: ev.model.index
+    }
+  }
+
+  dragFromCards(ev) {
+    this.dndData = {
+      type: 'entity',
+      src: 'cards',
+      index: ev.model.index
+    }
+  }
+
+  canDropInView(ev) {
+    if (this.dndData.type === 'view') {
+      ev.preventDefault();
+    }
+  }
+
+  canDropInBadges(ev) {
+    if (this.dndData.type === 'entity') {
+      ev.preventDefault();
+    }
+  }
+
+  canDropInCards(ev) {
+    const type = this.dndData.type;
+    if (type === 'entity' || type === 'group') {
+      ev.preventDefault();
+    }
+  }
+
+  canDropInGroup(ev) {
+    if (this.dndData.type === 'entity') {
+      ev.preventDefault();
+    }
+  }
+
+  dropInView(ev) {
+    const dnd = this.dndData;
+    if (dnd.type === 'view') {
+      const toIndex = ev.model.index;
+      const fromIndex = dnd.index;
+      this.splice('views', toIndex, 0, this.views.splice(fromIndex, 1)[0]);
+
+      const selIndex = this.selectedViewIndex;
+      if (fromIndex === selIndex) {
+        this.selectedViewIndex = toIndex;
+      } else if (fromIndex < selIndex && toIndex >= selIndex) {
+        this.selectedViewIndex--;
+      } else if (fromIndex > selIndex && toIndex <= selIndex) {
+        this.selectedViewIndex++;
+      }
+
+      const defIndex = this.defaultViewIndex;
+      if (fromIndex === defIndex) {
+        this.defaultViewIndex = toIndex;
+      } else if (fromIndex < defIndex && toIndex >= defIndex) {
+        this.defaultViewIndex--;
+      } else if (fromIndex > defIndex && toIndex <= defIndex) {
+        this.defaultViewIndex++;
+      }
+    }
+  }
+
+  dropInBadges(ev) {
+    const dnd = this.dndData;
+    if (dnd.src === 'entities') {
+      this.push('selectedView.badges', {
+        type: 'entity',
+        entity_id: this.entities[dnd.index].entity_id,
+        hidden: false,
+        config: {}
+      });
+    } else if (dnd.src === 'cards') {
+      this.push('selectedView.badges', this.selectedView.cards[dnd.index]);
+      this.splice('selectedView.cards', dnd.index, 1);
+    }
+  }
+
+  dropInCards(ev) {
+    const dnd = this.dndData;
+    if (dnd.src === 'entities') {
+      this.push('selectedView.cards', {
+        type: 'entity',
+        entity_id: this.entities[dnd.index].entity_id,
+        hidden: false,
+        config: {}
+      });
+    } else if (dnd.src === 'badges') {
+      this.push('selectedView.cards', this.selectedView.badges[dnd.index]);
+      this.splice('selectedView.badges', dnd.index, 1);
+    }
+  }
+
+
+  _getConfig() { // todo
+    return JSON.stringify(this.views, null, 2);
+    //
+    return JSON.stringify({
+      default_view_index: this.defaultViewIndex,
+      views: this.views
+    }, null, 2);
+  }
+  _setViews() {
+    this.views = JSON.parse(this.$.cfg.value);
+    localStorage.test_views = this.$.cfg.value;
+  }
+
+  test(ev) {
+    console.log(ev.target.parentNode);
+  }
+
+}
+customElements.define(HaConfigFrontend.is, HaConfigFrontend);
+</script>
