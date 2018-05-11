@@ -8,30 +8,42 @@
       :host {
         display: block;
         padding-bottom: 16px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
       }
 
       .title {
-        margin-bottom: 16px;
+        font-size: 90%;
         opacity: var(--dark-primary-opacity);
+        line-height: 1.2em;
+        padding-top: 0.3em;
+
       }
 
-      iron-icon {
-        float: left;
-        margin-top: 4px;
+      .icon-container {
+        flex: 1 1 50px;
+        text-align: center;
         opacity: var(--dark-secondary-opacity);
+        width: 60px;
+        margin-top: 5px;
       }
 
       .slider-container {
-        margin-left: 24px;
+        flex: 1 1 200px;
       }
-
       ha-paper-slider {
+        width: 100%;
         background-image: var(--ha-slider-background);
+        border-radius: 8px;
       }
-    </style>
 
-    <div class='title'>[[caption]]</div>
-    <iron-icon icon='[[icon]]'></iron-icon>
+    </style>
+    <div class='icon-container'>
+      <iron-icon icon='[[icon]]'></iron-icon>
+      <div class='title'>[[caption]]</div>
+    </div>
     <div class='slider-container'>
       <ha-paper-slider min='[[min]]' max='[[max]]' value='{{value}}' ignore-bar-touch='[[ignoreBarTouch]]'>
       </ha-paper-slider>
