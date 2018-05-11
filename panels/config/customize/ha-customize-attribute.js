@@ -8,6 +8,7 @@ import './types/ha-customize-icon.js';
 import './types/ha-customize-key-value.js';
 import './types/ha-customize-string.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaCustomizeAttribute extends PolymerElement {
   static get template() {
     return html`

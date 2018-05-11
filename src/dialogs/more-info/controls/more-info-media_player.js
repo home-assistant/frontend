@@ -9,6 +9,7 @@ import '../../../components/ha-paper-slider.js';
 import '../../../util/hass-mixins.js';
 import '../../../util/hass-media-player-model.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 {
   class MoreInfoMediaPlayer extends window.hassMixins.EventsMixin(PolymerElement) {
     static get template() {

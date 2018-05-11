@@ -4,6 +4,7 @@ import '@polymer/iron-autogrow-textarea/iron-autogrow-textarea.js';
 import '@polymer/paper-button/paper-button.js';
 import '../../src/components/buttons/ha-call-api-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioAddonConfig extends PolymerElement {
   static get template() {
     return html`

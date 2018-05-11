@@ -7,6 +7,7 @@ import '../components/entity/state-info.js';
 import '../util/hass-util.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+
 class StateCardInputNumber extends mixinBehaviors([
   IronResizableBehavior
 ], PolymerElement) {

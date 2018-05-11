@@ -2,6 +2,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import './hassio-addons.js';
 import './hassio-hass-update.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioDashboard extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

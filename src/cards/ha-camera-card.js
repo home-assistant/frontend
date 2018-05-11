@@ -2,6 +2,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-material/paper-material.js';
 import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 {
   const UPDATE_INTERVAL = 10000; // ms
   /*

@@ -4,6 +4,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-input.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaComboBox extends PolymerElement {
   static get template() {
     return html`

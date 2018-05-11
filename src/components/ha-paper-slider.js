@@ -1,6 +1,7 @@
 import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/paper-slider/paper-slider.js';
 import { DomModule } from '@polymer/polymer/lib/elements/dom-module.js';
+
 const $_documentContainer = document.createElement('template');
 $_documentContainer.setAttribute('style', 'display: none;');
 

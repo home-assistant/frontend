@@ -3,6 +3,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '../../src/components/domain-icon.js';
 import '../../src/util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaLogbook extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

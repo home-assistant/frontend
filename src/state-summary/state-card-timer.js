@@ -4,6 +4,7 @@ import '../components/entity/state-info.js';
 import '../util/hass-mixins.js';
 import '../util/hass-util.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

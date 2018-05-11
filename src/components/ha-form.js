@@ -7,6 +7,7 @@ import '@polymer/paper-item/paper-item.js';
 import '../util/hass-mixins.js';
 import './ha-paper-slider.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaForm extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

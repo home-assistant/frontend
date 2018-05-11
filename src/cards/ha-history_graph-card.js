@@ -4,6 +4,7 @@ import '../components/state-history-charts.js';
 import '../data/ha-state-history-data.js';
 import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

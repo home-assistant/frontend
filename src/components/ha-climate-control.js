@@ -3,6 +3,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaClimateControl extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

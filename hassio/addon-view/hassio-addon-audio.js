@@ -8,6 +8,7 @@ import '@polymer/neon-animation/web-animations.js';
 import '../../src/resources/ha-style.js';
 import '../../src/util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioAddonAudio extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

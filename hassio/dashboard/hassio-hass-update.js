@@ -5,6 +5,7 @@ import '../../src/components/buttons/ha-call-api-button.js';
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioHassUpdate extends PolymerElement {
   static get template() {
     return html`

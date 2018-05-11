@@ -2,6 +2,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { MutableData } from '@polymer/polymer/lib/mixins/mutable-data.js';
 import './ha-customize-attribute.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaFormCustomizeAttributes extends MutableData(PolymerElement) {
   static get template() {
     return html`

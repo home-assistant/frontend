@@ -7,6 +7,7 @@ import '../cards/ha-card-chooser.js';
 import '../util/hass-util.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+
 {
   // mapping domain to size of the card.
   const DOMAINS_WITH_CARD = {

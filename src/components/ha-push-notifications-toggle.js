@@ -2,6 +2,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

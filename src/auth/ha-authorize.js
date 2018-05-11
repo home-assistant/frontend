@@ -5,6 +5,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import './ha-pick-auth-provider.js';
 import './ha-auth-flow.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaAuthorize extends PolymerElement {
   static get template() {
     return html`

@@ -13,6 +13,7 @@ import './hassio-addon-network.js';
 import './hassio-addon-logs.js';
 import '../hassio-markdown-dialog.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioAddonView extends PolymerElement {
   static get template() {
     return html`

@@ -6,6 +6,7 @@ import '../../../src/util/hass-util.js';
 import '../../../src/util/hass-attributes-util.js';
 import './ha-form-customize-attributes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaFormCustomize extends PolymerElement {
   static get template() {
     return html`

@@ -6,6 +6,7 @@ import '../../../src/util/hass-mixins.js';
 import '../../../src/resources/ha-style.js';
 import '../../../src/components/buttons/ha-progress-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaConfigCloudForgotPassword extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

@@ -3,6 +3,7 @@ import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '../../src/util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaEntityMarker extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

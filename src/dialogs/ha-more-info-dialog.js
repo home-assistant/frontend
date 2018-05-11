@@ -6,6 +6,7 @@ import '../resources/ha-style.js';
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   static get template() {
     return html`

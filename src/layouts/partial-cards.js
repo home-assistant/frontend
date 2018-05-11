@@ -14,6 +14,7 @@ import '../components/ha-start-voice-button.js';
 import '../components/ha-cards.js';
 import './ha-app-layout.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 {
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
   const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];

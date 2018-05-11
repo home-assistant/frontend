@@ -6,6 +6,7 @@ import './ha-media_player-card.js';
 import './ha-weather-card.js';
 import './ha-persistent_notification-card.js';
 import './ha-plant-card.js';
+
 class HaCardChooser extends PolymerElement {
   static get is() { return 'ha-card-chooser'; }
   static get properties() {

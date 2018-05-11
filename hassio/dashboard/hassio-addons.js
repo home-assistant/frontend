@@ -4,6 +4,7 @@ import '../../src/util/hass-mixins.js';
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioAddons extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {
     return html`

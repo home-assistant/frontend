@@ -10,6 +10,7 @@ import '../../../components/ha-climate-control.js';
 import '../../../components/ha-paper-slider.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+
 class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

@@ -6,6 +6,7 @@ import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import '../src/components/ha-markdown.js';
 import '../src/resources/ha-style.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioMarkdownDialog extends PolymerElement {
   static get template() {
     return html`

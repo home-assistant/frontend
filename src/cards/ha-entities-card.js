@@ -5,6 +5,7 @@ import '../components/entity/ha-entity-toggle.js';
 import '../state-summary/state-card-content.js';
 import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaEntitiesCard extends
   window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
   static get template() {

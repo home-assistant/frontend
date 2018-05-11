@@ -7,6 +7,7 @@ import '../../../src/resources/ha-style.js';
 import '../../../src/components/buttons/ha-progress-button.js';
 import '../ha-config-section.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaConfigCloudRegister extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

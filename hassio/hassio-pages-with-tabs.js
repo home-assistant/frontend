@@ -15,6 +15,7 @@ import './addon-store/hassio-addon-store.js';
 import './system/hassio-system.js';
 import './hassio-markdown-dialog.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {
     return html`

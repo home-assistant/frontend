@@ -4,6 +4,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
 import '../../../../src/util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaCustomizeArray extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

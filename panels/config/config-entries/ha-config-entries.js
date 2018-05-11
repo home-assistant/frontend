@@ -9,6 +9,7 @@ import '../../../src/layouts/hass-subpage.js';
 import '../ha-config-section.js';
 import './ha-config-flow.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 {
   /*
    * @appliesMixin window.hassMixins.LocalizeMixin

@@ -2,6 +2,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-icon/iron-icon.js';
 import './ha-paper-slider.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaLabeledSlider extends PolymerElement {
   static get template() {
     return html`

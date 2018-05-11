@@ -1,5 +1,6 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+
 class HaRelativeTime extends PolymerElement {
   static get is() { return 'ha-relative-time'; }
 

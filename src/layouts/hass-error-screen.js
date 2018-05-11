@@ -3,6 +3,7 @@ import '@polymer/paper-button/paper-button.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassErrorScreen extends PolymerElement {
   static get template() {
     return html`

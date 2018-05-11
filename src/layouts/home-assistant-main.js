@@ -13,6 +13,7 @@ import '../components/ha-sidebar.js';
 import '../util/hass-mixins.js';
 import '../util/hass-util.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 {
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
 

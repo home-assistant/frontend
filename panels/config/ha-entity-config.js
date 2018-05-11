@@ -6,6 +6,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaEntityConfig extends PolymerElement {
   static get template() {
     return html`

@@ -1,6 +1,7 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-material/paper-material.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaCard extends PolymerElement {
   static get template() {
     return html`

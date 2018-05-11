@@ -1,4 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 {
   const STORED_STATE = [
     'dockedSidebar',

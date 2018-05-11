@@ -3,6 +3,7 @@ import '@polymer/iron-icon/iron-icon.js';
 import '../components/ha-card.js';
 import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

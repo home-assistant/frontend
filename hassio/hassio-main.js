@@ -6,6 +6,7 @@ import './hassio-data.js';
 import './hassio-pages-with-tabs.js';
 import './addon-view/hassio-addon-view.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

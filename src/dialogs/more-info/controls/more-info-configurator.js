@@ -6,6 +6,7 @@ import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-input/paper-input.js';
 import '../../../components/ha-markdown.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class MoreInfoConfigurator extends PolymerElement {
   static get template() {
     return html`

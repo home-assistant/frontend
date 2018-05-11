@@ -8,6 +8,7 @@ import '../../../components/ha-labeled-slider.js';
 import '../../../components/ha-color-picker.js';
 import '../../../components/ha-attributes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 {
   const FEATURE_CLASS_NAMES = {
     1: 'has-brightness',

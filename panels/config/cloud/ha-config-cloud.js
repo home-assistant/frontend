@@ -9,6 +9,7 @@ import './ha-config-cloud-account.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+
 {
   const LOGGED_IN_URLS = [
     '/cloud/account',

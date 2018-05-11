@@ -3,6 +3,7 @@ import './state-badge.js';
 import '../ha-relative-time.js';
 import '../../util/hass-util.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class StateInfo extends PolymerElement {
   static get template() {
     return html`

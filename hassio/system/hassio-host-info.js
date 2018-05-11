@@ -4,6 +4,7 @@ import '@polymer/paper-button/paper-button.js';
 import '../../src/util/hass-mixins.js';
 import '../../src/components/buttons/ha-call-api-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioHostInfo extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

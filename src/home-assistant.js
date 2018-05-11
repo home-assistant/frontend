@@ -17,10 +17,11 @@ import './managers/notification-manager.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import translationMetadata from '../build-translations/translationMetadata.json';
+
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
 document.createElement = Document.prototype.createElement;
-/*polyfill for paper-dropdown*/
+/* polyfill for paper-dropdown */
 /*
   FIXME(polymer-modulizer): the above comments were extracted
   from HTML and may be out of place here. Review them and

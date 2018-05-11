@@ -2,6 +2,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/polymer/lib/utils/debounce.js';
 import './entity/ha-chart-base.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class StateHistoryChartLine extends PolymerElement {
   static get template() {
     return html`

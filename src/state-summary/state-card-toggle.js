@@ -3,6 +3,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '../components/entity/state-info.js';
 import '../components/entity/ha-entity-toggle.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class StateCardToggle extends PolymerElement {
   static get template() {
     return html`

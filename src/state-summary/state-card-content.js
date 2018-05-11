@@ -13,6 +13,7 @@ import './state-card-timer.js';
 import './state-card-toggle.js';
 import './state-card-weblink.js';
 import '../util/hass-util.js';
+
 class StateCardContent extends PolymerElement {
   static get is() { return 'state-card-content'; }
 

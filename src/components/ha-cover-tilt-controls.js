@@ -3,6 +3,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '../util/cover-model.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaCoverTiltControls extends PolymerElement {
   static get template() {
     return html`

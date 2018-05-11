@@ -21,6 +21,7 @@ import '@polymer/polymer/polymer-element.js';
 
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaAppLayout extends customElements.get('app-header-layout') {
   static get template() {
     return html`

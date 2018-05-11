@@ -3,6 +3,7 @@ import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-button/paper-button.js';
 import '../../src/resources/ha-style.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HassioAddonLogs extends PolymerElement {
   static get template() {
     return html`

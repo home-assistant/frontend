@@ -18,6 +18,7 @@ import './more-info-updater.js';
 import './more-info-vacuum.js';
 import './more-info-input_datetime.js';
 import './more-info-weather.js';
+
 class MoreInfoContent extends PolymerElement {
   static get is() { return 'more-info-content'; }
 

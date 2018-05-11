@@ -1,4 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 class HassioData extends PolymerElement {
   static get is() { return 'hassio-data'; }
 

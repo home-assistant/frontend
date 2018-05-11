@@ -5,6 +5,7 @@ import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '../../../src/util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaConfigEntriesMenu extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {
     return html`

@@ -3,6 +3,7 @@ import '@polymer/app-route/app-route.js';
 import './ha-automation-picker.js';
 import './ha-automation-editor.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaConfigAutomation extends PolymerElement {
   static get template() {
     return html`

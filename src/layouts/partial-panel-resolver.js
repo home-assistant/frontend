@@ -5,6 +5,7 @@ import './hass-loading-screen.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 // import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+
 class PartialPanelResolver extends PolymerElement {
   static get template() {
     return html`

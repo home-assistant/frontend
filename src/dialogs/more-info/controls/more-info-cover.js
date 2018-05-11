@@ -5,6 +5,7 @@ import '../../../components/ha-paper-slider.js';
 import '../../../util/cover-model.js';
 import '../../../components/ha-cover-tilt-controls.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 {
   const FEATURE_CLASS_NAMES = {
     128: 'has-set_tilt_position',

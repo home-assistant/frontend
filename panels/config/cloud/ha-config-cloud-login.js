@@ -12,6 +12,7 @@ import '../../../src/resources/ha-style.js';
 import '../../../src/components/buttons/ha-progress-button.js';
 import '../ha-config-section.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 class HaConfigCloudLogin extends
   window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(PolymerElement)) {
   static get template() {
