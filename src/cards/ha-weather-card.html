@@ -76,7 +76,8 @@
       }
 
       .attributes,
-      .templow {
+      .templow,
+      .precipitation {
         color: var(--secondary-text-color);
       }
     </style>
@@ -128,6 +129,9 @@
                 <div class="temp">[[item.temperature]] [[getUnit('temperature')]]</div>
                 <template is="dom-if" if="[[item.templow]]">
                   <div class="templow">[[item.templow]] [[getUnit('temperature')]]</div>
+                </template>
+                <template is="dom-if" if="[[item.precipitation]]">
+                  <div class="precipitation">[[item.precipitation]]</div>
                 </template>
               </div>
             </template>
