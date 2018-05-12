@@ -3,7 +3,7 @@ import '@polymer/app-route/app-route.js';
 import '../util/hass-mixins.js';
 import './hass-loading-screen.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-// import { importHref } from '@polymer/polymer/lib/utils/import-href.js';
+import { importHref } from '../resources/html-import/import-href';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
 class PartialPanelResolver extends PolymerElement {
