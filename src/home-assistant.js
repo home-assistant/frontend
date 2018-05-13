@@ -4,7 +4,8 @@ import '@polymer/paper-styles/typography.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/app-route/app-route.js';
 import '@polymer/app-route/app-location.js';
-// import '@polymer/neon-animation/web-animations.js';
+// Needed for paper-dropdown-menu
+import 'web-animations-js/web-animations-next-lite.min.js';
 import './util/hass-translation.js';
 import './util/hass-util.js';
 import './util/ha-pref-storage.js';
