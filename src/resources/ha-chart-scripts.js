@@ -1,12 +1,6 @@
 import moment from 'moment';
 import Chart from 'chart.js';
-
-/* global Chart moment Color */
-
-window.Chart = Chart;
-// timeline depends on window.Chart being available so load it after we have
-// made that one available.
-import(/* webpackChunkName: "load_chart_timeline" */ 'chartjs-chart-timeline');
+import 'chartjs-chart-timeline';
 
 // This function add a new interaction mode to Chart.js that
 // returns one point for every dataset.
