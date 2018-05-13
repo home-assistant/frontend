@@ -1,18 +1,17 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-<script type="module" src="../../node_modules/@polymer/polymer/lib/utils/debounce.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-spinner/paper-spinner.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-
-<dom-module id="ha-panel-dev-template">
-  <template>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/paper-spinner/paper-spinner.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+class HaPanelDevTemplate extends PolymerElement {
+  static get template() {
+    return html`
     <style is="custom-style" include="ha-style iron-flex iron-positioning"></style>
     <style>
       :host {
@@ -95,21 +94,8 @@
         </div>
       </div>
     </app-header-layout>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
-class HaPanelDevTemplate extends PolymerElement {
+    `;
+  }
   static get is() { return 'ha-panel-dev-template'; }
 
   static get properties() {
@@ -209,4 +195,3 @@ For loop example:
 }
 
 customElements.define(HaPanelDevTemplate.is, HaPanelDevTemplate);
-</script>

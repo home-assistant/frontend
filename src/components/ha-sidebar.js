@@ -109,7 +109,7 @@ class HaSidebar extends
       </paper-icon-item>
 
       <template is="dom-repeat" items="[[panels]]">
-        <paper-icon-item on-click="menuClicked" data-panel\$="[[item.url_path]]">
+        <paper-icon-item on-click="menuClicked">
           <iron-icon slot="item-icon" icon="[[item.icon]]"></iron-icon>
           <span class="item-text">[[computePanelName(localize, item)]]</span>
         </paper-icon-item>
@@ -209,18 +209,23 @@ class HaSidebar extends
   }
 
   menuClicked(ev) {
-    var target = ev.target;
-    var checks = 5;
-    var attr = target.getAttribute('data-panel');
-
-    // find panel to select
-    while (checks && !attr) {
-      target = target.parentElement;
-      attr = target.getAttribute('data-panel');
-      checks--;
+    // Selection made inside dom-repeat
+    if (ev.model) {
+      this.selectPanel(ev.model.item.component_name);
+      return;
     }
 
-    if (checks) {
+    let target = ev.target;
+    let checks = 5;
+    let attr;
+
+    do {
+      attr = target.getAttribute('data-panel');
+      target = target.parentElement;
+      checks--;
+    } while (checks > 0 && target !== null && !attr)
+
+    if (checks > 0 && target !== null) {
       this.selectPanel(attr);
     }
   }

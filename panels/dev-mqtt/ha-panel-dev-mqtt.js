@@ -1,20 +1,20 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+// TODO: References import.meta
+// import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-input/paper-textarea.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
 
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-storage/app-localstorage/app-localstorage-document.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/paper-card/paper-card.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-
-<dom-module id='ha-panel-dev-mqtt'>
-  <template>
+class HaPanelDevMqtt extends PolymerElement {
+  static get template() {
+    return html`
     <style include='ha-style'>
       :host {
         -ms-user-select: initial;
@@ -75,22 +75,9 @@
       </div>
 
     </app-header-layout>
-  </template>
-</dom-module>
+    `;
+  }
 
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
-class HaPanelDevMqtt extends PolymerElement {
   static get is() { return 'ha-panel-dev-mqtt'; }
 
   static get properties() {
@@ -112,4 +99,3 @@ class HaPanelDevMqtt extends PolymerElement {
 }
 
 customElements.define(HaPanelDevMqtt.is, HaPanelDevMqtt);
-</script>

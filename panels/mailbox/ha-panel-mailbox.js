@@ -1,24 +1,25 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-dialog/paper-dialog.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-item/paper-item.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-item/paper-item-body.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-card/paper-card.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-storage/app-localstorage/app-localstorage-document.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-
-
-<dom-module id='ha-panel-mailbox'>
-  <template>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-dialog/paper-dialog.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+// TODO: References import.meta
+// import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+import '../../src/util/hass-mixins.js';
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
+  static get template() {
+    return html`
     <style include='ha-style'>
       :host {
         -ms-user-select: initial;
@@ -135,7 +136,7 @@
       </h2>
       <div id="transcribe"></div>
       <div>
-        <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg"></audio>
+        <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg" /></audio>
       </div>
     </paper-dialog>
 
@@ -146,28 +147,8 @@
         <paper-button dialog-confirm autofocus on-click="deleteSelected">[[localize('ui.panel.mailbox.delete_button')]]</paper-button>
       </div>
     </paper-dialog>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
-import '../../src/util/hass-mixins.js';
-/*
- * @appliesMixin window.hassMixins.LocalizeMixin
- */
-class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
+    `;
+  }
   static get is() { return 'ha-panel-mailbox'; }
 
   static get properties() {
@@ -286,4 +267,3 @@ class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
 }
 
 customElements.define(HaPanelMailbox.is, HaPanelMailbox);
-</script>

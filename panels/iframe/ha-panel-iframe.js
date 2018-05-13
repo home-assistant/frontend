@@ -1,12 +1,11 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-
-<dom-module id='ha-panel-iframe'>
-  <template>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+class HaPanelIframe extends PolymerElement {
+  static get template() {
+    return html`
     <style include='ha-style'>
       iframe {
         border: 0;
@@ -24,15 +23,8 @@
       sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts"
       allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"
     ></iframe>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
-class HaPanelIframe extends PolymerElement {
+    `;
+  }
   static get is() { return 'ha-panel-iframe'; }
 
   static get properties() {
@@ -53,4 +45,3 @@ class HaPanelIframe extends PolymerElement {
 }
 
 customElements.define(HaPanelIframe.is, HaPanelIframe);
-</script>

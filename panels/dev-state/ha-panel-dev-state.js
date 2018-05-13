@@ -1,22 +1,19 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/components/entity/ha-entity-picker.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-
-<dom-module id="ha-panel-dev-state">
-  <template>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/paper-checkbox/paper-checkbox.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/components/entity/ha-entity-picker.js';
+import '../../src/resources/ha-style.js';
+import '../../src/util/hass-mixins.js';
+class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
+  static get template() {
+    return html`
     <style include="ha-style">
       :host {
         -ms-user-select: initial;
@@ -134,23 +131,8 @@
         </table>
       </div>
     </app-header-layout>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/components/entity/ha-entity-picker.js';
-import '../../src/resources/ha-style.js';
-import '../../src/util/hass-mixins.js';
-class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
+    `;
+  }
   static get is() { return 'ha-panel-dev-state'; }
 
   static get properties() {
@@ -333,4 +315,3 @@ class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
 }
 
 customElements.define(HaPanelDevState.is, HaPanelDevState);
-</script>
