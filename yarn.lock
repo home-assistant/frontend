@@ -188,7 +188,7 @@
   dependencies:
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/iron-overlay-behavior@^3.0.0-pre.12", "@polymer/iron-overlay-behavior@^3.0.0-pre.15", "@polymer/iron-overlay-behavior@^3.0.0-pre.19":
+"@polymer/iron-overlay-behavior@^3.0.0-pre.15", "@polymer/iron-overlay-behavior@^3.0.0-pre.19":
   version "3.0.0-pre.19"
   resolved "https://registry.yarnpkg.com/@polymer/iron-overlay-behavior/-/iron-overlay-behavior-3.0.0-pre.19.tgz#0d15e901c30380e93351132be7b6fc35a93a5444"
   dependencies:
@@ -1051,7 +1051,7 @@
     "@vaadin/vaadin-lumo-styles" "^1.0.0-pre.4"
     "@vaadin/vaadin-themable-mixin" "^1.1.5-pre.2"
 
-"@vaadin/vaadin-lumo-styles@^1.0.0-pre.1", "@vaadin/vaadin-lumo-styles@^1.0.0-pre.4":
+"@vaadin/vaadin-lumo-styles@^1.0.0-pre.4":
   version "1.0.0-pre.6"
   resolved "https://registry.yarnpkg.com/@vaadin/vaadin-lumo-styles/-/vaadin-lumo-styles-1.0.0-pre.6.tgz#a9407f24151c6ccd1e6cba54716f735713841bcf"
   dependencies:
@@ -1059,16 +1059,7 @@
     "@polymer/iron-iconset-svg" "^3.0.0-pre.15"
     "@polymer/polymer" "^3.0.0-pre.13"
 
-"@vaadin/vaadin-overlay@^3.0.1-pre.1":
-  version "3.0.1-pre.1"
-  resolved "https://registry.yarnpkg.com/@vaadin/vaadin-overlay/-/vaadin-overlay-3.0.1-pre.1.tgz#6500fd98e566b1892baf3bb49fede28fd239f9a3"
-  dependencies:
-    "@polymer/iron-overlay-behavior" "^3.0.0-pre.12"
-    "@polymer/polymer" "^3.0.0-pre.12"
-    "@vaadin/vaadin-lumo-styles" "^1.0.0-pre.1"
-    "@vaadin/vaadin-themable-mixin" "^1.1.5-pre.1"
-
-"@vaadin/vaadin-overlay@^3.0.2-pre.1":
+"@vaadin/vaadin-overlay@3.0.2-pre.2", "@vaadin/vaadin-overlay@^3.0.1-pre.1", "@vaadin/vaadin-overlay@^3.0.2-pre.1":
   version "3.0.2-pre.2"
   resolved "https://registry.yarnpkg.com/@vaadin/vaadin-overlay/-/vaadin-overlay-3.0.2-pre.2.tgz#1c53e3da1e379f0c5b40b384c5254af06254d95b"
   dependencies:
@@ -1087,7 +1078,7 @@
     "@vaadin/vaadin-lumo-styles" "^1.0.0-pre.4"
     "@vaadin/vaadin-themable-mixin" "^1.1.5-pre.2"
 
-"@vaadin/vaadin-themable-mixin@^1.1.5-pre.1", "@vaadin/vaadin-themable-mixin@^1.1.5-pre.2":
+"@vaadin/vaadin-themable-mixin@^1.1.5-pre.2":
   version "1.1.5-pre.3"
   resolved "https://registry.yarnpkg.com/@vaadin/vaadin-themable-mixin/-/vaadin-themable-mixin-1.1.5-pre.3.tgz#c81292f331132150f17f7e7e55ec835e4645a22d"
   dependencies:

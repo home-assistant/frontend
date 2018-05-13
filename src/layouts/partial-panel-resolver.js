@@ -82,7 +82,7 @@ function ensureLoaded(panel) {
   return imported;
 }
 
-class PartialPanelResolver extends PolymerElement {
+class PartialPanelResolver extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -130,10 +130,6 @@ class PartialPanelResolver extends PolymerElement {
         type: Boolean,
         value: false,
       },
-      errorLoading: {
-        type: Boolean,
-        value: false,
-      },
       panel: {
         type: Object,
         computed: 'computeCurrentPanel(hass)',
@@ -151,7 +147,6 @@ class PartialPanelResolver extends PolymerElement {
     }
 
     this.resolved = false;
-    this.errorLoading = false;
 
     let loadingProm;
     if (panel.url) {
@@ -159,6 +154,11 @@ class PartialPanelResolver extends PolymerElement {
         (resolve, reject) => importHref(panel.url, resolve, reject));
     } else {
       loadingProm = ensureLoaded(panel.component_name);
+    }
+
+    if (loadingProm === null) {
+      this.panelLoadError(panel);
+      return;
     }
 
     loadingProm.then(
@@ -173,13 +173,19 @@ class PartialPanelResolver extends PolymerElement {
         this.resolved = true;
       },
 
-      () => {
+      (err) => {
+        console.error("Error loading panel", err);
         // a single retry of importHref in the error callback fixes a webkit refresh issue
         if (!this.retrySetPanelForWebkit(panel)) {
-          this.errorLoading = true;
+          this.panelLoadError(panel);
         }
       },
     );
+  }
+
+  panelLoadError(panel) {
+    alert(`I don't know how to resolve panel ${panel.component_name}`);
+    this.navigate('/states');
   }
 
   retrySetPanelForWebkit(panel) {
