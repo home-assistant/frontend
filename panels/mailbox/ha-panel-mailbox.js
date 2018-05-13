@@ -8,8 +8,6 @@ import '@polymer/paper-card/paper-card.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-// TODO: References import.meta
-// import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';
