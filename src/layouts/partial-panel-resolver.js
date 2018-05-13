@@ -6,6 +6,81 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { importHref } from '../resources/html-import/import-href';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
+const loaded = {}
+
+function ensureLoaded(panel) {
+  if (panel in loaded) return;
+  let imported = null;
+  // Name each panel we support here, that way Webpack knows about it.
+  switch (panel) {
+    case 'config':
+      imported = import(/* webpackChunkName: "config" */ '../../panels/config/ha-panel-config.js');
+      break;
+
+    case 'dev-event':
+      imported = import(/* webpackChunkName: "dev-event" */ '../../panels/dev-event/ha-panel-dev-event.js');
+      break;
+
+    case 'dev-info':
+      imported = import(/* webpackChunkName: "dev-info" */ '../../panels/dev-info/ha-panel-dev-info.js');
+      break;
+
+    case 'dev-mqtt':
+      imported = import(/* webpackChunkName: "dev-mqtt" */ '../../panels/dev-mqtt/ha-panel-dev-mqtt.js');
+      break;
+
+    case 'dev-service':
+      imported = import(/* webpackChunkName: "dev-service" */ '../../panels/dev-service/ha-panel-dev-service.js');
+      break;
+
+    case 'dev-state':
+      imported = import(/* webpackChunkName: "dev-state" */ '../../panels/dev-state/ha-panel-dev-state.js');
+      break;
+
+    case 'dev-template':
+      imported = import(/* webpackChunkName: "dev-template" */ '../../panels/dev-template/ha-panel-dev-template.js');
+      break;
+
+    case 'hassio':
+      imported = import(/* webpackChunkName: "hassio" */ '../../panels/hassio/ha-panel-hassio.js');
+      break;
+
+    case 'history':
+      imported = import(/* webpackChunkName: "history" */ '../../panels/history/ha-panel-history.js');
+      break;
+
+    case 'iframe':
+      imported = import(/* webpackChunkName: "iframe" */ '../../panels/iframe/ha-panel-iframe.js');
+      break;
+
+    case 'kiosk':
+      imported = import(/* webpackChunkName: "kiosk" */ '../../panels/kiosk/ha-panel-kiosk.js');
+      break;
+
+    case 'logbook':
+      imported = import(/* webpackChunkName: "logbook" */ '../../panels/logbook/ha-panel-logbook.js');
+      break;
+
+    case 'mailbox':
+      imported = import(/* webpackChunkName: "mailbox" */ '../../panels/mailbox/ha-panel-mailbox.js');
+      break;
+
+    case 'map':
+      imported = import(/* webpackChunkName: "map" */ '../../panels/map/ha-panel-map.js');
+      break;
+
+    case 'shopping-list':
+      imported = import(/* webpackChunkName: "shopping-list" */ '../../panels/shopping-list/ha-panel-shopping-list.js');
+      break;
+  }
+
+  if (imported != null) {
+    loaded[panel] = imported;
+  }
+
+  return imported;
+}
+
 class PartialPanelResolver extends PolymerElement {
   static get template() {
     return html`
