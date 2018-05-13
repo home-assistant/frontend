@@ -8,8 +8,8 @@ import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
-{
-  let SCRIPT_LOADED = false;
+
+let scriptsLoaded = null;
 
   class HaChartBase extends mixinBehaviors([
     IronResizableBehavior
@@ -195,15 +195,13 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
         this.addEventListener('iron-resize', this._resizeListener);
       }
 
-      if (!SCRIPT_LOADED) {
-        importHref(
-          window.CHART_SCRIPT,
-          () => {
-            SCRIPT_LOADED = true;
-            this.onPropsChange();
-          },
-        );
+      if (scriptsLoaded === null) {
+        scriptsLoaded = import(/* webpackChunkName: "load_chart" */ '../../resources/ha-chart-scripts.js');
       }
+      scriptsLoaded.then((ChartModule) => {
+        this.ChartClass = ChartModule.default;
+        this.onPropsChange();
+      });
     }
 
     disconnectedCallback() {
@@ -221,7 +219,7 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
       }
     }
     onPropsChange() {
-      if (!this._isAttached || !SCRIPT_LOADED || !this.data) {
+      if (!this._isAttached || !this.ChartClass || !this.data) {
         return;
       }
       this.drawChart();
@@ -408,7 +406,7 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
           plugins: plugins,
         };
         // Async resize after dom update
-        this._chart = new Chart(ctx, chartData);
+        this._chart = new this.ChartClass(ctx, chartData);
         if (this.isTimeline !== true && this.data.legend === true) {
           this._drawLegend();
         }
@@ -541,4 +539,3 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
     }
   }
   customElements.define(HaChartBase.is, HaChartBase);
-}
