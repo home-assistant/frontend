@@ -11,6 +11,7 @@ import '../../src/components/ha-menu-button.js';
 import '../../src/components/entity/ha-entity-picker.js';
 import '../../src/components/ha-service-picker.js';
 import '../../src/resources/ha-style.js';
+
 {
   const ERROR_SENTINEL = {};
   class HaPanelDevService extends PolymerElement {

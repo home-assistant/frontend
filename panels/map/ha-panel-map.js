@@ -4,6 +4,7 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/util/hass-mixins.js';
 import './ha-entity-marker.js';
+
 window.L.Icon.Default.imagePath = '/static/images/leaflet';
 
 /*

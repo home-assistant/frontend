@@ -11,6 +11,7 @@ import '../../src/components/ha-menu-button.js';
 import '../../src/components/entity/ha-entity-picker.js';
 import '../../src/resources/ha-style.js';
 import '../../src/util/hass-mixins.js';
+
 class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`

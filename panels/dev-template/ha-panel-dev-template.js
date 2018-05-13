@@ -9,6 +9,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+
 class HaPanelDevTemplate extends PolymerElement {
   static get template() {
     return html`
