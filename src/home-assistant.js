@@ -18,6 +18,7 @@ import './managers/notification-manager.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import translationMetadata from '../build-translations/translationMetadata.json';
+import './util/legacy-support';
 
 // This will handle mdi.html, custom UI which are defined as <link rel=import
 import './resources/html-import/polyfill.js';
