@@ -12,6 +12,8 @@ import './script/ha-config-script.js';
 import './zwave/ha-config-zwave.js';
 import './customize/ha-config-customize.js';
 import './config-entries/ha-config-entries.js';
+import '../../build-temp/panel-config.js';
+
 
 class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {
