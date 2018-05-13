@@ -1,10 +1,6 @@
-<script src="../../node_modules/moment/moment.js"></script>
-<script src="../../node_modules/chart.js/dist/Chart.min.js"></script>
-<script src="../../node_modules/chartjs-chart-timeline/timeline.js"></script>
-<script>
-// Use minified(Chart.min.js) version to fix strange color after uglify
-// eslint-disable-next-line no-unused-vars
-/* global Chart moment Color */
+import moment from 'moment';
+import Chart from 'chart.js';
+import 'chartjs-chart-timeline';
 
 // This function add a new interaction mode to Chart.js that
 // returns one point for every dataset.
@@ -61,4 +57,5 @@ Chart.Interaction.modes.neareach = function (chart, e, options) {
   const ret = elements.filter(n => n !== undefined);
   return ret;
 };
-</script>
+
+export default Chart;

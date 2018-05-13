@@ -3088,16 +3088,19 @@ charenc@~0.0.1:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
 
-chart.js@~2.7.2:
+chart.js@^2.7.2, chart.js@~2.7.2:
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.7.2.tgz#3c9fde4dc5b95608211bdefeda7e5d33dffa5714"
   dependencies:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
 
-chartjs-chart-timeline@0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/chartjs-chart-timeline/-/chartjs-chart-timeline-0.1.5.tgz#2996b09fbf8b44cad14c67a2bbbf16f60dbc014e"
+chartjs-chart-timeline@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/chartjs-chart-timeline/-/chartjs-chart-timeline-0.2.0.tgz#f16462311f23c0596632fb2ecab9ae41ed27e571"
+  dependencies:
+    chart.js "^2.7.2"
+    moment "^2.22.0"
 
 chartjs-color-string@^0.5.0:
   version "0.5.0"
@@ -7868,7 +7871,7 @@ mocha@^5.0.0:
     mkdirp "0.5.1"
     supports-color "4.4.0"
 
-moment@^2.10.2, moment@^2.20.0:
+moment@^2.10.2, moment@^2.20.0, moment@^2.22.0:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
 
