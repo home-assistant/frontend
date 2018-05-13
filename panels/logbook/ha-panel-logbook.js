@@ -1,25 +1,24 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-spinner/paper-spinner.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-
-<script type="module" src="../../node_modules/@vaadin/vaadin-date-picker/vaadin-date-picker.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-<script type="module" src="../../src/resources/ha-date-picker-style.js"></script>
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-
-<script type="module" src="./ha-logbook.js"></script>
-<script type="module" src="./ha-logbook-data.js"></script>
-
-<dom-module id="ha-panel-logbook">
-  <template>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-spinner/paper-spinner.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+import '../../src/resources/ha-date-picker-style.js';
+import '../../src/util/hass-mixins.js';
+import './ha-logbook.js';
+import './ha-logbook-data.js';
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
+  static get template() {
+    return html`
     <style include="ha-style">
     .content {
       padding: 0 16px 16px;
@@ -83,28 +82,8 @@
         <ha-logbook hass='[[hass]]' entries="[[entries]]" hidden$='[[isLoading]]'></ha-logbook>
       </div>
     </app-header-layout>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-spinner/paper-spinner.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
-import '../../src/resources/ha-date-picker-style.js';
-import '../../src/util/hass-mixins.js';
-import './ha-logbook.js';
-import './ha-logbook-data.js';
-/*
- * @appliesMixin window.hassMixins.LocalizeMixin
- */
-class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
+    `;
+  }
   static get is() { return 'ha-panel-logbook'; }
 
   static get properties() {
@@ -174,4 +153,3 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
 }
 
 customElements.define(HaPanelLogbook.is, HaPanelLogbook);
-</script>

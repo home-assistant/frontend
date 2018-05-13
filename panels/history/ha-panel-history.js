@@ -1,25 +1,27 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-dropdown-menu/paper-dropdown-menu.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-listbox/paper-listbox.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-item/paper-item.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-
-<script type="module" src="../../node_modules/@vaadin/vaadin-date-picker/vaadin-date-picker.js"></script>
-
-<script type="module" src="../../src/components/state-history-charts.js"></script>
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/data/ha-state-history-data.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-<script type="module" src="../../src/resources/ha-date-picker-style.js"></script>
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-
-<dom-module id="ha-panel-history">
-  <template>
-    <style include="iron-flex ha-style">
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import '../../src/components/state-history-charts.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/data/ha-state-history-data.js';
+import '../../src/resources/ha-style.js';
+import '../../src/resources/ha-date-picker-style.js';
+import '../../src/util/hass-mixins.js';
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
+  static get template() {
+    return html`
+        <style include="iron-flex ha-style">
       .content {
         padding: 0 16px 16px;
       }
@@ -88,30 +90,8 @@
         </state-history-charts>
       </div>
     </app-header-layout>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
-import '../../src/components/state-history-charts.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/data/ha-state-history-data.js';
-import '../../src/resources/ha-style.js';
-import '../../src/resources/ha-date-picker-style.js';
-import '../../src/util/hass-mixins.js';
-/*
- * @appliesMixin window.hassMixins.LocalizeMixin
- */
-class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
+    `;
+  }
   static get is() { return 'ha-panel-history'; }
 
   static get properties() {
@@ -210,4 +190,3 @@ class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
 }
 
 customElements.define(HaPanelHistory.is, HaPanelHistory);
-</script>

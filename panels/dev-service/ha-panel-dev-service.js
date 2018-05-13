@@ -1,20 +1,21 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-storage/app-localstorage/app-localstorage-document.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/components/entity/ha-entity-picker.js"></script>
-<script type="module" src="../../src/components/ha-service-picker.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-
-<dom-module id='ha-panel-dev-service'>
-  <template>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+// TODO: References import.meta
+// import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/components/entity/ha-entity-picker.js';
+import '../../src/components/ha-service-picker.js';
+import '../../src/resources/ha-style.js';
+{
+  const ERROR_SENTINEL = {};
+  class HaPanelDevService extends PolymerElement {
+    static get template() {
+      return html`
     <style include='ha-style'>
       :host {
         -ms-user-select: initial;
@@ -163,24 +164,8 @@
       </div>
 
     </app-header-layout>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/components/entity/ha-entity-picker.js';
-import '../../src/components/ha-service-picker.js';
-import '../../src/resources/ha-style.js';
-{
-  const ERROR_SENTINEL = {};
-  class HaPanelDevService extends PolymerElement {
+      `;
+    }
     static get is() { return 'ha-panel-dev-service'; }
 
     static get properties() {
@@ -317,4 +302,3 @@ import '../../src/resources/ha-style.js';
 
   customElements.define(HaPanelDevService.is, HaPanelDevService);
 }
-</script>

@@ -1,21 +1,21 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-<script type="module" src="../../node_modules/@polymer/iron-media-query/iron-media-query.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-route/app-route.js"></script>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/iron-media-query/iron-media-query.js';
+import '@polymer/app-route/app-route.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/layouts/hass-error-screen.js';
+import '../../src/util/hass-mixins.js';
+import './dashboard/ha-config-dashboard.js';
+import './core/ha-config-core.js';
+import './cloud/ha-config-cloud.js';
+import './automation/ha-config-automation.js';
+import './script/ha-config-script.js';
+import './zwave/ha-config-zwave.js';
+import './customize/ha-config-customize.js';
+import './config-entries/ha-config-entries.js';
 
-<script type="module" src="../../src/layouts/hass-error-screen.js"></script>
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-
-<script type="module" src="./dashboard/ha-config-dashboard.js"></script>
-<script type="module" src="./core/ha-config-core.js"></script>
-<script type="module" src="./cloud/ha-config-cloud.js"></script>
-<script type="module" src="./automation/ha-config-automation.js"></script>
-<script type="module" src="./script/ha-config-script.js"></script>
-<script type="module" src="./zwave/ha-config-zwave.js"></script>
-<script type="module" src="./customize/ha-config-customize.js"></script>
-<script type="module" src="./config-entries/ha-config-entries.js"></script>
-
-<dom-module id="ha-panel-config">
-  <template>
+class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
+  static get template() {
+    return html`
     <app-route
       route='[[route]]'
       pattern='/:page'
@@ -97,24 +97,9 @@
         is-wide='[[isWide]]'
       ></ha-config-entries>
     </template>
-  </template>
-</dom-module>
+    `;
+  }
 
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/iron-media-query/iron-media-query.js';
-import '@polymer/app-route/app-route.js';
-import '../../src/layouts/hass-error-screen.js';
-import '../../src/util/hass-mixins.js';
-import './dashboard/ha-config-dashboard.js';
-import './core/ha-config-core.js';
-import './cloud/ha-config-cloud.js';
-import './automation/ha-config-automation.js';
-import './script/ha-config-script.js';
-import './zwave/ha-config-zwave.js';
-import './customize/ha-config-customize.js';
-import './config-entries/ha-config-entries.js';
-class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get is() { return 'ha-panel-config'; }
 
   static get properties() {
@@ -167,4 +152,3 @@ class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
 }
 
 customElements.define(HaPanelConfig.is, HaPanelConfig);
-</script>

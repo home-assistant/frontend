@@ -8,6 +8,7 @@ import '@polymer/paper-card/paper-card.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/buttons/ha-call-service-button.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';

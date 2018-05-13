@@ -1,15 +1,17 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-<script type="module" src="../../node_modules/@polymer/iron-icon/iron-icon.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/util/hass-mixins.js';
+import './ha-entity-marker.js';
+window.L.Icon.Default.imagePath = '/static/images/leaflet';
 
-<script src="../../node_modules/leaflet/dist/leaflet.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-<script type="module" src="./ha-entity-marker.js"></script>
-
-<dom-module id="ha-panel-map">
-  <template>
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
+  static get template() {
+    return html`
     <style include="ha-style">
       #map {
         height: calc(100% - 64px);
@@ -24,22 +26,8 @@
     </app-toolbar>
 
     <div id='map'></div>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/util/hass-mixins.js';
-import './ha-entity-marker.js';
-window.L.Icon.Default.imagePath = '/static/images/leaflet';
-
-/*
- * @appliesMixin window.hassMixins.LocalizeMixin
- */
-class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
+    `;
+  }
   static get is() { return 'ha-panel-map'; }
 
   static get properties() {
@@ -203,4 +191,3 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
 }
 
 customElements.define(HaPanelMap.is, HaPanelMap);
-</script>

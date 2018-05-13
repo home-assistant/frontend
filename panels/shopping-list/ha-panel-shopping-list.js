@@ -1,23 +1,26 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-card/paper-card.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-item/paper-icon-item.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-item/paper-item-body.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-checkbox/paper-checkbox.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-icon-button/paper-icon-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-menu-button/paper-menu-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-listbox/paper-listbox.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-item/paper-item.js"></script>
-
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/components/ha-start-voice-button.js"></script>
-
-<dom-module id="ha-panel-shopping-list">
-  <template>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-item/paper-icon-item.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-checkbox/paper-checkbox.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-menu-button/paper-menu-button.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/util/hass-mixins.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/components/ha-start-voice-button.js';
+/*
+ * @appliesMixin window.hassMixins.LocalizeMixin
+ */
+class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(PolymerElement) {
+  static get template() {
+    return html`
     <style include="ha-style">
       :host {
         height: 100%;
@@ -128,30 +131,8 @@
         </div>
       </div>
     </app-header-layout>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-icon-item.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-menu-button/paper-menu-button.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
-import '../../src/util/hass-mixins.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/components/ha-start-voice-button.js';
-/*
- * @appliesMixin window.hassMixins.LocalizeMixin
- */
-class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(PolymerElement) {
+    `;
+  }
   static get is() { return 'ha-panel-shopping-list'; }
 
   static get properties() {
@@ -233,4 +214,3 @@ class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(PolymerElement
 }
 
 customElements.define(HaPanelShoppingList.is, HaPanelShoppingList);
-</script>

@@ -1,23 +1,20 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
+import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-input/paper-textarea.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
+import '../../src/util/hass-mixins.js';
+import './events-list.js';
 
-<script type="module" src="../../node_modules/@polymer/iron-flex-layout/iron-flex-layout-classes.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/paper-button/paper-button.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-input.js"></script>
-<script type="module" src="../../node_modules/@polymer/paper-input/paper-textarea.js"></script>
-
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header-layout/app-header-layout.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-header/app-header.js"></script>
-<script type="module" src="../../node_modules/@polymer/app-layout/app-toolbar/app-toolbar.js"></script>
-
-<script type="module" src="../../src/components/ha-menu-button.js"></script>
-<script type="module" src="../../src/resources/ha-style.js"></script>
-<script type="module" src="../../src/util/hass-mixins.js"></script>
-
-<script type="module" src="./events-list.js"></script>
-
-<dom-module id="ha-panel-dev-event">
-  <template>
+class HaPanelDevEvent extends window.hassMixins.EventsMixin(PolymerElement) {
+  static get template() {
+    return html`
     <style is="custom-style" include="ha-style iron-flex iron-positioning"></style>
     <style>
       :host {
@@ -63,28 +60,13 @@
 
         <div>
           <div class='header'>Available Events</div>
-          <events-list on-event-selected='eventSelected' hass='[[hass]]'></event-list>
+          <events-list on-event-selected='eventSelected' hass='[[hass]]'></events-list>
         </div>
       </div>
-    </events-list>
+    </app-header-layout>
+    `;
+  }
 
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
-import '../../src/util/hass-mixins.js';
-import './events-list.js';
-class HaPanelDevEvent extends window.hassMixins.EventsMixin(PolymerElement) {
   static get is() { return 'ha-panel-dev-event'; }
 
   static get properties() {
@@ -146,4 +128,3 @@ class HaPanelDevEvent extends window.hassMixins.EventsMixin(PolymerElement) {
 }
 
 customElements.define(HaPanelDevEvent.is, HaPanelDevEvent);
-</script>

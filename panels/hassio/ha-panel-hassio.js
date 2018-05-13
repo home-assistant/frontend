@@ -1,8 +1,11 @@
-<script type="module" src="../../node_modules/@polymer/polymer/polymer-element.js"></script>
-<script type="module" src="../../src/util/hass-mixins.js"></script>
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/util/hass-mixins.js';
 
-<dom-module id="ha-panel-hassio">
-  <template>
+class HaPanelHassio extends
+  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  static get template() {
+    return html`
     <style>
       iframe {
         border: 0;
@@ -15,14 +18,8 @@
       id='iframe'
       src="[[iframeUrl]]"
     ></iframe>
-  </template>
-</dom-module>
-
-<script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../../src/util/hass-mixins.js';
-class HaPanelHassio extends
-  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+    `;
+  }
   static get is() { return 'ha-panel-hassio'; }
 
   static get properties() {
@@ -80,4 +77,3 @@ class HaPanelHassio extends
 }
 
 customElements.define(HaPanelHassio.is, HaPanelHassio);
-</script>
