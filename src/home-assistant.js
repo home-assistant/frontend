@@ -18,6 +18,9 @@ import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js'
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import translationMetadata from '../build-translations/translationMetadata.json';
 
+// This will handle mdi.html, custom UI which are defined as <link rel=import
+import './resources/html-import/polyfill.js';
+
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
 document.createElement = Document.prototype.createElement;
