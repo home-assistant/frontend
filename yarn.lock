@@ -40,7 +40,7 @@
   dependencies:
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/font-roboto-local@^3.0.0-pre.18":
+"@polymer/font-roboto-local@^3.0.0-pre.19":
   version "3.0.0-pre.19"
   resolved "https://registry.yarnpkg.com/@polymer/font-roboto-local/-/font-roboto-local-3.0.0-pre.19.tgz#bb2858668d28553982f106503c39f3d08c43b071"
 

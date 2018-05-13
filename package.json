@@ -28,7 +28,7 @@
     "@polymer/app-route": "^3.0.0-pre.18",
     "@polymer/app-storage": "^3.0.0-pre.18",
     "@polymer/font-roboto": "^3.0.0-pre.18",
-    "@polymer/font-roboto-local": "^3.0.0-pre.18",
+    "@polymer/font-roboto-local": "^3.0.0-pre.19",
     "@polymer/iron-autogrow-textarea": "^3.0.0-pre.18",
     "@polymer/iron-flex-layout": "^3.0.0-pre.18",
     "@polymer/iron-icon": "^3.0.0-pre.18",
