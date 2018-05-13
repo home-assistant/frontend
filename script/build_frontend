@@ -37,7 +37,7 @@ cp build-es5/src/resources/ha-chart-scripts.html $OUTPUT_DIR_ES5
 cp -r build-translations/output $OUTPUT_DIR/translations
 
 # Local Roboto
-cp -r bower_components/font-roboto-local/fonts $OUTPUT_DIR
+cp -r node_modules/@polymer/font-roboto-local/fonts $OUTPUT_DIR
 
 # Polyfill web components
 cp bower_components/webcomponentsjs/webcomponents-lite.js $OUTPUT_DIR
