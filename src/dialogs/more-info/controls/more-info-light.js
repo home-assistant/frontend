@@ -1,13 +1,14 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
-import '../../../util/hass-mixins.js';
-import '../../../components/ha-labeled-slider.js';
-import '../../../components/ha-color-picker.js';
-import '../../../components/ha-attributes.js';
+import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../components/ha-attributes.js';
+import '../../../components/ha-color-picker.js';
+import '../../../components/ha-labeled-slider.js';
+import '../../../util/hass-mixins.js';
 
 {
   const FEATURE_CLASS_NAMES = {

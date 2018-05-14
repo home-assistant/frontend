@@ -1,15 +1,17 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
-import '../../../src/resources/ha-style.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../../src/layouts/ha-app-layout.js';
+import '../../../src/resources/ha-style.js';
 import '../../../src/util/hass-mixins.js';
 import './ha-config-section-core.js';
 import './ha-config-section-push-notifications.js';
-import './ha-config-section-translation.js';
 import './ha-config-section-themes.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import './ha-config-section-translation.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */

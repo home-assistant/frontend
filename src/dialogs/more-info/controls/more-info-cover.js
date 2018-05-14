@@ -1,10 +1,11 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../components/ha-cover-tilt-controls.js';
 import '../../../components/ha-paper-slider.js';
 import '../../../util/cover-model.js';
-import '../../../components/ha-cover-tilt-controls.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 {
   const FEATURE_CLASS_NAMES = {

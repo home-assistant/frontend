@@ -1,19 +1,20 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/app-route/app-route.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-pages/iron-pages.js';
-import '@polymer/paper-tabs/paper-tabs.js';
 import '@polymer/paper-tabs/paper-tab.js';
-import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-route/app-route.js';
-import '../util/hass-mixins.js';
+import '@polymer/paper-tabs/paper-tabs.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../components/ha-cards.js';
 import '../components/ha-menu-button.js';
 import '../components/ha-start-voice-button.js';
-import '../components/ha-cards.js';
+import '../util/hass-mixins.js';
 import './ha-app-layout.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 {
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';

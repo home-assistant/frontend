@@ -1,13 +1,14 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-button/paper-button.js';
-import '../../../src/layouts/hass-subpage.js';
-import '../../../src/util/hass-mixins.js';
-import '../../../src/resources/ha-style.js';
-import '../../../src/components/buttons/ha-call-api-button.js';
-import '../ha-config-section.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../src/components/buttons/ha-call-api-button.js';
+import '../../../src/layouts/hass-subpage.js';
+import '../../../src/resources/ha-style.js';
+import '../../../src/util/hass-mixins.js';
+import '../ha-config-section.js';
 
 class HaConfigCloudAccount extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

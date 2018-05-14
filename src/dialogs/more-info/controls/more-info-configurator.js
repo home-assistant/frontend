@@ -1,11 +1,12 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/iron-input/iron-input.js';
-import '@polymer/paper-spinner/paper-spinner.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-input/paper-input.js';
-import '../../../components/ha-markdown.js';
+import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../components/ha-markdown.js';
 
 class MoreInfoConfigurator extends PolymerElement {
   static get template() {

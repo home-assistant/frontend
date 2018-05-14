@@ -1,10 +1,12 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../util/hass-util.js';
 import './state-card-climate.js';
 import './state-card-configurator.js';
 import './state-card-cover.js';
 import './state-card-display.js';
-import './state-card-input_select.js';
 import './state-card-input_number.js';
+import './state-card-input_select.js';
 import './state-card-input_text.js';
 import './state-card-media_player.js';
 import './state-card-scene.js';
@@ -12,7 +14,6 @@ import './state-card-script.js';
 import './state-card-timer.js';
 import './state-card-toggle.js';
 import './state-card-weblink.js';
-import '../util/hass-util.js';
 
 class StateCardContent extends PolymerElement {
   static get is() { return 'state-card-content'; }

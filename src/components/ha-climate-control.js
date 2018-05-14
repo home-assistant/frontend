@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
-import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../util/hass-mixins.js';
 
 class HaClimateControl extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

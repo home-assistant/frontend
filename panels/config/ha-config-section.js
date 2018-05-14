@@ -1,6 +1,7 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../../src/resources/ha-style.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../src/resources/ha-style.js';
 
 class HaConfigSection extends PolymerElement {
   static get template() {

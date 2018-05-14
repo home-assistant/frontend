@@ -1,7 +1,8 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-button/paper-button.js';
+import '@polymer/paper-card/paper-card.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../src/resources/ha-style.js';
 
 class HassioAddonLogs extends PolymerElement {

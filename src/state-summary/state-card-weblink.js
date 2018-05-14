@@ -1,6 +1,7 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../components/entity/state-badge.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../components/entity/state-badge.js';
 
 class StateCardWeblink extends PolymerElement {
   static get template() {

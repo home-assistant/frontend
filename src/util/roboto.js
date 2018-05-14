@@ -1,7 +1,7 @@
-const $_documentContainer = document.createElement('template');
-$_documentContainer.setAttribute('style', 'display: none;');
+const documentContainer = document.createElement('template');
+documentContainer.setAttribute('style', 'display: none;');
 
-$_documentContainer.innerHTML = `<style>
+documentContainer.innerHTML = `<style>
 @font-face {
 font-family: "Roboto";
 src: url(/static/fonts/roboto/Roboto-Thin.ttf) format("truetype");
@@ -136,7 +136,7 @@ font-style: italic;
 }
 </style>`;
 
-document.head.appendChild($_documentContainer.content);
+document.head.appendChild(documentContainer.content);
 
 /**
 @license

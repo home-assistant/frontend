@@ -1,10 +1,11 @@
-import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-input/paper-input.js';
-import '../../../components/ha-relative-time.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/polymer/polymer-legacy.js';
+import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+
+import '../../../components/ha-relative-time.js';
 
 class DatetimeInput extends PolymerElement {
   static get template() {
@@ -95,10 +96,9 @@ class DatetimeInput extends PolymerElement {
       return;
     }
 
-    var minuteFiller;
-    var changed = false;
+    let changed = false;
 
-    var serviceData = {
+    const serviceData = {
       entity_id: this.stateObj.entity_id
     };
 

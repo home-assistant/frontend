@@ -1,20 +1,21 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-tabs/paper-tabs.js';
-import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-tabs/paper-tab.js';
+import '@polymer/paper-tabs/paper-tabs.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../src/components/ha-menu-button.js';
-import '../src/util/hass-mixins.js';
 import '../src/resources/ha-style.js';
-import './dashboard/hassio-dashboard.js';
-import './snapshots/hassio-snapshots.js';
-import './snapshots/hassio-snapshot.js';
+import '../src/util/hass-mixins.js';
 import './addon-store/hassio-addon-store.js';
-import './system/hassio-system.js';
+import './dashboard/hassio-dashboard.js';
 import './hassio-markdown-dialog.js';
+import './snapshots/hassio-snapshot.js';
+import './snapshots/hassio-snapshots.js';
+import './system/hassio-system.js';
 
 class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {

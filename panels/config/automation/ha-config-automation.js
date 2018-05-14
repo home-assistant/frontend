@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-route/app-route.js';
-import './ha-automation-picker.js';
-import './ha-automation-editor.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import './ha-automation-editor.js';
+import './ha-automation-picker.js';
 
 class HaConfigAutomation extends PolymerElement {
   static get template() {

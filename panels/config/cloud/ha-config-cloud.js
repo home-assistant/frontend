@@ -1,14 +1,15 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-route/app-route.js';
+import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-section.js';
+import './ha-config-cloud-account.js';
+import './ha-config-cloud-forgot-password.js';
 import './ha-config-cloud-login.js';
 import './ha-config-cloud-register.js';
-import './ha-config-cloud-forgot-password.js';
-import './ha-config-cloud-account.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 
 {
   const LOGGED_IN_URLS = [

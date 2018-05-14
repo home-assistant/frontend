@@ -1,11 +1,13 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/iron-label/iron-label.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
+import '@polymer/iron-label/iron-label.js';
+import '@polymer/paper-card/paper-card.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../src/components/ha-push-notifications-toggle.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-section.js';
-import '../../../src/components/ha-push-notifications-toggle.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */

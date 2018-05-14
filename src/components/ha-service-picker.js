@@ -1,7 +1,9 @@
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../util/hass-mixins.js';
 import './ha-combo-box.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */

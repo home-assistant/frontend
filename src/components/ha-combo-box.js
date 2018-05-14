@@ -1,9 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
-import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
 
 class HaComboBox extends PolymerElement {
   static get template() {

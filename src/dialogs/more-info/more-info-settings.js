@@ -1,10 +1,11 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-button/paper-button.js';
-import '../../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../util/hass-mixins.js';
 
 class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

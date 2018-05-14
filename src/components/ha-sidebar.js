@@ -1,14 +1,16 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/iron-icon/iron-icon.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-item/paper-icon-item.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/paper-item/paper-icon-item.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../util/hass-mixins.js';
 import '../util/hass-translation.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin window.hassMixins.EventsMixin

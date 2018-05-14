@@ -1,12 +1,13 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import './ha-demo-badge.js';
+import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../cards/ha-badges-card.js';
 import '../cards/ha-card-chooser.js';
 import '../util/hass-util.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import './ha-demo-badge.js';
 
 {
   // mapping domain to size of the card.

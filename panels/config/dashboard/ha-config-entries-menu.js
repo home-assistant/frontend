@@ -1,10 +1,11 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/iron-icon/iron-icon.js';
-import '../../../src/util/hass-mixins.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../src/util/hass-mixins.js';
 
 class HaConfigEntriesMenu extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {

@@ -1,8 +1,9 @@
+import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../util/hass-mixins.js';
 import '../util/hass-util.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 
 {
   const RECENT_THRESHOLD = 60000; // 1 minute

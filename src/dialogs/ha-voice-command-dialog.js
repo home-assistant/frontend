@@ -1,8 +1,8 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js';
 import '@polymer/iron-icon/iron-icon.js';
+import '@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   static get template() {

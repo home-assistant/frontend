@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import './state-badge.js';
-import '../ha-relative-time.js';
-import '../../util/hass-util.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../util/hass-util.js';
+import '../ha-relative-time.js';
+import './state-badge.js';
 
 class StateInfo extends PolymerElement {
   static get template() {

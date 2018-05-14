@@ -1,6 +1,7 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../../src/util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../src/util/hass-mixins.js';
 
 class EventsList extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

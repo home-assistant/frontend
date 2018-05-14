@@ -1,9 +1,10 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-card/paper-card.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import '../../src/util/hass-mixins.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
+import '../../src/util/hass-mixins.js';
 
 class HassioAddons extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {

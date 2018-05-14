@@ -1,7 +1,7 @@
-const $_documentContainer = document.createElement('template');
-$_documentContainer.setAttribute('style', 'display: none;');
+const documentContainer = document.createElement('template');
+documentContainer.setAttribute('style', 'display: none;');
 
-$_documentContainer.innerHTML = `<dom-module id="ha-date-picker-vaadin-date-picker-styles" theme-for="vaadin-date-picker">
+documentContainer.innerHTML = `<dom-module id="ha-date-picker-vaadin-date-picker-styles" theme-for="vaadin-date-picker">
   <template>
     <style>
       :host([required]) [part~="clear-button"] {
@@ -117,4 +117,4 @@ $_documentContainer.innerHTML = `<dom-module id="ha-date-picker-vaadin-date-pick
   </template>
 </dom-module>`;
 
-document.head.appendChild($_documentContainer.content);
+document.head.appendChild(documentContainer.content);

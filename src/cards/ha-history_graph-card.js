@@ -1,9 +1,10 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-card/paper-card.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../components/state-history-charts.js';
 import '../data/ha-state-history-data.js';
 import '../util/hass-mixins.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

@@ -1,18 +1,19 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-drawer-layout/app-drawer-layout.js';
 import '@polymer/app-layout/app-drawer/app-drawer.js';
+import '@polymer/app-route/app-route.js';
 import '@polymer/iron-media-query/iron-media-query.js';
 import '@polymer/iron-pages/iron-pages.js';
-import '@polymer/app-route/app-route.js';
-import './partial-cards.js';
-import './partial-panel-resolver.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../components/ha-sidebar.js';
 import '../dialogs/ha-more-info-dialog.js';
 import '../dialogs/ha-voice-command-dialog.js';
 import '../util/ha-url-sync.js';
-import '../components/ha-sidebar.js';
 import '../util/hass-mixins.js';
 import '../util/hass-util.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import './partial-cards.js';
+import './partial-panel-resolver.js';
 
 {
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];

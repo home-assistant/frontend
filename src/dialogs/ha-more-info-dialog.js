@@ -1,11 +1,12 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js';
 import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
-import '../util/hass-mixins.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../resources/ha-style.js';
+import '../util/hass-mixins.js';
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   static get template() {

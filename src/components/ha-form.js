@@ -1,12 +1,13 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../util/hass-mixins.js';
 import './ha-paper-slider.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HaForm extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

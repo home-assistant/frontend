@@ -1,7 +1,8 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '../../../components/ha-relative-time.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../components/ha-relative-time.js';
 
 class MoreInfoSun extends PolymerElement {
   static get template() {

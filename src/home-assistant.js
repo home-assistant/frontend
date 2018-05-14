@@ -1,27 +1,26 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import './util/roboto.js';
-import '@polymer/paper-styles/typography.js';
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/app-route/app-route.js';
-import '@polymer/app-route/app-location.js';
-// Needed for paper-dropdown-menu
 import 'web-animations-js/web-animations-next-lite.min.js';
-import './util/hass-translation.js';
-import './util/hass-util.js';
+
+import '@polymer/app-route/app-location.js';
+import '@polymer/app-route/app-route.js';
+import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
+import '@polymer/paper-styles/typography.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import translationMetadata from '../build-translations/translationMetadata.json';
+import './layouts/home-assistant-main.js';
+import './layouts/login-form.js';
+import './managers/notification-manager.js';
+import './resources/ha-style.js';
+import './resources/html-import/polyfill.js';
+import './resources/panel-imports.js';
 import './util/ha-pref-storage.js';
 import './util/hass-call-api.js';
-import './layouts/login-form.js';
-import './layouts/home-assistant-main.js';
-import './resources/ha-style.js';
-import './resources/panel-imports.js';
-import './managers/notification-manager.js';
-import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import translationMetadata from '../build-translations/translationMetadata.json';
+import './util/hass-translation.js';
+import './util/hass-util.js';
 import './util/legacy-support';
-
-// This will handle mdi.html, custom UI which are defined as <link rel=import
-import './resources/html-import/polyfill.js';
+import './util/roboto.js';
 
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */

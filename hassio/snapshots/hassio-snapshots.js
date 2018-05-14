@@ -1,14 +1,15 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-radio-group/paper-radio-group.js';
-import '@polymer/paper-radio-button/paper-radio-button.js';
+import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-radio-button/paper-radio-button.js';
+import '@polymer/paper-radio-group/paper-radio-group.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import '../../src/util/hass-mixins.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
+import '../../src/util/hass-mixins.js';
 
 class HassioSnapshots extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

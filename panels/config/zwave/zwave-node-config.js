@@ -1,11 +1,12 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-input/paper-input.js';
-import '../../../src/components/buttons/ha-call-service-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../src/components/buttons/ha-call-service-button.js';
 
 class ZwaveNodeConfig extends PolymerElement {
   static get template() {

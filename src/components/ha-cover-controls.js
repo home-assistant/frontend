@@ -1,7 +1,8 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
-import '../util/cover-model.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../util/cover-model.js';
 
 class HaCoverControls extends PolymerElement {
   static get template() {

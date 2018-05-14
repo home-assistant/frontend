@@ -1,10 +1,10 @@
-import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/paper-styles/paper-styles.js';
+import '@polymer/polymer/polymer-legacy.js';
 
-const $_documentContainer = document.createElement('template');
-$_documentContainer.setAttribute('style', 'display: none;');
+const documentContainer = document.createElement('template');
+documentContainer.setAttribute('style', 'display: none;');
 
-$_documentContainer.innerHTML = `<custom-style>
+documentContainer.innerHTML = `<custom-style>
   <style is="custom-style">/* remove is= on Polymer 2 */
     /*
       Home Assistant default styles.
@@ -242,4 +242,4 @@ $_documentContainer.innerHTML = `<custom-style>
   </template>
 </dom-module>`;
 
-document.head.appendChild($_documentContainer.content);
+document.head.appendChild(documentContainer.content);

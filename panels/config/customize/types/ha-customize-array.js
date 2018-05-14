@@ -1,9 +1,10 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
-import '../../../../src/util/hass-mixins.js';
+import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../../src/util/hass-mixins.js';
 
 class HaCustomizeArray extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

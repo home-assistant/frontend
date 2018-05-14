@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '../components/ha-climate-state.js';
-import '../components/entity/state-info.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../components/entity/state-info.js';
+import '../components/ha-climate-state.js';
 
 class StateCardClimate extends PolymerElement {
   static get template() {

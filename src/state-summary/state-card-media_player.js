@@ -1,8 +1,10 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../components/entity/state-info.js';
 import '../util/hass-mixins.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */

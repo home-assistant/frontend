@@ -1,12 +1,14 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-dialog/paper-dialog.js';
-import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import '@polymer/paper-button/paper-button.js';
-import '../../../src/util/hass-mixins.js';
+import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
+import '@polymer/paper-dialog/paper-dialog.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../src/components/ha-form.js';
 import '../../../src/components/ha-markdown.js';
 import '../../../src/resources/ha-style.js';
-import '../../../src/components/ha-form.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../../src/util/hass-mixins.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin window.hassMixins.EventsMixin

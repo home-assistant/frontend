@@ -1,11 +1,12 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import './ha-camera-card.js';
 import './ha-entities-card.js';
 import './ha-history_graph-card.js';
 import './ha-media_player-card.js';
-import './ha-weather-card.js';
 import './ha-persistent_notification-card.js';
 import './ha-plant-card.js';
+import './ha-weather-card.js';
 
 class HaCardChooser extends PolymerElement {
   static get is() { return 'ha-card-chooser'; }

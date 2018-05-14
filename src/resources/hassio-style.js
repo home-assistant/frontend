@@ -1,7 +1,7 @@
-const $_documentContainer = document.createElement('template');
-$_documentContainer.setAttribute('style', 'display: none;');
+const documentContainer = document.createElement('template');
+documentContainer.setAttribute('style', 'display: none;');
 
-$_documentContainer.innerHTML = `<dom-module id="hassio-style">
+documentContainer.innerHTML = `<dom-module id="hassio-style">
   <template>
     <style>
       .card-group {
@@ -55,4 +55,4 @@ $_documentContainer.innerHTML = `<dom-module id="hassio-style">
   </template>
 </dom-module>`;
 
-document.head.appendChild($_documentContainer.content);
+document.head.appendChild(documentContainer.content);

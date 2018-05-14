@@ -1,10 +1,11 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '../components/ha-card.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../components/entity/ha-entity-toggle.js';
+import '../components/ha-card.js';
 import '../state-summary/state-card-content.js';
 import '../util/hass-mixins.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HaEntitiesCard extends
   window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {

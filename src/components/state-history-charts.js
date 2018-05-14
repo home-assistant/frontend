@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-spinner/paper-spinner.js';
-import './state-history-chart-timeline.js';
-import './state-history-chart-line.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import './state-history-chart-line.js';
+import './state-history-chart-timeline.js';
 
 class StateHistoryCharts extends PolymerElement {
   static get template() {

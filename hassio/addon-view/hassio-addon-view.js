@@ -1,18 +1,19 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/app-route/app-route.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/app-route/app-route.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';
-import './hassio-addon-info.js';
-import './hassio-addon-config.js';
-import './hassio-addon-audio.js';
-import './hassio-addon-network.js';
-import './hassio-addon-logs.js';
 import '../hassio-markdown-dialog.js';
+import './hassio-addon-audio.js';
+import './hassio-addon-config.js';
+import './hassio-addon-info.js';
+import './hassio-addon-logs.js';
+import './hassio-addon-network.js';
 
 class HassioAddonView extends PolymerElement {
   static get template() {

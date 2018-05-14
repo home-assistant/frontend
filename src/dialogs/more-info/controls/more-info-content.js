@@ -1,4 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import './more-info-alarm_control_panel.js';
 import './more-info-automation.js';
 import './more-info-camera.js';
@@ -7,8 +8,9 @@ import './more-info-configurator.js';
 import './more-info-cover.js';
 import './more-info-default.js';
 import './more-info-fan.js';
-import './more-info-history_graph.js';
 import './more-info-group.js';
+import './more-info-history_graph.js';
+import './more-info-input_datetime.js';
 import './more-info-light.js';
 import './more-info-lock.js';
 import './more-info-media_player.js';
@@ -16,7 +18,6 @@ import './more-info-script.js';
 import './more-info-sun.js';
 import './more-info-updater.js';
 import './more-info-vacuum.js';
-import './more-info-input_datetime.js';
 import './more-info-weather.js';
 
 class MoreInfoContent extends PolymerElement {

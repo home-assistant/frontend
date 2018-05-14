@@ -1,14 +1,15 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../components/state-history-charts.js';
 import '../../data/ha-state-history-data.js';
+import '../../resources/ha-style.js';
 import '../../state-summary/state-card-content.js';
 import '../../util/hass-mixins.js';
-import '../../resources/ha-style.js';
 import './controls/more-info-content.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 {
   const DOMAINS_NO_INFO = [

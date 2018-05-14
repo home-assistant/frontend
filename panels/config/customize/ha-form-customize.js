@@ -1,11 +1,12 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
-import '../../../src/util/hass-util.js';
-import '../../../src/util/hass-attributes-util.js';
-import './ha-form-customize-attributes.js';
+import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../../src/util/hass-attributes-util.js';
+import '../../../src/util/hass-util.js';
+import './ha-form-customize-attributes.js';
 
 class HaFormCustomize extends PolymerElement {
   static get template() {

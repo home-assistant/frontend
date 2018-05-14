@@ -1,4 +1,5 @@
 import IntlMessageFormat from 'intl-messageformat';
+
 import translationMetadata from '../../build-translations/translationMetadata.json';
 
 // To get app-localize-behavior to work.

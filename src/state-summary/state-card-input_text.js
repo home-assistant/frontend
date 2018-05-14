@@ -1,9 +1,10 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-input/paper-input.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../components/entity/state-info.js';
 import '../util/hass-util.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class StateCardInputText extends PolymerElement {
   static get template() {

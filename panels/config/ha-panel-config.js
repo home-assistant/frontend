@@ -1,18 +1,19 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/iron-media-query/iron-media-query.js';
 import '@polymer/app-route/app-route.js';
+import '@polymer/iron-media-query/iron-media-query.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../build-temp/panel-config.js';
 import '../../src/layouts/hass-error-screen.js';
 import '../../src/util/hass-mixins.js';
-import './dashboard/ha-config-dashboard.js';
-import './core/ha-config-core.js';
-import './cloud/ha-config-cloud.js';
 import './automation/ha-config-automation.js';
+import './cloud/ha-config-cloud.js';
+import './config-entries/ha-config-entries.js';
+import './core/ha-config-core.js';
+import './customize/ha-config-customize.js';
+import './dashboard/ha-config-dashboard.js';
 import './script/ha-config-script.js';
 import './zwave/ha-config-zwave.js';
-import './customize/ha-config-customize.js';
-import './config-entries/ha-config-entries.js';
-import '../../build-temp/panel-config.js';
 
 
 class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {

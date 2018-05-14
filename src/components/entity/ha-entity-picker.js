@@ -1,12 +1,14 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
-import '@polymer/paper-item/paper-icon-item.js';
-import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-item/paper-icon-item.js';
+import '@polymer/paper-item/paper-item-body.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
+
 import '../../util/hass-mixins.js';
 import './state-badge.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */

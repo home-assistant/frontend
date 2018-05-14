@@ -1,15 +1,16 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
-import '../../../util/hass-mixins.js';
+import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../../components/ha-climate-control.js';
 import '../../../components/ha-paper-slider.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import '../../../util/hass-mixins.js';
 
 class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

@@ -1,5 +1,7 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
 import '../../../src/util/hass-attributes-util.js';
 import '../ha-form-style.js';
 import './types/ha-customize-array.js';
@@ -7,7 +9,6 @@ import './types/ha-customize-boolean.js';
 import './types/ha-customize-icon.js';
 import './types/ha-customize-key-value.js';
 import './types/ha-customize-string.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HaCustomizeAttribute extends PolymerElement {
   static get template() {

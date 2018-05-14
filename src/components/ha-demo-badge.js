@@ -1,6 +1,7 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import './ha-label-badge.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import './ha-label-badge.js';
 
 class HaDemoBadge extends PolymerElement {
   static get template() {

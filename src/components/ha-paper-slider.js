@@ -1,11 +1,11 @@
-import '@polymer/polymer/polymer-legacy.js';
 import '@polymer/paper-slider/paper-slider.js';
 import { DomModule } from '@polymer/polymer/lib/elements/dom-module.js';
+import '@polymer/polymer/polymer-legacy.js';
 
-const $_documentContainer = document.createElement('template');
-$_documentContainer.setAttribute('style', 'display: none;');
+const documentContainer = document.createElement('template');
+documentContainer.setAttribute('style', 'display: none;');
 
-$_documentContainer.innerHTML = `<dom-module id="ha-paper-slider">
+documentContainer.innerHTML = `<dom-module id="ha-paper-slider">
   <template strip-whitespace="">
     <style include="paper-slider">
       .pin > .slider-knob > .slider-knob-inner {
@@ -56,10 +56,10 @@ $_documentContainer.innerHTML = `<dom-module id="ha-paper-slider">
     </style>
   </template>
 
-  
+
 </dom-module>`;
 
-document.head.appendChild($_documentContainer.content);
+document.head.appendChild(documentContainer.content);
 
 {
   /**

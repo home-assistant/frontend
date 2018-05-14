@@ -1,4 +1,3 @@
-import moment from 'moment';
 import Chart from 'chart.js';
 import 'chartjs-chart-timeline';
 

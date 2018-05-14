@@ -1,20 +1,22 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-item/paper-item.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
-import '../../src/components/state-history-charts.js';
+
 import '../../src/components/ha-menu-button.js';
+import '../../src/components/state-history-charts.js';
 import '../../src/data/ha-state-history-data.js';
-import '../../src/resources/ha-style.js';
 import '../../src/resources/ha-date-picker-style.js';
+import '../../src/resources/ha-style.js';
 import '../../src/util/hass-mixins.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */

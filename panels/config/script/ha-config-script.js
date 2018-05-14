@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-route/app-route.js';
-import './ha-script-picker.js';
-import './ha-script-editor.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import './ha-script-editor.js';
+import './ha-script-picker.js';
 
 class HaConfigScript extends PolymerElement {
   static get template() {

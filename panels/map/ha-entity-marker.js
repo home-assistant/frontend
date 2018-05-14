@@ -1,8 +1,9 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/iron-image/iron-image.js';
 import '@polymer/iron-icon/iron-icon.js';
-import '../../src/util/hass-mixins.js';
+import '@polymer/iron-image/iron-image.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import '../../src/util/hass-mixins.js';
 
 class HaEntityMarker extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
