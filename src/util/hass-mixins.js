@@ -2,6 +2,7 @@ import { AppLocalizeBehavior } from '@polymer/app-localize-behavior/app-localize
 import { PaperDialogBehavior } from '@polymer/paper-dialog-behavior/paper-dialog-behavior.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
+import '@polymer/polymer/lib/mixins/element-mixin.js';
 
 // Polymer legacy event helpers used courtesy of the Polymer project.
 //
@@ -82,7 +83,7 @@ window.hassMixins.NavigateMixin = dedupingMixin(superClass =>
 
 /**
  * @polymerMixin
- * @appliesMixin Polymer.AppLocalizeBehavior
+ * @appliesMixin AppLocalizeBehavior
  */
 window.hassMixins.LocalizeMixin = dedupingMixin(superClass =>
   class extends mixinBehaviors([AppLocalizeBehavior], superClass) {
@@ -112,7 +113,7 @@ window.hassMixins.LocalizeMixin = dedupingMixin(superClass =>
 /**
  * @polymerMixin
  * @appliesMixin window.hassMixins.EventsMixin
- * @appliesMixin Polymer.PaperDialogBehavior
+ * @appliesMixin PaperDialogBehavior
  */
 window.hassMixins.DialogMixin = dedupingMixin(superClass =>
   class extends mixinBehaviors([window.hassMixins.EventsMixin,
