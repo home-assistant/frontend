@@ -1,7 +1,6 @@
 const path = require('path');
 
 function createConfig(isProdBuild, latestBuild) {
-  // if (isProdBuild) {}
   let buildPath = latestBuild ? 'build/webpack/' : 'build-es5/webpack/';
 
   let publicPath;
@@ -15,7 +14,6 @@ function createConfig(isProdBuild, latestBuild) {
   if (!latestBuild) {
     rules.push({
       test: /\.js$/,
-      // exclude: /(node_modules|bower_components)/,
       use: {
         loader: 'babel-loader',
         options: {
