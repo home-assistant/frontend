@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf build/* build-temp/* build-es5/* build-temp-es5/* build-translations/*",
     "gulp": "gulp",
-    "build": "BUILD_DEV=0 gulp",
+    "build": "BUILD_DEV=0 gulp && NODE_ENV=production webpack -p",
     "build_demo": "BUILD_DEV=0 BUILD_DEMO=1 gulp",
     "dev": "npm run gulp ru_all gen-service-worker",
     "dev-watch": "npm run gulp watch_ru_all gen-service-worker",

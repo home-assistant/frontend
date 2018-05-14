@@ -5,7 +5,7 @@
       "browsers": [{
           "browserName": "chrome",
           "platform": "Linux",
-          "version": "latest"
+          "version": "62"
         }, {
           "browserName": "safari",
           "platform": "macOS 10.12",
