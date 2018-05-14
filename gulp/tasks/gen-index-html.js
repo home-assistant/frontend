@@ -8,7 +8,7 @@ const { minifyStream } = require('../common/transform');
 
 const buildReplaces = {
   '/home-assistant-polymer/build/core.js': 'core.js',
-  '/home-assistant-polymer/build/app.js': 'app.js',
+  '/home-assistant-polymer/build/webpack/app.js': 'app.js',
 };
 
 function generateIndex(es6) {

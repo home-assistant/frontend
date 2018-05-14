@@ -2,7 +2,7 @@ const path = require('path');
 
 function createConfig(isProdBuild, latestBuild) {
   // if (isProdBuild) {}
-  let buildPath = latestBuild ? 'build/webpack/' : 'build/webpack-es5/';
+  let buildPath = latestBuild ? 'build/webpack/' : 'build-es5/webpack/';
 
   let publicPath;
   if (isProdBuild) {
