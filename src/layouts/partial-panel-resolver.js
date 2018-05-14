@@ -1,17 +1,17 @@
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-route/app-route.js';
+import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../util/hass-mixins.js';
 import './hass-loading-screen.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { importHref } from '../resources/html-import/import-href';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 
-const loaded = {}
+const loaded = {};
 
 function ensureLoaded(panel) {
   if (panel in loaded) return loaded[panel];
 
-  let imported = null;
+  let imported;
   // Name each panel we support here, that way Webpack knows about it.
   switch (panel) {
     case 'config':
@@ -73,6 +73,9 @@ function ensureLoaded(panel) {
     case 'shopping-list':
       imported = import(/* webpackChunkName: "panel-shopping-list" */ '../../panels/shopping-list/ha-panel-shopping-list.js');
       break;
+
+    default:
+      imported = null;
   }
 
   if (imported != null) {
@@ -150,8 +153,7 @@ class PartialPanelResolver extends window.hassMixins.NavigateMixin(PolymerElemen
 
     let loadingProm;
     if (panel.url) {
-      loadingProm = new Promise(
-        (resolve, reject) => importHref(panel.url, resolve, reject));
+      loadingProm = new Promise((resolve, reject) => importHref(panel.url, resolve, reject));
     } else {
       loadingProm = ensureLoaded(panel.component_name);
     }
@@ -174,7 +176,8 @@ class PartialPanelResolver extends window.hassMixins.NavigateMixin(PolymerElemen
       },
 
       (err) => {
-        console.error("Error loading panel", err);
+        /* eslint-disable-next-line */
+        console.error('Error loading panel', err);
         // a single retry of importHref in the error callback fixes a webkit refresh issue
         if (!this.retrySetPanelForWebkit(panel)) {
           this.panelLoadError(panel);
