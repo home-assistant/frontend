@@ -1,8 +1,8 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/util/hass-mixins.js';
 import './hassio-repositories-editor.js';
 import './hassio-addon-repository.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioAddonStore extends PolymerElement {
   static get template() {

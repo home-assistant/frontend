@@ -1,10 +1,10 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-button/paper-button.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/buttons/ha-call-api-button.js';
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioHassUpdate extends PolymerElement {
   static get template() {
@@ -21,9 +21,9 @@ class HassioHassUpdate extends PolymerElement {
       }
     </style>
     <template is="dom-if" if="[[computeUpdateAvailable(hassInfo)]]">
-      <div class="content"> 
+      <div class="content">
         <div class="card-group">
-          <div class="title">Update available! 🎉</div>     
+          <div class="title">Update available! 🎉</div>
           <paper-card>
             <div class="card-content">
               <hassio-card-content title="Home Assistant [[hassInfo.last_version]] is available" description="You are currently running version [[hassInfo.version]]" icon="mdi:home-assistant" icon-class="hassupdate"></hassio-card-content>

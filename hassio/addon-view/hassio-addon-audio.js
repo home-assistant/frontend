@@ -4,10 +4,11 @@ import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-item/paper-item.js';
-import '@polymer/neon-animation/web-animations.js';
+// Needed for paper-dropdown-menu
+import 'web-animations-js/web-animations-next-lite.min.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/resources/ha-style.js';
 import '../../src/util/hass-mixins.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioAddonAudio extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
@@ -34,7 +35,7 @@ class HassioAddonAudio extends window.hassMixins.EventsMixin(PolymerElement) {
         <template is="dom-if" if="[[error]]">
           <div class="errors">[[error]]</div>
         </template>
-        
+
         <paper-dropdown-menu label="Input">
           <paper-listbox slot="dropdown-content" attr-for-selected="device" selected="{{selectedInput}}">
             <template is="dom-repeat" items="[[inputDevices]]">

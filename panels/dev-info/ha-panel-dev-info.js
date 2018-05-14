@@ -203,7 +203,7 @@ class HaPanelDevInfo extends PolymerElement {
     <paper-dialog with-backdrop id="showlog">
       <h2>Log Details ([[selectedItem.level]])</h2>
       <paper-dialog-scrollable id="scrollable">
-	      <p>[[fullTimeStamp(selectedItem.timestamp)]]</p>
+        <p>[[fullTimeStamp(selectedItem.timestamp)]]</p>
         <template is='dom-if' if='[[selectedItem.message]]'>
           <pre>[[selectedItem.message]]</pre>
         </template>

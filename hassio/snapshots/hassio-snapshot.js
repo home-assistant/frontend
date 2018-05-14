@@ -6,8 +6,8 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-input/paper-input.js';
-import '../../src/resources/ha-style.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import '../../src/resources/ha-style.js';
 
 class HassioSnapshot extends PolymerElement {
   static get template() {

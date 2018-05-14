@@ -4,6 +4,7 @@ import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';
 import './hassio-addon-info.js';
@@ -12,7 +13,6 @@ import './hassio-addon-audio.js';
 import './hassio-addon-network.js';
 import './hassio-addon-logs.js';
 import '../hassio-markdown-dialog.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioAddonView extends PolymerElement {
   static get template() {
@@ -21,7 +21,7 @@ class HassioAddonView extends PolymerElement {
       :host {
         color: var(--primary-text-color);
         --paper-card-header-color: var(--primary-text-color);
-      }      
+      }
       .content {
         padding: 24px 0 32px;
         max-width: 600px;
@@ -37,7 +37,7 @@ class HassioAddonView extends PolymerElement {
     <app-route route="[[route]]" pattern="/addon/:slug" data="{{routeData}}" active="{{routeMatches}}"></app-route>
     <app-header-layout has-scrolling-region="">
       <app-header fixed="" slot="header">
-        <app-toolbar>            
+        <app-toolbar>
           <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
           <paper-icon-button icon="mdi:arrow-left" on-click="backTapped"></paper-icon-button>
           <div main-title="">Hass.io: add-on details</div>

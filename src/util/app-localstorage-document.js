@@ -1,4 +1,5 @@
 /* Forked because it contained an import.meta which webpack doesn't support. */
+/* eslint-disable */
 /**
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.

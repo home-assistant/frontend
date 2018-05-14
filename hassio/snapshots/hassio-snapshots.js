@@ -5,10 +5,10 @@ import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-radio-group/paper-radio-group.js';
 import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/util/hass-mixins.js';
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioSnapshots extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

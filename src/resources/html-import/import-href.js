@@ -35,7 +35,7 @@ function whenImportsReady(cb) {
  *   Defaults to `false`.
  * @return {!HTMLLinkElement} The link element for the URL to be loaded.
  */
-export const importHref = function(href, onload, onerror, optAsync) {
+export const importHref = function (href, onload, onerror, optAsync) {
   let link = /** @type {HTMLLinkElement} */
     (document.head.querySelector('link[href="' + href + '"][import-href]'));
   if (!link) {
@@ -52,11 +52,11 @@ export const importHref = function(href, onload, onerror, optAsync) {
   // NOTE: the link may now be in 3 states: (1) pending insertion,
   // (2) inflight, (3) already loaded. In each case, we need to add
   // event listeners to process callbacks.
-  let cleanup = function() {
+  const cleanup = function () {
     link.removeEventListener('load', loadListener);
     link.removeEventListener('error', errorListener);
   };
-  let loadListener = function(event) {
+  let loadListener = function (event) {
     cleanup();
     // In case of a successful load, cache the load event on the link so
     // that it can be used to short-circuit this method in the future when
@@ -68,7 +68,7 @@ export const importHref = function(href, onload, onerror, optAsync) {
       });
     }
   };
-  let errorListener = function(event) {
+  let errorListener = function (event) {
     cleanup();
     // In case of an error, remove the link from the document so that it
     // will be automatically created again the next time `importHref` is

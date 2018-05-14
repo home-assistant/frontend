@@ -2,14 +2,13 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-button/paper-button.js';
-import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/buttons/ha-call-api-button.js';
 import '../../src/components/ha-markdown.js';
 import '../../src/resources/ha-style.js';
 import '../../src/components/hassio-card-content.js';
 import '../../src/util/hass-mixins.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioAddonInfo extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
@@ -53,11 +52,11 @@ class HassioAddonInfo extends window.hassMixins.EventsMixin(PolymerElement) {
       }
       iron-icon.stopped {
         color: var(--google-red-300);
-      }      
+      }
       ha-call-api-button {
         font-weight: 500;
         color: var(--primary-color);
-      }      
+      }
       .right {
         float: right;
       }

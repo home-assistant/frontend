@@ -1,11 +1,11 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-route/app-route.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../src/layouts/hass-loading-screen.js';
 import '../src/util/hass-util.js';
 import './hassio-data.js';
 import './hassio-pages-with-tabs.js';
 import './addon-view/hassio-addon-view.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
@@ -23,7 +23,7 @@ class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
       </template>
       <template is="dom-if" if="[[equalsAddon(routeData.page)]]">
         <hassio-addon-view hass="[[hass]]" narrow="[[narrow]]" show-menu="[[showMenu]]" route="[[route]]"></hassio-addon-view>
-      </template>        
+      </template>
     </template>
 `;
   }

@@ -103,7 +103,7 @@ class DatetimeInput extends PolymerElement {
     };
 
     if (this.stateObj.attributes.has_time) {
-      changed |= this.selectedTime !== `${this.stateObj.attributes.hour}:${this.stateObj.attributes.minute}`
+      changed |= this.selectedTime !== `${this.stateObj.attributes.hour}:${this.stateObj.attributes.minute}`;
       serviceData.time = this.selectedTime;
     }
 

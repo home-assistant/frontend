@@ -223,7 +223,7 @@ class HaSidebar extends
       attr = target.getAttribute('data-panel');
       target = target.parentElement;
       checks--;
-    } while (checks > 0 && target !== null && !attr)
+    } while (checks > 0 && target !== null && !attr);
 
     if (checks > 0 && target !== null) {
       this.selectPanel(attr);

@@ -119,7 +119,7 @@ class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
                 </div>
               </paper-item-body>
             </paper-item>
-    		  </template>
+          </template>
         </paper-card>
       </div>
     </app-header-layout>

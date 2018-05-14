@@ -5,6 +5,7 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/paper-tabs/paper-tabs.js';
 import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../src/components/ha-menu-button.js';
 import '../src/util/hass-mixins.js';
 import '../src/resources/ha-style.js';
@@ -14,7 +15,6 @@ import './snapshots/hassio-snapshot.js';
 import './addon-store/hassio-addon-store.js';
 import './system/hassio-system.js';
 import './hassio-markdown-dialog.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {
@@ -32,7 +32,7 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(PolymerElement
     </style>
     <app-header-layout has-scrolling-region="">
       <app-header fixed="" slot="header">
-        <app-toolbar>            
+        <app-toolbar>
           <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
           <div main-title="">Hass.io</div>
           <template is="dom-if" if="[[showRefreshButton(page)]]">

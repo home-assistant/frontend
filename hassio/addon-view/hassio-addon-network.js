@@ -1,10 +1,10 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-input/paper-input.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/util/hass-mixins.js';
 import '../../src/resources/ha-style.js';
 import '../../src/components/buttons/ha-call-api-button.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HassioAddonNetwork extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
