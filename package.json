@@ -15,7 +15,7 @@
     "dev-watch": "npm run gulp watch_ru_all gen-service-worker",
     "dev-es5": "npm run gulp ru_all_es5 gen-service-worker-es5",
     "dev-watch-es5": "npm run gulp watch_ru_all_es5 gen-service-worker-es5",
-    "lint_js": "eslint src panels js hassio test-mocha --ext js,html",
+    "lint_js": "eslint src panels js hassio test-mocha",
     "lint_html": "find src panels hassio -name '*.html' | grep -v hassio/index.html | xargs polymer lint --input",
     "mocha": "node_modules/.bin/mocha --opts test-mocha/mocha.opts",
     "test": "npm run lint_js && npm run lint_html && npm run mocha"
@@ -99,7 +99,6 @@
     "del": "^3.0.0",
     "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-html": "^4.0.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-react": "^7.0.0",
     "gulp": "^3.9.1",

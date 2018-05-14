@@ -15,22 +15,22 @@
   </head>
   <body>
     <hassio-app></hassio-app>
-    <script type="module">
-import './hassio-app.js';
-function addScript(src) {
-  var e = document.createElement('script');
-  e.src = src;
-  document.head.appendChild(e);
-}
-var webComponentsSupported = (
-  'customElements' in window &&
-  'import' in document.createElement('link') &&
-  'content' in document.createElement('template'));
-if (!webComponentsSupported) {
-  addScript('/static/webcomponents-bundle.js');
-}
-</script>
-    <script type="module" src="./hassio-app.js"></script>
+    <script>
+    function addScript(src) {
+      var e = document.createElement('script');
+      e.src = src;
+      document.head.appendChild(e);
+    }
+    var webComponentsSupported = (
+      'customElements' in window &&
+      'import' in document.createElement('link') &&
+      'content' in document.createElement('template'));
+    if (!webComponentsSupported) {
+      addScript('/static/webcomponents-bundle.js');
+    }
+    </script>
+    <!-- This is broken. -->
+    <script src="./hassio-app.js"></script>
     <link rel='import' href='/static/mdi.html' async>
   </body>
 </html>
