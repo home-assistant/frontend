@@ -382,13 +382,6 @@
     "@polymer/paper-styles" "^3.0.0-pre.19"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/paper-material@^3.0.0-pre.18":
-  version "3.0.0-pre.19"
-  resolved "https://registry.yarnpkg.com/@polymer/paper-material/-/paper-material-3.0.0-pre.19.tgz#93cfc099a6f3c4f30615849c81e4965c08262ce0"
-  dependencies:
-    "@polymer/paper-styles" "^3.0.0-pre.19"
-    "@polymer/polymer" "^3.0.0"
-
 "@polymer/paper-menu-button@^3.0.0-pre.18", "@polymer/paper-menu-button@^3.0.0-pre.19":
   version "3.0.0-pre.19"
   resolved "https://registry.yarnpkg.com/@polymer/paper-menu-button/-/paper-menu-button-3.0.0-pre.19.tgz#92402c4da6fe4fe31295e8de19c71ff39ad2a824"

@@ -1,16 +1,16 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-material/paper-material.js';
+import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class HaCard extends PolymerElement {
   static get template() {
     return html`
-    <style include="paper-material">
+    <style include="paper-material-styles">
       :host {
+        @apply --paper-material-elevation-1;
         display: block;
         border-radius: 2px;
         transition: all 0.30s ease-out;
-
         background-color: var(--paper-card-background-color, white);
       }
       .header {
@@ -35,14 +35,6 @@ class HaCard extends PolymerElement {
     return {
       header: {
         type: String,
-      },
-      /**
-       * The z-depth of the card, from 0-5.
-       */
-      elevation: {
-        type: Number,
-        value: 1,
-        reflectToAttribute: true,
       },
     };
   }

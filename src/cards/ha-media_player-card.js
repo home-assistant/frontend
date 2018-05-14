@@ -1,6 +1,6 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-material/paper-material.js';
+import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-progress/paper-progress.js';
 import '../util/hass-media-player-model.js';
@@ -14,8 +14,9 @@ class HaMediaPlayerCard extends
   window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style include="paper-material iron-flex iron-flex-alignment iron-positioning">
+    <style include="paper-material-styles iron-flex iron-flex-alignment iron-positioning">
       :host {
+        @apply --paper-material-elevation-1;
         display: block;
         position: relative;
         font-size: 0px;
@@ -193,14 +194,6 @@ class HaMediaPlayerCard extends
         computed: 'computePlaybackControlIcon(playerObj)',
       },
       playbackPosition: Number,
-      /**
-       * The z-depth of the card, from 0-5.
-       */
-      elevation: {
-        type: Number,
-        value: 1,
-        reflectToAttribute: true,
-      },
     };
   }
 
