@@ -153,14 +153,9 @@ class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
     // We are unable to parse date because we use intl api to render date
-    // So we just return last known date.
-    var lastFormatDate = new Date();
-    this.$.picker.set('i18n.parseDate', function () {
-      return lastFormatDate;
-    });
+    this.$.picker.set('i18n.parseDate', null);
     this.$.picker.set('i18n.formatDate', function (date) {
-      lastFormatDate = date;
-      return window.hassUtil.formatDate(date);
+      return window.hassUtil.formatDate(new Date(date.year, date.month, date.day));
     });
   }
 
