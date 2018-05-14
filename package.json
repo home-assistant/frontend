@@ -32,6 +32,7 @@
     "@polymer/iron-autogrow-textarea": "^3.0.0-pre.18",
     "@polymer/iron-flex-layout": "^3.0.0-pre.18",
     "@polymer/iron-icon": "^3.0.0-pre.18",
+    "@polymer/iron-iconset-svg": "^3.0.0-pre.19",
     "@polymer/iron-image": "^3.0.0-pre.18",
     "@polymer/iron-input": "^3.0.0-pre.18",
     "@polymer/iron-label": "^3.0.0-pre.18",
