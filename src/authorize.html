@@ -7,21 +7,20 @@
   </head>
   <body>
     <ha-authorize>Loading</ha-authorize>
-    <script type="module">
-import './auth/ha-authorize.js';
-function addScript(src) {
-  var e = document.createElement('script');
-  e.src = src;
-  document.head.appendChild(e);
-}
-var webComponentsSupported = (
-  'customElements' in window &&
-  'import' in document.createElement('link') &&
-  'content' in document.createElement('template'));
-if (!webComponentsSupported) {
-  addScript('/static/webcomponents-lite.js');
-}
-</script>
-    <script type="module" src="./auth/ha-authorize.js"></script>
+    <script>
+    function addScript(src) {
+      var e = document.createElement('script');
+      e.src = src;
+      document.head.appendChild(e);
+    }
+    var webComponentsSupported = (
+      'customElements' in window &&
+      'import' in document.createElement('link') &&
+      'content' in document.createElement('template'));
+    if (!webComponentsSupported) {
+      addScript('/static/webcomponents-lite.js');
+    }
+    </script>
+    <script src="/home-assistant-polymer/build/webpack/ha-authorize.js"></script>
   </body>
 </html>
