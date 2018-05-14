@@ -50,7 +50,6 @@
     "@polymer/paper-input": "^3.0.0-pre.18",
     "@polymer/paper-item": "^3.0.0-pre.18",
     "@polymer/paper-listbox": "^3.0.0-pre.18",
-    "@polymer/paper-material": "^3.0.0-pre.18",
     "@polymer/paper-menu-button": "^3.0.0-pre.18",
     "@polymer/paper-progress": "^3.0.0-pre.18",
     "@polymer/paper-radio-button": "^3.0.0-pre.18",

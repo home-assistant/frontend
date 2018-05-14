@@ -1,5 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-material/paper-material.js';
+import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import '../util/hass-mixins.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
@@ -13,8 +13,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
     window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
     static get template() {
       return html`
-    <style include="paper-material">
+    <style include="paper-material-styles">
       :host {
+        @apply --paper-material-elevation-1;
         display: block;
         position: relative;
         font-size: 0px;
@@ -69,14 +70,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
         imageLoaded: {
           type: Boolean,
           value: true,
-        },
-        /**
-         * The z-depth of the card, from 0-5.
-         */
-        elevation: {
-          type: Number,
-          value: 1,
-          reflectToAttribute: true,
         },
       };
     }
