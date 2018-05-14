@@ -2,8 +2,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-// TODO: References import.meta
-// import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
 import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button/paper-button.js';
@@ -11,6 +9,7 @@ import '@polymer/paper-input/paper-textarea.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';
+import '../../src/util/app-localstorage-document.js';
 
 class HaPanelDevMqtt extends PolymerElement {
   static get template() {
