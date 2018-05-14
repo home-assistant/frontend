@@ -8,8 +8,7 @@ const { minifyStream } = require('../common/transform');
 
 const buildReplaces = {
   '/home-assistant-polymer/build/core.js': 'core.js',
-  '/home-assistant-polymer/src/home-assistant.html': 'frontend.html',
-  '/home-assistant-polymer/src/resources/ha-chart-scripts.html': 'ha-chart-scripts.html',
+  '/home-assistant-polymer/build/app.js': 'app.js',
 };
 
 function generateIndex(es6) {

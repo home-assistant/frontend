@@ -27,7 +27,7 @@ var webComponentsSupported = (
   'import' in document.createElement('link') &&
   'content' in document.createElement('template'));
 if (!webComponentsSupported) {
-  addScript('/static/webcomponents-lite.js');
+  addScript('/static/webcomponents-bundle.js');
 }
 </script>
     <script type="module" src="./hassio-app.js"></script>

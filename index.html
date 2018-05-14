@@ -87,7 +87,7 @@
       if (!webComponentsSupported) {
         var e = document.createElement('script');
         e.onerror = initError;
-        e.src = '/static/webcomponents-lite.js';
+        e.src = '/static/webcomponents-bundle.js';
         if ('import' in document.createElement('link')) {
           document.write(e.outerHTML);
         } else {
@@ -103,7 +103,7 @@
     <!--<script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script>-->
     <!--EXTRA_SCRIPTS-->
     <script src='/home-assistant-polymer/build/core.js'></script>
-    <script src='/home-assistant-polymer/build/webpack/index.bundle.js'></script>
+    <script src='/home-assistant-polymer/build/webpack/app.js'></script>
     <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
     {% for extra_url in extra_urls -%}
       <link rel='import' href='{{ extra_url }}' async>
