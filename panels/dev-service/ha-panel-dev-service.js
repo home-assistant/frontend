@@ -4,13 +4,12 @@ import '@polymer/paper-input/paper-textarea.js';
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-// TODO: References import.meta
-// import '@polymer/app-storage/app-localstorage/app-localstorage-document.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/components/entity/ha-entity-picker.js';
 import '../../src/components/ha-service-picker.js';
 import '../../src/resources/ha-style.js';
+import '../../src/util/app-localstorage-document.js';
 
 {
   const ERROR_SENTINEL = {};
