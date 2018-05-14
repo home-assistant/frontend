@@ -28,7 +28,8 @@
     "filesToIgnore": [
       "**/*.html",
       "**/ha-paper-slider.js",
-      "**/hass-mixins.js"
+      "**/hass-mixins.js",
+      "**/ha-iconset-svg.js"
     ]
   },
   "builds": [

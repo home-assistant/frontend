@@ -21,6 +21,8 @@ import './util/hass-translation.js';
 import './util/hass-util.js';
 import './util/legacy-support';
 import './util/roboto.js';
+// For mdi icons.
+import './components/ha-iconset-svg.js';
 
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
