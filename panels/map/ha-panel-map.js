@@ -2,12 +2,13 @@ import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import Leaflet from 'leaflet';
 
 import '../../src/components/ha-menu-button.js';
 import '../../src/util/hass-mixins.js';
 import './ha-entity-marker.js';
 
-window.L.Icon.Default.imagePath = '/static/images/leaflet';
+Leaflet.Icon.Default.imagePath = '/static/images/leaflet';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
@@ -53,7 +54,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    var map = this._map = window.L.map(this.$.map);
+    var map = this._map = Leaflet.map(this.$.map);
     var style = document.createElement('link');
     style.setAttribute('href', window.HASS_DEV ?
       '/home-assistant-polymer/bower_components/leaflet/dist/leaflet.css' :
@@ -61,7 +62,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
     style.setAttribute('rel', 'stylesheet');
     this.$.map.parentNode.appendChild(style);
     map.setView([51.505, -0.09], 13);
-    window.L.tileLayer(
+    Leaflet.tileLayer(
       'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
       {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
@@ -82,11 +83,11 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
 
     if (this._mapItems.length === 0) {
       this._map.setView(
-        new window.L.LatLng(this.hass.config.core.latitude, this.hass.config.core.longitude),
+        new Leaflet.LatLng(this.hass.config.core.latitude, this.hass.config.core.longitude),
         14
       );
     } else {
-      bounds = new window.L.latLngBounds(this._mapItems.map(item => item.getLatLng()));
+      bounds = new Leaflet.latLngBounds(this._mapItems.map(item => item.getLatLng()));
       this._map.fitBounds(bounds.pad(0.5));
     }
   }
@@ -128,14 +129,14 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
           iconHTML = title;
         }
 
-        icon = window.L.divIcon({
+        icon = Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
           className: '',
         });
 
         // create market with the icon
-        mapItems.push(window.L.marker(
+        mapItems.push(Leaflet.marker(
           [entity.attributes.latitude, entity.attributes.longitude],
           {
             icon: icon,
@@ -145,7 +146,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
         ).addTo(map));
 
         // create circle around it
-        mapItems.push(window.L.circle(
+        mapItems.push(Leaflet.circle(
           [entity.attributes.latitude, entity.attributes.longitude],
           {
             interactive: false,
@@ -163,14 +164,14 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
       var entityName = title.split(' ').map(function (part) { return part.substr(0, 1); }).join('');
       /* Leaflet clones this element before adding it to the map. This messes up
          our Polymer object and we can't pass data through. Thus we hack like this. */
-      icon = window.L.divIcon({
+      icon = Leaflet.divIcon({
         html: "<ha-entity-marker entity-id='" + entity.entity_id + "' entity-name='" + entityName + "' entity-picture='" + entityPicture + "'></ha-entity-marker>",
         iconSize: [45, 45],
         className: '',
       });
 
       // create market with the icon
-      mapItems.push(window.L.marker(
+      mapItems.push(Leaflet.marker(
         [entity.attributes.latitude, entity.attributes.longitude],
         {
           icon: icon,
@@ -180,7 +181,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
 
       // create circle around if entity has accuracy
       if (entity.attributes.gps_accuracy) {
-        mapItems.push(window.L.circle(
+        mapItems.push(Leaflet.circle(
           [entity.attributes.latitude, entity.attributes.longitude],
           {
             interactive: false,
