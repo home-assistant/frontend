@@ -18,17 +18,17 @@ export default class ZoneCondition extends Component {
   }
 
   entityPicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.condition,
-      entity_id: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.condition,
+      { entity_id: ev.target.value },
+    ));
   }
 
   zonePicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.condition,
-      zone: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.condition,
+      { zone: ev.target.value },
+    ));
   }
 
   /* eslint-disable camelcase */

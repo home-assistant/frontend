@@ -11,17 +11,17 @@ export default class ScriptEditor extends Component {
   }
 
   onChange(ev) {
-    this.props.onChange({
-      ...this.props.script,
-      [ev.target.name]: ev.target.value,
-    });
+    this.props.onChange(Object.assign(
+      {}, this.props.script,
+      { [ev.target.name]: ev.target.value }
+    ));
   }
 
   sequenceChanged(sequence) {
-    this.props.onChange({
-      ...this.props.script,
-      sequence,
-    });
+    this.props.onChange(Object.assign(
+      {}, this.props.script,
+      { sequence },
+    ));
   }
 
   render({ script, isWide, hass, localize }) {
