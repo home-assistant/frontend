@@ -1,4 +1,5 @@
 const gulp = require('gulp');
+const path = require('path');
 const replace = require('gulp-batch-replace');
 const rename = require('gulp-rename');
 
@@ -11,8 +12,12 @@ const {
 const es5Extra = "<script src='/frontend_es5/custom-elements-es5-adapter.js'></script>";
 
 async function buildAuth(es6) {
-  let stream = await bundledStreamFromHTML('src/authorize.html');
-  stream = stream.pipe(replace([['<!--EXTRA_SCRIPTS-->', es6 ? '' : es5Extra]]));
+  const frontendPath = es6 ? 'hass_frontend_latest' : 'hass_frontend_es5';
+  const stream = gulp.src(path.resolve(config.polymer_dir, 'src/authorize.html'))
+    .pipe(replace([
+      ['<!--EXTRA_SCRIPTS-->', es6 ? '' : es5Extra],
+      ['/home-assistant-polymer/build/webpack/ha-authorize.js', `/${frontendPath}/authorize.js`],
+    ]));
 
   return minifyStream(stream, /* es6= */ es6)
     .pipe(rename('authorize.html'))

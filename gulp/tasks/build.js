@@ -31,6 +31,7 @@ function renamePanel(path) {
 }
 
 function build(es6) {
+  return;
   const strategy = composeStrategies([
     generateShellMergeStrategy(polymerConfig.shell),
     stripImportsStrategy([

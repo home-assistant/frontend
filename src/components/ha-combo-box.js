@@ -1,0 +1,86 @@
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-item/paper-item.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
+
+class HaComboBox extends PolymerElement {
+  static get template() {
+    return html`
+    <style>
+      paper-input > paper-icon-button {
+        width: 24px;
+        height: 24px;
+        padding: 2px;
+        color: var(--secondary-text-color);
+      }
+      [hidden] {
+        display: none;
+      }
+    </style>
+    <vaadin-combo-box-light items="[[_items]]" item-value-path="[[itemValuePath]]" item-label-path="[[itemLabelPath]]" value="{{value}}" opened="{{opened}}" allow-custom-value="[[allowCustomValue]]">
+      <paper-input autofocus="[[autofocus]]" label="[[label]]" class="input" value="[[value]]">
+        <paper-icon-button slot="suffix" class="clear-button" icon="mdi:close" hidden\$="[[!value]]">Clear</paper-icon-button>
+        <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden\$="[[!items.length]]">Toggle</paper-icon-button>
+      </paper-input>
+      <template>
+        <style>
+            paper-item {
+              margin: -5px -10px;
+            }
+        </style>
+        <paper-item>[[_computeItemLabel(item, itemLabelPath)]]</paper-item>
+      </template>
+    </vaadin-combo-box-light>
+`;
+  }
+
+  static get is() { return 'ha-combo-box'; }
+
+  static get properties() {
+    return {
+      allowCustomValue: Boolean,
+      items: {
+        type: Object,
+        observer: '_itemsChanged',
+      },
+      _items: Object,
+      itemLabelPath: String,
+      itemValuePath: String,
+      autofocus: Boolean,
+      label: String,
+      opened: {
+        type: Boolean,
+        value: false,
+        observer: '_openedChanged',
+      },
+      value: {
+        type: String,
+        notify: true,
+      },
+    };
+  }
+
+  _openedChanged(newVal) {
+    if (!newVal) {
+      this._items = this.items;
+    }
+  }
+
+  _itemsChanged(newVal) {
+    if (!this.opened) {
+      this._items = newVal;
+    }
+  }
+
+  _computeToggleIcon(opened) {
+    return opened ? 'mdi:menu-up' : 'mdi:menu-down';
+  }
+
+  _computeItemLabel(item, itemLabelPath) {
+    return itemLabelPath ? item[itemLabelPath] : item;
+  }
+}
+
+customElements.define(HaComboBox.is, HaComboBox);
