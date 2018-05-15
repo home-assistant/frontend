@@ -1,9 +1,9 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-util.js';
 import '../ha-relative-time.js';
 import './state-badge.js';
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
 
 class StateInfo extends PolymerElement {
   static get template() {
@@ -78,7 +78,7 @@ class StateInfo extends PolymerElement {
   }
 
   computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 }
 

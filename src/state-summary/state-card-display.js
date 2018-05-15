@@ -4,7 +4,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
 import '../util/hass-mixins.js';
-import '../util/hass-util.js';
+
+import computeStateDisplay from '../../js/common/entity/compute_state_display.js';
+import attributeClassNames from '../../js/common/entity/attribute_class_names.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
@@ -56,13 +58,13 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 
   computeStateDisplay(localize, stateObj, language) {
-    return window.hassUtil.computeStateDisplay(localize, stateObj, language);
+    return computeStateDisplay(localize, stateObj, language);
   }
 
   computeClassNames(stateObj) {
     const classes = [
       'state',
-      window.hassUtil.attributeClassNames(stateObj, ['unit_of_measurement']),
+      attributeClassNames(stateObj, ['unit_of_measurement']),
     ];
     return classes.join(' ');
   }

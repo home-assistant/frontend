@@ -2,6 +2,8 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import domainIcon from '../../js/common/entity/domain_icon.js';
+
 class DomainIcon extends PolymerElement {
   static get template() {
     return html`
@@ -26,7 +28,7 @@ class DomainIcon extends PolymerElement {
   }
 
   computeIcon(domain, state) {
-    return window.hassUtil.domainIcon(domain, state);
+    return domainIcon(domain, state);
   }
 }
 
