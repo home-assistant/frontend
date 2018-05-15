@@ -8,8 +8,8 @@ install: yarn install
 script:
   - npm run build
   - npm run test
-  - xvfb-run wct --module-resolution=node --npm
-  - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --module-resolution=node --npm --plugin sauce; fi'
+  # - xvfb-run wct --module-resolution=node --npm
+  # - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --module-resolution=node --npm --plugin sauce; fi'
 services:
   - docker
 before_deploy:
