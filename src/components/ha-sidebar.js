@@ -213,7 +213,7 @@ class HaSidebar extends
   menuClicked(ev) {
     // Selection made inside dom-repeat
     if (ev.model) {
-      this.selectPanel(ev.model.item.component_name);
+      this.selectPanel(ev.model.item.url_path);
       return;
     }
 
