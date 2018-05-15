@@ -15,31 +15,31 @@ export default class Automation extends Component {
   }
 
   onChange(ev) {
-    this.props.onChange({
-      ...this.props.automation,
-      [ev.target.name]: ev.target.value,
-    });
+    this.props.onChange(Object.assign(
+      {}, this.props.automation,
+      { [ev.target.name]: ev.target.value },
+    ));
   }
 
   triggerChanged(trigger) {
-    this.props.onChange({
-      ...this.props.automation,
-      trigger,
-    });
+    this.props.onChange(Object.assign(
+      {}, this.props.automation,
+      { trigger },
+    ));
   }
 
   conditionChanged(condition) {
-    this.props.onChange({
-      ...this.props.automation,
-      condition,
-    });
+    this.props.onChange(Object.assign(
+      {}, this.props.automation,
+      { condition },
+    ));
   }
 
   actionChanged(action) {
-    this.props.onChange({
-      ...this.props.automation,
-      action,
-    });
+    this.props.onChange(Object.assign(
+      {}, this.props.automation,
+      { action },
+    ));
   }
 
   render({ automation, isWide, hass, localize }) {

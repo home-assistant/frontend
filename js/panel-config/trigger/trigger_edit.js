@@ -35,10 +35,10 @@ export default class TriggerEdit extends Component {
     const type = ev.target.selectedItem.attributes.platform.value;
 
     if (type !== this.props.trigger.platform) {
-      this.props.onChange(this.props.index, {
-        platform: type,
-        ...TYPES[type].defaultConfig
-      });
+      this.props.onChange(this.props.index, Object.assign(
+        { platform: type },
+        TYPES[type].defaultConfig
+      ));
     }
   }
 

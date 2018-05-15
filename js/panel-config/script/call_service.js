@@ -11,17 +11,17 @@ export default class CallServiceAction extends Component {
   }
 
   serviceChanged(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.action,
-      service: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.action,
+      { service: ev.target.value },
+    ));
   }
 
   serviceDataChanged(data) {
-    this.props.onChange(this.props.index, {
-      ...this.props.action,
-      data,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.action,
+      { data },
+    ));
   }
 
   render({ action, hass, localize }) {

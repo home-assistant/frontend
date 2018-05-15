@@ -80,7 +80,6 @@ gulp.task('run_rollup_es5', () => gulp.src([
 
 gulp.task('run_rollup', () => gulp.src([
   'js/core.js',
-  'js/panel-config/panel-config.js',
   'js/util.js',
   'demo_data/demo_data.js',
 ])
