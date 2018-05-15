@@ -1,10 +1,4 @@
-// Package.json doesn't contain a 'module' pointer. Do it manually
-import IntlMessageFormat from 'intl-messageformat/src/main.js';
-
 import translationMetadata from '../../build-translations/translationMetadata.json';
-
-// To get app-localize-behavior to work.
-window.IntlMessageFormat = IntlMessageFormat;
 
 window.getActiveTranslation = function () {
   // Perform case-insenstive comparison since browser isn't required to
