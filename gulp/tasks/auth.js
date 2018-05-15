@@ -12,7 +12,7 @@ const {
 const es5Extra = "<script src='/frontend_es5/custom-elements-es5-adapter.js'></script>";
 
 async function buildAuth(es6) {
-  const frontendPath = es6 ? 'hass_frontend_latest' : 'hass_frontend_es5';
+  const frontendPath = es6 ? 'frontend_latest' : 'frontend_es5';
   const stream = gulp.src(path.resolve(config.polymer_dir, 'src/authorize.html'))
     .pipe(replace([
       ['<!--EXTRA_SCRIPTS-->', es6 ? '' : es5Extra],
