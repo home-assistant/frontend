@@ -3,7 +3,6 @@ import '@polymer/iron-media-query/iron-media-query.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../build-temp/panel-config.js';
 import '../../src/layouts/hass-error-screen.js';
 import '../../src/util/hass-mixins.js';
 import './automation/ha-config-automation.js';

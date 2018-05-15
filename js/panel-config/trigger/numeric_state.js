@@ -11,10 +11,10 @@ export default class NumericStateTrigger extends Component {
   }
 
   entityPicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      entity_id: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.trigger,
+      { entity_id: ev.target.value },
+    ));
   }
 
   /* eslint-disable camelcase */

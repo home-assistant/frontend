@@ -29,7 +29,9 @@
       "**/*.html",
       "**/ha-paper-slider.js",
       "**/hass-mixins.js",
-      "**/ha-iconset-svg.js"
+      "**/ha-iconset-svg.js",
+      "**/ha-script-editor.js",
+      "**/ha-automation-editor.js"
     ]
   },
   "builds": [

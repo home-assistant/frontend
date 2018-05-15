@@ -12,10 +12,10 @@ export default class Trigger extends Component {
   }
 
   addTrigger() {
-    const trigger = this.props.trigger.concat({
-      platform: 'state',
-      ...StateTrigger.defaultConfig,
-    });
+    const trigger = this.props.trigger.concat(Object.assign(
+      { platform: 'state' },
+      StateTrigger.defaultConfig,
+    ));
 
     this.props.onChange(trigger);
   }

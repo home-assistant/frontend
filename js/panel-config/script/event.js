@@ -12,10 +12,10 @@ export default class EventAction extends Component {
   }
 
   serviceDataChanged(data) {
-    this.props.onChange(this.props.index, {
-      ...this.props.action,
-      data,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.action,
+      { data },
+    ));
   }
 
   render({ action, localize }) {
