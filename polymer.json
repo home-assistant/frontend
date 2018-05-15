@@ -1,23 +1,22 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/home-assistant.html",
+  "shell": "src/home-assistant.js",
   "fragments": [
-    "panels/config/ha-panel-config.html",
-    "panels/dev-event/ha-panel-dev-event.html",
-    "panels/dev-info/ha-panel-dev-info.html",
-    "panels/dev-mqtt/ha-panel-dev-mqtt.html",
-    "panels/dev-service/ha-panel-dev-service.html",
-    "panels/dev-state/ha-panel-dev-state.html",
-    "panels/dev-template/ha-panel-dev-template.html",
-    "panels/hassio/ha-panel-hassio.html",
-    "panels/history/ha-panel-history.html",
-    "panels/iframe/ha-panel-iframe.html",
-    "panels/kiosk/ha-panel-kiosk.html",
-    "panels/logbook/ha-panel-logbook.html",
-    "panels/map/ha-panel-map.html",
-    "panels/shopping-list/ha-panel-shopping-list.html",
-    "panels/mailbox/ha-panel-mailbox.html",
-    "src/resources/ha-chart-scripts.html"
+    "panels/config/ha-panel-config.js",
+    "panels/dev-event/ha-panel-dev-event.js",
+    "panels/dev-info/ha-panel-dev-info.js",
+    "panels/dev-mqtt/ha-panel-dev-mqtt.js",
+    "panels/dev-service/ha-panel-dev-service.js",
+    "panels/dev-state/ha-panel-dev-state.js",
+    "panels/dev-template/ha-panel-dev-template.js",
+    "panels/hassio/ha-panel-hassio.js",
+    "panels/history/ha-panel-history.js",
+    "panels/iframe/ha-panel-iframe.js",
+    "panels/kiosk/ha-panel-kiosk.js",
+    "panels/logbook/ha-panel-logbook.js",
+    "panels/map/ha-panel-map.js",
+    "panels/shopping-list/ha-panel-shopping-list.js",
+    "panels/mailbox/ha-panel-mailbox.js"
   ],
   "sources": [
     "src/**/*",
@@ -25,7 +24,13 @@
     "!src/translations/*"
   ],
   "lint": {
-    "rules": ["polymer-2"]
+    "rules": ["polymer-3"],
+    "filesToIgnore": [
+      "**/*.html",
+      "**/ha-paper-slider.js",
+      "**/hass-mixins.js",
+      "**/ha-iconset-svg.js"
+    ]
   },
   "builds": [
     {
