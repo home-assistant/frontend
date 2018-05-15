@@ -12276,9 +12276,9 @@ wbuf@^1.1.0, wbuf@^1.7.2:
   dependencies:
     minimalistic-assert "^1.0.0"
 
-wct-browser-legacy@^0.0.1-pre.11:
-  version "0.0.1-pre.12"
-  resolved "https://registry.yarnpkg.com/wct-browser-legacy/-/wct-browser-legacy-0.0.1-pre.12.tgz#d8ac8321da90d22ade8a604e369d01180b8541c8"
+wct-browser-legacy@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/wct-browser-legacy/-/wct-browser-legacy-1.0.0.tgz#99f538854b823a3921580199dc5331f98fa96566"
   dependencies:
     "@polymer/polymer" "^3.0.0-pre.1"
     "@polymer/sinonjs" "^1.14.1"
