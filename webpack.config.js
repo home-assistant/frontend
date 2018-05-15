@@ -10,23 +10,24 @@ function createConfig(isProdBuild, latestBuild) {
     publicPath = `/home-assistant-polymer/${buildPath}`;
   }
 
-  const rules = [];
-  if (!latestBuild) {
-    rules.push({
-      test: /\.js$/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            ['es2015', { modules: false }]
-          ],
-          plugins: [
-            // Only support the syntax, Webpack will handle it.
-            "syntax-dynamic-import"
-          ],
+  const babelOptions = {
+    plugins: [
+      // Only support the syntax, Webpack will handle it.
+      "syntax-dynamic-import",
+      'transform-object-rest-spread',
+      [
+        'transform-react-jsx',
+        {
+          pragma: 'h'
         }
-      }
-    });
+      ],
+    ],
+  };
+
+  if (!latestBuild) {
+    babelOptions.presets = [
+      ['es2015', { modules: false }]
+    ];
   }
 
   const chunkFilename = isProdBuild ?
@@ -39,7 +40,15 @@ function createConfig(isProdBuild, latestBuild) {
       authorize: './src/auth/ha-authorize.js'
     },
     module: {
-      rules
+      rules: [
+        {
+          test: /\.js$/,
+          use: {
+            loader: 'babel-loader',
+            options: babelOptions,
+          },
+        }
+      ]
     },
     output: {
       filename: '[name].js',

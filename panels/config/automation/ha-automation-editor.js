@@ -15,6 +15,7 @@ import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-radio-group/paper-radio-group.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { h, render } from 'preact';
 
 import '../../../src/components/entity/ha-entity-picker.js';
 import '../../../src/components/ha-combo-box.js';
@@ -24,13 +25,19 @@ import '../../../src/layouts/ha-app-layout.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-js.js';
 import '../ha-config-section.js';
+import Automation from '../../../js/panel-config/automation.js';
+import unmountPreact from '../../../js/common/preact/unmount.js';
+
+function AutomationEditor(mountEl, props, mergeEl) {
+  return render(h(Automation, props), mountEl, mergeEl);
+};
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin window.hassMixins.EventsMixin
  */
 class HaAutomationEditor extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">
@@ -181,7 +188,7 @@ class HaAutomationEditor extends
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this._rendered) {
-      window.unmountPreact(this._rendered);
+      unmountPreact(this._rendered);
       this._rendered = null;
     }
   }
@@ -251,7 +258,7 @@ class HaAutomationEditor extends
     if (this._renderScheduled || !this.hass || !this.config) return;
     this._renderScheduled = true;
     Promise.resolve().then(() => {
-      this._rendered = window.AutomationEditor(this.$.root, {
+      this._rendered = AutomationEditor(this.$.root, {
         automation: this.config,
         onChange: this.configChanged,
         isWide: this.isWide,
@@ -268,8 +275,7 @@ class HaAutomationEditor extends
       this.dirty = false;
 
       if (this.creatingNew) {
-        history.replaceState(null, null, '/config/automation/edit/' + id);
-        this.fire('location-changed');
+        this.navigate(`/config/automation/edit/${id}`, true);
       }
     }.bind(this), function (errors) {
       this.errors = errors.body.message;

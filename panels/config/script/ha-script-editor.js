@@ -15,6 +15,7 @@ import '@polymer/paper-radio-button/paper-radio-button.js';
 import '@polymer/paper-radio-group/paper-radio-group.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { h, render } from 'preact';
 
 import '../../../src/components/entity/ha-entity-picker.js';
 import '../../../src/components/ha-combo-box.js';
@@ -22,11 +23,18 @@ import '../../../src/layouts/ha-app-layout.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-js.js';
 import '../ha-config-section.js';
+import Script from '../../../js/panel-config/script.js';
+import unmountPreact from '../../../js/common/preact/unmount.js';
+
+function ScriptEditor(mountEl, props, mergeEl) {
+  return render(h(Script, props), mountEl, mergeEl);
+};
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
-class HaScriptEditor extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaScriptEditor extends
+  window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">
@@ -174,7 +182,7 @@ class HaScriptEditor extends window.hassMixins.LocalizeMixin(PolymerElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     if (this._rendered) {
-      window.unmountPreact(this._rendered);
+      unmountPreact(this._rendered);
       this._rendered = null;
     }
   }
@@ -242,7 +250,7 @@ class HaScriptEditor extends window.hassMixins.LocalizeMixin(PolymerElement) {
     if (this._renderScheduled || !this.hass || !this.config) return;
     this._renderScheduled = true;
     Promise.resolve().then(() => {
-      this._rendered = window.ScriptEditor(this.$.root, {
+      this._rendered = ScriptEditor(this.$.root, {
         script: this.config,
         onChange: this.configChanged,
         isWide: this.isWide,
