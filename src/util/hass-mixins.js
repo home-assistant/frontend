@@ -1,13 +1,10 @@
-import IntlMessageFormatModule from 'intl-messageformat/dist/intl-messageformat.min.js';
-import { AppLocalizeBehavior } from '@polymer/app-localize-behavior/app-localize-behavior.js';
+import { AppLocalizeBehavior } from './app-localize-behavior.js';
 
 import { PaperDialogBehavior } from '@polymer/paper-dialog-behavior/paper-dialog-behavior.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
 import '@polymer/polymer/lib/mixins/element-mixin.js';
 
-// Make available to app-localize-behavior
-window.IntlMessageFormat = IntlMessageFormatModule.IntlMessageFormat;
 
 // Polymer legacy event helpers used courtesy of the Polymer project.
 //
