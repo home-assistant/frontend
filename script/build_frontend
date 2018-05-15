@@ -9,40 +9,17 @@ cd "$(dirname "$0")/.."
 OUTPUT_DIR=hass_frontend
 OUTPUT_DIR_ES5=hass_frontend_es5
 
-rm -rf $OUTPUT_DIR $OUTPUT_DIR_ES5
+rm -rf $OUTPUT_DIR $OUTPUT_DIR_ES5 build-translations
 cp -r public $OUTPUT_DIR
 mkdir $OUTPUT_DIR_ES5
 cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 # Build frontend
-BUILD_DEV=0 ./node_modules/.bin/gulp
+BUILD_DEV=0 ./node_modules/.bin/gulp build-translations authorize authorize-es5
 NODE_ENV=production webpack -p
-BUILD_DEV=0 ./node_modules/.bin/gulp authorize authorize-es5
-
-# Copy frontend to output
-cp build/core.js $OUTPUT_DIR
-cp build/webpack/* $OUTPUT_DIR
-cp build-es5/core.js $OUTPUT_DIR_ES5
-cp build-es5/webpack/* $OUTPUT_DIR_ES5
-cp build-es5/compatibility.js $OUTPUT_DIR_ES5
-
-# Translations
-cp -r build-translations/output $OUTPUT_DIR/translations
-
-# Local Roboto
-cp -r node_modules/@polymer/font-roboto-local/fonts $OUTPUT_DIR
-
-# Polyfill web components
-cp node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js $OUTPUT_DIR
-cp node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
 
 # Icons
 script/update_mdi.py
-
-# Leaflet
-mkdir $OUTPUT_DIR/images/leaflet
-cp node_modules/leaflet/dist/leaflet.css $OUTPUT_DIR/images/leaflet
-cp -r node_modules/leaflet/dist/images $OUTPUT_DIR/images/leaflet/
 
 ./node_modules/.bin/gulp compress
 

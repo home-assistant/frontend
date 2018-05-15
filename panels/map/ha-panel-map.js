@@ -56,7 +56,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
     super.connectedCallback();
     var map = this._map = Leaflet.map(this.$.map);
     var style = document.createElement('link');
-    style.setAttribute('href', window.HASS_DEV ?
+    style.setAttribute('href', __DEV__ ?
       '/home-assistant-polymer/bower_components/leaflet/dist/leaflet.css' :
       '/static/images/leaflet/leaflet.css');
     style.setAttribute('rel', 'stylesheet');
