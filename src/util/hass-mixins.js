@@ -1,9 +1,8 @@
-import { AppLocalizeBehavior } from './app-localize-behavior.js';
-
 import { PaperDialogBehavior } from '@polymer/paper-dialog-behavior/paper-dialog-behavior.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
 import '@polymer/polymer/lib/mixins/element-mixin.js';
+import { AppLocalizeBehavior } from './app-localize-behavior.js';
 
 
 // Polymer legacy event helpers used courtesy of the Polymer project.
