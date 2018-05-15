@@ -1,4 +1,5 @@
-import IntlMessageFormat from 'intl-messageformat';
+// Package.json doesn't contain a 'module' pointer. Do it manually
+import IntlMessageFormat from 'intl-messageformat/src/main.js';
 
 import translationMetadata from '../../build-translations/translationMetadata.json';
 
