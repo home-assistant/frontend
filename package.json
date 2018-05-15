@@ -153,7 +153,8 @@
     "supports-color": "3.1.2",
     "type-detect": "1.0.0",
     "@webcomponents/webcomponentsjs": "2.0.0-beta.2",
-    "@vaadin/vaadin-overlay": "3.0.2-pre.2"
+    "@vaadin/vaadin-overlay": "3.0.2-pre.2",
+    "fecha": "https://github.com/balloob/fecha/archive/51d14fd0eb4781e2ecf265d1c3080706259133b5.tar.gz"
   },
   "main": "src/home-assistant.js"
 }
