@@ -32,7 +32,7 @@ suite('state-card-display', function() {
 
   setup(function() {
     wrapper = fixture('stateCardDisplay');
-    card = new StateCardDisplay();
+    card = document.createElement('state-card-display');
     card.stateObj = {
       entity_id: 'binary_sensor.demo',
       state: 'off',
