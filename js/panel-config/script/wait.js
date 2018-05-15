@@ -12,10 +12,10 @@ export default class WaitAction extends Component {
   // Gets fired on mount. If empty, onChangeEvent removes attribute.
   // Without the attribute this action is no longer matched to this component.
   onTemplateChange(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      [ev.target.name]: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.trigger,
+      { [ev.target.name]: ev.target.value },
+    ));
   }
 
   render({ action, localize }) {

@@ -18,7 +18,7 @@ export default class ConditionAction extends Component {
   }
 }
 
-ConditionAction.defaultConfig = {
-  condition: 'state',
-  ...StateCondition.defaultConfig,
-};
+ConditionAction.defaultConfig = Object.assign(
+  { condition: 'state' },
+  StateCondition.defaultConfig,
+);

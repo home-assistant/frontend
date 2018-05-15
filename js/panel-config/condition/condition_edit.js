@@ -29,10 +29,10 @@ export default class ConditionRow extends Component {
     const type = ev.target.selectedItem.attributes.condition.value;
 
     if (type !== this.props.condition.condition) {
-      this.props.onChange(this.props.index, {
-        condition: type,
-        ...TYPES[type].defaultConfig
-      });
+      this.props.onChange(this.props.index, Object.assign(
+        { condition: type },
+        TYPES[type].defaultConfig
+      ));
     }
   }
 

@@ -11,10 +11,10 @@ export default class SunTrigger extends Component {
   }
 
   radioGroupPicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      event: ev.target.selected,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.trigger,
+      { event: ev.target.selected },
+    ));
   }
 
   /* eslint-disable camelcase */
