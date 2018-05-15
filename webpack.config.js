@@ -14,7 +14,6 @@ function createConfig(isProdBuild, latestBuild) {
     plugins: [
       // Only support the syntax, Webpack will handle it.
       "syntax-dynamic-import",
-      'transform-object-rest-spread',
       [
         'transform-react-jsx',
         {

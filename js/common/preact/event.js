@@ -1,3 +1,5 @@
+import { objectTypeAnnotation } from "babel-types";
+
 export function onChangeEvent(prop, ev) {
   const origData = this.props[prop];
 
@@ -5,7 +7,7 @@ export function onChangeEvent(prop, ev) {
     return;
   }
 
-  const data = { ...origData };
+  const data = Object.assign({}, origData);
 
   if (ev.target.value) {
     data[ev.target.name] = ev.target.value;
