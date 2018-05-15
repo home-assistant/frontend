@@ -16,45 +16,33 @@ cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 # Build frontend
 BUILD_DEV=0 ./node_modules/.bin/gulp
+NODE_ENV=production webpack -p
 BUILD_DEV=0 ./node_modules/.bin/gulp authorize authorize-es5
 
-# Entry points
-cp build/*.js build/*.html $OUTPUT_DIR
-cp build-es5/*.js build-es5/*.html $OUTPUT_DIR_ES5
-
-# Panels
-mkdir $OUTPUT_DIR/panels
-cp build/panels/*.html $OUTPUT_DIR/panels
-mkdir $OUTPUT_DIR_ES5/panels
-cp build-es5/panels/*.html $OUTPUT_DIR_ES5/panels
-
-# Chart code
-cp build/src/resources/ha-chart-scripts.html $OUTPUT_DIR
-cp build-es5/src/resources/ha-chart-scripts.html $OUTPUT_DIR_ES5
+# Copy frontend to output
+cp build/core.js $OUTPUT_DIR
+cp build/webpack/* $OUTPUT_DIR
+cp build-es5/core.js $OUTPUT_DIR_ES5
+cp build-es5/webpack/* $OUTPUT_DIR_ES5
+cp build-es5/compatibility.js $OUTPUT_DIR_ES5
 
 # Translations
 cp -r build-translations/output $OUTPUT_DIR/translations
 
 # Local Roboto
-cp -r bower_components/font-roboto-local/fonts $OUTPUT_DIR
+cp -r node_modules/@polymer/font-roboto-local/fonts $OUTPUT_DIR
 
 # Polyfill web components
-cp bower_components/webcomponentsjs/webcomponents-lite.js $OUTPUT_DIR
-cp bower_components/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
+cp node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js $OUTPUT_DIR
+cp node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
 
 # Icons
 script/update_mdi.py
 
 # Leaflet
 mkdir $OUTPUT_DIR/images/leaflet
-cp bower_components/leaflet/dist/leaflet.css $OUTPUT_DIR/images/leaflet
-cp -r bower_components/leaflet/dist/images $OUTPUT_DIR/images/leaflet/
-
-# Generate service worker
-BUILD_DEV=0 ./node_modules/.bin/gulp gen-service-worker-es5
-cp build-es5/service_worker.js $OUTPUT_DIR_ES5
-BUILD_DEV=0 ./node_modules/.bin/gulp gen-service-worker
-cp build/service_worker.js $OUTPUT_DIR
+cp node_modules/leaflet/dist/leaflet.css $OUTPUT_DIR/images/leaflet
+cp -r node_modules/leaflet/dist/images $OUTPUT_DIR/images/leaflet/
 
 ./node_modules/.bin/gulp compress
 
@@ -65,7 +53,5 @@ echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR_ES5/__init__.py
 echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR_ES5/__init__.py
 
 # Generate the MD5 hash of the new frontend
-script/fingerprint_frontend.py --base_dir $OUTPUT_DIR
-script/fingerprint_frontend.py --base_dir $OUTPUT_DIR_ES5
 ./node_modules/.bin/gulp gen-index-html
 ./node_modules/.bin/gulp gen-index-html-es5
