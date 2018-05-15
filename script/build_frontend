@@ -46,6 +46,12 @@ cp -r node_modules/leaflet/dist/images $OUTPUT_DIR/images/leaflet/
 
 ./node_modules/.bin/gulp compress
 
+# Stub the service worker
+touch build/service_worker.js
+touch build-es5/service_worker.js
+touch hass_frontend/service_worker.js
+touch hass_frontend_es5/service_worker.js
+
 # Generate the __init__ file
 echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR/__init__.py
 echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR/__init__.py
