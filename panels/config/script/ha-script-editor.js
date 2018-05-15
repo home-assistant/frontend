@@ -28,7 +28,7 @@ import unmountPreact from '../../../js/common/preact/unmount.js';
 
 function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);
-};
+}
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin

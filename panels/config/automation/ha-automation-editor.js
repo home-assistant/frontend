@@ -30,7 +30,7 @@ import unmountPreact from '../../../js/common/preact/unmount.js';
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
-};
+}
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin

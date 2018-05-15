@@ -1,5 +1,3 @@
-import { objectTypeAnnotation } from "babel-types";
-
 export function onChangeEvent(prop, ev) {
   const origData = this.props[prop];
 
