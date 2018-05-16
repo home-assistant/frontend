@@ -43,7 +43,7 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(PolymerEle
           <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="3" raised>3</paper-button>
           <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="6" raised>6</paper-button>
           <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="9" raised>9</paper-button>
-          <paper-button on-click='callclearcode' disabled='[[!codeInputEnabled]]' raised>Clear</paper-button>
+          <paper-button on-click='clearCode' disabled='[[!codeInputEnabled]]' raised>Clear</paper-button>
         </div>
       </div>
     </template>
@@ -69,7 +69,7 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(PolymerEle
         observer: 'stateObjChanged',
       },
       enteredCode: {
-        type: Boolean,
+        type: String,
         value: '',
       },
       numericPin: {
@@ -140,7 +140,7 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(PolymerEle
     this.enteredCode += ev.target.getAttribute('data-digit');
   }
 
-  callclearcode(ev){
+  clearCode() {
     this.enteredCode = '';
   }
 
