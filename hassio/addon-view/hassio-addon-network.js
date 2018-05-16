@@ -5,9 +5,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../src/components/buttons/ha-call-api-button.js';
 import '../../src/resources/ha-style.js';
-import '../../src/util/hass-mixins.js';
+import EventsMixin from '../../src/mixins/events-mixin.js';
 
-class HassioAddonNetwork extends window.hassMixins.EventsMixin(PolymerElement) {
+class HassioAddonNetwork extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">
