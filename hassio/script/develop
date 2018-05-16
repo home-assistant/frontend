@@ -1,5 +1,5 @@
 #!/bin/sh
-# Run the development server
+# Run the Hass.io development server
 
 # Stop on errors
 set -e
