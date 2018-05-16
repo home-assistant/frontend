@@ -7,13 +7,14 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../util/hass-mixins.js';
 import '../ha-config-section.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin EventsMixin
  */
 class HaConfigSectionThemes extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  window.hassMixins.LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <ha-config-section is-wide="[[isWide]]">

@@ -16,7 +16,7 @@ import isComponentLoaded from '../../../common/config/is_component_loaded.js';
   ];
   /*
    * @appliesMixin window.hassMixins.LocalizeMixin
-   * @appliesMixin window.hassMixins.EventsMixin
+   * @appliesMixin NavigateMixin
    */
   class HaConfigNavigation extends
     window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(PolymerElement)) {

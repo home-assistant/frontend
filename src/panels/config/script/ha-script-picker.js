@@ -16,7 +16,7 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin NavigateMixin
  */
 class HaScriptPicker extends
   window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(PolymerElement)) {

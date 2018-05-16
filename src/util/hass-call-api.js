@@ -14,7 +14,7 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
     req.onload = function () {
       var body = req.responseText;
 
-      if (req.getResponseHeader('content-type') === 'application') {
+      if (req.getResponseHeader('content-type') === 'application/json') {
         try {
           body = JSON.parse(req.responseText);
         } catch (err) {

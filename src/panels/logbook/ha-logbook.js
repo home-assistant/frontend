@@ -6,8 +6,12 @@ import '../../components/domain-icon.js';
 import '../../util/hass-mixins.js';
 
 import formatTime from '../../common/datetime/format_time.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
-class HaLogbook extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaLogbook extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex"></style>

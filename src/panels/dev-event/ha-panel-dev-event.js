@@ -10,10 +10,13 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
-import '../../util/hass-mixins.js';
 import './events-list.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
-class HaPanelDevEvent extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaPanelDevEvent extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="ha-style iron-flex iron-positioning"></style>

@@ -4,8 +4,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../util/hass-mixins.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
-class HaEntityMarker extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaEntityMarker extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-positioning"></style>

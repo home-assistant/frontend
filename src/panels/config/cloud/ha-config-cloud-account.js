@@ -11,8 +11,12 @@ import '../../../util/hass-mixins.js';
 import '../ha-config-section.js';
 
 import formatDateTime from '../../../common/datetime/format_date_time.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
-class HaConfigCloudAccount extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">

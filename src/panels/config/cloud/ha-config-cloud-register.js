@@ -6,10 +6,13 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/buttons/ha-progress-button.js';
 import '../../../layouts/hass-subpage.js';
 import '../../../resources/ha-style.js';
-import '../../../util/hass-mixins.js';
 import '../ha-config-section.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
-class HaConfigCloudRegister extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">

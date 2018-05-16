@@ -11,9 +11,12 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../components/entity/ha-entity-picker.js';
 import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
-import '../../util/hass-mixins.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
-class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaPanelDevState extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">

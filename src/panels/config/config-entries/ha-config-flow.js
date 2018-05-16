@@ -8,13 +8,14 @@ import '../../../components/ha-form.js';
 import '../../../components/ha-markdown.js';
 import '../../../resources/ha-style.js';
 import '../../../util/hass-mixins.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin EventsMixin
  */
 class HaConfigFlow extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  window.hassMixins.LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style-dialog">

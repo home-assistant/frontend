@@ -1,10 +1,7 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
-
-class HaPanelHassio extends
-  window.hassMixins.NavigateMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+class HaPanelHassio extends PolymerElement {
   static get template() {
     return html`
     <style>

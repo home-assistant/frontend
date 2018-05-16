@@ -10,14 +10,15 @@ import '../../../resources/ha-style.js';
 import '../../../util/hass-mixins.js';
 import '../ha-config-section.js';
 import './ha-config-flow.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 {
   /*
    * @appliesMixin window.hassMixins.LocalizeMixin
-   * @appliesMixin window.hassMixins.EventsMixin
+   * @appliesMixin EventsMixin
    */
   class HaConfigManager extends
-    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+    window.hassMixins.LocalizeMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="iron-flex ha-style">
