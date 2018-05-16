@@ -4,7 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../state-summary/state-card-content.js';
 
-import computeDomain from '../../../../js/common/entity/compute_domain';
+import computeStateDomain from '../../../../js/common/entity/compute_state_domain';
 import dynamicContentUpdater from '../../../../js/common/dom/dynamic_content_updater.js';
 import stateMoreInfoType from '../../../../js/common/entity/state_more_info_type.js';
 
@@ -73,7 +73,7 @@ class MoreInfoGroup extends PolymerElement {
 
     if (states && states.length > 0) {
       const baseStateObj = states.find(s => s.state === 'on') || states[0];
-      const groupDomain = computeDomain(baseStateObj);
+      const groupDomain = computeStateDomain(baseStateObj);
 
       // Groups need to be filtered out or we'll show content of
       // first child above the children of the current group
@@ -84,7 +84,7 @@ class MoreInfoGroup extends PolymerElement {
         });
 
         for (let i = 0; i < states.length; i++) {
-          if (groupDomain !== computeDomain(states[i])) {
+          if (groupDomain !== computeStateDomain(states[i])) {
             groupDomainStateObj = false;
             break;
           }

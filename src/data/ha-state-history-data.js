@@ -5,7 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../util/hass-mixins.js';
 
 import computeStateName from '../../js/common/entity/compute_state_name.js';
-import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
 import computeStateDisplay from '../../js/common/entity/compute_state_display.js';
 
 {
@@ -59,7 +59,7 @@ import computeStateDisplay from '../../js/common/entity/compute_state_display.js
       identifier: lineChartDevices[unit].map(states => states[0].entity_id).join(''),
       data: lineChartDevices[unit].map((states) => {
         const last = states[states.length - 1];
-        const domain = computeDomain(last);
+        const domain = computeStateDomain(last);
         return {
           domain: domain,
           name: computeStateName(last),

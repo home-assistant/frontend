@@ -8,7 +8,7 @@ import '../util/hass-mixins.js';
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
 
-import computeDomain from '../../js/common/entity/compute_domain';
+import computeStateDomain from '../../js/common/entity/compute_state_domain';
 import isComponentLoaded from '../../js/common/config/is_component_loaded.js';
 
 class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
@@ -116,7 +116,7 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   }
 
   _computeDomain(stateObj) {
-    return stateObj ? computeDomain(stateObj) : '';
+    return stateObj ? computeStateDomain(stateObj) : '';
   }
 
   _computeStateObj(hass) {
