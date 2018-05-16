@@ -7,6 +7,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../src/util/hass-mixins.js';
 
+import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
+
 {
   const CORE_PAGES = [
     'core',
@@ -64,7 +66,7 @@ import '../../../src/util/hass-mixins.js';
     }
 
     _computeLoaded(hass, page) {
-      return CORE_PAGES.includes(page) || window.hassUtil.isComponentLoaded(hass, page);
+      return CORE_PAGES.includes(page) || isComponentLoaded(hass, page);
     }
 
     _computeCaption(page, localize) {

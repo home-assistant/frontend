@@ -13,6 +13,7 @@ import '../../../src/layouts/ha-app-layout.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-section.js';
 
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin window.hassMixins.EventsMixin
@@ -122,7 +123,7 @@ class HaAutomationPicker extends
   }
 
   computeName(automation) {
-    return window.hassUtil.computeStateName(automation);
+    return computeStateName(automation);
   }
 
   // Still thinking of something to add here.

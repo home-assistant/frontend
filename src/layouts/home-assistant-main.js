@@ -11,7 +11,6 @@ import '../dialogs/ha-more-info-dialog.js';
 import '../dialogs/ha-voice-command-dialog.js';
 import '../util/ha-url-sync.js';
 import '../util/hass-mixins.js';
-import '../util/hass-util.js';
 import './partial-cards.js';
 import './partial-panel-resolver.js';
 

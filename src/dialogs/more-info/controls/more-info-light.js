@@ -10,6 +10,8 @@ import '../../../components/ha-color-picker.js';
 import '../../../components/ha-labeled-slider.js';
 import '../../../util/hass-mixins.js';
 
+import featureClassNames from '../../../../js/common/entity/feature_class_names';
+
 {
   const FEATURE_CLASS_NAMES = {
     1: 'has-brightness',
@@ -176,7 +178,7 @@ import '../../../util/hass-mixins.js';
     }
 
     computeClassNames(stateObj) {
-      const classes = [window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
+      const classes = [featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
       if (stateObj && stateObj.state === 'on') {
         classes.push('is-on');
       }

@@ -9,6 +9,8 @@ import '../../../src/resources/ha-style.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-section.js';
 
+import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -144,15 +146,15 @@ class HaConfigSectionCore extends window.hassMixins.LocalizeMixin(PolymerElement
   }
 
   groupLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'group');
+    return isComponentLoaded(hass, 'group');
   }
 
   automationLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'automation');
+    return isComponentLoaded(hass, 'automation');
   }
 
   scriptLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'script');
+    return isComponentLoaded(hass, 'script');
   }
 
   validateConfig() {

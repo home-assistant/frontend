@@ -7,6 +7,9 @@ import '../../../components/ha-cover-tilt-controls.js';
 import '../../../components/ha-paper-slider.js';
 import '../../../util/cover-model.js';
 
+import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
+import featureClassNames from '../../../../js/common/entity/feature_class_names';
+
 {
   const FEATURE_CLASS_NAMES = {
     128: 'has-set_tilt_position',
@@ -93,8 +96,8 @@ import '../../../util/cover-model.js';
 
     computeClassNames(stateObj) {
       var classes = [
-        window.hassUtil.attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
-        window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES),
+        attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
+        featureClassNames(stateObj, FEATURE_CLASS_NAMES),
       ];
       return classes.join(' ');
     }
