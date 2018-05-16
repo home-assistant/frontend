@@ -7,6 +7,7 @@ import './hass-loading-screen.js';
 import { importHref } from '../resources/html-import/import-href';
 
 import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
+import NavigateMixin from '../mixins/navigate-mixin.js';
 
 const loaded = {};
 
@@ -87,7 +88,10 @@ function ensureLoaded(panel) {
   return imported;
 }
 
-class PartialPanelResolver extends window.hassMixins.NavigateMixin(PolymerElement) {
+/*
+ * @appliesMixin NavigateMixin
+ */
+class PartialPanelResolver extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

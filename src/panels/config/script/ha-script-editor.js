@@ -27,6 +27,7 @@ import unmountPreact from '../../../common/preact/unmount.js';
 
 import computeObjectId from '../../../common/entity/compute_object_id.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
 function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);
@@ -36,7 +37,7 @@ function ScriptEditor(mountEl, props, mergeEl) {
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
 class HaScriptEditor extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(PolymerElement)) {
+  window.hassMixins.LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">

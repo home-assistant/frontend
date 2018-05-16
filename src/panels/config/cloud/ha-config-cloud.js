@@ -10,6 +10,7 @@ import './ha-config-cloud-account.js';
 import './ha-config-cloud-forgot-password.js';
 import './ha-config-cloud-login.js';
 import './ha-config-cloud-register.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
 {
   const LOGGED_IN_URLS = [
@@ -21,7 +22,10 @@ import './ha-config-cloud-register.js';
     '/cloud/forgot-password',
   ];
 
-  class HaConfigCloud extends window.hassMixins.NavigateMixin(PolymerElement) {
+  /*
+   * @appliesMixin NavigateMixin
+   */
+  class HaConfigCloud extends NavigateMixin(PolymerElement) {
     static get template() {
       return html`
     <app-route route="[[route]]" pattern="/cloud/:page" data="{{_routeData}}" tail="{{_routeTail}}"></app-route>

@@ -15,8 +15,12 @@ import './script/ha-config-script.js';
 import './zwave/ha-config-zwave.js';
 
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
+import NavigateMixin from '../../mixins/navigate-mixin.js';
 
-class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
+/*
+ * @appliesMixin NavigateMixin
+ */
+class HaPanelConfig extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
     <app-route

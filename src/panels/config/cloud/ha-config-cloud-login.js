@@ -14,13 +14,14 @@ import '../../../resources/ha-style.js';
 import '../../../util/hass-mixins.js';
 import '../ha-config-section.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
 /*
  * @appliesMixin NavigateMixin
  * @appliesMixin EventsMixin
  */
 class HaConfigCloudLogin extends
-  window.hassMixins.NavigateMixin(EventsMixin(PolymerElement)) {
+  NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">

@@ -19,13 +19,18 @@ import './ha-app-layout.js';
 import computeStateName from '../common/entity/compute_state_name.js';
 import computeStateDomain from '../common/entity/compute_state_domain.js';
 import computeLocationName from '../common/config/location_name.js';
+import NavigateMixin from '../mixins/navigate-mixin.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 {
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
   const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
 
-  // eslint-disable-next-line
-  class PartialCards extends window.hassMixins.EventsMixin(window.hassMixins.NavigateMixin(PolymerElement)) {
+  /*
+   * @appliesMixin EventsMixin
+   * @appliesMixin NavigateMixin
+   */
+  class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="iron-flex iron-positioning ha-style">

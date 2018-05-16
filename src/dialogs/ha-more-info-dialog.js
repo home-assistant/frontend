@@ -11,7 +11,12 @@ import './more-info/more-info-settings.js';
 import computeStateDomain from '../common/entity/compute_state_domain';
 import isComponentLoaded from '../common/config/is_component_loaded.js';
 
-class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
+import DialogMixin from '../mixins/dialog-mixin.js';
+
+/*
+ * @appliesMixin DialogMixin
+ */
+class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style-dialog paper-dialog-shared-styles">

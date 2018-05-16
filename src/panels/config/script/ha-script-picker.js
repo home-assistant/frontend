@@ -13,13 +13,14 @@ import '../../../util/hass-mixins.js';
 import '../ha-config-section.js';
 
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin NavigateMixin
  */
 class HaScriptPicker extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.NavigateMixin(PolymerElement)) {
+  window.hassMixins.LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">

@@ -5,9 +5,12 @@ import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-mixins.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
-class HaConfigEntriesMenu extends window.hassMixins.NavigateMixin(PolymerElement) {
+/*
+ * @appliesMixin NavigateMixin
+ */
+class HaConfigEntriesMenu extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex">
