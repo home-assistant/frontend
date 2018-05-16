@@ -14,7 +14,7 @@ import './controls/more-info-content.js';
 import computeStateName from '../../../js/common/entity/compute_state_name.js';
 import computeDomain from '../../../js/common/entity/compute_domain.js';
 import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
-import DOMAINS_MORE_INFO_NO_HISTORY from '../../../js/common/const.js';
+import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../../js/common/const.js';
 
 {
   const DOMAINS_NO_INFO = [
