@@ -8,8 +8,8 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../src/resources/ha-style.js';
-import EventsMixin from '../../src/mixins/events-mixin.js';
+import '../../../src/resources/ha-style.js';
+import EventsMixin from '../../../src/mixins/events-mixin.js';
 
 class HassioAddonAudio extends EventsMixin(PolymerElement) {
   static get template() {

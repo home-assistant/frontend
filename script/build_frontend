@@ -16,7 +16,7 @@ cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 # Build frontend
 BUILD_DEV=0 ./node_modules/.bin/gulp build-translations authorize authorize-es5
-NODE_ENV=production webpack -p
+NODE_ENV=production ./node_modules/.bin/webpack -p
 
 # Icons
 script/update_mdi.py
