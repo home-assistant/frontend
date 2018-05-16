@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import stateCardType from '../../../js/common/entity/state_card_type.js';
+import stateCardType from '../../../src/common/entity/state_card_type.js';
 
 describe('stateCardType', () => {
   const hass = {

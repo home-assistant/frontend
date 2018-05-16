@@ -2,7 +2,7 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import stateIcon from '../../../js/common/entity/state_icon.js';
+import stateIcon from '../../common/entity/state_icon.js';
 
 class HaStateIcon extends PolymerElement {
   static get template() {

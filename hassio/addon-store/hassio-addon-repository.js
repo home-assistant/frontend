@@ -4,9 +4,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
-import '../../src/util/hass-mixins.js';
+import NavigateMixin from '../../src/mixins/navigate-mixin.js';
 
-class HassioAddonRepository extends window.hassMixins.NavigateMixin(PolymerElement) {
+class HassioAddonRepository extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style hassio-style">

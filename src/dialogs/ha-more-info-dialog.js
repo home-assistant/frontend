@@ -4,14 +4,19 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../resources/ha-style.js';
-import '../util/hass-mixins.js';
+
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
 
-import computeStateDomain from '../../js/common/entity/compute_state_domain';
-import isComponentLoaded from '../../js/common/config/is_component_loaded.js';
+import computeStateDomain from '../common/entity/compute_state_domain';
+import isComponentLoaded from '../common/config/is_component_loaded.js';
 
-class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
+import DialogMixin from '../mixins/dialog-mixin.js';
+
+/*
+ * @appliesMixin DialogMixin
+ */
+class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style-dialog paper-dialog-shared-styles">

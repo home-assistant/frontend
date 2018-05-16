@@ -9,9 +9,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../src/components/hassio-card-content.js';
 import '../../src/resources/hassio-style.js';
-import '../../src/util/hass-mixins.js';
+import EventsMixin from '../../src/mixins/events-mixin.js';
 
-class HassioSnapshots extends window.hassMixins.EventsMixin(PolymerElement) {
+class HassioSnapshots extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style hassio-style">

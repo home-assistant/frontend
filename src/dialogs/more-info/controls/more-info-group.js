@@ -4,9 +4,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../state-summary/state-card-content.js';
 
-import computeStateDomain from '../../../../js/common/entity/compute_state_domain';
-import dynamicContentUpdater from '../../../../js/common/dom/dynamic_content_updater.js';
-import stateMoreInfoType from '../../../../js/common/entity/state_more_info_type.js';
+import computeStateDomain from '../../../common/entity/compute_state_domain';
+import dynamicContentUpdater from '../../../common/dom/dynamic_content_updater.js';
+import stateMoreInfoType from '../../../common/entity/state_more_info_type.js';
 
 class MoreInfoGroup extends PolymerElement {
   static get template() {

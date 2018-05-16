@@ -6,7 +6,7 @@ import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 
-import formatTime from '../../../js/common/datetime/format_time.js';
+import formatTime from '../../common/datetime/format_time.js';
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
 

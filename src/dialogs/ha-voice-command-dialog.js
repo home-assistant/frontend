@@ -4,7 +4,12 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(PolymerElement) {
+import DialogMixin from '../mixins/dialog-mixin.js';
+
+/*
+ * @appliesMixin DialogMixin
+ */
+class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="paper-dialog-shared-styles">

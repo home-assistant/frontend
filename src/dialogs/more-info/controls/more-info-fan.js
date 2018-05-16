@@ -8,11 +8,15 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-attributes.js';
-import '../../../util/hass-mixins.js';
 
-import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
 
-class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
+import attributeClassNames from '../../../common/entity/attribute_class_names';
+import EventsMixin from '../../../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class MoreInfoFan extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex"></style>

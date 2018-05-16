@@ -1,7 +1,6 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../src/util/hass-mixins.js';
 import './hassio-addon-repository.js';
 import './hassio-repositories-editor.js';
 

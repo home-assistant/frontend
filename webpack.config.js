@@ -22,7 +22,7 @@ function createConfig(isProdBuild, latestBuild) {
   const entry = {
     app: './src/home-assistant.js',
     authorize: './src/auth/ha-authorize.js',
-    core: './js/core.js',
+    core: './src/core.js',
   };
 
   const babelOptions = {
@@ -61,7 +61,7 @@ function createConfig(isProdBuild, latestBuild) {
     babelOptions.presets = [
       ['es2015', { modules: false }]
     ];
-    entry.compatibility = './js/compatibility.js';
+    entry.compatibility = './src/compatibility.js';
   }
 
   const chunkFilename = isProdBuild ?

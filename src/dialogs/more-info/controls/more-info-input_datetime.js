@@ -7,7 +7,7 @@ import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 import '../../../components/ha-relative-time.js';
 
-import attributeClassNames from '../../../../js/common/entity/attribute_class_names.js';
+import attributeClassNames from '../../../common/entity/attribute_class_names.js';
 
 class DatetimeInput extends PolymerElement {
   static get template() {

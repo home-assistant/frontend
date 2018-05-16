@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import durationToSeconds from '../../../js/common/datetime/duration_to_seconds.js';
+import durationToSeconds from '../../../src/common/datetime/duration_to_seconds.js';
 
 describe('durationToSeconds', () => {
   it('works', () => {

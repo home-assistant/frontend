@@ -6,10 +6,13 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
 import './ha-paper-slider.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
-class HaForm extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaForm extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
