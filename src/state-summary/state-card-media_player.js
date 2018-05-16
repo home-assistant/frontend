@@ -50,8 +50,6 @@ class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(PolymerElemen
 `;
   }
 
-  static get is() { return 'state-card-media_player'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -77,4 +75,4 @@ class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(PolymerElemen
       || localize(`state.default.${playerObj.stateObj.state}`) || playerObj.stateObj.state;
   }
 }
-customElements.define(StateCardMediaPlayer.is, StateCardMediaPlayer);
+customElements.define('state-card-media_player', StateCardMediaPlayer);

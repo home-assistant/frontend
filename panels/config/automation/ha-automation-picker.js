@@ -88,8 +88,6 @@ class HaAutomationPicker extends
 `;
   }
 
-  static get is() { return 'ha-automation-picker'; }
-
   static get properties() {
     return {
       hass: {
@@ -138,4 +136,4 @@ class HaAutomationPicker extends
   }
 }
 
-customElements.define(HaAutomationPicker.is, HaAutomationPicker);
+customElements.define('ha-automation-picker', HaAutomationPicker);

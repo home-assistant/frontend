@@ -61,8 +61,6 @@ class HaConfigCloudForgotPassword extends window.hassMixins.EventsMixin(PolymerE
 `;
   }
 
-  static get is() { return 'ha-config-cloud-forgot-password'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -119,4 +117,4 @@ class HaConfigCloudForgotPassword extends window.hassMixins.EventsMixin(PolymerE
   }
 }
 
-customElements.define(HaConfigCloudForgotPassword.is, HaConfigCloudForgotPassword);
+customElements.define('ha-config-cloud-forgot-password', HaConfigCloudForgotPassword);

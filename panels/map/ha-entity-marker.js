@@ -39,8 +39,6 @@ class HaEntityMarker extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-entity-marker'; }
-
   static get properties() {
     return {
       hass: {
@@ -77,4 +75,4 @@ class HaEntityMarker extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaEntityMarker.is, HaEntityMarker);
+customElements.define('ha-entity-marker', HaEntityMarker);

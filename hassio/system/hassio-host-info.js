@@ -79,8 +79,6 @@ class HassioHostInfo extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-host-info'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -154,4 +152,4 @@ class HassioHostInfo extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HassioHostInfo.is, HassioHostInfo);
+customElements.define('hassio-host-info', HassioHostInfo);

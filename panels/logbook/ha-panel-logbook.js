@@ -86,7 +86,6 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
     </app-header-layout>
     `;
   }
-  static get is() { return 'ha-panel-logbook'; }
 
   static get properties() {
     return {
@@ -149,4 +148,4 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPanelLogbook.is, HaPanelLogbook);
+customElements.define('ha-panel-logbook', HaPanelLogbook);

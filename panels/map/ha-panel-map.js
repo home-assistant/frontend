@@ -32,7 +32,6 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
     <div id='map'></div>
     `;
   }
-  static get is() { return 'ha-panel-map'; }
 
   static get properties() {
     return {
@@ -194,4 +193,4 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPanelMap.is, HaPanelMap);
+customElements.define('ha-panel-map', HaPanelMap);

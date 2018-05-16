@@ -96,8 +96,6 @@ import './ha-config-flow.js';
 `;
     }
 
-    static get is() { return 'ha-config-entries'; }
-
     static get properties() {
       return {
         hass: Object,
@@ -200,5 +198,5 @@ import './ha-config-flow.js';
     }
   }
 
-  customElements.define(HaConfigManager.is, HaConfigManager);
+  customElements.define('ha-config-entries', HaConfigManager);
 }

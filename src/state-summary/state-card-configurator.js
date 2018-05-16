@@ -31,8 +31,6 @@ class StateCardConfigurator extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-card-configurator'; }
-
   static get properties() {
     return {
       stateObj: Object,
@@ -43,4 +41,4 @@ class StateCardConfigurator extends PolymerElement {
     };
   }
 }
-customElements.define(StateCardConfigurator.is, StateCardConfigurator);
+customElements.define('state-card-configurator', StateCardConfigurator);

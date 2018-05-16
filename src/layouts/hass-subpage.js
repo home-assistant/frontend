@@ -22,8 +22,6 @@ class HassSubpage extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hass-subpage'; }
-
   static get properties() {
     return {
       header: String
@@ -35,4 +33,4 @@ class HassSubpage extends PolymerElement {
   }
 }
 
-customElements.define(HassSubpage.is, HassSubpage);
+customElements.define('hass-subpage', HassSubpage);

@@ -71,8 +71,6 @@ document.head.appendChild(documentContainer.content);
   let myTemplate;
 
   class HaPaperSlider extends PaperSliderClass {
-    static get is() { return 'ha-paper-slider'; }
-
     static get template() {
       if (!myTemplate) {
         // Retrieve this element's dom-module template
@@ -87,5 +85,5 @@ document.head.appendChild(documentContainer.content);
       return myTemplate;
     }
   }
-  customElements.define(HaPaperSlider.is, HaPaperSlider);
+  customElements.define('ha-paper-slider', HaPaperSlider);
 }

@@ -99,8 +99,6 @@ import '../../../util/hass-mixins.js';
 `;
     }
 
-    static get is() { return 'more-info-media_player'; }
-
     static get properties() {
       return {
         hass: Object,
@@ -282,5 +280,5 @@ import '../../../util/hass-mixins.js';
     }
   }
 
-  customElements.define(MoreInfoMediaPlayer.is, MoreInfoMediaPlayer);
+  customElements.define('more-info-media_player', MoreInfoMediaPlayer);
 }

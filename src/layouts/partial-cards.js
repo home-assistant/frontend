@@ -91,8 +91,6 @@ import './ha-app-layout.js';
 `;
     }
 
-    static get is() { return 'partial-cards'; }
-
     static get properties() {
       return {
 
@@ -340,5 +338,5 @@ import './ha-app-layout.js';
     }
   }
 
-  customElements.define(PartialCards.is, PartialCards);
+  customElements.define('partial-cards', PartialCards);
 }

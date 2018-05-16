@@ -36,8 +36,6 @@ class HaEntityToggle extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-entity-toggle'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -147,4 +145,4 @@ class HaEntityToggle extends PolymerElement {
   }
 }
 
-customElements.define(HaEntityToggle.is, HaEntityToggle);
+customElements.define('ha-entity-toggle', HaEntityToggle);

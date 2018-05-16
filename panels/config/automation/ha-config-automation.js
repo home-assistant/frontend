@@ -27,8 +27,6 @@ class HaConfigAutomation extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-config-automation'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -103,4 +101,4 @@ class HaConfigAutomation extends PolymerElement {
   }
 }
 
-customElements.define(HaConfigAutomation.is, HaConfigAutomation);
+customElements.define('ha-config-automation', HaConfigAutomation);

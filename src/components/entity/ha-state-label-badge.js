@@ -55,8 +55,6 @@ class HaStateLabelBadge extends
 `;
   }
 
-  static get is() { return 'ha-state-label-badge'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -203,4 +201,4 @@ class HaStateLabelBadge extends
   }
 }
 
-customElements.define(HaStateLabelBadge.is, HaStateLabelBadge);
+customElements.define('ha-state-label-badge', HaStateLabelBadge);

@@ -21,8 +21,6 @@ import './more-info-vacuum.js';
 import './more-info-weather.js';
 
 class MoreInfoContent extends PolymerElement {
-  static get is() { return 'more-info-content'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -67,4 +65,4 @@ class MoreInfoContent extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoContent.is, MoreInfoContent);
+customElements.define('more-info-content', MoreInfoContent);

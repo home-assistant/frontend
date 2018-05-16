@@ -44,8 +44,6 @@ class ZwaveNodeInformation extends PolymerElement {
 `;
   }
 
-  static get is() { return 'zwave-node-information'; }
-
   static get properties() {
     return {
       nodes: {
@@ -80,4 +78,4 @@ class ZwaveNodeInformation extends PolymerElement {
   }
 }
 
-customElements.define(ZwaveNodeInformation.is, ZwaveNodeInformation);
+customElements.define('zwave-node-information', ZwaveNodeInformation);

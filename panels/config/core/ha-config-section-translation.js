@@ -37,8 +37,6 @@ class HaConfigSectionTranslation extends
 `;
   }
 
-  static get is() { return 'ha-config-section-translation'; }
-
   static get properties() {
     return {
       hass: {
@@ -83,4 +81,4 @@ class HaConfigSectionTranslation extends
   }
 }
 
-customElements.define(HaConfigSectionTranslation.is, HaConfigSectionTranslation);
+customElements.define('ha-config-section-translation', HaConfigSectionTranslation);

@@ -44,8 +44,6 @@ class HaConfigCustomize extends window.hassMixins.LocalizeMixin(PolymerElement) 
 `;
   }
 
-  static get is() { return 'ha-config-customize'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -81,4 +79,4 @@ class HaConfigCustomize extends window.hassMixins.LocalizeMixin(PolymerElement) 
       .sort(window.hassUtil.sortByName);
   }
 }
-customElements.define(HaConfigCustomize.is, HaConfigCustomize);
+customElements.define('ha-config-customize', HaConfigCustomize);

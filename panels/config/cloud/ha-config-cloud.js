@@ -44,8 +44,6 @@ import './ha-config-cloud-register.js';
 `;
     }
 
-    static get is() { return 'ha-config-cloud'; }
-
     static get properties() {
       return {
         hass: Object,
@@ -105,5 +103,5 @@ import './ha-config-cloud-register.js';
     }
   }
 
-  customElements.define(HaConfigCloud.is, HaConfigCloud);
+  customElements.define('ha-config-cloud', HaConfigCloud);
 }

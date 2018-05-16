@@ -26,8 +26,6 @@ class StateCardWeblink extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-card-weblink'; }
-
   static get properties() {
     return {
       stateObj: Object,
@@ -53,4 +51,4 @@ class StateCardWeblink extends PolymerElement {
     window.open(this.stateObj.state, '_blank');
   }
 }
-customElements.define(StateCardWeblink.is, StateCardWeblink);
+customElements.define('state-card-weblink', StateCardWeblink);

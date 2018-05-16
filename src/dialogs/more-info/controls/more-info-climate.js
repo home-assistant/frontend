@@ -206,8 +206,6 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'more-info-climate'; }
-
   static get properties() {
     return {
       hass: {
@@ -458,4 +456,4 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(MoreInfoClimate.is, MoreInfoClimate);
+customElements.define('more-info-climate', MoreInfoClimate);

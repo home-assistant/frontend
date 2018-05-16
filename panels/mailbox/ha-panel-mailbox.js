@@ -149,7 +149,6 @@ class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
     </paper-dialog>
     `;
   }
-  static get is() { return 'ha-panel-mailbox'; }
 
   static get properties() {
     return {
@@ -266,4 +265,4 @@ class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPanelMailbox.is, HaPanelMailbox);
+customElements.define('ha-panel-mailbox', HaPanelMailbox);

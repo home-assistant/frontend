@@ -19,7 +19,6 @@ class MoreInfoHistoryGraph extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-history_graph'; }
   static get properties() {
     return {
       hass: Object,
@@ -27,4 +26,4 @@ class MoreInfoHistoryGraph extends PolymerElement {
     };
   }
 }
-customElements.define(MoreInfoHistoryGraph.is, MoreInfoHistoryGraph);
+customElements.define('more-info-history_graph', MoreInfoHistoryGraph);

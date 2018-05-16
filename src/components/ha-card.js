@@ -29,8 +29,6 @@ class HaCard extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-card'; }
-
   static get properties() {
     return {
       header: {
@@ -40,4 +38,4 @@ class HaCard extends PolymerElement {
   }
 }
 
-customElements.define(HaCard.is, HaCard);
+customElements.define('ha-card', HaCard);

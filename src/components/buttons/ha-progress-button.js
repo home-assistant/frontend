@@ -55,8 +55,6 @@ class HaProgressButton extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-progress-button'; }
-
   static get properties() {
     return {
       hass: {
@@ -105,4 +103,4 @@ class HaProgressButton extends PolymerElement {
   }
 }
 
-customElements.define(HaProgressButton.is, HaProgressButton);
+customElements.define('ha-progress-button', HaProgressButton);

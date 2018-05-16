@@ -26,8 +26,6 @@ class StateCardCover extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-card-cover'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -48,4 +46,4 @@ class StateCardCover extends PolymerElement {
     return entity;
   }
 }
-customElements.define(StateCardCover.is, StateCardCover);
+customElements.define('state-card-cover', StateCardCover);

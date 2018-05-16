@@ -132,8 +132,6 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(PolymerElement)
 `;
   }
 
-  static get is() { return 'ha-config-cloud-account'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -171,4 +169,4 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(PolymerElement)
   }
 }
 
-customElements.define(HaConfigCloudAccount.is, HaConfigCloudAccount);
+customElements.define('ha-config-cloud-account', HaConfigCloudAccount);

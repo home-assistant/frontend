@@ -77,8 +77,6 @@ class HassioSupervisorInfo extends window.hassMixins.EventsMixin(PolymerElement)
 `;
   }
 
-  static get is() { return 'hassio-supervisor-info'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -152,4 +150,4 @@ This inludes beta releases for:
   }
 }
 
-customElements.define(HassioSupervisorInfo.is, HassioSupervisorInfo);
+customElements.define('hassio-supervisor-info', HassioSupervisorInfo);

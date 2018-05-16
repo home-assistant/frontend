@@ -23,8 +23,6 @@ class StateCardToggle extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-card-toggle'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -36,4 +34,4 @@ class StateCardToggle extends PolymerElement {
     };
   }
 }
-customElements.define(StateCardToggle.is, StateCardToggle);
+customElements.define('state-card-toggle', StateCardToggle);

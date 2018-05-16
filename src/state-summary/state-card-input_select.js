@@ -40,8 +40,6 @@ class StateCardInputSelect extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-card-input_select'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -80,4 +78,4 @@ class StateCardInputSelect extends PolymerElement {
     ev.stopPropagation();
   }
 }
-customElements.define(StateCardInputSelect.is, StateCardInputSelect);
+customElements.define('state-card-input_select', StateCardInputSelect);

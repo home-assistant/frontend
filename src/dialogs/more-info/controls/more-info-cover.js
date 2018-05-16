@@ -51,8 +51,6 @@ import '../../../util/cover-model.js';
 `;
     }
 
-    static get is() { return 'more-info-cover'; }
-
     static get properties() {
       return {
         hass: {
@@ -110,5 +108,5 @@ import '../../../util/cover-model.js';
     }
   }
 
-  customElements.define(MoreInfoCover.is, MoreInfoCover);
+  customElements.define('more-info-cover', MoreInfoCover);
 }

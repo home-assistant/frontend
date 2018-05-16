@@ -74,8 +74,6 @@ class HaEntityConfig extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-entity-config'; }
-
   static get properties() {
     return {
       hass: {
@@ -198,4 +196,4 @@ class HaEntityConfig extends PolymerElement {
   }
 }
 
-customElements.define(HaEntityConfig.is, HaEntityConfig);
+customElements.define('ha-entity-config', HaEntityConfig);

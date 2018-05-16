@@ -36,8 +36,6 @@ class HaComboBox extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-combo-box'; }
-
   static get properties() {
     return {
       allowCustomValue: Boolean,
@@ -83,4 +81,4 @@ class HaComboBox extends PolymerElement {
   }
 }
 
-customElements.define(HaComboBox.is, HaComboBox);
+customElements.define('ha-combo-box', HaComboBox);

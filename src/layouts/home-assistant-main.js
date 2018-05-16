@@ -57,8 +57,6 @@ import './partial-panel-resolver.js';
 `;
     }
 
-    static get is() { return 'home-assistant-main'; }
-
     static get properties() {
       return {
         hass: Object,
@@ -129,5 +127,5 @@ import './partial-panel-resolver.js';
     }
   }
 
-  customElements.define(HomeAssistantMain.is, HomeAssistantMain);
+  customElements.define('home-assistant-main', HomeAssistantMain);
 }
