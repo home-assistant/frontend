@@ -16,7 +16,7 @@ async function buildAuth(es6) {
   const stream = gulp.src(path.resolve(config.polymer_dir, 'src/authorize.html'))
     .pipe(replace([
       ['<!--EXTRA_SCRIPTS-->', es6 ? '' : es5Extra],
-      ['/home-assistant-polymer/build/webpack/ha-authorize.js', `/${frontendPath}/authorize.js`],
+      ['/home-assistant-polymer/hass_frontend/authorize.js', `/${frontendPath}/authorize.js`],
     ]));
 
   return minifyStream(stream, /* es6= */ es6)
