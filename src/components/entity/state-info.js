@@ -58,8 +58,6 @@ class StateInfo extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-info'; }
-
   static get properties() {
     return {
       detailed: {
@@ -82,4 +80,4 @@ class StateInfo extends PolymerElement {
   }
 }
 
-customElements.define(StateInfo.is, StateInfo);
+customElements.define('state-info', StateInfo);

@@ -115,8 +115,6 @@ class HaAutomationEditor extends
 `;
   }
 
-  static get is() { return 'ha-automation-editor'; }
-
   static get properties() {
     return {
       hass: {
@@ -290,4 +288,4 @@ class HaAutomationEditor extends
   }
 }
 
-customElements.define(HaAutomationEditor.is, HaAutomationEditor);
+customElements.define('ha-automation-editor', HaAutomationEditor);

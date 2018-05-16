@@ -35,7 +35,7 @@ class HassioCardContent extends PolymerElement {
       .addition {
         color: var(--secondary-text-color);
         overflow: hidden;
-        position: relative; 
+        position: relative;
         height: 2.4em;
         line-height: 1.2em;
       }
@@ -58,8 +58,6 @@ class HassioCardContent extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-card-content'; }
-
   static get properties() {
     return {
       title: String,
@@ -74,4 +72,4 @@ class HassioCardContent extends PolymerElement {
     };
   }
 }
-customElements.define(HassioCardContent.is, HassioCardContent);
+customElements.define('hassio-card-content', HassioCardContent);

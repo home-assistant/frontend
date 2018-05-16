@@ -69,8 +69,6 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(PolymerElement
 `;
   }
 
-  static get is() { return 'hassio-pages-with-tabs'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -128,4 +126,4 @@ class HassioPagesWithTabs extends window.hassMixins.NavigateMixin(PolymerElement
   }
 }
 
-customElements.define(HassioPagesWithTabs.is, HassioPagesWithTabs);
+customElements.define('hassio-pages-with-tabs', HassioPagesWithTabs);

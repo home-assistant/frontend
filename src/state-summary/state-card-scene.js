@@ -30,8 +30,6 @@ class StateCardScene extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'state-card-scene'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -51,4 +49,4 @@ class StateCardScene extends window.hassMixins.LocalizeMixin(PolymerElement) {
     );
   }
 }
-customElements.define(StateCardScene.is, StateCardScene);
+customElements.define('state-card-scene', StateCardScene);

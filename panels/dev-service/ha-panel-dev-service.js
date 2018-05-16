@@ -167,7 +167,6 @@ import '../../src/util/app-localstorage-document.js';
     </app-header-layout>
       `;
     }
-    static get is() { return 'ha-panel-dev-service'; }
 
     static get properties() {
       return {
@@ -301,5 +300,5 @@ import '../../src/util/app-localstorage-document.js';
     }
   }
 
-  customElements.define(HaPanelDevService.is, HaPanelDevService);
+  customElements.define('ha-panel-dev-service', HaPanelDevService);
 }

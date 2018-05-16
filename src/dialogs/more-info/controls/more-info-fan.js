@@ -69,8 +69,6 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'more-info-fan'; }
-
   static get properties() {
     return {
       hass: {
@@ -163,4 +161,4 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(MoreInfoFan.is, MoreInfoFan);
+customElements.define('more-info-fan', MoreInfoFan);

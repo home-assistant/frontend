@@ -39,8 +39,6 @@ class HassioAddonRepository extends window.hassMixins.NavigateMixin(PolymerEleme
 `;
   }
 
-  static get is() { return 'hassio-addon-repository'; }
-
   static get properties() {
     return {
       repo: Object,
@@ -71,4 +69,4 @@ class HassioAddonRepository extends window.hassMixins.NavigateMixin(PolymerEleme
   }
 }
 
-customElements.define(HassioAddonRepository.is, HassioAddonRepository);
+customElements.define('hassio-addon-repository', HassioAddonRepository);

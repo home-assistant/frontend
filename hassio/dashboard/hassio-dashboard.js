@@ -19,8 +19,6 @@ class HassioDashboard extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-dashboard'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -30,4 +28,4 @@ class HassioDashboard extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HassioDashboard.is, HassioDashboard);
+customElements.define('hassio-dashboard', HassioDashboard);

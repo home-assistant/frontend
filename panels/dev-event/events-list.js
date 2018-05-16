@@ -33,8 +33,6 @@ class EventsList extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'events-list'; }
-
   static get properties() {
     return {
       hass: {
@@ -60,4 +58,4 @@ class EventsList extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(EventsList.is, EventsList);
+customElements.define('events-list', EventsList);

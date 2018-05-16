@@ -49,7 +49,6 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-plant-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -105,4 +104,4 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPlantCard.is, HaPlantCard);
+customElements.define('ha-plant-card', HaPlantCard);

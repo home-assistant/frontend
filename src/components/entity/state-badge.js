@@ -43,7 +43,6 @@ class StateBadge extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-badge'; }
   static get properties() {
     return {
       stateObj: {
@@ -87,4 +86,4 @@ class StateBadge extends PolymerElement {
     Object.assign(this.style, hostStyle);
   }
 }
-customElements.define(StateBadge.is, StateBadge);
+customElements.define('state-badge', StateBadge);

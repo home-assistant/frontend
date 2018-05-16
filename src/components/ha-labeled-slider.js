@@ -42,8 +42,6 @@ class HaLabeledSlider extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-labeled-slider'; }
-
   static get properties() {
     return {
       caption: String,
@@ -60,4 +58,4 @@ class HaLabeledSlider extends PolymerElement {
   }
 }
 
-customElements.define(HaLabeledSlider.is, HaLabeledSlider);
+customElements.define('ha-labeled-slider', HaLabeledSlider);

@@ -134,7 +134,7 @@ class HaChartBase extends mixinBehaviors([
   get chart() {
     return this._chart;
   }
-  static get is() { return 'ha-chart-base'; }
+
   static get properties() {
     return {
       data: Object,
@@ -537,4 +537,4 @@ class HaChartBase extends mixinBehaviors([
     return getColor;
   }
 }
-customElements.define(HaChartBase.is, HaChartBase);
+customElements.define('ha-chart-base', HaChartBase);

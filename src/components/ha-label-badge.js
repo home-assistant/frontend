@@ -95,7 +95,6 @@ class HaLabelBadge extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-label-badge'; }
   static get properties() {
     return {
       value: String,
@@ -134,4 +133,4 @@ class HaLabelBadge extends PolymerElement {
     this.$.badge.style.backgroundImage = newVal ? 'url(' + newVal + ')' : '';
   }
 }
-customElements.define(HaLabelBadge.is, HaLabelBadge);
+customElements.define('ha-label-badge', HaLabelBadge);

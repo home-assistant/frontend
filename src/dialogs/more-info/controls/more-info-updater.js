@@ -16,8 +16,6 @@ class MoreInfoUpdater extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-updater'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -32,4 +30,4 @@ class MoreInfoUpdater extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoUpdater.is, MoreInfoUpdater);
+customElements.define('more-info-updater', MoreInfoUpdater);

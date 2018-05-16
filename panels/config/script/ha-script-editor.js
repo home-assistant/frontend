@@ -110,8 +110,6 @@ class HaScriptEditor extends
 `;
   }
 
-  static get is() { return 'ha-script-editor'; }
-
   static get properties() {
     return {
       hass: {
@@ -281,4 +279,4 @@ class HaScriptEditor extends
   }
 }
 
-customElements.define(HaScriptEditor.is, HaScriptEditor);
+customElements.define('ha-script-editor', HaScriptEditor);

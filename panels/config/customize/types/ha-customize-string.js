@@ -10,8 +10,6 @@ class HaCustomizeString extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-customize-string'; }
-
   static get properties() {
     return {
       item: {
@@ -25,4 +23,4 @@ class HaCustomizeString extends PolymerElement {
     return item.description + (item.type === 'json' ? ' (JSON formatted)' : '');
   }
 }
-customElements.define(HaCustomizeString.is, HaCustomizeString);
+customElements.define('ha-customize-string', HaCustomizeString);

@@ -84,8 +84,6 @@ class HaScriptPicker extends
 `;
   }
 
-  static get is() { return 'ha-script-picker'; }
-
   static get properties() {
     return {
       hass: {
@@ -134,4 +132,4 @@ class HaScriptPicker extends
   }
 }
 
-customElements.define(HaScriptPicker.is, HaScriptPicker);
+customElements.define('ha-script-picker', HaScriptPicker);

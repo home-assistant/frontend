@@ -78,8 +78,6 @@ class HaConfigFlow extends
 `;
   }
 
-  static get is() { return 'ha-config-flow'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -192,4 +190,4 @@ class HaConfigFlow extends
   }
 }
 
-customElements.define(HaConfigFlow.is, HaConfigFlow);
+customElements.define('ha-config-flow', HaConfigFlow);

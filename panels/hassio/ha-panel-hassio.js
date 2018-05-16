@@ -21,7 +21,6 @@ class HaPanelHassio extends
     ></iframe>
     `;
   }
-  static get is() { return 'ha-panel-hassio'; }
 
   static get properties() {
     return {
@@ -77,4 +76,4 @@ class HaPanelHassio extends
   }
 }
 
-customElements.define(HaPanelHassio.is, HaPanelHassio);
+customElements.define('ha-panel-hassio', HaPanelHassio);

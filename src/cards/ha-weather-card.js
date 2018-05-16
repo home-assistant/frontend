@@ -144,7 +144,6 @@ class HaWeatherCard extends
 `;
   }
 
-  static get is() { return 'ha-weather-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -237,4 +236,4 @@ class HaWeatherCard extends
     return date.toLocaleDateString(this.hass.selectedLanguage || this.hass.language, { weekday: 'short' });
   }
 }
-customElements.define(HaWeatherCard.is, HaWeatherCard);
+customElements.define('ha-weather-card', HaWeatherCard);

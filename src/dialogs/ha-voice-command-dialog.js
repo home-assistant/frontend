@@ -127,8 +127,6 @@ class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(PolymerElement)
 `;
   }
 
-  static get is() { return 'ha-voice-command-dialog'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -242,4 +240,4 @@ class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(PolymerElement)
   }
 }
 
-customElements.define(HaVoiceCommandDialog.is, HaVoiceCommandDialog);
+customElements.define('ha-voice-command-dialog', HaVoiceCommandDialog);

@@ -51,8 +51,6 @@ class HaConfigDashboard extends window.hassMixins.LocalizeMixin(PolymerElement) 
 `;
   }
 
-  static get is() { return 'ha-config-dashboard'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -68,4 +66,4 @@ class HaConfigDashboard extends window.hassMixins.LocalizeMixin(PolymerElement) 
   }
 }
 
-customElements.define(HaConfigDashboard.is, HaConfigDashboard);
+customElements.define('ha-config-dashboard', HaConfigDashboard);

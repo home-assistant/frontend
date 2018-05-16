@@ -30,8 +30,6 @@ class HaConfigEntriesMenu extends window.hassMixins.NavigateMixin(PolymerElement
 `;
   }
 
-  static get is() { return 'ha-config-entries-menu'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -45,4 +43,4 @@ class HaConfigEntriesMenu extends window.hassMixins.NavigateMixin(PolymerElement
   }
 }
 
-customElements.define(HaConfigEntriesMenu.is, HaConfigEntriesMenu);
+customElements.define('ha-config-entries-menu', HaConfigEntriesMenu);
