@@ -58,7 +58,7 @@ class HaStateLabelBadge extends
       }
     </style>
 
-    <ha-label-badge class\$="[[computeClassNames(state)]]" value="[[computeValue(localize, state)]]" icon="[[computeIcon(state)]]" image="[[computeImage(state)]]" label="[[computeLabel(localize, state, timerTimeRemaining)]]" description="[[computeDescription(state)]]"></ha-label-badge>
+    <ha-label-badge class\$="[[computeClassNames(state)]]" value="[[computeValue(localize, state)]]" icon="[[computeIcon(state)]]" image="[[computeImage(state)]]" label="[[computeLabel(localize, state, _timerTimeRemaining)]]" description="[[computeDescription(state)]]"></ha-label-badge>
 `;
   }
 
@@ -69,7 +69,7 @@ class HaStateLabelBadge extends
         type: Object,
         observer: 'stateChanged',
       },
-      timerTimeRemaining: {
+      _timerTimeRemaining: {
         type: Number,
         value: 0,
       }
@@ -161,7 +161,7 @@ class HaStateLabelBadge extends
     return state.attributes.entity_picture || null;
   }
 
-  computeLabel(localize, state, timerTimeRemaining) {
+  computeLabel(localize, state, _timerTimeRemaining) {
     const domain = computeDomain(state);
     if (state.state === 'unavailable' ||
         ['device_tracker', 'alarm_control_panel'].includes(domain)) {
@@ -171,7 +171,7 @@ class HaStateLabelBadge extends
       return localize(`state_badge.${domain}.${state.state}`) || localize(`state_badge.default.${state.state}`) || state.state;
     }
     if (domain === 'timer') {
-      return secondsToDuration(timerTimeRemaining);
+      return secondsToDuration(_timerTimeRemaining);
     }
     return state.attributes.unit_of_measurement || null;
   }
@@ -204,7 +204,7 @@ class HaStateLabelBadge extends
   }
 
   calculateTimerRemaining(stateObj) {
-    this.timerTimeRemaining = timerTimeRemaining(stateObj);
+    this._timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 }
 

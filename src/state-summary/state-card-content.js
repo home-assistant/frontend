@@ -36,16 +36,16 @@ class StateCardContent extends PolymerElement {
   }
 
   inputChanged(hass, inDialog, stateObj) {
-    let stateCardType;
+    let stateCard;
     if (!stateObj || !hass) return;
     if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
-      stateCardType = stateObj.attributes.custom_ui_state_card;
+      stateCard = stateObj.attributes.custom_ui_state_card;
     } else {
-      stateCardType = 'state-card-' + stateCardType(hass, stateObj);
+      stateCard = 'state-card-' + stateCardType(hass, stateObj);
     }
     dynamicContentUpdater(
       this,
-      stateCardType.toUpperCase(),
+      stateCard.toUpperCase(),
       {
         hass: hass,
         stateObj: stateObj,

@@ -10,7 +10,7 @@ import '../../../components/ha-color-picker.js';
 import '../../../components/ha-labeled-slider.js';
 import '../../../util/hass-mixins.js';
 
-import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
+import featureClassNames from '../../../../js/common/entity/feature_class_names';
 
 {
   const FEATURE_CLASS_NAMES = {
