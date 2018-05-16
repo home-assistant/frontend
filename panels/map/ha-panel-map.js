@@ -8,7 +8,7 @@ import '../../src/components/ha-menu-button.js';
 import '../../src/util/hass-mixins.js';
 import './ha-entity-marker.js';
 
-import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
 import computeStateName from '../../js/common/entity/compute_state_name.js';
 
 Leaflet.Icon.Default.imagePath = '/static/images/leaflet';
@@ -109,7 +109,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
       var title = computeStateName(entity);
 
       if ((entity.attributes.hidden &&
-          computeDomain(entity) !== 'zone') ||
+          computeStateDomain(entity) !== 'zone') ||
           entity.state === 'home' ||
           !('latitude' in entity.attributes) ||
           !('longitude' in entity.attributes)) {
@@ -118,7 +118,7 @@ class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
 
       var icon;
 
-      if (computeDomain(entity) === 'zone') {
+      if (computeStateDomain(entity) === 'zone') {
         // DRAW ZONE
         if (entity.attributes.passive) return;
 

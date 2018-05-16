@@ -12,7 +12,7 @@ import '../ha-entity-config.js';
 import './ha-form-customize.js';
 
 import computeStateName from '../../../js/common/entity/compute_state_name.js';
-import computeDomain from '../../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
 import sortByName from '../../../js/common/entity/states_sort_by_name.js';
 
 /*
@@ -62,7 +62,7 @@ class HaConfigCustomize extends window.hassMixins.LocalizeMixin(PolymerElement) 
         value: {
           component: 'ha-form-customize',
           computeSelectCaption: stateObj =>
-            computeStateName(stateObj) + ' (' + computeDomain(stateObj) + ')'
+            computeStateName(stateObj) + ' (' + computeStateDomain(stateObj) + ')'
         }
       },
     };
