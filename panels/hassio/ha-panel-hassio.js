@@ -31,7 +31,7 @@ class HaPanelHassio extends
 
       iframeUrl: {
         type: String,
-        value: window.HASS_DEV ?
+        value: __DEV__ ?
           '/home-assistant-polymer/hassio/index.html' : '/api/hassio/app-es5/index.html',
       }
     };
