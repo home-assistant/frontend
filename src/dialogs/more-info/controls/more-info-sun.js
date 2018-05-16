@@ -4,7 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-relative-time.js';
 
-import formatTime from '../../../../js/common/datetime/format_time.js';
+import formatTime from '../../../common/datetime/format_time.js';
 
 class MoreInfoSun extends PolymerElement {
   static get template() {

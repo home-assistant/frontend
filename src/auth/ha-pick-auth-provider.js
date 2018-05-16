@@ -2,12 +2,12 @@ import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin EventsMixin
  */
-class HaPickAuthProvider extends window.hassMixins.EventsMixin(PolymerElement) {
+class HaPickAuthProvider extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

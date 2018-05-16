@@ -1,12 +1,12 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 let loaded = null;
 
 /*
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin EventsMixin
  */
-class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
+class HaMarkdown extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       content: {

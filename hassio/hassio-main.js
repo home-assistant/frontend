@@ -7,9 +7,10 @@ import './addon-view/hassio-addon-view.js';
 import './hassio-data.js';
 import './hassio-pages-with-tabs.js';
 
-import applyThemesOnElement from '../js/common/dom/apply_themes_on_element.js';
+import applyThemesOnElement from '../src/common/dom/apply_themes_on_element.js';
+import EventsMixin from '../src/mixins/events-mixin.js';
 
-class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
+class HassioMain extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <app-route route="[[route]]" pattern="/:page" data="{{routeData}}"></app-route>

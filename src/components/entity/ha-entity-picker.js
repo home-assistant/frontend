@@ -6,15 +6,16 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
 
-import '../../util/hass-mixins.js';
+
 import './state-badge.js';
 
-import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import computeStateName from '../../common/entity/compute_state_name.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaEntityPicker extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

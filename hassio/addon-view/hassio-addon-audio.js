@@ -9,9 +9,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../src/resources/ha-style.js';
-import '../../src/util/hass-mixins.js';
+import EventsMixin from '../../src/mixins/events-mixin.js';
 
-class HassioAddonAudio extends window.hassMixins.EventsMixin(PolymerElement) {
+class HassioAddonAudio extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">

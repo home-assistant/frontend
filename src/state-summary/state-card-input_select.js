@@ -6,7 +6,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-badge.js';
 
-import computeStateName from '../../js/common/entity/compute_state_name.js';
+import computeStateName from '../common/entity/compute_state_name.js';
 
 class StateCardInputSelect extends PolymerElement {
   static get template() {

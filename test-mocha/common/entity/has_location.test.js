@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import hasLocation from '../../../js/common/entity/has_location.js';
+import hasLocation from '../../../src/common/entity/has_location.js';
 
 describe('hasLocation', () => {
   it('flags states with location', () => {

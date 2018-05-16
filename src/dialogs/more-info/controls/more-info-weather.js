@@ -2,12 +2,12 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-mixins.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class MoreInfoWeather extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

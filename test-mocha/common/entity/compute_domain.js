@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import computeDomain from '../../../js/common/entity/compute_domain';
+import computeDomain from '../../../src/common/entity/compute_domain';
 
 describe('computeDomain', () => {
   it('Returns domains', () => {

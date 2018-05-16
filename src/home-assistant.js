@@ -23,8 +23,8 @@ import './util/roboto.js';
 // For mdi icons.
 import './components/ha-iconset-svg.js';
 
-import computeStateName from '../js/common/entity/compute_state_name.js';
-import applyThemesOnElement from '../js/common/dom/apply_themes_on_element.js';
+import computeStateName from './common/entity/compute_state_name.js';
+import applyThemesOnElement from './common/dom/apply_themes_on_element.js';
 
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */

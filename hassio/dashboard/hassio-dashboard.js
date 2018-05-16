@@ -3,8 +3,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hassio-addons.js';
 import './hassio-hass-update.js';
+import EventsMixin from '../../src/mixins/events-mixin.js';
 
-class HassioDashboard extends window.hassMixins.EventsMixin(PolymerElement) {
+class HassioDashboard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
