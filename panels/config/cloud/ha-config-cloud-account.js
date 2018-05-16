@@ -10,6 +10,8 @@ import '../../../src/resources/ha-style.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-section.js';
 
+import formatDateTime from '../../../js/common/datetime/format_date_time.js';
+
 class HaConfigCloudAccount extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -148,7 +150,7 @@ class HaConfigCloudAccount extends window.hassMixins.EventsMixin(PolymerElement)
   }
 
   _formatExpiration(date) {
-    return window.hassUtil.formatDateTime(new Date(date));
+    return formatDateTime(new Date(date));
   }
 
   _accountChanged(newAccount) {

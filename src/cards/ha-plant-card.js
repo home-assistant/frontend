@@ -5,6 +5,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/ha-card.js';
 import '../util/hass-mixins.js';
 
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+
 class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -68,7 +70,7 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 
   computeTitle(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 
   computeAttributes(data) {

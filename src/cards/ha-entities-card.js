@@ -7,6 +7,11 @@ import '../components/ha-card.js';
 import '../state-summary/state-card-content.js';
 import '../util/hass-mixins.js';
 
+import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+import stateMoreInfoType from '../../js/common/entity/state_more_info_type.js';
+import canToggleState from '../../js/common/entity/can_toggle_state.js';
+
 class HaEntitiesCard extends
   window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
   static get template() {
@@ -79,9 +84,9 @@ class HaEntitiesCard extends
 
   computeTitle(states, groupEntity, localize) {
     if (groupEntity) {
-      return window.hassUtil.computeStateName(groupEntity).trim();
+      return computeStateName(groupEntity).trim();
     }
-    const domain = window.hassUtil.computeDomain(states[0]);
+    const domain = computeDomain(states[0]);
     return (localize && localize(`domain.${domain}`)) || domain.replace(/_/g, ' ');
   }
 
@@ -94,7 +99,7 @@ class HaEntitiesCard extends
   }
 
   computeStateClass(stateObj) {
-    return window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state';
+    return stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state';
   }
 
   addTapEvents() {
@@ -133,7 +138,7 @@ class HaEntitiesCard extends
     // Only show if we can toggle 2+ entities in group
     let canToggleCount = 0;
     for (let i = 0; i < states.length; i++) {
-      if (!window.hassUtil.canToggleState(this.hass, states[i])) {
+      if (!canToggleState(this.hass, states[i])) {
         continue;
       }
 

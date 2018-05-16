@@ -7,10 +7,13 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../src/resources/ha-style.js';
 import '../../../src/util/hass-mixins.js';
-import '../../../src/util/hass-util.js';
 import '../ha-config-section.js';
 import '../ha-entity-config.js';
 import './ha-form-customize.js';
+
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import computeDomain from '../../../js/common/entity/compute_domain.js';
+import sortByName from '../../../js/common/entity/states_sort_by_name.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
@@ -59,7 +62,7 @@ class HaConfigCustomize extends window.hassMixins.LocalizeMixin(PolymerElement) 
         value: {
           component: 'ha-form-customize',
           computeSelectCaption: stateObj =>
-            window.hassUtil.computeStateName(stateObj) + ' (' + window.hassUtil.computeDomain(stateObj) + ')'
+            computeStateName(stateObj) + ' (' + computeDomain(stateObj) + ')'
         }
       },
     };
@@ -76,7 +79,7 @@ class HaConfigCustomize extends window.hassMixins.LocalizeMixin(PolymerElement) 
   computeEntities(hass) {
     return Object.keys(hass.states)
       .map(key => hass.states[key])
-      .sort(window.hassUtil.sortByName);
+      .sort(sortByName);
   }
 }
 customElements.define('ha-config-customize', HaConfigCustomize);

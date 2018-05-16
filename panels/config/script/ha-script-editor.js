@@ -25,6 +25,9 @@ import '../ha-config-section.js';
 import Script from '../../../js/panel-config/script.js';
 import unmountPreact from '../../../js/common/preact/unmount.js';
 
+import computeObjectId from '../../../js/common/entity/compute_object_id.js';
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+
 function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);
 }
@@ -202,7 +205,7 @@ class HaScriptEditor extends
     if (oldVal && oldVal.entity_id === newVal.entity_id) {
       return;
     }
-    this.hass.callApi('get', 'config/script/config/' + window.hassUtil.computeObjectId(newVal.entity_id))
+    this.hass.callApi('get', 'config/script/config/' + computeObjectId(newVal.entity_id))
       .then((config) => {
         // Normalize data: ensure sequence is a list
         // Happens when people copy paste their scripts into the config
@@ -260,7 +263,7 @@ class HaScriptEditor extends
 
   saveScript() {
     var id = this.creatingNew ?
-      '' + Date.now() : window.hassUtil.computeObjectId(this.script.entity_id);
+      '' + Date.now() : computeObjectId(this.script.entity_id);
     this.hass.callApi('post', 'config/script/config/' + id, this.config).then(() => {
       this.dirty = false;
 
@@ -274,7 +277,7 @@ class HaScriptEditor extends
   }
 
   computeName(script) {
-    return script && window.hassUtil.computeStateName(script);
+    return script && computeStateName(script);
   }
 }
 

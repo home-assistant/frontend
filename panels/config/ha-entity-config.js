@@ -7,6 +7,8 @@ import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+
 class HaEntityConfig extends PolymerElement {
   static get template() {
     return html`
@@ -125,7 +127,7 @@ class HaEntityConfig extends PolymerElement {
   computeSelectCaption(stateObj) {
     return this.config.computeSelectCaption ?
       this.config.computeSelectCaption(stateObj) :
-      window.hassUtil.computeStateName(stateObj);
+      computeStateName(stateObj);
   }
 
   computeShowNoDevices(formState) {

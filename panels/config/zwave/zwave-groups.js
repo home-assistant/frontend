@@ -7,6 +7,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../src/components/buttons/ha-call-service-button.js';
 
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+
 class ZwaveGroups extends PolymerElement {
   static get template() {
     return html`
@@ -188,7 +190,7 @@ class ZwaveGroups extends PolymerElement {
   }
 
   computeSelectCaption(stateObj) {
-    return window.hassUtil.computeStateName(stateObj) + ' (Node:' +
+    return computeStateName(stateObj) + ' (Node:' +
       stateObj.attributes.node_id + ' ' +
       stateObj.attributes.query_stage + ')';
   }

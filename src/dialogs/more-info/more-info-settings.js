@@ -7,6 +7,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../util/hass-mixins.js';
 
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
+
 class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -67,11 +70,11 @@ class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
 
   _computeStateName(stateObj) {
     if (!stateObj) return '';
-    return window.hassUtil.computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 
   _computeComponentLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'config.entity_registry');
+    return isComponentLoaded(hass, 'config.entity_registry');
   }
 
   _registryInfoChanged(newVal) {
