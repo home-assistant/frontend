@@ -21,7 +21,6 @@ import '../../../src/components/entity/ha-entity-picker.js';
 import '../../../src/components/ha-combo-box.js';
 import '../../../src/layouts/ha-app-layout.js';
 import '../../../src/util/hass-mixins.js';
-import '../ha-config-js.js';
 import '../ha-config-section.js';
 import Script from '../../../js/panel-config/script.js';
 import unmountPreact from '../../../js/common/preact/unmount.js';

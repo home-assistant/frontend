@@ -23,7 +23,6 @@ import '../../../src/components/ha-markdown.js';
 import '../../../src/components/ha-service-picker.js';
 import '../../../src/layouts/ha-app-layout.js';
 import '../../../src/util/hass-mixins.js';
-import '../ha-config-js.js';
 import '../ha-config-section.js';
 import Automation from '../../../js/panel-config/automation.js';
 import unmountPreact from '../../../js/common/preact/unmount.js';
