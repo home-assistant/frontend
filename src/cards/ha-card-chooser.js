@@ -8,7 +8,7 @@ import './ha-persistent_notification-card.js';
 import './ha-plant-card.js';
 import './ha-weather-card.js';
 
-import dynamicContentUpdater from '../../js/common/dom/dynamic_content_updater.js';
+import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
 
 class HaCardChooser extends PolymerElement {
   static get properties() {

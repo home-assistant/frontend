@@ -1,12 +1,14 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 /**
  * Color-picker custom element
+ *
+ * @appliesMixin EventsMixin
  */
-class HaColorPicker extends window.hassMixins.EventsMixin(PolymerElement) {
+class HaColorPicker extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

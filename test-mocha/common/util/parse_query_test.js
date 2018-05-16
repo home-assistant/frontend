@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import parseQuery from '../../../js/common/util/parse_query.js';
+import parseQuery from '../../../src/common/util/parse_query.js';
 
 describe('parseQuery', () => {
   it('works', () => {

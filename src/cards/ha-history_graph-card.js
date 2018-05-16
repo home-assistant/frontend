@@ -4,11 +4,15 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/state-history-charts.js';
 import '../data/ha-state-history-data.js';
-import '../util/hass-mixins.js';
 
-import computeStateName from '../../js/common/entity/compute_state_name.js';
 
-class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
+import computeStateName from '../common/entity/compute_state_name.js';
+import EventsMixin from '../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

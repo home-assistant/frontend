@@ -7,8 +7,8 @@ import '../../../components/ha-cover-tilt-controls.js';
 import '../../../components/ha-paper-slider.js';
 import '../../../util/cover-model.js';
 
-import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
-import featureClassNames from '../../../../js/common/entity/feature_class_names';
+import attributeClassNames from '../../../common/entity/attribute_class_names';
+import featureClassNames from '../../../common/entity/feature_class_names';
 
 {
   const FEATURE_CLASS_NAMES = {

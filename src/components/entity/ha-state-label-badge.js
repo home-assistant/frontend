@@ -1,23 +1,26 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
+
 import '../ha-label-badge.js';
 
-import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
-import computeStateName from '../../../js/common/entity/compute_state_name.js';
-import domainIcon from '../../../js/common/entity/domain_icon.js';
-import stateIcon from '../../../js/common/entity/state_icon.js';
-import timerTimeRemaining from '../../../js/common/entity/timer_time_remaining.js';
-import attributeClassNames from '../../../js/common/entity/attribute_class_names.js';
-import secondsToDuration from '../../../js/common/datetime/seconds_to_duration.js';
+import computeStateDomain from '../../common/entity/compute_state_domain.js';
+import computeStateName from '../../common/entity/compute_state_name.js';
+import domainIcon from '../../common/entity/domain_icon.js';
+import stateIcon from '../../common/entity/state_icon.js';
+import timerTimeRemaining from '../../common/entity/timer_time_remaining.js';
+import attributeClassNames from '../../common/entity/attribute_class_names.js';
+import secondsToDuration from '../../common/datetime/seconds_to_duration.js';
+
+import EventsMixin from '../../mixins/events-mixin.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin LocalizeMixin
+ * @appliesMixin EventsMixin
  */
 class HaStateLabelBadge extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>

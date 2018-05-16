@@ -4,7 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './entity/ha-chart-base.js';
 
-import formatDateTime from '../../js/common/datetime/format_date_time.js';
+import formatDateTime from '../common/datetime/format_date_time.js';
 
 class StateHistoryChartLine extends PolymerElement {
   static get template() {
