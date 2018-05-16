@@ -1,7 +1,16 @@
+const fs = require('fs');
 const path = require('path');
+const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
+if (!version) {
+  throw Error('Version not found');
+}
+const VERSION = version[0];
 
 function createConfig(isProdBuild, latestBuild) {
-  let buildPath = latestBuild ? 'build/webpack/' : 'build-es5/webpack/';
+  let buildPath = latestBuild ? 'hass_frontend/' : 'hass_frontend_es5/';
 
   let publicPath;
   if (isProdBuild) {
@@ -9,6 +18,12 @@ function createConfig(isProdBuild, latestBuild) {
   } else {
     publicPath = `/home-assistant-polymer/${buildPath}`;
   }
+
+  const entry = {
+    app: './src/home-assistant.js',
+    authorize: './src/auth/ha-authorize.js',
+    core: './js/core.js',
+  };
 
   const babelOptions = {
     plugins: [
@@ -23,10 +38,30 @@ function createConfig(isProdBuild, latestBuild) {
     ],
   };
 
-  if (!latestBuild) {
+  const plugins = [
+    new webpack.DefinePlugin({
+      __DEV__: JSON.stringify(!isProdBuild),
+      __BUILD__: JSON.stringify(latestBuild ? 'latest' : 'es5'),
+      __VERSION__: JSON.stringify(VERSION),
+    })
+  ];
+
+  if (latestBuild) {
+    plugins.push(CopyWebpackPlugin([
+      { from: 'build-translations/output', to: `translations` },
+      'node_modules/@polymer/font-roboto-local',
+      'node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js',
+      { from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` },
+      { from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` },
+    ]));
+  } else {
+    plugins.push(CopyWebpackPlugin([
+      'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
+    ]));
     babelOptions.presets = [
       ['es2015', { modules: false }]
     ];
+    entry.compatibility = './js/compatibility.js';
   }
 
   const chunkFilename = isProdBuild ?
@@ -34,10 +69,7 @@ function createConfig(isProdBuild, latestBuild) {
 
   return {
     mode: isProdBuild ? 'production' : 'development',
-    entry: {
-      app: './src/home-assistant.js',
-      authorize: './src/auth/ha-authorize.js'
-    },
+    entry,
     module: {
       rules: [
         {
@@ -49,6 +81,7 @@ function createConfig(isProdBuild, latestBuild) {
         }
       ]
     },
+    plugins,
     output: {
       filename: '[name].js',
       chunkFilename: chunkFilename,

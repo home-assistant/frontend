@@ -9,7 +9,7 @@
     <link rel='apple-touch-icon' sizes='180x180'
           href='/static/icons/favicon-apple-180x180.png'>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#3fbbf4">
-    <link rel='preload' href='/home-assistant-polymer/build/core.js' as='script'/>
+    <link rel='preload' href='/home-assistant-polymer/hass_frontend/core.js' as='script'/>
     <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
     <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
     <meta name='apple-mobile-web-app-capable' content='yes'>
@@ -100,10 +100,9 @@
         });
       } */
     </script>
-    <!--<script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script>-->
     <!--EXTRA_SCRIPTS-->
-    <script src='/home-assistant-polymer/build/core.js'></script>
-    <script src='/home-assistant-polymer/build/webpack/app.js'></script>
+    <script src='/home-assistant-polymer/hass_frontend/core.js'></script>
+    <script src='/home-assistant-polymer/hass_frontend/app.js'></script>
     <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
     {% for extra_url in extra_urls -%}
       <link rel='import' href='{{ extra_url }}' async>
