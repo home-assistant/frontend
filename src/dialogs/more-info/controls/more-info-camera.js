@@ -3,6 +3,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../util/hass-mixins.js';
 
+import computeStateName from '../../../../js/common/entity/compute_state_name.js';
+
 class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -16,7 +18,7 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
       }
     </style>
 
-    <img class="camera-image" src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]" on-load="imageLoaded" alt="[[computeStateName(stateObj)]]">
+    <img class="camera-image" src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]" on-load="imageLoaded" alt="[[_computeStateName(stateObj)]]">
 `;
   }
 
@@ -51,8 +53,8 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
     this.fire('iron-resize');
   }
 
-  computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+  _computeStateName(stateObj) {
+    return computeStateName(stateObj);
   }
 
   computeCameraImageUrl(hass, stateObj, isVisible) {

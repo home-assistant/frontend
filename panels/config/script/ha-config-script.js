@@ -5,6 +5,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import './ha-script-editor.js';
 import './ha-script-picker.js';
 
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import computeDomain from '../../../js/common/entity/compute_domain.js';
+
 class HaConfigScript extends PolymerElement {
   static get template() {
     return html`
@@ -74,14 +77,14 @@ class HaConfigScript extends PolymerElement {
     Object.keys(hass.states).forEach(function (key) {
       var entity = hass.states[key];
 
-      if (window.hassUtil.computeDomain(entity) === 'script') {
+      if (computeDomain(entity) === 'script') {
         scripts.push(entity);
       }
     });
 
     return scripts.sort(function entitySortBy(entityA, entityB) {
-      var nameA = window.hassUtil.computeStateName(entityA);
-      var nameB = window.hassUtil.computeStateName(entityB);
+      var nameA = computeStateName(entityA);
+      var nameB = computeStateName(entityB);
 
       if (nameA < nameB) {
         return -1;

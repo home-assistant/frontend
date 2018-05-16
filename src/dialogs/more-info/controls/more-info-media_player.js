@@ -11,6 +11,9 @@ import '../../../components/ha-paper-slider.js';
 import '../../../util/hass-media-player-model.js';
 import '../../../util/hass-mixins.js';
 
+import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
+import isComponentLoaded from '../../../../js/common/config/is_component_loaded.js';
+
 {
   class MoreInfoMediaPlayer extends window.hassMixins.EventsMixin(PolymerElement) {
     static get template() {
@@ -145,7 +148,7 @@ import '../../../util/hass-mixins.js';
     }
 
     computeClassNames(stateObj) {
-      return window.hassUtil.attributeClassNames(stateObj, ['volume_level']);
+      return attributeClassNames(stateObj, ['volume_level']);
     }
 
     computeMuteVolumeIcon(playerObj) {
@@ -180,7 +183,7 @@ import '../../../util/hass-mixins.js';
     }
 
     computeTTSLoaded(hass) {
-      return window.hassUtil.isComponentLoaded(hass, 'tts');
+      return isComponentLoaded(hass, 'tts');
     }
 
     handleTogglePower() {

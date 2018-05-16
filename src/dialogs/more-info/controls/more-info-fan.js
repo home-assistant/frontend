@@ -10,6 +10,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/ha-attributes.js';
 import '../../../util/hass-mixins.js';
 
+import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
+
 class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -109,7 +111,7 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 
   computeClassNames(stateObj) {
-    return 'more-info-fan ' + window.hassUtil.attributeClassNames(stateObj, ['oscillating', 'speed_list', 'direction']);
+    return 'more-info-fan ' + attributeClassNames(stateObj, ['oscillating', 'speed_list', 'direction']);
   }
 
   speedChanged(speedIndex) {

@@ -11,6 +11,8 @@ import './ha-config-cloud-menu.js';
 import './ha-config-entries-menu.js';
 import './ha-config-navigation.js';
 
+import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -62,7 +64,7 @@ class HaConfigDashboard extends window.hassMixins.LocalizeMixin(PolymerElement) 
   }
 
   computeIsLoaded(hass, component) {
-    return window.hassUtil.isComponentLoaded(hass, component);
+    return isComponentLoaded(hass, component);
   }
 }
 

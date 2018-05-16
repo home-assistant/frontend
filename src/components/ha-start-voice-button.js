@@ -4,6 +4,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../util/hass-mixins.js';
 
+import isComponentLoaded from '../../js/common/config/is_component_loaded.js';
+
 class HaStartVoiceButton extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -28,7 +30,7 @@ class HaStartVoiceButton extends window.hassMixins.EventsMixin(PolymerElement) {
 
   computeCanListen(hass) {
     return ('webkitSpeechRecognition' in window &&
-            window.hassUtil.isComponentLoaded(hass, 'conversation'));
+           isComponentLoaded(hass, 'conversation'));
   }
 
   handleListenClick() {

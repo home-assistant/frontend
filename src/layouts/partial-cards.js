@@ -16,6 +16,10 @@ import '../components/ha-start-voice-button.js';
 import '../util/hass-mixins.js';
 import './ha-app-layout.js';
 
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeLocationName from '../../js/common/config/location_name.js';
+
 {
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
   const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
@@ -58,20 +62,20 @@ import './ha-app-layout.js';
               </template>
               <template is="dom-if" if="[[defaultView]]">
                 <template is="dom-if" if="[[defaultView.attributes.icon]]">
-                  <iron-icon title\$="[[computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></iron-icon>
+                  <iron-icon title\$="[[_computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></iron-icon>
                 </template>
                 <template is="dom-if" if="[[!defaultView.attributes.icon]]">
-                  [[computeStateName(defaultView)]]
+                  [[_computeStateName(defaultView)]]
                 </template>
               </template>
             </paper-tab>
             <template is="dom-repeat" items="[[views]]">
               <paper-tab data-entity\$="[[item.entity_id]]" on-click="scrollToTop">
                 <template is="dom-if" if="[[item.attributes.icon]]">
-                  <iron-icon title\$="[[computeStateName(item)]]" icon="[[item.attributes.icon]]"></iron-icon>
+                  <iron-icon title\$="[[_computeStateName(item)]]" icon="[[item.attributes.icon]]"></iron-icon>
                 </template>
                 <template is="dom-if" if="[[!item.attributes.icon]]">
-                  [[computeStateName(item)]]
+                  [[_computeStateName(item)]]
                 </template>
               </paper-tab>
             </template>
@@ -127,7 +131,7 @@ import './ha-app-layout.js';
         locationName: {
           type: String,
           value: '',
-          computed: 'computeLocationName(hass)',
+          computed: '_computeLocationName(hass)',
         },
 
         currentView: {
@@ -249,12 +253,12 @@ import './ha-app-layout.js';
       return (views && views.length > 0 && !defaultView && locationName === 'Home') || !locationName ? 'Home Assistant' : locationName;
     }
 
-    computeStateName(stateObj) {
-      return window.hassUtil.computeStateName(stateObj);
+    _computeStateName(stateObj) {
+      return computeStateName(stateObj);
     }
 
-    computeLocationName(hass) {
-      return window.hassUtil.computeLocationName(hass);
+    _computeLocationName(hass) {
+      return computeLocationName(hass);
     }
 
     hassChanged(hass) {
@@ -311,7 +315,7 @@ import './ha-app-layout.js';
       entityIds.forEach((entityId) => {
         const state = hass.states[entityId];
 
-        if (ALWAYS_SHOW_DOMAIN.includes(window.hassUtil.computeDomain(state))) {
+        if (ALWAYS_SHOW_DOMAIN.includes(computeDomain(state))) {
           states[entityId] = state;
         }
       });

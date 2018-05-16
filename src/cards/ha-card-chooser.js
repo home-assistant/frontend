@@ -8,6 +8,8 @@ import './ha-persistent_notification-card.js';
 import './ha-plant-card.js';
 import './ha-weather-card.js';
 
+import dynamicContentUpdater from '../../js/common/dom/dynamic_content_updater.js';
+
 class HaCardChooser extends PolymerElement {
   static get properties() {
     return {
@@ -19,7 +21,7 @@ class HaCardChooser extends PolymerElement {
   }
 
   _updateCard(newData) {
-    window.hassUtil.dynamicContentUpdater(
+    dynamicContentUpdater(
       this, 'HA-' + newData.cardType.toUpperCase() + '-CARD',
       newData
     );

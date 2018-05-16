@@ -3,7 +3,10 @@ import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../util/hass-mixins.js';
-import '../util/hass-util.js';
+
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeStateDisplay from '../../js/common/entity/compute_state_display.js';
 
 {
   const RECENT_THRESHOLD = 60000; // 1 minute
@@ -31,11 +34,11 @@ import '../util/hass-util.js';
 
       if (!unit) {
         timelineDevices.push({
-          name: window.hassUtil.computeStateName(stateInfo[0]),
+          name: computeStateName(stateInfo[0]),
           entity_id: stateInfo[0].entity_id,
           data: stateInfo
             .map(state => ({
-              state_localize: window.hassUtil.computeStateDisplay(localize, state, language),
+              state_localize: computeStateDisplay(localize, state, language),
               state: state.state,
               last_changed: state.last_changed,
             }))
@@ -56,10 +59,10 @@ import '../util/hass-util.js';
       identifier: lineChartDevices[unit].map(states => states[0].entity_id).join(''),
       data: lineChartDevices[unit].map((states) => {
         const last = states[states.length - 1];
-        const domain = window.hassUtil.computeDomain(last);
+        const domain = computeDomain(last);
         return {
           domain: domain,
-          name: window.hassUtil.computeStateName(last),
+          name: computeStateName(last),
           entity_id: last.entity_id,
           states: states.map((state) => {
             const result = {

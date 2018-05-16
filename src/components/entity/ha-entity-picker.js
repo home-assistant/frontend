@@ -9,6 +9,8 @@ import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
 import '../../util/hass-mixins.js';
 import './state-badge.js';
 
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -40,7 +42,7 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
         <paper-icon-item>
           <state-badge state-obj="[[item]]" slot="item-icon"></state-badge>
           <paper-item-body two-line="">
-            <div>[[computeStateName(item)]]</div>
+            <div>[[_computeStateName(item)]]</div>
             <div secondary="">[[item.entity_id]]</div>
           </paper-item-body>
         </paper-icon-item>
@@ -113,8 +115,8 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
     return entities;
   }
 
-  computeStateName(state) {
-    return window.hassUtil.computeStateName(state);
+  _computeStateName(state) {
+    return computeStateName(state);
   }
 
   _openedChanged(newVal) {
