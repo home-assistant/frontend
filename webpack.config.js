@@ -49,7 +49,7 @@ function createConfig(isProdBuild, latestBuild) {
   if (latestBuild) {
     plugins.push(CopyWebpackPlugin([
       { from: 'build-translations/output', to: `translations` },
-      'node_modules/@polymer/font-roboto-local',
+      { from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' },
       'node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js',
       { from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` },
       { from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` },

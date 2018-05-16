@@ -7,11 +7,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-sidebar.js';
-import '../dialogs/ha-voice-command-dialog.js';
 import '../util/ha-url-sync.js';
 import '../util/hass-mixins.js';
 import './partial-cards.js';
 import './partial-panel-resolver.js';
+
+import(/* webpackChunkName: "more-info-dialog" */ '../dialogs/ha-more-info-dialog.js');
+import(/* webpackChunkName: "voice-command-dialog" */ '../dialogs/ha-voice-command-dialog.js');
 
 {
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
