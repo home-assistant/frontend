@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import canToggleState from '../../../js/common/entity/can_toggle_state';
+import canToggleState from '../../../src/common/entity/can_toggle_state';
 
 describe('canToggleState', () => {
   const hass = {

@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import canToggleDomain from '../../../js/common/entity/can_toggle_domain';
+import canToggleDomain from '../../../src/common/entity/can_toggle_domain';
 
 describe('canToggleDomain', () => {
   const hass = {
