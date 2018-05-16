@@ -18,7 +18,6 @@ import './resources/panel-imports.js';
 import './util/ha-pref-storage.js';
 import './util/hass-call-api.js';
 import './util/hass-translation.js';
-import './util/hass-util.js';
 import './util/legacy-support';
 import './util/roboto.js';
 // For mdi icons.

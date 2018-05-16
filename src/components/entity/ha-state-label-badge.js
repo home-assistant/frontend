@@ -2,7 +2,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../util/hass-mixins.js';
-import '../../util/hass-util.js';
 import '../ha-label-badge.js';
 
 import computeDomain from '../../../js/common/entity/compute_domain.js';

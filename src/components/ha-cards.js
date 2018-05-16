@@ -6,7 +6,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../cards/ha-badges-card.js';
 import '../cards/ha-card-chooser.js';
-import '../util/hass-util.js';
 import './ha-demo-badge.js';
 
 import computeDomain from '../../js/common/entity/compute_domain.js';

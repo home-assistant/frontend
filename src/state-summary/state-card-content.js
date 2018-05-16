@@ -1,6 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-util.js';
 import './state-card-climate.js';
 import './state-card-configurator.js';
 import './state-card-cover.js';

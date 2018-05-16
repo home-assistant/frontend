@@ -3,7 +3,6 @@ import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../util/hass-mixins.js';
-import '../util/hass-util.js';
 
 import computeStateName from '../../js/common/entity/compute_state_name.js';
 import computeDomain from '../../js/common/entity/compute_domain.js';

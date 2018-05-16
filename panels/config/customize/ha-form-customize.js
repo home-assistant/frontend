@@ -5,7 +5,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../src/util/hass-attributes-util.js';
-import '../../../src/util/hass-util.js';
 import './ha-form-customize-attributes.js';
 
 import computeDomain from '../../../js/common/entity/compute_domain';

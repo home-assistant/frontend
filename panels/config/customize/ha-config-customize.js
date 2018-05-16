@@ -7,7 +7,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../src/resources/ha-style.js';
 import '../../../src/util/hass-mixins.js';
-import '../../../src/util/hass-util.js';
 import '../ha-config-section.js';
 import '../ha-entity-config.js';
 import './ha-form-customize.js';
