@@ -24,8 +24,6 @@ script/update_mdi.py
 ./node_modules/.bin/gulp compress
 
 # Stub the service worker
-touch build/service_worker.js
-touch build-es5/service_worker.js
 touch hass_frontend/service_worker.js
 touch hass_frontend_es5/service_worker.js
 
