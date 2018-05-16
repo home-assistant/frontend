@@ -27,7 +27,7 @@ import './zwave-values.js';
 
 import sortByName from '../../../js/common/entity/states_sort_by_name.js';
 import computeStateName from '../../../js/common/entity/compute_state_name.js';
-import computeDomain from '../../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -397,7 +397,7 @@ class HaConfigZwave extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 
   computeSelectCaptionEnt(stateObj) {
-    return (computeDomain(stateObj) + '.'
+    return (computeStateDomain(stateObj) + '.'
             + computeStateName(stateObj));
   }
 

@@ -53,7 +53,7 @@ import computeStateName from '../../js/common/entity/compute_state_name.js';
 
     <img src="[[cameraFeedSrc]]" class="camera-feed" hidden\$="[[!imageLoaded]]" alt="[[_computeStateName(stateObj)]]">
     <div class="caption">
-      [[computeStateName(stateObj)]]
+      [[_computeStateName(stateObj)]]
       <template is="dom-if" if="[[!imageLoaded]]">
         ([[localize('ui.card.camera.not_available')]])
       </template>

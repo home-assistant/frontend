@@ -12,7 +12,7 @@ import '../../util/hass-mixins.js';
 import './controls/more-info-content.js';
 
 import computeStateName from '../../../js/common/entity/compute_state_name.js';
-import computeDomain from '../../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
 import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
 import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../../js/common/const.js';
 
@@ -121,17 +121,17 @@ import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../../js/common/const.js';
     }
 
     _computeShowStateInfo(stateObj) {
-      return !stateObj || !DOMAINS_NO_INFO.includes(computeDomain(stateObj));
+      return !stateObj || !DOMAINS_NO_INFO.includes(computeStateDomain(stateObj));
     }
 
     _computeShowHistoryComponent(hass, stateObj) {
       return hass && stateObj &&
         isComponentLoaded(hass, 'history') &&
-        !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeDomain(stateObj));
+        !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
     }
 
     _computeDomain(stateObj) {
-      return stateObj ? computeDomain(stateObj) : '';
+      return stateObj ? computeStateDomain(stateObj) : '';
     }
 
     _computeStateName(stateObj) {

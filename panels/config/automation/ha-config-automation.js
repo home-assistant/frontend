@@ -5,7 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import './ha-automation-editor.js';
 import './ha-automation-picker.js';
 
-import computeDomain from '../../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
 
 class HaConfigAutomation extends PolymerElement {
   static get template() {
@@ -76,7 +76,7 @@ class HaConfigAutomation extends PolymerElement {
     Object.keys(hass.states).forEach(function (key) {
       var entity = hass.states[key];
 
-      if (computeDomain(entity) === 'automation' &&
+      if (computeStateDomain(entity) === 'automation' &&
           'id' in entity.attributes) {
         automations.push(entity);
       }

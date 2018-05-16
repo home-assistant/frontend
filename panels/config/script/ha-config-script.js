@@ -6,7 +6,7 @@ import './ha-script-editor.js';
 import './ha-script-picker.js';
 
 import computeStateName from '../../../js/common/entity/compute_state_name.js';
-import computeDomain from '../../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
 
 class HaConfigScript extends PolymerElement {
   static get template() {
@@ -77,7 +77,7 @@ class HaConfigScript extends PolymerElement {
     Object.keys(hass.states).forEach(function (key) {
       var entity = hass.states[key];
 
-      if (computeDomain(entity) === 'script') {
+      if (computeStateDomain(entity) === 'script') {
         scripts.push(entity);
       }
     });

@@ -7,7 +7,7 @@ import '../components/ha-card.js';
 import '../state-summary/state-card-content.js';
 import '../util/hass-mixins.js';
 
-import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
 import computeStateName from '../../js/common/entity/compute_state_name.js';
 import stateMoreInfoType from '../../js/common/entity/state_more_info_type.js';
 import canToggleState from '../../js/common/entity/can_toggle_state.js';
@@ -86,7 +86,7 @@ class HaEntitiesCard extends
     if (groupEntity) {
       return computeStateName(groupEntity).trim();
     }
-    const domain = computeDomain(states[0]);
+    const domain = computeStateDomain(states[0]);
     return (localize && localize(`domain.${domain}`)) || domain.replace(/_/g, ' ');
   }
 
