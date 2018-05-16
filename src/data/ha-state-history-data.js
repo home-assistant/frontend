@@ -4,9 +4,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../util/hass-mixins.js';
 
-import computeStateName from '../../js/common/entity/compute_state_name.js';
-import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
-import computeStateDisplay from '../../js/common/entity/compute_state_display.js';
+import computeStateName from '../common/entity/compute_state_name.js';
+import computeStateDomain from '../common/entity/compute_state_domain.js';
+import computeStateDisplay from '../common/entity/compute_state_display.js';
 
 {
   const RECENT_THRESHOLD = 60000; // 1 minute

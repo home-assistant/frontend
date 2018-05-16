@@ -6,7 +6,7 @@ import '../components/state-history-charts.js';
 import '../data/ha-state-history-data.js';
 import '../util/hass-mixins.js';
 
-import computeStateName from '../../js/common/entity/compute_state_name.js';
+import computeStateName from '../common/entity/compute_state_name.js';
 
 class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

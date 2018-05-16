@@ -9,7 +9,7 @@ import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
 import '../../util/hass-mixins.js';
 import './state-badge.js';
 
-import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import computeStateName from '../../common/entity/compute_state_name.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin

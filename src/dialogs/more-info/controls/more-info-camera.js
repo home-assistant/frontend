@@ -3,7 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../util/hass-mixins.js';
 
-import computeStateName from '../../../../js/common/entity/compute_state_name.js';
+import computeStateName from '../../../common/entity/compute_state_name.js';
 
 class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

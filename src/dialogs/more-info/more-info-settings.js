@@ -7,8 +7,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../util/hass-mixins.js';
 
-import computeStateName from '../../../js/common/entity/compute_state_name.js';
-import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
+import computeStateName from '../../common/entity/compute_state_name.js';
+import isComponentLoaded from '../../common/config/is_component_loaded.js';
 
 class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

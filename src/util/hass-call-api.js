@@ -14,7 +14,7 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
     req.onload = function () {
       var body = req.responseText;
 
-      if (req.getResponseHeader('content-type') === 'application/json') {
+      if (req.getResponseHeader('content-type') === 'application') {
         try {
           body = JSON.parse(req.responseText);
         } catch (err) {
@@ -47,7 +47,7 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
     };
 
     if (parameters) {
-      req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      req.setRequestHeader('Content-Type', 'application;charset=UTF-8');
       req.send(JSON.stringify(parameters));
     } else {
       req.send();

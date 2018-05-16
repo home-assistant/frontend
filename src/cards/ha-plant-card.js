@@ -5,7 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/ha-card.js';
 import '../util/hass-mixins.js';
 
-import computeStateName from '../../js/common/entity/compute_state_name.js';
+import computeStateName from '../common/entity/compute_state_name.js';
 
 class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

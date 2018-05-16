@@ -6,7 +6,7 @@ import '../util/hass-mixins.js';
 import './hass-loading-screen.js';
 import { importHref } from '../resources/html-import/import-href';
 
-import dynamicContentUpdater from '../../js/common/dom/dynamic_content_updater.js';
+import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
 
 const loaded = {};
 
@@ -17,63 +17,63 @@ function ensureLoaded(panel) {
   // Name each panel we support here, that way Webpack knows about it.
   switch (panel) {
     case 'config':
-      imported = import(/* webpackChunkName: "panel-config" */ '../../panels/config/ha-panel-config.js');
+      imported = import(/* webpackChunkName: "panel-config" */ '../panels/config/ha-panel-config.js');
       break;
 
     case 'dev-event':
-      imported = import(/* webpackChunkName: "panel-dev-event" */ '../../panels/dev-event/ha-panel-dev-event.js');
+      imported = import(/* webpackChunkName: "panel-dev-event" */ '../panels/dev-event/ha-panel-dev-event.js');
       break;
 
     case 'dev-info':
-      imported = import(/* webpackChunkName: "panel-dev-info" */ '../../panels/dev-info/ha-panel-dev-info.js');
+      imported = import(/* webpackChunkName: "panel-dev-info" */ '../panels/dev-info/ha-panel-dev-info.js');
       break;
 
     case 'dev-mqtt':
-      imported = import(/* webpackChunkName: "panel-dev-mqtt" */ '../../panels/dev-mqtt/ha-panel-dev-mqtt.js');
+      imported = import(/* webpackChunkName: "panel-dev-mqtt" */ '../panels/dev-mqtt/ha-panel-dev-mqtt.js');
       break;
 
     case 'dev-service':
-      imported = import(/* webpackChunkName: "panel-dev-service" */ '../../panels/dev-service/ha-panel-dev-service.js');
+      imported = import(/* webpackChunkName: "panel-dev-service" */ '../panels/dev-service/ha-panel-dev-service.js');
       break;
 
     case 'dev-state':
-      imported = import(/* webpackChunkName: "panel-dev-state" */ '../../panels/dev-state/ha-panel-dev-state.js');
+      imported = import(/* webpackChunkName: "panel-dev-state" */ '../panels/dev-state/ha-panel-dev-state.js');
       break;
 
     case 'dev-template':
-      imported = import(/* webpackChunkName: "panel-dev-template" */ '../../panels/dev-template/ha-panel-dev-template.js');
+      imported = import(/* webpackChunkName: "panel-dev-template" */ '../panels/dev-template/ha-panel-dev-template.js');
       break;
 
     case 'hassio':
-      imported = import(/* webpackChunkName: "panel-hassio" */ '../../panels/hassio/ha-panel-hassio.js');
+      imported = import(/* webpackChunkName: "panel-hassio" */ '../panels/hassio/ha-panel-hassio.js');
       break;
 
     case 'history':
-      imported = import(/* webpackChunkName: "panel-history" */ '../../panels/history/ha-panel-history.js');
+      imported = import(/* webpackChunkName: "panel-history" */ '../panels/history/ha-panel-history.js');
       break;
 
     case 'iframe':
-      imported = import(/* webpackChunkName: "panel-iframe" */ '../../panels/iframe/ha-panel-iframe.js');
+      imported = import(/* webpackChunkName: "panel-iframe" */ '../panels/iframe/ha-panel-iframe.js');
       break;
 
     case 'kiosk':
-      imported = import(/* webpackChunkName: "panel-kiosk" */ '../../panels/kiosk/ha-panel-kiosk.js');
+      imported = import(/* webpackChunkName: "panel-kiosk" */ '../panels/kiosk/ha-panel-kiosk.js');
       break;
 
     case 'logbook':
-      imported = import(/* webpackChunkName: "panel-logbook" */ '../../panels/logbook/ha-panel-logbook.js');
+      imported = import(/* webpackChunkName: "panel-logbook" */ '../panels/logbook/ha-panel-logbook.js');
       break;
 
     case 'mailbox':
-      imported = import(/* webpackChunkName: "panel-mailbox" */ '../../panels/mailbox/ha-panel-mailbox.js');
+      imported = import(/* webpackChunkName: "panel-mailbox" */ '../panels/mailbox/ha-panel-mailbox.js');
       break;
 
     case 'map':
-      imported = import(/* webpackChunkName: "panel-map" */ '../../panels/map/ha-panel-map.js');
+      imported = import(/* webpackChunkName: "panel-map" */ '../panels/map/ha-panel-map.js');
       break;
 
     case 'shopping-list':
-      imported = import(/* webpackChunkName: "panel-shopping-list" */ '../../panels/shopping-list/ha-panel-shopping-list.js');
+      imported = import(/* webpackChunkName: "panel-shopping-list" */ '../panels/shopping-list/ha-panel-shopping-list.js');
       break;
 
     default:

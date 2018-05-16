@@ -14,8 +14,8 @@ import './state-card-timer.js';
 import './state-card-toggle.js';
 import './state-card-weblink.js';
 
-import stateCardType from '../../js/common/entity/state_card_type.js';
-import dynamicContentUpdater from '../../js/common/dom/dynamic_content_updater.js';
+import stateCardType from '../common/entity/state_card_type.js';
+import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
 
 class StateCardContent extends PolymerElement {
   static get properties() {

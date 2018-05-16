@@ -8,8 +8,8 @@ import '../util/hass-mixins.js';
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
 
-import computeStateDomain from '../../js/common/entity/compute_state_domain';
-import isComponentLoaded from '../../js/common/config/is_component_loaded.js';
+import computeStateDomain from '../common/entity/compute_state_domain';
+import isComponentLoaded from '../common/config/is_component_loaded.js';
 
 class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   static get template() {

@@ -16,9 +16,9 @@ import '../components/ha-start-voice-button.js';
 import '../util/hass-mixins.js';
 import './ha-app-layout.js';
 
-import computeStateName from '../../js/common/entity/compute_state_name.js';
-import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
-import computeLocationName from '../../js/common/config/location_name.js';
+import computeStateName from '../common/entity/compute_state_name.js';
+import computeStateDomain from '../common/entity/compute_state_domain.js';
+import computeLocationName from '../common/config/location_name.js';
 
 {
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';

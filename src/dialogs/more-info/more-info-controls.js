@@ -11,10 +11,10 @@ import '../../state-summary/state-card-content.js';
 import '../../util/hass-mixins.js';
 import './controls/more-info-content.js';
 
-import computeStateName from '../../../js/common/entity/compute_state_name.js';
-import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
-import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
-import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../../js/common/const.js';
+import computeStateName from '../../common/entity/compute_state_name.js';
+import computeStateDomain from '../../common/entity/compute_state_domain.js';
+import isComponentLoaded from '../../common/config/is_component_loaded.js';
+import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../common/const.js';
 
 {
   const DOMAINS_NO_INFO = [

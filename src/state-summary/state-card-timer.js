@@ -5,8 +5,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/entity/state-info.js';
 import '../util/hass-mixins.js';
 
-import timerTimeRemaining from '../../js/common/entity/timer_time_remaining.js';
-import secondsToDuration from '../../js/common/datetime/seconds_to_duration.js';
+import timerTimeRemaining from '../common/entity/timer_time_remaining.js';
+import secondsToDuration from '../common/datetime/seconds_to_duration.js';
 
 class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
   static get template() {

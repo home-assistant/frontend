@@ -5,8 +5,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/entity/state-info.js';
 import '../util/hass-mixins.js';
 
-import computeStateDisplay from '../../js/common/entity/compute_state_display.js';
-import attributeClassNames from '../../js/common/entity/attribute_class_names.js';
+import computeStateDisplay from '../common/entity/compute_state_display.js';
+import attributeClassNames from '../common/entity/attribute_class_names.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin

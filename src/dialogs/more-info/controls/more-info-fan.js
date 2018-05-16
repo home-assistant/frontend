@@ -10,7 +10,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/ha-attributes.js';
 import '../../../util/hass-mixins.js';
 
-import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
+import attributeClassNames from '../../../common/entity/attribute_class_names';
 
 class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

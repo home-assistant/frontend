@@ -11,8 +11,8 @@ import '../../../components/ha-paper-slider.js';
 import '../../../util/hass-media-player-model.js';
 import '../../../util/hass-mixins.js';
 
-import attributeClassNames from '../../../../js/common/entity/attribute_class_names';
-import isComponentLoaded from '../../../../js/common/config/is_component_loaded.js';
+import attributeClassNames from '../../../common/entity/attribute_class_names';
+import isComponentLoaded from '../../../common/config/is_component_loaded.js';
 
 {
   class MoreInfoMediaPlayer extends window.hassMixins.EventsMixin(PolymerElement) {

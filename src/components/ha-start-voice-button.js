@@ -4,7 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../util/hass-mixins.js';
 
-import isComponentLoaded from '../../js/common/config/is_component_loaded.js';
+import isComponentLoaded from '../common/config/is_component_loaded.js';
 
 class HaStartVoiceButton extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {

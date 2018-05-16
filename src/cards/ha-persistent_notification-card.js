@@ -6,7 +6,7 @@ import '../components/ha-card.js';
 import '../components/ha-markdown.js';
 import '../util/hass-mixins.js';
 
-import computeStateName from '../../js/common/entity/compute_state_name.js';
+import computeStateName from '../common/entity/compute_state_name.js';
 
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
