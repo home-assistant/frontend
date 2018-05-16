@@ -20,8 +20,7 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
-class HaScriptPicker extends
-  LocalizeMixin(NavigateMixin(PolymerElement)) {
+class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">

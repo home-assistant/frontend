@@ -1,7 +1,10 @@
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
 import EventsMixin from './events-mixin';
 
-/* @polymerMixin */
+/*
+ * @polymerMixin
+ * @appliesMixin EventsMixin
+ */
 export default dedupingMixin(superClass =>
   class extends EventsMixin(superClass) {
     navigate(path, replace = false) {
