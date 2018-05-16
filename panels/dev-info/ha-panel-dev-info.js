@@ -254,7 +254,7 @@ class HaPanelDevInfo extends PolymerElement {
 
       jsVersion: {
         type: String,
-        value: window.HASS_BUILD,
+        value: __BUILD__,
       },
 
       customUiList: {

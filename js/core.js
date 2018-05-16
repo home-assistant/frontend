@@ -5,14 +5,10 @@ import refreshToken_ from './common/auth/refresh_token.js';
 import parseQuery from './common/util/parse_query.js';
 
 window.HAWS = HAWS;
-window.HASS_DEMO = __DEMO__;
-window.HASS_DEV = __DEV__;
-window.HASS_BUILD = __BUILD__;
-window.HASS_VERSION = __VERSION__;
 
 const init = window.createHassConnection = function (password, accessToken) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const url = `${proto}://${window.location.host}/api/websocket?${window.HASS_BUILD}`;
+  const url = `${proto}://${window.location.host}/api/websocket?${__BUILD__}`;
   const options = {
     setupRetry: 10,
   };
@@ -94,7 +90,7 @@ window.addEventListener('error', (e) => {
   const homeAssistant = document.querySelector('home-assistant');
   if (homeAssistant && homeAssistant.hass && homeAssistant.hass.callService) {
     homeAssistant.hass.callService('system_log', 'write', {
-      logger: `frontend.${window.HASS_DEV ? 'js_dev' : 'js'}.${window.HASS_BUILD}.${window.HASS_VERSION.replace('.', '')}`,
+      logger: `frontend.${__DEV__ ? 'js_dev' : 'js'}.${__BUILD__}.${__VERSION__.replace('.', '')}`,
       message: `${e.filename}:${e.lineno}:${e.colno} ${e.message}`,
     });
   }
