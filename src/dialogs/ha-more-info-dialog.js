@@ -8,6 +8,9 @@ import '../util/hass-mixins.js';
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
 
+import computeDomain from '../../js/common/entity/compute_domain';
+import isComponentLoaded from '../../js/common/config/is_component_loaded.js';
+
 class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   static get template() {
     return html`
@@ -113,7 +116,7 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   }
 
   _computeDomain(stateObj) {
-    return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
+    return stateObj ? computeDomain(stateObj) : '';
   }
 
   _computeStateObj(hass) {
@@ -131,7 +134,7 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
       return;
     }
 
-    if (window.hassUtil.isComponentLoaded(this.hass, 'config.entity_registry') &&
+    if (isComponentLoaded(this.hass, 'config.entity_registry') &&
         (!oldVal || oldVal.entity_id !== newVal.entity_id)) {
       this.hass.callApi('get', `config/entity_registry/${newVal.entity_id}`)
         .then(

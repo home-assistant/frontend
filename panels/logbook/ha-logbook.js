@@ -5,6 +5,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../src/components/domain-icon.js';
 import '../../src/util/hass-mixins.js';
 
+import formatTime from '../../js/common/datetime/format_time.js';
+
 class HaLogbook extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -45,7 +47,7 @@ class HaLogbook extends window.hassMixins.EventsMixin(PolymerElement) {
 
     <template is="dom-repeat" items="[[entries]]">
       <div class="horizontal layout entry">
-        <div class="time">[[formatTime(item.when)]]</div>
+        <div class="time">[[_formatTime(item.when)]]</div>
         <domain-icon domain="[[item.domain]]" class="icon"></domain-icon>
         <div class="message" flex="">
           <template is="dom-if" if="[[!item.entity_id]]">
@@ -75,8 +77,8 @@ class HaLogbook extends window.hassMixins.EventsMixin(PolymerElement) {
     };
   }
 
-  formatTime(date) {
-    return window.hassUtil.formatTime(new Date(date));
+  _formatTime(date) {
+    return formatTime(new Date(date));
   }
 
   entityClicked(ev) {

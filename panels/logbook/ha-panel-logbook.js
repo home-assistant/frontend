@@ -15,6 +15,8 @@ import '../../src/util/hass-mixins.js';
 import './ha-logbook-data.js';
 import './ha-logbook.js';
 
+import formatDate from '../../js/common/datetime/format_date.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -132,7 +134,7 @@ class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
     // We are unable to parse date because we use intl api to render date
     this.$.picker.set('i18n.parseDate', null);
     this.$.picker.set('i18n.formatDate', function (date) {
-      return window.hassUtil.formatDate(new Date(date.year, date.month, date.day));
+      return formatDate(new Date(date.year, date.month, date.day));
     });
   }
 

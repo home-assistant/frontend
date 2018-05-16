@@ -12,6 +12,8 @@ import './ha-config-section-push-notifications.js';
 import './ha-config-section-themes.js';
 import './ha-config-section-translation.js';
 
+import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -80,7 +82,7 @@ class HaConfigCore extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 
   computeIsZwaveLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'config.zwave');
+    return isComponentLoaded(hass, 'config.zwave');
   }
 
   computeIsTranslationLoaded(hass) {

@@ -15,6 +15,9 @@ import './state-card-timer.js';
 import './state-card-toggle.js';
 import './state-card-weblink.js';
 
+import stateCardType from '../../js/common/entity/state_card_type.js';
+import dynamicContentUpdater from '../../js/common/dom/dynamic_content_updater.js';
+
 class StateCardContent extends PolymerElement {
   static get properties() {
     return {
@@ -39,9 +42,9 @@ class StateCardContent extends PolymerElement {
     if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
       stateCardType = stateObj.attributes.custom_ui_state_card;
     } else {
-      stateCardType = 'state-card-' + window.hassUtil.stateCardType(hass, stateObj);
+      stateCardType = 'state-card-' + stateCardType(hass, stateObj);
     }
-    window.hassUtil.dynamicContentUpdater(
+    dynamicContentUpdater(
       this,
       stateCardType.toUpperCase(),
       {

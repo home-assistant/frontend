@@ -6,6 +6,8 @@ import '../util/hass-mixins.js';
 import './hass-loading-screen.js';
 import { importHref } from '../resources/html-import/import-href';
 
+import dynamicContentUpdater from '../../js/common/dom/dynamic_content_updater.js';
+
 const loaded = {};
 
 function ensureLoaded(panel) {
@@ -163,7 +165,7 @@ class PartialPanelResolver extends window.hassMixins.NavigateMixin(PolymerElemen
 
     loadingProm.then(
       () => {
-        window.hassUtil.dynamicContentUpdater(this.$.panel, 'ha-panel-' + panel.component_name, {
+        dynamicContentUpdater(this.$.panel, 'ha-panel-' + panel.component_name, {
           hass: this.hass,
           narrow: this.narrow,
           showMenu: this.showMenu,

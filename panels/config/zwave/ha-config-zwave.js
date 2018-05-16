@@ -25,6 +25,9 @@ import './zwave-node-information.js';
 import './zwave-usercodes.js';
 import './zwave-values.js';
 
+import sortByName from '../../../js/common/entity/states_sort_by_name.js';
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import computeDomain from '../../../js/common/entity/compute_domain.js';
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -310,7 +313,7 @@ class HaConfigZwave extends window.hassMixins.LocalizeMixin(PolymerElement) {
       .filter(function (ent) {
         return ((ent.entity_id).match('zwave[.]'));
       })
-      .sort(window.hassUtil.sortByName);
+      .sort(sortByName);
   }
 
   computeEntities(selectedNode) {
@@ -328,7 +331,7 @@ class HaConfigZwave extends window.hassMixins.LocalizeMixin(PolymerElement) {
                 ent.attributes.node_id === nodeid &&
                 (!(ent.entity_id).match('zwave[.]')));
       })
-      .sort(window.hassUtil.sortByName);
+      .sort(sortByName);
   }
 
   selectedNodeChanged(selectedNode) {
@@ -388,14 +391,14 @@ class HaConfigZwave extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 
   computeSelectCaption(stateObj) {
-    return window.hassUtil.computeStateName(stateObj) + ' (Node:' +
+    return computeStateName(stateObj) + ' (Node:' +
       stateObj.attributes.node_id + ' ' +
       stateObj.attributes.query_stage + ')';
   }
 
   computeSelectCaptionEnt(stateObj) {
-    return (window.hassUtil.computeDomain(stateObj) + '.'
-            + window.hassUtil.computeStateName(stateObj));
+    return (computeDomain(stateObj) + '.'
+            + computeStateName(stateObj));
   }
 
   computeIsNodeSelected() {

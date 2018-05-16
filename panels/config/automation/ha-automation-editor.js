@@ -25,8 +25,10 @@ import '../../../src/layouts/ha-app-layout.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-js.js';
 import '../ha-config-section.js';
+
 import Automation from '../../../js/panel-config/automation.js';
 import unmountPreact from '../../../js/common/preact/unmount.js';
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
@@ -283,7 +285,7 @@ class HaAutomationEditor extends
 
   computeName(automation, localize) {
     return automation
-      ? window.hassUtil.computeStateName(automation)
+      ? computeStateName(automation)
       : localize('ui.panel.config.automation.editor.default_name');
   }
 }

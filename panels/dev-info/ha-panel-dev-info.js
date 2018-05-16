@@ -14,6 +14,9 @@ import '../../src/components/buttons/ha-call-service-button.js';
 import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';
 
+import formatDateTime from '../../js/common/datetime/format_date_time.js';
+import formatTime from '../../js/common/datetime/format_time.js';
+
 class HaPanelDevInfo extends PolymerElement {
   static get template() {
     return html`
@@ -311,7 +314,7 @@ class HaPanelDevInfo extends PolymerElement {
     const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
 
     return dateTimeDay < today ?
-      window.hassUtil.formatDateTime(dateTime) : window.hassUtil.formatTime(dateTime);
+      formatDateTime(dateTime) : formatTime(dateTime);
   }
 
   openLog(event) {

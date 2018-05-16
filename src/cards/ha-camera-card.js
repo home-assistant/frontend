@@ -4,6 +4,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../util/hass-mixins.js';
 
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+
 {
   const UPDATE_INTERVAL = 10000; // ms
   /*
@@ -49,7 +51,7 @@ import '../util/hass-mixins.js';
       }
     </style>
 
-    <img src="[[cameraFeedSrc]]" class="camera-feed" hidden\$="[[!imageLoaded]]" alt="[[computeStateName(stateObj)]]">
+    <img src="[[cameraFeedSrc]]" class="camera-feed" hidden\$="[[!imageLoaded]]" alt="[[_computeStateName(stateObj)]]">
     <div class="caption">
       [[computeStateName(stateObj)]]
       <template is="dom-if" if="[[!imageLoaded]]">
@@ -109,8 +111,8 @@ import '../util/hass-mixins.js';
       });
     }
 
-    computeStateName(stateObj) {
-      return window.hassUtil.computeStateName(stateObj);
+    _computeStateName(stateObj) {
+      return computeStateName(stateObj);
     }
   }
   customElements.define('ha-camera-card', HaCameraCard);

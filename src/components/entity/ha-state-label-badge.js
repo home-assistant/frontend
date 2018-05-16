@@ -5,6 +5,14 @@ import '../../util/hass-mixins.js';
 import '../../util/hass-util.js';
 import '../ha-label-badge.js';
 
+import computeDomain from '../../../js/common/entity/compute_domain.js';
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import domainIcon from '../../../js/common/entity/domain_icon.js';
+import stateIcon from '../../../js/common/entity/state_icon.js';
+import timerTimeRemaining from '../../../js/common/entity/timer_time_remaining.js';
+import attributeClassNames from '../../../js/common/entity/attribute_class_names.js';
+import secondsToDuration from '../../../js/common/datetime/seconds_to_duration.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin window.hassMixins.EventsMixin
@@ -90,13 +98,13 @@ class HaStateLabelBadge extends
   }
 
   computeClassNames(state) {
-    const classes = [window.hassUtil.computeDomain(state)];
-    classes.push(window.hassUtil.attributeClassNames(state, ['unit_of_measurement']));
+    const classes = [computeDomain(state)];
+    classes.push(attributeClassNames(state, ['unit_of_measurement']));
     return classes.join(' ');
   }
 
   computeValue(localize, state) {
-    const domain = window.hassUtil.computeDomain(state);
+    const domain = computeDomain(state);
     switch (domain) {
       case 'binary_sensor':
       case 'device_tracker':
@@ -118,7 +126,7 @@ class HaStateLabelBadge extends
     if (state.state === 'unavailable') {
       return null;
     }
-    const domain = window.hassUtil.computeDomain(state);
+    const domain = computeDomain(state);
     switch (domain) {
       case 'alarm_control_panel':
         if (state.state === 'pending') {
@@ -135,14 +143,14 @@ class HaStateLabelBadge extends
           return 'mdi:alert-circle';
         }
         // state == 'disarmed'
-        return window.hassUtil.domainIcon(domain, state.state);
+        return domainIcon(domain, state.state);
       case 'binary_sensor':
       case 'device_tracker':
       case 'updater':
-        return window.hassUtil.stateIcon(state);
+        return stateIcon(state);
       case 'sun':
         return state.state === 'above_horizon' ?
-          window.hassUtil.domainIcon(domain) : 'mdi:brightness-3';
+          domainIcon(domain) : 'mdi:brightness-3';
       case 'timer':
         return state.state === 'active' ? 'mdi:timer' : 'mdi:timer-off';
       default:
@@ -155,7 +163,7 @@ class HaStateLabelBadge extends
   }
 
   computeLabel(localize, state, timerTimeRemaining) {
-    const domain = window.hassUtil.computeDomain(state);
+    const domain = computeDomain(state);
     if (state.state === 'unavailable' ||
         ['device_tracker', 'alarm_control_panel'].includes(domain)) {
       // Localize the state with a special state_badge namespace, which has variations of
@@ -164,13 +172,13 @@ class HaStateLabelBadge extends
       return localize(`state_badge.${domain}.${state.state}`) || localize(`state_badge.default.${state.state}`) || state.state;
     }
     if (domain === 'timer') {
-      return window.hassUtil.secondsToDuration(timerTimeRemaining);
+      return secondsToDuration(timerTimeRemaining);
     }
     return state.attributes.unit_of_measurement || null;
   }
 
   computeDescription(state) {
-    return window.hassUtil.computeStateName(state);
+    return computeStateName(state);
   }
 
   stateChanged(stateObj) {
@@ -187,7 +195,7 @@ class HaStateLabelBadge extends
 
   startInterval(stateObj) {
     this.clearInterval();
-    if (window.hassUtil.computeDomain(stateObj) === 'timer') {
+    if (computeDomain(stateObj) === 'timer') {
       this.calculateTimerRemaining(stateObj);
 
       if (stateObj.state === 'active') {
@@ -197,7 +205,7 @@ class HaStateLabelBadge extends
   }
 
   calculateTimerRemaining(stateObj) {
-    this.timerTimeRemaining = window.hassUtil.timerTimeRemaining(stateObj);
+    this.timerTimeRemaining = timerTimeRemaining(stateObj);
   }
 }
 

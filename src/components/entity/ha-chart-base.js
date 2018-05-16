@@ -5,6 +5,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
+
+import formatTime from '../../../js/common/datetime/format_time.js';
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
 
@@ -314,7 +316,7 @@ class HaChartBase extends mixinBehaviors([
       return value;
     }
     const date = new Date(values[index].value);
-    return window.hassUtil.formatTime(date);
+    return formatTime(date);
   }
   drawChart() {
     const data = this.data.data;

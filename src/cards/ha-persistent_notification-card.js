@@ -6,6 +6,8 @@ import '../components/ha-card.js';
 import '../components/ha-markdown.js';
 import '../util/hass-mixins.js';
 
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -57,7 +59,7 @@ class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(Polym
 
   computeTitle(stateObj) {
     return (stateObj.attributes.title ||
-            window.hassUtil.computeStateName(stateObj));
+            computeStateName(stateObj));
   }
 
   dismissTap(ev) {

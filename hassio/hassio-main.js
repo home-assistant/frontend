@@ -8,6 +8,8 @@ import './addon-view/hassio-addon-view.js';
 import './hassio-data.js';
 import './hassio-pages-with-tabs.js';
 
+import applyThemesOnElement from '../js/common/dom/apply_themes_on_element.js';
+
 class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
   static get template() {
     return html`
@@ -57,7 +59,7 @@ class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    window.hassUtil.applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
+    applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
     this.addEventListener('hass-api-called', ev => this.apiCalled(ev));
   }
 

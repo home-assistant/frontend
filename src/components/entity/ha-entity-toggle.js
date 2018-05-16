@@ -3,6 +3,9 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import STATES_OFF from '../../../js/common/const.js';
+import computeDomain from '../../../js/common/entity/compute_domain';
+
 class HaEntityToggle extends PolymerElement {
   static get template() {
     return html`
@@ -97,7 +100,7 @@ class HaEntityToggle extends PolymerElement {
   }
 
   computeIsOn(stateObj) {
-    return stateObj && !window.hassUtil.OFF_STATES.includes(stateObj.state);
+    return stateObj && !STATES_OFF.includes(stateObj.state);
   }
 
   stateObjObserver(newVal, oldVal) {
@@ -113,7 +116,7 @@ class HaEntityToggle extends PolymerElement {
   // result in the entity to be turned on. Since the state is not changing,
   // the resync is not called automatic.
   callService(turnOn) {
-    const stateDomain = window.hassUtil.computeDomain(this.stateObj);
+    const stateDomain = computeDomain(this.stateObj);
     let serviceDomain;
     let service;
 

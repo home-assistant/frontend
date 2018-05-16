@@ -6,6 +6,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-badge.js';
 
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+
 class StateCardInputSelect extends PolymerElement {
   static get template() {
     return html`
@@ -30,7 +32,7 @@ class StateCardInputSelect extends PolymerElement {
     </style>
 
     <state-badge state-obj="[[stateObj]]"></state-badge>
-    <paper-dropdown-menu on-click="stopPropagation" selected-item-label="{{selectedOption}}" label="[[computeStateName(stateObj)]]">
+    <paper-dropdown-menu on-click="stopPropagation" selected-item-label="{{selectedOption}}" label="[[_computeStateName(stateObj)]]">
       <paper-listbox slot="dropdown-content" selected="[[computeSelected(stateObj)]]">
         <template is="dom-repeat" items="[[stateObj.attributes.options]]">
           <paper-item>[[item]]</paper-item>
@@ -55,8 +57,8 @@ class StateCardInputSelect extends PolymerElement {
     };
   }
 
-  computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+  _computeStateName(stateObj) {
+    return computeStateName(stateObj);
   }
 
   computeSelected(stateObj) {
