@@ -3,7 +3,6 @@ import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 
-
 import computeStateName from '../common/entity/compute_state_name.js';
 import computeStateDomain from '../common/entity/compute_state_domain.js';
 import computeStateDisplay from '../common/entity/compute_state_display.js';
