@@ -57,8 +57,6 @@ class HassioAddonNetwork extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-addon-network'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -107,4 +105,4 @@ class HassioAddonNetwork extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HassioAddonNetwork.is, HassioAddonNetwork);
+customElements.define('hassio-addon-network', HassioAddonNetwork);

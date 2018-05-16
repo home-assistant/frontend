@@ -145,7 +145,6 @@ import './ha-demo-badge.js';
 `;
     }
 
-    static get is() { return 'ha-cards'; }
     static get properties() {
       return {
         hass: Object,
@@ -364,5 +363,5 @@ import './ha-demo-badge.js';
       return cards;
     }
   }
-  customElements.define(HaCards.is, HaCards);
+  customElements.define('ha-cards', HaCards);
 }

@@ -26,8 +26,6 @@ class MoreInfoAutomation extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-automation'; }
-
   static get properties() {
     return {
       hass: {
@@ -47,4 +45,4 @@ class MoreInfoAutomation extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoAutomation.is, MoreInfoAutomation);
+customElements.define('more-info-automation', MoreInfoAutomation);

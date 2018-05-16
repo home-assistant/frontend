@@ -64,8 +64,6 @@ class HaConfigCore extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-config-core'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -100,4 +98,4 @@ class HaConfigCore extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaConfigCore.is, HaConfigCore);
+customElements.define('ha-config-core', HaConfigCore);

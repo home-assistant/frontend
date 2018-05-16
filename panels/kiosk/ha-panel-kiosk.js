@@ -15,7 +15,6 @@ class HaPanelKiosk extends PolymerElement {
     ></partial-cards>
     `;
   }
-  static get is() { return 'ha-panel-kiosk'; }
 
   static get properties() {
     return {
@@ -25,4 +24,4 @@ class HaPanelKiosk extends PolymerElement {
   }
 }
 
-customElements.define(HaPanelKiosk.is, HaPanelKiosk);
+customElements.define('ha-panel-kiosk', HaPanelKiosk);

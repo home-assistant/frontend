@@ -29,10 +29,6 @@ class DatetimeInput extends PolymerElement {
 `;
   }
 
-  static get is() {
-    return 'more-info-input_datetime';
-  }
-
   constructor() {
     super();
     this.is_ready = false;
@@ -158,4 +154,4 @@ class DatetimeInput extends PolymerElement {
   }
 }
 
-customElements.define(DatetimeInput.is, DatetimeInput);
+customElements.define('more-info-input_datetime', DatetimeInput);

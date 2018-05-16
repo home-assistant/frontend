@@ -29,7 +29,6 @@ class HaAuthorize extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-authorize'; }
   static get properties() {
     return {
       _authProvider: {
@@ -66,4 +65,4 @@ class HaAuthorize extends PolymerElement {
     this._authProvider = null;
   }
 }
-customElements.define(HaAuthorize.is, HaAuthorize);
+customElements.define('ha-authorize', HaAuthorize);

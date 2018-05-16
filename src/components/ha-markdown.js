@@ -7,8 +7,6 @@ let loaded = null;
  * @appliesMixin window.hassMixins.EventsMixin
  */
 class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
-  static get is() { return 'ha-markdown'; }
-
   static get properties() {
     return {
       content: {
@@ -72,4 +70,4 @@ class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaMarkdown.is, HaMarkdown);
+customElements.define('ha-markdown', HaMarkdown);

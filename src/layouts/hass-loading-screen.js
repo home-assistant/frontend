@@ -31,8 +31,6 @@ class HassLoadingScreen extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hass-loading-screen'; }
-
   static get properties() {
     return {
       narrow: {
@@ -53,4 +51,4 @@ class HassLoadingScreen extends PolymerElement {
   }
 }
 
-customElements.define(HassLoadingScreen.is, HassLoadingScreen);
+customElements.define('hass-loading-screen', HassLoadingScreen);

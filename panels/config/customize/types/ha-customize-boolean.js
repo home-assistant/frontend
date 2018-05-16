@@ -11,8 +11,6 @@ class HaCustomizeBoolean extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-customize-boolean'; }
-
   static get properties() {
     return {
       item: {
@@ -22,4 +20,4 @@ class HaCustomizeBoolean extends PolymerElement {
     };
   }
 }
-customElements.define(HaCustomizeBoolean.is, HaCustomizeBoolean);
+customElements.define('ha-customize-boolean', HaCustomizeBoolean);

@@ -37,7 +37,6 @@ class HaPickAuthProvider extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-pick-auth-provider'; }
   static get properties() {
     return {
       _state: {
@@ -82,4 +81,4 @@ class HaPickAuthProvider extends window.hassMixins.EventsMixin(PolymerElement) {
     return a === b;
   }
 }
-customElements.define(HaPickAuthProvider.is, HaPickAuthProvider);
+customElements.define('ha-pick-auth-provider', HaPickAuthProvider);

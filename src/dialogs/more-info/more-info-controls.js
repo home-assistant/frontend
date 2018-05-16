@@ -73,7 +73,6 @@ import './controls/more-info-content.js';
 `;
     }
 
-    static get is() { return 'more-info-controls'; }
     static get properties() {
       return {
         hass: Object,
@@ -151,5 +150,5 @@ import './controls/more-info-content.js';
       this.fire('more-info-page', { page: 'settings' });
     }
   }
-  customElements.define(MoreInfoControls.is, MoreInfoControls);
+  customElements.define('more-info-controls', MoreInfoControls);
 }

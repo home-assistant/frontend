@@ -181,7 +181,6 @@ class HaMediaPlayerCard extends
 `;
   }
 
-  static get is() { return 'ha-media_player-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -307,4 +306,4 @@ class HaMediaPlayerCard extends
     this.playerObj.togglePower();
   }
 }
-customElements.define(HaMediaPlayerCard.is, HaMediaPlayerCard);
+customElements.define('ha-media_player-card', HaMediaPlayerCard);

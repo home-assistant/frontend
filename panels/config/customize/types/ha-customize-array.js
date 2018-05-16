@@ -24,8 +24,6 @@ class HaCustomizeArray extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-customize-array'; }
-
   static get properties() {
     return {
       item: {
@@ -51,4 +49,4 @@ class HaCustomizeArray extends window.hassMixins.EventsMixin(PolymerElement) {
     return options.indexOf(item.value);
   }
 }
-customElements.define(HaCustomizeArray.is, HaCustomizeArray);
+customElements.define('ha-customize-array', HaCustomizeArray);

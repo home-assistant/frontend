@@ -19,8 +19,6 @@ class HaFormCustomizeAttributes extends MutableData(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-form-customize-attributes'; }
-
   static get properties() {
     return {
       attributes: {
@@ -30,4 +28,4 @@ class HaFormCustomizeAttributes extends MutableData(PolymerElement) {
     };
   }
 }
-customElements.define(HaFormCustomizeAttributes.is, HaFormCustomizeAttributes);
+customElements.define('ha-form-customize-attributes', HaFormCustomizeAttributes);

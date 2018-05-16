@@ -11,8 +11,6 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(PolymerEle
 `;
   }
 
-  static get is() { return 'ha-push-notifications-toggle'; }
-
   static get properties() {
     return {
       hass: { type: Object, value: null },
@@ -122,4 +120,4 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(PolymerEle
   }
 }
 
-customElements.define(HaPushNotificationsToggle.is, HaPushNotificationsToggle);
+customElements.define('ha-push-notifications-toggle', HaPushNotificationsToggle);

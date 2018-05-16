@@ -103,8 +103,6 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'more-info-weather'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -182,4 +180,4 @@ class MoreInfoWeather extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(MoreInfoWeather.is, MoreInfoWeather);
+customElements.define('more-info-weather', MoreInfoWeather);

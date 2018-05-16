@@ -16,8 +16,6 @@ class MoreInfoScript extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-script'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -27,4 +25,4 @@ class MoreInfoScript extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoScript.is, MoreInfoScript);
+customElements.define('more-info-script', MoreInfoScript);

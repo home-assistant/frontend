@@ -21,8 +21,6 @@ class HassioAddonStore extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-addon-store'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -82,4 +80,4 @@ class HassioAddonStore extends PolymerElement {
   }
 }
 
-customElements.define(HassioAddonStore.is, HassioAddonStore);
+customElements.define('hassio-addon-store', HassioAddonStore);

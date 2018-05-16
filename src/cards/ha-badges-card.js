@@ -18,7 +18,6 @@ class HaBadgesCard extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-badges-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -26,4 +25,4 @@ class HaBadgesCard extends PolymerElement {
     };
   }
 }
-customElements.define(HaBadgesCard.is, HaBadgesCard);
+customElements.define('ha-badges-card', HaBadgesCard);

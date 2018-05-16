@@ -41,8 +41,6 @@ class HaClimateState extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-climate-state'; }
-
   static get properties() {
     return {
       stateObj: Object,
@@ -80,4 +78,4 @@ class HaClimateState extends PolymerElement {
     return '';
   }
 }
-customElements.define(HaClimateState.is, HaClimateState);
+customElements.define('ha-climate-state', HaClimateState);

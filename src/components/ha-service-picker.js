@@ -14,8 +14,6 @@ class HaServicePicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-service-picker'; }
-
   static get properties() {
     return {
       hass: {
@@ -51,4 +49,4 @@ class HaServicePicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaServicePicker.is, HaServicePicker);
+customElements.define('ha-service-picker', HaServicePicker);

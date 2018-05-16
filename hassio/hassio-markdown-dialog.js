@@ -62,8 +62,6 @@ class HassioMarkdownDialog extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-markdown-dialog'; }
-
   static get properties() {
     return {
       title: String,
@@ -75,4 +73,4 @@ class HassioMarkdownDialog extends PolymerElement {
     this.$.dialog.open();
   }
 }
-customElements.define(HassioMarkdownDialog.is, HassioMarkdownDialog);
+customElements.define('hassio-markdown-dialog', HassioMarkdownDialog);

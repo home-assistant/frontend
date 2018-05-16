@@ -50,8 +50,6 @@ class StateCardInputNumber extends mixinBehaviors([
 `;
   }
 
-  static get is() { return 'state-card-input_number'; }
-
   ready() {
     super.ready();
     if (typeof ResizeObserver === 'function') {
@@ -151,4 +149,4 @@ class StateCardInputNumber extends mixinBehaviors([
   }
 }
 
-customElements.define(StateCardInputNumber.is, StateCardInputNumber);
+customElements.define('state-card-input_number', StateCardInputNumber);

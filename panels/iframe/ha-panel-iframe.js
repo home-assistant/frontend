@@ -27,7 +27,6 @@ class HaPanelIframe extends PolymerElement {
     ></iframe>
     `;
   }
-  static get is() { return 'ha-panel-iframe'; }
 
   static get properties() {
     return {
@@ -46,4 +45,4 @@ class HaPanelIframe extends PolymerElement {
   }
 }
 
-customElements.define(HaPanelIframe.is, HaPanelIframe);
+customElements.define('ha-panel-iframe', HaPanelIframe);

@@ -20,8 +20,6 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'more-info-camera'; }
-
   static get properties() {
     return {
       hass: {
@@ -69,4 +67,4 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(MoreInfoCamera.is, MoreInfoCamera);
+customElements.define('more-info-camera', MoreInfoCamera);

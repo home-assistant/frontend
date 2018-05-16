@@ -64,8 +64,6 @@ class HaFormCustomize extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-form-customize'; }
-
   static get properties() {
     return {
       hass: {
@@ -266,4 +264,4 @@ class HaFormCustomize extends PolymerElement {
     );
   }
 }
-customElements.define(HaFormCustomize.is, HaFormCustomize);
+customElements.define('ha-form-customize', HaFormCustomize);

@@ -23,8 +23,6 @@ class MoreInfoLock extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-lock'; }
-
   static get properties() {
     return {
       hass: {
@@ -64,4 +62,4 @@ class MoreInfoLock extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoLock.is, MoreInfoLock);
+customElements.define('more-info-lock', MoreInfoLock);

@@ -62,8 +62,6 @@ class HaLogbook extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-logbook'; }
-
   static get properties() {
     return {
       hass: {
@@ -87,4 +85,4 @@ class HaLogbook extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaLogbook.is, HaLogbook);
+customElements.define('ha-logbook', HaLogbook);

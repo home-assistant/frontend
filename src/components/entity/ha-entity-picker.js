@@ -49,8 +49,6 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-entity-picker'; }
-
   static get properties() {
     return {
       allowCustomEntity: {
@@ -136,4 +134,4 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaEntityPicker.is, HaEntityPicker);
+customElements.define('ha-entity-picker', HaEntityPicker);

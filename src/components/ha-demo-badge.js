@@ -15,8 +15,6 @@ class HaDemoBadge extends PolymerElement {
     <ha-label-badge icon="mdi:emoticon" label="Demo" description=""></ha-label-badge>
 `;
   }
-
-  static get is() { return 'ha-demo-badge'; }
 }
 
-customElements.define(HaDemoBadge.is, HaDemoBadge);
+customElements.define('ha-demo-badge', HaDemoBadge);

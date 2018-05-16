@@ -67,8 +67,6 @@ class HassioAddonView extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-addon-view'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -131,4 +129,4 @@ class HassioAddonView extends PolymerElement {
   }
 }
 
-customElements.define(HassioAddonView.is, HassioAddonView);
+customElements.define('hassio-addon-view', HassioAddonView);

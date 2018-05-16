@@ -1,8 +1,6 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 class HassioData extends PolymerElement {
-  static get is() { return 'hassio-data'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -59,4 +57,4 @@ class HassioData extends PolymerElement {
   }
 }
 
-customElements.define(HassioData.is, HassioData);
+customElements.define('hassio-data', HassioData);

@@ -28,8 +28,6 @@ class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'state-card-timer'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -83,4 +81,4 @@ class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
     return window.hassUtil.secondsToDuration(time);
   }
 }
-customElements.define(StateCardTimer.is, StateCardTimer);
+customElements.define('state-card-timer', StateCardTimer);

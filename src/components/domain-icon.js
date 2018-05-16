@@ -11,8 +11,6 @@ class DomainIcon extends PolymerElement {
 `;
   }
 
-  static get is() { return 'domain-icon'; }
-
   static get properties() {
     return {
       domain: {
@@ -32,4 +30,4 @@ class DomainIcon extends PolymerElement {
   }
 }
 
-customElements.define(DomainIcon.is, DomainIcon);
+customElements.define('domain-icon', DomainIcon);

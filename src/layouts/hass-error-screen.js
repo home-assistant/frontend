@@ -34,8 +34,6 @@ class HassErrorScreen extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hass-error-screen'; }
-
   static get properties() {
     return {
       title: {
@@ -55,4 +53,4 @@ class HassErrorScreen extends PolymerElement {
   }
 }
 
-customElements.define(HassErrorScreen.is, HassErrorScreen);
+customElements.define('hass-error-screen', HassErrorScreen);

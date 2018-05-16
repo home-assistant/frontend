@@ -37,8 +37,6 @@ class HaConfigSectionThemes extends
 `;
   }
 
-  static get is() { return 'ha-config-section-themes'; }
-
   static get properties() {
     return {
       hass: {
@@ -91,4 +89,4 @@ class HaConfigSectionThemes extends
   }
 }
 
-customElements.define(HaConfigSectionThemes.is, HaConfigSectionThemes);
+customElements.define('ha-config-section-themes', HaConfigSectionThemes);

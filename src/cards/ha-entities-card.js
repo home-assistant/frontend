@@ -58,7 +58,6 @@ class HaEntitiesCard extends
 `;
   }
 
-  static get is() { return 'ha-entities-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -148,4 +147,4 @@ class HaEntitiesCard extends
     return canToggleCount > 1;
   }
 }
-customElements.define(HaEntitiesCard.is, HaEntitiesCard);
+customElements.define('ha-entities-card', HaEntitiesCard);

@@ -78,8 +78,6 @@ class HaColorPicker extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-color-picker'; }
-
   static get properties() {
     return {
       hsColor: {
@@ -525,4 +523,4 @@ class HaColorPicker extends window.hassMixins.EventsMixin(PolymerElement) {
     svgElement.appendChild(svgElement.tooltip);
   }
 }
-customElements.define(HaColorPicker.is, HaColorPicker);
+customElements.define('ha-color-picker', HaColorPicker);

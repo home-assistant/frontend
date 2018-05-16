@@ -45,7 +45,6 @@ class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'more-info-settings'; }
   static get properties() {
     return {
       hass: Object,
@@ -99,4 +98,4 @@ class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
       );
   }
 }
-customElements.define(MoreInfoSettings.is, MoreInfoSettings);
+customElements.define('more-info-settings', MoreInfoSettings);

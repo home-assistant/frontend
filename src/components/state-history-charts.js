@@ -40,7 +40,6 @@ class StateHistoryCharts extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-history-charts'; }
   static get properties() {
     return {
       hass: Object,
@@ -82,4 +81,4 @@ class StateHistoryCharts extends PolymerElement {
     return upToNow ? new Date() : endTime;
   }
 }
-customElements.define(StateHistoryCharts.is, StateHistoryCharts);
+customElements.define('state-history-charts', StateHistoryCharts);

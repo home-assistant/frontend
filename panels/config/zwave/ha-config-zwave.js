@@ -209,8 +209,6 @@ class HaConfigZwave extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-config-zwave'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -474,4 +472,4 @@ class HaConfigZwave extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaConfigZwave.is, HaConfigZwave);
+customElements.define('ha-config-zwave', HaConfigZwave);

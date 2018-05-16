@@ -8,8 +8,6 @@ class HaServiceDescription extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-service-description'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -27,4 +25,4 @@ class HaServiceDescription extends PolymerElement {
   }
 }
 
-customElements.define(HaServiceDescription.is, HaServiceDescription);
+customElements.define('ha-service-description', HaServiceDescription);

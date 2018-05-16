@@ -24,8 +24,6 @@ class StateCardInputText extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-card-input_text'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -70,4 +68,4 @@ class StateCardInputText extends PolymerElement {
   }
 }
 
-customElements.define(StateCardInputText.is, StateCardInputText);
+customElements.define('state-card-input_text', StateCardInputText);
