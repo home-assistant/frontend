@@ -89,6 +89,7 @@
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
+    "copy-webpack-plugin": "^4.5.1",
     "css-slam": "^2.0.2",
     "del": "^3.0.0",
     "eslint": "^4.11.0",
