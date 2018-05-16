@@ -11,8 +11,6 @@ class HaCallServiceButton extends window.hassMixins.EventsMixin(PolymerElement) 
 `;
   }
 
-  static get is() { return 'ha-call-service-button'; }
-
   static get properties() {
     return {
       hass: {
@@ -63,4 +61,4 @@ class HaCallServiceButton extends window.hassMixins.EventsMixin(PolymerElement) 
   }
 }
 
-customElements.define(HaCallServiceButton.is, HaCallServiceButton);
+customElements.define('ha-call-service-button', HaCallServiceButton);

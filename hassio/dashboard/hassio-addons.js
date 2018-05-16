@@ -34,8 +34,6 @@ class HassioAddons extends window.hassMixins.NavigateMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-addons'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -72,4 +70,4 @@ class HassioAddons extends window.hassMixins.NavigateMixin(PolymerElement) {
   }
 }
 
-customElements.define(HassioAddons.is, HassioAddons);
+customElements.define('hassio-addons', HassioAddons);

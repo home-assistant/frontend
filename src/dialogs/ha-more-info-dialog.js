@@ -74,7 +74,6 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-more-info-dialog'; }
   static get properties() {
     return {
       hass: Object,
@@ -162,4 +161,4 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
     this.notifyResize();
   }
 }
-customElements.define(HaMoreInfoDialog.is, HaMoreInfoDialog);
+customElements.define('ha-more-info-dialog', HaMoreInfoDialog);

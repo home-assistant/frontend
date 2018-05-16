@@ -48,7 +48,6 @@ class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(Polym
 `;
   }
 
-  static get is() { return 'ha-persistent_notification-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -66,4 +65,4 @@ class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(Polym
     this.hass.callApi('DELETE', 'states/' + this.stateObj.entity_id);
   }
 }
-customElements.define(HaPersistentNotificationCard.is, HaPersistentNotificationCard);
+customElements.define('ha-persistent_notification-card', HaPersistentNotificationCard);

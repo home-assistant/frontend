@@ -8,8 +8,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
   ];
 
   class HaPrefStorage extends PolymerElement {
-    static get is() { return 'ha-pref-storage'; }
-
     static get properties() {
       return {
         hass: Object,
@@ -47,5 +45,5 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
       return state;
     }
   }
-  customElements.define(HaPrefStorage.is, HaPrefStorage);
+  customElements.define('ha-pref-storage', HaPrefStorage);
 }

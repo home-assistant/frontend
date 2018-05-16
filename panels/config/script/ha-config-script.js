@@ -27,8 +27,6 @@ class HaConfigScript extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-config-script'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -100,4 +98,4 @@ class HaConfigScript extends PolymerElement {
   }
 }
 
-customElements.define(HaConfigScript.is, HaConfigScript);
+customElements.define('ha-config-script', HaConfigScript);

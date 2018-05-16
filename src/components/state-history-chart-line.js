@@ -19,7 +19,6 @@ class StateHistoryChartLine extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-history-chart-line'; }
   static get properties() {
     return {
       chartData: Object,
@@ -295,4 +294,4 @@ class StateHistoryChartLine extends PolymerElement {
     this.chartData = chartOptions;
   }
 }
-customElements.define(StateHistoryChartLine.is, StateHistoryChartLine);
+customElements.define('state-history-chart-line', StateHistoryChartLine);

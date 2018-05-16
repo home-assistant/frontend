@@ -102,8 +102,6 @@ class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
     `;
   }
 
-  static get is() { return 'ha-panel-config'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -153,4 +151,4 @@ class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPanelConfig.is, HaPanelConfig);
+customElements.define('ha-panel-config', HaPanelConfig);

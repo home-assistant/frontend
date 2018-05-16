@@ -68,8 +68,6 @@ class HaPanelDevEvent extends window.hassMixins.EventsMixin(PolymerElement) {
     `;
   }
 
-  static get is() { return 'ha-panel-dev-event'; }
-
   static get properties() {
     return {
       hass: {
@@ -128,4 +126,4 @@ class HaPanelDevEvent extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPanelDevEvent.is, HaPanelDevEvent);
+customElements.define('ha-panel-dev-event', HaPanelDevEvent);

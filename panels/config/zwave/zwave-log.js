@@ -45,8 +45,6 @@ class OzwLog extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ozw-log'; }
-
   static get properties() {
     return {
       hass: {
@@ -79,4 +77,4 @@ class OzwLog extends PolymerElement {
   }
 }
 
-customElements.define(OzwLog.is, OzwLog);
+customElements.define('ozw-log', OzwLog);

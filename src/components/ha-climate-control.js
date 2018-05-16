@@ -48,8 +48,6 @@ class HaClimateControl extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-climate-control'; }
-
   static get properties() {
     return {
       value: {
@@ -123,4 +121,4 @@ class HaClimateControl extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaClimateControl.is, HaClimateControl);
+customElements.define('ha-climate-control', HaClimateControl);

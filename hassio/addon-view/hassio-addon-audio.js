@@ -59,8 +59,6 @@ class HassioAddonAudio extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-addon-audio'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -114,4 +112,4 @@ class HassioAddonAudio extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HassioAddonAudio.is, HassioAddonAudio);
+customElements.define('hassio-addon-audio', HassioAddonAudio);

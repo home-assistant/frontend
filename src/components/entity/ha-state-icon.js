@@ -11,8 +11,6 @@ class HaStateIcon extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-state-icon'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -26,4 +24,4 @@ class HaStateIcon extends PolymerElement {
   }
 }
 
-customElements.define(HaStateIcon.is, HaStateIcon);
+customElements.define('ha-state-icon', HaStateIcon);

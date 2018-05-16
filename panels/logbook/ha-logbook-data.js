@@ -4,8 +4,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
   var DATE_CACHE = {};
 
   class HaLogbookData extends PolymerElement {
-    static get is() { return 'ha-logbook-data'; }
-
     static get properties() {
       return {
         hass: {
@@ -74,5 +72,5 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
     }
   }
 
-  customElements.define(HaLogbookData.is, HaLogbookData);
+  customElements.define('ha-logbook-data', HaLogbookData);
 }

@@ -106,8 +106,6 @@ import '../../../util/hass-mixins.js';
 `;
     }
 
-    static get is() { return 'more-info-light'; }
-
     static get properties() {
       return {
         hass: {
@@ -257,5 +255,5 @@ import '../../../util/hass-mixins.js';
     }
   }
 
-  customElements.define(MoreInfoLight.is, MoreInfoLight);
+  customElements.define('more-info-light', MoreInfoLight);
 }

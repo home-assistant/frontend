@@ -74,8 +74,6 @@ class MoreInfoConfigurator extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-configurator'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -132,4 +130,4 @@ class MoreInfoConfigurator extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoConfigurator.is, MoreInfoConfigurator);
+customElements.define('more-info-configurator', MoreInfoConfigurator);

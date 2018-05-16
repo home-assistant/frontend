@@ -135,7 +135,6 @@ class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
     </app-header-layout>
     `;
   }
-  static get is() { return 'ha-panel-dev-state'; }
 
   static get properties() {
     return {
@@ -316,4 +315,4 @@ class HaPanelDevState extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPanelDevState.is, HaPanelDevState);
+customElements.define('ha-panel-dev-state', HaPanelDevState);

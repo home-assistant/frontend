@@ -59,7 +59,6 @@ import '../util/hass-mixins.js';
 `;
     }
 
-    static get is() { return 'ha-camera-card'; }
     static get properties() {
       return {
         hass: Object,
@@ -114,5 +113,5 @@ import '../util/hass-mixins.js';
       return window.hassUtil.computeStateName(stateObj);
     }
   }
-  customElements.define(HaCameraCard.is, HaCameraCard);
+  customElements.define('ha-camera-card', HaCameraCard);
 }

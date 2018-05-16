@@ -28,8 +28,6 @@ class StateCardClimate extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-card-climate'; }
-
   static get properties() {
     return {
       stateObj: Object,
@@ -40,4 +38,4 @@ class StateCardClimate extends PolymerElement {
     };
   }
 }
-customElements.define(StateCardClimate.is, StateCardClimate);
+customElements.define('state-card-climate', StateCardClimate);

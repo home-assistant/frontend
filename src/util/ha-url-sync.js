@@ -7,8 +7,6 @@ import './hass-mixins.js';
   const DEBUG = false;
 
   class HaUrlSync extends window.hassMixins.EventsMixin(PolymerElement) {
-    static get is() { return 'ha-url-sync'; }
-
     static get properties() {
       return {
         hass: {
@@ -70,5 +68,5 @@ import './hass-mixins.js';
       window.removeEventListener('popstate', this.popstateChangeListener);
     }
   }
-  customElements.define(HaUrlSync.is, HaUrlSync);
+  customElements.define('ha-url-sync', HaUrlSync);
 }

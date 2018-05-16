@@ -22,7 +22,6 @@ class StateHistoryChartTimeline extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-history-chart-timeline'; }
   static get properties() {
     return {
       hass: {
@@ -191,4 +190,4 @@ class StateHistoryChartTimeline extends PolymerElement {
     this.chartData = chartOptions;
   }
 }
-customElements.define(StateHistoryChartTimeline.is, StateHistoryChartTimeline);
+customElements.define('state-history-chart-timeline', StateHistoryChartTimeline);

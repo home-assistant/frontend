@@ -16,8 +16,6 @@ import './state-card-toggle.js';
 import './state-card-weblink.js';
 
 class StateCardContent extends PolymerElement {
-  static get is() { return 'state-card-content'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -54,4 +52,4 @@ class StateCardContent extends PolymerElement {
     );
   }
 }
-customElements.define(StateCardContent.is, StateCardContent);
+customElements.define('state-card-content', StateCardContent);

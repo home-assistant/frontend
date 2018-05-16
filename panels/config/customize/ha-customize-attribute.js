@@ -32,8 +32,6 @@ class HaCustomizeAttribute extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-customize-attribute'; }
-
   static get properties() {
     return {
       item: {
@@ -80,4 +78,4 @@ class HaCustomizeAttribute extends PolymerElement {
     }
   }
 }
-customElements.define(HaCustomizeAttribute.is, HaCustomizeAttribute);
+customElements.define('ha-customize-attribute', HaCustomizeAttribute);

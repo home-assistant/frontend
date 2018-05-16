@@ -10,8 +10,6 @@ class MoreInfoDefault extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-default'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -21,4 +19,4 @@ class MoreInfoDefault extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoDefault.is, MoreInfoDefault);
+customElements.define('more-info-default', MoreInfoDefault);

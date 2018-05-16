@@ -142,8 +142,6 @@ class HaSidebar extends
 `;
   }
 
-  static get is() { return 'ha-sidebar'; }
-
   static get properties() {
     return {
       hass: {
@@ -253,4 +251,4 @@ class HaSidebar extends
   }
 }
 
-customElements.define(HaSidebar.is, HaSidebar);
+customElements.define('ha-sidebar', HaSidebar);

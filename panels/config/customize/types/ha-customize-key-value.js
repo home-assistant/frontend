@@ -23,8 +23,6 @@ class HaCustomizeKeyValue extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-customize-key-value'; }
-
   static get properties() {
     return {
       item: {
@@ -34,4 +32,4 @@ class HaCustomizeKeyValue extends PolymerElement {
     };
   }
 }
-customElements.define(HaCustomizeKeyValue.is, HaCustomizeKeyValue);
+customElements.define('ha-customize-key-value', HaCustomizeKeyValue);

@@ -11,8 +11,6 @@ class HaStartVoiceButton extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-start-voice-button'; }
-
   static get properties() {
     return {
       hass: {
@@ -38,4 +36,4 @@ class HaStartVoiceButton extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaStartVoiceButton.is, HaStartVoiceButton);
+customElements.define('ha-start-voice-button', HaStartVoiceButton);

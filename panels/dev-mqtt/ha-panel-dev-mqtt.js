@@ -78,8 +78,6 @@ class HaPanelDevMqtt extends PolymerElement {
     `;
   }
 
-  static get is() { return 'ha-panel-dev-mqtt'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -98,4 +96,4 @@ class HaPanelDevMqtt extends PolymerElement {
   }
 }
 
-customElements.define(HaPanelDevMqtt.is, HaPanelDevMqtt);
+customElements.define('ha-panel-dev-mqtt', HaPanelDevMqtt);

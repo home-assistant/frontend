@@ -69,8 +69,6 @@ class HaConfigSection extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-config-section'; }
-
   static get properties() {
     return {
       hass: {
@@ -106,4 +104,4 @@ class HaConfigSection extends PolymerElement {
   }
 }
 
-customElements.define(HaConfigSection.is, HaConfigSection);
+customElements.define('ha-config-section', HaConfigSection);

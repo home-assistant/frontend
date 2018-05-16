@@ -27,7 +27,7 @@ class HaConfigSectionPushNotifications extends window.hassMixins.LocalizeMixin(P
 
       <paper-card>
         <div class="card-content">
-          <iron-label class="horizontal layout">            
+          <iron-label class="horizontal layout">
             [[localize('ui.panel.config.core.section.push_notifications.push_notifications')]]
             <ha-push-notifications-toggle hass="[[hass]]" push-supported="{{pushSupported}}"></ha-push-notifications-toggle>
           </iron-label>
@@ -36,8 +36,6 @@ class HaConfigSectionPushNotifications extends window.hassMixins.LocalizeMixin(P
     </ha-config-section>
 `;
   }
-
-  static get is() { return 'ha-config-section-push-notifications'; }
 
   static get properties() {
     return {
@@ -51,4 +49,4 @@ class HaConfigSectionPushNotifications extends window.hassMixins.LocalizeMixin(P
   }
 }
 
-customElements.define(HaConfigSectionPushNotifications.is, HaConfigSectionPushNotifications);
+customElements.define('ha-config-section-push-notifications', HaConfigSectionPushNotifications);

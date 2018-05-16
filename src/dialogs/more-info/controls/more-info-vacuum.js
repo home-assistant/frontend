@@ -78,8 +78,6 @@ class MoreInfoVacuum extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-vacuum'; }
-
   static get properties() {
     return {
       hass: {
@@ -192,4 +190,4 @@ class MoreInfoVacuum extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoVacuum.is, MoreInfoVacuum);
+customElements.define('more-info-vacuum', MoreInfoVacuum);

@@ -67,8 +67,6 @@ class LoginForm extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'login-form'; }
-
   static get properties() {
     return {
       hass: {
@@ -186,4 +184,4 @@ class LoginForm extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(LoginForm.is, LoginForm);
+customElements.define('login-form', LoginForm);
