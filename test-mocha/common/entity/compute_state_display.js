@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import computeStateDisplay from '../../../js/common/entity/compute_state_display';
+import computeStateDisplay from '../../../src/common/entity/compute_state_display';
 
 describe('computeStateDisplay', () => {
   const localize = function (message, ...args) {

@@ -2,12 +2,12 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../components/ha-form.js';
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin EventsMixin
  */
-class HaAuthFlow extends window.hassMixins.EventsMixin(PolymerElement) {
+class HaAuthFlow extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">

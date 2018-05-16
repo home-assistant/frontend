@@ -3,12 +3,16 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
-import '../util/hass-mixins.js';
 
-import timerTimeRemaining from '../../js/common/entity/timer_time_remaining.js';
-import secondsToDuration from '../../js/common/datetime/seconds_to_duration.js';
 
-class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
+import timerTimeRemaining from '../common/entity/timer_time_remaining.js';
+import secondsToDuration from '../common/datetime/seconds_to_duration.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class StateCardTimer extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>

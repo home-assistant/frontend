@@ -3,8 +3,8 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import { STATES_OFF } from '../../../js/common/const.js';
-import computeStateDomain from '../../../js/common/entity/compute_state_domain';
+import { STATES_OFF } from '../../common/const.js';
+import computeStateDomain from '../../common/entity/compute_state_domain';
 
 class HaEntityToggle extends PolymerElement {
   static get template() {

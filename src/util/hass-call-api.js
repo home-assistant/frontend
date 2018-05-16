@@ -47,7 +47,7 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
     };
 
     if (parameters) {
-      req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      req.setRequestHeader('Content-Type', 'application;charset=UTF-8');
       req.send(JSON.stringify(parameters));
     } else {
       req.send();

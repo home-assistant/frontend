@@ -20,8 +20,8 @@ import './more-info-updater.js';
 import './more-info-vacuum.js';
 import './more-info-weather.js';
 
-import stateMoreInfoType from '../../../../js/common/entity/state_more_info_type.js';
-import dynamicContentUpdater from '../../../../js/common/dom/dynamic_content_updater.js';
+import stateMoreInfoType from '../../../common/entity/state_more_info_type.js';
+import dynamicContentUpdater from '../../../common/dom/dynamic_content_updater.js';
 
 class MoreInfoContent extends PolymerElement {
   static get properties() {

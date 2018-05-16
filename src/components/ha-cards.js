@@ -8,7 +8,7 @@ import '../cards/ha-badges-card.js';
 import '../cards/ha-card-chooser.js';
 import './ha-demo-badge.js';
 
-import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
+import computeStateDomain from '../common/entity/compute_state_domain.js';
 
 {
   // mapping domain to size of the card.

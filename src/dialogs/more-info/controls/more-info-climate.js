@@ -10,12 +10,16 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-climate-control.js';
 import '../../../components/ha-paper-slider.js';
-import '../../../util/hass-mixins.js';
 
-import attributeClassNames from '../../../../js/common/entity/attribute_class_names.js';
-import featureClassNames from '../../../../js/common/entity/feature_class_names';
 
-class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
+import attributeClassNames from '../../../common/entity/attribute_class_names.js';
+import featureClassNames from '../../../common/entity/feature_class_names';
+import EventsMixin from '../../../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class MoreInfoClimate extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex"></style>
