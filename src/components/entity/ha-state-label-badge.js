@@ -4,7 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../util/hass-mixins.js';
 import '../ha-label-badge.js';
 
-import computeDomain from '../../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
 import computeStateName from '../../../js/common/entity/compute_state_name.js';
 import domainIcon from '../../../js/common/entity/domain_icon.js';
 import stateIcon from '../../../js/common/entity/state_icon.js';
@@ -97,13 +97,13 @@ class HaStateLabelBadge extends
   }
 
   computeClassNames(state) {
-    const classes = [computeDomain(state)];
+    const classes = [computeStateDomain(state)];
     classes.push(attributeClassNames(state, ['unit_of_measurement']));
     return classes.join(' ');
   }
 
   computeValue(localize, state) {
-    const domain = computeDomain(state);
+    const domain = computeStateDomain(state);
     switch (domain) {
       case 'binary_sensor':
       case 'device_tracker':
@@ -125,7 +125,7 @@ class HaStateLabelBadge extends
     if (state.state === 'unavailable') {
       return null;
     }
-    const domain = computeDomain(state);
+    const domain = computeStateDomain(state);
     switch (domain) {
       case 'alarm_control_panel':
         if (state.state === 'pending') {
@@ -162,7 +162,7 @@ class HaStateLabelBadge extends
   }
 
   computeLabel(localize, state, _timerTimeRemaining) {
-    const domain = computeDomain(state);
+    const domain = computeStateDomain(state);
     if (state.state === 'unavailable' ||
         ['device_tracker', 'alarm_control_panel'].includes(domain)) {
       // Localize the state with a special state_badge namespace, which has variations of
@@ -194,7 +194,7 @@ class HaStateLabelBadge extends
 
   startInterval(stateObj) {
     this.clearInterval();
-    if (computeDomain(stateObj) === 'timer') {
+    if (computeStateDomain(stateObj) === 'timer') {
       this.calculateTimerRemaining(stateObj);
 
       if (stateObj.state === 'active') {

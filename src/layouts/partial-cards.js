@@ -17,7 +17,7 @@ import '../util/hass-mixins.js';
 import './ha-app-layout.js';
 
 import computeStateName from '../../js/common/entity/compute_state_name.js';
-import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
 import computeLocationName from '../../js/common/config/location_name.js';
 
 {
@@ -315,7 +315,7 @@ import computeLocationName from '../../js/common/config/location_name.js';
       entityIds.forEach((entityId) => {
         const state = hass.states[entityId];
 
-        if (ALWAYS_SHOW_DOMAIN.includes(computeDomain(state))) {
+        if (ALWAYS_SHOW_DOMAIN.includes(computeStateDomain(state))) {
           states[entityId] = state;
         }
       });

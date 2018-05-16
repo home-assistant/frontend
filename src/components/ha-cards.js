@@ -8,7 +8,7 @@ import '../cards/ha-badges-card.js';
 import '../cards/ha-card-chooser.js';
 import './ha-demo-badge.js';
 
-import computeDomain from '../../js/common/entity/compute_domain.js';
+import computeStateDomain from '../../js/common/entity/compute_state_domain.js';
 
 {
   // mapping domain to size of the card.
@@ -247,7 +247,7 @@ import computeDomain from '../../js/common/entity/compute_domain.js';
         let size = 0;
 
         entities.forEach((entity) => {
-          const domain = computeDomain(entity);
+          const domain = computeStateDomain(entity);
 
           if (domain in DOMAINS_WITH_CARD) {
             owncard.push(entity);
@@ -275,7 +275,7 @@ import computeDomain from '../../js/common/entity/compute_domain.js';
         owncard.forEach((entity) => {
           cards.columns[curIndex].push({
             hass: hass,
-            cardType: computeDomain(entity),
+            cardType: computeStateDomain(entity),
             stateObj: entity,
           });
         });
@@ -295,7 +295,7 @@ import computeDomain from '../../js/common/entity/compute_domain.js';
 
       Object.keys(splitted.ungrouped).forEach((key) => {
         const state = splitted.ungrouped[key];
-        const domain = computeDomain(state);
+        const domain = computeStateDomain(state);
 
         if (domain === 'a') {
           cards.demo = true;
