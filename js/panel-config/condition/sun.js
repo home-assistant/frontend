@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../../common/util/event.js';
+import { onChangeEvent } from '../../common/preact/event.js';
 
 export default class SunCondition extends Component {
   constructor() {
@@ -12,7 +12,7 @@ export default class SunCondition extends Component {
   }
 
   radioGroupPicked(key, ev) {
-    const condition = { ...this.props.condition };
+    const condition = Object.assign({}, this.props.condition);
 
     if (ev.target.selected) {
       condition[key] = ev.target.selected;

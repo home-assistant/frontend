@@ -9,7 +9,7 @@
         }, {
           "browserName": "safari",
           "platform": "macOS 10.12",
-          "version": "10"
+          "version": "latest"
         }, {
           "browserName": "firefox",
           "platform": "Windows 10",
@@ -17,7 +17,7 @@
         }, {
           "browserName": "MicrosoftEdge",
           "platform": "Windows 10",
-          "version": "14.14393"
+          "version": "latest"
         }, {
           "deviceName": "Android GoogleAPI Emulator",
           "platformName": "Android",

@@ -236,6 +236,21 @@
                 "initializing": "Initialisation ({query_stage})",
                 "dead": "Mort ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Clair, nuit",
+            "cloudy": "Nuageux",
+            "fog": "Brouillard",
+            "hail": "Grêle",
+            "lightning": "Foudre",
+            "lightning_rainy": "Foudre, pluvieux",
+            "partlycloudy": "Partiellement nuageux",
+            "rainy": "Pluvieux",
+            "snowy": "Neigeux",
+            "snowy_rainy": "Neigeux, pluvieux",
+            "sunny": "Ensoleillé",
+            "windy": "Venteux",
+            "windy_variant": "Venteux"
         }
     },
     "state_badge": {
@@ -517,7 +532,7 @@
         "login-form": {
             "password": "Mot de passe",
             "remember": "Se rappeler",
-            "log_in": "Identifiant"
+            "log_in": "Connexion"
         },
         "card": {
             "camera": {
@@ -525,6 +540,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Ignorer"
+            },
+            "scene": {
+                "activate": "Activer"
+            },
+            "script": {
+                "execute": "Exécuter"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pression de l'air",
+                    "humidity": "Humidité",
+                    "temperature": "Température",
+                    "visibility": "Visibilité",
+                    "wind_speed": "Vitesse du vent"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
+                },
+                "forecast": "Prévisions"
             }
         },
         "components": {

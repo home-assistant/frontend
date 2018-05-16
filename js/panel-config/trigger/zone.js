@@ -1,8 +1,8 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../../common/util/event.js';
-import { hasLocation } from '../../common/util/location.js';
-import computeStateDomain from '../../common/util/compute_state_domain.js';
+import { onChangeEvent } from '../../common/preact/event.js';
+import hasLocation from '../../common/entity/has_location.js';
+import computeStateDomain from '../../common/entity/compute_state_domain.js';
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== 'zone';
@@ -19,24 +19,24 @@ export default class ZoneTrigger extends Component {
   }
 
   entityPicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      entity_id: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.trigger,
+      { entity_id: ev.target.value },
+    ));
   }
 
   zonePicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      zone: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.trigger,
+      { zone: ev.target.value },
+    ));
   }
 
   radioGroupPicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      event: ev.target.selected,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.trigger,
+      { event: ev.target.selected },
+    ));
   }
 
   /* eslint-disable camelcase */

@@ -61,6 +61,7 @@
         document.getElementById('ha-init-skeleton').classList.add('error');
       };
       window.noAuth = '{{ no_auth }}';
+      window.clientId = '{{ client_id }}'
       window.Polymer = {
         lazyRegister: true,
         useNativeCSSProperties: true,
@@ -86,27 +87,23 @@
       if (!webComponentsSupported) {
         var e = document.createElement('script');
         e.onerror = initError;
-        e.src = '/static/webcomponents-lite.js';
+        e.src = '/static/webcomponents-bundle.js';
         if ('import' in document.createElement('link')) {
           document.write(e.outerHTML);
         } else {
           document.head.appendChild(e);
         }
       }
-      if ('serviceWorker' in navigator) {
+      /* if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
           navigator.serviceWorker.register('/service_worker.js');
         });
-      }
-      window.CHART_SCRIPT = '/home-assistant-polymer/src/resources/ha-chart-scripts.html';
+      } */
     </script>
     <!--<script src='/home-assistant-polymer/build/_demo_data_compiled.js'></script>-->
     <!--EXTRA_SCRIPTS-->
     <script src='/home-assistant-polymer/build/core.js'></script>
-    <link rel='import' href='/home-assistant-polymer/src/home-assistant.html' onerror='initError()'>
-    {% if panel_url -%}
-      <link rel='import' href='{{ panel_url }}' async>
-    {% endif -%}
+    <script src='/home-assistant-polymer/build/webpack/app.js'></script>
     <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
     {% for extra_url in extra_urls -%}
       <link rel='import' href='{{ extra_url }}' async>

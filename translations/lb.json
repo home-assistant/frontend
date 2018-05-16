@@ -236,6 +236,22 @@
                 "initializing": "Initialiséiert ({query_stage})",
                 "dead": "Net Ereechbar ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Kloer, Nuecht",
+            "cloudy": "Wollekeg",
+            "fog": "Niwwel",
+            "hail": "Knëppelsteng",
+            "lightning": "Blëtz",
+            "lightning_rainy": "Blëtz, Reen",
+            "partlycloudy": "Liicht wollekeg",
+            "pouring": "Schloreen",
+            "rainy": "Reen",
+            "snowy": "Schnéi",
+            "snowy_rainy": "Schnéi, Reen",
+            "sunny": "Sonneg",
+            "windy": "Lëfteg",
+            "windy_variant": "Lëfteg"
         }
     },
     "state_badge": {
@@ -531,6 +547,34 @@
             },
             "script": {
                 "execute": "Ausféieren"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Loftdrock",
+                    "humidity": "Fiichtegkeet",
+                    "temperature": "Temperatur",
+                    "visibility": "Visibilitéit",
+                    "wind_speed": "Wandvitesse"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Prognose"
             }
         },
         "components": {

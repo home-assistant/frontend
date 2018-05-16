@@ -236,6 +236,16 @@
                 "initializing": "Inicializálás ({query_stage})",
                 "dead": "Halott ({query_stage})"
             }
+        },
+        "weather": {
+            "cloudy": "Felhős",
+            "fog": "Köd",
+            "hail": "Jégeső",
+            "partlycloudy": "Részben felhős",
+            "rainy": "Esős",
+            "snowy": "Havazás",
+            "sunny": "Napos",
+            "windy": "Szeles"
         }
     },
     "state_badge": {
@@ -525,6 +535,22 @@
             },
             "persistent_notification": {
                 "dismiss": "Elvetés"
+            },
+            "scene": {
+                "activate": "Aktiválás"
+            },
+            "script": {
+                "execute": "Futtatás"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Légnyomás",
+                    "humidity": "Páratartalom",
+                    "temperature": "Hőmérséklet",
+                    "visibility": "Láthatóság",
+                    "wind_speed": "Szélsebesség"
+                },
+                "forecast": "Előrejelzés"
             }
         },
         "components": {

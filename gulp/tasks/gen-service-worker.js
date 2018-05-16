@@ -29,22 +29,13 @@ const staticFingerprinted = [
 
 const staticFingerprintedEs6 = [
   'core.js',
-  'frontend.html',
-  'ha-chart-scripts.html',
+  'app.js',
 ];
 
 const staticFingerprintedEs5 = [
   'compatibility.js',
   'core.js',
-  'frontend.html',
-  'ha-chart-scripts.html',
-];
-
-// These panels will always be registered inside HA and thus can
-// be safely assumed to be able to preload.
-const panelsFingerprinted = [
-  'dev-event', 'dev-info', 'dev-service', 'dev-state', 'dev-template',
-  'dev-mqtt', 'kiosk',
+  'app.js',
 ];
 
 function processStatic(fn, rootDir, urlDir) {

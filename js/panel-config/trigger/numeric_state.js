@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { onChangeEvent } from '../../common/util/event.js';
+import { onChangeEvent } from '../../common/preact/event.js';
 
 export default class NumericStateTrigger extends Component {
   constructor() {
@@ -11,10 +11,10 @@ export default class NumericStateTrigger extends Component {
   }
 
   entityPicked(ev) {
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      entity_id: ev.target.value,
-    });
+    this.props.onChange(this.props.index, Object.assign(
+      {}, this.props.trigger,
+      { entity_id: ev.target.value },
+    ));
   }
 
   /* eslint-disable camelcase */
