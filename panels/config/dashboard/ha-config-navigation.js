@@ -44,8 +44,6 @@ import '../../../src/util/hass-mixins.js';
 `;
     }
 
-    static get is() { return 'ha-config-navigation'; }
-
     static get properties() {
       return {
         hass: {
@@ -82,5 +80,5 @@ import '../../../src/util/hass-mixins.js';
     }
   }
 
-  customElements.define(HaConfigNavigation.is, HaConfigNavigation);
+  customElements.define('ha-config-navigation', HaConfigNavigation);
 }

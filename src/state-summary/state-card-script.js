@@ -40,8 +40,6 @@ class StateCardScript extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'state-card-script'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -61,4 +59,4 @@ class StateCardScript extends window.hassMixins.LocalizeMixin(PolymerElement) {
     );
   }
 }
-customElements.define(StateCardScript.is, StateCardScript);
+customElements.define('state-card-script', StateCardScript);

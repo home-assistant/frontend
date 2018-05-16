@@ -83,8 +83,6 @@ class ZwaveGroups extends PolymerElement {
 `;
   }
 
-  static get is() { return 'zwave-groups'; }
-
   static get properties() {
     return {
       hass: {
@@ -238,4 +236,4 @@ class ZwaveGroups extends PolymerElement {
   }
 }
 
-customElements.define(ZwaveGroups.is, ZwaveGroups);
+customElements.define('zwave-groups', ZwaveGroups);

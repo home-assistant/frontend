@@ -70,8 +70,6 @@ class HaForm extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-form'; }
-
   static get properties() {
     return {
       data: {
@@ -118,4 +116,4 @@ class HaForm extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaForm.is, HaForm);
+customElements.define('ha-form', HaForm);

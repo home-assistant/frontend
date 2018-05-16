@@ -215,7 +215,6 @@ class HaPanelDevInfo extends PolymerElement {
     </paper-dialog>
     `;
   }
-  static get is() { return 'ha-panel-dev-info'; }
 
   static get properties() {
     return {
@@ -330,4 +329,4 @@ class HaPanelDevInfo extends PolymerElement {
   }
 }
 
-customElements.define(HaPanelDevInfo.is, HaPanelDevInfo);
+customElements.define('ha-panel-dev-info', HaPanelDevInfo);

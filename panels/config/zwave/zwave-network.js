@@ -92,8 +92,6 @@ class ZwaveNetwork extends PolymerElement {
 `;
   }
 
-  static get is() { return 'zwave-network'; }
-
   static get properties() {
     return {
       hass: {
@@ -117,4 +115,4 @@ class ZwaveNetwork extends PolymerElement {
   }
 }
 
-customElements.define(ZwaveNetwork.is, ZwaveNetwork);
+customElements.define('zwave-network', ZwaveNetwork);

@@ -29,8 +29,6 @@ class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-main'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -101,4 +99,4 @@ class HassioMain extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HassioMain.is, HassioMain);
+customElements.define('hassio-main', HassioMain);

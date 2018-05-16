@@ -30,8 +30,6 @@ class HaAttributes extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-attributes'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -79,4 +77,4 @@ class HaAttributes extends PolymerElement {
   }
 }
 
-customElements.define(HaAttributes.is, HaAttributes);
+customElements.define('ha-attributes', HaAttributes);

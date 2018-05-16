@@ -146,8 +146,6 @@ class HassioAddonInfo extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-addon-info'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -222,4 +220,4 @@ class HassioAddonInfo extends window.hassMixins.EventsMixin(PolymerElement) {
     });
   }
 }
-customElements.define(HassioAddonInfo.is, HassioAddonInfo);
+customElements.define('hassio-addon-info', HassioAddonInfo);

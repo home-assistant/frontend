@@ -16,8 +16,6 @@ class NotificationManager extends PolymerElement {
 `;
   }
 
-  static get is() { return 'notification-manager'; }
-
   static get properties() {
     return {
       hass: {
@@ -95,4 +93,4 @@ class NotificationManager extends PolymerElement {
   }
 }
 
-customElements.define(NotificationManager.is, NotificationManager);
+customElements.define('notification-manager', NotificationManager);

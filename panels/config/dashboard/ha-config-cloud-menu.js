@@ -35,8 +35,6 @@ class HaConfigCloudMenu extends window.hassMixins.NavigateMixin(PolymerElement) 
 `;
   }
 
-  static get is() { return 'ha-config-cloud-menu'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -50,4 +48,4 @@ class HaConfigCloudMenu extends window.hassMixins.NavigateMixin(PolymerElement) 
   }
 }
 
-customElements.define(HaConfigCloudMenu.is, HaConfigCloudMenu);
+customElements.define('ha-config-cloud-menu', HaConfigCloudMenu);

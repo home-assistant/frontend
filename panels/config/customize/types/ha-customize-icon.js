@@ -23,8 +23,6 @@ class HaCustomizeIcon extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-customize-icon'; }
-
   static get properties() {
     return {
       item: {
@@ -34,4 +32,4 @@ class HaCustomizeIcon extends PolymerElement {
     };
   }
 }
-customElements.define(HaCustomizeIcon.is, HaCustomizeIcon);
+customElements.define('ha-customize-icon', HaCustomizeIcon);

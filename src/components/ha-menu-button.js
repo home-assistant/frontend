@@ -16,8 +16,6 @@ class HaMenuButton extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-menu-button'; }
-
   static get properties() {
     return {
       narrow: {
@@ -42,4 +40,4 @@ class HaMenuButton extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaMenuButton.is, HaMenuButton);
+customElements.define('ha-menu-button', HaMenuButton);

@@ -100,8 +100,6 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'hassio-snapshots'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -261,4 +259,4 @@ class HassioSnapshots extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HassioSnapshots.is, HassioSnapshots);
+customElements.define('hassio-snapshots', HassioSnapshots);

@@ -22,8 +22,6 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(PolymerEle
 `;
   }
 
-  static get is() { return 'more-info-alarm_control_panel'; }
-
   static get properties() {
     return {
       hass: {
@@ -119,4 +117,4 @@ class MoreInfoAlarmControlPanel extends window.hassMixins.EventsMixin(PolymerEle
   }
 }
 
-customElements.define(MoreInfoAlarmControlPanel.is, MoreInfoAlarmControlPanel);
+customElements.define('more-info-alarm_control_panel', MoreInfoAlarmControlPanel);

@@ -98,7 +98,6 @@ class HaPanelDevTemplate extends PolymerElement {
     </app-header-layout>
     `;
   }
-  static get is() { return 'ha-panel-dev-template'; }
 
   static get properties() {
     return {
@@ -196,4 +195,4 @@ For loop example:
   }
 }
 
-customElements.define(HaPanelDevTemplate.is, HaPanelDevTemplate);
+customElements.define('ha-panel-dev-template', HaPanelDevTemplate);

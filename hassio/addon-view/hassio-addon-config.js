@@ -47,8 +47,6 @@ class HassioAddonConfig extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-addon-config'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -97,4 +95,4 @@ class HassioAddonConfig extends PolymerElement {
   }
 }
 
-customElements.define(HassioAddonConfig.is, HassioAddonConfig);
+customElements.define('hassio-addon-config', HassioAddonConfig);

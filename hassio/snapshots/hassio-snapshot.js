@@ -108,8 +108,6 @@ class HassioSnapshot extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-snapshot'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -254,4 +252,4 @@ class HassioSnapshot extends PolymerElement {
     this.snapshotSlug = null;
   }
 }
-customElements.define(HassioSnapshot.is, HassioSnapshot);
+customElements.define('hassio-snapshot', HassioSnapshot);

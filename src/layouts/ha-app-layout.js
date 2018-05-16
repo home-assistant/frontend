@@ -95,7 +95,5 @@ class HaAppLayout extends customElements.get('app-header-layout') {
     </div>
 `;
   }
-
-  static get is() { return 'ha-app-layout'; }
 }
-customElements.define(HaAppLayout.is, HaAppLayout);
+customElements.define('ha-app-layout', HaAppLayout);

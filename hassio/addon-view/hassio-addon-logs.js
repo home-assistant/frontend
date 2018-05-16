@@ -25,8 +25,6 @@ class HassioAddonLogs extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-addon-logs'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -55,4 +53,4 @@ class HassioAddonLogs extends PolymerElement {
   }
 }
 
-customElements.define(HassioAddonLogs.is, HassioAddonLogs);
+customElements.define('hassio-addon-logs', HassioAddonLogs);

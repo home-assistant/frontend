@@ -103,8 +103,6 @@ class PartialPanelResolver extends window.hassMixins.NavigateMixin(PolymerElemen
 `;
   }
 
-  static get is() { return 'partial-panel-resolver'; }
-
   static get properties() {
     return {
       hass: {
@@ -213,4 +211,4 @@ class PartialPanelResolver extends window.hassMixins.NavigateMixin(PolymerElemen
   }
 }
 
-customElements.define(PartialPanelResolver.is, PartialPanelResolver);
+customElements.define('partial-panel-resolver', PartialPanelResolver);

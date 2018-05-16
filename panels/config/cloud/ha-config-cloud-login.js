@@ -104,8 +104,6 @@ class HaConfigCloudLogin extends
 `;
   }
 
-  static get is() { return 'ha-config-cloud-login'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -232,4 +230,4 @@ class HaConfigCloudLogin extends
   }
 }
 
-customElements.define(HaConfigCloudLogin.is, HaConfigCloudLogin);
+customElements.define('ha-config-cloud-login', HaConfigCloudLogin);

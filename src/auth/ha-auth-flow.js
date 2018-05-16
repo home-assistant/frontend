@@ -31,7 +31,6 @@ class HaAuthFlow extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-auth-flow'; }
   static get properties() {
     return {
       authProvider: Object,
@@ -134,4 +133,4 @@ class HaAuthFlow extends window.hassMixins.EventsMixin(PolymerElement) {
     });
   }
 }
-customElements.define(HaAuthFlow.is, HaAuthFlow);
+customElements.define('ha-auth-flow', HaAuthFlow);

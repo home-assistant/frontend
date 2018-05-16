@@ -12,8 +12,6 @@ class HassioApp extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-app'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -44,4 +42,4 @@ class HassioApp extends PolymerElement {
   }
 }
 
-customElements.define(HassioApp.is, HassioApp);
+customElements.define('hassio-app', HassioApp);

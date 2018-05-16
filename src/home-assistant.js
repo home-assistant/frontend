@@ -58,8 +58,6 @@ class HomeAssistant extends PolymerElement {
 `;
   }
 
-  static get is() { return 'home-assistant'; }
-
   static get properties() {
     return {
       connectionPromise: {
@@ -356,4 +354,4 @@ class HomeAssistant extends PolymerElement {
   }
 }
 
-customElements.define(HomeAssistant.is, HomeAssistant);
+customElements.define('home-assistant', HomeAssistant);

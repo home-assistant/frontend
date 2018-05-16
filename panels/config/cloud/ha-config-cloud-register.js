@@ -77,8 +77,6 @@ class HaConfigCloudRegister extends window.hassMixins.EventsMixin(PolymerElement
 `;
   }
 
-  static get is() { return 'ha-config-cloud-register'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -183,4 +181,4 @@ class HaConfigCloudRegister extends window.hassMixins.EventsMixin(PolymerElement
   }
 }
 
-customElements.define(HaConfigCloudRegister.is, HaConfigCloudRegister);
+customElements.define('ha-config-cloud-register', HaConfigCloudRegister);

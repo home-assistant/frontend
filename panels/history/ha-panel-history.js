@@ -94,7 +94,6 @@ class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
     </app-header-layout>
     `;
   }
-  static get is() { return 'ha-panel-history'; }
 
   static get properties() {
     return {
@@ -186,4 +185,4 @@ class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPanelHistory.is, HaPanelHistory);
+customElements.define('ha-panel-history', HaPanelHistory);

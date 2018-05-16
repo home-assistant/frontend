@@ -43,8 +43,6 @@ class HassioHassUpdate extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-hass-update'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -78,4 +76,4 @@ class HassioHassUpdate extends PolymerElement {
   }
 }
 
-customElements.define(HassioHassUpdate.is, HassioHassUpdate);
+customElements.define('hassio-hass-update', HassioHassUpdate);

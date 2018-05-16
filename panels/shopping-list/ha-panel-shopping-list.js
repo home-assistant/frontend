@@ -135,7 +135,6 @@ class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(PolymerElement
     </app-header-layout>
     `;
   }
-  static get is() { return 'ha-panel-shopping-list'; }
 
   static get properties() {
     return {
@@ -215,4 +214,4 @@ class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(PolymerElement
   }
 }
 
-customElements.define(HaPanelShoppingList.is, HaPanelShoppingList);
+customElements.define('ha-panel-shopping-list', HaPanelShoppingList);

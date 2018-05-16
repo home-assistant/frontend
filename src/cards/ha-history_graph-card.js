@@ -44,7 +44,6 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-history_graph-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -106,4 +105,4 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
     }
   }
 }
-customElements.define(HaHistoryGraphCard.is, HaHistoryGraphCard);
+customElements.define('ha-history_graph-card', HaHistoryGraphCard);

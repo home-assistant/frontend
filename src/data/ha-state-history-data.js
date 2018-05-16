@@ -99,7 +99,6 @@ import '../util/hass-util.js';
    * @appliesMixin window.hassMixins.LocalizeMixin
    */
   class HaStateHistoryData extends window.hassMixins.LocalizeMixin(PolymerElement) {
-    static get is() { return 'ha-state-history-data'; }
     static get properties() {
       return {
         hass: {
@@ -382,5 +381,5 @@ import '../util/hass-util.js';
       return prom;
     }
   }
-  customElements.define(HaStateHistoryData.is, HaStateHistoryData);
+  customElements.define('ha-state-history-data', HaStateHistoryData);
 }

@@ -25,8 +25,6 @@ class MoreInfoSun extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-sun'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -70,4 +68,4 @@ class MoreInfoSun extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoSun.is, MoreInfoSun);
+customElements.define('more-info-sun', MoreInfoSun);

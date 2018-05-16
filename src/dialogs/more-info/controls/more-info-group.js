@@ -26,8 +26,6 @@ class MoreInfoGroup extends PolymerElement {
 `;
   }
 
-  static get is() { return 'more-info-group'; }
-
   static get properties() {
     return {
       hass: {
@@ -105,4 +103,4 @@ class MoreInfoGroup extends PolymerElement {
   }
 }
 
-customElements.define(MoreInfoGroup.is, MoreInfoGroup);
+customElements.define('more-info-group', MoreInfoGroup);

@@ -44,8 +44,6 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'state-card-display'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -69,4 +67,4 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(PolymerElement) {
     return classes.join(' ');
   }
 }
-customElements.define(StateCardDisplay.is, StateCardDisplay);
+customElements.define('state-card-display', StateCardDisplay);

@@ -23,8 +23,6 @@ class HaCoverTiltControls extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-cover-tilt-controls'; }
-
   static get properties() {
     return {
       hass: {
@@ -64,4 +62,4 @@ class HaCoverTiltControls extends PolymerElement {
   }
 }
 
-customElements.define(HaCoverTiltControls.is, HaCoverTiltControls);
+customElements.define('ha-cover-tilt-controls', HaCoverTiltControls);

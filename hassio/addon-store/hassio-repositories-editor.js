@@ -55,8 +55,6 @@ class HassioRepositoriesEditor extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-repositories-editor'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -90,4 +88,4 @@ class HassioRepositoriesEditor extends PolymerElement {
   }
 }
 
-customElements.define(HassioRepositoriesEditor.is, HassioRepositoriesEditor);
+customElements.define('hassio-repositories-editor', HassioRepositoriesEditor);

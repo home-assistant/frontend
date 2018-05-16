@@ -9,7 +9,6 @@ import './ha-plant-card.js';
 import './ha-weather-card.js';
 
 class HaCardChooser extends PolymerElement {
-  static get is() { return 'ha-card-chooser'; }
   static get properties() {
     return {
       cardData: {
@@ -76,4 +75,4 @@ class HaCardChooser extends PolymerElement {
     }
   }
 }
-customElements.define(HaCardChooser.is, HaCardChooser);
+customElements.define('ha-card-chooser', HaCardChooser);

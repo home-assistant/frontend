@@ -22,8 +22,6 @@ class HassioSupervisorLog extends PolymerElement {
 `;
   }
 
-  static get is() { return 'hassio-supervisor-log'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -50,4 +48,4 @@ class HassioSupervisorLog extends PolymerElement {
   }
 }
 
-customElements.define(HassioSupervisorLog.is, HassioSupervisorLog);
+customElements.define('hassio-supervisor-log', HassioSupervisorLog);
