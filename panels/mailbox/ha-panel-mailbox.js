@@ -14,6 +14,8 @@ import '../../src/components/ha-menu-button.js';
 import '../../src/resources/ha-style.js';
 import '../../src/util/hass-mixins.js';
 
+import formatDateTime from '../../js/common/datetime/format_date_time.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  */
@@ -234,7 +236,7 @@ class HaPanelMailbox extends window.hassMixins.LocalizeMixin(PolymerElement) {
         var platformItems = [];
         var arrayLength = values.length;
         for (var i = 0; i < arrayLength; i++) {
-          var datetime = window.hassUtil.formatDateTime(new Date(values[i].info.origtime * 1000));
+          var datetime = formatDateTime(new Date(values[i].info.origtime * 1000));
           platformItems.push({
             timestamp: datetime,
             caller: values[i].info.callerid,

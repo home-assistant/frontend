@@ -11,6 +11,11 @@ import '../../state-summary/state-card-content.js';
 import '../../util/hass-mixins.js';
 import './controls/more-info-content.js';
 
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import computeDomain from '../../../js/common/entity/compute_domain.js';
+import isComponentLoaded from '../../../js/common/config/is_component_loaded.js';
+import DOMAINS_MORE_INFO_NO_HISTORY from '../../../js/common/const.js';
+
 {
   const DOMAINS_NO_INFO = [
     'camera',
@@ -116,21 +121,21 @@ import './controls/more-info-content.js';
     }
 
     _computeShowStateInfo(stateObj) {
-      return !stateObj || !DOMAINS_NO_INFO.includes(window.hassUtil.computeDomain(stateObj));
+      return !stateObj || !DOMAINS_NO_INFO.includes(computeDomain(stateObj));
     }
 
     _computeShowHistoryComponent(hass, stateObj) {
       return hass && stateObj &&
-        window.hassUtil.isComponentLoaded(hass, 'history') &&
-        !window.hassUtil.DOMAINS_WITH_NO_HISTORY.includes(window.hassUtil.computeDomain(stateObj));
+        isComponentLoaded(hass, 'history') &&
+        !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeDomain(stateObj));
     }
 
     _computeDomain(stateObj) {
-      return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
+      return stateObj ? computeDomain(stateObj) : '';
     }
 
     _computeStateName(stateObj) {
-      return stateObj ? window.hassUtil.computeStateName(stateObj) : '';
+      return stateObj ? computeStateName(stateObj) : '';
     }
 
     _stateObjChanged(newVal) {

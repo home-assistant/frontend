@@ -8,6 +8,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../util/hass-media-player-model.js';
 import '../util/hass-mixins.js';
 
+import computeStateName from '../../js/common/entity/compute_state_name.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin window.hassMixins.EventsMixin
@@ -158,7 +160,7 @@ class HaMediaPlayerCard extends
       <div class="cover" id="cover"></div>
 
       <div class="caption">
-        [[computeStateName(stateObj)]]
+        [[_computeStateName(stateObj)]]
         <div class="title">[[computePrimaryText(localize, playerObj)]]</div>
         [[playerObj.secondaryTitle]]<br>
       </div>
@@ -277,8 +279,8 @@ class HaMediaPlayerCard extends
     return '';
   }
 
-  computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+  _computeStateName(stateObj) {
+    return computeStateName(stateObj);
   }
 
   handleNext(ev) {

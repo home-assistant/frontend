@@ -6,8 +6,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../cards/ha-badges-card.js';
 import '../cards/ha-card-chooser.js';
-import '../util/hass-util.js';
 import './ha-demo-badge.js';
+
+import computeDomain from '../../js/common/entity/compute_domain.js';
 
 {
   // mapping domain to size of the card.
@@ -72,8 +73,6 @@ import './ha-demo-badge.js';
         func(domain);
       });
   };
-
-  const computeDomain = window.hassUtil.computeDomain;
 
   class HaCards extends PolymerElement {
     static get template() {

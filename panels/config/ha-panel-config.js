@@ -14,6 +14,7 @@ import './dashboard/ha-config-dashboard.js';
 import './script/ha-config-script.js';
 import './zwave/ha-config-zwave.js';
 
+import isComponentLoaded from '../../js/common/config/is_component_loaded.js';
 
 class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
   static get template() {
@@ -128,7 +129,7 @@ class HaPanelConfig extends window.hassMixins.NavigateMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    if (window.hassUtil.isComponentLoaded(this.hass, 'cloud')) {
+    if (isComponentLoaded(this.hass, 'cloud')) {
       this.hass.callApi('get', 'cloud/account').then((account) => { this.account = account; });
     }
     this.addEventListener('ha-account-refreshed', (ev) => {

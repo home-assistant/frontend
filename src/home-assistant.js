@@ -18,11 +18,13 @@ import './resources/panel-imports.js';
 import './util/ha-pref-storage.js';
 import './util/hass-call-api.js';
 import './util/hass-translation.js';
-import './util/hass-util.js';
 import './util/legacy-support';
 import './util/roboto.js';
 // For mdi icons.
 import './components/ha-iconset-svg.js';
+
+import computeStateName from '../js/common/entity/compute_state_name.js';
+import applyThemesOnElement from '../js/common/dom/apply_themes_on_element.js';
 
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
@@ -180,7 +182,7 @@ class HomeAssistant extends PolymerElement {
               var name;
               if (serviceData.entity_id && this.hass.states &&
                 this.hass.states[serviceData.entity_id]) {
-                name = window.hassUtil.computeStateName(this.hass.states[serviceData.entity_id]);
+                name = computeStateName(this.hass.states[serviceData.entity_id]);
               }
               if (service === 'turn_on' && serviceData.entity_id) {
                 message = 'Turned on ' + (name || serviceData.entity_id) + '.';
@@ -253,7 +255,7 @@ class HomeAssistant extends PolymerElement {
 
     this.hass.callApi('get', 'themes').then((themes) => {
       this._updateHass({ themes: themes });
-      window.hassUtil.applyThemesOnElement(
+      applyThemesOnElement(
         document.documentElement,
         themes,
         this.hass.selectedTheme,
@@ -262,7 +264,7 @@ class HomeAssistant extends PolymerElement {
     });
     conn.subscribeEvents((event) => {
       this._updateHass({ themes: event.data });
-      window.hassUtil.applyThemesOnElement(
+      applyThemesOnElement(
         document.documentElement,
         event.data,
         this.hass.selectedTheme,
@@ -326,7 +328,7 @@ class HomeAssistant extends PolymerElement {
 
   setTheme(event) {
     this._updateHass({ selectedTheme: event.detail });
-    window.hassUtil.applyThemesOnElement(
+    applyThemesOnElement(
       document.documentElement,
       this.hass.themes,
       this.hass.selectedTheme,

@@ -12,6 +12,8 @@ import '../../../src/layouts/ha-app-layout.js';
 import '../../../src/util/hass-mixins.js';
 import '../ha-config-section.js';
 
+import computeStateName from '../../../js/common/entity/compute_state_name.js';
+
 /*
  * @appliesMixin window.hassMixins.LocalizeMixin
  * @appliesMixin window.hassMixins.EventsMixin
@@ -118,7 +120,7 @@ class HaScriptPicker extends
   }
 
   computeName(script) {
-    return window.hassUtil.computeStateName(script);
+    return computeStateName(script);
   }
 
   // Still thinking of something to add here.
