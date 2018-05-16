@@ -1,7 +1,7 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
+
 import '../ha-label-badge.js';
 
 import computeStateDomain from '../../common/entity/compute_state_domain.js';
@@ -12,12 +12,15 @@ import timerTimeRemaining from '../../common/entity/timer_time_remaining.js';
 import attributeClassNames from '../../common/entity/attribute_class_names.js';
 import secondsToDuration from '../../common/datetime/seconds_to_duration.js';
 
+import EventsMixin from '../../mixins/events-mixin.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
+
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin LocalizeMixin
+ * @appliesMixin EventsMixin
  */
 class HaStateLabelBadge extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>

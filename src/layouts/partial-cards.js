@@ -13,7 +13,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/ha-cards.js';
 import '../components/ha-menu-button.js';
 import '../components/ha-start-voice-button.js';
-import '../util/hass-mixins.js';
+
 import './ha-app-layout.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';

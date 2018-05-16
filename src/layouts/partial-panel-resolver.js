@@ -2,7 +2,7 @@ import '@polymer/app-route/app-route.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../util/hass-mixins.js';
+
 import './hass-loading-screen.js';
 import { importHref } from '../resources/html-import/import-href';
 

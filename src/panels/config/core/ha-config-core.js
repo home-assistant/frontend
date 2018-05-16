@@ -6,18 +6,19 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../layouts/ha-app-layout.js';
 import '../../../resources/ha-style.js';
-import '../../../util/hass-mixins.js';
+
 import './ha-config-section-core.js';
 import './ha-config-section-push-notifications.js';
 import './ha-config-section-themes.js';
 import './ha-config-section-translation.js';
 
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaConfigCore extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaConfigCore extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">

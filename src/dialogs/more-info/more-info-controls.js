@@ -8,13 +8,14 @@ import '../../components/state-history-charts.js';
 import '../../data/ha-state-history-data.js';
 import '../../resources/ha-style.js';
 import '../../state-summary/state-card-content.js';
-import '../../util/hass-mixins.js';
+
 import './controls/more-info-content.js';
 
 import computeStateName from '../../common/entity/compute_state_name.js';
 import computeStateDomain from '../../common/entity/compute_state_domain.js';
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
 import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../common/const.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
 {
   const DOMAINS_NO_INFO = [
@@ -22,7 +23,10 @@ import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../common/const.js';
     'configurator',
     'history_graph',
   ];
-  class MoreInfoControls extends window.hassMixins.EventsMixin(PolymerElement) {
+  /*
+   * @appliesMixin EventsMixin
+   */
+  class MoreInfoControls extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
     <style include="ha-style-dialog">

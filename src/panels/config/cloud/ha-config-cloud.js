@@ -4,7 +4,7 @@ import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import './ha-config-cloud-account.js';
 import './ha-config-cloud-forgot-password.js';

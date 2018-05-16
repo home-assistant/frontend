@@ -11,7 +11,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/buttons/ha-progress-button.js';
 import '../../../layouts/hass-subpage.js';
 import '../../../resources/ha-style.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';

@@ -3,7 +3,7 @@ import '@polymer/iron-image/iron-image.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
+
 import EventsMixin from '../../mixins/events-mixin.js';
 
 /*

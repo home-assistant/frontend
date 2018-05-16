@@ -11,16 +11,17 @@ import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 import '../../components/ha-menu-button.js';
 import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
-import '../../util/hass-mixins.js';
+
 import './ha-logbook-data.js';
 import './ha-logbook.js';
 
 import formatDate from '../../common/datetime/format_date.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPanelLogbook extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">

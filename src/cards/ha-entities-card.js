@@ -5,15 +5,16 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/entity/ha-entity-toggle.js';
 import '../components/ha-card.js';
 import '../state-summary/state-card-content.js';
-import '../util/hass-mixins.js';
+
 
 import computeStateDomain from '../common/entity/compute_state_domain.js';
 import computeStateName from '../common/entity/compute_state_name.js';
 import stateMoreInfoType from '../common/entity/state_more_info_type.js';
 import canToggleState from '../common/entity/can_toggle_state.js';
+import EventsMixin from '../mixins/events-mixin.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
-class HaEntitiesCard extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex"></style>

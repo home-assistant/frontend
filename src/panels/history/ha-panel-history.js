@@ -15,14 +15,15 @@ import '../../components/state-history-charts.js';
 import '../../data/ha-state-history-data.js';
 import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
-import '../../util/hass-mixins.js';
+
 
 import formatDate from '../../common/datetime/format_date.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPanelHistory extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaPanelHistory extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
         <style include="iron-flex ha-style">

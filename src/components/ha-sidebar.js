@@ -8,16 +8,17 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+
 import '../util/hass-translation.js';
 import NavigateMixin from '../mixins/navigate-mixin.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
 class HaSidebar extends
-  window.hassMixins.LocalizeMixin(NavigateMixin(PolymerElement)) {
+  LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex iron-flex-alignment iron-positioning">

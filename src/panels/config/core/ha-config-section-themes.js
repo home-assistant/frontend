@@ -5,16 +5,17 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
 class HaConfigSectionThemes extends
-  window.hassMixins.LocalizeMixin(EventsMixin(PolymerElement)) {
+  LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <ha-config-section is-wide="[[isWide]]">

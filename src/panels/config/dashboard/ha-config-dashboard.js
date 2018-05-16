@@ -5,18 +5,19 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-menu-button.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import './ha-config-cloud-menu.js';
 import './ha-config-entries-menu.js';
 import './ha-config-navigation.js';
 
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaConfigDashboard extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaConfigDashboard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">

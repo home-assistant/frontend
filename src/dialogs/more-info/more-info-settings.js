@@ -5,12 +5,15 @@ import '@polymer/paper-input/paper-input.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
 import computeStateName from '../../common/entity/compute_state_name.js';
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
 
-class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class MoreInfoSettings extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

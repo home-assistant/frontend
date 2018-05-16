@@ -8,9 +8,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/ha-attributes.js';
 import '../../../components/ha-color-picker.js';
 import '../../../components/ha-labeled-slider.js';
-import '../../../util/hass-mixins.js';
+
 
 import featureClassNames from '../../../common/entity/feature_class_names';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 {
   const FEATURE_CLASS_NAMES = {
@@ -20,7 +21,10 @@ import featureClassNames from '../../../common/entity/feature_class_names';
     16: 'has-color',
     128: 'has-white_value',
   };
-  class MoreInfoLight extends window.hassMixins.EventsMixin(PolymerElement) {
+  /*
+   * @appliesMixin EventsMixin
+   */
+  class MoreInfoLight extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
     <style is="custom-style" include="iron-flex"></style>

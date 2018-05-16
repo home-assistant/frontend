@@ -2,11 +2,12 @@ import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import computeStateDomain from '../common/entity/compute_state_domain.js';
 import computeStateDisplay from '../common/entity/compute_state_display.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 {
   const RECENT_THRESHOLD = 60000; // 1 minute
@@ -99,9 +100,9 @@ import computeStateDisplay from '../common/entity/compute_state_display.js';
   }
 
   /*
-   * @appliesMixin window.hassMixins.LocalizeMixin
+   * @appliesMixin LocalizeMixin
    */
-  class HaStateHistoryData extends window.hassMixins.LocalizeMixin(PolymerElement) {
+  class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     static get properties() {
       return {
         hass: {

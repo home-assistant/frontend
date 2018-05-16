@@ -5,13 +5,14 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-push-notifications-toggle.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaConfigSectionPushNotifications extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaConfigSectionPushNotifications extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex iron-flex-alignment iron-positioning">

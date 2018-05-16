@@ -20,7 +20,7 @@ import { h, render } from 'preact';
 import '../../../components/entity/ha-entity-picker.js';
 import '../../../components/ha-combo-box.js';
 import '../../../layouts/ha-app-layout.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import Script from '../js/script.js';
 import unmountPreact from '../../../common/preact/unmount.js';
@@ -28,16 +28,18 @@ import unmountPreact from '../../../common/preact/unmount.js';
 import computeObjectId from '../../../common/entity/compute_object_id.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);
 }
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
+ * @appliesMixin NavigateMixin
  */
 class HaScriptEditor extends
-  window.hassMixins.LocalizeMixin(NavigateMixin(PolymerElement)) {
+  LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">

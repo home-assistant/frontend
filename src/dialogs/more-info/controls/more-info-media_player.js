@@ -9,13 +9,17 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-paper-slider.js';
 import '../../../util/hass-media-player-model.js';
-import '../../../util/hass-mixins.js';
+
 
 import attributeClassNames from '../../../common/entity/attribute_class_names';
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 {
-  class MoreInfoMediaPlayer extends window.hassMixins.EventsMixin(PolymerElement) {
+  /*
+   * @appliesMixin EventsMixin
+   */
+  class MoreInfoMediaPlayer extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>

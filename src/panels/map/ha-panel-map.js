@@ -5,18 +5,19 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import Leaflet from 'leaflet';
 
 import '../../components/ha-menu-button.js';
-import '../../util/hass-mixins.js';
+
 import './ha-entity-marker.js';
 
 import computeStateDomain from '../../common/entity/compute_state_domain.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 Leaflet.Icon.Default.imagePath = '/static/images/leaflet';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPanelMap extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaPanelMap extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">

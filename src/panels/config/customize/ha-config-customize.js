@@ -6,7 +6,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../resources/ha-style.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import '../ha-entity-config.js';
 import './ha-form-customize.js';
@@ -14,11 +14,12 @@ import './ha-form-customize.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import sortByName from '../../../common/entity/states_sort_by_name.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaConfigCustomize extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">

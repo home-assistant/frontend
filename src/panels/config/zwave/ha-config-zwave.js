@@ -14,7 +14,7 @@ import '../../../components/ha-menu-button.js';
 import '../../../components/ha-service-description.js';
 import '../../../layouts/ha-app-layout.js';
 import '../../../resources/ha-style.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import '../ha-form-style.js';
 import './zwave-groups.js';
@@ -28,10 +28,12 @@ import './zwave-values.js';
 import sortByName from '../../../common/entity/states_sort_by_name.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
+
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaConfigZwave extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaConfigZwave extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style ha-form-style">

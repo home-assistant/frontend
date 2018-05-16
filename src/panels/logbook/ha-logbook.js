@@ -3,7 +3,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../components/domain-icon.js';
-import '../../util/hass-mixins.js';
+
 
 import formatTime from '../../common/datetime/format_time.js';
 import EventsMixin from '../../mixins/events-mixin.js';

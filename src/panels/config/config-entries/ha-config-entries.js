@@ -7,18 +7,19 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../layouts/hass-subpage.js';
 import '../../../resources/ha-style.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 import './ha-config-flow.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 {
   /*
-   * @appliesMixin window.hassMixins.LocalizeMixin
+   * @appliesMixin LocalizeMixin
    * @appliesMixin EventsMixin
    */
   class HaConfigManager extends
-    window.hassMixins.LocalizeMixin(EventsMixin(PolymerElement)) {
+    LocalizeMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="iron-flex ha-style">

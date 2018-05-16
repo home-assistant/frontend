@@ -1,10 +1,13 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
 import './ha-progress-button.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
-class HaCallServiceButton extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaCallServiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <ha-progress-button id="progress" progress="[[progress]]" on-click="buttonTapped"><slot></slot></ha-progress-button>

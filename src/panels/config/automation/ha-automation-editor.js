@@ -22,24 +22,25 @@ import '../../../components/ha-combo-box.js';
 import '../../../components/ha-markdown.js';
 import '../../../components/ha-service-picker.js';
 import '../../../layouts/ha-app-layout.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 
 import Automation from '../js/automation.js';
 import unmountPreact from '../../../common/preact/unmount.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
 }
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
 class HaAutomationEditor extends
-  window.hassMixins.LocalizeMixin(NavigateMixin(PolymerElement)) {
+  LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">

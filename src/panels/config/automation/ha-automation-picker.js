@@ -10,17 +10,18 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-markdown.js';
 import '../../../layouts/ha-app-layout.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
 class HaAutomationPicker extends
-  window.hassMixins.LocalizeMixin(NavigateMixin(PolymerElement)) {
+  LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">

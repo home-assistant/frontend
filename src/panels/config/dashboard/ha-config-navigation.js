@@ -5,8 +5,9 @@ import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-mixins.js';
+
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
 
@@ -16,11 +17,11 @@ import isComponentLoaded from '../../../common/config/is_component_loaded.js';
     'customize',
   ];
   /*
-   * @appliesMixin window.hassMixins.LocalizeMixin
+   * @appliesMixin LocalizeMixin
    * @appliesMixin NavigateMixin
    */
   class HaConfigNavigation extends
-    window.hassMixins.LocalizeMixin(NavigateMixin(PolymerElement)) {
+    LocalizeMixin(NavigateMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="iron-flex">

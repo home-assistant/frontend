@@ -7,7 +7,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/buttons/ha-call-api-button.js';
 import '../../../layouts/hass-subpage.js';
 import '../../../resources/ha-style.js';
-import '../../../util/hass-mixins.js';
+
 import '../ha-config-section.js';
 
 import formatDateTime from '../../../common/datetime/format_date_time.js';

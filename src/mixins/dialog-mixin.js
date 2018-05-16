@@ -4,7 +4,7 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import EventsMixin from './events-mixin';
 /**
  * @polymerMixin
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin EventsMixin
  * @appliesMixin PaperDialogBehavior
  */
 export default dedupingMixin(superClass =>

@@ -15,12 +15,12 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../components/ha-menu-button.js';
 import '../../components/ha-start-voice-button.js';
-import '../../util/hass-mixins.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPanelShoppingList extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style">

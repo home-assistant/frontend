@@ -8,7 +8,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-sidebar.js';
 import '../util/ha-url-sync.js';
-import '../util/hass-mixins.js';
+
 import './partial-cards.js';
 import './partial-panel-resolver.js';
 import EventsMixin from '../mixins/events-mixin.js';

@@ -4,7 +4,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../resources/ha-style.js';
-import '../util/hass-mixins.js';
+
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
 
