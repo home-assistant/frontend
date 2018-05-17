@@ -62,9 +62,12 @@ function createConfig(isProdBuild, latestBuild) {
 
   if (isProdBuild) {
     plugins.push(new UglifyJsPlugin({
-      parallel: true,
       extractComments: true,
       sourceMap: true,
+      uglifyOptions: {
+        // Disabling because it broke output
+        mangle: false,
+      }
     }));
   }
 
@@ -73,7 +76,7 @@ function createConfig(isProdBuild, latestBuild) {
 
   return {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map ' : 'inline-cheap-source-map',
+    devtool: isProdBuild ? 'source-map ' : 'inline-source-map',
     entry,
     module: {
       rules: [

@@ -84,9 +84,11 @@
         'customElements' in window &&
         'content' in document.createElement('template'));
       if (!webComponentsSupported) {
-        var e = document.createElement('script');
-        e.src = '/static/webcomponents-bundle.js';
-        document.write(e.outerHTML);
+        (function() {
+          var e = document.createElement('script');
+          e.src = '/static/webcomponents-bundle.js';
+          document.write(e.outerHTML);
+        }());
       }
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
