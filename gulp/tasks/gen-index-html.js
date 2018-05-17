@@ -7,8 +7,8 @@ const md5 = require('../common/md5');
 const { minifyStream } = require('../common/transform');
 
 const buildReplaces = {
-  '/home-assistant-polymer/hass_frontend/core.js': 'core.js',
-  '/home-assistant-polymer/hass_frontend/app.js': 'app.js',
+  '/frontend_latest/core.js': 'core.js',
+  '/frontend_latest/app.js': 'app.js',
 };
 
 function generateIndex(es6) {
@@ -18,7 +18,7 @@ function generateIndex(es6) {
   const toReplace = [
     // Needs to look like a color during CSS minifiaction
     ['{{ theme_color }}', '#THEME'],
-    ['/home-assistant-polymer/hass_frontend/mdi.html',
+    ['/static/mdi.html',
       `/static/mdi-${md5(path.resolve(config.output, 'mdi.html'))}.html`],
   ];
 

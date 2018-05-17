@@ -59,9 +59,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     super.connectedCallback();
     var map = this._map = Leaflet.map(this.$.map);
     var style = document.createElement('link');
-    style.setAttribute('href', __DEV__ ?
-      '/home-assistant-polymer/bower_components/leaflet/dist/leaflet.css' :
-      '/static/images/leaflet/leaflet.css');
+    style.setAttribute('href', '/static/images/leaflet/leaflet.css');
     style.setAttribute('rel', 'stylesheet');
     this.$.map.parentNode.appendChild(style);
     map.setView([51.505, -0.09], 13);

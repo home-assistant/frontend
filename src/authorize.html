@@ -8,19 +8,15 @@
   <body>
     <ha-authorize>Loading</ha-authorize>
     <script>
-    function addScript(src) {
-      var e = document.createElement('script');
-      e.src = src;
-      document.head.appendChild(e);
-    }
     var webComponentsSupported = (
       'customElements' in window &&
-      'import' in document.createElement('link') &&
       'content' in document.createElement('template'));
     if (!webComponentsSupported) {
-      addScript('/static/webcomponents-lite.js');
+      var e = document.createElement('script');
+      e.src = '/static/webcomponents-bundle.js';
+      document.write(e.outerHTML);
     }
     </script>
-    <script src="/home-assistant-polymer/hass_frontend/authorize.js"></script>
+    <script src="/frontend_latest/authorize.js"></script>
   </body>
 </html>

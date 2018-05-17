@@ -9,7 +9,7 @@
     <link rel='apple-touch-icon' sizes='180x180'
           href='/static/icons/favicon-apple-180x180.png'>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#3fbbf4">
-    <link rel='preload' href='/home-assistant-polymer/hass_frontend/core.js' as='script'/>
+    <link rel='preload' href='/frontend_latest/core.js' as='script'/>
     <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
     <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
     <meta name='apple-mobile-web-app-capable' content='yes'>
@@ -82,28 +82,24 @@
     <script>
       var webComponentsSupported = (
         'customElements' in window &&
-        'import' in document.createElement('link') &&
         'content' in document.createElement('template'));
       if (!webComponentsSupported) {
-        var e = document.createElement('script');
-        e.onerror = initError;
-        e.src = '/static/webcomponents-bundle.js';
-        if ('import' in document.createElement('link')) {
+        (function() {
+          var e = document.createElement('script');
+          e.src = '/static/webcomponents-bundle.js';
           document.write(e.outerHTML);
-        } else {
-          document.head.appendChild(e);
-        }
+        }());
       }
-      /* if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
           navigator.serviceWorker.register('/service_worker.js');
         });
-      } */
+      }
     </script>
     <!--EXTRA_SCRIPTS-->
-    <script src='/home-assistant-polymer/hass_frontend/core.js'></script>
-    <script src='/home-assistant-polymer/hass_frontend/app.js'></script>
-    <link rel='import' href='/home-assistant-polymer/hass_frontend/mdi.html' async>
+    <script src='/frontend_latest/core.js'></script>
+    <script src='/frontend_latest/app.js'></script>
+    <link rel='import' href='/static/mdi.html' async>
     {% for extra_url in extra_urls -%}
       <link rel='import' href='{{ extra_url }}' async>
     {% endfor -%}
