@@ -7,6 +7,7 @@ cache:
 install: yarn install
 script:
   - npm run build
+  - hassio/script/build_hassio
   - npm run test
   # - xvfb-run wct --module-resolution=node --npm
   # - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --module-resolution=node --npm --plugin sauce; fi'

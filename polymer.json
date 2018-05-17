@@ -16,7 +16,8 @@
     "src/panels/logbook/ha-panel-logbook.js",
     "src/panels/map/ha-panel-map.js",
     "src/panels/shopping-list/ha-panel-shopping-list.js",
-    "src/panels/mailbox/ha-panel-mailbox.js"
+    "src/panels/mailbox/ha-panel-mailbox.js",
+    "hassio/src/hassio-app.js"
   ],
   "sources": [
     "src/**/*",

@@ -1,11 +1,6 @@
-build/*
-build-temp/*
-build-es5/*
-build-temp-es5/*
 build-translations/*
-build-hassio/*
+hassio/build-es5/*
 node_modules/*
-bower_components/*
 npm-debug.log
 .DS_Store
 hass_frontend/*

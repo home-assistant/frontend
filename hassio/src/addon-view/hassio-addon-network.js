@@ -3,9 +3,9 @@ import '@polymer/paper-input/paper-input.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../src/components/buttons/ha-call-api-button.js';
-import '../../src/resources/ha-style.js';
-import EventsMixin from '../../src/mixins/events-mixin.js';
+import '../../../src/components/buttons/ha-call-api-button.js';
+import '../../../src/resources/ha-style.js';
+import EventsMixin from '../../../src/mixins/events-mixin.js';
 
 class HassioAddonNetwork extends EventsMixin(PolymerElement) {
   static get template() {

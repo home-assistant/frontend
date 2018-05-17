@@ -4,7 +4,7 @@ import '@polymer/paper-card/paper-card.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../src/components/buttons/ha-call-api-button.js';
+import '../../../src/components/buttons/ha-call-api-button.js';
 
 class HassioAddonConfig extends PolymerElement {
   static get template() {
