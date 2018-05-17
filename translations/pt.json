@@ -543,7 +543,7 @@
                 "dismiss": "Fechar"
             },
             "scene": {
-                "activate": "Activar"
+                "activate": "Ativar"
             },
             "script": {
                 "execute": "Executar"

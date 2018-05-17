@@ -236,6 +236,22 @@
                 "initializing": "初始化 ({query_stage})",
                 "dead": "失去連線 ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "晴空、夜間",
+            "cloudy": "多雲",
+            "fog": "有霧",
+            "hail": "冰雹",
+            "lightning": "有雷",
+            "lightning_rainy": "有雷雨",
+            "partlycloudy": "局部多雲",
+            "pouring": "大雨",
+            "rainy": "有雨",
+            "snowy": "有雪",
+            "snowy_rainy": "有雪、有雨",
+            "sunny": "晴天",
+            "windy": "有風",
+            "windy_variant": "有風"
         }
     },
     "state_badge": {
@@ -525,6 +541,40 @@
             },
             "persistent_notification": {
                 "dismiss": "關閉"
+            },
+            "scene": {
+                "activate": "啟用"
+            },
+            "script": {
+                "execute": "執行"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "大氣壓",
+                    "humidity": "濕度",
+                    "temperature": "溫度",
+                    "visibility": "能見度",
+                    "wind_speed": "風速"
+                },
+                "cardinal_direction": {
+                    "e": "東",
+                    "ene": "東北東",
+                    "ese": "西南西",
+                    "n": "北",
+                    "ne": "東北",
+                    "nne": "北北東",
+                    "nw": "西北",
+                    "nnw": "北北西",
+                    "s": "南",
+                    "se": "東南",
+                    "sse": "南南東",
+                    "ssw": "南南西",
+                    "sw": "西南",
+                    "w": "西",
+                    "wnw": "西北西",
+                    "wsw": "西南西"
+                },
+                "forecast": "預報"
             }
         },
         "components": {
