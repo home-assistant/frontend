@@ -1,0 +1,12 @@
+#!/bin/sh
+# Run the Hass.io development server
+
+# Stop on errors
+set -e
+
+OUTPUT_DIR_ES5=build-es5
+
+rm -rf $OUTPUT_DIR_ES5
+mkdir $OUTPUT_DIR_ES5
+node script/gen-index-html.js
+../node_modules/.bin/webpack --watch --progress

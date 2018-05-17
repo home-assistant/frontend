@@ -3,7 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hassio-addons.js';
 import './hassio-hass-update.js';
-import EventsMixin from '../../src/mixins/events-mixin.js';
+import EventsMixin from '../../../src/mixins/events-mixin.js';
 
 class HassioDashboard extends EventsMixin(PolymerElement) {
   static get template() {

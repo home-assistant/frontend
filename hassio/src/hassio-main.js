@@ -2,13 +2,13 @@ import '@polymer/app-route/app-route.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../src/layouts/hass-loading-screen.js';
+import '../../src/layouts/hass-loading-screen.js';
 import './addon-view/hassio-addon-view.js';
 import './hassio-data.js';
 import './hassio-pages-with-tabs.js';
 
-import applyThemesOnElement from '../src/common/dom/apply_themes_on_element.js';
-import EventsMixin from '../src/mixins/events-mixin.js';
+import applyThemesOnElement from '../../src/common/dom/apply_themes_on_element.js';
+import EventsMixin from '../../src/mixins/events-mixin.js';
 
 class HassioMain extends EventsMixin(PolymerElement) {
   static get template() {

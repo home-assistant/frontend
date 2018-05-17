@@ -7,15 +7,15 @@ import '@polymer/paper-tabs/paper-tabs.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../src/components/ha-menu-button.js';
-import '../src/resources/ha-style.js';
+import '../../src/components/ha-menu-button.js';
+import '../../src/resources/ha-style.js';
 import './addon-store/hassio-addon-store.js';
 import './dashboard/hassio-dashboard.js';
 import './hassio-markdown-dialog.js';
 import './snapshots/hassio-snapshot.js';
 import './snapshots/hassio-snapshots.js';
 import './system/hassio-system.js';
-import NavigateMixin from '../src/mixins/navigate-mixin.js';
+import NavigateMixin from '../../src/mixins/navigate-mixin.js';
 
 class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
   static get template() {

@@ -1,0 +1,20 @@
+#!/bin/sh
+# Run the frontend development server
+
+# Stop on errors
+set -e
+
+OUTPUT_DIR=hass_frontend
+
+rm -rf $OUTPUT_DIR
+cp -r public $OUTPUT_DIR
+
+./node_modules/.bin/gulp build-translations authorize authorize-es5
+
+# Icons
+script/update_mdi.py
+
+# Stub the service worker
+touch $OUTPUT_DIR/service_worker.js
+
+./node_modules/.bin/webpack --watch --progress
