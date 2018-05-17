@@ -8,22 +8,22 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import translationMetadata from '../build-translations/translationMetadata.json';
-import './layouts/home-assistant-main.js';
-import './layouts/login-form.js';
-import './managers/notification-manager.js';
-import './resources/ha-style.js';
-import './resources/html-import/polyfill.js';
-import './util/ha-pref-storage.js';
-import './util/hass-call-api.js';
-import './util/hass-translation.js';
-import './util/legacy-support';
-import './util/roboto.js';
+import translationMetadata from '../../build-translations/translationMetadata.json';
+import '../layouts/home-assistant-main.js';
+import '../layouts/login-form.js';
+import '../managers/notification-manager.js';
+import '../resources/ha-style.js';
+import '../resources/html-import/polyfill.js';
+import '../util/ha-pref-storage.js';
+import '../util/hass-call-api.js';
+import '../util/hass-translation.js';
+import '../util/legacy-support';
+import '../util/roboto.js';
 // For mdi icons.
-import './components/ha-iconset-svg.js';
+import '../components/ha-iconset-svg.js';
 
-import computeStateName from './common/entity/compute_state_name.js';
-import applyThemesOnElement from './common/dom/apply_themes_on_element.js';
+import computeStateName from '../common/entity/compute_state_name.js';
+import applyThemesOnElement from '../common/dom/apply_themes_on_element.js';
 
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */

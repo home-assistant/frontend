@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const config = require('./config.js');
 
 const version = fs.readFileSync('../setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -12,8 +13,27 @@ const isProdBuild = process.env.NODE_ENV === 'production'
 const chunkFilename = isProdBuild ?
   '[name]-[chunkhash].chunk.js' : '[name].chunk.js';
 
+const plugins = [
+  new webpack.DefinePlugin({
+    __DEV__: JSON.stringify(!isProdBuild),
+    __VERSION__: JSON.stringify(VERSION),
+  })
+];
+
+if (isProdBuild) {
+  plugins.push(new UglifyJsPlugin({
+    extractComments: true,
+    sourceMap: true,
+    uglifyOptions: {
+      // Disabling because it broke output
+      mangle: false,
+    }
+  }));
+}
+
 module.exports = {
   mode: isProdBuild ? 'production' : 'development',
+  devtool: isProdBuild ? 'source-map ' : 'inline-source-map',
   entry: {
     app: './src/hassio-app.js',
   },
@@ -36,16 +56,11 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      __DEV__: JSON.stringify(!isProdBuild),
-      __VERSION__: JSON.stringify(VERSION),
-    })
-  ],
+  plugins,
   output: {
     filename: '[name].js',
     chunkFilename: chunkFilename,
     path: config.buildDir,
-    publicPath: config.publicPath,
+    publicPath: `${config.publicPath}/`,
   }
 };
