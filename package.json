@@ -137,6 +137,7 @@
     "sw-precache": "^5.2.0",
     "uglify-es": "^3.1.9",
     "uglify-js": "^3.1.9",
+    "uglifyjs-webpack-plugin": "^1.2.5",
     "wct-browser-legacy": "^1.0.0",
     "web-component-tester": "^6.6.0",
     "webpack": "^4.8.1",
