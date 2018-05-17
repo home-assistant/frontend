@@ -12,6 +12,7 @@ import '../util/ha-url-sync.js';
 import './partial-cards.js';
 import './partial-panel-resolver.js';
 import EventsMixin from '../mixins/events-mixin.js';
+import NavigateMixin from '../mixins/navigate-mixin.js';
 
 import(/* webpackChunkName: "more-info-dialog" */ '../dialogs/ha-more-info-dialog.js');
 import(/* webpackChunkName: "voice-command-dialog" */ '../dialogs/ha-voice-command-dialog.js');
@@ -19,7 +20,7 @@ import(/* webpackChunkName: "voice-command-dialog" */ '../dialogs/ha-voice-comma
 {
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
 
-  class HomeAssistantMain extends EventsMixin(PolymerElement) {
+  class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`
     <style>
@@ -111,7 +112,7 @@ import(/* webpackChunkName: "voice-command-dialog" */ '../dialogs/ha-voice-comma
       super.connectedCallback();
       window.removeInitMsg();
       if (document.location.pathname === '/') {
-        history.replaceState(null, null, '/states');
+        this.navigate('/states', true);
       }
     }
 
