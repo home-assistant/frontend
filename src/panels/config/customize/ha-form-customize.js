@@ -7,7 +7,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../util/hass-attributes-util.js';
 import './ha-form-customize-attributes.js';
 
-import computeDomain from '../../../common/entity/compute_domain';
+import computeStateDomain from '../../../common/entity/compute_state_domain';
 
 class HaFormCustomize extends PolymerElement {
   static get template() {
@@ -120,7 +120,7 @@ class HaFormCustomize extends PolymerElement {
       attribute: key,
       value: value,
       closed: false,
-      domain: computeDomain(this.entity),
+      domain: computeStateDomain(this.entity),
       secondary: secondary,
       description: key,
     }, config);
@@ -200,7 +200,7 @@ class HaFormCustomize extends PolymerElement {
           .filter((key) => {
             const conf = window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
             return conf && (!conf.domains || !this.entity ||
-                              conf.domains.includes(computeDomain(this.entity)));
+                              conf.domains.includes(computeStateDomain(this.entity)));
           })
           .filter(this.filterFromAttributes(localAttributes))
           .filter(this.filterFromAttributes(globalAttributes))

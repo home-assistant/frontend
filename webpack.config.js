@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -11,18 +12,12 @@ const VERSION = version[0];
 
 function createConfig(isProdBuild, latestBuild) {
   let buildPath = latestBuild ? 'hass_frontend/' : 'hass_frontend_es5/';
-
-  let publicPath;
-  if (isProdBuild) {
-    publicPath = latestBuild ? '/frontend_latest/' : '/frontend_es5/';
-  } else {
-    publicPath = `/home-assistant-polymer/${buildPath}`;
-  }
+  const publicPath = latestBuild ? '/frontend_latest/' : '/frontend_es5/';
 
   const entry = {
-    app: './src/home-assistant.js',
-    authorize: './src/auth/ha-authorize.js',
-    core: './src/core.js',
+    app: './src/entrypoints/app.js',
+    authorize: './src/entrypoints/authorize.js',
+    core: './src/entrypoints/core.js',
   };
 
   const babelOptions = {
@@ -53,6 +48,7 @@ function createConfig(isProdBuild, latestBuild) {
       'node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js',
       { from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` },
       { from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` },
+      { from: 'gulp/service-worker.js.tmpl', to: 'service_worker.js' },
     ]));
   } else {
     plugins.push(CopyWebpackPlugin([
@@ -61,7 +57,15 @@ function createConfig(isProdBuild, latestBuild) {
     babelOptions.presets = [
       ['es2015', { modules: false }]
     ];
-    entry.compatibility = './src/compatibility.js';
+    entry.compatibility = './src/entrypoints/compatibility.js';
+  }
+
+  if (isProdBuild) {
+    plugins.push(new UglifyJsPlugin({
+      parallel: true,
+      extractComments: true,
+      sourceMap: true,
+    }));
   }
 
   const chunkFilename = isProdBuild ?
@@ -69,6 +73,7 @@ function createConfig(isProdBuild, latestBuild) {
 
   return {
     mode: isProdBuild ? 'production' : 'development',
+    devtool: isProdBuild ? 'source-map ' : 'inline-cheap-source-map',
     entry,
     module: {
       rules: [

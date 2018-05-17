@@ -1,8 +1,8 @@
 import * as HAWS from 'home-assistant-js-websocket';
 
-import fetchToken from './common/auth/fetch_token.js';
-import refreshToken_ from './common/auth/refresh_token.js';
-import parseQuery from './common/util/parse_query.js';
+import fetchToken from '../common/auth/fetch_token.js';
+import refreshToken_ from '../common/auth/refresh_token.js';
+import parseQuery from '../common/util/parse_query.js';
 
 window.HAWS = HAWS;
 

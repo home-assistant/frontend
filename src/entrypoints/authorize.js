@@ -4,8 +4,8 @@ import '@polymer/polymer/lib/elements/dom-repeat.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import './ha-auth-flow.js';
-import './ha-pick-auth-provider.js';
+import '../auth/ha-auth-flow.js';
+import '../auth/ha-pick-auth-provider.js';
 
 class HaAuthorize extends PolymerElement {
   static get template() {

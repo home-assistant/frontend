@@ -46,6 +46,6 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: chunkFilename,
     path: config.buildDir,
-    publicPath: config.publicPath,
+    publicPath: `${config.publicPath}/`,
   }
 };

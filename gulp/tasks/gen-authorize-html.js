@@ -5,9 +5,6 @@ const rename = require('gulp-rename');
 
 const config = require('../config');
 const minifyStream = require('../common/transform').minifyStream;
-const {
-  bundledStreamFromHTML,
-} = require('../common/html');
 
 const es5Extra = "<script src='/frontend_es5/custom-elements-es5-adapter.js'></script>";
 
@@ -24,5 +21,5 @@ async function buildAuth(es6) {
     .pipe(gulp.dest(es6 ? config.output : config.output_es5));
 }
 
-gulp.task('authorize-es5', () => buildAuth(/* es6= */ false));
-gulp.task('authorize', () => buildAuth(/* es6= */ true));
+gulp.task('gen-authorize-html-es5', () => buildAuth(/* es6= */ false));
+gulp.task('gen-authorize-html', () => buildAuth(/* es6= */ true));
