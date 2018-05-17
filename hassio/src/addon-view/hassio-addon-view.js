@@ -6,8 +6,8 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../src/components/ha-menu-button.js';
-import '../../src/resources/ha-style.js';
+import '../../../src/components/ha-menu-button.js';
+import '../../../src/resources/ha-style.js';
 import '../hassio-markdown-dialog.js';
 import './hassio-addon-audio.js';
 import './hassio-addon-config.js';

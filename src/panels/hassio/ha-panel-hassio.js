@@ -1,6 +1,8 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import config from '../../../hassio/config.js';
+
 class HaPanelHassio extends PolymerElement {
   static get template() {
     return html`
@@ -29,7 +31,7 @@ class HaPanelHassio extends PolymerElement {
       iframeUrl: {
         type: String,
         value: __DEV__ ?
-          '/home-assistant-polymer/hassio/index.html' : '/api/hassio/app-es5/index.html',
+          '/home-assistant-polymer/hassio/build-es5/index.html' : `${config.publicPath}/index.html`,
       }
     };
   }
