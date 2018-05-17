@@ -8,9 +8,9 @@ import './hassio-data.js';
 import './hassio-pages-with-tabs.js';
 
 import applyThemesOnElement from '../../src/common/dom/apply_themes_on_element.js';
-import EventsMixin from '../../src/mixins/events-mixin.js';
+import NavigateMixin from '../../src/mixins/navigate-mixin.js';
 
-class HassioMain extends EventsMixin(PolymerElement) {
+class HassioMain extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`
     <app-route route="[[route]]" pattern="/:page" data="{{routeData}}"></app-route>
@@ -91,8 +91,7 @@ class HassioMain extends EventsMixin(PolymerElement) {
 
   routeChanged(route) {
     if (route.path === '' && route.prefix === '/hassio') {
-      history.replaceState(null, null, '/hassio/dashboard');
-      this.fire('location-changed');
+      this.navigate('/hassio/dashboard', true);
     }
   }
 
