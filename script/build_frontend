@@ -16,7 +16,7 @@ cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 # Build frontend
 BUILD_DEV=0 ./node_modules/.bin/gulp build-translations authorize authorize-es5
-NODE_ENV=production webpack -p
+NODE_ENV=production ./node_modules/.bin/webpack -p
 
 # Icons
 script/update_mdi.py
@@ -24,8 +24,8 @@ script/update_mdi.py
 ./node_modules/.bin/gulp compress
 
 # Stub the service worker
-touch hass_frontend/service_worker.js
-touch hass_frontend_es5/service_worker.js
+touch $OUTPUT_DIR/service_worker.js
+touch $OUTPUT_DIR_ES5/service_worker.js
 
 # Generate the __init__ file
 echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR/__init__.py
