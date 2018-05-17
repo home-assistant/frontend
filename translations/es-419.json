@@ -198,6 +198,16 @@
                 "initializing": "Inicializando ({query_stage})",
                 "dead": "No encontrado ({query_stage})"
             }
+        },
+        "weather": {
+            "partlycloudy": "Parcialmente nublado",
+            "pouring": "Torrencial",
+            "rainy": "Lluvioso",
+            "snowy": "Nevado",
+            "snowy_rainy": "Nevado, lluvioso",
+            "sunny": "Soleado",
+            "windy": "Ventoso",
+            "windy_variant": "Ventoso"
         }
     },
     "state_badge": {
@@ -244,7 +254,40 @@
                 },
                 "automation": {
                     "caption": "Automatización",
-                    "description": "Crear y editar automatizaciones"
+                    "description": "Crear y editar automatizaciones",
+                    "editor": {
+                        "actions": {
+                            "add": "Agregar acción",
+                            "duplicate": "Duplicar",
+                            "delete": "Eliminar",
+                            "delete_confirm": "Seguro deseas eliminar?",
+                            "unsupported_action": "Acción no soportada: {action}",
+                            "type_select": "Tipo de acción",
+                            "type": {
+                                "service": {
+                                    "label": "Llamar servico",
+                                    "service_data": "Datos"
+                                },
+                                "delay": {
+                                    "label": "Retardo",
+                                    "delay": "Retardo"
+                                },
+                                "wait_template": {
+                                    "label": "Espera",
+                                    "wait_template": "Plantilla de espera",
+                                    "timeout": "Timeout (opcional)"
+                                },
+                                "condition": {
+                                    "label": "Condición"
+                                },
+                                "event": {
+                                    "label": "Disparar evento",
+                                    "event": "Evento",
+                                    "service_data": "Datos"
+                                }
+                            }
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Script",
@@ -253,6 +296,36 @@
                 "zwave": {
                     "caption": ""
                 }
+            }
+        },
+        "card": {
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Presión atmosférica",
+                    "humidity": "Humedad",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilidad",
+                    "wind_speed": "Velocidad del viento"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NO",
+                    "nnw": "NNO",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
+                },
+                "forecast": "Pronóstico"
             }
         }
     },
