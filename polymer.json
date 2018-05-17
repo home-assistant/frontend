@@ -1,6 +1,6 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/home-assistant.js",
+  "shell": "src/entrypoints/app.js",
   "fragments": [
     "src/panels/config/ha-panel-config.js",
     "src/panels/dev-event/ha-panel-dev-event.js",
