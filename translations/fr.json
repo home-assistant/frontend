@@ -10,7 +10,7 @@
         "dev-services": "Services",
         "dev-states": "États",
         "dev-events": "Événements",
-        "dev-templates": "Modèles",
+        "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
         "dev-info": "Info"
     },
@@ -23,9 +23,9 @@
         },
         "alarm_control_panel": {
             "armed": "Enclenchée",
-            "disarmed": "Désactivé",
+            "disarmed": "Désactivée",
             "armed_home": "Enclenchée (présent)",
-            "armed_away": "Enclenché (absent)",
+            "armed_away": "Enclenchée (absent)",
             "armed_night": "Enclenché (nuit)",
             "pending": "En attente",
             "arming": "Activation",
@@ -47,7 +47,7 @@
                 "on": "Humide"
             },
             "gas": {
-                "off": "Non décelé",
+                "off": "Non détecté",
                 "on": "Détecté"
             },
             "motion": {
@@ -126,7 +126,7 @@
         "camera": {
             "recording": "Enregistrement",
             "streaming": "Diffusion en cours",
-            "idle": "Inactif"
+            "idle": "En veille"
         },
         "climate": {
             "off": "Off",
@@ -195,7 +195,7 @@
             "on": "On",
             "playing": "Lecture en cours",
             "paused": "En pause",
-            "idle": "Inactif",
+            "idle": "En veille",
             "standby": "En veille"
         },
         "plant": {
@@ -228,13 +228,13 @@
         "zwave": {
             "default": {
                 "initializing": "Initialisation",
-                "dead": "Mort",
+                "dead": "Morte",
                 "sleeping": "En veille",
                 "ready": "Prêt"
             },
             "query_stage": {
                 "initializing": "Initialisation ({query_stage})",
-                "dead": "Mort ({query_stage})"
+                "dead": "Morte ({query_stage})"
             }
         },
         "weather": {
@@ -245,6 +245,7 @@
             "lightning": "Foudre",
             "lightning_rainy": "Foudre, pluvieux",
             "partlycloudy": "Partiellement nuageux",
+            "pouring": "Averses",
             "rainy": "Pluvieux",
             "snowy": "Neigeux",
             "snowy_rainy": "Neigeux, pluvieux",
@@ -278,7 +279,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Effacement complété",
+                "clear_completed": "Effacement accompli",
                 "add_item": "Ajouter un élément",
                 "microphone_tip": "Cliquez sur le microphone en haut à droite et dites “Ajouter des bonbons à ma liste d'achat”"
             },
@@ -290,9 +291,9 @@
                 "showing_entries": "Afficher les entrées pour"
             },
             "mailbox": {
-                "empty": "Vous n'avez pas de message",
+                "empty": "Vous n'avez aucun message",
                 "playback_title": "Lecture de messages",
-                "delete_prompt": "Effacer ce message?",
+                "delete_prompt": "Supprimer ce message ?",
                 "delete_button": "Effacer"
             },
             "config": {
@@ -339,7 +340,7 @@
                         },
                         "themes": {
                             "header": "Définir un thème",
-                            "introduction": "Choisissez « Backend-selected » pour utiliser le thème choisit par le backend ou choisissez un thème pour cet appareil",
+                            "introduction": "Choisissez « Backend-selected » pour utiliser le thème choisi par le backend ou choisissez un thème pour cet appareil",
                             "theme": "Thème"
                         }
                     }
@@ -359,9 +360,9 @@
                         "add_automation": "Ajouter une automatisation"
                     },
                     "editor": {
-                        "introduction": "Utilisez les automatisations pour rendre votre maison vivante",
+                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "default_name": "Nouvelle automatisation",
-                        "save": "sauvegarder",
+                        "save": "Sauvegarder",
                         "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
                         "alias": "Nom",
                         "triggers": {
@@ -369,8 +370,8 @@
                             "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Ajouter un déclencheur",
                             "duplicate": "Dupliquer",
-                            "delete": "Éfface",
-                            "delete_confirm": "Voulez-vous éffacé?",
+                            "delete": "Efface",
+                            "delete_confirm": "Voulez-vous effacer ?",
                             "unsupported_platform": "Platefome non supportée : {platform}",
                             "type_select": "Type de déclencheur",
                             "type": {
@@ -387,7 +388,7 @@
                                 "homeassistant": {
                                     "label": "Home Assistant",
                                     "event": "Événement :",
-                                    "start": "Démarrer",
+                                    "start": "Démarrage",
                                     "shutdown": "Arrêt"
                                 },
                                 "mqtt": {
@@ -405,7 +406,7 @@
                                     "label": "Soleil",
                                     "event": "Événement :",
                                     "sunrise": "Lever du soleil",
-                                    "sunset": "Coucher de soleil",
+                                    "sunset": "Coucher du soleil",
                                     "offset": "Décalage (optionnel)"
                                 },
                                 "template": {
@@ -421,18 +422,18 @@
                                     "entity": "Entité avec emplacement",
                                     "zone": "Zone",
                                     "event": "Événement :",
-                                    "enter": "Entrez",
-                                    "leave": "Quitté"
+                                    "enter": "Entre",
+                                    "leave": "Quitter"
                                 }
                             }
                         },
                         "conditions": {
                             "header": "Conditions",
-                            "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemble aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.\n\n[En apprendre plus sur les conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemblent aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.\n\n[En apprendre plus sur les conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Ajouter une condition",
                             "duplicate": "Dupliquer",
-                            "delete": "Éffacement",
-                            "delete_confirm": "Voulez-vous éffacé?",
+                            "delete": "Effacement",
+                            "delete_confirm": "Voulez-vous effacer ?",
                             "unsupported_condition": "Condition non supportée : {condition}",
                             "type_select": "Type de condition",
                             "type": {
@@ -453,7 +454,7 @@
                                     "before_offset": "Décalage avant (optionnel)",
                                     "after_offset": "Décalage après (optionnel)",
                                     "sunrise": "Lever du soleil",
-                                    "sunset": "Coucher de soleil"
+                                    "sunset": "Coucher du soleil"
                                 },
                                 "template": {
                                     "label": "Template",
@@ -599,7 +600,7 @@
         "cover": "Volets",
         "device_tracker": "Dispositif de suivi",
         "fan": "Ventilateur",
-        "history_graph": "Graphe de l’historique",
+        "history_graph": "Graphique historique",
         "group": "Groupe",
         "image_processing": "Traitement d’image",
         "input_boolean": "Entrée logique",
@@ -611,7 +612,7 @@
         "lock": "Verrou",
         "mailbox": "Boites aux lettres",
         "media_player": "Lecteur multimédia",
-        "notify": "Aviser",
+        "notify": "Notifier",
         "plant": "Plante",
         "proximity": "Proximité",
         "remote": "Distant",
