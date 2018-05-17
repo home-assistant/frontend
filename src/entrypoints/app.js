@@ -1,3 +1,4 @@
+/* polyfill for paper-dropdown */
 import 'web-animations-js/web-animations-next-lite.min.js';
 
 import '@polymer/app-route/app-location.js';
@@ -28,12 +29,6 @@ import applyThemesOnElement from '../common/dom/apply_themes_on_element.js';
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
 document.createElement = Document.prototype.createElement;
-/* polyfill for paper-dropdown */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
 window.removeInitMsg = function () {
   var initMsg = document.getElementById('ha-init-skeleton');
   if (initMsg) {
