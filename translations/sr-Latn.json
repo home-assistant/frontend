@@ -17,11 +17,81 @@
             "config": {
                 "zwave": {
                     "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "numeric_state": {
+                                    "label": "Numeričko stanje",
+                                    "above": "Iznad",
+                                    "below": "Ispod"
+                                },
+                                "sun": {
+                                    "label": "Sunce"
+                                }
+                            }
+                        }
+                    }
                 }
+            }
+        },
+        "card": {
+            "scene": {
+                "activate": "Aktiviraj"
+            },
+            "script": {
+                "execute": "Izvrši"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Vazdušni pritisak",
+                    "humidity": "Vlažnost",
+                    "temperature": "Temperatura",
+                    "visibility": "Vidljivost",
+                    "wind_speed": "Brzina vetra"
+                },
+                "cardinal_direction": {
+                    "e": "I",
+                    "ene": "ISI",
+                    "ese": "IJI",
+                    "n": "S",
+                    "ne": "SI",
+                    "nne": "SSI",
+                    "nw": "SZ",
+                    "nnw": "SSZ",
+                    "s": "J",
+                    "se": "JI",
+                    "sse": "JJI",
+                    "ssw": "JJZ",
+                    "sw": "JZ",
+                    "w": "Z",
+                    "wnw": "ZSZ",
+                    "wsw": "ZJZ"
+                },
+                "forecast": "Vremenska prognoza"
             }
         }
     },
     "domain": {
         "zwave": "Z-Wave"
+    },
+    "state": {
+        "weather": {
+            "clear_night": "Vedra noć",
+            "cloudy": "Oblačno",
+            "fog": "Magla",
+            "hail": "Grad",
+            "lightning": "Grmljavina",
+            "lightning_rainy": "Grmljavina sa kišom",
+            "partlycloudy": "Delimično oblačno",
+            "pouring": "Pljusak",
+            "rainy": "Kiša",
+            "snowy": "Sneg",
+            "snowy_rainy": "Sneg i kiša",
+            "sunny": "Sunčano",
+            "windy": "Vetrovito",
+            "windy_variant": "Vetrovito"
+        }
     }
 }
