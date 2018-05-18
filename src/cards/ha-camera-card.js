@@ -51,7 +51,9 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
       }
     </style>
 
-    <img src="[[cameraFeedSrc]]" class="camera-feed" hidden\$="[[!imageLoaded]]" alt="[[_computeStateName(stateObj)]]">
+    <template is="dom-if" if="[[cameraFeedSrc]]">
+      <img src="[[cameraFeedSrc]]" class="camera-feed" alt="[[_computeStateName(stateObj)]]">
+    </template>
     <div class="caption">
       [[_computeStateName(stateObj)]]
       <template is="dom-if" if="[[!imageLoaded]]">
@@ -68,7 +70,10 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
           type: Object,
           observer: 'updateCameraFeedSrc',
         },
-        cameraFeedSrc: String,
+        cameraFeedSrc: {
+          type: String,
+          value: '',
+        },
         imageLoaded: {
           type: Boolean,
           value: true,
