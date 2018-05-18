@@ -1,4 +1,4 @@
-export default function hassCallApi (host, auth, method, path, parameters) {
+export default function hassCallApi(host, auth, method, path, parameters) {
   var url = host + '/api/' + path;
 
   return new Promise(function (resolve, reject) {
@@ -53,4 +53,4 @@ export default function hassCallApi (host, auth, method, path, parameters) {
       req.send();
     }
   });
-};
+}
