@@ -5,6 +5,8 @@ import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { ERR_CANNOT_CONNECT, ERR_INVALID_AUTH } from 'home-assistant-js-websocket';
+
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
@@ -172,9 +174,9 @@ class LoginForm extends LocalizeMixin(PolymerElement) {
       function (errCode) {
         el.isValidating = false;
 
-        if (errCode === window.HAWS.ERR_CANNOT_CONNECT) {
+        if (errCode === ERR_CANNOT_CONNECT) {
           el.errorMessage = 'Unable to connect';
-        } else if (errCode === window.HAWS.ERR_INVALID_AUTH) {
+        } else if (errCode === ERR_INVALID_AUTH) {
           el.errorMessage = 'Invalid password';
         } else {
           el.errorMessage = 'Unknown error: ' + errCode;
