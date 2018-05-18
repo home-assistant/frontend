@@ -147,23 +147,23 @@ class MoreInfoFan extends EventsMixin(PolymerElement) {
   onDirectionLeft() {
     this.hass.callService('fan', 'set_direction', {
       entity_id: this.stateObj.entity_id,
-      direction: 'left'
+      direction: 'reverse'
     });
   }
 
   onDirectionRight() {
     this.hass.callService('fan', 'set_direction', {
       entity_id: this.stateObj.entity_id,
-      direction: 'right'
+      direction: 'forward'
     });
   }
 
   computeIsRotatingLeft(stateObj) {
-    return stateObj.attributes.direction === 'left';
+    return stateObj.attributes.direction === 'reverse';
   }
 
   computeIsRotatingRight(stateObj) {
-    return stateObj.attributes.direction === 'right';
+    return stateObj.attributes.direction === 'forward';
   }
 }
 
