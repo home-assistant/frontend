@@ -9,6 +9,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import {
+  ERR_INVALID_AUTH,
+  subscribeEntities,
+  subscribeConfig,
+} from 'home-assistant-js-websocket';
+
 import translationMetadata from '../../build-translations/translationMetadata.json';
 import '../layouts/home-assistant-main.js';
 import '../layouts/login-form.js';
@@ -221,7 +227,7 @@ class HomeAssistant extends PolymerElement {
     // If we reconnect after losing connection and access token is no longer
     // valid.
     conn.addEventListener('reconnect-error', (_conn, err) => {
-      if (err !== window.HAWS.ERR_INVALID_AUTH) return;
+      if (err !== ERR_INVALID_AUTH) return;
       disconnected();
       this.unsubConnection();
       window.refreshToken().then(accessToken =>
@@ -231,7 +237,7 @@ class HomeAssistant extends PolymerElement {
 
     var unsubEntities;
 
-    window.HAWS.subscribeEntities(conn, (states) => {
+    subscribeEntities(conn, (states) => {
       this._updateHass({ states: states });
     }).then(function (unsub) {
       unsubEntities = unsub;
@@ -239,7 +245,7 @@ class HomeAssistant extends PolymerElement {
 
     var unsubConfig;
 
-    window.HAWS.subscribeConfig(conn, (config) => {
+    subscribeConfig(conn, (config) => {
       this._updateHass({ config: config });
     }).then(function (unsub) {
       unsubConfig = unsub;
