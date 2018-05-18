@@ -1,10 +1,13 @@
-import * as HAWS from 'home-assistant-js-websocket';
+import {
+  ERR_INVALID_AUTH,
+  createConnection,
+  subscribeConfig,
+  subscribeEntities,
+} from 'home-assistant-js-websocket';
 
 import fetchToken from '../common/auth/fetch_token.js';
 import refreshToken_ from '../common/auth/refresh_token.js';
 import parseQuery from '../common/util/parse_query.js';
-
-window.HAWS = HAWS;
 
 const init = window.createHassConnection = function (password, accessToken) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -17,10 +20,10 @@ const init = window.createHassConnection = function (password, accessToken) {
   } else if (accessToken) {
     options.accessToken = accessToken;
   }
-  return HAWS.createConnection(url, options)
+  return createConnection(url, options)
     .then(function (conn) {
-      HAWS.subscribeEntities(conn);
-      HAWS.subscribeConfig(conn);
+      subscribeEntities(conn);
+      subscribeConfig(conn);
       return conn;
     });
 };
@@ -61,7 +64,7 @@ function main() {
   if (localStorage.tokens) {
     window.tokens = JSON.parse(localStorage.tokens);
     window.hassConnection = init(null, window.tokens.access_token).catch((err) => {
-      if (err !== HAWS.ERR_INVALID_AUTH) throw err;
+      if (err !== ERR_INVALID_AUTH) throw err;
 
       return window.refreshToken().then(accessToken => init(null, accessToken));
     });
