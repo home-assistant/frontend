@@ -26,6 +26,7 @@ import '../util/hass-call-api.js';
 import '../util/hass-translation.js';
 import '../util/legacy-support';
 import '../util/roboto.js';
+import hassCallApi from '../util/hass-call-api.js';
 // For mdi icons.
 import '../components/ha-iconset-svg.js';
 
@@ -201,13 +202,13 @@ class HomeAssistant extends PolymerElement {
       callApi: (method, path, parameters) => {
         const host = window.location.protocol + '//' + window.location.host;
         const auth = conn.options;
-        return window.hassCallApi(host, auth, method, path, parameters).catch((err) => {
+        return hassCallApi(host, auth, method, path, parameters).catch((err) => {
           if (err.status_code !== 401 || !auth.accessToken) throw err;
 
           // If we connect with access token and get 401, refresh token and try again
           return window.refreshToken().then((accessToken) => {
             conn.options.accessToken = accessToken;
-            return window.hassCallApi(host, auth, method, path, parameters);
+            return hassCallApi(host, auth, method, path, parameters);
           });
         });
       },
