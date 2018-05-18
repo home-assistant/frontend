@@ -16,6 +16,8 @@ import '../components/ha-start-voice-button.js';
 
 import './ha-app-layout.js';
 
+import extractViews from '../common/entity/extract_views.js';
+import getViewEntities from '../common/entity/get_view_entities.js';
 import computeStateName from '../common/entity/compute_state_name.js';
 import computeStateDomain from '../common/entity/compute_state_domain.js';
 import computeLocationName from '../common/config/location_name.js';
@@ -268,7 +270,7 @@ import EventsMixin from '../mixins/events-mixin.js';
 
     hassChanged(hass) {
       if (!hass) return;
-      const views = window.HAWS.extractViews(hass.states);
+      const views = extractViews(hass.states);
       let defaultView = null;
       // If default view present, it's in first index.
       if (views.length > 0 && views[0].entity_id === DEFAULT_VIEW_ENTITY_ID) {
@@ -311,9 +313,9 @@ import EventsMixin from '../mixins/events-mixin.js';
 
       let states;
       if (currentView) {
-        states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
+        states = getViewEntities(hass.states, hass.states[currentView]);
       } else {
-        states = window.HAWS.getViewEntities(hass.states, hass.states[DEFAULT_VIEW_ENTITY_ID]);
+        states = getViewEntities(hass.states, hass.states[DEFAULT_VIEW_ENTITY_ID]);
       }
 
       // Make sure certain domains are always shown.

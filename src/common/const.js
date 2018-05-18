@@ -40,3 +40,6 @@ export const STATES_OFF = [
 /** Temperature units. */
 export const UNIT_C = '°C';
 export const UNIT_F = '°F';
+
+/** Entity ID of the default view. */
+export const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';

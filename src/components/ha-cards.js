@@ -9,6 +9,8 @@ import '../cards/ha-card-chooser.js';
 import './ha-demo-badge.js';
 
 import computeStateDomain from '../common/entity/compute_state_domain.js';
+import splitByGroups from '../common/entity/split_by_groups.js';
+import getGroupEntities from '../common/entity/get_group_entities.js';
 
 {
   // mapping domain to size of the card.
@@ -281,7 +283,7 @@ import computeStateDomain from '../common/entity/compute_state_domain.js';
         });
       }
 
-      const splitted = window.HAWS.splitByGroups(states);
+      const splitted = splitByGroups(states);
       if (orderedGroupEntities) {
         splitted.groups.sort((gr1, gr2) => orderedGroupEntities[gr1.entity_id] -
           orderedGroupEntities[gr2.entity_id]);
@@ -344,7 +346,7 @@ import computeStateDomain from '../common/entity/compute_state_domain.js';
       });
 
       splitted.groups.forEach((groupState) => {
-        const entities = window.HAWS.getGroupEntities(states, groupState);
+        const entities = getGroupEntities(states, groupState);
         addEntitiesCard(
           groupState.entity_id,
           Object.keys(entities).map(key => entities[key]),
