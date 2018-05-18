@@ -8,12 +8,3 @@ cd "$(dirname "$0")/.."
 
 # Install node modules
 yarn install
-
-# Install bower web components. Allow to download the components as root since the user in docker is root.
-./node_modules/.bin/bower install --allow-root
-
-# Generate all needed files.
-script/build_frontend
-
-# Build files that need to be generated to run development mode
-yarn dev
