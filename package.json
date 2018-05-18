@@ -69,7 +69,7 @@
     "chartjs-chart-timeline": "0.2.0",
     "es6-object-assign": "^1.1.0",
     "fecha": "^2.3.3",
-    "home-assistant-js-websocket": "2.0.0",
+    "home-assistant-js-websocket": "2.0.1",
     "intl-messageformat": "^2.2.0",
     "leaflet": "^1.0.2",
     "marked": "^0.3.19",
