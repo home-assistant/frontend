@@ -9,7 +9,6 @@
   "scripts": {
     "clean": "rm -rf build/* build-temp/* build-es5/* build-temp-es5/* build-translations/*",
     "build": "script/build_frontend",
-    "dev": "./node_modules/.bin/gulp gen-service-worker",
     "lint_js": "eslint src hassio/src test-mocha",
     "lint_html": "polymer lint",
     "mocha": "node_modules/.bin/mocha --opts test-mocha/mocha.opts",

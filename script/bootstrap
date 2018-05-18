@@ -16,4 +16,4 @@ yarn install
 script/build_frontend
 
 # Build files that need to be generated to run development mode
-yarn dev
+./node_modules/.bin/gulp gen-service-worker
