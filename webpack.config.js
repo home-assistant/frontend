@@ -33,27 +33,27 @@ function createConfig(isProdBuild, latestBuild) {
     ],
   };
 
+  const copyPluginOpts = [
+    { from: 'gulp/service-worker.js.tmpl', to: 'service_worker.js' },
+  ];
+
   const plugins = [
     new webpack.DefinePlugin({
       __DEV__: JSON.stringify(!isProdBuild),
       __BUILD__: JSON.stringify(latestBuild ? 'latest' : 'es5'),
       __VERSION__: JSON.stringify(VERSION),
-    })
+    }),
+    new CopyWebpackPlugin(copyPluginOpts),
   ];
 
   if (latestBuild) {
-    plugins.push(CopyWebpackPlugin([
-      { from: 'build-translations/output', to: `translations` },
-      { from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' },
-      'node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js',
-      { from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` },
-      { from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` },
-      { from: 'gulp/service-worker.js.tmpl', to: 'service_worker.js' },
-    ]));
+    copyPluginOpts.push({ from: 'build-translations/output', to: `translations` });
+    copyPluginOpts.push({ from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' });
+    copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
+    copyPluginOpts.push({ from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` });
+    copyPluginOpts.push({ from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` });
   } else {
-    plugins.push(CopyWebpackPlugin([
-      'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
-    ]));
+    copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
     babelOptions.presets = [
       ['es2015', { modules: false }]
     ];
