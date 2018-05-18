@@ -30,10 +30,12 @@ describe('getViewEntities', () => {
     const expectedEntities = entityMap(view.attributes.entity_id.map(ent => entities[ent]));
     Object.assign(
       expectedEntities,
-      entityMap(group1.attributes.entity_id.map(ent => entities[ent])));
+      entityMap(group1.attributes.entity_id.map(ent => entities[ent]))
+    );
     Object.assign(
       expectedEntities,
-      entityMap(group2.attributes.entity_id.map(ent => entities[ent])));
+      entityMap(group2.attributes.entity_id.map(ent => entities[ent]))
+    );
 
     assert.deepEqual(expectedEntities, getViewEntities(entities, view));
   });

@@ -4,10 +4,7 @@ import extractViews from '../../../src/common/entity/extract_views.js';
 
 import {
   createEntities,
-  createEntity,
-  createGroup,
   createView,
-  entityMap
 } from './test_util';
 
 describe('extractViews', () => {
