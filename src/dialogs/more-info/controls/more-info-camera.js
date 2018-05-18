@@ -2,6 +2,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import emptyImageBase64 from '../../../common/empty_image_base64.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 
 /*
@@ -67,7 +68,7 @@ class MoreInfoCamera extends EventsMixin(PolymerElement) {
              '?token=' + stateObj.attributes.access_token;
     }
     // Return an empty image if no stateObj (= dialog not open) or in cleanup mode.
-    return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+    return emptyImageBase64;
   }
 }
 
