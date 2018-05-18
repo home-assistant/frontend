@@ -7,12 +7,10 @@
   "name": "home-assistant-frontend",
   "version": "1.0.0",
   "scripts": {
-    "clean": "rm -rf build/* build-temp/* build-es5/* build-temp-es5/* build-translations/*",
     "build": "script/build_frontend",
-    "lint_js": "eslint src hassio/src test-mocha",
-    "lint_html": "polymer lint",
+    "lint": "eslint src hassio/src test-mocha && polymer lint",
     "mocha": "node_modules/.bin/mocha --opts test-mocha/mocha.opts",
-    "test": "npm run lint_js && npm run lint_html && npm run mocha"
+    "test": "npm run lint && npm run mocha"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",

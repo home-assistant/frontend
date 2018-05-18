@@ -22,7 +22,6 @@ import '../managers/notification-manager.js';
 import '../resources/ha-style.js';
 import '../resources/html-import/polyfill.js';
 import '../util/ha-pref-storage.js';
-import '../util/hass-call-api.js';
 import '../util/hass-translation.js';
 import '../util/legacy-support';
 import '../util/roboto.js';
