@@ -26,7 +26,11 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
       loaded = import(/* webpackChunkName: "load_markdown" */ '../resources/load_markdown.js');
     }
     loaded.then(
-      () => { this._scriptLoaded = 1; },
+      ({ marked, filterXSS }) => {
+        this.marked = marked;
+        this.filterXSS = filterXSS;
+        this._scriptLoaded = 1;
+      },
       () => { this._scriptLoaded = 2; },
     ).then(() => this._render());
   }
@@ -41,7 +45,7 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
       this._renderScheduled = false;
 
       if (this._scriptLoaded === 1) {
-        this.innerHTML = window.filterXSS(window.marked(this.content, {
+        this.innerHTML = this.filterXSS(this.marked(this.content, {
           gfm: true,
           tables: true,
           breaks: true
