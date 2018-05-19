@@ -2,7 +2,7 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/cover-model.js';
+import CoverEntity from '../util/cover-model.js';
 
 class HaCoverControls extends PolymerElement {
   static get template() {
@@ -39,7 +39,7 @@ class HaCoverControls extends PolymerElement {
     };
   }
   computeEntityObj(hass, stateObj) {
-    return new window.CoverEntity(hass, stateObj);
+    return new CoverEntity(hass, stateObj);
   }
   computeOpenDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
