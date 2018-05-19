@@ -5,6 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/entity/state-info.js';
 import '../components/ha-cover-controls.js';
 import '../components/ha-cover-tilt-controls.js';
+import CoverEntity from '../util/cover-model.js';
 
 class StateCardCover extends PolymerElement {
   static get template() {
@@ -42,7 +43,7 @@ class StateCardCover extends PolymerElement {
   }
 
   computeEntityObj(hass, stateObj) {
-    var entity = new window.CoverEntity(hass, stateObj);
+    var entity = new CoverEntity(hass, stateObj);
     return entity;
   }
 }

@@ -1,11 +1,11 @@
-window.CoverEntity = function (hass, stateObj) {
+export default function CoverEntity(hass, stateObj) {
   this.hass = hass;
   this.stateObj = stateObj;
-};
+}
 
 function addGetter(name, getter) {
   Object.defineProperty(
-    window.CoverEntity.prototype, name,
+    CoverEntity.prototype, name,
     { get: getter }
   );
 }
@@ -74,7 +74,7 @@ addGetter('isTiltOnly', function () {
 
 /* eslint-enable no-bitwise */
 
-Object.assign(window.CoverEntity.prototype, {
+Object.assign(CoverEntity.prototype, {
   openCover: function () {
     this.callService('open_cover');
   },
