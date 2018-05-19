@@ -2,7 +2,7 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-attributes-util.js';
+import hassAttributeUtil from '../../../util/hass-attributes-util.js';
 import '../ha-form-style.js';
 import './types/ha-customize-array.js';
 import './types/ha-customize-boolean.js';
@@ -56,7 +56,7 @@ class HaCustomizeAttribute extends PolymerElement {
 
   itemObserver(item) {
     const wrapper = this.$.wrapper;
-    const tag = window.hassAttributeUtil.TYPE_TO_TAG[item.type].toUpperCase();
+    const tag = hassAttributeUtil.TYPE_TO_TAG[item.type].toUpperCase();
     let child;
     if (wrapper.lastChild && wrapper.lastChild.tagName === tag) {
       child = wrapper.lastChild;
