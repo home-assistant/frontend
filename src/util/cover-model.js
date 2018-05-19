@@ -1,7 +1,7 @@
-export default function CoverEntity (hass, stateObj) {
+export default function CoverEntity(hass, stateObj) {
   this.hass = hass;
   this.stateObj = stateObj;
-};
+}
 
 function addGetter(name, getter) {
   Object.defineProperty(
