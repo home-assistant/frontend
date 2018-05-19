@@ -1,6 +1,6 @@
 import translationMetadata from '../../build-translations/translationMetadata.json';
 
-window.getActiveTranslation = function () {
+export function getActiveTranslation() {
   // Perform case-insenstive comparison since browser isn't required to
   // report languages with specific cases.
   const lookup = {};
@@ -58,18 +58,18 @@ window.getActiveTranslation = function () {
 
   // Final fallback
   return 'en';
-};
+}
 
 // Store loaded translations in memory so translations are available immediately
 // when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
 const translations = {};
 
-window.getTranslation = function (fragment, translationInput) {
+export function getTranslation(fragment, translationInput) {
   const translation = translationInput || getActiveTranslation();
   const metadata = translationMetadata.translations[translation];
   if (!metadata) {
     if (translationInput !== 'en') {
-      return window.getTranslation(fragment, 'en');
+      return getTranslation(fragment, 'en');
     }
     return Promise.reject(new Error('Language en not found in metadata'));
   }
@@ -89,14 +89,14 @@ window.getTranslation = function (fragment, translationInput) {
           delete translations[translationFingerprint];
           if (translationInput !== 'en') {
             // Couldn't load selected translation. Try a fall back to en before failing.
-            return window.getTranslation(fragment, 'en');
+            return getTranslation(fragment, 'en');
           }
           return Promise.reject(error);
         });
   }
   return translations[translationFingerprint];
-};
+}
 
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.
-window.getTranslation();
+getTranslation();
