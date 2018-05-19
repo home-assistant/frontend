@@ -4,7 +4,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-attributes-util.js';
+import hassAttributeUtil from '../../../util/hass-attributes-util.js';
 import './ha-form-customize-attributes.js';
 
 import computeStateDomain from '../../../common/entity/compute_state_domain';
@@ -152,8 +152,8 @@ class HaFormCustomize extends PolymerElement {
   }
 
   _computeSingleAttribute(key, value, secondary) {
-    const config = window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key]
-        || { type: window.hassAttributeUtil.UNKNOWN_TYPE };
+    const config = hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key]
+        || { type: hassAttributeUtil.UNKNOWN_TYPE };
     return this._initOpenObject(key, config.type === 'json' ? JSON.stringify(value) : value, secondary, config);
   }
 
@@ -196,9 +196,9 @@ class HaFormCustomize extends PolymerElement {
 
   getNewAttributesOptions(localAttributes, globalAttributes, existingAttributes, newAttributes) {
     const knownKeys =
-        Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES)
+        Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES)
           .filter((key) => {
-            const conf = window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
+            const conf = hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
             return conf && (!conf.domains || !this.entity ||
                               conf.domains.includes(computeStateDomain(this.entity)));
           })
@@ -214,7 +214,7 @@ class HaFormCustomize extends PolymerElement {
     const option = this.newAttributesOptions[selected];
     if (selected === this.newAttributesOptions.length - 1) {
       // The "Other" option.
-      const attr = this._initOpenObject('', '', false /* secondary */, { type: window.hassAttributeUtil.ADD_TYPE });
+      const attr = this._initOpenObject('', '', false /* secondary */, { type: hassAttributeUtil.ADD_TYPE });
       this.push('newAttributes', attr);
       this.selectedNewAttribute = -1;
       return;
