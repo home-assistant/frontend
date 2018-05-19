@@ -1,5 +1,5 @@
-import marked from 'marked';
-import filterXSS from 'xss';
+import marked_ from 'marked';
+import filterXSS_ from 'xss';
 
-window.marked = marked;
-window.filterXSS = filterXSS;
+export const marked = marked_;
+export const filterXSS = filterXSS_;
