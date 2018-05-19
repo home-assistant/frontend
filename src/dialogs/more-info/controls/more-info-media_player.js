@@ -8,7 +8,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-paper-slider.js';
-import '../../../util/hass-media-player-model.js';
+import HassMediaPlayerEntity from '../../../util/hass-media-player-model.js';
 
 
 import attributeClassNames from '../../../common/entity/attribute_class_names';
@@ -136,7 +136,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
     }
 
     computePlayerObj(hass, stateObj) {
-      return new window.HassMediaPlayerEntity(hass, stateObj);
+      return new HassMediaPlayerEntity(hass, stateObj);
     }
 
     playerObjChanged(newVal, oldVal) {
