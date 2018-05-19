@@ -1,6 +1,6 @@
-window.hassAttributeUtil = window.hassAttributeUtil || {};
+const hassAttributeUtil = {};
 
-window.hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
+hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
   binary_sensor: [
     'battery',
     'cold',
@@ -35,10 +35,10 @@ window.hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
   ],
 };
 
-window.hassAttributeUtil.UNKNOWN_TYPE = 'json';
-window.hassAttributeUtil.ADD_TYPE = 'key-value';
+hassAttributeUtil.UNKNOWN_TYPE = 'json';
+hassAttributeUtil.ADD_TYPE = 'key-value';
 
-window.hassAttributeUtil.TYPE_TO_TAG = {
+hassAttributeUtil.TYPE_TO_TAG = {
   string: 'ha-customize-string',
   json: 'ha-customize-string',
   icon: 'ha-customize-icon',
@@ -51,8 +51,8 @@ window.hassAttributeUtil.TYPE_TO_TAG = {
 // 1) Any key of this object won't be shown in more-info window.
 // 2) Any key which has value other than undefined will appear in customization
 //    config according to its value.
-window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
-  window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES || {
+hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
+  hassAttributeUtil.LOGIC_STATE_ATTRIBUTES || {
     entity_picture: undefined,
     friendly_name: { type: 'string', description: 'Name' },
     icon: { type: 'icon' },
@@ -74,7 +74,7 @@ window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
     custom_ui_state_card: { type: 'string' },
     device_class: {
       type: 'array',
-      options: window.hassAttributeUtil.DOMAIN_DEVICE_CLASS,
+      options: hassAttributeUtil.DOMAIN_DEVICE_CLASS,
       description: 'Device class',
       domains: ['binary_sensor', 'cover', 'sensor']
     },
@@ -89,3 +89,5 @@ window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES =
     },
     unit_of_measurement: { type: 'string' },
   };
+
+export default hassAttributeUtil;
