@@ -22,7 +22,7 @@ import '../managers/notification-manager.js';
 import '../resources/ha-style.js';
 import '../resources/html-import/polyfill.js';
 import '../util/ha-pref-storage.js';
-import '../util/hass-translation.js';
+import { getActiveTranslation, getTranslation } from '../util/hass-translation.js';
 import '../util/legacy-support';
 import '../util/roboto.js';
 import hassCallApi from '../util/hass-call-api.js';
@@ -108,7 +108,7 @@ class HomeAssistant extends PolymerElement {
   }
 
   loadResources(fragment) {
-    window.getTranslation(fragment).then((result) => {
+    getTranslation(fragment).then((result) => {
       this._updateResources(result.language, result.data);
     });
   }
@@ -167,7 +167,7 @@ class HomeAssistant extends PolymerElement {
       themes: null,
       panelUrl: this.panelUrl,
 
-      language: window.getActiveTranslation(),
+      language: getActiveTranslation(),
       // If resources are already loaded, don't discard them
       resources: (this.hass && this.hass.resources) || null,
 
