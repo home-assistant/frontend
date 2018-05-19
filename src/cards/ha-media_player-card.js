@@ -5,7 +5,7 @@ import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-media-player-model.js';
+import HassMediaPlayerEntity from '../util/hass-media-player-model.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import EventsMixin from '../mixins/events-mixin.js';
@@ -261,7 +261,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computePlayerObj(hass, stateObj) {
-    return new window.HassMediaPlayerEntity(hass, stateObj);
+    return new HassMediaPlayerEntity(hass, stateObj);
   }
 
   computePrimaryText(localize, playerObj) {

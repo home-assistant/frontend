@@ -1,11 +1,11 @@
-window.HassMediaPlayerEntity = function (hass, stateObj) {
+export default function HassMediaPlayerEntity(hass, stateObj) {
   this.hass = hass;
   this.stateObj = stateObj;
-};
+}
 
 function addGetter(name, getter) {
   Object.defineProperty(
-    window.HassMediaPlayerEntity.prototype, name,
+    HassMediaPlayerEntity.prototype, name,
     { get: getter }
   );
 }
@@ -144,7 +144,7 @@ addGetter('sourceList', function () {
   return this.stateObj.attributes.source_list;
 });
 
-Object.assign(window.HassMediaPlayerEntity.prototype, {
+Object.assign(HassMediaPlayerEntity.prototype, {
   mediaPlayPause: function () {
     this.callService('media_play_pause');
   },
