@@ -13,7 +13,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
   const RECENT_CACHE = {};
   const DOMAINS_USE_LAST_UPDATED = ['thermostat', 'climate'];
   const LINE_ATTRIBUTES_TO_KEEP = ['temperature', 'current_temperature', 'target_temp_low', 'target_temp_high'];
-  window.stateHistoryCache = window.stateHistoryCache || {};
+  const stateHistoryCache = {};
 
   function computeHistory(stateHistory, localize, language) {
     const lineChartDevices = {};
@@ -295,7 +295,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
       originalStartTime.setHours(originalStartTime.getHours() - cacheConfig.hoursToShow);
       let startTime = originalStartTime;
       let appendingToCache = false;
-      let cache = window.stateHistoryCache[cacheKey];
+      let cache = stateHistoryCache[cacheKey];
       if (cache && startTime >= cache.startTime && startTime <= cache.endTime
         && cache.language === language) {
         startTime = cache.endTime;
@@ -304,7 +304,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
           return cache.prom;
         }
       } else {
-        cache = window.stateHistoryCache[cacheKey] = this.getEmptyCache(language);
+        cache = stateHistoryCache[cacheKey] = this.getEmptyCache(language);
       }
       // Use Promise.all in order to make sure the old and the new fetches have both completed.
       const prom = Promise.all([cache.prom,
@@ -325,7 +325,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
         .catch((err) => {
           /* eslint-disable no-console */
           console.error(err);
-          window.stateHistoryCache[cacheKey] = undefined;
+          stateHistoryCache[cacheKey] = undefined;
         });
       cache.prom = prom;
       cache.startTime = originalStartTime;
