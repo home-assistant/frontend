@@ -84,7 +84,7 @@ function createConfig(isProdBuild, latestBuild) {
   }
 
   const chunkFilename = isProdBuild ?
-    '[name]-[chunkhash].chunk.js' : '[name].chunk.js';
+    '[chunkhash].chunk.js' : '[name].chunk.js';
 
   return {
     mode: isProdBuild ? 'production' : 'development',

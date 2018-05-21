@@ -1,6 +1,6 @@
-/* polyfill for paper-dropdown */
-import 'web-animations-js/web-animations-next-lite.min.js';
-
+/* eslint-disable import/first */
+// Load polyfill first so HTML imports start resolving
+import '../resources/html-import/polyfill.js';
 import '@polymer/app-route/app-location.js';
 import '@polymer/app-route/app-route.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
@@ -17,10 +17,7 @@ import {
 
 import translationMetadata from '../../build-translations/translationMetadata.json';
 import '../layouts/home-assistant-main.js';
-import '../layouts/login-form.js';
-import '../managers/notification-manager.js';
 import '../resources/ha-style.js';
-import '../resources/html-import/polyfill.js';
 import '../util/ha-pref-storage.js';
 import { getActiveTranslation, getTranslation } from '../util/hass-translation.js';
 import '../util/legacy-support';
@@ -31,6 +28,12 @@ import '../components/ha-iconset-svg.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import applyThemesOnElement from '../common/dom/apply_themes_on_element.js';
+
+/* polyfill for paper-dropdown */
+import(/* webpackChunkName: "polyfill-web-animations-next" */ 'web-animations-js/web-animations-next-lite.min.js');
+import(/* webpackChunkName: "login-form" */ '../layouts/login-form.js');
+import(/* webpackChunkName: "notification-manager" */ '../managers/notification-manager.js');
+
 
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
