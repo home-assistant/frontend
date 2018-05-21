@@ -44,6 +44,18 @@ function createConfig(isProdBuild, latestBuild) {
       __VERSION__: JSON.stringify(VERSION),
     }),
     new CopyWebpackPlugin(copyPluginOpts),
+    // Ignore moment.js locales
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // Color.js is bloated, it contains all color definitions for all material color sets.
+    new webpack.NormalModuleReplacementPlugin(
+      /@polymer\/paper-styles\/color\.js$/,
+      path.resolve(__dirname, 'src/util/empty.js')
+    ),
+    // Ignore roboto pointing at CDN. We use local font-roboto-local.
+    new webpack.NormalModuleReplacementPlugin(
+      /@polymer\/font-roboto\/roboto\.js$/,
+      path.resolve(__dirname, 'src/util/empty.js')
+    ),
   ];
 
   if (latestBuild) {
