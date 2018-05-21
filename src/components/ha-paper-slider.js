@@ -1,18 +1,4 @@
 import '@polymer/paper-slider/paper-slider.js';
-// import { DomModule } from '@polymer/polymer/lib/elements/dom-module.js';
-import '@polymer/polymer/polymer-legacy.js';
-
-// const documentContainer = document.createElement('template');
-// documentContainer.setAttribute('style', 'display: none;');
-
-// documentContainer.innerHTML = `<dom-module id="ha-paper-slider">
-//   <template strip-whitespace="">
-//   </template>
-
-
-// </dom-module>`;
-
-// document.head.appendChild(documentContainer.content);
 
 /**
 * @polymer
