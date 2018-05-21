@@ -460,13 +460,8 @@ class HaChartBase extends mixinBehaviors([
       this._axisHeight = (height1 - areaBot) + areaTop;
     }
 
-    // var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
-    // if (axis && axis.height > 0) {
-    //   this._axisHeight = axis.height;
-    // }
     if (!this._axisHeight) {
       chartTarget.style.height = '50px';
-      // chartTarget.height = '100px';
       this._chart.resize();
       this.resizeChart();
       return;
@@ -476,7 +471,6 @@ class HaChartBase extends mixinBehaviors([
       const targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
       if (chartTarget.style.height !== targetHeight) {
         chartTarget.style.height = targetHeight;
-        // chartTarget.height = targetHeight;
       }
       this._chart.resize();
     }
