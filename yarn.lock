@@ -3799,9 +3799,9 @@ chart.js@^2.7.2, chart.js@~2.7.2:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
 
-chartjs-chart-timeline@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/chartjs-chart-timeline/-/chartjs-chart-timeline-0.2.0.tgz#f16462311f23c0596632fb2ecab9ae41ed27e571"
+chartjs-chart-timeline@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/chartjs-chart-timeline/-/chartjs-chart-timeline-0.2.1.tgz#5209aeec17ba686ab5a09139a323e61c56112c23"
   dependencies:
     chart.js "^2.7.2"
     moment "^2.22.0"
