@@ -6,7 +6,6 @@ import '@polymer/iron-pages/iron-pages.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../components/ha-sidebar.js';
 import '../util/ha-url-sync.js';
 
 import './partial-cards.js';
@@ -14,6 +13,7 @@ import './partial-panel-resolver.js';
 import EventsMixin from '../mixins/events-mixin.js';
 import NavigateMixin from '../mixins/navigate-mixin.js';
 
+import(/* webpackChunkName: "ha-sidebar" */ '../components/ha-sidebar.js');
 import(/* webpackChunkName: "more-info-dialog" */ '../dialogs/ha-more-info-dialog.js');
 import(/* webpackChunkName: "voice-command-dialog" */ '../dialogs/ha-voice-command-dialog.js');
 
