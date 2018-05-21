@@ -1,13 +1,19 @@
 import '@polymer/paper-slider/paper-slider.js';
-import { DomModule } from '@polymer/polymer/lib/elements/dom-module.js';
-import '@polymer/polymer/polymer-legacy.js';
 
-const documentContainer = document.createElement('template');
-documentContainer.setAttribute('style', 'display: none;');
+/**
+* @polymer
+* @customElement
+* @appliesMixin paper-slider
+*/
+const PaperSliderClass = customElements.get('paper-slider');
 
-documentContainer.innerHTML = `<dom-module id="ha-paper-slider">
-  <template strip-whitespace="">
-    <style include="paper-slider">
+class HaPaperSlider extends PaperSliderClass {
+  static get template() {
+    const tpl = document.createElement('template');
+    tpl.innerHTML = PaperSliderClass.template.innerHTML;
+    const styleEl = tpl.content.querySelector('style');
+    styleEl.setAttribute('include', 'paper-slider');
+    styleEl.innerHTML = `
       .pin > .slider-knob > .slider-knob-inner {
         font-size:  var(--ha-paper-slider-pin-font-size, 10px);
         line-height: normal;
@@ -53,37 +59,8 @@ documentContainer.innerHTML = `<dom-module id="ha-paper-slider">
         -webkit-transform: scale(1) translate(0, -10px);
         transform: scale(1) translate(0, -10px);
       }
-    </style>
-  </template>
-
-
-</dom-module>`;
-
-document.head.appendChild(documentContainer.content);
-
-{
-  /**
-  * @polymer
-  * @customElement
-  * @appliesMixin paper-slider
-  */
-  const PaperSliderClass = customElements.get('paper-slider');
-  let myTemplate;
-
-  class HaPaperSlider extends PaperSliderClass {
-    static get template() {
-      if (!myTemplate) {
-        // Retrieve this element's dom-module template
-        myTemplate = DomModule.import(HaPaperSlider.is, 'template');
-        // Clone the contents of the superclass template
-        const superTemplateContents = document.importNode(PaperSliderClass.template.content, true);
-        // Remove the style from superclass contents, we already included them in our own <style>
-        superTemplateContents.querySelector('style').remove();
-        // Insert the superclass contents
-        myTemplate.content.append(superTemplateContents);
-      }
-      return myTemplate;
-    }
+    `;
+    return tpl;
   }
-  customElements.define('ha-paper-slider', HaPaperSlider);
 }
+customElements.define('ha-paper-slider', HaPaperSlider);
