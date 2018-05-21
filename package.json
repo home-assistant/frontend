@@ -63,7 +63,7 @@
     "@webcomponents/shadycss": "^1.0.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "chart.js": "~2.7.2",
-    "chartjs-chart-timeline": "0.2.0",
+    "chartjs-chart-timeline": "^0.2.1",
     "es6-object-assign": "^1.1.0",
     "fecha": "^2.3.3",
     "home-assistant-js-websocket": "2.0.1",

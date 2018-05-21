@@ -338,7 +338,9 @@ class HaChartBase extends mixinBehaviors([
       this._customTooltips({ opacity: 0 });
       this._chart.data = data;
       this._chart.update({ duration: 0 });
-      if (this.isTimeline !== true && this.data.legend === true) {
+      if (this.isTimeline) {
+        this._chart.options.scales.yAxes[0].gridLines.display = data.length > 1;
+      } else if (this.data.legend === true) {
         this._drawLegend();
       }
       this.resizeChart();
@@ -388,7 +390,7 @@ class HaChartBase extends mixinBehaviors([
           );
         }
         if (this._colorFunc !== undefined) {
-          options.colorFunction = this._colorFunc;
+          options.elements.colorFunction = this._colorFunc;
         }
         if (data.datasets.length === 1) {
           if (options.scales.yAxes[0].ticks) {
@@ -396,10 +398,16 @@ class HaChartBase extends mixinBehaviors([
           } else {
             options.scales.yAxes[0].ticks = { display: false };
           }
+          if (options.scales.yAxes[0].gridLines) {
+            options.scales.yAxes[0].gridLines.display = false;
+          } else {
+            options.scales.yAxes[0].gridLines = { display: false };
+          }
         }
+        this.$.chartTarget.style.height = '50px';
+      } else {
+        this.$.chartTarget.style.height = '160px';
       }
-      this.$.chartTarget.style.height = '160px';
-      this.$.chartTarget.height = '160px';
       const chartData = {
         type: this.data.type,
         data: this.data.data,
@@ -418,11 +426,9 @@ class HaChartBase extends mixinBehaviors([
   resizeChart() {
     if (!this._chart) return;
     // Chart not ready
-    if (this.$.chartTarget.clientWidth === 0) {
-      if (this._resizeTimer === undefined) {
-        this._resizeTimer = setInterval(this.resizeChart.bind(this), 10);
-        return;
-      }
+    if (this._resizeTimer === undefined) {
+      this._resizeTimer = setInterval(this.resizeChart.bind(this), 10);
+      return;
     }
 
     clearInterval(this._resizeTimer);
@@ -447,25 +453,24 @@ class HaChartBase extends mixinBehaviors([
     }
 
     // Recalculate chart height for Timeline chart
-    var axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
-    if (axis && axis.height > 0) {
-      this._axisHeight = axis.height;
+    const areaTop = this._chart.chartArea.top;
+    const areaBot = this._chart.chartArea.bottom;
+    const height1 = this._chart.canvas.clientHeight;
+    if (areaBot > 0) {
+      this._axisHeight = (height1 - areaBot) + areaTop;
     }
+
     if (!this._axisHeight) {
-      chartTarget.style.height = '100px';
-      chartTarget.height = '100px';
+      chartTarget.style.height = '50px';
       this._chart.resize();
-      axis = this._chart.boxes.filter(x => x.position === 'bottom')[0];
-      if (axis && axis.height > 0) {
-        this._axisHeight = axis.height;
-      }
+      this.resizeChart();
+      return;
     }
     if (this._axisHeight) {
       const cnt = data.datasets.length;
       const targetHeight = ((30 * cnt) + this._axisHeight) + 'px';
       if (chartTarget.style.height !== targetHeight) {
         chartTarget.style.height = targetHeight;
-        chartTarget.height = targetHeight;
       }
       this._chart.resize();
     }
