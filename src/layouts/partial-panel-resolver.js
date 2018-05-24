@@ -49,6 +49,10 @@ function ensureLoaded(panel) {
       imported = import(/* webpackChunkName: "panel-dev-template" */ '../panels/dev-template/ha-panel-dev-template.js');
       break;
 
+    case 'experimental-ui':
+      imported = import(/* webpackChunkName: "panel-experimental-ui" */ '../panels/experimental-ui/ha-panel-experimental-ui.js');
+      break;
+
     case 'history':
       imported = import(/* webpackChunkName: "panel-history" */ '../panels/history/ha-panel-history.js');
       break;
