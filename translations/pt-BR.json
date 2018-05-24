@@ -138,10 +138,10 @@
             "dry": "Seco",
             "fan_only": "Apenas ventilador",
             "eco": "",
-            "electric": "",
+            "electric": "Elétrico",
             "performance": "Desempenho",
             "high_demand": "Alta demanda",
-            "heat_pump": "",
+            "heat_pump": "Bomba de calor",
             "gas": "Gás"
         },
         "configurator": {
@@ -233,9 +233,25 @@
                 "ready": "Pronto"
             },
             "query_stage": {
-                "initializing": "Iniciando ({query_stage})",
+                "initializing": "",
                 "dead": ""
             }
+        },
+        "weather": {
+            "clear_night": "Noite clara",
+            "cloudy": "Nublado",
+            "fog": "Nevoeiro",
+            "hail": "Granizo",
+            "lightning": "Raios",
+            "lightning_rainy": "Raios, chuvoso",
+            "partlycloudy": "Parcialmente nublado",
+            "pouring": "Torrencial",
+            "rainy": "Chuvoso",
+            "snowy": "Neve",
+            "snowy_rainy": "Neve, chuva",
+            "sunny": "Ensolarado",
+            "windy": "Ventoso",
+            "windy_variant": "Ventoso"
         }
     },
     "state_badge": {
@@ -330,7 +346,7 @@
                     }
                 },
                 "customize": {
-                    "caption": "Costumização",
+                    "caption": "Customização",
                     "description": "Personalizar suas entidades"
                 },
                 "automation": {
@@ -356,7 +372,7 @@
                             "duplicate": "Duplicar",
                             "delete": "Apagar",
                             "delete_confirm": "Tem certeza que deseja excluir?",
-                            "unsupported_platform": "Plataforma não suportada: {plataforma}",
+                            "unsupported_platform": "Plataforma não suportada: {platform}",
                             "type_select": "Tipo de gatilho",
                             "type": {
                                 "event": {
@@ -370,13 +386,13 @@
                                     "to": "Para"
                                 },
                                 "homeassistant": {
-                                    "label": "Home Assistant",
+                                    "label": "",
                                     "event": "Evento:",
                                     "start": "Iniciar",
                                     "shutdown": "Desligar"
                                 },
                                 "mqtt": {
-                                    "label": "MQTT",
+                                    "label": "",
                                     "topic": "Tópico",
                                     "payload": "Valor (opcional)"
                                 },
@@ -413,12 +429,12 @@
                         },
                         "conditions": {
                             "header": "Condições",
-                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação aconteça quando acionada. As condições são muito semelhantes aos gatilhos, mas são muito diferentes. Um gatilho examinará os eventos que estão ocorrendo no sistema, enquanto uma condição examina apenas a aparência do sistema no momento. Um disparador pode observar que um interruptor está sendo ligado. Uma condição só pode ver se um switch está atualmente ativado ou desativado. \n\n [Saiba mais sobre as condições.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação aconteça quando acionada. As condições são muito semelhantes aos gatilhos, mas são muito diferentes. Um gatilho examinará os eventos que estão ocorrendo no sistema, enquanto uma condição examina apenas a aparência do sistema no momento. Um disparador pode observar que um interruptor está sendo ligado. Uma condição só pode ver se um switch está atualmente ativado ou desativado.\n\n [Saiba mais sobre as condições.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Adicionar condição",
                             "duplicate": "Duplicar",
                             "delete": "Apagar",
                             "delete_confirm": "Tem certeza que quer apagar?",
-                            "unsupported_condition": "Condição não suportada: {condição}",
+                            "unsupported_condition": "Condição não suportada: {condition}",
                             "type_select": "Tipo de Condição",
                             "type": {
                                 "state": {
@@ -462,8 +478,8 @@
                             "add": "Adicionar ação",
                             "duplicate": "Duplicar",
                             "delete": "Apagar",
-                            "delete_confirm": "Está certo que deseja apagar?",
-                            "unsupported_action": "Ação não suportada: {ação}",
+                            "delete_confirm": "Tem certeza que deseja apagar?",
+                            "unsupported_action": "Ação não suportada: {action}",
                             "type_select": "Tipo de acão",
                             "type": {
                                 "service": {
@@ -525,6 +541,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Dispensar"
+            },
+            "scene": {
+                "activate": "Ativar"
+            },
+            "script": {
+                "execute": "Executar"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pressão do ar",
+                    "humidity": "Umidade",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilidade",
+                    "wind_speed": "Velocidade do vento"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NO",
+                    "nnw": "NNO",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
+                },
+                "forecast": "Previsão"
             }
         },
         "components": {
@@ -577,7 +627,7 @@
     },
     "attribute": {
         "weather": {
-            "humidity": "Humidade",
+            "humidity": "Umidade",
             "visibility": "Visibilidade",
             "wind_speed": "Velocidade do vento"
         }

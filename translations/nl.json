@@ -553,26 +553,26 @@
                     "air_pressure": "Luchtdruk",
                     "humidity": "Vochtigheid",
                     "temperature": "Temperatuur",
-                    "visibility": "Zichtbaarheid",
+                    "visibility": "Zicht",
                     "wind_speed": "Windsnelheid"
                 },
                 "cardinal_direction": {
-                    "e": "E",
-                    "ene": "ENE",
-                    "ese": "ESE",
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OZO",
                     "n": "N",
-                    "ne": "NE",
-                    "nne": "NNE",
+                    "ne": "NO",
+                    "nne": "NNO",
                     "nw": "NW",
                     "nnw": "NNW",
-                    "s": "S",
-                    "se": "SE",
-                    "sse": "SSE",
-                    "ssw": "SSW",
-                    "sw": "SW",
+                    "s": "Z",
+                    "se": "ZO",
+                    "sse": "ZZO",
+                    "ssw": "ZZW",
+                    "sw": "ZW",
                     "w": "W",
                     "wnw": "WNW",
-                    "wsw": "WSW"
+                    "wsw": "WZW"
                 },
                 "forecast": "Weersvoorspelling"
             }
