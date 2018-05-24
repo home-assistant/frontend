@@ -236,6 +236,22 @@
                 "initializing": "Inicializace ({query_stage})",
                 "dead": "Nereaguje ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Jasná noc",
+            "cloudy": "Zataženo",
+            "fog": "Mlha",
+            "hail": "Krupobití",
+            "lightning": "Bouře",
+            "lightning_rainy": "Bouře a déšť",
+            "partlycloudy": "Polojasno",
+            "pouring": "Liják",
+            "rainy": "Déšť",
+            "snowy": "Sníh",
+            "snowy_rainy": "Déšť se sněhem",
+            "sunny": "Slunečno",
+            "windy": "Větrno",
+            "windy_variant": "Větrno"
         }
     },
     "state_badge": {
@@ -525,6 +541,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Zavřít"
+            },
+            "scene": {
+                "activate": "Aktivovat"
+            },
+            "script": {
+                "execute": "Vykonat"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Tlak vzduchu",
+                    "humidity": "Vlhkost vzduchu",
+                    "temperature": "Teplota",
+                    "visibility": "Viditelnost",
+                    "wind_speed": "Rychlost větru"
+                },
+                "cardinal_direction": {
+                    "e": "V",
+                    "ene": "VSV",
+                    "ese": "VJV",
+                    "n": "S",
+                    "ne": "SV",
+                    "nne": "SSV",
+                    "nw": "SZ",
+                    "nnw": "SSZ",
+                    "s": "J",
+                    "se": "JV",
+                    "sse": "JJV",
+                    "ssw": "JJZ",
+                    "sw": "JZ",
+                    "w": "Z",
+                    "wnw": "ZSZ",
+                    "wsw": "ZJZ"
+                },
+                "forecast": "Předpověď"
             }
         },
         "components": {

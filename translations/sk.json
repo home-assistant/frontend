@@ -236,6 +236,13 @@
                 "initializing": "Inicializácia ({query_stage})",
                 "dead": "Nereaguje ({query_stage})"
             }
+        },
+        "weather": {
+            "fog": "Hmla",
+            "rainy": "Daždivo",
+            "sunny": "slnečno",
+            "windy": "Veterno",
+            "windy_variant": "Veterno"
         }
     },
     "state_badge": {
@@ -525,6 +532,22 @@
             },
             "persistent_notification": {
                 "dismiss": "Zrušiť"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Tlak vzduchu",
+                    "humidity": "Vlhkosť",
+                    "temperature": "Teplota",
+                    "visibility": "Viditeľnosť",
+                    "wind_speed": "Rýchlosť vetra"
+                },
+                "cardinal_direction": {
+                    "e": "V",
+                    "n": "S",
+                    "s": "J",
+                    "w": "Z"
+                },
+                "forecast": "Predpoveď"
             }
         },
         "components": {
