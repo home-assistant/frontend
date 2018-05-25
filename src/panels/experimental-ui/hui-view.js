@@ -63,10 +63,10 @@ class HaView extends PolymerElement {
       root.appendChild(element);
     }
 
-    if ('theme' in config) {
+    if ('css' in config) {
       const styles = {};
-      Object.keys(config.theme).forEach(prop => {
-        styles[`--${prop}`] = config.theme[prop];
+      Object.keys(config.css).forEach(prop => {
+        styles[`--${prop}`] = config.css[prop];
       });
       this.updateStyles(styles);
     }
