@@ -28,6 +28,10 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
         padding: 8px 16px;
       }
       .has-plant-image .header {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 16px;
+        padding: 16px;
         color: white;
         width: 100%;
         background:rgba(0, 0, 0, var(--dark-secondary-opacity));
