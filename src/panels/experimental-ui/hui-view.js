@@ -3,6 +3,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hui-entities-card.js';
 
+import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
+
 const VALID_TYPES = ['entities', 'group'];
 const CUSTOM_TYPE_PREFIX = 'custom:'
 
@@ -63,12 +65,8 @@ class HaView extends PolymerElement {
       root.appendChild(element);
     }
 
-    if ('css' in config) {
-      const styles = {};
-      Object.keys(config.css).forEach(prop => {
-        styles[`--${prop}`] = config.css[prop];
-      });
-      this.updateStyles(styles);
+    if ('theme' in config) {
+      applyThemesOnElement(this, this.hass.themes, config.theme)
     }
   }
 
