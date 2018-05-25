@@ -5,7 +5,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
 
-class HaComboBox extends PolymerElement {
+import EventsMixin from '../mixins/events-mixin.js';
+
+class HaComboBox extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -19,7 +21,15 @@ class HaComboBox extends PolymerElement {
         display: none;
       }
     </style>
-    <vaadin-combo-box-light items="[[_items]]" item-value-path="[[itemValuePath]]" item-label-path="[[itemLabelPath]]" value="{{value}}" opened="{{opened}}" allow-custom-value="[[allowCustomValue]]">
+    <vaadin-combo-box-light
+      items="[[_items]]"
+      item-value-path="[[itemValuePath]]"
+      item-label-path="[[itemLabelPath]]"
+      value="{{value}}"
+      opened="{{opened}}"
+      allow-custom-value="[[allowCustomValue]]"
+      on-change='_fireChanged'
+    >
       <paper-input autofocus="[[autofocus]]" label="[[label]]" class="input" value="[[value]]">
         <paper-icon-button slot="suffix" class="clear-button" icon="mdi:close" hidden\$="[[!value]]">Clear</paper-icon-button>
         <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden\$="[[!items.length]]">Toggle</paper-icon-button>
@@ -78,6 +88,10 @@ class HaComboBox extends PolymerElement {
 
   _computeItemLabel(item, itemLabelPath) {
     return itemLabelPath ? item[itemLabelPath] : item;
+  }
+
+  _fireChanged(ev) {
+    this.fire('change');
   }
 }
 
