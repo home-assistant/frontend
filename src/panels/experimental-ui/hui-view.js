@@ -2,10 +2,11 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hui-entities-card.js';
+import './hui-entity-filter-card.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
 
-const VALID_TYPES = ['entities', 'group'];
+const VALID_TYPES = ['entities', 'entity-filter'];
 const CUSTOM_TYPE_PREFIX = 'custom:'
 
 function cardElement(type) {

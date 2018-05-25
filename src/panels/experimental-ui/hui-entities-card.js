@@ -14,7 +14,9 @@ import '../../state-summary/state-card-content.js';
 // stateCardType requires `hass` because we check if a service exists.
 // This should also be determined during runtime.
 function stateElement(hass, entityId, stateObj) {
-  if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
+  if (!stateObj) {
+    return 'state-card-display';
+  } else if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
     return stateObj.attributes.custom_ui_state_card;
   } else {
     return 'state-card-' + stateCardType(hass, stateObj);
@@ -73,10 +75,6 @@ class HuiEntitiesCard extends PolymerElement {
 
   _computeTitle(config) {
     return config.title;
-  }
-
-  _computeStates(config, hass) {
-    return config.entities.map(ent => hass.states[ent]);
   }
 
   _configChanged(config) {
