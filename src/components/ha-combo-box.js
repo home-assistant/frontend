@@ -91,6 +91,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
   }
 
   _fireChanged(ev) {
+    ev.stopPropagation();
     this.fire('change');
   }
 }

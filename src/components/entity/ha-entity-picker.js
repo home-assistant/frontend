@@ -146,6 +146,7 @@ class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _fireChanged(ev) {
+    ev.stopPropagation();
     this.fire('change');
   }
 }
