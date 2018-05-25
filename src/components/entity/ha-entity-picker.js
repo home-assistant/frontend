@@ -11,11 +11,12 @@ import './state-badge.js';
 
 import computeStateName from '../../common/entity/compute_state_name.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
  */
-class HaEntityPicker extends LocalizeMixin(PolymerElement) {
+class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -29,7 +30,15 @@ class HaEntityPicker extends LocalizeMixin(PolymerElement) {
         display: none;
       }
     </style>
-    <vaadin-combo-box-light items="[[_states]]" item-value-path="entity_id" item-label-path="entity_id" value="{{value}}" opened="{{opened}}" allow-custom-value="[[allowCustomEntity]]">
+    <vaadin-combo-box-light
+      items="[[_states]]"
+      item-value-path="entity_id"
+      item-label-path="entity_id"
+      value="{{value}}"
+      opened="{{opened}}"
+      allow-custom-value="[[allowCustomEntity]]"
+      on-change='_fireChanged'
+    >
       <paper-input autofocus="[[autofocus]]" label="[[_computeLabel(label, localize)]]" class="input" value="[[value]]" disabled="[[disabled]]">
         <paper-icon-button slot="suffix" class="clear-button" icon="mdi:close" no-ripple="" hidden\$="[[!value]]">Clear</paper-icon-button>
         <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden="[[!_states.length]]">Toggle</paper-icon-button>
@@ -134,6 +143,11 @@ class HaEntityPicker extends LocalizeMixin(PolymerElement) {
 
   _computeToggleIcon(opened) {
     return opened ? 'mdi:menu-up' : 'mdi:menu-down';
+  }
+
+  _fireChanged(ev) {
+    ev.stopPropagation();
+    this.fire('change');
   }
 }
 
