@@ -16,16 +16,13 @@ import '../../data/ha-state-history-data.js';
 import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
 
-import HABigCalendar from './ha-big-calendar.js';
-
-import formatDate from '../../common/datetime/format_date.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
  */
 class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
-  static get template() { 
+  static get template() {
     return html`
       <style include="iron-flex ha-style">
         .content {
@@ -103,7 +100,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     super.connectedCallback();
     this._fetchData = this._fetchData.bind(this);
     // TODO implement calendar_updated event
-    //this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
+    // this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
     //  .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
     this._fetchData();
   }
@@ -116,30 +113,26 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         this.calendars = items;
       }.bind(this));
     // Fecth events fro selected calendar
-    this.items = []
-    this.hass.callApi('post', 'calendar', {calendars: this.selectedCalendars})
+    this.items = [];
+    this.hass.callApi('post', 'calendar', { calendars: this.selectedCalendars })
       .then(function (items) {
         // add items
         this.items = items;
       }.bind(this));
-
-
   }
 
   checkAll() {
     // Check all calendars
     if (this.$.all_calendars.checked) {
-        var selected_index = []
-        for (let i = 0; i < this.$.calendar_list.selectedItems.length; i++) {
-            selected_index.push(this.$.calendar_list.indexOf(this.$.calendar_list.selectedItems[i]))
+      var selectedIndex = [];
+      for (let i = 0; i < this.$.calendar_list.selectedItems.length; i++) {
+        selectedIndex.push(this.$.calendar_list.indexOf(this.$.calendar_list.selectedItems[i]));
+      }
+      for (let i = 0; i < this.calendars.length; i++) {
+        if (selectedIndex.indexOf(i) === -1) {
+          this.$.calendar_list.selectIndex(i);
         }
-        for (let i = 0; i < this.calendars.length; i++) {
-            if (selected_index.indexOf(i) == -1){
-                this.$.calendar_list.selectIndex(i);
-            }
-        }
-
-
+      }
     }
   }
 
@@ -151,7 +144,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
 
       items: {
         type: Array,
-        value:   [],
+        value: [],
       },
 
       calendars: {
@@ -163,7 +156,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         type: Array,
         value: [],
       },
-        
+
       narrow: {
         type: Boolean,
         value: false,
