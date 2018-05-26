@@ -64,6 +64,7 @@ function createConfig(isProdBuild, latestBuild) {
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` });
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` });
+    entry.mdi = './src/entrypoints/mdi.js';
   } else {
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
     babelOptions.presets = [
@@ -98,6 +99,15 @@ function createConfig(isProdBuild, latestBuild) {
             loader: 'babel-loader',
             options: babelOptions,
           },
+        },
+        {
+          test: /\.(html)$/,
+          use: {
+            loader: 'html-loader',
+            options: {
+              exportAsEs6Default: true,
+            }
+          }
         }
       ]
     },
