@@ -10,10 +10,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
-import '../../components/ha-menu-button.js';
-import '../../components/state-history-charts.js';
-import '../../data/ha-state-history-data.js';
-import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
 
 import React from 'react';
@@ -28,11 +24,10 @@ import LocalizeMixin from '../../mixins/localize-mixin.js';
  * @appliesMixin LocalizeMixin
  */
 
-
 class HABigCalendar extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <template>[[items]]</template>
+    <template>[[events]]</template>
     `;
   }
 
@@ -42,21 +37,29 @@ class HABigCalendar extends LocalizeMixin(PolymerElement) {
     var allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k])
 
     this.bc_element = React.createElement(BigCalendar,
-                             {events: this.items,
+                             {events: this.events,
                              views: allViews,
-                              step: 60,
-                            showMultiDayTimes: false,
-                              defaultDate: new Date(2015, 3, 1)
+                             eventPropGetter: this.set_event_style,
+                             defaultDate: new Date(),
                               })
        render(this.bc_element,
         this.shadowRoot
        );
-    // FIXME: should be loaded with webpack...
+    // Add react big calendar css
     var style = document.createElement('link');
     style.setAttribute('href', '/static/images/react-big-calendar/react-big-calendar.css');
     style.setAttribute('rel', 'stylesheet');
     this.shadowRoot.appendChild(style);
 
+  }
+
+  set_event_style(event, start, end, isSelected)  {
+    // https://stackoverflow.com/questions/34587067/change-color-of-react-big-calendar-events
+    let newStyle = {}
+    if (event.color) {
+      newStyle.backgroundColor = event.color
+    }
+    return {style: newStyle} 
   }
 
   static get properties() {
@@ -69,37 +72,14 @@ class HABigCalendar extends LocalizeMixin(PolymerElement) {
         type: Object,
       },
 
-      items: {
+      events: {
        type: Array,
        observer: 'update',
       },
 
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-
-      platforms: {
-        type: Array,
-      },
-
-      _messages: {
-        type: Array,
-      },
-
-      currentMessage: {
-        type: Object,
-      },
     };
   }
 
 }
-
-
 
 customElements.define('ha-big-calendar', HABigCalendar);
