@@ -1,3 +1,4 @@
+build
 build-translations/*
 hassio/build-es5/*
 node_modules/*
