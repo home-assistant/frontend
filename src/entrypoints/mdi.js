@@ -1,4 +1,3 @@
-import '../components/ha-iconset-svg.js';
 import iconSetContent from '../../build/mdi.html';
 
 const documentContainer = document.createElement('template');

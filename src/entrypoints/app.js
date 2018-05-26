@@ -26,6 +26,9 @@ import hassCallApi from '../util/hass-call-api.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import applyThemesOnElement from '../common/dom/apply_themes_on_element.js';
+// For MDI icons. Needs to be part of main bundle or else it won't hook
+// properly into iron-meta, which is used to transfer iconsets to iron-icon.
+import '../components/ha-iconset-svg.js';
 
 /* polyfill for paper-dropdown */
 import(/* webpackChunkName: "polyfill-web-animations-next" */ 'web-animations-js/web-animations-next-lite.min.js');
