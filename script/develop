@@ -13,14 +13,11 @@ mkdir $OUTPUT_DIR_ES5
 # Needed in case frontend repo installed with pip3 install -e
 cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
-./node_modules/.bin/gulp build-translations
+./node_modules/.bin/gulp build-translations gen-icons
 cp src/authorize.html $OUTPUT_DIR
 
 # Manually copy over this file as we don't run the ES5 build
 # The Hass.io panel depends on it.
 cp node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
-
-# Icons
-script/update_mdi.py
 
 ./node_modules/.bin/webpack --watch --progress
