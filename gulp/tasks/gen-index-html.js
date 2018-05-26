@@ -18,8 +18,8 @@ function generateIndex(es6) {
   const toReplace = [
     // Needs to look like a color during CSS minifiaction
     ['{{ theme_color }}', '#THEME'],
-    ['/static/mdi.html',
-      `/static/mdi-${md5(path.resolve(config.output, 'mdi.html'))}.html`],
+    ['/frontend_latest/mdi.js',
+      `/frontend_latest/mdi-${md5(path.resolve(config.output, 'mdi.js'))}.js`],
   ];
 
   if (!es6) {
