@@ -1,10 +1,6 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-// For mdi icons.
-import '../../src/components/ha-iconset-svg.js';
-import '../../src/resources/html-import/polyfill.js';
-
 import './hassio-main.js';
 
 class HassioApp extends PolymerElement {
