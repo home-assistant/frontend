@@ -15,11 +15,8 @@ mkdir $OUTPUT_DIR_ES5
 cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 # Build frontend
-BUILD_DEV=0 ./node_modules/.bin/gulp build-translations
+./node_modules/.bin/gulp build-translations gen-icons
 NODE_ENV=production ./node_modules/.bin/webpack
-
-# Icons
-script/update_mdi.py
 
 ./node_modules/.bin/gulp compress
 
