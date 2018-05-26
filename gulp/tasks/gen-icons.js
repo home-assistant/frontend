@@ -6,7 +6,8 @@ const config = require('../config');
 const ICON_PACKAGE_PATH = path.resolve(__dirname, '../../node_modules/@mdi/svg/');
 const META_PATH = path.resolve(ICON_PACKAGE_PATH, 'meta.json');
 const ICON_PATH = path.resolve(ICON_PACKAGE_PATH, 'svg');
-const OUTPUT_PATH = path.resolve(__dirname, '../../build/mdi.html');
+const OUTPUT_DIR = path.resolve(__dirname, '../../build');
+const OUTPUT_PATH = path.resolve(OUTPUT_DIR, 'mdi.html');
 
 function iconPath(name) {
   return path.resolve(ICON_PATH, `${name}.svg`);
@@ -34,7 +35,8 @@ ${iconDefs}
 async function genIcons(es6) {
   const meta = JSON.parse(fs.readFileSync(path.resolve(ICON_PACKAGE_PATH, META_PATH), 'UTF-8'));
   const iconDefs = meta.map(iconInfo => transformXMLtoPolymer(iconInfo.name, loadIcon(iconInfo.name))).join('');
+  fs.existsSync(OUTPUT_DIR) || fs.mkdirSync(OUTPUT_DIR);
   fs.writeFileSync(OUTPUT_PATH, generateIconset('mdi', iconDefs));
 }
 
-gulp.task('gen-icons', () => genIcons(/* es6= */ true));
+gulp.task('gen-icons', () => genIcons());
