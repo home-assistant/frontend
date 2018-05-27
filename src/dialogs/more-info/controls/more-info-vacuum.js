@@ -42,19 +42,19 @@ class MoreInfoVacuum extends PolymerElement {
       <div class="status-subtitle">Vacuum cleaner commands:</div>
       <div class="horizontal justified layout">
         <div hidden\$="[[!supportsPause(stateObj)]]">
-          <paper-icon-button icon="mdi:play-pause" on-click="onPlayPause" title="Start/Pause"></paper-icon-button>
+          <paper-icon-button icon="hass:play-pause" on-click="onPlayPause" title="Start/Pause"></paper-icon-button>
         </div>
         <div hidden\$="[[!supportsStop(stateObj)]]">
-          <paper-icon-button icon="mdi:stop" on-click="onStop" title="Stop"></paper-icon-button>
+          <paper-icon-button icon="hass:stop" on-click="onStop" title="Stop"></paper-icon-button>
         </div>
         <div hidden\$="[[!supportsCleanSpot(stateObj)]]">
-        <paper-icon-button icon="mdi:broom" on-click="onCleanSpot" title="Clean spot"></paper-icon-button>
+        <paper-icon-button icon="hass:broom" on-click="onCleanSpot" title="Clean spot"></paper-icon-button>
         </div>
         <div hidden\$="[[!supportsLocate(stateObj)]]">
-        <paper-icon-button icon="mdi:map-marker" on-click="onLocate" title="Locate"></paper-icon-button>
+        <paper-icon-button icon="hass:map-marker" on-click="onLocate" title="Locate"></paper-icon-button>
         </div>
         <div hidden\$="[[!supportsReturnHome(stateObj)]]">
-        <paper-icon-button icon="mdi:home-map-marker" on-click="onReturnHome" title="Return home"></paper-icon-button>
+        <paper-icon-button icon="hass:home-map-marker" on-click="onReturnHome" title="Return home"></paper-icon-button>
         </div>
       </div>
     </div>
@@ -69,7 +69,7 @@ class MoreInfoVacuum extends PolymerElement {
           </paper-listbox>
         </paper-dropdown-menu>
         <div style="justify-content: center; align-self: center; padding-top: 1.3em">
-          <span><iron-icon icon="mdi:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
+          <span><iron-icon icon="hass:fan"></iron-icon> [[stateObj.attributes.fan_speed]]</span>
         </div>
       </div>
       <p></p>

@@ -51,7 +51,7 @@ class HaCustomizeAttribute extends PolymerElement {
   }
 
   getIcon(secondary) {
-    return secondary ? 'mdi:pencil' : 'mdi:close';
+    return secondary ? 'hass:pencil' : 'hass:close';
   }
 
   itemObserver(item) {

@@ -40,7 +40,7 @@ class MoreInfoSettings extends EventsMixin(PolymerElement) {
     </style>
 
     <app-toolbar>
-      <paper-icon-button icon="mdi:arrow-left" on-click="_backTapped"></paper-icon-button>
+      <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
       <div main-title="">[[_computeStateName(stateObj)]]</div>
       <paper-button on-click="_save">Save</paper-button>
     </app-toolbar>

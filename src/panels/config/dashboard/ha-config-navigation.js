@@ -40,7 +40,7 @@ import isComponentLoaded from '../../../common/config/is_component_loaded.js';
               [[_computeCaption(item, localize)]]
               <div secondary="">[[_computeDescription(item, localize)]]</div>
             </paper-item-body>
-            <iron-icon icon="mdi:chevron-right"></iron-icon>
+            <iron-icon icon="hass:chevron-right"></iron-icon>
           </paper-item>
         </template>
       </template>

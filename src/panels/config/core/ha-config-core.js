@@ -40,7 +40,7 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
     <ha-app-layout has-scrolling-region="">
       <app-header slot="header" fixed="">
         <app-toolbar>
-          <paper-icon-button icon="mdi:arrow-left" on-click="_backTapped"></paper-icon-button>
+          <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
           <div main-title="">[[localize('ui.panel.config.core.caption')]]</div>
         </app-toolbar>
       </app-header>

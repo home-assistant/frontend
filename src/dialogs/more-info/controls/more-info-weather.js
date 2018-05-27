@@ -48,34 +48,34 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
     </style>
 
     <div class="flex">
-      <iron-icon icon="mdi:thermometer"></iron-icon>
+      <iron-icon icon="hass:thermometer"></iron-icon>
       <div class="main">[[localize('ui.card.weather.attributes.temperature')]]</div>
       <div>[[stateObj.attributes.temperature]] [[getUnit('temperature')]]</div>
     </div>
     <template is="dom-if" if="[[stateObj.attributes.pressure]]">
       <div class="flex">
-        <iron-icon icon="mdi:gauge"></iron-icon>
+        <iron-icon icon="hass:gauge"></iron-icon>
         <div class="main">[[localize('ui.card.weather.attributes.air_pressure')]]</div>
         <div>[[stateObj.attributes.pressure]] hPa</div>
       </div>
     </template>
     <template is="dom-if" if="[[stateObj.attributes.humidity]]">
       <div class="flex">
-        <iron-icon icon="mdi:water-percent"></iron-icon>
+        <iron-icon icon="hass:water-percent"></iron-icon>
         <div class="main">[[localize('ui.card.weather.attributes.humidity')]]</div>
         <div>[[stateObj.attributes.humidity]] %</div>
       </div>
     </template>
     <template is="dom-if" if="[[stateObj.attributes.wind_speed]]">
       <div class="flex">
-        <iron-icon icon="mdi:weather-windy"></iron-icon>
+        <iron-icon icon="hass:weather-windy"></iron-icon>
         <div class="main">[[localize('ui.card.weather.attributes.wind_speed')]]</div>
         <div>[[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]</div>
       </div>
     </template>
     <template is="dom-if" if="[[stateObj.attributes.visibility]]">
       <div class="flex">
-        <iron-icon icon="mdi:eye"></iron-icon>
+        <iron-icon icon="hass:eye"></iron-icon>
         <div class="main">[[localize('ui.card.weather.attributes.visibility')]]</div>
         <div>[[stateObj.attributes.visibility]] [[getUnit('length')]]</div>
       </div>
@@ -117,20 +117,20 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
       'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
     ];
     this.weatherIcons = {
-      'clear-night': 'mdi:weather-night',
-      cloudy: 'mdi:weather-cloudy',
-      fog: 'mdi:weather-fog',
-      hail: 'mdi:weather-hail',
+      'clear-night': 'hass:weather-night',
+      cloudy: 'hass:weather-cloudy',
+      fog: 'hass:weather-fog',
+      hail: 'hass:weather-hail',
       lightning: 'mid:weather-lightning',
-      'lightning-rainy': 'mdi:weather-lightning-rainy',
-      partlycloudy: 'mdi:weather-partlycloudy',
-      pouring: 'mdi:weather-pouring',
-      rainy: 'mdi:weather-rainy',
-      snowy: 'mdi:weather-snowy',
-      'snowy-rainy': 'mdi:weather-snowy-rainy',
-      sunny: 'mdi:weather-sunny',
-      windy: 'mdi:weather-windy',
-      'windy-variant': 'mdi:weather-windy-variant'
+      'lightning-rainy': 'hass:weather-lightning-rainy',
+      partlycloudy: 'hass:weather-partlycloudy',
+      pouring: 'hass:weather-pouring',
+      rainy: 'hass:weather-rainy',
+      snowy: 'hass:weather-snowy',
+      'snowy-rainy': 'hass:weather-snowy-rainy',
+      sunny: 'hass:weather-sunny',
+      windy: 'hass:weather-windy',
+      'windy-variant': 'hass:weather-windy-variant'
     };
   }
 

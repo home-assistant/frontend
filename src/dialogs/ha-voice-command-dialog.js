@@ -126,7 +126,7 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
         </div>
       </template>
       <div class="icon" hidden\$="[[results]]">
-        <paper-icon-button icon="mdi:text-to-speech" on-click="startListening"></paper-icon-button>
+        <paper-icon-button icon="hass:text-to-speech" on-click="startListening"></paper-icon-button>
       </div>
     </div>
 `;

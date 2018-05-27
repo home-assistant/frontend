@@ -92,11 +92,11 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
   constructor() {
     super();
     this.sensors = {
-      moisture: 'mdi:water',
-      temperature: 'mdi:thermometer',
-      brightness: 'mdi:white-balance-sunny',
-      conductivity: 'mdi:emoticon-poop',
-      battery: 'mdi:battery'
+      moisture: 'hass:water',
+      temperature: 'hass:thermometer',
+      brightness: 'hass:white-balance-sunny',
+      conductivity: 'hass:emoticon-poop',
+      battery: 'hass:battery'
     };
   }
 

@@ -83,7 +83,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     <ha-app-layout has-scrolling-region="">
       <app-header slot="header" fixed="">
         <app-toolbar>
-          <paper-icon-button icon="mdi:arrow-left" on-click="_backTapped"></paper-icon-button>
+          <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
           <div main-title="">[[localize('ui.panel.config.zwave.caption')]]</div>
         </app-toolbar>
       </app-header>
@@ -94,7 +94,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
       <ha-config-section is-wide="[[isWide]]">
         <div style="position: relative" slot="header">
           <span>Z-Wave Node Management</span>
-          <paper-icon-button class="toggle-help-icon" on-click="toggleHelp" icon="mdi:help-circle"></paper-icon-button>
+          <paper-icon-button class="toggle-help-icon" on-click="toggleHelp" icon="hass:help-circle"></paper-icon-button>
 
         </div>
         <span slot="introduction">
