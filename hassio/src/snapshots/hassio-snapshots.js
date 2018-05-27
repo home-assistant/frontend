@@ -233,7 +233,7 @@ class HassioSnapshots extends EventsMixin(PolymerElement) {
   }
 
   _computeIcon(type) {
-    return type === 'full' ? 'mdi:package-variant-closed' : 'mdi:package-variant';
+    return type === 'full' ? 'hassio:package-variant-closed' : 'hassio:package-variant';
   }
 
   _snapshotClicked(ev) {

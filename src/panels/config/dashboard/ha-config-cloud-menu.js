@@ -32,7 +32,7 @@ class HaConfigCloudMenu extends NavigateMixin(PolymerElement) {
             <div secondary="">Not logged in</div>
           </template>
         </paper-item-body>
-        <iron-icon icon="mdi:chevron-right"></iron-icon>
+        <iron-icon icon="hass:chevron-right"></iron-icon>
       </paper-item>
     </paper-card>
 `;

@@ -1,13 +1,12 @@
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-item/paper-icon-item.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-
+import '../components/ha-icon.js';
 
 import '../util/hass-translation.js';
 import NavigateMixin from '../mixins/navigate-mixin.js';
@@ -103,24 +102,24 @@ class HaSidebar extends
 
     <app-toolbar>
       <div main-title="">Home Assistant</div>
-      <paper-icon-button icon="mdi:chevron-left" hidden\$="[[narrow]]" on-click="toggleMenu"></paper-icon-button>
+      <paper-icon-button icon="hass:chevron-left" hidden\$="[[narrow]]" on-click="toggleMenu"></paper-icon-button>
     </app-toolbar>
 
     <paper-listbox attr-for-selected="data-panel" selected="[[hass.panelUrl]]">
       <paper-icon-item on-click="menuClicked" data-panel="states">
-        <iron-icon slot="item-icon" icon="mdi:apps"></iron-icon>
+        <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
         <span class="item-text">[[localize('panel.states')]]</span>
       </paper-icon-item>
 
       <template is="dom-repeat" items="[[panels]]">
         <paper-icon-item on-click="menuClicked">
-          <iron-icon slot="item-icon" icon="[[item.icon]]"></iron-icon>
+          <ha-icon slot="item-icon" icon="[[item.icon]]"></ha-icon>
           <span class="item-text">[[computePanelName(localize, item)]]</span>
         </paper-icon-item>
       </template>
 
       <paper-icon-item on-click="menuClicked" data-panel="logout" class="logout">
-        <iron-icon slot="item-icon" icon="mdi:exit-to-app"></iron-icon>
+        <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
         <span class="item-text">[[localize('ui.sidebar.log_out')]]</span>
       </paper-icon-item>
     </paper-listbox>
@@ -131,14 +130,14 @@ class HaSidebar extends
       <div class="subheader">[[localize('ui.sidebar.developer_tools')]]</div>
 
       <div class="dev-tools layout horizontal justified">
-        <paper-icon-button icon="mdi:remote" data-panel="dev-service" alt="[[localize('panel.dev-services')]]" title="[[localize('panel.dev-services')]]" on-click="menuClicked"></paper-icon-button>
-        <paper-icon-button icon="mdi:code-tags" data-panel="dev-state" alt="[[localize('panel.dev-states')]]" title="[[localize('panel.dev-states')]]" on-click="menuClicked"></paper-icon-button>
-        <paper-icon-button icon="mdi:radio-tower" data-panel="dev-event" alt="[[localize('panel.dev-events')]]" title="[[localize('panel.dev-events')]]" on-click="menuClicked"></paper-icon-button>
-        <paper-icon-button icon="mdi:file-xml" data-panel="dev-template" alt="[[localize('panel.dev-templates')]]" title="[[localize('panel.dev-templates')]]" on-click="menuClicked"></paper-icon-button>
+        <paper-icon-button icon="hass:remote" data-panel="dev-service" alt="[[localize('panel.dev-services')]]" title="[[localize('panel.dev-services')]]" on-click="menuClicked"></paper-icon-button>
+        <paper-icon-button icon="hass:code-tags" data-panel="dev-state" alt="[[localize('panel.dev-states')]]" title="[[localize('panel.dev-states')]]" on-click="menuClicked"></paper-icon-button>
+        <paper-icon-button icon="hass:radio-tower" data-panel="dev-event" alt="[[localize('panel.dev-events')]]" title="[[localize('panel.dev-events')]]" on-click="menuClicked"></paper-icon-button>
+        <paper-icon-button icon="hass:file-xml" data-panel="dev-template" alt="[[localize('panel.dev-templates')]]" title="[[localize('panel.dev-templates')]]" on-click="menuClicked"></paper-icon-button>
         <template is="dom-if" if="[[_mqttLoaded(hass)]]">
-          <paper-icon-button icon="mdi:altimeter" data-panel="dev-mqtt" alt="[[localize('panel.dev-mqtt')]]" title="[[localize('panel.dev-mqtt')]]" on-click="menuClicked"></paper-icon-button>
+          <paper-icon-button icon="hass:altimeter" data-panel="dev-mqtt" alt="[[localize('panel.dev-mqtt')]]" title="[[localize('panel.dev-mqtt')]]" on-click="menuClicked"></paper-icon-button>
         </template>
-        <paper-icon-button icon="mdi:information-outline" data-panel="dev-info" alt="[[localize('panel.dev-info')]]" title="[[localize('panel.dev-info')]]" on-click="menuClicked"></paper-icon-button>
+        <paper-icon-button icon="hass:information-outline" data-panel="dev-info" alt="[[localize('panel.dev-info')]]" title="[[localize('panel.dev-info')]]" on-click="menuClicked"></paper-icon-button>
       </div>
     </div>
 `;

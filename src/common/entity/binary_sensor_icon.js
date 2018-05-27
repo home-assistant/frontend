@@ -4,46 +4,46 @@ export default function binarySensorIcon(state) {
   var activated = state.state && state.state === 'off';
   switch (state.attributes.device_class) {
     case 'battery':
-      return activated ? 'mdi:battery' : 'mdi:battery-outline';
+      return activated ? 'hass:battery' : 'hass:battery-outline';
     case 'cold':
-      return activated ? 'mdi:thermometer' : 'mdi:snowflake';
+      return activated ? 'hass:thermometer' : 'hass:snowflake';
     case 'connectivity':
-      return activated ? 'mdi:server-network-off' : 'mdi:server-network';
+      return activated ? 'hass:server-network-off' : 'hass:server-network';
     case 'door':
-      return activated ? 'mdi:door-closed' : 'mdi:door-open';
+      return activated ? 'hass:door-closed' : 'hass:door-open';
     case 'garage_door':
-      return activated ? 'mdi:garage' : 'mdi:garage-open';
+      return activated ? 'hass:garage' : 'hass:garage-open';
     case 'gas':
     case 'power':
     case 'problem':
     case 'safety':
     case 'smoke':
-      return activated ? 'mdi:verified' : 'mdi:alert';
+      return activated ? 'hass:verified' : 'hass:alert';
     case 'heat':
-      return activated ? 'mdi:thermometer' : 'mdi:fire';
+      return activated ? 'hass:thermometer' : 'hass:fire';
     case 'light':
-      return activated ? 'mdi:brightness-5' : 'mdi:brightness-7';
+      return activated ? 'hass:brightness-5' : 'hass:brightness-7';
     case 'lock':
-      return activated ? 'mdi:lock' : 'mdi:lock-open';
+      return activated ? 'hass:lock' : 'hass:lock-open';
     case 'moisture':
-      return activated ? 'mdi:water-off' : 'mdi:water';
+      return activated ? 'hass:water-off' : 'hass:water';
     case 'motion':
-      return activated ? 'mdi:walk' : 'mdi:run';
+      return activated ? 'hass:walk' : 'hass:run';
     case 'occupancy':
-      return activated ? 'mdi:home-outline' : 'mdi:home';
+      return activated ? 'hass:home-outline' : 'hass:home';
     case 'opening':
-      return activated ? 'mdi:square' : 'mdi:square-outline';
+      return activated ? 'hass:square' : 'hass:square-outline';
     case 'plug':
-      return activated ? 'mdi:power-plug-off' : 'mdi:power-plug';
+      return activated ? 'hass:power-plug-off' : 'hass:power-plug';
     case 'presence':
-      return activated ? 'mdi:home-outline' : 'mdi:home';
+      return activated ? 'hass:home-outline' : 'hass:home';
     case 'sound':
-      return activated ? 'mdi:music-note-off' : 'mdi:music-note';
+      return activated ? 'hass:music-note-off' : 'hass:music-note';
     case 'vibration':
-      return activated ? 'mdi:crop-portrait' : 'mdi:vibrate';
+      return activated ? 'hass:crop-portrait' : 'hass:vibrate';
     case 'window':
-      return activated ? 'mdi:window-closed' : 'mdi:window-open';
+      return activated ? 'hass:window-closed' : 'hass:window-open';
     default:
-      return activated ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
+      return activated ? 'hass:radiobox-blank' : 'hass:checkbox-marked-circle';
   }
 }

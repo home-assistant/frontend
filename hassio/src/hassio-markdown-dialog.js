@@ -52,7 +52,7 @@ class HassioMarkdownDialog extends PolymerElement {
     </style>
     <paper-dialog id="dialog" with-backdrop="">
       <app-toolbar>
-        <paper-icon-button icon="mdi:close" dialog-dismiss=""></paper-icon-button>
+        <paper-icon-button icon="hassio:close" dialog-dismiss=""></paper-icon-button>
         <div main-title="">[[title]]</div>
       </app-toolbar>
       <paper-dialog-scrollable>

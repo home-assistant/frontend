@@ -6,39 +6,39 @@
 import { DEFAULT_DOMAIN_ICON } from '../const.js';
 
 const fixedIcons = {
-  automation: 'mdi:playlist-play',
-  calendar: 'mdi:calendar',
-  camera: 'mdi:video',
-  climate: 'mdi:thermostat',
-  configurator: 'mdi:settings',
-  conversation: 'mdi:text-to-speech',
-  device_tracker: 'mdi:account',
-  fan: 'mdi:fan',
-  group: 'mdi:google-circles-communities',
-  history_graph: 'mdi:chart-line',
-  homeassistant: 'mdi:home-assistant',
-  image_processing: 'mdi:image-filter-frames',
-  input_boolean: 'mdi:drawing',
-  input_datetime: 'mdi:calendar-clock',
-  input_number: 'mdi:ray-vertex',
-  input_select: 'mdi:format-list-bulleted',
-  input_text: 'mdi:textbox',
-  light: 'mdi:lightbulb',
-  mailbox: 'mdi:mailbox',
-  notify: 'mdi:comment-alert',
-  plant: 'mdi:flower',
-  proximity: 'mdi:apple-safari',
-  remote: 'mdi:remote',
-  scene: 'mdi:google-pages',
-  script: 'mdi:file-document',
-  sensor: 'mdi:eye',
-  simple_alarm: 'mdi:bell',
-  sun: 'mdi:white-balance-sunny',
-  switch: 'mdi:flash',
-  timer: 'mdi:timer',
-  updater: 'mdi:cloud-upload',
-  vacuum: 'mdi:robot-vacuum',
-  weblink: 'mdi:open-in-new',
+  automation: 'hass:playlist-play',
+  calendar: 'hass:calendar',
+  camera: 'hass:video',
+  climate: 'hass:thermostat',
+  configurator: 'hass:settings',
+  conversation: 'hass:text-to-speech',
+  device_tracker: 'hass:account',
+  fan: 'hass:fan',
+  group: 'hass:google-circles-communities',
+  history_graph: 'hass:chart-line',
+  homeassistant: 'hass:home-assistant',
+  image_processing: 'hass:image-filter-frames',
+  input_boolean: 'hass:drawing',
+  input_datetime: 'hass:calendar-clock',
+  input_number: 'hass:ray-vertex',
+  input_select: 'hass:format-list-bulleted',
+  input_text: 'hass:textbox',
+  light: 'hass:lightbulb',
+  mailbox: 'hass:mailbox',
+  notify: 'hass:comment-alert',
+  plant: 'hass:flower',
+  proximity: 'hass:apple-safari',
+  remote: 'hass:remote',
+  scene: 'hass:google-pages',
+  script: 'hass:file-document',
+  sensor: 'hass:eye',
+  simple_alarm: 'hass:bell',
+  sun: 'hass:white-balance-sunny',
+  switch: 'hass:flash',
+  timer: 'hass:timer',
+  updater: 'hass:cloud-upload',
+  vacuum: 'hass:robot-vacuum',
+  weblink: 'hass:open-in-new',
 };
 
 export default function domainIcon(domain, state) {
@@ -50,40 +50,40 @@ export default function domainIcon(domain, state) {
     case 'alarm_control_panel':
       switch (state) {
         case 'armed_home':
-          return 'mdi:bell-plus';
+          return 'hass:bell-plus';
         case 'armed_night':
-          return 'mdi:bell-sleep';
+          return 'hass:bell-sleep';
         case 'disarmed':
-          return 'mdi:bell-outline';
+          return 'hass:bell-outline';
         case 'triggered':
-          return 'mdi:bell-ring';
+          return 'hass:bell-ring';
         default:
-          return 'mdi:bell';
+          return 'hass:bell';
       }
 
     case 'binary_sensor':
-      return state && state === 'off' ? 'mdi:radiobox-blank' : 'mdi:checkbox-marked-circle';
+      return state && state === 'off' ? 'hass:radiobox-blank' : 'hass:checkbox-marked-circle';
 
     case 'cover':
-      return state && state === 'open' ? 'mdi:window-open' : 'mdi:window-closed';
+      return state && state === 'open' ? 'hass:window-open' : 'hass:window-closed';
 
     case 'lock':
-      return state && state === 'unlocked' ? 'mdi:lock-open' : 'mdi:lock';
+      return state && state === 'unlocked' ? 'hass:lock-open' : 'hass:lock';
 
     case 'media_player':
       return state && state !== 'off' && state !== 'idle' ?
-        'mdi:cast-connected' : 'mdi:cast';
+        'hass:cast-connected' : 'hass:cast';
 
     case 'zwave':
       switch (state) {
         case 'dead':
-          return 'mdi:emoticon-dead';
+          return 'hass:emoticon-dead';
         case 'sleeping':
-          return 'mdi:sleep';
+          return 'hass:sleep';
         case 'initializing':
-          return 'mdi:timer-sand';
+          return 'hass:timer-sand';
         default:
-          return 'mdi:nfc';
+          return 'hass:nfc';
       }
 
     default:

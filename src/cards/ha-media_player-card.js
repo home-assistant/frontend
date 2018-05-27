@@ -169,15 +169,15 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     <paper-progress max="[[stateObj.attributes.media_duration]]" value="[[playbackPosition]]" hidden\$="[[computeHideProgress(playerObj)]]" class="progress"></paper-progress>
 
     <div class="controls layout horizontal justified">
-      <paper-icon-button icon="mdi:power" on-click="handleTogglePower" invisible\$="[[computeHidePowerButton(playerObj)]]" class="self-center secondary"></paper-icon-button>
+      <paper-icon-button icon="hass:power" on-click="handleTogglePower" invisible\$="[[computeHidePowerButton(playerObj)]]" class="self-center secondary"></paper-icon-button>
 
       <div>
-        <paper-icon-button icon="mdi:skip-previous" invisible\$="[[!playerObj.supportsPreviousTrack]]" disabled="[[playerObj.isOff]]" on-click="handlePrevious"></paper-icon-button>
+        <paper-icon-button icon="hass:skip-previous" invisible\$="[[!playerObj.supportsPreviousTrack]]" disabled="[[playerObj.isOff]]" on-click="handlePrevious"></paper-icon-button>
         <paper-icon-button class="primary" icon="[[computePlaybackControlIcon(playerObj)]]" invisible\$="[[!computePlaybackControlIcon(playerObj)]]" disabled="[[playerObj.isOff]]" on-click="handlePlaybackControl"></paper-icon-button>
-        <paper-icon-button icon="mdi:skip-next" invisible\$="[[!playerObj.supportsNextTrack]]" disabled="[[playerObj.isOff]]" on-click="handleNext"></paper-icon-button>
+        <paper-icon-button icon="hass:skip-next" invisible\$="[[!playerObj.supportsNextTrack]]" disabled="[[playerObj.isOff]]" on-click="handleNext"></paper-icon-button>
       </div>
 
-      <paper-icon-button icon="mdi:dots-vertical" on-click="handleOpenMoreInfo" class="self-center secondary"></paper-icon-button>
+      <paper-icon-button icon="hass:dots-vertical" on-click="handleOpenMoreInfo" class="self-center secondary"></paper-icon-button>
 
     </div>
 `;
@@ -272,9 +272,9 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
-      return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
+      return playerObj.supportsPause ? 'hass:pause' : 'hass:stop';
     } else if (playerObj.isPaused || playerObj.isOff || playerObj.isIdle) {
-      return playerObj.supportsPlay ? 'mdi:play' : null;
+      return playerObj.supportsPlay ? 'hass:play' : null;
     }
     return '';
   }
