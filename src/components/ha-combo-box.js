@@ -31,7 +31,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
       on-change='_fireChanged'
     >
       <paper-input autofocus="[[autofocus]]" label="[[label]]" class="input" value="[[value]]">
-        <paper-icon-button slot="suffix" class="clear-button" icon="mdi:close" hidden\$="[[!value]]">Clear</paper-icon-button>
+        <paper-icon-button slot="suffix" class="clear-button" icon="hass:close" hidden\$="[[!value]]">Clear</paper-icon-button>
         <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden\$="[[!items.length]]">Toggle</paper-icon-button>
       </paper-input>
       <template>
@@ -83,7 +83,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
   }
 
   _computeToggleIcon(opened) {
-    return opened ? 'mdi:menu-up' : 'mdi:menu-down';
+    return opened ? 'hass:menu-up' : 'hass:menu-down';
   }
 
   _computeItemLabel(item, itemLabelPath) {

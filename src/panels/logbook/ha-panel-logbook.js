@@ -61,7 +61,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[localize('panel.logbook')]]</div>
           <paper-icon-button
-            icon='mdi:refresh'
+            icon='hass:refresh'
             on-click='refreshLogbook'
             hidden$='[[isLoading]]'
           ></paper-icon-button>

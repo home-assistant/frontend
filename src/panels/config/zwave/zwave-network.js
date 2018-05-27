@@ -45,7 +45,7 @@ class ZwaveNetwork extends PolymerElement {
     <ha-config-section is-wide="[[isWide]]">
       <div style="position: relative" slot="header">
         <span>Z-Wave Network Management</span>
-        <paper-icon-button class="toggle-help-icon" on-click="helpTap" icon="mdi:help-circle"></paper-icon-button>
+        <paper-icon-button class="toggle-help-icon" on-click="helpTap" icon="hass:help-circle"></paper-icon-button>
 
       </div>
       <span slot="introduction">

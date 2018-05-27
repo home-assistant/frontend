@@ -102,7 +102,7 @@ class HaAutomationEditor extends
     <ha-app-layout has-scrolling-region="">
       <app-header slot="header" fixed="">
         <app-toolbar>
-          <paper-icon-button icon="mdi:arrow-left" on-click="backTapped"></paper-icon-button>
+          <paper-icon-button icon="hass:arrow-left" on-click="backTapped"></paper-icon-button>
           <div main-title="">[[name]]</div>
         </app-toolbar>
       </app-header>
@@ -113,7 +113,7 @@ class HaAutomationEditor extends
         </template>
         <div id="root"></div>
       </div>
-      <paper-fab slot="fab" is-wide\$="[[isWide]]" dirty\$="[[dirty]]" icon="mdi:content-save" title="[[localize('ui.panel.config.automation.editor.save')]]" on-click="saveAutomation"></paper-fab>
+      <paper-fab slot="fab" is-wide\$="[[isWide]]" dirty\$="[[dirty]]" icon="hass:content-save" title="[[localize('ui.panel.config.automation.editor.save')]]" on-click="saveAutomation"></paper-fab>
     </ha-app-layout>
 `;
   }

@@ -35,7 +35,7 @@ class HassioRepositoriesEditor extends PolymerElement {
       <template id="list" is="dom-repeat" items="[[repoList]]" as="repo" sort="sortRepos">
         <paper-card>
           <div class="card-content">
-            <hassio-card-content title="[[repo.name]]" description="[[repo.url]]" icon="mdi:github-circle"></hassio-card-content>
+            <hassio-card-content title="[[repo.name]]" description="[[repo.url]]" icon="hassio:github-circle"></hassio-card-content>
           </div>
           <div class="card-actions">
             <ha-call-api-button hass="[[hass]]" path="hassio/supervisor/options" data="[[computeRemoveRepoData(repoList, repo.url)]]" class="warning">Remove</ha-call-api-button>
@@ -44,7 +44,7 @@ class HassioRepositoriesEditor extends PolymerElement {
       </template>
       <paper-card>
         <div class="card-content add">
-          <iron-icon icon="mdi:github-circle"></iron-icon>
+          <iron-icon icon="hassio:github-circle"></iron-icon>
           <paper-input label="Add new repository by URL" value="{{repoUrl}}"></paper-input>
         </div>
         <div class="card-actions">
