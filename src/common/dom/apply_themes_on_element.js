@@ -23,8 +23,10 @@ export default function applyThemesOnElement(element, themes, localTheme, update
       styles[prefixedKey] = theme[key];
     });
   }
-  // implement updateStyles() method of Polemer elements
-  if (window.ShadyCSS) {
+  if (element.updateStyles) {
+    element.updateStyles(styles);
+  } else if (window.ShadyCSS) {
+    // implement updateStyles() method of Polemer elements
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */(element), styles);
   }
 
