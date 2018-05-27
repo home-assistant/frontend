@@ -19,7 +19,7 @@
     function addScript(src) {
       var e = document.createElement('script');
       e.src = src;
-      document.head.appendChild(e);
+      document.write(e.outerHTML);
     }
     var webComponentsSupported = (
       'customElements' in window &&
@@ -29,6 +29,10 @@
       addScript('/static/webcomponents-bundle.js');
     }
     </script>
-    <script src="./app.js"></script>
+    <!--
+      Disabled while we make Home Assistant able to serve the right files.
+      <script src="./app.js"></script>
+    -->
+    <link rel='import' href='./hassio-app.html'>
   </body>
 </html>
