@@ -11,7 +11,7 @@ if (!version) {
 const VERSION = version[0];
 const isProdBuild = process.env.NODE_ENV === 'production'
 const chunkFilename = isProdBuild ?
-  '[name]-[chunkhash].chunk.js' : '[name].chunk.js';
+  'chunk.[chunkhash].js' : '[name].chunk.js';
 
 const plugins = [
   new webpack.DefinePlugin({
@@ -33,7 +33,9 @@ if (isProdBuild) {
 
 module.exports = {
   mode: isProdBuild ? 'production' : 'development',
-  devtool: isProdBuild ? 'source-map ' : 'inline-source-map',
+  // Disabled in prod while we make Home Assistant able to serve the right files.
+  // Was source-map
+  devtool: isProdBuild ? 'none' : 'inline-source-map',
   entry: {
     app: './src/hassio-app.js',
   },
