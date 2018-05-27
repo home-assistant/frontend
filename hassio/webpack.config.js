@@ -53,7 +53,17 @@ module.exports = {
             ],
           },
         },
+      },
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: 'html-loader',
+          options: {
+            exportAsEs6Default: true,
+          }
+        }
       }
+
     ]
   },
   plugins,

@@ -9,7 +9,6 @@ const ICON_PATH = path.resolve(ICON_PACKAGE_PATH, 'svg');
 const OUTPUT_DIR = path.resolve(__dirname, '../../build');
 const MDI_OUTPUT_PATH = path.resolve(OUTPUT_DIR, 'mdi.html');
 const HASS_OUTPUT_PATH = path.resolve(OUTPUT_DIR, 'hass-icons.html');
-const ICON_REGEX = /hass:[\w-]+/g;
 
 const BUILT_IN_PANEL_ICONS = [
   'settings', // Config
@@ -48,11 +47,7 @@ function generateIconset(name, iconNames) {
     }
     return transformXMLtoPolymer(name, iconDef)
   }).join('');
-  return `
-<ha-iconset-svg name="${name}" size="24"><svg><defs>
-${iconDefs}
-</defs></svg></ha-iconset-svg>
-  `;
+  return `<ha-iconset-svg name="${name}" size="24"><svg><defs>${iconDefs}</defs></svg></ha-iconset-svg>`;
 }
 
 // Generate the full MDI iconset
@@ -78,27 +73,34 @@ function mapFiles(startPath, filter, mapFunc) {
 }
 
 // Find all icons used by the project.
-function findHassIcons() {
-  const icons = new Set(BUILT_IN_PANEL_ICONS);
+function findIcons(path, iconsetName) {
+  const iconRegex = new RegExp(`${iconsetName}:[\\w-]+`, 'g');
+  const icons = new Set();
   function processFile(filename) {
     const content = fs.readFileSync(filename);
     let match;
     // eslint-disable-next-line
-    while (match = ICON_REGEX.exec(content)) {
+    while (match = iconRegex.exec(content)) {
       // strip off "hass:" and add to set
-      icons.add(match[0].substr(5));
+      icons.add(match[0].substr(iconsetName.length + 1));
     }
   }
-  mapFiles('src', '.js', processFile);
+  mapFiles(path, '.js', processFile);
   return Array.from(icons);
 }
 
 function genHassIcons() {
-  const iconNames = findHassIcons();
+  const iconNames = findIcons('./src', 'hass').concat(BUILT_IN_PANEL_ICONS);
   fs.existsSync(OUTPUT_DIR) || fs.mkdirSync(OUTPUT_DIR);
   fs.writeFileSync(HASS_OUTPUT_PATH, generateIconset('hass', iconNames));
 }
 
 gulp.task('gen-icons-mdi', () => genMDIIcons());
 gulp.task('gen-icons-hass', () => genHassIcons());
+gulp.task('gen-icons-hassio', () => genHassIcons());
 gulp.task('gen-icons', ['gen-icons-hass', 'gen-icons-mdi'], () => {});
+
+module.exports = {
+  findIcons,
+  generateIconset,
+};
