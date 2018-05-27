@@ -17,9 +17,9 @@ class HaCoverControls extends PolymerElement {
     </style>
 
     <div class="state">
-      <paper-icon-button icon="mdi:arrow-up" on-click="onOpenTap" invisible\$="[[!entityObj.supportsOpen]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
-      <paper-icon-button icon="mdi:stop" on-click="onStopTap" invisible\$="[[!entityObj.supportsStop]]"></paper-icon-button>
-      <paper-icon-button icon="mdi:arrow-down" on-click="onCloseTap" invisible\$="[[!entityObj.supportsClose]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
+      <paper-icon-button icon="hass:arrow-up" on-click="onOpenTap" invisible\$="[[!entityObj.supportsOpen]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
+      <paper-icon-button icon="hass:stop" on-click="onStopTap" invisible\$="[[!entityObj.supportsStop]]"></paper-icon-button>
+      <paper-icon-button icon="hass:arrow-down" on-click="onCloseTap" invisible\$="[[!entityObj.supportsClose]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
     </div>
 `;
   }

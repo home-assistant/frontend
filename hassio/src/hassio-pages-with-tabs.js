@@ -37,7 +37,7 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
           <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
           <div main-title="">Hass.io</div>
           <template is="dom-if" if="[[showRefreshButton(page)]]">
-            <paper-icon-button icon="mdi:refresh" on-click="refreshClicked"></paper-icon-button>
+            <paper-icon-button icon="hassio:refresh" on-click="refreshClicked"></paper-icon-button>
           </template>
         </app-toolbar>
         <paper-tabs scrollable="" selected="[[page]]" attr-for-selected="page-name" on-iron-activate="handlePageSelected">

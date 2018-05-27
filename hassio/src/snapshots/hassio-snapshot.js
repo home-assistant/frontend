@@ -58,7 +58,7 @@ class HassioSnapshot extends PolymerElement {
     </style>
     <paper-dialog id="dialog" with-backdrop="" on-iron-overlay-closed="_dialogClosed">
       <app-toolbar>
-        <paper-icon-button icon="mdi:close" dialog-dismiss=""></paper-icon-button>
+        <paper-icon-button icon="hassio:close" dialog-dismiss=""></paper-icon-button>
         <div main-title="">[[_computeName(snapshot)]]</div>
       </app-toolbar>
       <div class="details">
@@ -95,9 +95,9 @@ class HassioSnapshot extends PolymerElement {
         <p class="error">Error: [[error]]</p>
       </template>
       <div class="buttons">
-        <paper-icon-button icon="mdi:delete" on-click="_deleteClicked" class="warning" title="Delete snapshot"></paper-icon-button>
+        <paper-icon-button icon="hassio:delete" on-click="_deleteClicked" class="warning" title="Delete snapshot"></paper-icon-button>
         <a href="[[_computeDownloadUrl(snapshotSlug)]]" download="[[_computeDownloadName(snapshot)]]">
-          <paper-icon-button icon="mdi:download" class="download" title="Download snapshot"></paper-icon-button>
+          <paper-icon-button icon="hassio:download" class="download" title="Download snapshot"></paper-icon-button>
         </a>
         <paper-button on-click="_partialRestoreClicked">Restore selected</paper-button>
         <template is="dom-if" if="[[_isFullSnapshot(snapshot.type)]]">

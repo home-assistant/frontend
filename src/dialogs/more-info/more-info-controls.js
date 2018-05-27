@@ -62,10 +62,10 @@ import EventsMixin from '../../mixins/events-mixin.js';
     </style>
 
     <app-toolbar>
-      <paper-icon-button icon="mdi:close" dialog-dismiss=""></paper-icon-button>
+      <paper-icon-button icon="hass:close" dialog-dismiss=""></paper-icon-button>
       <div class="main-title" main-title="" on-click="enlarge">[[_computeStateName(stateObj)]]</div>
       <template is="dom-if" if="[[canConfigure]]">
-        <paper-icon-button icon="mdi:settings" on-click="_gotoSettings"></paper-icon-button>
+        <paper-icon-button icon="hass:settings" on-click="_gotoSettings"></paper-icon-button>
       </template>
     </app-toolbar>
 

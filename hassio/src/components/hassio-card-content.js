@@ -64,7 +64,7 @@ class HassioCardContent extends PolymerElement {
       datetime: String,
       icon: {
         type: String,
-        value: 'mdi:help-circle'
+        value: 'hass:help-circle'
       },
       iconTitle: String,
       iconClass: String,

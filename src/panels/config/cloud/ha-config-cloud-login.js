@@ -77,7 +77,7 @@ class HaConfigCloudLogin extends
           <paper-card hidden\$="[[!flashMessage]]">
             <div class="card-content flash-msg">
               [[flashMessage]]
-              <paper-icon-button icon="mdi:close" on-click="_dismissFlash">Dismiss</paper-icon-button>
+              <paper-icon-button icon="hass:close" on-click="_dismissFlash">Dismiss</paper-icon-button>
               <paper-ripple id="flashRipple" noink=""></paper-ripple>
             </div>
           </paper-card>
@@ -101,7 +101,7 @@ class HaConfigCloudLogin extends
                 Create Account
                 <div secondary="">Get up and running quickly.</div>
               </paper-item-body>
-              <iron-icon icon="mdi:chevron-right"></iron-icon>
+              <iron-icon icon="hass:chevron-right"></iron-icon>
             </paper-item>
           </paper-card>
         </ha-config-section>

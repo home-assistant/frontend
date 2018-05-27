@@ -9,5 +9,6 @@ cd "$(dirname "$0")/.."
 OUTPUT_DIR_ES5=build-es5
 
 rm -rf $OUTPUT_DIR_ES5
+node script/gen-icons.js
 NODE_ENV=production ../node_modules/.bin/webpack -p
 node script/gen-index-html.js

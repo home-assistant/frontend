@@ -121,7 +121,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
               <td>
                 <paper-icon-button
                   on-click='entityMoreInfo'
-                  icon='mdi:open-in-new'
+                  icon='hass:open-in-new'
                   alt="More Info" title="More Info"
                   >
                 </paper-icon-button>

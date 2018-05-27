@@ -198,7 +198,7 @@ class HaPanelDevInfo extends PolymerElement {
         </div>
         <p class='error-log-intro'>
           Press the button to load the full Home Assistant log.
-          <paper-icon-button icon='mdi:refresh' on-click='refreshErrorLog'></paper-icon-button>
+          <paper-icon-button icon='hass:refresh' on-click='refreshErrorLog'></paper-icon-button>
         </p>
         <div class='error-log'>[[errorLog]]</div>
       </div>
