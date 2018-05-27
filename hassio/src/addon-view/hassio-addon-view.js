@@ -40,7 +40,7 @@ class HassioAddonView extends PolymerElement {
       <app-header fixed="" slot="header">
         <app-toolbar>
           <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-          <paper-icon-button icon="mdi:arrow-left" on-click="backTapped"></paper-icon-button>
+          <paper-icon-button icon="hassio:arrow-left" on-click="backTapped"></paper-icon-button>
           <div main-title="">Hass.io: add-on details</div>
         </app-toolbar>
       </app-header>

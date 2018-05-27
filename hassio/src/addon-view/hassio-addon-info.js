@@ -66,7 +66,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
     <template is="dom-if" if="[[computeUpdateAvailable(addon)]]">
       <paper-card heading="Update available! 🎉">
         <div class="card-content">
-          <hassio-card-content title="[[addon.name]] [[addon.last_version]] is available" description="You are currently running version [[addon.version]]" icon="mdi:arrow-up-bold-circle" icon-class="update"></hassio-card-content>
+          <hassio-card-content title="[[addon.name]] [[addon.last_version]] is available" description="You are currently running version [[addon.version]]" icon="hassio:arrow-up-bold-circle" icon-class="update"></hassio-card-content>
         </div>
         <div class="card-actions">
           <ha-call-api-button hass="[[hass]]" path="hassio/addons/[[addonSlug]]/update">Update</ha-call-api-button>
@@ -84,10 +84,10 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
             <template is="dom-if" if="[[addon.version]]">
               [[addon.version]]
               <template is="dom-if" if="[[isRunning]]">
-                <iron-icon title="Add-on is running" class="running" icon="mdi:circle"></iron-icon>
+                <iron-icon title="Add-on is running" class="running" icon="hassio:circle"></iron-icon>
               </template>
               <template is="dom-if" if="[[!isRunning]]">
-                <iron-icon title="Add-on is stopped" class="stopped" icon="mdi:circle"></iron-icon>
+                <iron-icon title="Add-on is stopped" class="stopped" icon="hassio:circle"></iron-icon>
               </template>
             </template>
             <template is="dom-if" if="[[!addon.version]]">
