@@ -65,8 +65,8 @@ class MoreInfoFan extends EventsMixin(PolymerElement) {
       <div class="container-direction">
         <div class="direction">
           <div>Direction</div>
-          <paper-icon-button icon="mdi:rotate-left" on-click="onDirectionLeft" title="Left" disabled="[[computeIsRotatingLeft(stateObj)]]"></paper-icon-button>
-          <paper-icon-button icon="mdi:rotate-right" on-click="onDirectionRight" title="Right" disabled="[[computeIsRotatingRight(stateObj)]]"></paper-icon-button>
+          <paper-icon-button icon="hass:rotate-left" on-click="onDirectionLeft" title="Left" disabled="[[computeIsRotatingLeft(stateObj)]]"></paper-icon-button>
+          <paper-icon-button icon="hass:rotate-right" on-click="onDirectionRight" title="Right" disabled="[[computeIsRotatingRight(stateObj)]]"></paper-icon-button>
         </div>
       </div>
     </div>

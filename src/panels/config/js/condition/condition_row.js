@@ -27,7 +27,7 @@ export default class ConditionRow extends Component {
             vertical-offset="-5"
           >
             <paper-icon-button
-              icon="mdi:dots-vertical"
+              icon="hass:dots-vertical"
               slot="dropdown-trigger"
             />
             <paper-listbox slot="dropdown-content">

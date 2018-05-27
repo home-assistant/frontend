@@ -5,7 +5,7 @@
 // Each constant should have a description what it is supposed to be used for.
 
 /** Icon to use when no icon specified for domain. */
-export const DEFAULT_DOMAIN_ICON = 'mdi:bookmark';
+export const DEFAULT_DOMAIN_ICON = 'hass:bookmark';
 
 /** Domains that have a state card. */
 export const DOMAINS_WITH_CARD = [

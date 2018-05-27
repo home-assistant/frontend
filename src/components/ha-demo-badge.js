@@ -12,7 +12,7 @@ class HaDemoBadge extends PolymerElement {
       }
     </style>
 
-    <ha-label-badge icon="mdi:emoticon" label="Demo" description=""></ha-label-badge>
+    <ha-label-badge icon="hass:emoticon" label="Demo" description=""></ha-label-badge>
 `;
   }
 }

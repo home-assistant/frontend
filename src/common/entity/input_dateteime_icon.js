@@ -3,9 +3,9 @@ import domainIcon from './domain_icon.js';
 
 export default function inputDateTimeIcon(state) {
   if (!state.attributes.has_date) {
-    return 'mdi:clock';
+    return 'hass:clock';
   } else if (!state.attributes.has_time) {
-    return 'mdi:calendar';
+    return 'hass:calendar';
   }
   return domainIcon('input_datetime');
 }

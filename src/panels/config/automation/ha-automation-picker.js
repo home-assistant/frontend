@@ -57,7 +57,7 @@ class HaAutomationPicker extends
     <ha-app-layout has-scrolling-region="">
       <app-header slot="header" fixed="">
         <app-toolbar>
-          <paper-icon-button icon="mdi:arrow-left" on-click="_backTapped"></paper-icon-button>
+          <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
           <div main-title="">[[localize('ui.panel.config.automation.caption')]]</div>
         </app-toolbar>
       </app-header>
@@ -80,13 +80,13 @@ class HaAutomationPicker extends
                 <div>[[computeName(automation)]]</div>
                 <div secondary="">[[computeDescription(automation)]]</div>
               </paper-item-body>
-              <iron-icon icon="mdi:chevron-right"></iron-icon>
+              <iron-icon icon="hass:chevron-right"></iron-icon>
             </paper-item>
           </template>
         </paper-card>
       </ha-config-section>
 
-      <paper-fab slot="fab" is-wide\$="[[isWide]]" icon="mdi:plus" title="[[localize('ui.panel.config.automation.picker.add_automation')]]" on-click="addAutomation"></paper-fab>
+      <paper-fab slot="fab" is-wide\$="[[isWide]]" icon="hass:plus" title="[[localize('ui.panel.config.automation.picker.add_automation')]]" on-click="addAutomation"></paper-fab>
     </ha-app-layout>
 `;
   }

@@ -79,7 +79,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
             vertical-offset="-5"
           >
             <paper-icon-button
-              icon="mdi:dots-vertical"
+              icon="hass:dots-vertical"
               slot="dropdown-trigger"
             ></paper-icon-button>
             <paper-listbox slot="dropdown-content">
@@ -96,7 +96,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
           <paper-icon-item on-focus='_focusRowInput'>
             <paper-icon-button
               slot="item-icon"
-              icon="mdi:plus"
+              icon="hass:plus"
               on-click='_addItem'
             ></paper-icon-button>
             <paper-item-body>

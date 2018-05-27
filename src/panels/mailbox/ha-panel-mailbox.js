@@ -134,7 +134,7 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
         [[localize('ui.panel.mailbox.playback_title')]]
         <paper-icon-button
           on-click='openDeleteDialog'
-          icon='mdi:delete'
+          icon='hass:delete'
         ></paper-icon-button>
       </h2>
       <div id="transcribe"></div>
