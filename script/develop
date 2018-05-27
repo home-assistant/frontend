@@ -20,5 +20,6 @@ cp src/authorize.html $OUTPUT_DIR
 # Manually copy over this file as we don't run the ES5 build
 # The Hass.io panel depends on it.
 cp node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
+cp node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js.map $OUTPUT_DIR
 
 ./node_modules/.bin/webpack --watch --progress
