@@ -2,7 +2,7 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import './ha-relative-time.js';
+import '../../../src/components/ha-relative-time.js';
 
 class HassioCardContent extends PolymerElement {
   static get template() {
