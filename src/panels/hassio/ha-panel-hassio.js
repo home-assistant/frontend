@@ -37,8 +37,7 @@ class HaPanelHassio extends NavigateMixin(EventsMixin(PolymerElement)) {
 
       iframeUrl: {
         type: String,
-        value: __DEV__ ?
-          '/home-assistant-polymer/hassio/build-es5/index.html' : `${config.publicPath}/index.html`,
+        value: `${config.publicPath}/index.html`
       }
     };
   }
