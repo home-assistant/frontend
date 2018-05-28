@@ -1,3 +1,4 @@
+import '../../../src/components/ha-iconset-svg.js';
 import iconSetContent from '../../hassio-icons.html';
 
 const documentContainer = document.createElement('template');
