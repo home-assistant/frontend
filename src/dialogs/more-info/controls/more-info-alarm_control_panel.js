@@ -5,53 +5,87 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
+class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-      <style is="custom-style" include="iron-flex"></style>
+      <style include="iron-flex"></style>
       <style>
+        paper-input {
+          margin: auto;
+          max-width: 200px;
+        }
         .pad {
           display: flex;
           justify-content: center;
-          margin-bottom: 10%;
+          margin-bottom: 24px;
         }
         .pad div {
           display: flex;
           flex-direction: column;
         }
+        .pad paper-button {
+          width: 80px;
+        }
+        .actions paper-button {
+          min-width: 160px;
+          margin-bottom: 16px;
+          color: var(--primary-color);
+        }
+        paper-button.disarm {
+          color: var(--google-red-500);
+        }
       </style>
 
-      <div class='layout horizontal center-justified'>
-        <paper-input label="code" value="{{enteredCode}}" pattern="[[codeFormat]]" type="password" hidden\$="[[!codeFormat]]" disabled="[[!codeInputEnabled]]"></paper-input>
-      </div>
+      <template is="dom-if" if="[[!_equal(_codeFormat, 'None')]]">
+        <paper-input
+          label="[[localize('ui.card.alarm_control_panel.code')]]"
+          value="{{_enteredCode}}"
+          pattern="[[_codeFormat]]"
+          type="password"
+          disabled="[[!_inputEnabled]]"
+        ></paper-input>
 
-      <template is="dom-if" if="[[numericPin]]">
-        <div class="pad">
-          <div>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="1" raised>1</paper-button>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="4" raised>4</paper-button>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="7" raised>7</paper-button>
+        <template is="dom-if" if="[[_equal(_codeFormat, 'Number')]]">
+          <div class="pad">
+            <div>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="1" raised>1</paper-button>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="4" raised>4</paper-button>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="7" raised>7</paper-button>
+            </div>
+            <div>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="2" raised>2</paper-button>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="5" raised>5</paper-button>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="8" raised>8</paper-button>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="0" raised>0</paper-button>
+            </div>
+            <div>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="3" raised>3</paper-button>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="6" raised>6</paper-button>
+              <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="9" raised>9</paper-button>
+              <paper-button on-click='_clear_enteredCode' disabled='[[!_inputEnabled]]' raised>
+                [[localize('ui.card.alarm_control_panel.clear_code')]]
+              </paper-button>
+            </div>
           </div>
-          <div>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="2" raised>2</paper-button>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="5" raised>5</paper-button>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="8" raised>8</paper-button>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="0" raised>0</paper-button>
-          </div>
-          <div>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="3" raised>3</paper-button>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="6" raised>6</paper-button>
-            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="9" raised>9</paper-button>
-            <paper-button on-click='clearCode' disabled='[[!codeInputEnabled]]' raised>Clear</paper-button>
-          </div>
-        </div>
+        </template>
       </template>
 
-      <div class="layout horizontal">
-        <paper-button on-click="handleDisarmTap" hidden\$="[[!disarmButtonVisible]]" disabled="[[!codeValid]]">Disarm</paper-button>
-        <paper-button on-click="handleHomeTap" hidden\$="[[!armHomeButtonVisible]]" disabled="[[!codeValid]]">Arm Home</paper-button>
-        <paper-button on-click="handleAwayTap" hidden\$="[[!armAwayButtonVisible]]" disabled="[[!codeValid]]">Arm Away</paper-button>
+      <div class="layout horizontal center-justified actions">
+        <template is="dom-if" if="[[_disarmVisible]]">
+          <paper-button raised class="disarm" on-click="_callService" data-service="alarm_disarm" disabled="[[_equal(_enteredCode, '')]]">
+            [[localize('ui.card.alarm_control_panel.disarm')]]
+          </paper-button>
+        </template>
+        <template is="dom-if" if="[[_armVisible]]">
+          <paper-button raised on-click="_callService" data-service="alarm_arm_home" disabled="[[_equal(_enteredCode, '')]]">
+            [[localize('ui.card.alarm_control_panel.arm_home')]]
+          </paper-button>
+          <paper-button raised on-click="_callService" data-service="alarm_arm_away" disabled="[[_equal(_enteredCode, '')]]">
+            [[localize('ui.card.alarm_control_panel.arm_away')]]
+          </paper-button>
+        </template>
       </div>
     `;
   }
@@ -61,67 +95,46 @@ class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
       hass: Object,
       stateObj: {
         type: Object,
-        observer: 'stateObjChanged',
+        observer: '_stateObjChanged',
       },
-      enteredCode: {
+      _enteredCode: {
         type: String,
         value: '',
       },
-      numericPin: {
-        type: Boolean,
-        value: false,
-      },
-      disarmButtonVisible: {
-        type: Boolean,
-        value: false,
-      },
-      armHomeButtonVisible: {
-        type: Boolean,
-        value: false,
-      },
-      armAwayButtonVisible: {
-        type: Boolean,
-        value: false,
-      },
-      codeInputEnabled: {
-        type: Boolean,
-        value: false,
-      },
-      codeFormat: {
+      _codeFormat: {
         type: String,
         value: '',
       },
-      codeValid: {
+      _disarmVisible: {
         type: Boolean,
-        computed: 'validateCode(enteredCode, codeFormat)',
+        value: false,
       },
+      _armVisible: {
+        type: Boolean,
+        value: false,
+      },
+      _inputEnabled: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
-  validateCode(code, format) {
-    var re = new RegExp(format);
-    if (format === null) {
-      return true;
-    }
-    return re.test(code);
+  constructor() {
+    super();
+    this._armedStates = ['armed_home', 'armed_away', 'armed_night', 'armed_custom_bypass'];
   }
 
-  stateObjChanged(newVal, oldVal) {
+  _stateObjChanged(newVal, oldVal) {
     if (newVal) {
+      const state = newVal.state;
       const props = {
-        codeFormat: newVal.attributes.code_format,
-        numericPin: newVal.attributes.code_format === '^\\d+$',
-        armHomeButtonVisible: newVal.state === 'disarmed',
-        armAwayButtonVisible: newVal.state === 'disarmed',
+        _codeFormat: newVal.attributes.code_format,
+        _armVisible: state === 'disarmed',
+        _disarmVisible: this._armedStates.includes(state) ||
+          state === 'pending' || state === 'triggered'
       };
-      props.disarmButtonVisible = (
-        newVal.state === 'armed_home' ||
-        newVal.state === 'armed_away' ||
-        newVal.state === 'armed_night' ||
-        newVal.state === 'armed_custom_bypass' ||
-        newVal.state === 'pending' ||
-        newVal.state === 'triggered');
-      props.codeInputEnabled = props.disarmButtonVisible || newVal.state === 'disarmed';
+      props._inputEnabled = props._disarmVisible || props._armVisible;
       this.setProperties(props);
     }
     if (oldVal) {
@@ -131,34 +144,28 @@ class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
     }
   }
 
-  numberPadClicked(ev) {
-    this.enteredCode += ev.target.getAttribute('data-digit');
+  _equal(a, b) {
+    return a === b;
   }
 
-  clearCode() {
-    this.enteredCode = '';
+  _digitClicked(ev) {
+    this._enteredCode += ev.target.getAttribute('data-digit');
   }
 
-  handleDisarmTap() {
-    this.callService('alarm_disarm', { code: this.enteredCode });
+  _clear_enteredCode() {
+    this._enteredCode = '';
   }
 
-  handleHomeTap() {
-    this.callService('alarm_arm_home', { code: this.enteredCode });
-  }
-
-  handleAwayTap() {
-    this.callService('alarm_arm_away', { code: this.enteredCode });
-  }
-
-  callService(service, data) {
-    var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entity_id;
-    this.hass.callService('alarm_control_panel', service, serviceData)
-      .then(function () {
-        this.enteredCode = '';
-      }.bind(this));
+  _callService(ev) {
+    const service = ev.target.getAttribute('data-service');
+    const data = {
+      entity_id: this.stateObj.entity_id,
+      code: this._enteredCode
+    };
+    this.hass.callService('alarm_control_panel', service, data)
+      .then(() => {
+        this._enteredCode = '';
+      });
   }
 }
-
 customElements.define('more-info-alarm_control_panel', MoreInfoAlarmControlPanel);
