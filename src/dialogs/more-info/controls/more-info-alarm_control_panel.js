@@ -74,15 +74,15 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
 
       <div class="layout horizontal center-justified actions">
         <template is="dom-if" if="[[_disarmVisible]]">
-          <paper-button raised class="disarm" on-click="_callService" data-service="alarm_disarm" disabled="[[_equal(_enteredCode, '')]]">
+          <paper-button raised class="disarm" on-click="_callService" data-service="alarm_disarm" disabled="[[!_validateCode(_enteredCode, _codeFormat)]]">
             [[localize('ui.card.alarm_control_panel.disarm')]]
           </paper-button>
         </template>
         <template is="dom-if" if="[[_armVisible]]">
-          <paper-button raised on-click="_callService" data-service="alarm_arm_home" disabled="[[_equal(_enteredCode, '')]]">
+          <paper-button raised on-click="_callService" data-service="alarm_arm_home" disabled="[[!_validateCode(_enteredCode, _codeFormat)]]">
             [[localize('ui.card.alarm_control_panel.arm_home')]]
           </paper-button>
-          <paper-button raised on-click="_callService" data-service="alarm_arm_away" disabled="[[_equal(_enteredCode, '')]]">
+          <paper-button raised on-click="_callService" data-service="alarm_arm_away" disabled="[[!_validateCode(_enteredCode, _codeFormat)]]">
             [[localize('ui.card.alarm_control_panel.arm_away')]]
           </paper-button>
         </template>
@@ -146,6 +146,10 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
 
   _equal(a, b) {
     return a === b;
+  }
+
+  _validateCode(code, format) {
+    return format === 'None' || code.length > 0;
   }
 
   _digitClicked(ev) {
