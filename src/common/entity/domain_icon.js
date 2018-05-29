@@ -65,7 +65,7 @@ export default function domainIcon(domain, state) {
       return state && state === 'off' ? 'hass:radiobox-blank' : 'hass:checkbox-marked-circle';
 
     case 'cover':
-      return state && state === 'open' ? 'hass:window-open' : 'hass:window-closed';
+      return state === 'closed' ? 'hass:window-closed' : 'hass:window-open';
 
     case 'lock':
       return state && state === 'unlocked' ? 'hass:lock-open' : 'hass:lock';
