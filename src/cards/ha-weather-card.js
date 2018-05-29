@@ -113,7 +113,7 @@ class HaWeatherCard extends
                   [[stateObj.attributes.humidity]] %
                 </div>
               </template>
-              <template is="dom-if" if="[[_showValue(stateObj.attributes.humidity)]]">
+              <template is="dom-if" if="[[_showValue(stateObj.attributes.wind_speed)]]">
                 <div>
                   [[localize('ui.card.weather.attributes.wind_speed')]]:
                   [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
