@@ -4,11 +4,19 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../resources/ha-style.js';
-import '../util/hass-mixins.js';
+
 import './more-info/more-info-controls.js';
 import './more-info/more-info-settings.js';
 
-class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
+import computeStateDomain from '../common/entity/compute_state_domain';
+import isComponentLoaded from '../common/config/is_component_loaded.js';
+
+import DialogMixin from '../mixins/dialog-mixin.js';
+
+/*
+ * @appliesMixin DialogMixin
+ */
+class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style-dialog paper-dialog-shared-styles">
@@ -74,7 +82,6 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-more-info-dialog'; }
   static get properties() {
     return {
       hass: Object,
@@ -114,7 +121,7 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
   }
 
   _computeDomain(stateObj) {
-    return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
+    return stateObj ? computeStateDomain(stateObj) : '';
   }
 
   _computeStateObj(hass) {
@@ -132,7 +139,7 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
       return;
     }
 
-    if (window.hassUtil.isComponentLoaded(this.hass, 'config.entity_registry') &&
+    if (isComponentLoaded(this.hass, 'config.entity_registry') &&
         (!oldVal || oldVal.entity_id !== newVal.entity_id)) {
       this.hass.callApi('get', `config/entity_registry/${newVal.entity_id}`)
         .then(
@@ -162,4 +169,4 @@ class HaMoreInfoDialog extends window.hassMixins.DialogMixin(PolymerElement) {
     this.notifyResize();
   }
 }
-customElements.define(HaMoreInfoDialog.is, HaMoreInfoDialog);
+customElements.define('ha-more-info-dialog', HaMoreInfoDialog);

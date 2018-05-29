@@ -2,9 +2,12 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
-class HaMenuButton extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaMenuButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -12,11 +15,9 @@ class HaMenuButton extends window.hassMixins.EventsMixin(PolymerElement) {
         visibility: hidden;
       }
     </style>
-    <paper-icon-button icon="mdi:menu" class\$="[[computeMenuButtonClass(narrow, showMenu)]]" on-click="toggleMenu"></paper-icon-button>
+    <paper-icon-button icon="hass:menu" class\$="[[computeMenuButtonClass(narrow, showMenu)]]" on-click="toggleMenu"></paper-icon-button>
 `;
   }
-
-  static get is() { return 'ha-menu-button'; }
 
   static get properties() {
     return {
@@ -42,4 +43,4 @@ class HaMenuButton extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaMenuButton.is, HaMenuButton);
+customElements.define('ha-menu-button', HaMenuButton);

@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
 
-import timerTimeRemaining from '../../../js/common/entity/timer_time_remaining.js';
+import timerTimeRemaining from '../../../src/common/entity/timer_time_remaining.js';
 
 describe('timerTimeRemaining', () => {
   it('works with idle timers', () => {

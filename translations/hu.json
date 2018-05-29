@@ -238,14 +238,20 @@
             }
         },
         "weather": {
+            "clear_night": "Tiszta, éjszaka",
             "cloudy": "Felhős",
             "fog": "Köd",
             "hail": "Jégeső",
+            "lightning": "Vihar",
+            "lightning_rainy": "Viharos, esős",
             "partlycloudy": "Részben felhős",
+            "pouring": "Szakad",
             "rainy": "Esős",
             "snowy": "Havazás",
+            "snowy_rainy": "Havas, esős",
             "sunny": "Napos",
-            "windy": "Szeles"
+            "windy": "Szeles",
+            "windy_variant": "Szeles"
         }
     },
     "state_badge": {
@@ -549,6 +555,24 @@
                     "temperature": "Hőmérséklet",
                     "visibility": "Láthatóság",
                     "wind_speed": "Szélsebesség"
+                },
+                "cardinal_direction": {
+                    "e": "K",
+                    "ene": "K-ÉK",
+                    "ese": "K-DK",
+                    "n": "É",
+                    "ne": "ÉK",
+                    "nne": "É-ÉK",
+                    "nw": "ÉNy",
+                    "nnw": "É-ÉNy",
+                    "s": "D",
+                    "se": "DK",
+                    "sse": "D-DK",
+                    "ssw": "D-DNy",
+                    "sw": "DNy",
+                    "w": "Ny",
+                    "wnw": "Ny-ÉNy",
+                    "wsw": "Ny-DNy"
                 },
                 "forecast": "Előrejelzés"
             }

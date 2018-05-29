@@ -6,8 +6,11 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../cards/ha-badges-card.js';
 import '../cards/ha-card-chooser.js';
-import '../util/hass-util.js';
 import './ha-demo-badge.js';
+
+import computeStateDomain from '../common/entity/compute_state_domain.js';
+import splitByGroups from '../common/entity/split_by_groups.js';
+import getGroupEntities from '../common/entity/get_group_entities.js';
 
 {
   // mapping domain to size of the card.
@@ -72,8 +75,6 @@ import './ha-demo-badge.js';
         func(domain);
       });
   };
-
-  const computeDomain = window.hassUtil.computeDomain;
 
   class HaCards extends PolymerElement {
     static get template() {
@@ -145,7 +146,6 @@ import './ha-demo-badge.js';
 `;
     }
 
-    static get is() { return 'ha-cards'; }
     static get properties() {
       return {
         hass: Object,
@@ -249,7 +249,7 @@ import './ha-demo-badge.js';
         let size = 0;
 
         entities.forEach((entity) => {
-          const domain = computeDomain(entity);
+          const domain = computeStateDomain(entity);
 
           if (domain in DOMAINS_WITH_CARD) {
             owncard.push(entity);
@@ -277,13 +277,13 @@ import './ha-demo-badge.js';
         owncard.forEach((entity) => {
           cards.columns[curIndex].push({
             hass: hass,
-            cardType: computeDomain(entity),
+            cardType: computeStateDomain(entity),
             stateObj: entity,
           });
         });
       }
 
-      const splitted = window.HAWS.splitByGroups(states);
+      const splitted = splitByGroups(states);
       if (orderedGroupEntities) {
         splitted.groups.sort((gr1, gr2) => orderedGroupEntities[gr1.entity_id] -
           orderedGroupEntities[gr2.entity_id]);
@@ -297,7 +297,7 @@ import './ha-demo-badge.js';
 
       Object.keys(splitted.ungrouped).forEach((key) => {
         const state = splitted.ungrouped[key];
-        const domain = computeDomain(state);
+        const domain = computeStateDomain(state);
 
         if (domain === 'a') {
           cards.demo = true;
@@ -346,7 +346,7 @@ import './ha-demo-badge.js';
       });
 
       splitted.groups.forEach((groupState) => {
-        const entities = window.HAWS.getGroupEntities(states, groupState);
+        const entities = getGroupEntities(states, groupState);
         addEntitiesCard(
           groupState.entity_id,
           Object.keys(entities).map(key => entities[key]),
@@ -364,5 +364,5 @@ import './ha-demo-badge.js';
       return cards;
     }
   }
-  customElements.define(HaCards.is, HaCards);
+  customElements.define('ha-cards', HaCards);
 }

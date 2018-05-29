@@ -20,9 +20,10 @@ import './more-info-updater.js';
 import './more-info-vacuum.js';
 import './more-info-weather.js';
 
-class MoreInfoContent extends PolymerElement {
-  static get is() { return 'more-info-content'; }
+import stateMoreInfoType from '../../../common/entity/state_more_info_type.js';
+import dynamicContentUpdater from '../../../common/dom/dynamic_content_updater.js';
 
+class MoreInfoContent extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
@@ -58,13 +59,13 @@ class MoreInfoContent extends PolymerElement {
     if (stateObj.attributes && 'custom_ui_more_info' in stateObj.attributes) {
       moreInfoType = stateObj.attributes.custom_ui_more_info;
     } else {
-      moreInfoType = 'more-info-' + window.hassUtil.stateMoreInfoType(stateObj);
+      moreInfoType = 'more-info-' + stateMoreInfoType(stateObj);
     }
-    window.hassUtil.dynamicContentUpdater(
+    dynamicContentUpdater(
       this, moreInfoType.toUpperCase(),
       { hass: hass, stateObj: stateObj }
     );
   }
 }
 
-customElements.define(MoreInfoContent.is, MoreInfoContent);
+customElements.define('more-info-content', MoreInfoContent);

@@ -5,9 +5,15 @@ import '@polymer/paper-input/paper-input.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
-class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
+import computeStateName from '../../common/entity/compute_state_name.js';
+import isComponentLoaded from '../../common/config/is_component_loaded.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class MoreInfoSettings extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -34,7 +40,7 @@ class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
     </style>
 
     <app-toolbar>
-      <paper-icon-button icon="mdi:arrow-left" on-click="_backTapped"></paper-icon-button>
+      <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
       <div main-title="">[[_computeStateName(stateObj)]]</div>
       <paper-button on-click="_save">Save</paper-button>
     </app-toolbar>
@@ -45,7 +51,6 @@ class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'more-info-settings'; }
   static get properties() {
     return {
       hass: Object,
@@ -68,11 +73,11 @@ class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
 
   _computeStateName(stateObj) {
     if (!stateObj) return '';
-    return window.hassUtil.computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 
   _computeComponentLoaded(hass) {
-    return window.hassUtil.isComponentLoaded(hass, 'config.entity_registry');
+    return isComponentLoaded(hass, 'config.entity_registry');
   }
 
   _registryInfoChanged(newVal) {
@@ -99,4 +104,4 @@ class MoreInfoSettings extends window.hassMixins.EventsMixin(PolymerElement) {
       );
   }
 }
-customElements.define(MoreInfoSettings.is, MoreInfoSettings);
+customElements.define('more-info-settings', MoreInfoSettings);

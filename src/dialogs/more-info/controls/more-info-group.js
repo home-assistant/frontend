@@ -4,6 +4,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../state-summary/state-card-content.js';
 
+import computeStateDomain from '../../../common/entity/compute_state_domain';
+import dynamicContentUpdater from '../../../common/dom/dynamic_content_updater.js';
+import stateMoreInfoType from '../../../common/entity/state_more_info_type.js';
+
 class MoreInfoGroup extends PolymerElement {
   static get template() {
     return html`
@@ -25,8 +29,6 @@ class MoreInfoGroup extends PolymerElement {
     </template>
 `;
   }
-
-  static get is() { return 'more-info-group'; }
 
   static get properties() {
     return {
@@ -71,7 +73,7 @@ class MoreInfoGroup extends PolymerElement {
 
     if (states && states.length > 0) {
       const baseStateObj = states.find(s => s.state === 'on') || states[0];
-      const groupDomain = window.hassUtil.computeDomain(baseStateObj);
+      const groupDomain = computeStateDomain(baseStateObj);
 
       // Groups need to be filtered out or we'll show content of
       // first child above the children of the current group
@@ -82,7 +84,7 @@ class MoreInfoGroup extends PolymerElement {
         });
 
         for (let i = 0; i < states.length; i++) {
-          if (groupDomain !== window.hassUtil.computeDomain(states[i])) {
+          if (groupDomain !== computeStateDomain(states[i])) {
             groupDomainStateObj = false;
             break;
           }
@@ -96,13 +98,13 @@ class MoreInfoGroup extends PolymerElement {
         el.removeChild(el.lastChild);
       }
     } else {
-      window.hassUtil.dynamicContentUpdater(
+      dynamicContentUpdater(
         this.$.groupedControlDetails,
-        'MORE-INFO-' + window.hassUtil.stateMoreInfoType(groupDomainStateObj).toUpperCase(),
+        'MORE-INFO-' + stateMoreInfoType(groupDomainStateObj).toUpperCase(),
         { stateObj: groupDomainStateObj, hass: this.hass }
       );
     }
   }
 }
 
-customElements.define(MoreInfoGroup.is, MoreInfoGroup);
+customElements.define('more-info-group', MoreInfoGroup);

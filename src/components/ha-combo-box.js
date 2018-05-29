@@ -5,7 +5,9 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
 
-class HaComboBox extends PolymerElement {
+import EventsMixin from '../mixins/events-mixin.js';
+
+class HaComboBox extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -19,9 +21,17 @@ class HaComboBox extends PolymerElement {
         display: none;
       }
     </style>
-    <vaadin-combo-box-light items="[[_items]]" item-value-path="[[itemValuePath]]" item-label-path="[[itemLabelPath]]" value="{{value}}" opened="{{opened}}" allow-custom-value="[[allowCustomValue]]">
+    <vaadin-combo-box-light
+      items="[[_items]]"
+      item-value-path="[[itemValuePath]]"
+      item-label-path="[[itemLabelPath]]"
+      value="{{value}}"
+      opened="{{opened}}"
+      allow-custom-value="[[allowCustomValue]]"
+      on-change='_fireChanged'
+    >
       <paper-input autofocus="[[autofocus]]" label="[[label]]" class="input" value="[[value]]">
-        <paper-icon-button slot="suffix" class="clear-button" icon="mdi:close" hidden\$="[[!value]]">Clear</paper-icon-button>
+        <paper-icon-button slot="suffix" class="clear-button" icon="hass:close" hidden\$="[[!value]]">Clear</paper-icon-button>
         <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden\$="[[!items.length]]">Toggle</paper-icon-button>
       </paper-input>
       <template>
@@ -35,8 +45,6 @@ class HaComboBox extends PolymerElement {
     </vaadin-combo-box-light>
 `;
   }
-
-  static get is() { return 'ha-combo-box'; }
 
   static get properties() {
     return {
@@ -75,12 +83,17 @@ class HaComboBox extends PolymerElement {
   }
 
   _computeToggleIcon(opened) {
-    return opened ? 'mdi:menu-up' : 'mdi:menu-down';
+    return opened ? 'hass:menu-up' : 'hass:menu-down';
   }
 
   _computeItemLabel(item, itemLabelPath) {
     return itemLabelPath ? item[itemLabelPath] : item;
   }
+
+  _fireChanged(ev) {
+    ev.stopPropagation();
+    this.fire('change');
+  }
 }
 
-customElements.define(HaComboBox.is, HaComboBox);
+customElements.define('ha-combo-box', HaComboBox);

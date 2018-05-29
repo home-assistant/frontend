@@ -1,20 +1,20 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+
 import './ha-combo-box.js';
 
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaServicePicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaServicePicker extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <ha-combo-box label="[[localize('ui.components.service-picker.service')]]" items="[[_services]]" value="{{value}}" allow-custom-value=""></ha-combo-box>
 `;
   }
-
-  static get is() { return 'ha-service-picker'; }
 
   static get properties() {
     return {
@@ -51,4 +51,4 @@ class HaServicePicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaServicePicker.is, HaServicePicker);
+customElements.define('ha-service-picker', HaServicePicker);

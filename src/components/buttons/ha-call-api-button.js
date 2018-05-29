@@ -1,17 +1,19 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../util/hass-mixins.js';
-import './ha-progress-button.js';
 
-class HaCallApiButton extends window.hassMixins.EventsMixin(PolymerElement) {
+import './ha-progress-button.js';
+import EventsMixin from '../../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaCallApiButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <ha-progress-button id="progress" progress="[[progress]]" on-click="buttonTapped" disabled="[[disabled]]"><slot></slot></ha-progress-button>
 `;
   }
-
-  static get is() { return 'ha-call-api-button'; }
 
   static get properties() {
     return {
@@ -66,4 +68,4 @@ class HaCallApiButton extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaCallApiButton.is, HaCallApiButton);
+customElements.define('ha-call-api-button', HaCallApiButton);

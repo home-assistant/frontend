@@ -2,16 +2,18 @@ import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+
+import computeStateName from '../common/entity/compute_state_name.js';
+import EventsMixin from '../mixins/events-mixin.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 {
   const UPDATE_INTERVAL = 10000; // ms
   /*
-   * @appliesMixin window.hassMixins.LocalizeMixin
-   * @appliesMixin window.hassMixins.EventsMixin
+   * @appliesMixin LocalizeMixin
+   * @appliesMixin EventsMixin
    */
-  class HaCameraCard extends
-    window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="paper-material-styles">
@@ -49,9 +51,11 @@ import '../util/hass-mixins.js';
       }
     </style>
 
-    <img src="[[cameraFeedSrc]]" class="camera-feed" hidden\$="[[!imageLoaded]]" alt="[[computeStateName(stateObj)]]">
+    <template is="dom-if" if="[[cameraFeedSrc]]">
+      <img src="[[cameraFeedSrc]]" class="camera-feed" alt="[[_computeStateName(stateObj)]]">
+    </template>
     <div class="caption">
-      [[computeStateName(stateObj)]]
+      [[_computeStateName(stateObj)]]
       <template is="dom-if" if="[[!imageLoaded]]">
         ([[localize('ui.card.camera.not_available')]])
       </template>
@@ -59,7 +63,6 @@ import '../util/hass-mixins.js';
 `;
     }
 
-    static get is() { return 'ha-camera-card'; }
     static get properties() {
       return {
         hass: Object,
@@ -67,7 +70,10 @@ import '../util/hass-mixins.js';
           type: Object,
           observer: 'updateCameraFeedSrc',
         },
-        cameraFeedSrc: String,
+        cameraFeedSrc: {
+          type: String,
+          value: '',
+        },
         imageLoaded: {
           type: Boolean,
           value: true,
@@ -110,9 +116,9 @@ import '../util/hass-mixins.js';
       });
     }
 
-    computeStateName(stateObj) {
-      return window.hassUtil.computeStateName(stateObj);
+    _computeStateName(stateObj) {
+      return computeStateName(stateObj);
     }
   }
-  customElements.define(HaCameraCard.is, HaCameraCard);
+  customElements.define('ha-camera-card', HaCameraCard);
 }

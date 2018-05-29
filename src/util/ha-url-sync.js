@@ -1,14 +1,15 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import './hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 {
   /* eslint-disable no-console */
   const DEBUG = false;
 
-  class HaUrlSync extends window.hassMixins.EventsMixin(PolymerElement) {
-    static get is() { return 'ha-url-sync'; }
-
+  /*
+   * @appliesMixin EventsMixin
+   */
+  class HaUrlSync extends EventsMixin(PolymerElement) {
     static get properties() {
       return {
         hass: {
@@ -70,5 +71,5 @@ import './hass-mixins.js';
       window.removeEventListener('popstate', this.popstateChangeListener);
     }
   }
-  customElements.define(HaUrlSync.is, HaUrlSync);
+  customElements.define('ha-url-sync', HaUrlSync);
 }

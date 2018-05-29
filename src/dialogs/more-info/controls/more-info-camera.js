@@ -1,9 +1,14 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../util/hass-mixins.js';
+import computeStateName from '../../../common/entity/compute_state_name.js';
+import emptyImageBase64 from '../../../common/empty_image_base64.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
-class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class MoreInfoCamera extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -16,11 +21,9 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
       }
     </style>
 
-    <img class="camera-image" src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]" on-load="imageLoaded" alt="[[computeStateName(stateObj)]]">
+    <img class="camera-image" src="[[computeCameraImageUrl(hass, stateObj, isVisible)]]" on-load="imageLoaded" alt="[[_computeStateName(stateObj)]]">
 `;
   }
-
-  static get is() { return 'more-info-camera'; }
 
   static get properties() {
     return {
@@ -53,8 +56,8 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
     this.fire('iron-resize');
   }
 
-  computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+  _computeStateName(stateObj) {
+    return computeStateName(stateObj);
   }
 
   computeCameraImageUrl(hass, stateObj, isVisible) {
@@ -65,8 +68,8 @@ class MoreInfoCamera extends window.hassMixins.EventsMixin(PolymerElement) {
              '?token=' + stateObj.attributes.access_token;
     }
     // Return an empty image if no stateObj (= dialog not open) or in cleanup mode.
-    return 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+    return emptyImageBase64;
   }
 }
 
-customElements.define(MoreInfoCamera.is, MoreInfoCamera);
+customElements.define('more-info-camera', MoreInfoCamera);

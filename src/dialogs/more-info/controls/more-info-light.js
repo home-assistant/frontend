@@ -8,7 +8,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/ha-attributes.js';
 import '../../../components/ha-color-picker.js';
 import '../../../components/ha-labeled-slider.js';
-import '../../../util/hass-mixins.js';
+
+
+import featureClassNames from '../../../common/entity/feature_class_names';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 {
   const FEATURE_CLASS_NAMES = {
@@ -18,7 +21,10 @@ import '../../../util/hass-mixins.js';
     16: 'has-color',
     128: 'has-white_value',
   };
-  class MoreInfoLight extends window.hassMixins.EventsMixin(PolymerElement) {
+  /*
+   * @appliesMixin EventsMixin
+   */
+  class MoreInfoLight extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
     <style is="custom-style" include="iron-flex"></style>
@@ -77,15 +83,15 @@ import '../../../util/hass-mixins.js';
     <div class\$="[[computeClassNames(stateObj)]]">
 
       <div class="control brightness">
-        <ha-labeled-slider caption="Brightness" icon="mdi:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
+        <ha-labeled-slider caption="Brightness" icon="hass:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
       </div>
 
       <div class="control color_temp">
-        <ha-labeled-slider caption="Color Temperature" icon="mdi:thermometer" min="[[stateObj.attributes.min_mireds]]" max="[[stateObj.attributes.max_mireds]]" value="{{ctSliderValue}}" on-change="ctSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
+        <ha-labeled-slider caption="Color Temperature" icon="hass:thermometer" min="[[stateObj.attributes.min_mireds]]" max="[[stateObj.attributes.max_mireds]]" value="{{ctSliderValue}}" on-change="ctSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
       </div>
 
       <div class="control white_value">
-        <ha-labeled-slider caption="White Value" icon="mdi:file-word-box" max="255" value="{{wvSliderValue}}" on-change="wvSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
+        <ha-labeled-slider caption="White Value" icon="hass:file-word-box" max="255" value="{{wvSliderValue}}" on-change="wvSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
       </div>
 
       <ha-color-picker class="control color" on-colorselected="colorPicked" desired-hs-color="{{colorPickerColor}}" throttle="500" hue-segments="24" saturation-segments="8">
@@ -105,8 +111,6 @@ import '../../../util/hass-mixins.js';
     </div>
 `;
     }
-
-    static get is() { return 'more-info-light'; }
 
     static get properties() {
       return {
@@ -178,7 +182,7 @@ import '../../../util/hass-mixins.js';
     }
 
     computeClassNames(stateObj) {
-      const classes = [window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
+      const classes = [featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
       if (stateObj && stateObj.state === 'on') {
         classes.push('is-on');
       }
@@ -257,5 +261,5 @@ import '../../../util/hass-mixins.js';
     }
   }
 
-  customElements.define(MoreInfoLight.is, MoreInfoLight);
+  customElements.define('more-info-light', MoreInfoLight);
 }

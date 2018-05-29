@@ -7,6 +7,8 @@ import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 import '../../../components/ha-relative-time.js';
 
+import attributeClassNames from '../../../common/entity/attribute_class_names.js';
+
 class DatetimeInput extends PolymerElement {
   static get template() {
     return html`
@@ -27,10 +29,6 @@ class DatetimeInput extends PolymerElement {
       </template>
     </div>
 `;
-  }
-
-  static get is() {
-    return 'more-info-input_datetime';
   }
 
   constructor() {
@@ -154,8 +152,8 @@ class DatetimeInput extends PolymerElement {
   }
 
   computeClassNames(stateObj) {
-    return 'more-info-input_datetime ' + window.hassUtil.attributeClassNames(stateObj, ['has_time', 'has_date']);
+    return 'more-info-input_datetime ' + attributeClassNames(stateObj, ['has_time', 'has_date']);
   }
 }
 
-customElements.define(DatetimeInput.is, DatetimeInput);
+customElements.define('more-info-input_datetime', DatetimeInput);

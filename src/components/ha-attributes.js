@@ -2,7 +2,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-attributes-util.js';
+import hassAttributeUtil from '../util/hass-attributes-util.js';
 
 class HaAttributes extends PolymerElement {
   static get template() {
@@ -30,8 +30,6 @@ class HaAttributes extends PolymerElement {
 `;
   }
 
-  static get is() { return 'ha-attributes'; }
-
   static get properties() {
     return {
       stateObj: {
@@ -49,7 +47,7 @@ class HaAttributes extends PolymerElement {
   }
 
   computeFiltersArray(extraFilters) {
-    return Object.keys(window.hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(extraFilters ? extraFilters.split(',') : []);
+    return Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(extraFilters ? extraFilters.split(',') : []);
   }
 
   computeDisplayAttributes(stateObj, filtersArray) {
@@ -79,4 +77,4 @@ class HaAttributes extends PolymerElement {
   }
 }
 
-customElements.define(HaAttributes.is, HaAttributes);
+customElements.define('ha-attributes', HaAttributes);

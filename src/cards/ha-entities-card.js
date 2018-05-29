@@ -5,10 +5,16 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/entity/ha-entity-toggle.js';
 import '../components/ha-card.js';
 import '../state-summary/state-card-content.js';
-import '../util/hass-mixins.js';
 
-class HaEntitiesCard extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+
+import computeStateDomain from '../common/entity/compute_state_domain.js';
+import computeStateName from '../common/entity/compute_state_name.js';
+import stateMoreInfoType from '../common/entity/state_more_info_type.js';
+import canToggleState from '../common/entity/can_toggle_state.js';
+import EventsMixin from '../mixins/events-mixin.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex"></style>
@@ -58,7 +64,6 @@ class HaEntitiesCard extends
 `;
   }
 
-  static get is() { return 'ha-entities-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -80,9 +85,9 @@ class HaEntitiesCard extends
 
   computeTitle(states, groupEntity, localize) {
     if (groupEntity) {
-      return window.hassUtil.computeStateName(groupEntity).trim();
+      return computeStateName(groupEntity).trim();
     }
-    const domain = window.hassUtil.computeDomain(states[0]);
+    const domain = computeStateDomain(states[0]);
     return (localize && localize(`domain.${domain}`)) || domain.replace(/_/g, ' ');
   }
 
@@ -95,7 +100,7 @@ class HaEntitiesCard extends
   }
 
   computeStateClass(stateObj) {
-    return window.hassUtil.stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state';
+    return stateMoreInfoType(stateObj) !== 'hidden' ? 'state more-info' : 'state';
   }
 
   addTapEvents() {
@@ -134,7 +139,7 @@ class HaEntitiesCard extends
     // Only show if we can toggle 2+ entities in group
     let canToggleCount = 0;
     for (let i = 0; i < states.length; i++) {
-      if (!window.hassUtil.canToggleState(this.hass, states[i])) {
+      if (!canToggleState(this.hass, states[i])) {
         continue;
       }
 
@@ -148,4 +153,4 @@ class HaEntitiesCard extends
     return canToggleCount > 1;
   }
 }
-customElements.define(HaEntitiesCard.is, HaEntitiesCard);
+customElements.define('ha-entities-card', HaEntitiesCard);

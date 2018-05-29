@@ -3,12 +3,13 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
-import '../util/hass-mixins.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
+import HassMediaPlayerEntity from '../util/hass-media-player-model.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -50,8 +51,6 @@ class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(PolymerElemen
 `;
   }
 
-  static get is() { return 'state-card-media_player'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -68,7 +67,7 @@ class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(PolymerElemen
   }
 
   computePlayerObj(hass, stateObj) {
-    return new window.HassMediaPlayerEntity(hass, stateObj);
+    return new HassMediaPlayerEntity(hass, stateObj);
   }
 
   computePrimaryText(localize, playerObj) {
@@ -77,4 +76,4 @@ class StateCardMediaPlayer extends window.hassMixins.LocalizeMixin(PolymerElemen
       || localize(`state.default.${playerObj.stateObj.state}`) || playerObj.stateObj.state;
   }
 }
-customElements.define(StateCardMediaPlayer.is, StateCardMediaPlayer);
+customElements.define('state-card-media_player', StateCardMediaPlayer);

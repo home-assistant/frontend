@@ -2,7 +2,7 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import domainIcon from '../../js/common/entity/domain_icon.js';
+import domainIcon from '../common/entity/domain_icon.js';
 
 class DomainIcon extends PolymerElement {
   static get template() {
@@ -10,8 +10,6 @@ class DomainIcon extends PolymerElement {
     <iron-icon icon="[[computeIcon(domain, state)]]"></iron-icon>
 `;
   }
-
-  static get is() { return 'domain-icon'; }
 
   static get properties() {
     return {
@@ -32,4 +30,4 @@ class DomainIcon extends PolymerElement {
   }
 }
 
-customElements.define(DomainIcon.is, DomainIcon);
+customElements.define('domain-icon', DomainIcon);

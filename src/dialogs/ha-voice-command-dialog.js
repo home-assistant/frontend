@@ -4,7 +4,12 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(PolymerElement) {
+import DialogMixin from '../mixins/dialog-mixin.js';
+
+/*
+ * @appliesMixin DialogMixin
+ */
+class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="paper-dialog-shared-styles">
@@ -121,13 +126,11 @@ class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(PolymerElement)
         </div>
       </template>
       <div class="icon" hidden\$="[[results]]">
-        <paper-icon-button icon="mdi:text-to-speech" on-click="startListening"></paper-icon-button>
+        <paper-icon-button icon="hass:text-to-speech" on-click="startListening"></paper-icon-button>
       </div>
     </div>
 `;
   }
-
-  static get is() { return 'ha-voice-command-dialog'; }
 
   static get properties() {
     return {
@@ -242,4 +245,4 @@ class HaVoiceCommandDialog extends window.hassMixins.DialogMixin(PolymerElement)
   }
 }
 
-customElements.define(HaVoiceCommandDialog.is, HaVoiceCommandDialog);
+customElements.define('ha-voice-command-dialog', HaVoiceCommandDialog);

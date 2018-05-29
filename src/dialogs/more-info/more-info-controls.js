@@ -8,8 +8,14 @@ import '../../components/state-history-charts.js';
 import '../../data/ha-state-history-data.js';
 import '../../resources/ha-style.js';
 import '../../state-summary/state-card-content.js';
-import '../../util/hass-mixins.js';
+
 import './controls/more-info-content.js';
+
+import computeStateName from '../../common/entity/compute_state_name.js';
+import computeStateDomain from '../../common/entity/compute_state_domain.js';
+import isComponentLoaded from '../../common/config/is_component_loaded.js';
+import { DOMAINS_MORE_INFO_NO_HISTORY } from '../../common/const.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
 {
   const DOMAINS_NO_INFO = [
@@ -17,7 +23,10 @@ import './controls/more-info-content.js';
     'configurator',
     'history_graph',
   ];
-  class MoreInfoControls extends window.hassMixins.EventsMixin(PolymerElement) {
+  /*
+   * @appliesMixin EventsMixin
+   */
+  class MoreInfoControls extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
     <style include="ha-style-dialog">
@@ -53,10 +62,10 @@ import './controls/more-info-content.js';
     </style>
 
     <app-toolbar>
-      <paper-icon-button icon="mdi:close" dialog-dismiss=""></paper-icon-button>
+      <paper-icon-button icon="hass:close" dialog-dismiss=""></paper-icon-button>
       <div class="main-title" main-title="" on-click="enlarge">[[_computeStateName(stateObj)]]</div>
       <template is="dom-if" if="[[canConfigure]]">
-        <paper-icon-button icon="mdi:settings" on-click="_gotoSettings"></paper-icon-button>
+        <paper-icon-button icon="hass:settings" on-click="_gotoSettings"></paper-icon-button>
       </template>
     </app-toolbar>
 
@@ -73,7 +82,6 @@ import './controls/more-info-content.js';
 `;
     }
 
-    static get is() { return 'more-info-controls'; }
     static get properties() {
       return {
         hass: Object,
@@ -117,21 +125,21 @@ import './controls/more-info-content.js';
     }
 
     _computeShowStateInfo(stateObj) {
-      return !stateObj || !DOMAINS_NO_INFO.includes(window.hassUtil.computeDomain(stateObj));
+      return !stateObj || !DOMAINS_NO_INFO.includes(computeStateDomain(stateObj));
     }
 
     _computeShowHistoryComponent(hass, stateObj) {
       return hass && stateObj &&
-        window.hassUtil.isComponentLoaded(hass, 'history') &&
-        !window.hassUtil.DOMAINS_WITH_NO_HISTORY.includes(window.hassUtil.computeDomain(stateObj));
+        isComponentLoaded(hass, 'history') &&
+        !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
     }
 
     _computeDomain(stateObj) {
-      return stateObj ? window.hassUtil.computeDomain(stateObj) : '';
+      return stateObj ? computeStateDomain(stateObj) : '';
     }
 
     _computeStateName(stateObj) {
-      return stateObj ? window.hassUtil.computeStateName(stateObj) : '';
+      return stateObj ? computeStateName(stateObj) : '';
     }
 
     _stateObjChanged(newVal) {
@@ -151,5 +159,5 @@ import './controls/more-info-content.js';
       this.fire('more-info-page', { page: 'settings' });
     }
   }
-  customElements.define(MoreInfoControls.is, MoreInfoControls);
+  customElements.define('more-info-controls', MoreInfoControls);
 }

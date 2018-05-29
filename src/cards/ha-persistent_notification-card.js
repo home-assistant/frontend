@@ -4,12 +4,15 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-card.js';
 import '../components/ha-markdown.js';
-import '../util/hass-mixins.js';
+
+
+import computeStateName from '../common/entity/compute_state_name.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -48,7 +51,6 @@ class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(Polym
 `;
   }
 
-  static get is() { return 'ha-persistent_notification-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -58,7 +60,7 @@ class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(Polym
 
   computeTitle(stateObj) {
     return (stateObj.attributes.title ||
-            window.hassUtil.computeStateName(stateObj));
+            computeStateName(stateObj));
   }
 
   dismissTap(ev) {
@@ -66,4 +68,4 @@ class HaPersistentNotificationCard extends window.hassMixins.LocalizeMixin(Polym
     this.hass.callApi('DELETE', 'states/' + this.stateObj.entity_id);
   }
 }
-customElements.define(HaPersistentNotificationCard.is, HaPersistentNotificationCard);
+customElements.define('ha-persistent_notification-card', HaPersistentNotificationCard);

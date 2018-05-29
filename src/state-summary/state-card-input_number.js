@@ -7,7 +7,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
-import '../util/hass-util.js';
 
 class StateCardInputNumber extends mixinBehaviors([
   IronResizableBehavior
@@ -49,8 +48,6 @@ class StateCardInputNumber extends mixinBehaviors([
     </div>
 `;
   }
-
-  static get is() { return 'state-card-input_number'; }
 
   ready() {
     super.ready();
@@ -151,4 +148,4 @@ class StateCardInputNumber extends mixinBehaviors([
   }
 }
 
-customElements.define(StateCardInputNumber.is, StateCardInputNumber);
+customElements.define('state-card-input_number', StateCardInputNumber);

@@ -3,6 +3,9 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import { STATES_OFF } from '../../common/const.js';
+import computeStateDomain from '../../common/entity/compute_state_domain';
+
 class HaEntityToggle extends PolymerElement {
   static get template() {
     return html`
@@ -27,16 +30,14 @@ class HaEntityToggle extends PolymerElement {
     </style>
 
     <template is="dom-if" if="[[stateObj.attributes.assumed_state]]">
-      <paper-icon-button icon="mdi:flash-off" on-click="turnOff" state-active\$="[[!isOn]]"></paper-icon-button>
-      <paper-icon-button icon="mdi:flash" on-click="turnOn" state-active\$="[[isOn]]"></paper-icon-button>
+      <paper-icon-button icon="hass:flash-off" on-click="turnOff" state-active\$="[[!isOn]]"></paper-icon-button>
+      <paper-icon-button icon="hass:flash" on-click="turnOn" state-active\$="[[isOn]]"></paper-icon-button>
     </template>
     <template is="dom-if" if="[[!stateObj.attributes.assumed_state]]">
       <paper-toggle-button checked="[[toggleChecked]]" on-change="toggleChanged"></paper-toggle-button>
     </template>
 `;
   }
-
-  static get is() { return 'ha-entity-toggle'; }
 
   static get properties() {
     return {
@@ -99,7 +100,7 @@ class HaEntityToggle extends PolymerElement {
   }
 
   computeIsOn(stateObj) {
-    return stateObj && !window.hassUtil.OFF_STATES.includes(stateObj.state);
+    return stateObj && !STATES_OFF.includes(stateObj.state);
   }
 
   stateObjObserver(newVal, oldVal) {
@@ -115,7 +116,7 @@ class HaEntityToggle extends PolymerElement {
   // result in the entity to be turned on. Since the state is not changing,
   // the resync is not called automatic.
   callService(turnOn) {
-    const stateDomain = window.hassUtil.computeDomain(this.stateObj);
+    const stateDomain = computeStateDomain(this.stateObj);
     let serviceDomain;
     let service;
 
@@ -147,4 +148,4 @@ class HaEntityToggle extends PolymerElement {
   }
 }
 
-customElements.define(HaEntityToggle.is, HaEntityToggle);
+customElements.define('ha-entity-toggle', HaEntityToggle);

@@ -1,11 +1,9 @@
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import relativeTime from '../../js/common/datetime/relative_time.js';
+import relativeTime from '../common/datetime/relative_time.js';
 
 class HaRelativeTime extends PolymerElement {
-  static get is() { return 'ha-relative-time'; }
-
   static get properties() {
     return {
       datetime: {
@@ -59,4 +57,4 @@ class HaRelativeTime extends PolymerElement {
   }
 }
 
-customElements.define(HaRelativeTime.is, HaRelativeTime);
+customElements.define('ha-relative-time', HaRelativeTime);

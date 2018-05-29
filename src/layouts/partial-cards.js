@@ -13,15 +13,26 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/ha-cards.js';
 import '../components/ha-menu-button.js';
 import '../components/ha-start-voice-button.js';
-import '../util/hass-mixins.js';
+
 import './ha-app-layout.js';
+
+import extractViews from '../common/entity/extract_views.js';
+import getViewEntities from '../common/entity/get_view_entities.js';
+import computeStateName from '../common/entity/compute_state_name.js';
+import computeStateDomain from '../common/entity/compute_state_domain.js';
+import computeLocationName from '../common/config/location_name.js';
+import NavigateMixin from '../mixins/navigate-mixin.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 {
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
   const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
 
-  // eslint-disable-next-line
-  class PartialCards extends window.hassMixins.EventsMixin(window.hassMixins.NavigateMixin(PolymerElement)) {
+  /*
+   * @appliesMixin EventsMixin
+   * @appliesMixin NavigateMixin
+   */
+  class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="iron-flex iron-positioning ha-style">
@@ -58,20 +69,20 @@ import './ha-app-layout.js';
               </template>
               <template is="dom-if" if="[[defaultView]]">
                 <template is="dom-if" if="[[defaultView.attributes.icon]]">
-                  <iron-icon title\$="[[computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></iron-icon>
+                  <iron-icon title\$="[[_computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></iron-icon>
                 </template>
                 <template is="dom-if" if="[[!defaultView.attributes.icon]]">
-                  [[computeStateName(defaultView)]]
+                  [[_computeStateName(defaultView)]]
                 </template>
               </template>
             </paper-tab>
             <template is="dom-repeat" items="[[views]]">
               <paper-tab data-entity\$="[[item.entity_id]]" on-click="scrollToTop">
                 <template is="dom-if" if="[[item.attributes.icon]]">
-                  <iron-icon title\$="[[computeStateName(item)]]" icon="[[item.attributes.icon]]"></iron-icon>
+                  <iron-icon title\$="[[_computeStateName(item)]]" icon="[[item.attributes.icon]]"></iron-icon>
                 </template>
                 <template is="dom-if" if="[[!item.attributes.icon]]">
-                  [[computeStateName(item)]]
+                  [[_computeStateName(item)]]
                 </template>
               </paper-tab>
             </template>
@@ -90,8 +101,6 @@ import './ha-app-layout.js';
     </ha-app-layout>
 `;
     }
-
-    static get is() { return 'partial-cards'; }
 
     static get properties() {
       return {
@@ -129,7 +138,7 @@ import './ha-app-layout.js';
         locationName: {
           type: String,
           value: '',
-          computed: 'computeLocationName(hass)',
+          computed: '_computeLocationName(hass)',
         },
 
         currentView: {
@@ -251,17 +260,17 @@ import './ha-app-layout.js';
       return (views && views.length > 0 && !defaultView && locationName === 'Home') || !locationName ? 'Home Assistant' : locationName;
     }
 
-    computeStateName(stateObj) {
-      return window.hassUtil.computeStateName(stateObj);
+    _computeStateName(stateObj) {
+      return computeStateName(stateObj);
     }
 
-    computeLocationName(hass) {
-      return window.hassUtil.computeLocationName(hass);
+    _computeLocationName(hass) {
+      return computeLocationName(hass);
     }
 
     hassChanged(hass) {
       if (!hass) return;
-      const views = window.HAWS.extractViews(hass.states);
+      const views = extractViews(hass.states);
       let defaultView = null;
       // If default view present, it's in first index.
       if (views.length > 0 && views[0].entity_id === DEFAULT_VIEW_ENTITY_ID) {
@@ -304,16 +313,16 @@ import './ha-app-layout.js';
 
       let states;
       if (currentView) {
-        states = window.HAWS.getViewEntities(hass.states, hass.states[currentView]);
+        states = getViewEntities(hass.states, hass.states[currentView]);
       } else {
-        states = window.HAWS.getViewEntities(hass.states, hass.states[DEFAULT_VIEW_ENTITY_ID]);
+        states = getViewEntities(hass.states, hass.states[DEFAULT_VIEW_ENTITY_ID]);
       }
 
       // Make sure certain domains are always shown.
       entityIds.forEach((entityId) => {
         const state = hass.states[entityId];
 
-        if (ALWAYS_SHOW_DOMAIN.includes(window.hassUtil.computeDomain(state))) {
+        if (ALWAYS_SHOW_DOMAIN.includes(computeStateDomain(state))) {
           states[entityId] = state;
         }
       });
@@ -340,5 +349,5 @@ import './ha-app-layout.js';
     }
   }
 
-  customElements.define(PartialCards.is, PartialCards);
+  customElements.define('partial-cards', PartialCards);
 }

@@ -4,9 +4,15 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/state-history-charts.js';
 import '../data/ha-state-history-data.js';
-import '../util/hass-mixins.js';
 
-class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
+
+import computeStateName from '../common/entity/compute_state_name.js';
+import EventsMixin from '../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -44,7 +50,6 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-history_graph-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -83,7 +88,7 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 
   computeTitle(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 
   computeContentClass(inDialog) {
@@ -106,4 +111,4 @@ class HaHistoryGraphCard extends window.hassMixins.EventsMixin(PolymerElement) {
     }
   }
 }
-customElements.define(HaHistoryGraphCard.is, HaHistoryGraphCard);
+customElements.define('ha-history_graph-card', HaHistoryGraphCard);

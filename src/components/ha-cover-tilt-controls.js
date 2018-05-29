@@ -3,7 +3,7 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/cover-model.js';
+import CoverEntity from '../util/cover-model.js';
 
 class HaCoverTiltControls extends PolymerElement {
   static get template() {
@@ -17,13 +17,11 @@ class HaCoverTiltControls extends PolymerElement {
         visibility: hidden !important;
       }
     </style>
-    <paper-icon-button icon="mdi:arrow-top-right" on-click="onOpenTiltTap" title="Open tilt" invisible\$="[[!entityObj.supportsOpenTilt]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
-    <paper-icon-button icon="mdi:stop" on-click="onStopTiltTap" invisible\$="[[!entityObj.supportsStopTilt]]" title="Stop tilt"></paper-icon-button>
-    <paper-icon-button icon="mdi:arrow-bottom-left" on-click="onCloseTiltTap" title="Close tilt" invisible\$="[[!entityObj.supportsCloseTilt]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
+    <paper-icon-button icon="hass:arrow-top-right" on-click="onOpenTiltTap" title="Open tilt" invisible\$="[[!entityObj.supportsOpenTilt]]" disabled="[[computeOpenDisabled(stateObj, entityObj)]]"></paper-icon-button>
+    <paper-icon-button icon="hass:stop" on-click="onStopTiltTap" invisible\$="[[!entityObj.supportsStopTilt]]" title="Stop tilt"></paper-icon-button>
+    <paper-icon-button icon="hass:arrow-bottom-left" on-click="onCloseTiltTap" title="Close tilt" invisible\$="[[!entityObj.supportsCloseTilt]]" disabled="[[computeClosedDisabled(stateObj, entityObj)]]"></paper-icon-button>
 `;
   }
-
-  static get is() { return 'ha-cover-tilt-controls'; }
 
   static get properties() {
     return {
@@ -40,7 +38,7 @@ class HaCoverTiltControls extends PolymerElement {
     };
   }
   computeEntityObj(hass, stateObj) {
-    return new window.CoverEntity(hass, stateObj);
+    return new CoverEntity(hass, stateObj);
   }
   computeOpenDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
@@ -64,4 +62,4 @@ class HaCoverTiltControls extends PolymerElement {
   }
 }
 
-customElements.define(HaCoverTiltControls.is, HaCoverTiltControls);
+customElements.define('ha-cover-tilt-controls', HaCoverTiltControls);

@@ -4,12 +4,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
-import '../util/hass-mixins.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class StateCardScene extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class StateCardScene extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -30,8 +30,6 @@ class StateCardScene extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'state-card-scene'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -51,4 +49,4 @@ class StateCardScene extends window.hassMixins.LocalizeMixin(PolymerElement) {
     );
   }
 }
-customElements.define(StateCardScene.is, StateCardScene);
+customElements.define('state-card-scene', StateCardScene);

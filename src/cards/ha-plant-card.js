@@ -3,16 +3,46 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-card.js';
-import '../util/hass-mixins.js';
 
-class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
+import computeStateName from '../common/entity/compute_state_name.js';
+import EventsMixin from '../mixins/events-mixin.js';
+
+class HaPlantCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
+      .banner {
+        display: flex;
+        align-items: flex-end;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        padding-top: 12px;
+      }
+      .has-plant-image .banner {
+        padding-top: 30%;
+      }
+      .header {
+        @apply --paper-font-headline;
+        line-height: 40px;
+        padding: 8px 16px;
+      }
+      .has-plant-image .header {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 16px;
+        padding: 16px;
+        color: white;
+        width: 100%;
+        background:rgba(0, 0, 0, var(--dark-secondary-opacity));
+      }
       .content {
         display: flex;
         justify-content: space-between;
-        padding: 0 32px 24px 32px;
+        padding: 16px 32px 24px 32px;
+      }
+      .has-plant-image .content {
+        padding-bottom: 16px;
       }
       iron-icon {
         color: var(--paper-item-icon-color);
@@ -33,12 +63,15 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
       }
     </style>
 
-    <ha-card header="[[computeTitle(stateObj)]]">
+    <ha-card class$="[[computeImageClass(stateObj.attributes.entity_picture)]]">
+      <div class="banner" style="background-image:url([[stateObj.attributes.entity_picture]])">
+        <div class="header">[[computeTitle(stateObj)]]</div>
+      </div>
       <div class="content">
         <template is="dom-repeat" items="[[computeAttributes(stateObj.attributes)]]">
           <div class="attributes" on-click="attributeClicked">
             <div><iron-icon icon="[[computeIcon(item, stateObj.attributes.battery)]]"></iron-icon></div>
-            <div class\$="[[computeClass(stateObj.attributes.problem, item)]]">
+            <div class$="[[computeAttributeClass(stateObj.attributes.problem, item)]]">
               [[computeValue(stateObj.attributes, item)]]
             </div>
             <div class="uom">[[computeUom(stateObj.attributes.unit_of_measurement_dict, item)]]</div>
@@ -49,7 +82,6 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'ha-plant-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -60,16 +92,16 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
   constructor() {
     super();
     this.sensors = {
-      moisture: 'mdi:water',
-      temperature: 'mdi:thermometer',
-      brightness: 'mdi:white-balance-sunny',
-      conductivity: 'mdi:emoticon-poop',
-      battery: 'mdi:battery'
+      moisture: 'hass:water',
+      temperature: 'hass:thermometer',
+      brightness: 'hass:white-balance-sunny',
+      conductivity: 'hass:emoticon-poop',
+      battery: 'hass:battery'
     };
   }
 
   computeTitle(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 
   computeAttributes(data) {
@@ -96,8 +128,12 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
     return dict[attr] || '';
   }
 
-  computeClass(problem, attr) {
+  computeAttributeClass(problem, attr) {
     return problem.indexOf(attr) === -1 ? '' : 'problem';
+  }
+
+  computeImageClass(entityPicture) {
+    return entityPicture ? 'has-plant-image' : '';
   }
 
   attributeClicked(ev) {
@@ -105,4 +141,4 @@ class HaPlantCard extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaPlantCard.is, HaPlantCard);
+customElements.define('ha-plant-card', HaPlantCard);

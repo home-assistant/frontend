@@ -236,6 +236,22 @@
                 "initializing": "Inicializacija ({query_stage})",
                 "dead": "Mrtev ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Jasna, noč",
+            "cloudy": "Oblačno",
+            "fog": "Megla",
+            "hail": "Toča",
+            "lightning": "Grmenje",
+            "lightning_rainy": "Grmenje, deževno",
+            "partlycloudy": "Delno oblačno",
+            "pouring": "Močan dež",
+            "rainy": "Deževno",
+            "snowy": "Snežno",
+            "snowy_rainy": "Snežno, deževno",
+            "sunny": "Sončno",
+            "windy": "Vetrovno",
+            "windy_variant": "Vetrovno"
         }
     },
     "state_badge": {
@@ -525,6 +541,40 @@
             },
             "persistent_notification": {
                 "dismiss": "Opusti"
+            },
+            "scene": {
+                "activate": "Aktiviraj"
+            },
+            "script": {
+                "execute": "Izvedi"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Zračni tlak",
+                    "humidity": "Vlažnost",
+                    "temperature": "Temperatura",
+                    "visibility": "Vidljivost",
+                    "wind_speed": "Hitrost vetra"
+                },
+                "cardinal_direction": {
+                    "e": "Vzhod",
+                    "ene": "Vzhodno-severovzhod",
+                    "ese": "Vzhodno-jugovzhod",
+                    "n": "Sever",
+                    "ne": "Severovzhod",
+                    "nne": "Severo-severovzhod",
+                    "nw": "Severozahod",
+                    "nnw": "Severo-severozahod",
+                    "s": "Jug",
+                    "se": "Jugovzhod",
+                    "sse": "Jugo-juhovzhod",
+                    "ssw": "Jugo-jugozahod",
+                    "sw": "Jugozahod",
+                    "w": "Zahod",
+                    "wnw": "Zahod-severozahod",
+                    "wsw": "Zahod-jugozahod"
+                },
+                "forecast": "Napoved"
             }
         },
         "components": {

@@ -1,6 +1,4 @@
 node_modules
-bower_components
 hass_frontend
-build
-build-temp
+hass_frontend_es5
 .git

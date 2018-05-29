@@ -1,17 +1,13 @@
-import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import stateIcon from '../../../js/common/entity/state_icon.js';
+import '../ha-icon.js';
+import stateIcon from '../../common/entity/state_icon.js';
 
 class HaStateIcon extends PolymerElement {
   static get template() {
-    return html`
-    <iron-icon icon="[[computeIcon(stateObj)]]"></iron-icon>
-`;
+    return html`<ha-icon icon="[[computeIcon(stateObj)]]"></ha-icon>`;
   }
-
-  static get is() { return 'ha-state-icon'; }
 
   static get properties() {
     return {
@@ -26,4 +22,4 @@ class HaStateIcon extends PolymerElement {
   }
 }
 
-customElements.define(HaStateIcon.is, HaStateIcon);
+customElements.define('ha-state-icon', HaStateIcon);

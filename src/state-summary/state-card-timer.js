@@ -3,10 +3,16 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
-import '../util/hass-mixins.js';
-import '../util/hass-util.js';
 
-class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
+
+import timerTimeRemaining from '../common/entity/timer_time_remaining.js';
+import secondsToDuration from '../common/datetime/seconds_to_duration.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class StateCardTimer extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -23,12 +29,10 @@ class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
 
     <div class="horizontal justified layout">
       <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
-      <div class="state">[[secondsToDuration(timeRemaining)]]</div>
+      <div class="state">[[_secondsToDuration(timeRemaining)]]</div>
     </div>
 `;
   }
-
-  static get is() { return 'state-card-timer'; }
 
   static get properties() {
     return {
@@ -76,11 +80,11 @@ class StateCardTimer extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 
   calculateRemaining(stateObj) {
-    this.timeRemaining = window.hassUtil.timerTimeRemaining(stateObj);
+    this.timeRemaining = timerTimeRemaining(stateObj);
   }
 
-  secondsToDuration(time) {
-    return window.hassUtil.secondsToDuration(time);
+  _secondsToDuration(time) {
+    return secondsToDuration(time);
   }
 }
-customElements.define(StateCardTimer.is, StateCardTimer);
+customElements.define('state-card-timer', StateCardTimer);

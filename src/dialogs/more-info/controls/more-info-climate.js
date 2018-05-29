@@ -10,9 +10,16 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-climate-control.js';
 import '../../../components/ha-paper-slider.js';
-import '../../../util/hass-mixins.js';
 
-class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
+
+import attributeClassNames from '../../../common/entity/attribute_class_names.js';
+import featureClassNames from '../../../common/entity/feature_class_names';
+import EventsMixin from '../../../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class MoreInfoClimate extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex"></style>
@@ -206,8 +213,6 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'more-info-climate'; }
-
   static get properties() {
     return {
       hass: {
@@ -340,7 +345,7 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 
   computeClassNames(stateObj) {
-    const featureClassNames = {
+    const _featureClassNames = {
       1: 'has-target_temperature',
       2: 'has-target_temperature_high',
       4: 'has-target_temperature_low',
@@ -358,8 +363,8 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
 
 
     var classes = [
-      window.hassUtil.attributeClassNames(stateObj, ['current_temperature', 'current_humidity']),
-      window.hassUtil.featureClassNames(stateObj, featureClassNames),
+      attributeClassNames(stateObj, ['current_temperature', 'current_humidity']),
+      featureClassNames(stateObj, _featureClassNames),
     ];
 
     classes.push('more-info-climate');
@@ -458,4 +463,4 @@ class MoreInfoClimate extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(MoreInfoClimate.is, MoreInfoClimate);
+customElements.define('more-info-climate', MoreInfoClimate);

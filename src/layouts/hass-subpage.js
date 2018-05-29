@@ -12,7 +12,7 @@ class HassSubpage extends PolymerElement {
     <app-header-layout has-scrolling-region="">
       <app-header slot="header" fixed="">
         <app-toolbar>
-          <paper-icon-button icon="mdi:arrow-left" on-click="_backTapped"></paper-icon-button>
+          <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
           <div main-title="">[[header]]</div>
         </app-toolbar>
       </app-header>
@@ -21,8 +21,6 @@ class HassSubpage extends PolymerElement {
     </app-header-layout>
 `;
   }
-
-  static get is() { return 'hass-subpage'; }
 
   static get properties() {
     return {
@@ -35,4 +33,4 @@ class HassSubpage extends PolymerElement {
   }
 }
 
-customElements.define(HassSubpage.is, HassSubpage);
+customElements.define('hass-subpage', HassSubpage);

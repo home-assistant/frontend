@@ -2,16 +2,17 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
-class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <paper-toggle-button hidden\$="[[!pushSupported]]" disabled="[[loading]]" checked="{{pushChecked}}"></paper-toggle-button>
 `;
   }
-
-  static get is() { return 'ha-push-notifications-toggle'; }
 
   static get properties() {
     return {
@@ -122,4 +123,4 @@ class HaPushNotificationsToggle extends window.hassMixins.EventsMixin(PolymerEle
   }
 }
 
-customElements.define(HaPushNotificationsToggle.is, HaPushNotificationsToggle);
+customElements.define('ha-push-notifications-toggle', HaPushNotificationsToggle);

@@ -4,6 +4,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-relative-time.js';
 
+import formatTime from '../../../common/datetime/format_time.js';
+
 class MoreInfoSun extends PolymerElement {
   static get template() {
     return html`
@@ -24,8 +26,6 @@ class MoreInfoSun extends PolymerElement {
      </div>
 `;
   }
-
-  static get is() { return 'more-info-sun'; }
 
   static get properties() {
     return {
@@ -66,8 +66,8 @@ class MoreInfoSun extends PolymerElement {
   }
 
   itemValue(type) {
-    return window.hassUtil.formatTime(this.itemDate(type));
+    return formatTime(this.itemDate(type));
   }
 }
 
-customElements.define(MoreInfoSun.is, MoreInfoSun);
+customElements.define('more-info-sun', MoreInfoSun);

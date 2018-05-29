@@ -4,7 +4,7 @@ import '@polymer/paper-input/paper-input.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import EventsMixin from '../../../mixins/events-mixin';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
   static get template() {

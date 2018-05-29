@@ -4,6 +4,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './entity/ha-chart-base.js';
 
+import formatDateTime from '../common/datetime/format_date_time.js';
+
 class StateHistoryChartLine extends PolymerElement {
   static get template() {
     return html`
@@ -19,7 +21,6 @@ class StateHistoryChartLine extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-history-chart-line'; }
   static get properties() {
     return {
       chartData: Object,
@@ -234,7 +235,7 @@ class StateHistoryChartLine extends PolymerElement {
       const item = items[0];
       const date = data.datasets[item.datasetIndex].data[item.index].x;
 
-      return window.hassUtil.formatDateTime(date);
+      return formatDateTime(date);
     };
 
     const chartOptions = {
@@ -295,4 +296,4 @@ class StateHistoryChartLine extends PolymerElement {
     this.chartData = chartOptions;
   }
 }
-customElements.define(StateHistoryChartLine.is, StateHistoryChartLine);
+customElements.define('state-history-chart-line', StateHistoryChartLine);

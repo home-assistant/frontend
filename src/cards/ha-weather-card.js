@@ -3,13 +3,15 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-card.js';
-import '../util/hass-mixins.js';
+
+import EventsMixin from '../mixins/events-mixin.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
 class HaWeatherCard extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+  LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -144,7 +146,6 @@ class HaWeatherCard extends
 `;
   }
 
-  static get is() { return 'ha-weather-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -163,20 +164,20 @@ class HaWeatherCard extends
       'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N'
     ];
     this.weatherIcons = {
-      'clear-night': 'mdi:weather-night',
-      cloudy: 'mdi:weather-cloudy',
-      fog: 'mdi:weather-fog',
-      hail: 'mdi:weather-hail',
+      'clear-night': 'hass:weather-night',
+      cloudy: 'hass:weather-cloudy',
+      fog: 'hass:weather-fog',
+      hail: 'hass:weather-hail',
       lightning: 'mid:weather-lightning',
-      'lightning-rainy': 'mdi:weather-lightning-rainy',
-      partlycloudy: 'mdi:weather-partlycloudy',
-      pouring: 'mdi:weather-pouring',
-      rainy: 'mdi:weather-rainy',
-      snowy: 'mdi:weather-snowy',
-      'snowy-rainy': 'mdi:weather-snowy-rainy',
-      sunny: 'mdi:weather-sunny',
-      windy: 'mdi:weather-windy',
-      'windy-variant': 'mdi:weather-windy-variant'
+      'lightning-rainy': 'hass:weather-lightning-rainy',
+      partlycloudy: 'hass:weather-partlycloudy',
+      pouring: 'hass:weather-pouring',
+      rainy: 'hass:weather-rainy',
+      snowy: 'hass:weather-snowy',
+      'snowy-rainy': 'hass:weather-snowy-rainy',
+      sunny: 'hass:weather-sunny',
+      windy: 'hass:weather-windy',
+      'windy-variant': 'hass:weather-windy-variant'
     };
   }
 
@@ -237,4 +238,4 @@ class HaWeatherCard extends
     return date.toLocaleDateString(this.hass.selectedLanguage || this.hass.language, { weekday: 'short' });
   }
 }
-customElements.define(HaWeatherCard.is, HaWeatherCard);
+customElements.define('ha-weather-card', HaWeatherCard);

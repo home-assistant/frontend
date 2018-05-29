@@ -5,7 +5,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-cover-tilt-controls.js';
 import '../../../components/ha-paper-slider.js';
-import '../../../util/cover-model.js';
+import CoverEntity from '../../../util/cover-model.js';
+
+import attributeClassNames from '../../../common/entity/attribute_class_names';
+import featureClassNames from '../../../common/entity/feature_class_names';
 
 {
   const FEATURE_CLASS_NAMES = {
@@ -51,8 +54,6 @@ import '../../../util/cover-model.js';
 `;
     }
 
-    static get is() { return 'more-info-cover'; }
-
     static get properties() {
       return {
         hass: {
@@ -81,7 +82,7 @@ import '../../../util/cover-model.js';
     }
 
     computeEntityObj(hass, stateObj) {
-      return new window.CoverEntity(hass, stateObj);
+      return new CoverEntity(hass, stateObj);
     }
 
     stateObjChanged(newVal) {
@@ -95,8 +96,8 @@ import '../../../util/cover-model.js';
 
     computeClassNames(stateObj) {
       var classes = [
-        window.hassUtil.attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
-        window.hassUtil.featureClassNames(stateObj, FEATURE_CLASS_NAMES),
+        attributeClassNames(stateObj, ['current_position', 'current_tilt_position']),
+        featureClassNames(stateObj, FEATURE_CLASS_NAMES),
       ];
       return classes.join(' ');
     }
@@ -110,5 +111,5 @@ import '../../../util/cover-model.js';
     }
   }
 
-  customElements.define(MoreInfoCover.is, MoreInfoCover);
+  customElements.define('more-info-cover', MoreInfoCover);
 }

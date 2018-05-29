@@ -34,7 +34,7 @@ def get_remote_version():
 
 def clean_component(source):
     """Clean component."""
-    return source[source.index(START_ICONSET):].replace('iron-iconset-svg', 'ha-iconset-svg')
+    return source[source.index(START_ICONSET):]
 
 
 def write_component(source):

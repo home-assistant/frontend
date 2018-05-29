@@ -8,9 +8,15 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-attributes.js';
-import '../../../util/hass-mixins.js';
 
-class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
+
+import attributeClassNames from '../../../common/entity/attribute_class_names';
+import EventsMixin from '../../../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class MoreInfoFan extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex"></style>
@@ -59,8 +65,8 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
       <div class="container-direction">
         <div class="direction">
           <div>Direction</div>
-          <paper-icon-button icon="mdi:rotate-left" on-click="onDirectionLeft" title="Left" disabled="[[computeIsRotatingLeft(stateObj)]]"></paper-icon-button>
-          <paper-icon-button icon="mdi:rotate-right" on-click="onDirectionRight" title="Right" disabled="[[computeIsRotatingRight(stateObj)]]"></paper-icon-button>
+          <paper-icon-button icon="hass:rotate-left" on-click="onDirectionLeft" title="Left" disabled="[[computeIsRotatingLeft(stateObj)]]"></paper-icon-button>
+          <paper-icon-button icon="hass:rotate-right" on-click="onDirectionRight" title="Right" disabled="[[computeIsRotatingRight(stateObj)]]"></paper-icon-button>
         </div>
       </div>
     </div>
@@ -68,8 +74,6 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
     <ha-attributes state-obj="[[stateObj]]" extra-filters="speed,speed_list,oscillating,direction"></ha-attributes>
 `;
   }
-
-  static get is() { return 'more-info-fan'; }
 
   static get properties() {
     return {
@@ -111,7 +115,7 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 
   computeClassNames(stateObj) {
-    return 'more-info-fan ' + window.hassUtil.attributeClassNames(stateObj, ['oscillating', 'speed_list', 'direction']);
+    return 'more-info-fan ' + attributeClassNames(stateObj, ['oscillating', 'speed_list', 'direction']);
   }
 
   speedChanged(speedIndex) {
@@ -143,24 +147,24 @@ class MoreInfoFan extends window.hassMixins.EventsMixin(PolymerElement) {
   onDirectionLeft() {
     this.hass.callService('fan', 'set_direction', {
       entity_id: this.stateObj.entity_id,
-      direction: 'left'
+      direction: 'reverse'
     });
   }
 
   onDirectionRight() {
     this.hass.callService('fan', 'set_direction', {
       entity_id: this.stateObj.entity_id,
-      direction: 'right'
+      direction: 'forward'
     });
   }
 
   computeIsRotatingLeft(stateObj) {
-    return stateObj.attributes.direction === 'left';
+    return stateObj.attributes.direction === 'reverse';
   }
 
   computeIsRotatingRight(stateObj) {
-    return stateObj.attributes.direction === 'right';
+    return stateObj.attributes.direction === 'forward';
   }
 }
 
-customElements.define(MoreInfoFan.is, MoreInfoFan);
+customElements.define('more-info-fan', MoreInfoFan);

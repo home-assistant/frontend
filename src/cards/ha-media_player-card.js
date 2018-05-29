@@ -5,15 +5,17 @@ import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-media-player-model.js';
-import '../util/hass-mixins.js';
+import HassMediaPlayerEntity from '../util/hass-media-player-model.js';
+
+import computeStateName from '../common/entity/compute_state_name.js';
+import EventsMixin from '../mixins/events-mixin.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin LocalizeMixin
+ * @appliesMixin EventsMixin
  */
-class HaMediaPlayerCard extends
-  window.hassMixins.LocalizeMixin(window.hassMixins.EventsMixin(PolymerElement)) {
+class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="paper-material-styles iron-flex iron-flex-alignment iron-positioning">
@@ -158,7 +160,7 @@ class HaMediaPlayerCard extends
       <div class="cover" id="cover"></div>
 
       <div class="caption">
-        [[computeStateName(stateObj)]]
+        [[_computeStateName(stateObj)]]
         <div class="title">[[computePrimaryText(localize, playerObj)]]</div>
         [[playerObj.secondaryTitle]]<br>
       </div>
@@ -167,21 +169,20 @@ class HaMediaPlayerCard extends
     <paper-progress max="[[stateObj.attributes.media_duration]]" value="[[playbackPosition]]" hidden\$="[[computeHideProgress(playerObj)]]" class="progress"></paper-progress>
 
     <div class="controls layout horizontal justified">
-      <paper-icon-button icon="mdi:power" on-click="handleTogglePower" invisible\$="[[computeHidePowerButton(playerObj)]]" class="self-center secondary"></paper-icon-button>
+      <paper-icon-button icon="hass:power" on-click="handleTogglePower" invisible\$="[[computeHidePowerButton(playerObj)]]" class="self-center secondary"></paper-icon-button>
 
       <div>
-        <paper-icon-button icon="mdi:skip-previous" invisible\$="[[!playerObj.supportsPreviousTrack]]" disabled="[[playerObj.isOff]]" on-click="handlePrevious"></paper-icon-button>
+        <paper-icon-button icon="hass:skip-previous" invisible\$="[[!playerObj.supportsPreviousTrack]]" disabled="[[playerObj.isOff]]" on-click="handlePrevious"></paper-icon-button>
         <paper-icon-button class="primary" icon="[[computePlaybackControlIcon(playerObj)]]" invisible\$="[[!computePlaybackControlIcon(playerObj)]]" disabled="[[playerObj.isOff]]" on-click="handlePlaybackControl"></paper-icon-button>
-        <paper-icon-button icon="mdi:skip-next" invisible\$="[[!playerObj.supportsNextTrack]]" disabled="[[playerObj.isOff]]" on-click="handleNext"></paper-icon-button>
+        <paper-icon-button icon="hass:skip-next" invisible\$="[[!playerObj.supportsNextTrack]]" disabled="[[playerObj.isOff]]" on-click="handleNext"></paper-icon-button>
       </div>
 
-      <paper-icon-button icon="mdi:dots-vertical" on-click="handleOpenMoreInfo" class="self-center secondary"></paper-icon-button>
+      <paper-icon-button icon="hass:dots-vertical" on-click="handleOpenMoreInfo" class="self-center secondary"></paper-icon-button>
 
     </div>
 `;
   }
 
-  static get is() { return 'ha-media_player-card'; }
   static get properties() {
     return {
       hass: Object,
@@ -260,7 +261,7 @@ class HaMediaPlayerCard extends
   }
 
   computePlayerObj(hass, stateObj) {
-    return new window.HassMediaPlayerEntity(hass, stateObj);
+    return new HassMediaPlayerEntity(hass, stateObj);
   }
 
   computePrimaryText(localize, playerObj) {
@@ -271,15 +272,15 @@ class HaMediaPlayerCard extends
 
   computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
-      return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
+      return playerObj.supportsPause ? 'hass:pause' : 'hass:stop';
     } else if (playerObj.isPaused || playerObj.isOff || playerObj.isIdle) {
-      return playerObj.supportsPlay ? 'mdi:play' : null;
+      return playerObj.supportsPlay ? 'hass:play' : null;
     }
     return '';
   }
 
-  computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+  _computeStateName(stateObj) {
+    return computeStateName(stateObj);
   }
 
   handleNext(ev) {
@@ -307,4 +308,4 @@ class HaMediaPlayerCard extends
     this.playerObj.togglePower();
   }
 }
-customElements.define(HaMediaPlayerCard.is, HaMediaPlayerCard);
+customElements.define('ha-media_player-card', HaMediaPlayerCard);

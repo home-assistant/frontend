@@ -1,14 +1,12 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 let loaded = null;
 
 /*
- * @appliesMixin window.hassMixins.EventsMixin
+ * @appliesMixin EventsMixin
  */
-class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
-  static get is() { return 'ha-markdown'; }
-
+class HaMarkdown extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       content: {
@@ -28,7 +26,11 @@ class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
       loaded = import(/* webpackChunkName: "load_markdown" */ '../resources/load_markdown.js');
     }
     loaded.then(
-      () => { this._scriptLoaded = 1; },
+      ({ marked, filterXSS }) => {
+        this.marked = marked;
+        this.filterXSS = filterXSS;
+        this._scriptLoaded = 1;
+      },
       () => { this._scriptLoaded = 2; },
     ).then(() => this._render());
   }
@@ -43,7 +45,7 @@ class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
       this._renderScheduled = false;
 
       if (this._scriptLoaded === 1) {
-        this.innerHTML = window.filterXSS(window.marked(this.content, {
+        this.innerHTML = this.filterXSS(this.marked(this.content, {
           gfm: true,
           tables: true,
           breaks: true
@@ -72,4 +74,4 @@ class HaMarkdown extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaMarkdown.is, HaMarkdown);
+customElements.define('ha-markdown', HaMarkdown);

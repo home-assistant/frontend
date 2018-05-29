@@ -5,12 +5,13 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/ha-entity-toggle.js';
 import '../components/entity/state-info.js';
-import '../util/hass-mixins.js';
+
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class StateCardScript extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class StateCardScript extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -40,8 +41,6 @@ class StateCardScript extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'state-card-script'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -61,4 +60,4 @@ class StateCardScript extends window.hassMixins.LocalizeMixin(PolymerElement) {
     );
   }
 }
-customElements.define(StateCardScript.is, StateCardScript);
+customElements.define('state-card-script', StateCardScript);

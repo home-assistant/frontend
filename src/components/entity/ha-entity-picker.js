@@ -6,13 +6,17 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-combo-box/vaadin-combo-box-light.js';
 
-import '../../util/hass-mixins.js';
+
 import './state-badge.js';
 
+import computeStateName from '../../common/entity/compute_state_name.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from '../../mixins/events-mixin.js';
+
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -26,9 +30,17 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
         display: none;
       }
     </style>
-    <vaadin-combo-box-light items="[[_states]]" item-value-path="entity_id" item-label-path="entity_id" value="{{value}}" opened="{{opened}}" allow-custom-value="[[allowCustomEntity]]">
+    <vaadin-combo-box-light
+      items="[[_states]]"
+      item-value-path="entity_id"
+      item-label-path="entity_id"
+      value="{{value}}"
+      opened="{{opened}}"
+      allow-custom-value="[[allowCustomEntity]]"
+      on-change='_fireChanged'
+    >
       <paper-input autofocus="[[autofocus]]" label="[[_computeLabel(label, localize)]]" class="input" value="[[value]]" disabled="[[disabled]]">
-        <paper-icon-button slot="suffix" class="clear-button" icon="mdi:close" no-ripple="" hidden\$="[[!value]]">Clear</paper-icon-button>
+        <paper-icon-button slot="suffix" class="clear-button" icon="hass:close" no-ripple="" hidden\$="[[!value]]">Clear</paper-icon-button>
         <paper-icon-button slot="suffix" class="toggle-button" icon="[[_computeToggleIcon(opened)]]" hidden="[[!_states.length]]">Toggle</paper-icon-button>
       </paper-input>
       <template>
@@ -40,7 +52,7 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
         <paper-icon-item>
           <state-badge state-obj="[[item]]" slot="item-icon"></state-badge>
           <paper-item-body two-line="">
-            <div>[[computeStateName(item)]]</div>
+            <div>[[_computeStateName(item)]]</div>
             <div secondary="">[[item.entity_id]]</div>
           </paper-item-body>
         </paper-icon-item>
@@ -48,8 +60,6 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
     </vaadin-combo-box-light>
 `;
   }
-
-  static get is() { return 'ha-entity-picker'; }
 
   static get properties() {
     return {
@@ -115,8 +125,8 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
     return entities;
   }
 
-  computeStateName(state) {
-    return window.hassUtil.computeStateName(state);
+  _computeStateName(state) {
+    return computeStateName(state);
   }
 
   _openedChanged(newVal) {
@@ -132,8 +142,13 @@ class HaEntityPicker extends window.hassMixins.LocalizeMixin(PolymerElement) {
   }
 
   _computeToggleIcon(opened) {
-    return opened ? 'mdi:menu-up' : 'mdi:menu-down';
+    return opened ? 'hass:menu-up' : 'hass:menu-down';
+  }
+
+  _fireChanged(ev) {
+    ev.stopPropagation();
+    this.fire('change');
   }
 }
 
-customElements.define(HaEntityPicker.is, HaEntityPicker);
+customElements.define('ha-entity-picker', HaEntityPicker);

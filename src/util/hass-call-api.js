@@ -1,30 +1,5 @@
-window.hassCallApi = function (host, auth, method, path, parameters) {
+export default function hassCallApi(host, auth, method, path, parameters) {
   var url = host + '/api/' + path;
-
-  if (window.HASS_DEMO) {
-    var component = path.split('/', 1)[0];
-    var data;
-    switch (component) {
-      case 'bootstrap':
-        data = window.hassDemoData.bootstrap;
-        break;
-      case 'logbook':
-        data = window.hassDemoData.logbook;
-        break;
-      case 'history':
-        data = window.hassDemoData.stateHistory;
-        break;
-      default:
-        data = false;
-    }
-    return new Promise(function (resolve, reject) {
-      if (data) {
-        resolve(data);
-      } else {
-        reject(new Error('Request not allowed in demo mode.'));
-      }
-    });
-  }
 
   return new Promise(function (resolve, reject) {
     var req = new XMLHttpRequest();
@@ -72,10 +47,10 @@ window.hassCallApi = function (host, auth, method, path, parameters) {
     };
 
     if (parameters) {
-      req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      req.setRequestHeader('Content-Type', 'application;charset=UTF-8');
       req.send(JSON.stringify(parameters));
     } else {
       req.send();
     }
   });
-};
+}

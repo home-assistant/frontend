@@ -4,7 +4,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
-import '../util/hass-util.js';
 
 class StateCardInputText extends PolymerElement {
   static get template() {
@@ -23,8 +22,6 @@ class StateCardInputText extends PolymerElement {
     </div>
 `;
   }
-
-  static get is() { return 'state-card-input_text'; }
 
   static get properties() {
     return {
@@ -70,4 +67,4 @@ class StateCardInputText extends PolymerElement {
   }
 }
 
-customElements.define(StateCardInputText.is, StateCardInputText);
+customElements.define('state-card-input_text', StateCardInputText);

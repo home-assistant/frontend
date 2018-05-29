@@ -1,6 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-util.js';
 import './state-card-climate.js';
 import './state-card-configurator.js';
 import './state-card-cover.js';
@@ -15,9 +14,10 @@ import './state-card-timer.js';
 import './state-card-toggle.js';
 import './state-card-weblink.js';
 
-class StateCardContent extends PolymerElement {
-  static get is() { return 'state-card-content'; }
+import stateCardType from '../common/entity/state_card_type.js';
+import dynamicContentUpdater from '../common/dom/dynamic_content_updater.js';
 
+class StateCardContent extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
@@ -36,16 +36,16 @@ class StateCardContent extends PolymerElement {
   }
 
   inputChanged(hass, inDialog, stateObj) {
-    let stateCardType;
+    let stateCard;
     if (!stateObj || !hass) return;
     if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
-      stateCardType = stateObj.attributes.custom_ui_state_card;
+      stateCard = stateObj.attributes.custom_ui_state_card;
     } else {
-      stateCardType = 'state-card-' + window.hassUtil.stateCardType(hass, stateObj);
+      stateCard = 'state-card-' + stateCardType(hass, stateObj);
     }
-    window.hassUtil.dynamicContentUpdater(
+    dynamicContentUpdater(
       this,
-      stateCardType.toUpperCase(),
+      stateCard.toUpperCase(),
       {
         hass: hass,
         stateObj: stateObj,
@@ -54,4 +54,4 @@ class StateCardContent extends PolymerElement {
     );
   }
 }
-customElements.define(StateCardContent.is, StateCardContent);
+customElements.define('state-card-content', StateCardContent);

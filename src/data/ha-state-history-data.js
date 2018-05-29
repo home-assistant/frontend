@@ -2,15 +2,18 @@ import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
-import '../util/hass-util.js';
+
+import computeStateName from '../common/entity/compute_state_name.js';
+import computeStateDomain from '../common/entity/compute_state_domain.js';
+import computeStateDisplay from '../common/entity/compute_state_display.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 {
   const RECENT_THRESHOLD = 60000; // 1 minute
   const RECENT_CACHE = {};
   const DOMAINS_USE_LAST_UPDATED = ['thermostat', 'climate'];
   const LINE_ATTRIBUTES_TO_KEEP = ['temperature', 'current_temperature', 'target_temp_low', 'target_temp_high'];
-  window.stateHistoryCache = window.stateHistoryCache || {};
+  const stateHistoryCache = {};
 
   function computeHistory(stateHistory, localize, language) {
     const lineChartDevices = {};
@@ -31,11 +34,11 @@ import '../util/hass-util.js';
 
       if (!unit) {
         timelineDevices.push({
-          name: window.hassUtil.computeStateName(stateInfo[0]),
+          name: computeStateName(stateInfo[0]),
           entity_id: stateInfo[0].entity_id,
           data: stateInfo
             .map(state => ({
-              state_localize: window.hassUtil.computeStateDisplay(localize, state, language),
+              state_localize: computeStateDisplay(localize, state, language),
               state: state.state,
               last_changed: state.last_changed,
             }))
@@ -56,10 +59,10 @@ import '../util/hass-util.js';
       identifier: lineChartDevices[unit].map(states => states[0].entity_id).join(''),
       data: lineChartDevices[unit].map((states) => {
         const last = states[states.length - 1];
-        const domain = window.hassUtil.computeDomain(last);
+        const domain = computeStateDomain(last);
         return {
           domain: domain,
-          name: window.hassUtil.computeStateName(last),
+          name: computeStateName(last),
           entity_id: last.entity_id,
           states: states.map((state) => {
             const result = {
@@ -96,10 +99,9 @@ import '../util/hass-util.js';
   }
 
   /*
-   * @appliesMixin window.hassMixins.LocalizeMixin
+   * @appliesMixin LocalizeMixin
    */
-  class HaStateHistoryData extends window.hassMixins.LocalizeMixin(PolymerElement) {
-    static get is() { return 'ha-state-history-data'; }
+  class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     static get properties() {
       return {
         hass: {
@@ -293,7 +295,7 @@ import '../util/hass-util.js';
       originalStartTime.setHours(originalStartTime.getHours() - cacheConfig.hoursToShow);
       let startTime = originalStartTime;
       let appendingToCache = false;
-      let cache = window.stateHistoryCache[cacheKey];
+      let cache = stateHistoryCache[cacheKey];
       if (cache && startTime >= cache.startTime && startTime <= cache.endTime
         && cache.language === language) {
         startTime = cache.endTime;
@@ -302,7 +304,7 @@ import '../util/hass-util.js';
           return cache.prom;
         }
       } else {
-        cache = window.stateHistoryCache[cacheKey] = this.getEmptyCache(language);
+        cache = stateHistoryCache[cacheKey] = this.getEmptyCache(language);
       }
       // Use Promise.all in order to make sure the old and the new fetches have both completed.
       const prom = Promise.all([cache.prom,
@@ -323,7 +325,7 @@ import '../util/hass-util.js';
         .catch((err) => {
           /* eslint-disable no-console */
           console.error(err);
-          window.stateHistoryCache[cacheKey] = undefined;
+          stateHistoryCache[cacheKey] = undefined;
         });
       cache.prom = prom;
       cache.startTime = originalStartTime;
@@ -382,5 +384,5 @@ import '../util/hass-util.js';
       return prom;
     }
   }
-  customElements.define(HaStateHistoryData.is, HaStateHistoryData);
+  customElements.define('ha-state-history-data', HaStateHistoryData);
 }

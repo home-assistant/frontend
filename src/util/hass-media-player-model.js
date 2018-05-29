@@ -1,210 +1,204 @@
-window.HassMediaPlayerEntity = function (hass, stateObj) {
-  this.hass = hass;
-  this.stateObj = stateObj;
-};
-
-function addGetter(name, getter) {
-  Object.defineProperty(
-    window.HassMediaPlayerEntity.prototype, name,
-    { get: getter }
-  );
-}
-
-addGetter('isOff', function () {
-  return this.stateObj.state === 'off';
-});
-
-addGetter('isIdle', function () {
-  return this.stateObj.state === 'idle';
-});
-
-addGetter('isMuted', function () {
-  return this.stateObj.attributes.is_volume_muted;
-});
-
-addGetter('isPaused', function () {
-  return this.stateObj.state === 'paused';
-});
-
-addGetter('isPlaying', function () {
-  return this.stateObj.state === 'playing';
-});
-
-addGetter('isMusic', function () {
-  return this.stateObj.attributes.media_content_type === 'music';
-});
-
-addGetter('isTVShow', function () {
-  return this.stateObj.attributes.media_content_type === 'tvshow';
-});
-
-addGetter('hasMediaControl', function () {
-  return ['playing', 'paused', 'unknown'].indexOf(this.stateObj.state) !== -1;
-});
-
-addGetter('volumeSliderValue', function () {
-  return this.stateObj.attributes.volume_level * 100;
-});
-
-addGetter('showProgress', function () {
-  return (
-    (this.isPlaying || this.isPaused) &&
-    'media_duration' in this.stateObj.attributes &&
-    'media_position' in this.stateObj.attributes &&
-    'media_position_updated_at' in this.stateObj.attributes);
-});
-
-addGetter('currentProgress', function () {
-  var progress = this.stateObj.attributes.media_position;
-  if (this.isPlaying) {
-    progress += (Date.now() -
-                 new Date(this.stateObj.attributes.media_position_updated_at).getTime()) / 1000.0;
+export default class MediaPlayerEntity {
+  constructor(hass, stateObj) {
+    this.hass = hass;
+    this.stateObj = stateObj;
+    this._attr = stateObj.attributes;
+    this._feat = this._attr.supported_features;
   }
-  return progress;
-});
 
-/* eslint-disable no-bitwise */
+  get isOff() {
+    return this.stateObj.state === 'off';
+  }
 
-addGetter('supportsPause', function () {
-  return (this.stateObj.attributes.supported_features & 1) !== 0;
-});
+  get isIdle() {
+    return this.stateObj.state === 'idle';
+  }
 
-addGetter('supportsVolumeSet', function () {
-  return (this.stateObj.attributes.supported_features & 4) !== 0;
-});
+  get isMuted() {
+    return this._attr.is_volume_muted;
+  }
 
-addGetter('supportsVolumeMute', function () {
-  return (this.stateObj.attributes.supported_features & 8) !== 0;
-});
+  get isPaused() {
+    return this.stateObj.state === 'paused';
+  }
 
-addGetter('supportsPreviousTrack', function () {
-  return (this.stateObj.attributes.supported_features & 16) !== 0;
-});
+  get isPlaying() {
+    return this.stateObj.state === 'playing';
+  }
 
-addGetter('supportsNextTrack', function () {
-  return (this.stateObj.attributes.supported_features & 32) !== 0;
-});
+  get isMusic() {
+    return this._attr.media_content_type === 'music';
+  }
 
-addGetter('supportsTurnOn', function () {
-  return (this.stateObj.attributes.supported_features & 128) !== 0;
-});
+  get isTVShow() {
+    return this._attr.media_content_type === 'tvshow';
+  }
 
-addGetter('supportsTurnOff', function () {
-  return (this.stateObj.attributes.supported_features & 256) !== 0;
-});
+  get hasMediaControl() {
+    return ['playing', 'paused', 'unknown'].indexOf(this.stateObj.state) !== -1;
+  }
 
-addGetter('supportsPlayMedia', function () {
-  return (this.stateObj.attributes.supported_features & 512) !== 0;
-});
+  get volumeSliderValue() {
+    return this._attr.volume_level * 100;
+  }
 
-addGetter('supportsVolumeButtons', function () {
-  return (this.stateObj.attributes.supported_features & 1024) !== 0;
-});
+  get showProgress() {
+    return (
+      (this.isPlaying || this.isPaused) &&
+      'media_duration' in this.stateObj.attributes &&
+      'media_position' in this.stateObj.attributes &&
+      'media_position_updated_at' in this.stateObj.attributes);
+  }
 
-addGetter('supportsSelectSource', function () {
-  return (this.stateObj.attributes.supported_features & 2048) !== 0;
-});
-
-addGetter('supportsPlay', function () {
-  return (this.stateObj.attributes.supported_features & 16384) !== 0;
-});
-
-/* eslint-enable no-bitwise */
-
-addGetter('primaryTitle', function () {
-  return this.stateObj.attributes.media_title;
-});
-
-addGetter('secondaryTitle', function () {
-  if (this.isMusic) {
-    return this.stateObj.attributes.media_artist;
-  } else if (this.isTVShow) {
-    var text = this.stateObj.attributes.media_series_title;
-
-    if (this.stateObj.attributes.media_season) {
-      text += ' S' + this.stateObj.attributes.media_season;
-
-      if (this.stateObj.attributes.media_episode) {
-        text += 'E' + this.stateObj.attributes.media_episode;
-      }
+  get currentProgress() {
+    var progress = this._attr.media_position;
+    if (this.isPlaying) {
+      progress += (Date.now() -
+                  new Date(this._attr.media_position_updated_at).getTime()) / 1000.0;
     }
-
-    return text;
-  } else if (this.stateObj.attributes.app_name) {
-    return this.stateObj.attributes.app_name;
+    return progress;
   }
-  return '';
-});
 
-addGetter('source', function () {
-  return this.stateObj.attributes.source;
-});
+  /* eslint-disable no-bitwise */
 
-addGetter('sourceList', function () {
-  return this.stateObj.attributes.source_list;
-});
+  get supportsPause() {
+    return (this._feat & 1) !== 0;
+  }
 
-Object.assign(window.HassMediaPlayerEntity.prototype, {
-  mediaPlayPause: function () {
+  get supportsVolumeSet() {
+    return (this._feat & 4) !== 0;
+  }
+
+  get supportsVolumeMute() {
+    return (this._feat & 8) !== 0;
+  }
+
+  get supportsPreviousTrack() {
+    return (this._feat & 16) !== 0;
+  }
+
+  get supportsNextTrack() {
+    return (this._feat & 32) !== 0;
+  }
+
+  get supportsTurnOn() {
+    return (this._feat & 128) !== 0;
+  }
+
+  get supportsTurnOff() {
+    return (this._feat & 256) !== 0;
+  }
+
+  get supportsPlayMedia() {
+    return (this._feat & 512) !== 0;
+  }
+
+  get supportsVolumeButtons() {
+    return (this._feat & 1024) !== 0;
+  }
+
+  get supportsSelectSource() {
+    return (this._feat & 2048) !== 0;
+  }
+
+  get supportsPlay() {
+    return (this._feat & 16384) !== 0;
+  }
+
+  /* eslint-enable no-bitwise */
+
+  get primaryTitle() {
+    return this._attr.media_title;
+  }
+
+  get secondaryTitle() {
+    if (this.isMusic) {
+      return this._attr.media_artist;
+    } else if (this.isTVShow) {
+      var text = this._attr.media_series_title;
+
+      if (this._attr.media_season) {
+        text += ' S' + this._attr.media_season;
+
+        if (this._attr.media_episode) {
+          text += 'E' + this._attr.media_episode;
+        }
+      }
+
+      return text;
+    } else if (this._attr.app_name) {
+      return this._attr.app_name;
+    }
+    return '';
+  }
+
+  get source() {
+    return this._attr.source;
+  }
+
+  get sourceList() {
+    return this._attr.source_list;
+  }
+
+  mediaPlayPause() {
     this.callService('media_play_pause');
-  },
+  }
 
-  nextTrack: function () {
+  nextTrack() {
     this.callService('media_next_track');
-  },
+  }
 
-  playbackControl: function () {
+  playbackControl() {
     this.callService('media_play_pause');
-  },
+  }
 
-  previousTrack: function () {
+  previousTrack() {
     this.callService('media_previous_track');
-  },
+  }
 
-  setVolume: function (volume) {
+  setVolume(volume) {
     this.callService('volume_set', { volume_level: volume });
-  },
+  }
 
-  togglePower: function () {
+  togglePower() {
     if (this.isOff) {
       this.turnOn();
     } else {
       this.turnOff();
     }
-  },
+  }
 
-  turnOff: function () {
+  turnOff() {
     this.callService('turn_off');
-  },
+  }
 
-  turnOn: function () {
+  turnOn() {
     this.callService('turn_on');
-  },
+  }
 
-  volumeDown: function () {
+  volumeDown() {
     this.callService('volume_down');
-  },
+  }
 
-  volumeMute: function (mute) {
+  volumeMute(mute) {
     if (!this.supportsVolumeMute) {
       throw new Error('Muting volume not supported');
     }
     this.callService('volume_mute', { is_volume_muted: mute });
-  },
+  }
 
-  volumeUp: function () {
+  volumeUp() {
     this.callService('volume_up');
-  },
+  }
 
-  selectSource: function (sourceInput) {
-    this.callService('select_source', { source: sourceInput });
-  },
+  selectSource(source) {
+    this.callService('select_source', { source });
+  }
 
   // helper method
 
-  callService: function (service, data) {
-    var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entity_id;
-    this.hass.callService('media_player', service, serviceData);
-  },
-});
+  callService(service, data = {}) {
+    data.entity_id = this.stateObj.entity_id;
+    this.hass.callService('media_player', service, data);
+  }
+}

@@ -3,6 +3,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-badge.js';
 
+import computeStateName from '../common/entity/compute_state_name.js';
+
 class StateCardWeblink extends PolymerElement {
   static get template() {
     return html`
@@ -22,11 +24,9 @@ class StateCardWeblink extends PolymerElement {
     </style>
 
     <state-badge state-obj="[[stateObj]]"></state-badge>
-    <a href\$="[[stateObj.state]]" target="_blank" class="name" id="link">[[computeStateName(stateObj)]]</a>
+    <a href\$="[[stateObj.state]]" target="_blank" class="name" id="link">[[_computeStateName(stateObj)]]</a>
 `;
   }
-
-  static get is() { return 'state-card-weblink'; }
 
   static get properties() {
     return {
@@ -43,8 +43,8 @@ class StateCardWeblink extends PolymerElement {
     this.addEventListener('click', ev => this.onTap(ev));
   }
 
-  computeStateName(stateObj) {
-    return window.hassUtil.computeStateName(stateObj);
+  _computeStateName(stateObj) {
+    return computeStateName(stateObj);
   }
 
   onTap(ev) {
@@ -53,4 +53,4 @@ class StateCardWeblink extends PolymerElement {
     window.open(this.stateObj.state, '_blank');
   }
 }
-customElements.define(StateCardWeblink.is, StateCardWeblink);
+customElements.define('state-card-weblink', StateCardWeblink);

@@ -6,19 +6,21 @@ import '@polymer/iron-pages/iron-pages.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../components/ha-sidebar.js';
-import '../dialogs/ha-more-info-dialog.js';
-import '../dialogs/ha-voice-command-dialog.js';
 import '../util/ha-url-sync.js';
-import '../util/hass-mixins.js';
-import '../util/hass-util.js';
+
 import './partial-cards.js';
 import './partial-panel-resolver.js';
+import EventsMixin from '../mixins/events-mixin.js';
+import NavigateMixin from '../mixins/navigate-mixin.js';
+
+import(/* webpackChunkName: "ha-sidebar" */ '../components/ha-sidebar.js');
+import(/* webpackChunkName: "more-info-dialog" */ '../dialogs/ha-more-info-dialog.js');
+import(/* webpackChunkName: "voice-command-dialog" */ '../dialogs/ha-voice-command-dialog.js');
 
 {
   const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
 
-  class HomeAssistantMain extends window.hassMixins.EventsMixin(PolymerElement) {
+  class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`
     <style>
@@ -56,8 +58,6 @@ import './partial-panel-resolver.js';
     </app-drawer-layout>
 `;
     }
-
-    static get is() { return 'home-assistant-main'; }
 
     static get properties() {
       return {
@@ -112,7 +112,7 @@ import './partial-panel-resolver.js';
       super.connectedCallback();
       window.removeInitMsg();
       if (document.location.pathname === '/') {
-        history.replaceState(null, null, '/states');
+        this.navigate('/states', true);
       }
     }
 
@@ -129,5 +129,5 @@ import './partial-panel-resolver.js';
     }
   }
 
-  customElements.define(HomeAssistantMain.is, HomeAssistantMain);
+  customElements.define('home-assistant-main', HomeAssistantMain);
 }

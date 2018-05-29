@@ -3,7 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../ha-relative-time.js';
 import './state-badge.js';
-import computeStateName from '../../../js/common/entity/compute_state_name.js';
+import computeStateName from '../../common/entity/compute_state_name.js';
 
 class StateInfo extends PolymerElement {
   static get template() {
@@ -58,8 +58,6 @@ class StateInfo extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-info'; }
-
   static get properties() {
     return {
       detailed: {
@@ -82,4 +80,4 @@ class StateInfo extends PolymerElement {
   }
 }
 
-customElements.define(StateInfo.is, StateInfo);
+customElements.define('state-info', StateInfo);

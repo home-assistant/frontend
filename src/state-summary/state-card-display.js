@@ -3,15 +3,15 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
-import '../util/hass-mixins.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
-import computeStateDisplay from '../../js/common/entity/compute_state_display.js';
-import attributeClassNames from '../../js/common/entity/attribute_class_names.js';
+import computeStateDisplay from '../common/entity/compute_state_display.js';
+import attributeClassNames from '../common/entity/attribute_class_names.js';
 
 /*
- * @appliesMixin window.hassMixins.LocalizeMixin
+ * @appliesMixin LocalizeMixin
  */
-class StateCardDisplay extends window.hassMixins.LocalizeMixin(PolymerElement) {
+class StateCardDisplay extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -44,8 +44,6 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(PolymerElement) {
 `;
   }
 
-  static get is() { return 'state-card-display'; }
-
   static get properties() {
     return {
       hass: Object,
@@ -69,4 +67,4 @@ class StateCardDisplay extends window.hassMixins.LocalizeMixin(PolymerElement) {
     return classes.join(' ');
   }
 }
-customElements.define(StateCardDisplay.is, StateCardDisplay);
+customElements.define('state-card-display', StateCardDisplay);

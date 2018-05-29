@@ -3,9 +3,12 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../util/hass-mixins.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
-class HaClimateControl extends window.hassMixins.EventsMixin(PolymerElement) {
+/*
+ * @appliesMixin EventsMixin
+ */
+class HaClimateControl extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -39,16 +42,14 @@ class HaClimateControl extends window.hassMixins.EventsMixin(PolymerElement) {
     </div>
     <div class="control-buttons">
       <div>
-        <paper-icon-button icon="mdi:chevron-up" on-click="incrementValue"></paper-icon-button>
+        <paper-icon-button icon="hass:chevron-up" on-click="incrementValue"></paper-icon-button>
       </div>
       <div>
-        <paper-icon-button icon="mdi:chevron-down" on-click="decrementValue"></paper-icon-button>
+        <paper-icon-button icon="hass:chevron-down" on-click="decrementValue"></paper-icon-button>
       </div>
     </div>
 `;
   }
-
-  static get is() { return 'ha-climate-control'; }
 
   static get properties() {
     return {
@@ -123,4 +124,4 @@ class HaClimateControl extends window.hassMixins.EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define(HaClimateControl.is, HaClimateControl);
+customElements.define('ha-climate-control', HaClimateControl);

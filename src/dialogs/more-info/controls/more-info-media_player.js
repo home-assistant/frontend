@@ -8,11 +8,18 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-paper-slider.js';
-import '../../../util/hass-media-player-model.js';
-import '../../../util/hass-mixins.js';
+import HassMediaPlayerEntity from '../../../util/hass-media-player-model.js';
+
+
+import attributeClassNames from '../../../common/entity/attribute_class_names';
+import isComponentLoaded from '../../../common/config/is_component_loaded.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 {
-  class MoreInfoMediaPlayer extends window.hassMixins.EventsMixin(PolymerElement) {
+  /*
+   * @appliesMixin EventsMixin
+   */
+  class MoreInfoMediaPlayer extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -58,21 +65,21 @@ import '../../../util/hass-mixins.js';
     <div class\$="[[computeClassNames(stateObj)]]">
       <div class="layout horizontal">
         <div class="flex">
-          <paper-icon-button icon="mdi:power" highlight\$="[[playerObj.isOff]]" on-click="handleTogglePower" hidden\$="[[computeHidePowerButton(playerObj)]]"></paper-icon-button>
+          <paper-icon-button icon="hass:power" highlight\$="[[playerObj.isOff]]" on-click="handleTogglePower" hidden\$="[[computeHidePowerButton(playerObj)]]"></paper-icon-button>
         </div>
         <div>
           <template is="dom-if" if="[[computeShowPlaybackControls(playerObj)]]">
-            <paper-icon-button icon="mdi:skip-previous" on-click="handlePrevious" hidden\$="[[!playerObj.supportsPreviousTrack]]"></paper-icon-button>
+            <paper-icon-button icon="hass:skip-previous" on-click="handlePrevious" hidden\$="[[!playerObj.supportsPreviousTrack]]"></paper-icon-button>
             <paper-icon-button icon="[[computePlaybackControlIcon(playerObj)]]" on-click="handlePlaybackControl" hidden\$="[[!computePlaybackControlIcon(playerObj)]]" highlight=""></paper-icon-button>
-            <paper-icon-button icon="mdi:skip-next" on-click="handleNext" hidden\$="[[!playerObj.supportsNextTrack]]"></paper-icon-button>
+            <paper-icon-button icon="hass:skip-next" on-click="handleNext" hidden\$="[[!playerObj.supportsNextTrack]]"></paper-icon-button>
           </template>
         </div>
       </div>
       <!-- VOLUME -->
       <div class="volume_buttons center horizontal layout" hidden\$="[[computeHideVolumeButtons(playerObj)]]">
-        <paper-icon-button on-click="handleVolumeTap" icon="mdi:volume-off"></paper-icon-button>
-        <paper-icon-button id="volumeDown" disabled\$="[[playerObj.isMuted]]" on-mousedown="handleVolumeDown" on-touchstart="handleVolumeDown" icon="mdi:volume-medium"></paper-icon-button>
-        <paper-icon-button id="volumeUp" disabled\$="[[playerObj.isMuted]]" on-mousedown="handleVolumeUp" on-touchstart="handleVolumeUp" icon="mdi:volume-high"></paper-icon-button>
+        <paper-icon-button on-click="handleVolumeTap" icon="hass:volume-off"></paper-icon-button>
+        <paper-icon-button id="volumeDown" disabled\$="[[playerObj.isMuted]]" on-mousedown="handleVolumeDown" on-touchstart="handleVolumeDown" icon="hass:volume-medium"></paper-icon-button>
+        <paper-icon-button id="volumeUp" disabled\$="[[playerObj.isMuted]]" on-mousedown="handleVolumeUp" on-touchstart="handleVolumeUp" icon="hass:volume-high"></paper-icon-button>
       </div>
       <div class="volume center horizontal layout" hidden\$="[[!playerObj.supportsVolumeSet]]">
         <paper-icon-button on-click="handleVolumeTap" hidden\$="[[playerObj.supportsVolumeButtons]]" icon="[[computeMuteVolumeIcon(playerObj)]]"></paper-icon-button>
@@ -81,7 +88,7 @@ import '../../../util/hass-mixins.js';
       </div>
       <!-- SOURCE PICKER -->
       <div class="controls layout horizontal justified" hidden\$="[[computeHideSelectSource(playerObj)]]">
-        <iron-icon class="source-input" icon="mdi:login-variant"></iron-icon>
+        <iron-icon class="source-input" icon="hass:login-variant"></iron-icon>
         <paper-dropdown-menu class="flex source-input" dynamic-align="" label-float="" label="Source">
           <paper-listbox slot="dropdown-content" selected="{{sourceIndex}}">
             <template is="dom-repeat" items="[[playerObj.sourceList]]">
@@ -93,13 +100,11 @@ import '../../../util/hass-mixins.js';
       <!-- TTS -->
       <div hidden\$="[[computeHideTTS(ttsLoaded, playerObj)]]" class="layout horizontal end">
         <paper-input id="ttsInput" label="Text to speak" class="flex" value="{{ttsMessage}}" on-keydown="ttsCheckForEnter"></paper-input>
-        <paper-icon-button icon="mdi:send" on-click="sendTTS"></paper-icon-button>
+        <paper-icon-button icon="hass:send" on-click="sendTTS"></paper-icon-button>
       </div>
     </div>
 `;
     }
-
-    static get is() { return 'more-info-media_player'; }
 
     static get properties() {
       return {
@@ -131,7 +136,7 @@ import '../../../util/hass-mixins.js';
     }
 
     computePlayerObj(hass, stateObj) {
-      return new window.HassMediaPlayerEntity(hass, stateObj);
+      return new HassMediaPlayerEntity(hass, stateObj);
     }
 
     playerObjChanged(newVal, oldVal) {
@@ -147,11 +152,11 @@ import '../../../util/hass-mixins.js';
     }
 
     computeClassNames(stateObj) {
-      return window.hassUtil.attributeClassNames(stateObj, ['volume_level']);
+      return attributeClassNames(stateObj, ['volume_level']);
     }
 
     computeMuteVolumeIcon(playerObj) {
-      return playerObj.isMuted ? 'mdi:volume-off' : 'mdi:volume-high';
+      return playerObj.isMuted ? 'hass:volume-off' : 'hass:volume-high';
     }
 
     computeHideVolumeButtons(playerObj) {
@@ -164,9 +169,9 @@ import '../../../util/hass-mixins.js';
 
     computePlaybackControlIcon(playerObj) {
       if (playerObj.isPlaying) {
-        return playerObj.supportsPause ? 'mdi:pause' : 'mdi:stop';
+        return playerObj.supportsPause ? 'hass:pause' : 'hass:stop';
       }
-      return playerObj.supportsPlay ? 'mdi:play' : null;
+      return playerObj.supportsPlay ? 'hass:play' : null;
     }
 
     computeHidePowerButton(playerObj) {
@@ -182,7 +187,7 @@ import '../../../util/hass-mixins.js';
     }
 
     computeTTSLoaded(hass) {
-      return window.hassUtil.isComponentLoaded(hass, 'tts');
+      return isComponentLoaded(hass, 'tts');
     }
 
     handleTogglePower() {
@@ -282,5 +287,5 @@ import '../../../util/hass-mixins.js';
     }
   }
 
-  customElements.define(MoreInfoMediaPlayer.is, MoreInfoMediaPlayer);
+  customElements.define('more-info-media_player', MoreInfoMediaPlayer);
 }

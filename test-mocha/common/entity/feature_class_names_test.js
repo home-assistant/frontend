@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import featureClassNames from '../../../js/common/entity/feature_class_names';
+import featureClassNames from '../../../src/common/entity/feature_class_names';
 
 describe('featureClassNames', () => {
   const classNames = {

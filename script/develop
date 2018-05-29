@@ -1,0 +1,25 @@
+#!/bin/sh
+# Run the frontend development server
+
+# Stop on errors
+set -e
+
+BUILD_DIR=build
+OUTPUT_DIR=hass_frontend
+OUTPUT_DIR_ES5=hass_frontend_es5
+
+rm -rf $OUTPUT_DIR $OUTPUT_DIR_ES5 $BUILD_DIR
+cp -r public $OUTPUT_DIR
+mkdir $OUTPUT_DIR_ES5
+# Needed in case frontend repo installed with pip3 install -e
+cp -r public/__init__.py $OUTPUT_DIR_ES5/
+
+./node_modules/.bin/gulp build-translations gen-icons
+cp src/authorize.html $OUTPUT_DIR
+
+# Manually copy over this file as we don't run the ES5 build
+# The Hass.io panel depends on it.
+cp node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js $OUTPUT_DIR_ES5
+cp node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js.map $OUTPUT_DIR
+
+./node_modules/.bin/webpack --watch --progress

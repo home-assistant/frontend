@@ -2,7 +2,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './ha-state-icon.js';
-import computeStateDomain from '../../../js/common/entity/compute_state_domain.js';
+import computeStateDomain from '../../common/entity/compute_state_domain.js';
 
 class StateBadge extends PolymerElement {
   static get template() {
@@ -43,7 +43,6 @@ class StateBadge extends PolymerElement {
 `;
   }
 
-  static get is() { return 'state-badge'; }
   static get properties() {
     return {
       stateObj: {
@@ -87,4 +86,4 @@ class StateBadge extends PolymerElement {
     Object.assign(this.style, hostStyle);
   }
 }
-customElements.define(StateBadge.is, StateBadge);
+customElements.define('state-badge', StateBadge);
