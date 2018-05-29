@@ -151,7 +151,7 @@ documentContainer.innerHTML = `<custom-style>
       app-header, app-toolbar {
         background-color: var(--primary-color);
         font-weight: 400;
-        color: white;
+        color: var(--text-primary-color);
       }
 
       app-toolbar ha-menu-button + [main-title],
