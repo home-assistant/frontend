@@ -14,136 +14,140 @@ class HaWeatherCard extends
   LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style>
-      :host {
-        cursor: pointer;
-      }
+      <style>
+        :host {
+          cursor: pointer;
+        }
 
-      .content {
-        padding: 0 20px 20px;
-      }
+        .content {
+          padding: 0 20px 20px;
+        }
 
-      iron-icon {
-        color: var(--paper-item-icon-color);
-      }
+        iron-icon {
+          color: var(--paper-item-icon-color);
+        }
 
-      .now {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-      }
+        .now {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+        }
 
-      .main {
-        display: flex;
-        align-items: center;
-        margin-right: 32px;
-      }
+        .main {
+          display: flex;
+          align-items: center;
+          margin-right: 32px;
+        }
 
-      .main iron-icon {
-        --iron-icon-height: 72px;
-        --iron-icon-width: 72px;
-        margin-right: 8px;
-      }
+        .main iron-icon {
+          --iron-icon-height: 72px;
+          --iron-icon-width: 72px;
+          margin-right: 8px;
+        }
 
-      .main .temp {
-        font-size: 52px;
-        line-height: 1em;
-        position: relative;
-      }
+        .main .temp {
+          font-size: 52px;
+          line-height: 1em;
+          position: relative;
+        }
 
-      .main .temp span {
-        font-size: 24px;
-        line-height: 1em;
-        position: absolute;
-        top: 4px;
-      }
+        .main .temp span {
+          font-size: 24px;
+          line-height: 1em;
+          position: absolute;
+          top: 4px;
+        }
 
-      .now-text {
-        font-size: 24px;
-      }
+        .now-text {
+          font-size: 24px;
+        }
 
-      .forecast {
-        margin-top: 24px;
-        display: flex;
-        justify-content: space-between;
-      }
+        .forecast {
+          margin-top: 24px;
+          display: flex;
+          justify-content: space-between;
+        }
 
-      .forecast div {
-        flex: 0 0 auto;
-        text-align: center;
-      }
+        .forecast div {
+          flex: 0 0 auto;
+          text-align: center;
+        }
 
-      .forecast .icon {
-        margin: 8px 0;
-        text-align: center;
-      }
+        .forecast .icon {
+          margin: 8px 0;
+          text-align: center;
+        }
 
-      .weekday {
-        font-weight: bold;
-      }
+        .weekday {
+          font-weight: bold;
+        }
 
-      .attributes,
-      .templow {
-        color: var(--secondary-text-color);
-      }
-    </style>
-    <ha-card header="[[stateObj.attributes.friendly_name]]">
-      <div class="content">
-        <div class="now">
-          <div class="main">
-            <template is="dom-if" if="[[showWeatherIcon(stateObj.state)]]">
-              <iron-icon icon="[[getWeatherIcon(stateObj.state)]]"></iron-icon>
-            </template>
-            <div class="temp">
-              [[stateObj.attributes.temperature]]<span>[[getUnit('temperature')]]</span>
+        .attributes,
+        .templow,
+        .precipitation {      {
+          color: var(--secondary-text-color);
+        }
+      </style>
+      <ha-card header="[[stateObj.attributes.friendly_name]]">
+        <div class="content">
+          <div class="now">
+            <div class="main">
+              <template is="dom-if" if="[[showWeatherIcon(stateObj.state)]]">
+                <iron-icon icon="[[getWeatherIcon(stateObj.state)]]"></iron-icon>
+              </template>
+              <div class="temp">
+                [[stateObj.attributes.temperature]]<span>[[getUnit('temperature')]]</span>
+              </div>
+            </div>
+            <div class="attributes">
+              <template is="dom-if" if="[[_showValue(stateObj.attributes.pressure)]]">
+                <div>
+                  [[localize('ui.card.weather.attributes.air_pressure')]]:
+                  [[stateObj.attributes.pressure]] hPa
+                </div>
+              </template>
+              <template is="dom-if" if="[[_showValue(stateObj.attributes.humidity)]]">
+                <div>
+                  [[localize('ui.card.weather.attributes.humidity')]]:
+                  [[stateObj.attributes.humidity]] %
+                </div>
+              </template>
+              <template is="dom-if" if="[[_showValue(stateObj.attributes.humidity)]]">
+                <div>
+                  [[localize('ui.card.weather.attributes.wind_speed')]]:
+                  [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
+                </div>
+              </template>
             </div>
           </div>
-          <div class="attributes">
-            <template is="dom-if" if="[[stateObj.attributes.pressure]]">
-              <div>
-                [[localize('ui.card.weather.attributes.air_pressure')]]:
-                [[stateObj.attributes.pressure]] hPa
-              </div>
-            </template>
-            <template is="dom-if" if="[[stateObj.attributes.humidity]]">
-              <div>
-                [[localize('ui.card.weather.attributes.humidity')]]:
-                [[stateObj.attributes.humidity]] %
-              </div>
-            </template>
-            <template is="dom-if" if="[[stateObj.attributes.humidity]]">
-              <div>
-                [[localize('ui.card.weather.attributes.wind_speed')]]:
-                [[getWind(stateObj.attributes.wind_speed, stateObj.attributes.wind_bearing, localize)]]
-              </div>
-            </template>
+          <div class="now-text">
+            [[computeState(stateObj.state, localize)]]
           </div>
+          <template is="dom-if" if="[[forecast]]">
+            <div class="forecast">
+              <template is="dom-repeat" items="[[forecast]]">
+                <div>
+                  <div class="weekday">[[computeDateTime(item.datetime)]]</div>
+                  <template is="dom-if" if="[[item.condition]]">
+                    <div class="icon">
+                      <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
+                    </div>
+                  </template>
+                  <div class="temp">[[item.temperature]] [[getUnit('temperature')]]</div>
+                  <template is="dom-if" if="[[_showValue(item.templow)]]">
+                    <div class="templow">[[item.templow]] [[getUnit('temperature')]]</div>
+                  </template>
+                  <template is="dom-if" if="[[_showValue(item.precipitation)]]">
+                    <div class="precipitation">[[item.precipitation]] [[getUnit('precipitation')]]</div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </template>
         </div>
-        <div class="now-text">
-          [[computeState(stateObj.state, localize)]]
-        </div>
-        <template is="dom-if" if="[[forecast]]">
-          <div class="forecast">
-            <template is="dom-repeat" items="[[forecast]]">
-              <div>
-                <div class="weekday">[[computeDateTime(item.datetime)]]</div>
-                <template is="dom-if" if="[[item.condition]]">
-                  <div class="icon">
-                    <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
-                  </div>
-                </template>
-                <div class="temp">[[item.temperature]] [[getUnit('temperature')]]</div>
-                <template is="dom-if" if="[[item.templow]]">
-                  <div class="templow">[[item.templow]] [[getUnit('temperature')]]</div>
-                </template>
-              </div>
-            </template>
-          </div>
-        </template>
-      </div>
-    </ha-card>
-`;
+      </ha-card>
+    `;
   }
 
   static get properties() {
@@ -194,8 +198,11 @@ class HaWeatherCard extends
     return forecast && forecast.slice(0, 5);
   }
 
-  getUnit(unit) {
-    return this.hass.config.core.unit_system[unit] || '';
+  getUnit(measure) {
+    if (measure === 'precipitation') {
+      return this.getUnit('length') === 'km' ? 'mm' : 'in';
+    }
+    return this.hass.config.core.unit_system[measure] || '';
   }
 
   computeState(state, localize) {
@@ -224,6 +231,10 @@ class HaWeatherCard extends
       return `${speed} ${this.getUnit('length')}/h (${localize(`ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`) || cardinalDirection})`;
     }
     return `${speed} ${this.getUnit('length')}/h`;
+  }
+
+  _showValue(item) {
+    return typeof item !== 'undefined' && item !== null;
   }
 
   computeDateTime(data) {
