@@ -16,13 +16,12 @@ import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 
 import '../../resources/ha-style.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
  */
 
-class HABigCalendar extends LocalizeMixin(PolymerElement) {
+class HABigCalendar extends PolymerElement {
   static get template() {
     return html`
     <template>[[events]]</template>

@@ -80,7 +80,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             </div>
             <paper-listbox id="calendar_list" multi on-selected-items-changed="_fetchData" selected-values="{{selectedCalendars}}" attr-for-selected="item-name">
               <template is="dom-repeat" items="[[calendars]]">
-                <paper-item item-name=[[item.name]]>
+                <paper-item item-name="[[item.name]]">
                   <span class="calendar_color" style="background-color: [[item.color]]"></span>
                   <span class="calendar_color_spacer"></span>
                   [[item.name]]
