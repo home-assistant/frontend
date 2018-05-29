@@ -31,7 +31,7 @@ class HABigCalendar extends LocalizeMixin(PolymerElement) {
 
   update() {
     BigCalendar.momentLocalizer(moment);
-    var allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k]);
+    const allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k]);
 
     this.bc_element = React.createElement(
       BigCalendar,
@@ -42,7 +42,7 @@ class HABigCalendar extends LocalizeMixin(PolymerElement) {
     );
     render(this.bc_element, this.shadowRoot);
     // Add react big calendar css
-    var style = document.createElement('link');
+    const style = document.createElement('link');
     style.setAttribute('href', '/static/images/react-big-calendar/react-big-calendar.css');
     style.setAttribute('rel', 'stylesheet');
     this.shadowRoot.appendChild(style);
@@ -59,13 +59,9 @@ class HABigCalendar extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
-      bc_element: {
-        type: Object,
-      },
+      bc_element: Object,
 
       events: {
         type: Array,

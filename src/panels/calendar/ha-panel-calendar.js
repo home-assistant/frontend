@@ -73,23 +73,23 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
 
       <div class="flex content">
         <div id="calendars" class="layout vertical wrap">
-            <paper-card heading="Calendars">
-              <div class="all_calendars">
-                <paper-checkbox id="all_calendars" on-change="checkAll" checked>All calendars</paper-checkbox>
-              </div>
-              <paper-listbox id="calendar_list" multi on-selected-items-changed="_fetchData" selected-values="{{selectedCalendars}}" attr-for-selected="item-name">
-                <template is="dom-repeat" items="[[calendars]]">
-                  <paper-item item-name={{item.name}}>
-                    <span class="calendar_color" style="background-color: {{item.color}}"></span>
-                    <span class="calendar_color_spacer"></span>
-                    {{item.name}}
-                  </paper-item>
-                </template>
-              </paper-listbox>
-            </paper-card>
+          <paper-card heading="Calendars">
+            <div class="all_calendars">
+              <paper-checkbox id="all_calendars" on-change="checkAll" checked>All calendars</paper-checkbox>
+            </div>
+            <paper-listbox id="calendar_list" multi on-selected-items-changed="_fetchData" selected-values="{{selectedCalendars}}" attr-for-selected="item-name">
+              <template is="dom-repeat" items="[[calendars]]">
+                <paper-item item-name=[[item.name]]>
+                  <span class="calendar_color" style="background-color: [[item.color]]"></span>
+                  <span class="calendar_color_spacer"></span>
+                  [[item.name]]
+                </paper-item>
+              </template>
+            </paper-listbox>
+          </paper-card>
         </div>
         <div class="flex layout horizontal wrap">
-            <ha-big-calendar events=[[items]]></ha-big-calendar>
+          <ha-big-calendar events=[[items]]></ha-big-calendar>
         </div>
       </div>
     </app-header-layout>
@@ -124,10 +124,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   checkAll() {
     // Check all calendars
     if (this.$.all_calendars.checked) {
-      var selectedIndex = [];
-      for (let i = 0; i < this.$.calendar_list.selectedItems.length; i++) {
-        selectedIndex.push(this.$.calendar_list.indexOf(this.$.calendar_list.selectedItems[i]));
-      }
+      const selectedIndex = this.$.calendar_list.selectedItems.map(x => this.$.calendar_list.indexOf(x));
       for (let i = 0; i < this.calendars.length; i++) {
         if (selectedIndex.indexOf(i) === -1) {
           this.$.calendar_list.selectIndex(i);
@@ -138,9 +135,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
       items: {
         type: Array,
@@ -167,17 +162,11 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         value: false,
       },
 
-      platforms: {
-        type: Array,
-      },
+      platforms: Array,
 
-      _messages: {
-        type: Array,
-      },
+      _messages: Array,
 
-      currentMessage: {
-        type: Object,
-      },
+      currentMessage: Object,
 
     };
   }
