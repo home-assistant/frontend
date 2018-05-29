@@ -315,6 +315,10 @@
   },
   "ui": {
     "card": {
+      "automation": {
+        "last_triggered": "Last triggered",
+        "trigger": "Trigger"
+      },
       "camera": {
         "not_available": "Image not available"
       },

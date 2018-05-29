@@ -1,40 +1,43 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-relative-time.js';
 
-class MoreInfoAutomation extends PolymerElement {
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
+
+class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      paper-button {
-        color: var(--primary-color);
-        font-weight: 500;
-        top: 3px;
-        height: 37px;
-      }
-    </style>
+      <style>
+        paper-button {
+          color: var(--primary-color);
+          font-weight: 500;
+          margin-bottom: 8px;
+        }
+        .flex {
+          display: flex;
+          justify-content: space-between;
+        }
+      </style>
 
-    <p>
-      Last triggered:
-      <ha-relative-time datetime="[[stateObj.attributes.last_triggered]]"></ha-relative-time>
-    </p>
+      <div class="flex">
+        <div>
+          [[localize('ui.card.automation.last_triggered')]]:
+        </div>
+        <ha-relative-time datetime="[[stateObj.attributes.last_triggered]]"></ha-relative-time>
+      </div>
 
-    <paper-button on-click="handleTriggerTapped">TRIGGER</paper-button>
-`;
+      <paper-button on-click="handleTriggerTapped">
+        [[localize('ui.card.automation.trigger')]]
+      </paper-button>
+    `;
   }
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      stateObj: {
-        type: Object,
-      },
+      hass: Object,
+      stateObj: Object
     };
   }
 
