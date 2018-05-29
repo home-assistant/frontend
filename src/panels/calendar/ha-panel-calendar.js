@@ -110,16 +110,16 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // Fetch data
     // Fetch calendar list
     this.hass.callApi('get', 'calendar-list')
-      .then(function (items) {
+      .then((items) => {
         this.calendars = items;
-      }.bind(this));
+      });
     // Fecth events fro selected calendar
     this.items = [];
     this.hass.callApi('post', 'calendar', { calendars: this.selectedCalendars })
-      .then(function (items) {
+      .then((items) => {
         // add items
         this.items = items;
-      }.bind(this));
+      });
   }
 
   checkAll() {
