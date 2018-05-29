@@ -125,7 +125,8 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   checkAll() {
     // Check all calendars
     if (this.$.all_calendars.checked) {
-      const selectedIndex = this.$.calendar_list.selectedItems.map(x => this.$.calendar_list.indexOf(x));
+      const selectedIndex = this.$.calendar_list.selectedItems
+                              .map(x => this.$.calendar_list.indexOf(x));
       for (let i = 0; i < this.calendars.length; i++) {
         if (selectedIndex.indexOf(i) === -1) {
           this.$.calendar_list.selectIndex(i);

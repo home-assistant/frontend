@@ -51,7 +51,7 @@ class HABigCalendar extends PolymerElement {
   }
 
   showEventDetails(event) {
-   alert(event);
+    alert(event);
   }
 
   setEventStyle(event) {
