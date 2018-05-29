@@ -38,7 +38,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
         }
       </style>
 
-      <template is="dom-if" if="[[!_equal(_codeFormat, 'None')]]">
+      <template is="dom-if" if="[[_codeFormat]]">
         <paper-input
           label="[[localize('ui.card.alarm_control_panel.code')]]"
           value="{{_enteredCode}}"
@@ -47,7 +47,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
           disabled="[[!_inputEnabled]]"
         ></paper-input>
 
-        <template is="dom-if" if="[[_equal(_codeFormat, 'Number')]]">
+        <template is="dom-if" if="[[_isNumber(_codeFormat)]]">
           <div class="pad">
             <div>
               <paper-button on-click='_digitClicked' disabled='[[!_inputEnabled]]' data-digit="1" raised>1</paper-button>
@@ -82,7 +82,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
           <paper-button raised on-click="_callService" data-service="alarm_arm_home" disabled="[[!_codeValid]]">
             [[localize('ui.card.alarm_control_panel.arm_home')]]
           </paper-button>
-          <paper-button raised on-click="_callService" data-service="alarm_arm_away" disabled="[[!_codeValid)]]">
+          <paper-button raised on-click="_callService" data-service="alarm_arm_away" disabled="[[!_codeValid]]">
             [[localize('ui.card.alarm_control_panel.arm_away')]]
           </paper-button>
         </template>
@@ -148,12 +148,12 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
     }
   }
 
-  _equal(a, b) {
-    return a === b;
+  _isNumber(format) {
+    return format === 'Number';
   }
 
   _validateCode(code, format) {
-    return format === 'None' || code.length > 0;
+    return !format || code.length > 0;
   }
 
   _digitClicked(ev) {
