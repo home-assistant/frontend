@@ -6,31 +6,59 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex"></style>
+      <style is="custom-style" include="iron-flex"></style>
+      <style>
+        .pad {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 10%;
+        }
+        .pad div {
+          display: flex;
+          flex-direction: column;
+        }
+      </style>
 
-    <div class="layout horizontal">
-      <paper-input label="code" value="{{enteredCode}}" pattern="[[codeFormat]]" type="password" hidden\$="[[!codeFormat]]" disabled="[[!codeInputEnabled]]"></paper-input>
-    </div>
-    <div class="layout horizontal">
-      <paper-button on-click="handleDisarmTap" hidden\$="[[!disarmButtonVisible]]" disabled="[[!codeValid]]">Disarm</paper-button>
-      <paper-button on-click="handleHomeTap" hidden\$="[[!armHomeButtonVisible]]" disabled="[[!codeValid]]">Arm Home</paper-button>
-      <paper-button on-click="handleAwayTap" hidden\$="[[!armAwayButtonVisible]]" disabled="[[!codeValid]]">Arm Away</paper-button>
-    </div>
-`;
+      <div class='layout horizontal center-justified'>
+        <paper-input label="code" value="{{enteredCode}}" pattern="[[codeFormat]]" type="password" hidden\$="[[!codeFormat]]" disabled="[[!codeInputEnabled]]"></paper-input>
+      </div>
+
+      <template is="dom-if" if="[[numericPin]]">
+        <div class="pad">
+          <div>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="1" raised>1</paper-button>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="4" raised>4</paper-button>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="7" raised>7</paper-button>
+          </div>
+          <div>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="2" raised>2</paper-button>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="5" raised>5</paper-button>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="8" raised>8</paper-button>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="0" raised>0</paper-button>
+          </div>
+          <div>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="3" raised>3</paper-button>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="6" raised>6</paper-button>
+            <paper-button on-click='numberPadClicked' disabled='[[!codeInputEnabled]]' data-digit="9" raised>9</paper-button>
+            <paper-button on-click='clearCode' disabled='[[!codeInputEnabled]]' raised>Clear</paper-button>
+          </div>
+        </div>
+      </template>
+
+      <div class="layout horizontal">
+        <paper-button on-click="handleDisarmTap" hidden\$="[[!disarmButtonVisible]]" disabled="[[!codeValid]]">Disarm</paper-button>
+        <paper-button on-click="handleHomeTap" hidden\$="[[!armHomeButtonVisible]]" disabled="[[!codeValid]]">Arm Home</paper-button>
+        <paper-button on-click="handleAwayTap" hidden\$="[[!armAwayButtonVisible]]" disabled="[[!codeValid]]">Arm Away</paper-button>
+      </div>
+    `;
   }
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
+      hass: Object,
       stateObj: {
         type: Object,
         observer: 'stateObjChanged',
@@ -38,6 +66,10 @@ class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
       enteredCode: {
         type: String,
         value: '',
+      },
+      numericPin: {
+        type: Boolean,
+        value: false,
       },
       disarmButtonVisible: {
         type: Boolean,
@@ -78,6 +110,7 @@ class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
     if (newVal) {
       const props = {
         codeFormat: newVal.attributes.code_format,
+        numericPin: newVal.attributes.code_format === '^\\d+$',
         armHomeButtonVisible: newVal.state === 'disarmed',
         armAwayButtonVisible: newVal.state === 'disarmed',
       };
@@ -96,6 +129,14 @@ class MoreInfoAlarmControlPanel extends EventsMixin(PolymerElement) {
         this.fire('iron-resize');
       }, 500);
     }
+  }
+
+  numberPadClicked(ev) {
+    this.enteredCode += ev.target.getAttribute('data-digit');
+  }
+
+  clearCode() {
+    this.enteredCode = '';
   }
 
   handleDisarmTap() {
