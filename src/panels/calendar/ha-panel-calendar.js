@@ -15,6 +15,7 @@ import '../../components/state-history-charts.js';
 import '../../data/ha-state-history-data.js';
 import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
+import './ha-big-calendar.js';
 
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 

@@ -37,6 +37,9 @@ class HABigCalendar extends LocalizeMixin(PolymerElement) {
       BigCalendar,
       { events: this.events,
         views: allViews,
+        popup: true,
+        selectable: true,
+        onSelectEvent: this.showEventDetails,
         eventPropGetter: this.setEventStyle,
         defaultDate: new Date(), }
     );
@@ -46,6 +49,10 @@ class HABigCalendar extends LocalizeMixin(PolymerElement) {
     style.setAttribute('href', '/static/images/react-big-calendar/react-big-calendar.css');
     style.setAttribute('rel', 'stylesheet');
     this.shadowRoot.appendChild(style);
+  }
+
+  showEventDetails(event) {
+   alert(event);
   }
 
   setEventStyle(event) {
