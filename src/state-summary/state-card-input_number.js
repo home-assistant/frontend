@@ -38,14 +38,20 @@ class StateCardInputNumber extends mixinBehaviors([
     </style>
 
     <div class="horizontal justified layout" id="input_number_card">
-      <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
-        <paper-slider min="[[min]]" max="[[max]]" value="{{value}}" step="[[step]]" hidden="[[hiddenslider]]" pin="" on-change="selectedValueChanged" on-click="stopPropagation" id="slider" ignore-bar-touch="">
-        </paper-slider>
+      ${this.stateInfoTemplate}
+      <paper-slider min="[[min]]" max="[[max]]" value="{{value}}" step="[[step]]" hidden="[[hiddenslider]]" pin="" on-change="selectedValueChanged" on-click="stopPropagation" id="slider" ignore-bar-touch="">
+      </paper-slider>
       <paper-input no-label-float="" auto-validate="" pattern="[0-9]+([\\.][0-9]+)?" step="[[step]]" min="[[min]]" max="[[max]]" value="{{value}}" type="number" on-change="selectedValueChanged" on-click="stopPropagation" hidden="[[hiddenbox]]">
       </paper-input>
       <div class="state" hidden="[[hiddenbox]]">[[stateObj.attributes.unit_of_measurement]]</div>
       <div id="sliderstate" class="state sliderstate" hidden="[[hiddenslider]]">[[value]] [[stateObj.attributes.unit_of_measurement]]</div>
     </div>
+`;
+  }
+
+  static get stateInfoTemplate() {
+    return html`
+    <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
 `;
   }
 

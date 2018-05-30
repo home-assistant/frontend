@@ -31,7 +31,7 @@ class StateCardInputSelect extends PolymerElement {
       }
     </style>
 
-    <state-badge state-obj="[[stateObj]]"></state-badge>
+    ${this.stateBadgeTemplate}
     <paper-dropdown-menu on-click="stopPropagation" selected-item-label="{{selectedOption}}" label="[[_computeStateName(stateObj)]]">
       <paper-listbox slot="dropdown-content" selected="[[computeSelected(stateObj)]]">
         <template is="dom-repeat" items="[[stateObj.attributes.options]]">
@@ -39,6 +39,12 @@ class StateCardInputSelect extends PolymerElement {
         </template>
       </paper-listbox>
     </paper-dropdown-menu>
+`;
+  }
+
+  static get stateBadgeTemplate() {
+    return html`
+    <state-badge state-obj="[[stateObj]]"></state-badge>
 `;
   }
 

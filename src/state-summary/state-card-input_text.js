@@ -16,12 +16,19 @@ class StateCardInputText extends PolymerElement {
     </style>
 
     <div class="horizontal justified layout">
-      <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+      ${this.stateInfoTemplate}
       <paper-input no-label-float="" minlength="[[stateObj.attributes.min]]" maxlength="[[stateObj.attributes.max]]" value="{{value}}" auto-validate="[[stateObj.attributes.pattern]]" pattern="[[stateObj.attributes.pattern]]" type="[[stateObj.attributes.mode]]" on-change="selectedValueChanged" on-click="stopPropagation" placeholder="(empty value)">
       </paper-input>
     </div>
 `;
   }
+
+  static get stateInfoTemplate() {
+    return html`
+    <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+`;
+  }
+
 
   static get properties() {
     return {
