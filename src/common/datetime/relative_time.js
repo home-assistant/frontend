@@ -10,8 +10,9 @@ const tests = [
 ];
 
 export default function relativeTime(dateObj) {
-  let delta = Math.abs((new Date() - dateObj) / 1000);
+  let delta = (new Date() - dateObj) / 1000;
   const format = delta >= 0 ? '%s ago' : 'in %s';
+  delta = Math.abs(delta);
 
   for (let i = 0; i < tests.length; i += 2) {
     if (delta < tests[i]) {
