@@ -16,7 +16,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 class LoginForm extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-positioning"></style>
+    <style include="iron-flex iron-positioning"></style>
     <style>
       :host {
         white-space: nowrap;

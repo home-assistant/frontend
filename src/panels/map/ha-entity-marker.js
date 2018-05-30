@@ -10,7 +10,7 @@ import EventsMixin from '../../mixins/events-mixin.js';
 class HaEntityMarker extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-positioning"></style>
+    <style include="iron-positioning"></style>
     <style>
     .marker {
       vertical-align: top;

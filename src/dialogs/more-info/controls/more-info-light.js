@@ -27,7 +27,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
   class MoreInfoLight extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
-    <style is="custom-style" include="iron-flex"></style>
+    <style include="iron-flex"></style>
     <style>
       .effect_list {
         padding-bottom: 16px;

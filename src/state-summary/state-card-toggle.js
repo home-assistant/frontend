@@ -8,7 +8,7 @@ import '../components/entity/state-info.js';
 class StateCardToggle extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       ha-entity-toggle {
         margin: -4px -16px -4px 0;

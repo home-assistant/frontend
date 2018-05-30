@@ -19,7 +19,7 @@ import EventsMixin from '../../mixins/events-mixin.js';
 class HaPanelDevEvent extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="ha-style iron-flex iron-positioning"></style>
+    <style include="ha-style iron-flex iron-positioning"></style>
     <style>
       :host {
         -ms-user-select: initial;

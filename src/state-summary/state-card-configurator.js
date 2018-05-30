@@ -8,7 +8,7 @@ import '../components/entity/state-info.js';
 class StateCardConfigurator extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       paper-button {
         color: var(--primary-color);
