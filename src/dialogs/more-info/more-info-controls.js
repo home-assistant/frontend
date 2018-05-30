@@ -3,7 +3,7 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../components/ha-paper-dialog-scrollable.js'
+import '../../components/ha-paper-dialog-scrollable.js';
 import '../../components/state-history-charts.js';
 import '../../data/ha-state-history-data.js';
 import '../../resources/ha-style.js';
