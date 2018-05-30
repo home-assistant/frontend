@@ -28,6 +28,7 @@ import featureClassNames from '../../../common/entity/feature_class_names';
       .has-current_tilt_position .tilt
       {
         max-height: 90px;
+        overflow: visible;
       }
 
       [invisible] {
