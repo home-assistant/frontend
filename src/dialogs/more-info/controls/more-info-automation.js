@@ -13,7 +13,8 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin-bottom: 8px;
+          margin: 16px 0 0 0;
+          float: right;
         }
         .flex {
           display: flex;
