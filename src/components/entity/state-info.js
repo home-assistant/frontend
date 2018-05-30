@@ -8,6 +8,14 @@ import computeStateName from '../../common/entity/compute_state_name.js';
 class StateInfo extends PolymerElement {
   static get template() {
     return html`
+    ${this.styleTemplate}
+    ${this.stateBadgeTemplate}
+    ${this.infoTemplate}
+`;
+  }
+
+  static get styleTemplate() {
+    return html`
     <style>
     :host {
       @apply --paper-font-body1;
@@ -38,23 +46,31 @@ class StateInfo extends PolymerElement {
       color: var(--secondary-text-color);
     }
     </style>
+`;
+  }
 
-      <state-badge state-obj="[[stateObj]]"></state-badge>
+  static get stateBadgeTemplate() {
+    return html`
+    <state-badge state-obj="[[stateObj]]"></state-badge>
+`;
+  }
 
-      <div class="info">
-        <div class="name" in-dialog\$="[[inDialog]]">[[computeStateName(stateObj)]]</div>
+  static get infoTemplate() {
+    return html`
+    <div class="info">
+      <div class="name" in-dialog\$="[[inDialog]]">[[computeStateName(stateObj)]]</div>
 
-        <template is="dom-if" if="[[inDialog]]">
-          <div class="time-ago">
-            <ha-relative-time datetime="[[stateObj.last_changed]]"></ha-relative-time>
-          </div>
-        </template>
-        <template is="dom-if" if="[[!inDialog]]">
-          <div class="extra-info">
-            <slot>
-          </slot></div>
-        </template>
-      </div>
+      <template is="dom-if" if="[[inDialog]]">
+        <div class="time-ago">
+          <ha-relative-time datetime="[[stateObj.last_changed]]"></ha-relative-time>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!inDialog]]">
+        <div class="extra-info">
+          <slot>
+        </slot></div>
+      </template>
+    </div>
 `;
   }
 

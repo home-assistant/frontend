@@ -20,7 +20,7 @@ class StateCardConfigurator extends PolymerElement {
     </style>
 
     <div class="horizontal justified layout">
-      <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+      ${this.stateInfoTemplate}
       <paper-button hidden\$="[[inDialog]]">[[stateObj.state]]</paper-button>
     </div>
 
@@ -28,6 +28,12 @@ class StateCardConfigurator extends PolymerElement {
     <template is="dom-if" if="[[stateObj.attributes.description_image]]">
       <img hidden="" src="[[stateObj.attributes.description_image]]">
     </template>
+`;
+  }
+
+  static get stateInfoTemplate() {
+    return html`
+    <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
 `;
   }
 
