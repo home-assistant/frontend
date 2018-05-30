@@ -23,7 +23,7 @@ class StateCardClimate extends PolymerElement {
 
     <div class="horizontal justified layout">
       ${this.stateInfoTemplate}
-      ${this.haClimateStateTemplate}
+      <ha-climate-state state-obj="[[stateObj]]"></ha-climate-state>
     </div>
 `;
   }
@@ -31,12 +31,6 @@ class StateCardClimate extends PolymerElement {
   static get stateInfoTemplate() {
     return html`
     <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
-`;
-  }
-
-  static get haClimateStateTemplate() {
-    return html`
-    <ha-climate-state state-obj="[[stateObj]]"></ha-climate-state>
 `;
   }
 

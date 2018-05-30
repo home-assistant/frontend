@@ -20,8 +20,8 @@ class StateCardCover extends PolymerElement {
     <div class="horizontal justified layout">
       ${this.stateInfoTemplate}
       <div class="horizontal layout">
-        ${this.haCoverControlsTemplate}
-        ${this.haCoverTiltControlsTemplate}
+        <ha-cover-controls hidden\$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
+        <ha-cover-tilt-controls hidden\$="[[!entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
       </div>
     </div>
 `;
@@ -30,18 +30,6 @@ class StateCardCover extends PolymerElement {
   static get stateInfoTemplate() {
     return html`
     <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
-`;
-  }
-
-  static get haCoverControlsTemplate() {
-    return html`
-    <ha-cover-controls hidden\$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-controls>
-`;
-  }
-
-  static get haCoverTiltControlsTemplate() {
-    return html`
-    <ha-cover-tilt-controls hidden\$="[[!entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]"></ha-cover-tilt-controls>
 `;
   }
 
