@@ -24,9 +24,15 @@ class StateCardScene extends LocalizeMixin(PolymerElement) {
     </style>
 
     <div class="horizontal justified layout">
-      <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+      ${this.stateInfoTemplate}
       <paper-button on-click="activateScene">[[localize('ui.card.scene.activate')]]</paper-button>
     </div>
+`;
+  }
+
+  static get stateInfoTemplate() {
+    return html`
+    <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
 `;
   }
 
