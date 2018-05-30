@@ -12,7 +12,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 class StateCardScene extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       paper-button {
         color: var(--primary-color);

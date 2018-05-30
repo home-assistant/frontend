@@ -10,7 +10,7 @@ import '../auth/ha-pick-auth-provider.js';
 class HaAuthorize extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-positioning"></style>
+    <style include="iron-flex iron-positioning"></style>
     <style>
       .layout {
         padding-top: 20px;

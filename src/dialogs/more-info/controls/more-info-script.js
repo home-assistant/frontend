@@ -5,7 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class MoreInfoScript extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
 
     <div class="layout vertical">
       <div class="data-entry layout justified horizontal">

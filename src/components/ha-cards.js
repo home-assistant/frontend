@@ -79,7 +79,7 @@ import getGroupEntities from '../common/entity/get_group_entities.js';
   class HaCards extends PolymerElement {
     static get template() {
       return html`
-    <style is="custom-style" include="iron-flex iron-flex-factors"></style>
+    <style include="iron-flex iron-flex-factors"></style>
     <style>
       :host {
         display: block;
