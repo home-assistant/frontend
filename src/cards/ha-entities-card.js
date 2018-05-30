@@ -17,7 +17,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex"></style>
+    <style include="iron-flex"></style>
     <style>
       ha-card {
         padding: 16px;

@@ -7,7 +7,7 @@ import hassAttributeUtil from '../util/hass-attributes-util.js';
 class HaAttributes extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       .data-entry .value {
         max-width: 200px;

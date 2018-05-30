@@ -19,7 +19,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
 class MoreInfoFan extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex"></style>
+    <style include="iron-flex"></style>
     <style>
       .container-speed_list,
       .container-direction,

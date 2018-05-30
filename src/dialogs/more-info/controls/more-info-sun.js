@@ -9,7 +9,7 @@ import formatTime from '../../../common/datetime/format_time.js';
 class MoreInfoSun extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
 
     <template is="dom-repeat" items="[[computeOrder(risingDate, settingDate)]]">
       <div class="data-entry layout justified horizontal">

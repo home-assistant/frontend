@@ -15,7 +15,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 class StateCardTimer extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       .state {
         @apply --paper-font-body1;

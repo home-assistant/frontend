@@ -17,7 +17,7 @@ import featureClassNames from '../../../common/entity/feature_class_names';
   class MoreInfoCover extends PolymerElement {
     static get template() {
       return html`
-    <style is="custom-style" include="iron-flex"></style>
+    <style include="iron-flex"></style>
     <style>
       .current_position, .tilt {
         max-height: 0px;

@@ -22,7 +22,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
 class MoreInfoClimate extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex"></style>
+    <style include="iron-flex"></style>
     <style>
       :host {
         color: var(--primary-text-color);

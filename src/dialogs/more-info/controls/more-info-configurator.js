@@ -11,7 +11,7 @@ import '../../../components/ha-markdown.js';
 class MoreInfoConfigurator extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex"></style>
+    <style include="iron-flex"></style>
     <style>
       p {
         margin: 8px 0;
