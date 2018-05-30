@@ -47,7 +47,7 @@ class HaPaperSlider extends PaperSliderClass {
         left: 50%;
         margin-left: -1.0em;
         width: 2.0em;
-        height: 1.8em;
+        height: 1.9em;
 
         -webkit-transform-origin: center bottom;
         transform-origin: center bottom;
