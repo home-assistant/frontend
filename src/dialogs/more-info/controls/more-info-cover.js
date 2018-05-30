@@ -23,11 +23,18 @@ import featureClassNames from '../../../common/entity/feature_class_names';
         max-height: 0px;
         overflow: hidden;
       }
+
+      .current_position > div,
+      .tilt > .name {
+        padding-top: 4px;
+        padding-bottom: 6px;
+      }
+
       .has-current_position .current_position,
       .has-set_tilt_position .tilt,
       .has-current_tilt_position .tilt
       {
-        max-height: 90px;
+        max-height: 102px;
       }
 
       [invisible] {
@@ -42,7 +49,7 @@ import featureClassNames from '../../../common/entity/feature_class_names';
       </div>
 
       <div class="tilt">
-        <div>Tilt position</div>
+        <div class="name">Tilt position</div>
         <div>
           <ha-cover-tilt-controls hidden\$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]">
           </ha-cover-tilt-controls>
