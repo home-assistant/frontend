@@ -1,9 +1,9 @@
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../components/ha-paper-dialog-scrollable.js';
 import '../../components/state-history-charts.js';
 import '../../data/ha-state-history-data.js';
 import '../../resources/ha-style.js';
@@ -56,7 +56,7 @@ import EventsMixin from '../../mixins/events-mixin.js';
         }
       }
 
-      :host([domain=camera]) ha-paper-dialog-scrollable {
+      :host([domain=camera]) paper-dialog-scrollable {
         margin: 0 -24px -5px;
       }
     </style>
@@ -72,13 +72,13 @@ import EventsMixin from '../../mixins/events-mixin.js';
     <template is="dom-if" if="[[_computeShowStateInfo(stateObj)]]" restamp="">
       <state-card-content state-obj="[[stateObj]]" hass="[[hass]]" in-dialog=""></state-card-content>
     </template>
-    <ha-paper-dialog-scrollable dialog-element="[[dialogElement]]">
+    <paper-dialog-scrollable dialog-element="[[dialogElement]]">
       <template is="dom-if" if="[[_computeShowHistoryComponent(hass, stateObj)]]" restamp="">
         <ha-state-history-data hass="[[hass]]" filter-type="recent-entity" entity-id="[[stateObj.entity_id]]" data="{{_stateHistory}}" is-loading="{{_stateHistoryLoading}}" cache-config="[[_cacheConfig]]"></ha-state-history-data>
         <state-history-charts history-data="[[_stateHistory]]" is-loading-data="[[_stateHistoryLoading]]" up-to-now="" no-single="[[large]]"></state-history-charts>
       </template>
       <more-info-content state-obj="[[stateObj]]" hass="[[hass]]"></more-info-content>
-    </ha-paper-dialog-scrollable>
+    </paper-dialog-scrollable>
 `;
     }
 
