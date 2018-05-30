@@ -5,7 +5,7 @@ const documentContainer = document.createElement('template');
 documentContainer.setAttribute('style', 'display: none;');
 
 documentContainer.innerHTML = `<custom-style>
-  <style is="custom-style">/* remove is= on Polymer 2 */
+  <style>
     /*
       Home Assistant default styles.
 

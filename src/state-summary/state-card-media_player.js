@@ -12,7 +12,7 @@ import HassMediaPlayerEntity from '../util/hass-media-player-model.js';
 class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       :host {
         line-height: 1.5;
