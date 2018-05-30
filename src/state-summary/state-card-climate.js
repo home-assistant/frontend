@@ -8,7 +8,7 @@ import '../components/ha-climate-state.js';
 class StateCardClimate extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       :host {
         @apply --paper-font-body1;

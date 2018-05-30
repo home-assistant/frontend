@@ -8,7 +8,7 @@ import CoverEntity from '../util/cover-model.js';
 class HaCoverTiltControls extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex"></style>
+    <style include="iron-flex"></style>
     <style>
       :host {
         white-space: nowrap;

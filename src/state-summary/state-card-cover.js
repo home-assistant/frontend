@@ -10,7 +10,7 @@ import CoverEntity from '../util/cover-model.js';
 class StateCardCover extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       :host {
         line-height: 1.5;

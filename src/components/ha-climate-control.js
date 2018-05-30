@@ -11,7 +11,7 @@ import EventsMixin from '../mixins/events-mixin.js';
 class HaClimateControl extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       /* local DOM styles go here */
       :host {

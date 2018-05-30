@@ -13,7 +13,7 @@ class StateCardInputNumber extends mixinBehaviors([
 ], PolymerElement) {
   static get template() {
     return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       paper-slider {
         margin-left: auto;

@@ -22,7 +22,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
   class MoreInfoMediaPlayer extends EventsMixin(PolymerElement) {
     static get template() {
       return html`
-    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       .media-state {
         text-transform: capitalize;

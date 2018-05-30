@@ -14,7 +14,7 @@ import '../../resources/ha-style.js';
 class HaPanelDevTemplate extends PolymerElement {
   static get template() {
     return html`
-    <style is="custom-style" include="ha-style iron-flex iron-positioning"></style>
+    <style include="ha-style iron-flex iron-positioning"></style>
     <style>
       :host {
         -ms-user-select: initial;
