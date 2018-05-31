@@ -42,7 +42,6 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
         <paper-input
           label="[[localize('ui.card.alarm_control_panel.code')]]"
           value="{{_enteredCode}}"
-          pattern="[[_codeFormat]]"
           type="password"
           disabled="[[!_inputEnabled]]"
         ></paper-input>
