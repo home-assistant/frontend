@@ -48,7 +48,9 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
     tempA.href = panel.config.html_url || panel.config.js_url;
 
     if (!panel.config.trust_external && !['localhost', '127.0.0.1', location.hostname].includes(tempA.hostname)) {
-      if (!confirm(`Do you trust the external url ${tempA.href}?`)) {
+      if (!confirm(`Do you trust the external panel "${panel.config.name}" at "${tempA.href}"?
+
+It will have access to all data in Home Assistant.`)) {
         return;
       }
     }
@@ -69,8 +71,9 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
             this.appendChild(element);
           },
           () => {
-            alert(`Unable to load custom panel from ${tempA.href}`)
-          });
+            alert(`Unable to load custom panel from ${tempA.href}`);
+          }
+        );
       return;
     }
 
