@@ -575,6 +575,17 @@
                     "wsw": "서남서"
                 },
                 "forecast": "일기 예보"
+            },
+            "alarm_control_panel": {
+                "code": "비밀번호",
+                "clear_code": "지움",
+                "disarm": "경보해제",
+                "arm_home": "재실 경비",
+                "arm_away": "외출 경비"
+            },
+            "automation": {
+                "last_triggered": "최근 트리거 됨",
+                "trigger": "트리거"
             }
         },
         "components": {

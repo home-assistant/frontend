@@ -62,8 +62,21 @@
                 "off": "Turvallinen",
                 "on": "Vaarallinen"
             },
+            "presence": {
+                "off": "Poissa",
+                "on": "Kotona"
+            },
             "battery": {
-                "off": "Normaali"
+                "off": "Normaali",
+                "on": "Alhainen"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Ongelma"
+            },
+            "connectivity": {
+                "off": "Ei yhteyttä",
+                "on": "Yhdistetty"
             },
             "cold": {
                 "off": "Normaali",
@@ -78,6 +91,7 @@
                 "on": "Auki"
             },
             "heat": {
+                "off": "Normaali",
                 "on": "Kuuma"
             },
             "window": {
@@ -90,6 +104,7 @@
             }
         },
         "calendar": {
+            "off": "Pois päältä",
             "on": "Päällä"
         },
         "camera": {
@@ -202,6 +217,22 @@
                 "initializing": "Alustaa ({query_stage})",
                 "dead": "Kuollut ({query_stage})"
             }
+        },
+        "weather": {
+            "clear_night": "Selkeää yöllä",
+            "cloudy": "Pilvistä",
+            "fog": "Sumuista",
+            "hail": "Raekuuro",
+            "lightning": "Ukkosvaara",
+            "lightning_rainy": "Ukkosvaara, sateista",
+            "partlycloudy": "Osittain pilvistä",
+            "pouring": "Tihkuista",
+            "rainy": "Sateista",
+            "snowy": "Lumisadetta",
+            "snowy_rainy": "Räntäsadetta",
+            "sunny": "Aurinkoinen",
+            "windy": "Tuulinen",
+            "windy_variant": "Tuulinen"
         }
     },
     "state_badge": {
@@ -214,78 +245,244 @@
         },
         "device_tracker": {
             "home": "Kotona",
-            "not_home": "Pois"
+            "not_home": "Poissa"
         }
     },
     "ui": {
-        "sidebar": {
-            "log_out": "Kirjaudu ulos",
-            "developer_tools": "Kehittäjän työkalut"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
-            "week": "{count} {count, plural,\n  one {viikkoa}\n  other {viikkoa}\n}"
-        },
         "panel": {
+            "shopping-list": {
+                "microphone_tip": "Paina mikrofonia oikeassa yläkulmassa ja sano \"Lisää karkkipussi ostoslistalleni\""
+            },
             "history": {
                 "showing_entries": "Näytetään tapahtumat alkaen",
-                "period": "aika"
+                "period": "aikajakso"
+            },
+            "mailbox": {
+                "empty": "Sinulle ei ole yhtään viestiä",
+                "playback_title": "Toista viesti",
+                "delete_prompt": "Poistetaanko tämä viesti?",
+                "delete_button": "Poista"
             },
             "config": {
                 "core": {
+                    "caption": "Yleinen",
+                    "description": "Tarkista asetustiedostosi ja hallitse palvelinta",
                     "section": {
                         "core": {
                             "header": "Asetusten ja palvelimen hallinta",
+                            "introduction": "Tiedämme, että asetusten muuttaminen saattaa olla työlästä. Täältä löydät työkaluja, jotka toivottavasti helpottavat elämääsi.",
                             "validation": {
+                                "heading": "Asetusten tarkistus",
+                                "introduction": "Voit tarkistaa asetuksesi varmistuaksesi, että niissä ei ole virheitä",
                                 "check_config": "Tarkista asetukset",
                                 "valid": "Asetukset kunnossa!",
                                 "invalid": "Asetukset ei kelpaa"
                             },
                             "reloading": {
                                 "heading": "Asetusten uudelleenlataus",
+                                "introduction": "Jotkut Home Assistantin osat voidaan ladata ilman uudelleenkäynnistystä. Painaessasi uudelleenlatausta, ladataan kyseisen kategorian asetukset uudelleen.",
                                 "core": "Lataa ydin uudelleen",
                                 "group": "Lataa ryhmät uudelleen",
-                                "automation": "Lataa automaatiot uudelleen"
+                                "automation": "Lataa automaatiot uudelleen",
+                                "script": "Lataa skriptit uudelleen"
                             },
                             "server_management": {
                                 "heading": "Palvelimen hallinta",
+                                "introduction": "Hallitse Home Assistant palvelintasi... suoraan Home Assistantista",
                                 "restart": "Käynnistä uudelleen",
                                 "stop": "Pysäytä"
                             }
                         },
+                        "push_notifications": {
+                            "push_notifications": "Ilmoitukset"
+                        },
                         "translation": {
                             "header": "Valitse kieli",
+                            "introduction": "Valitse kieli, jota käytetään tällä laitteella Home Assistantin käyttöliittymässä",
                             "language": "Kieli"
+                        },
+                        "themes": {
+                            "header": "Valitse teema",
+                            "theme": "Teema"
                         }
                     }
                 },
+                "customize": {
+                    "description": "Muokkaa laitteita"
+                },
                 "automation": {
                     "caption": "Automaatiot",
+                    "description": "Luo ja muokkaa automaatioita",
+                    "picker": {
+                        "header": "Automaatioeditori",
+                        "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Ole hyvä ja lue [ohjeet](https:\/\/home-assistant.io\/docs\/automation\/editor\/) (englanniksi), jotta saat konfiguroitua Home Assistantin oikein.",
+                        "pick_automation": "Valitse automaatio, jota haluat muokata",
+                        "no_automations": "Emme löytäneet muokattavia automaatioita",
+                        "add_automation": "Lisää automaatio"
+                    },
                     "editor": {
-                        "actions": {
+                        "introduction": "Käytä automaatioita herättääksesi kotisi eloon",
+                        "default_name": "Uusi automaatio",
+                        "save": "Tallenna",
+                        "unsaved_confirm": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?",
+                        "alias": "Nimi",
+                        "triggers": {
+                            "header": "Laukaisuehdot",
+                            "introduction": "Laukaisuehdot määrittelevät, milloin automaatiota aletaan suorittaa. Samassa säännössä voi olla useita laukaisuehtoja. Kun laukaisuehto täyttyy, Home Assistant varmistaa ehdot. Jos ehdot täyttyvät, toiminto suoritetaan.\n\n[Lue lisää laukaisuehdoista (englanniksi).](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Laukaisuehto",
+                            "duplicate": "Kopioi",
+                            "delete": "Poista",
+                            "delete_confirm": "Haluatko varmasti poistaa tämän?",
+                            "unsupported_platform": "Alustaa {platform} ei tueta"
+                        },
+                        "conditions": {
+                            "duplicate": "Kopioi",
+                            "delete": "Poista",
+                            "delete_confirm": "Haluatko varmasti poistaa tämän?",
                             "type": {
+                                "state": {
+                                    "label": "Tila",
+                                    "state": "Tila"
+                                },
+                                "numeric_state": {
+                                    "label": "Lukuarvo",
+                                    "above": "Yli",
+                                    "below": "Alle"
+                                },
+                                "sun": {
+                                    "label": "Aurinko",
+                                    "before": "Ennen",
+                                    "after": "Jälkeen",
+                                    "before_offset": "Ennen auringonlaskua",
+                                    "after_offset": "Auringonlaskun jälkeen",
+                                    "sunrise": "Auringonnousu",
+                                    "sunset": "Auringonlasku"
+                                },
+                                "zone": {
+                                    "zone": "Alue"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "duplicate": "Kopioi",
+                            "delete": "Poista",
+                            "delete_confirm": "Haluatko varmasti poistaa tämän?",
+                            "type": {
+                                "service": {
+                                    "service_data": "Palvelun data"
+                                },
                                 "delay": {
                                     "label": "Viive",
                                     "delay": "Viive"
                                 },
                                 "wait_template": {
-                                    "label": "Odota"
+                                    "label": "Odota",
+                                    "timeout": "Aikakatkaisu"
+                                },
+                                "condition": {
+                                    "label": "Ehto"
+                                },
+                                "event": {
+                                    "label": "Lähetä tapahtuma",
+                                    "event": "Tapahtuma",
+                                    "service_data": "Palvelun data"
                                 }
                             }
                         }
                     }
+                },
+                "script": {
+                    "caption": "Skripti",
+                    "description": "Luo ja muokkaa skriptejä"
                 },
                 "zwave": {
                     "caption": "Z-Wave"
                 }
             }
         },
+        "sidebar": {
+            "log_out": "Kirjaudu ulos",
+            "developer_tools": "Kehittäjän työkalut"
+        },
+        "common": {
+            "loading": "Ladataan",
+            "cancel": "Peruuta"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
+            "week": "{count} {count, plural,\n  one {viikkoa}\n  other {viikkoa}\n}"
+        },
         "login-form": {
             "password": "Salasana",
-            "remember": "Muista"
+            "remember": "Muista",
+            "log_in": "Kirjaudu sisään"
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Kohde"
+                }
+            },
+            "service-picker": {
+                "service": "Palvelu"
+            }
+        },
+        "card": {
+            "scene": {
+                "activate": "Aktivoi"
+            },
+            "script": {
+                "execute": "Suorita"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Ilmanpaine",
+                    "humidity": "Kosteus",
+                    "temperature": "Lämpötila",
+                    "visibility": "Näkyvyys",
+                    "wind_speed": "Tuulennopeus"
+                },
+                "cardinal_direction": {
+                    "w": "Länsi"
+                },
+                "forecast": "Sääennuste"
+            },
+            "alarm_control_panel": {
+                "code": "Koodi",
+                "clear_code": "Tyhjennä",
+                "disarm": "Poista hälytys"
+            },
+            "automation": {
+                "last_triggered": "Viimeksi käynnistetty",
+                "trigger": "Käynnistysehto"
+            }
         }
     },
     "domain": {
+        "automation": "Automaatio",
+        "binary_sensor": "Binäärisensori",
+        "calendar": "Kalenteri",
+        "camera": "Kamera",
+        "device_tracker": "Laiteseuranta",
+        "fan": "Tuuletin",
+        "history_graph": "Historiakuvaaja",
+        "group": "Ryhmä",
+        "image_processing": "Kuvantunnistus",
+        "input_boolean": "Syötä totuusarvo",
+        "input_datetime": "Syötä päivämäärä",
+        "input_select": "Valinta",
+        "input_number": "Syötä numero",
+        "input_text": "Syötä teksti",
+        "light": "Valo",
+        "lock": "Lukko",
+        "mailbox": "Postilaatikko",
+        "media_player": "Mediatoistin",
+        "notify": "Ilmoita",
+        "scene": "Skene",
+        "script": "Skripti",
+        "sensor": "Sensori",
+        "sun": "Aurinko",
+        "switch": "Kytkin",
         "zwave": "Z-Wave"
     },
     "attribute": {
