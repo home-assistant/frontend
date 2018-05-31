@@ -15,7 +15,7 @@ class HassioAddonStore extends PolymerElement {
     <hassio-repositories-editor hass="[[hass]]" repos="[[repos]]"></hassio-repositories-editor>
 
     <template is="dom-repeat" items="[[repos]]" as="repo" sort="sortRepos">
-      <hassio-addon-repository repo="[[repo]]" addons="[[computeAddons(repo.slug)]]"></hassio-addon-repository>
+      <hassio-addon-repository hass="[[hass]]" repo="[[repo]]" addons="[[computeAddons(repo.slug)]]"></hassio-addon-repository>
     </template>
 `;
   }

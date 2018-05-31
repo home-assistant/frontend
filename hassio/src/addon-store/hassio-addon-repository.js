@@ -41,6 +41,7 @@ class HassioAddonRepository extends NavigateMixin(PolymerElement) {
 
   static get properties() {
     return {
+      hass: Object,
       repo: Object,
       addons: Array,
     };
