@@ -50,7 +50,9 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
     if (!panel.config.trust_external && !['localhost', '127.0.0.1', location.hostname].includes(tempA.hostname)) {
       if (!confirm(`Do you trust the external panel "${panel.config.name}" at "${tempA.href}"?
 
-It will have access to all data in Home Assistant.`)) {
+It will have access to all data in Home Assistant.
+
+(Check docs for the panel_custom component to hide this message)`)) {
         return;
       }
     }
