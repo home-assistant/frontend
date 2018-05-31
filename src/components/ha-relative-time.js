@@ -11,6 +11,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 class HaRelativeTime extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
+      hass: Object,
       datetime: {
         type: String,
         observer: 'datetimeChanged',
