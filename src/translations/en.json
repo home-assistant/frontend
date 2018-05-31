@@ -391,6 +391,13 @@
       "remember": "Remember",
       "log_in": "Log in"
     },
+    "notification_toast": {
+      "entity_turned_on": "Turned on {entity}.",
+      "entity_turned_off": "Turned off {entity}.",
+      "service_called": "Service {service} called.",
+      "service_call_failed": "Service call {service} failed.",
+      "connection_lost": "Connection lost. Reconnecting…"
+    },
     "sidebar": {
       "developer_tools": "Developer tools",
       "log_out": "Log out"
