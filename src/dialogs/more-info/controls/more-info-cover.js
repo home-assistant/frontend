@@ -38,13 +38,26 @@ import featureClassNames from '../../../common/entity/feature_class_names';
     <div class\$="[[computeClassNames(stateObj)]]">
 
       <div class="current_position">
-        <ha-labeled-slider caption="Position" value="{{coverPositionSliderValue}}" pin="" disabled="[[!entityObj.supportsSetPosition]]" on-change="coverPositionSliderChanged"></ha-labeled-slider>
+        <ha-labeled-slider
+          caption="Position" pin=""
+          value="{{coverPositionSliderValue}}"
+          disabled="[[!entityObj.supportsSetPosition]]"
+          on-change="coverPositionSliderChanged"
+        ></ha-labeled-slider>
       </div>
 
       <div class="tilt">
-        <ha-labeled-slider caption="Tilt position" value="{{coverTiltPositionSliderValue}}", pin="", extra="" disabled="[[!entityObj.supportsSetTiltPosition]]", on-change="coverTiltPositionSliderChanged">
-          <ha-cover-tilt-controls hidden\$="[[entityObj.isTiltOnly]]" hass="[[hass]]" state-obj="[[stateObj]]">
-          </ha-cover-tilt-controls>
+        <ha-labeled-slider
+          caption="Tilt position" pin="" extra=""
+          value="{{coverTiltPositionSliderValue}}"
+          disabled="[[!entityObj.supportsSetTiltPosition]]"
+          on-change="coverTiltPositionSliderChanged">
+
+          <ha-cover-tilt-controls
+            slot="extra" hidden\$="[[entityObj.isTiltOnly]]"
+            hass="[[hass]]" state-obj="[[stateObj]]"
+          ></ha-cover-tilt-controls>
+
         </ha-labeled-slider>
       </div>
 

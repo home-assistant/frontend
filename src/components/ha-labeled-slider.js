@@ -30,15 +30,16 @@ class HaLabeledSlider extends PolymerElement {
     </style>
 
     <div class="title">[[caption]]</div>
-    <template is="dom-if" if="[[extra]]">
-      <div class="extra-container">
-        <slot></slot>
-      </div>
-    </template>
+    <div class="extra-container">
+      <slot name="extra"></slot>
+    </div>
     <div class="slider-container">
       <iron-icon icon="[[icon]]" hidden\$="[[!icon]]"></iron-icon>
-      <ha-paper-slider min="[[min]]" max="[[max]]" step="[[step]]" pin="[[pin]]" value="{{value}}" disabled="[[disabled]]" ignore-bar-touch="[[ignoreBarTouch]]">
-      </ha-paper-slider>
+      <ha-paper-slider
+        min="[[min]]" max="[[max]]" step="[[step]]"
+        pin="[[pin]]" disabled="[[disabled]]" disabled="[[disabled]]"
+        value="{{value}}"
+      ></ha-paper-slider>
     </div>
 `;
   }
