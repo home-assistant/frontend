@@ -61,7 +61,7 @@ class HaRelativeTime extends LocalizeMixin(PolymerElement) {
     } else {
       const rel = relativeTime(this.parsedDateTime);
       const format = this.localize(`ui.relative_time.${rel.tense}`);
-      const relTime = format.replace('$time', this.localize(`ui.duration.${rel.unit}`, 'count', rel.value));
+      const relTime = format.replace('{time}', this.localize(`ui.duration.${rel.unit}`, 'count', rel.value));
       root.innerHTML = relTime;
     }
   }
