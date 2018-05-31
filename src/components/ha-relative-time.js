@@ -3,7 +3,12 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import relativeTime from '../common/datetime/relative_time.js';
 
-class HaRelativeTime extends PolymerElement {
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HaRelativeTime extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
       datetime: {
