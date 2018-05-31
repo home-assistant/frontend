@@ -322,6 +322,10 @@
         "arm_home": "Arm home",
         "arm_away": "Arm away"
       },
+      "automation": {
+        "last_triggered": "Last triggered",
+        "trigger": "Trigger"
+      },
       "camera": {
         "not_available": "Image not available"
       },
