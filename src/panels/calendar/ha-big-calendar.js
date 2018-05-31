@@ -10,8 +10,10 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
-import React from 'react';
-import { render } from 'react-dom';
+/* polymer-lint disable */
+import React from 'react'; // eslint-disable-line import/no-extraneous-dependencies, import/no-unresolved
+import { render } from 'react-dom'; // eslint-disable-line import/no-extraneous-dependencies, import/no-unresolved
+/* polymer-lint enable */
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 

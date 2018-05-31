@@ -116,7 +116,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // Fetch events for selected calendar
     var calls = [];
     for (let i = 0; i < this.selectedCalendars.length; i++) {
-      calls.push(this.hass.callApi('get', 'calendar/' + this.selectedCalendars[i]))
+      calls.push(this.hass.callApi('get', 'calendar/' + this.selectedCalendars[i]));
     }
     Promise.all(calls).then((items) => {
       this.items = [];
