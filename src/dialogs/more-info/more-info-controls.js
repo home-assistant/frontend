@@ -59,6 +59,10 @@ import EventsMixin from '../../mixins/events-mixin.js';
       :host([domain=camera]) paper-dialog-scrollable {
         margin: 0 -24px -5px;
       }
+
+      paper-dialog-scrollable {
+        margin-bottom: 8px;
+      }
     </style>
 
     <app-toolbar>
