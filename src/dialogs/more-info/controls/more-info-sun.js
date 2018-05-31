@@ -29,10 +29,8 @@ class MoreInfoSun extends PolymerElement {
 
   static get properties() {
     return {
-      stateObj: {
-        type: Object,
-      },
-
+      hass: Object,
+      stateObj: Object,
       risingDate: {
         type: Object,
         computed: 'computeRising(stateObj)',

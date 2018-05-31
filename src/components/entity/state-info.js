@@ -80,14 +80,9 @@ class StateInfo extends PolymerElement {
         type: Boolean,
         value: false,
       },
-
-      stateObj: {
-        type: Object,
-      },
-
-      inDialog: {
-        type: Boolean,
-      },
+      hass: Object,
+      stateObj: Object,
+      inDialog:  Boolean
     };
   }
 

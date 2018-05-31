@@ -91,7 +91,7 @@ class HassioSnapshots extends EventsMixin(PolymerElement) {
         <template is="dom-repeat" items="[[snapshots]]" as="snapshot" sort="_sortSnapshots">
           <paper-card class="pointer" on-click="_snapshotClicked">
             <div class="card-content">
-              <hassio-card-content title="[[_computeName(snapshot)]]" description="[[_computeDetails(snapshot)]]" datetime="[[snapshot.date]]" icon="[[_computeIcon(snapshot.type)]]" icon-class="snapshot"></hassio-card-content>
+              <hassio-card-content hass=[[hass]] title="[[_computeName(snapshot)]]" description="[[_computeDetails(snapshot)]]" datetime="[[snapshot.date]]" icon="[[_computeIcon(snapshot.type)]]" icon-class="snapshot"></hassio-card-content>
             </div>
           </paper-card>
         </template>

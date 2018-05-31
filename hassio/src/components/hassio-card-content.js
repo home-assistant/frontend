@@ -59,6 +59,7 @@ class HassioCardContent extends PolymerElement {
 
   static get properties() {
     return {
+      hass: Object,
       title: String,
       description: String,
       datetime: String,
