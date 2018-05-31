@@ -6,6 +6,7 @@ import '@polymer/polymer/polymer-legacy.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 import '../../../components/ha-relative-time.js';
+import '../../../components/paper-time-input.js';
 
 import attributeClassNames from '../../../common/entity/attribute_class_names.js';
 
@@ -20,11 +21,7 @@ class DatetimeInput extends PolymerElement {
       </template>
       <template is="dom-if" if="[[doesHaveTime(stateObj)]]" restamp="">
         <div>
-          <paper-input
-            type='time'
-            label='time'
-            value='{{selectedTime}}'
-          ></paper-input>
+          <paper-time-input hour="{{selectedHour}}" min="{{selectedMinute}}" format="24"></paper-time-input>
         </div>
       </template>
     </div>
@@ -52,10 +49,15 @@ class DatetimeInput extends PolymerElement {
         observer: 'dateTimeChanged',
       },
 
-      selectedTime: {
-        type: String,
+      selectedHour: {
+        type: Number,
         observer: 'dateTimeChanged',
-      }
+      },
+
+      selectedMinute: {
+        type: Number,
+        observer: 'dateTimeChanged',
+      },
     };
   }
 
@@ -95,14 +97,22 @@ class DatetimeInput extends PolymerElement {
     }
 
     let changed = false;
+    let minuteFiller;
 
     const serviceData = {
       entity_id: this.stateObj.entity_id
     };
 
     if (this.stateObj.attributes.has_time) {
-      changed |= this.selectedTime !== `${this.stateObj.attributes.hour}:${this.stateObj.attributes.minute}`;
-      serviceData.time = this.selectedTime;
+      changed |= (parseInt(this.selectedMinute) !== this.stateObj.attributes.minute);
+      changed |= (parseInt(this.selectedHour) !== this.stateObj.attributes.hour);
+      if (this.selectedMinute < 10) {
+        minuteFiller = '0';
+      } else {
+        minuteFiller = '';
+      }
+      var timeStr = this.selectedHour + ':' + minuteFiller + this.selectedMinute;
+      serviceData.time = timeStr;
     }
 
     if (this.stateObj.attributes.has_date) {
