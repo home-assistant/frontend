@@ -23,9 +23,7 @@ import '../../resources/ha-style.js';
 
 class HABigCalendar extends PolymerElement {
   static get template() {
-    return html`
-    <template>[[events]]</template>
-    `;
+    return html``;
   }
 
   update() {

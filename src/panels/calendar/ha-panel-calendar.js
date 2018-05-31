@@ -80,7 +80,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             </div>
             <paper-listbox id="calendar_list" multi on-selected-items-changed="_fetchData" selected-values="{{selectedCalendars}}" attr-for-selected="item-name">
               <template is="dom-repeat" items="[[calendars]]">
-                <paper-item item-name="[[item.name]]">
+                <paper-item item-name="[[item.entity_id]]">
                   <span class="calendar_color" style="background-color: [[item.color]]"></span>
                   <span class="calendar_color_spacer"></span>
                   [[item.name]]
@@ -109,17 +109,21 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   _fetchData() {
     // Fetch data
     // Fetch calendar list
-    this.hass.callApi('get', 'calendar-list')
+    this.hass.callApi('get', 'calendars')
       .then((items) => {
         this.calendars = items;
       });
-    // Fecth events fro selected calendar
-    this.items = [];
-    this.hass.callApi('post', 'calendar', { calendars: this.selectedCalendars })
-      .then((items) => {
-        // add items
-        this.items = items;
-      });
+    // Fetch events for selected calendar
+    var calls = [];
+    for (let i = 0; i < this.selectedCalendars.length; i++) {
+        calls.push(this.hass.callApi('get', 'calendar/' + this.selectedCalendars[i]))
+    }
+    Promise.all(calls).then((items) => {
+        this.items = [];
+        for (let i = 0; i < items.length; i++) {
+            this.items = this.items.concat(items[i]);
+        }
+    });
   }
 
   checkAll() {
