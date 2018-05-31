@@ -24,19 +24,20 @@ class HaLabeledSlider extends PolymerElement {
         opacity: var(--dark-secondary-opacity);
       }
 
-      .slider-container {
-        margin-left: 24px;
-      }
-
       ha-paper-slider {
         background-image: var(--ha-slider-background);
       }
     </style>
 
     <div class="title">[[caption]]</div>
-    <iron-icon icon="[[icon]]"></iron-icon>
+    <template is="dom-if" if="[[extra]]">
+      <div class="extra-container">
+        <slot></slot>
+      </div>
+    </template>
     <div class="slider-container">
-      <ha-paper-slider min="[[min]]" max="[[max]]" value="{{value}}" ignore-bar-touch="[[ignoreBarTouch]]">
+      <iron-icon icon="[[icon]]" hidden\$="[[!icon]]"></iron-icon>
+      <ha-paper-slider min="[[min]]" max="[[max]]" step="[[step]]" pin="[[pin]]" value="{{value}}" disabled="[[disabled]]" ignore-bar-touch="[[ignoreBarTouch]]">
       </ha-paper-slider>
     </div>
 `;
@@ -45,11 +46,24 @@ class HaLabeledSlider extends PolymerElement {
   static get properties() {
     return {
       caption: String,
-      icon: String,
+      disabled: Boolean,
       min: Number,
       max: Number,
-      ignoreBarTouch: Boolean,
+      pin: Boolean,
+      step: Number,
 
+      extra: {
+        type: Boolean,
+        value: false,
+      },
+      ignoreBarTouch: {
+        type: Boolean,
+        value: true,
+      },
+      icon: {
+        type: String,
+        value: '',
+      },
       value: {
         type: Number,
         notify: true,
