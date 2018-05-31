@@ -194,6 +194,15 @@
                 "initializing": "در حال آماده شدن ({query_stage})",
                 "dead": "مرده ({query_stage})"
             }
+        },
+        "weather": {
+            "cloudy": "ابری",
+            "fog": "مه",
+            "lightning": "رعد و برق",
+            "partlycloudy": "نیمه ابری",
+            "rainy": "بارانی",
+            "snowy": "برفی",
+            "sunny": "آفتابی"
         }
     },
     "state_badge": {
@@ -228,9 +237,31 @@
                     "caption": "Z-Wave"
                 }
             }
+        },
+        "card": {
+            "scene": {
+                "activate": "فعال سازی"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "فشار هوا",
+                    "humidity": "رطوبت",
+                    "temperature": "دما",
+                    "wind_speed": "سرعت باد"
+                },
+                "cardinal_direction": {
+                    "se": "جنوب شرقی"
+                },
+                "forecast": "پیش بینی"
+            }
         }
     },
     "domain": {
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "رطوبت"
+        }
     }
 }

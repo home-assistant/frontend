@@ -575,6 +575,17 @@
                     "wsw": "WSW"
                 },
                 "forecast": "Forecast"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Clear",
+                "disarm": "Disarm",
+                "arm_home": "Arm home",
+                "arm_away": "Arm away"
+            },
+            "automation": {
+                "last_triggered": "Last triggered",
+                "trigger": "Trigger"
             }
         },
         "components": {

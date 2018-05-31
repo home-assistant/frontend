@@ -553,7 +553,7 @@
                     "air_pressure": "Légnyomás",
                     "humidity": "Páratartalom",
                     "temperature": "Hőmérséklet",
-                    "visibility": "Láthatóság",
+                    "visibility": "Látótávolság",
                     "wind_speed": "Szélsebesség"
                 },
                 "cardinal_direction": {
@@ -575,6 +575,13 @@
                     "wsw": "Ny-DNy"
                 },
                 "forecast": "Előrejelzés"
+            },
+            "alarm_control_panel": {
+                "code": "Kód",
+                "clear_code": "Törlés",
+                "disarm": "Hatástalanít",
+                "arm_home": "Élesít (otthon)",
+                "arm_away": "Élesít (távozó)"
             }
         },
         "components": {

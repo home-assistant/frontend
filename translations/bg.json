@@ -476,7 +476,7 @@
                             "header": "Действия",
                             "introduction": "Действията са това, което Home Assistant ще направи, когато се активира автоматизацията. \n\n[Научете повече за действията.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Добавяне на действие",
-                            "duplicate": "Дупликация",
+                            "duplicate": "Копиране",
                             "delete": "Изтриване",
                             "delete_confirm": "Сигурни ли сте, че искате да изтриете?",
                             "unsupported_action": "Неподдържано действие: {action}",
@@ -575,6 +575,17 @@
                     "wsw": "ЗЮЗ"
                 },
                 "forecast": "Прогноза"
+            },
+            "alarm_control_panel": {
+                "code": "Код",
+                "clear_code": "Изчистване",
+                "disarm": "Деактивирaне",
+                "arm_home": "Под охрана - вкъщи",
+                "arm_away": "Под охрана"
+            },
+            "automation": {
+                "last_triggered": "Последно задействане",
+                "trigger": "Тригер"
             }
         },
         "components": {
