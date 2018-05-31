@@ -16,9 +16,7 @@ class HaRelativeTime extends PolymerElement {
         observer: 'datetimeObjChanged',
       },
 
-      parsedDateTime: {
-        type: Object,
-      },
+      parsedDateTime: Object
     };
   }
 
@@ -51,9 +49,21 @@ class HaRelativeTime extends PolymerElement {
   }
 
   updateRelative() {
-    var root = dom(this);
-    root.innerHTML = this.parsedDateTime ?
-      relativeTime(this.parsedDateTime) : 'never';
+    const root = dom(this);
+    if (!this.parsedDateTime) {
+      root.innerHTML = this.localize('ui.relative_time.never');
+    } else {
+      const rel = relativeTime(this.parsedDateTime);
+      console.log(JSON.stringify(rel, null, 2));
+      console.log(typeof this.localize); // function
+      console.log(this.localize('ui.relative_time.past')); // undefined
+      console.log(this.localize('ui.sidebar.developer_tools')); // undefined
+      const format = this.localize(`ui.relative_time.${rel.tense}`);
+      const relTime = format
+        .replace('$unit', this.localize(`ui.duration.${rel.unit}`, 'count', rel.value))
+        .replace('$value', rel.value);
+        root.innerHTML = relTime;
+    }
   }
 }
 
