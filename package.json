@@ -74,9 +74,8 @@
     "mdn-polyfills": "^5.5.0",
     "moment": "^2.22.1",
     "preact": "^8.2.6",
-    "react": "^16.3.2",
+    "preact-compat": "^3.18.0",
     "react-big-calendar": "^0.19.1",
-    "react-dom": "^16.3.2",
     "unfetch": "^3.0.0",
     "web-animations-js": "^2.3.1",
     "xss": "^0.3.8"
