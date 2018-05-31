@@ -43,7 +43,7 @@ class HABigCalendar extends PolymerElement {
     render(this.bc_element, this.shadowRoot);
     // Add react big calendar css
     const style = document.createElement('link');
-    style.setAttribute('href', '/static/images/react-big-calendar/react-big-calendar.css');
+    style.setAttribute('href', '/static/panels/calendar/react-big-calendar.css');
     style.setAttribute('rel', 'stylesheet');
     this.shadowRoot.appendChild(style);
   }

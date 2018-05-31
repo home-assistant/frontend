@@ -65,7 +65,7 @@ function createConfig(isProdBuild, latestBuild) {
     copyPluginOpts.push({ from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' });
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js.map')
-    copyPluginOpts.push({ from: 'node_modules/react-big-calendar/lib/css/react-big-calendar.css', to: `images/react-big-calendar/` });
+    copyPluginOpts.push({ from: 'node_modules/react-big-calendar/lib/css/react-big-calendar.css', to: `panels/calendar/` });
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` });
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` });
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
