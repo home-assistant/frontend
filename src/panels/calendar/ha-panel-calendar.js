@@ -116,13 +116,13 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // Fetch events for selected calendar
     var calls = [];
     for (let i = 0; i < this.selectedCalendars.length; i++) {
-        calls.push(this.hass.callApi('get', 'calendar/' + this.selectedCalendars[i]))
+      calls.push(this.hass.callApi('get', 'calendar/' + this.selectedCalendars[i]))
     }
     Promise.all(calls).then((items) => {
-        this.items = [];
-        for (let i = 0; i < items.length; i++) {
-            this.items = this.items.concat(items[i]);
-        }
+      this.items = [];
+      for (let i = 0; i < items.length; i++) {
+        this.items = this.items.concat(items[i]);
+      }
     });
   }
 
@@ -130,7 +130,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // Check all calendars
     if (this.$.all_calendars.checked) {
       const selectedIndex = this.$.calendar_list.selectedItems
-                              .map(x => this.$.calendar_list.indexOf(x));
+        .map(x => this.$.calendar_list.indexOf(x));
       for (let i = 0; i < this.calendars.length; i++) {
         if (selectedIndex.indexOf(i) === -1) {
           this.$.calendar_list.selectIndex(i);
