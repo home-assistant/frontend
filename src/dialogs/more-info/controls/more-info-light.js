@@ -83,15 +83,15 @@ import EventsMixin from '../../../mixins/events-mixin.js';
     <div class\$="[[computeClassNames(stateObj)]]">
 
       <div class="control brightness">
-        <ha-labeled-slider caption="Brightness" icon="hass:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
+        <ha-labeled-slider caption="Brightness" icon="hass:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged"></ha-labeled-slider>
       </div>
 
       <div class="control color_temp">
-        <ha-labeled-slider caption="Color Temperature" icon="hass:thermometer" min="[[stateObj.attributes.min_mireds]]" max="[[stateObj.attributes.max_mireds]]" value="{{ctSliderValue}}" on-change="ctSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
+        <ha-labeled-slider caption="Color Temperature" icon="hass:thermometer" min="[[stateObj.attributes.min_mireds]]" max="[[stateObj.attributes.max_mireds]]" value="{{ctSliderValue}}" on-change="ctSliderChanged"></ha-labeled-slider>
       </div>
 
       <div class="control white_value">
-        <ha-labeled-slider caption="White Value" icon="hass:file-word-box" max="255" value="{{wvSliderValue}}" on-change="wvSliderChanged" ignore-bar-touch=""></ha-labeled-slider>
+        <ha-labeled-slider caption="White Value" icon="hass:file-word-box" max="255" value="{{wvSliderValue}}" on-change="wvSliderChanged"></ha-labeled-slider>
       </div>
 
       <ha-color-picker class="control color" on-colorselected="colorPicked" desired-hs-color="{{colorPickerColor}}" throttle="500" hue-segments="24" saturation-segments="8">
