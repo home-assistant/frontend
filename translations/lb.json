@@ -575,6 +575,17 @@
                     "wsw": "WSW"
                 },
                 "forecast": "Prognose"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Kloer",
+                "disarm": "Desaktivéieren",
+                "arm_home": "Aktivéiert Doheem",
+                "arm_away": "Aktivéiert Ënnerwee"
+            },
+            "automation": {
+                "last_triggered": "Läscht ausgeléist",
+                "trigger": "Ausléiser"
             }
         },
         "components": {

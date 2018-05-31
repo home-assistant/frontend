@@ -575,6 +575,17 @@
                     "wsw": "ЗЮЗ"
                 },
                 "forecast": "Прогноз"
+            },
+            "alarm_control_panel": {
+                "code": "Код",
+                "clear_code": "Очистить",
+                "disarm": "Без охраны",
+                "arm_home": "Охрана (дома)",
+                "arm_away": "Охрана (не дома)"
+            },
+            "automation": {
+                "last_triggered": "Последний запуск",
+                "trigger": "Запуск"
             }
         },
         "components": {

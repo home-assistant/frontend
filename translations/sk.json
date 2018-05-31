@@ -238,8 +238,17 @@
             }
         },
         "weather": {
+            "clear_night": "Jasno, v noci",
+            "cloudy": "Zamračené",
             "fog": "Hmla",
+            "hail": "Krupobitie",
+            "lightning": "Blesky",
+            "lightning_rainy": "Blesky, daždivo",
+            "partlycloudy": "Čiastočne zamračené",
+            "pouring": "Lejúco",
             "rainy": "Daždivo",
+            "snowy": "Zasneženo",
+            "snowy_rainy": "Zasneženo, daždivo",
             "sunny": "slnečno",
             "windy": "Veterno",
             "windy_variant": "Veterno"
@@ -345,7 +354,7 @@
                     "description": "Vytvárajte a upravujte skripty",
                     "picker": {
                         "header": "Editor automatizácií",
-                        "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
+                        "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
                         "pick_automation": "Vyberte automatizáciu, ktorú chcete upraviť",
                         "no_automations": "Nepodarilo sa nájsť žiadne editovateľné automatizácie",
                         "add_automation": "Pridať automatizáciu"
@@ -358,7 +367,7 @@
                         "alias": "Názov",
                         "triggers": {
                             "header": "Spúšťače",
-                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \n\n [Viac informácií o spúšťačov.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \n\n [Viac informácií o spúšťačov.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Pridať spúšťač",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
@@ -420,7 +429,7 @@
                         },
                         "conditions": {
                             "header": "Podmienky",
-                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \n\n [Viac informácií o podmienkach.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \n\n [Viac informácií o podmienkach.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Pridať podmienku",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
@@ -465,7 +474,7 @@
                         },
                         "actions": {
                             "header": "Akcie",
-                            "introduction": "Akcie, ktoré vykoná domáci asistent, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcie, ktoré vykoná domáci asistent, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Pridať akciu",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
@@ -533,6 +542,12 @@
             "persistent_notification": {
                 "dismiss": "Zrušiť"
             },
+            "scene": {
+                "activate": "Aktivovať"
+            },
+            "script": {
+                "execute": "Vykonať"
+            },
             "weather": {
                 "attributes": {
                     "air_pressure": "Tlak vzduchu",
@@ -543,9 +558,21 @@
                 },
                 "cardinal_direction": {
                     "e": "V",
+                    "ene": "VSV",
+                    "ese": "VJV",
                     "n": "S",
+                    "ne": "SV",
+                    "nne": "SSV",
+                    "nw": "SZ",
+                    "nnw": "SSZ",
                     "s": "J",
-                    "w": "Z"
+                    "se": "JV",
+                    "sse": "JJV",
+                    "ssw": "JJZ",
+                    "sw": "JZ",
+                    "w": "Z",
+                    "wnw": "ZSZ",
+                    "wsw": "ZJZ"
                 },
                 "forecast": "Predpoveď"
             }
@@ -579,7 +606,7 @@
         "input_boolean": "Logický vstup",
         "input_datetime": "Vstupný dátum a čas",
         "input_select": "Výber z možností",
-        "input_number": "Vstupné číslo",
+        "input_number": "Číselný vstup",
         "input_text": "Vstupný text",
         "light": "Svetlo",
         "lock": "Zámok",
