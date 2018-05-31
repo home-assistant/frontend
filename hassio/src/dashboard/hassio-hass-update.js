@@ -27,7 +27,7 @@ class HassioHassUpdate extends PolymerElement {
           <div class="title">Update available! 🎉</div>
           <paper-card>
             <div class="card-content">
-              <hassio-card-content hass=[[hass]] title="Home Assistant [[hassInfo.last_version]] is available" description="You are currently running version [[hassInfo.version]]" icon="hassio:home-assistant" icon-class="hassupdate"></hassio-card-content>
+              <hassio-card-content hass="[[hass]]" title="Home Assistant [[hassInfo.last_version]] is available" description="You are currently running version [[hassInfo.version]]" icon="hassio:home-assistant" icon-class="hassupdate"></hassio-card-content>
               <template is="dom-if" if="[[error]]">
                 <div class="error">Error: [[error]]</div>
               </template>
