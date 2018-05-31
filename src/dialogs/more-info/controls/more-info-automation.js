@@ -13,12 +13,14 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin: 16px 0 0 0;
-          float: right;
         }
         .flex {
           display: flex;
           justify-content: space-between;
+        }
+        .actions {
+          margin: 36px 0 8px 0;
+          text-align: right;
         }
       </style>
 
@@ -29,9 +31,11 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
         <ha-relative-time datetime="[[stateObj.attributes.last_triggered]]"></ha-relative-time>
       </div>
 
-      <paper-button on-click="handleTriggerTapped">
-        [[localize('ui.card.automation.trigger')]]
-      </paper-button>
+      <div class="actions">
+        <paper-button on-click="handleTriggerTapped">
+          [[localize('ui.card.automation.trigger')]]
+        </paper-button>
+      </div>
     `;
   }
 
