@@ -18,6 +18,7 @@ function createConfig(isProdBuild, latestBuild) {
     app: './src/entrypoints/app.js',
     authorize: './src/entrypoints/authorize.js',
     core: './src/entrypoints/core.js',
+    'custom-panel': './src/entrypoints/custom-panel.js',
   };
 
   const babelOptions = {
@@ -42,6 +43,7 @@ function createConfig(isProdBuild, latestBuild) {
       __DEV__: JSON.stringify(!isProdBuild),
       __BUILD__: JSON.stringify(latestBuild ? 'latest' : 'es5'),
       __VERSION__: JSON.stringify(VERSION),
+      __PUBLIC_PATH__: JSON.stringify(publicPath),
     }),
     new CopyWebpackPlugin(copyPluginOpts),
     // Ignore moment.js locales
@@ -64,9 +66,9 @@ function createConfig(isProdBuild, latestBuild) {
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` });
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` });
+    copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
     entry['hass-icons'] = './src/entrypoints/hass-icons.js';
   } else {
-    copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
     babelOptions.presets = [
       ['es2015', { modules: false }]
     ];
