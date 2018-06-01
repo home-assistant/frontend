@@ -50,7 +50,7 @@ class HassioCardContent extends PolymerElement {
           [[description]]
         </template>
         <template is="dom-if" if="[[datetime]]">
-          <ha-relative-time class="addition" datetime="[[datetime]]"></ha-relative-time>
+          <ha-relative-time hass="[[hass]]" class="addition" datetime="[[datetime]]"></ha-relative-time>
         </template>
       </div>
     </div>
@@ -59,6 +59,7 @@ class HassioCardContent extends PolymerElement {
 
   static get properties() {
     return {
+      hass: Object,
       title: String,
       description: String,
       datetime: String,

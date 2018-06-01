@@ -15,7 +15,7 @@ class MoreInfoSun extends PolymerElement {
       <div class="data-entry layout justified horizontal">
         <div class="key">
           <span>[[itemCaption(item)]]</span>
-          <ha-relative-time datetime-obj="[[itemDate(item)]]"></ha-relative-time>
+          <ha-relative-time hass="[[hass]]" datetime-obj="[[itemDate(item)]]"></ha-relative-time>
         </div>
         <div class="value">[[itemValue(item)]]</div>
       </div>
@@ -29,10 +29,8 @@ class MoreInfoSun extends PolymerElement {
 
   static get properties() {
     return {
-      stateObj: {
-        type: Object,
-      },
-
+      hass: Object,
+      stateObj: Object,
       risingDate: {
         type: Object,
         computed: 'computeRising(stateObj)',
