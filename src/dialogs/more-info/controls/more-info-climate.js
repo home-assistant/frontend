@@ -309,11 +309,11 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
   }
 
   supportsTemperature(stateObj) {
-    return (stateObj.attributes.supported_features & 1) !== 0;
+    return (stateObj.attributes.supported_features & 1) !== 0 && typeof stateObj.attributes.temperature === 'number';
   }
 
   supportsTemperatureRange(stateObj) {
-    return (stateObj.attributes.supported_features & 6) !== 0;
+    return (stateObj.attributes.supported_features & 6) !== 0 && (typeof stateObj.attributes.target_temp_low === 'number' || typeof stateObj.attributes.target_temp_high === 'number');
   }
 
   supportsHumidity(stateObj) {
