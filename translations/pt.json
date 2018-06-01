@@ -550,11 +550,11 @@
             },
             "weather": {
                 "attributes": {
-                    "air_pressure": "Pressão atmosférica",
+                    "air_pressure": "Press. Atmosférica",
                     "humidity": "Humidade",
                     "temperature": "Temperatura",
                     "visibility": "Visibilidade",
-                    "wind_speed": "Velocidade do vento"
+                    "wind_speed": "Vel. do vento"
                 },
                 "cardinal_direction": {
                     "e": "",
@@ -575,6 +575,17 @@
                     "wsw": ""
                 },
                 "forecast": "Previsão"
+            },
+            "alarm_control_panel": {
+                "code": "Código",
+                "clear_code": "Limpo",
+                "disarm": "Desarmar",
+                "arm_home": "Armado casa",
+                "arm_away": "Armado ausente"
+            },
+            "automation": {
+                "last_triggered": "Último disparo",
+                "trigger": "Acionamento"
             }
         },
         "components": {
@@ -629,7 +640,7 @@
         "weather": {
             "humidity": "Humidade",
             "visibility": "Visibilidade",
-            "wind_speed": "Velocidade do vento"
+            "wind_speed": "Vel. do vento"
         }
     }
 }
