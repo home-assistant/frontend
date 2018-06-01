@@ -16,7 +16,7 @@
     "__DEMO__": false,
     "__BUILD__": false,
     "__VERSION__": false,
-    "__ROOT__": false,
+    "__PUBLIC_PATH__": false,
     "Polymer": true,
     "webkitSpeechRecognition": false,
     "ResizeObserver": false
@@ -52,6 +52,7 @@
     "import/no-unresolved": 0,
     "import/extensions": [2, "ignorePackages"],
     "object-curly-newline": 0,
+    "default-case": 0,
     "react/jsx-no-bind": [2, { "ignoreRefs": true }],
     "react/jsx-no-duplicate-props": 2,
     "react/self-closing-comp": 2,

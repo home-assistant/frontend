@@ -30,7 +30,7 @@ function generateIndex(es6) {
     const compatibilityPath = `/frontend_es5/compatibility-${md5(path.resolve(config.output_es5, 'compatibility.js'))}.js`;
     const es5Extra = `
     <script src='${compatibilityPath}'></script>
-    <script src='/frontend_es5/custom-elements-es5-adapter.js'></script>
+    <script src='/static/custom-elements-es5-adapter.js'></script>
     `;
 
     toReplace.push([

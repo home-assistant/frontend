@@ -1,4 +1,5 @@
 /* eslint-disable */
+import './polyfill.js';
 /**
 @license
 Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
@@ -94,3 +95,6 @@ export const importHref = function (href, onload, onerror, optAsync) {
   }
   return link;
 };
+
+export const importHrefPromise = href =>
+  new Promise((resolve, reject) => importHref(href, resolve, reject));
