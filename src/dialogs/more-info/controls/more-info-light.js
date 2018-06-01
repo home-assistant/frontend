@@ -12,6 +12,7 @@ import '../../../components/ha-labeled-slider.js';
 
 import featureClassNames from '../../../common/entity/feature_class_names';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 {
   const FEATURE_CLASS_NAMES = {
@@ -24,7 +25,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
   /*
    * @appliesMixin EventsMixin
    */
-  class MoreInfoLight extends EventsMixin(PolymerElement) {
+  class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="iron-flex"></style>
@@ -83,22 +84,22 @@ import EventsMixin from '../../../mixins/events-mixin.js';
     <div class\$="[[computeClassNames(stateObj)]]">
 
       <div class="control brightness">
-        <ha-labeled-slider caption="Brightness" icon="hass:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged"></ha-labeled-slider>
+        <ha-labeled-slider caption="[[localize('ui.card.light.brightness')]]" icon="hass:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged"></ha-labeled-slider>
       </div>
 
       <div class="control color_temp">
-        <ha-labeled-slider caption="Color Temperature" icon="hass:thermometer" min="[[stateObj.attributes.min_mireds]]" max="[[stateObj.attributes.max_mireds]]" value="{{ctSliderValue}}" on-change="ctSliderChanged"></ha-labeled-slider>
+        <ha-labeled-slider caption="[[localize('ui.card.light.color_temperature')]]" icon="hass:thermometer" min="[[stateObj.attributes.min_mireds]]" max="[[stateObj.attributes.max_mireds]]" value="{{ctSliderValue}}" on-change="ctSliderChanged"></ha-labeled-slider>
       </div>
 
       <div class="control white_value">
-        <ha-labeled-slider caption="White Value" icon="hass:file-word-box" max="255" value="{{wvSliderValue}}" on-change="wvSliderChanged"></ha-labeled-slider>
+        <ha-labeled-slider caption="[[localize('ui.card.light.white_value')]]" icon="hass:file-word-box" max="255" value="{{wvSliderValue}}" on-change="wvSliderChanged"></ha-labeled-slider>
       </div>
 
       <ha-color-picker class="control color" on-colorselected="colorPicked" desired-hs-color="{{colorPickerColor}}" throttle="500" hue-segments="24" saturation-segments="8">
       </ha-color-picker>
 
       <div class="control effect_list">
-        <paper-dropdown-menu label-float="" dynamic-align="" label="Effect">
+        <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.light.effect')]]">
           <paper-listbox slot="dropdown-content" selected="{{effectIndex}}">
             <template is="dom-repeat" items="[[stateObj.attributes.effect_list]]">
               <paper-item>[[item]]</paper-item>
