@@ -5,7 +5,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import './state-history-chart-line.js';
 import './state-history-chart-timeline.js';
 
-class StateHistoryCharts extends PolymerElement {
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -21,11 +23,11 @@ class StateHistoryCharts extends PolymerElement {
     }
     </style>
     <template is="dom-if" class="info" if="[[_computeIsLoading(isLoadingData)]]">
-      <div class="info">Loading state history...</div>
+      <div class="info">[[localize('ui.components.history_charts.loading_history')]]</div>
     </template>
 
     <template is="dom-if" class="info" if="[[_computeIsEmpty(isLoadingData, historyData)]]">
-      <div class="info">No state history found.</div>
+      <div class="info">[[localize('ui.components.history_charts.no_history_found')]]</div>
     </template>
 
     <template is="dom-if" if="[[historyData.timeline.length]]">
