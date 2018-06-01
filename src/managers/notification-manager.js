@@ -2,7 +2,9 @@ import '@polymer/paper-toast/paper-toast.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class NotificationManager extends PolymerElement {
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+class NotificationManager extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -12,7 +14,7 @@ class NotificationManager extends PolymerElement {
     </style>
 
     <paper-toast id="toast" text="[[_text]]" no-cancel-on-outside-click="[[_cancelOnOutsideClick]]"></paper-toast>
-    <paper-toast id="connToast" duration="0" text="Connection lost. Reconnecting…" opened="[[connectionLost]]"></paper-toast>
+    <paper-toast id="connToast" duration="0" text="[[localize('ui.notification_toast.connection_lost')]]" opened="[[connectionLost]]"></paper-toast>
 `;
   }
 
