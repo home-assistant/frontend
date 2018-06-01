@@ -21,6 +21,10 @@ function ensureLoaded(panel) {
       imported = import(/* webpackChunkName: "panel-config" */ '../panels/config/ha-panel-config.js');
       break;
 
+    case 'custom':
+      imported = import(/* webpackChunkName: "panel-custom" */ '../panels/custom/ha-panel-custom.js');
+      break;
+
     case 'dev-event':
       imported = import(/* webpackChunkName: "panel-dev-event" */ '../panels/dev-event/ha-panel-dev-event.js');
       break;
