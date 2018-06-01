@@ -14,12 +14,13 @@ import HassMediaPlayerEntity from '../../../util/hass-media-player-model.js';
 import attributeClassNames from '../../../common/entity/attribute_class_names';
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 {
   /*
    * @appliesMixin EventsMixin
    */
-  class MoreInfoMediaPlayer extends EventsMixin(PolymerElement) {
+  class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`
     <style include="iron-flex iron-flex-alignment"></style>
@@ -99,7 +100,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
       </div>
       <!-- TTS -->
       <div hidden\$="[[computeHideTTS(ttsLoaded, playerObj)]]" class="layout horizontal end">
-        <paper-input id="ttsInput" label="Text to speak" class="flex" value="{{ttsMessage}}" on-keydown="ttsCheckForEnter"></paper-input>
+        <paper-input id="ttsInput" label="[[localize('ui.card.media_player.text_to_speak')]]" class="flex" value="{{ttsMessage}}" on-keydown="ttsCheckForEnter"></paper-input>
         <paper-icon-button icon="hass:send" on-click="sendTTS"></paper-icon-button>
       </div>
     </div>

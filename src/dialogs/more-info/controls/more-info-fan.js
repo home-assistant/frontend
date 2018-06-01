@@ -12,11 +12,12 @@ import '../../../components/ha-attributes.js';
 
 import attributeClassNames from '../../../common/entity/attribute_class_names';
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin EventsMixin
  */
-class MoreInfoFan extends EventsMixin(PolymerElement) {
+class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex"></style>
@@ -45,7 +46,7 @@ class MoreInfoFan extends EventsMixin(PolymerElement) {
     <div class\$="[[computeClassNames(stateObj)]]">
 
       <div class="container-speed_list">
-        <paper-dropdown-menu label-float="" dynamic-align="" label="Speed">
+        <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.fan.speed')]]">
           <paper-listbox slot="dropdown-content" selected="{{speedIndex}}">
             <template is="dom-repeat" items="[[stateObj.attributes.speed_list]]">
               <paper-item>[[item]]</paper-item>
@@ -56,7 +57,7 @@ class MoreInfoFan extends EventsMixin(PolymerElement) {
 
       <div class="container-oscillating">
         <div class="center horizontal layout single-row">
-          <div class="flex">Oscillate</div>
+          <div class="flex">[[localize('ui.card.fan.oscillate')]]</div>
           <paper-toggle-button checked="[[oscillationToggleChecked]]" on-change="oscillationToggleChanged">
           </paper-toggle-button>
         </div>
@@ -64,7 +65,7 @@ class MoreInfoFan extends EventsMixin(PolymerElement) {
 
       <div class="container-direction">
         <div class="direction">
-          <div>Direction</div>
+          <div>[[localize('ui.card.fan.direction')]]</div>
           <paper-icon-button icon="hass:rotate-left" on-click="onDirectionLeft" title="Left" disabled="[[computeIsRotatingLeft(stateObj)]]"></paper-icon-button>
           <paper-icon-button icon="hass:rotate-right" on-click="onDirectionRight" title="Right" disabled="[[computeIsRotatingRight(stateObj)]]"></paper-icon-button>
         </div>
