@@ -395,7 +395,7 @@
       "entity_turned_on": "Turned on {entity}.",
       "entity_turned_off": "Turned off {entity}.",
       "service_called": "Service {service} called.",
-      "service_call_failed": "Service call {service} failed.",
+      "service_call_failed": "Failed to call service {service}.",
       "connection_lost": "Connection lost. Reconnecting…"
     },
     "sidebar": {
