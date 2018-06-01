@@ -377,12 +377,19 @@
           "entity": "Entity"
         }
       },
+      "relative_time": {
+        "past": "{time} ago",
+        "future": "In {time}",
+        "never": "Never"
+      },
       "service-picker": {
         "service": "Service"
       }
     },
     "duration": {
       "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+      "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+      "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
       "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
       "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
     },
