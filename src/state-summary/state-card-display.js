@@ -8,9 +8,6 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 import computeStateDisplay from '../common/entity/compute_state_display.js';
 import attributeClassNames from '../common/entity/attribute_class_names.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class StateCardDisplay extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

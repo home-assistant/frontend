@@ -13,9 +13,6 @@ import computeStateName from '../../common/entity/compute_state_name.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaEntityPicker extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`

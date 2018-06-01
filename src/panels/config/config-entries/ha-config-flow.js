@@ -11,10 +11,6 @@ import '../../../resources/ha-style.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin EventsMixin
- */
 class HaConfigFlow extends
   LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {

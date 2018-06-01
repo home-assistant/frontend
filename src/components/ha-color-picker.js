@@ -3,11 +3,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../mixins/events-mixin.js';
 
-/**
- * Color-picker custom element
- *
- * @appliesMixin EventsMixin
- */
 class HaColorPicker extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

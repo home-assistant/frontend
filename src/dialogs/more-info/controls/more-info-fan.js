@@ -14,9 +14,6 @@ import attributeClassNames from '../../../common/entity/attribute_class_names';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`

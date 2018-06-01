@@ -20,9 +20,6 @@ import '../../resources/ha-style.js';
 import formatDate from '../../common/datetime/format_date.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaPanelHistory extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

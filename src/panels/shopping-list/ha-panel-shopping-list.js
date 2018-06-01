@@ -17,9 +17,6 @@ import '../../components/ha-menu-button.js';
 import '../../components/ha-start-voice-button.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

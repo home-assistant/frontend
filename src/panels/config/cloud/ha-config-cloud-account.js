@@ -13,9 +13,6 @@ import '../ha-config-section.js';
 import formatDateTime from '../../../common/datetime/format_date_time.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

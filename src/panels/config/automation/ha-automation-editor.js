@@ -35,10 +35,6 @@ function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
 }
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
- */
 class HaAutomationEditor extends
   LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {

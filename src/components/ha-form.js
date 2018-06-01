@@ -9,9 +9,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import './ha-paper-slider.js';
 import EventsMixin from '../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaForm extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

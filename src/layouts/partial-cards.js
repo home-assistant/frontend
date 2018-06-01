@@ -28,10 +28,6 @@ import EventsMixin from '../mixins/events-mixin.js';
   const DEFAULT_VIEW_ENTITY_ID = 'group.default_view';
   const ALWAYS_SHOW_DOMAIN = ['persistent_notification', 'configurator'];
 
-  /*
-   * @appliesMixin EventsMixin
-   * @appliesMixin NavigateMixin
-   */
   class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     static get template() {
       return html`

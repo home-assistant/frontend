@@ -16,12 +16,8 @@ import '../ha-config-section.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
- */
-class HaAutomationPicker extends
-  LocalizeMixin(NavigateMixin(PolymerElement)) {
+
+class HaAutomationPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="ha-style">

@@ -17,9 +17,6 @@ import '../../resources/ha-style.js';
 import formatDateTime from '../../common/datetime/format_date_time.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

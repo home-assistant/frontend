@@ -7,9 +7,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
-/*
- * @appliesMixin NavigateMixin
- */
 class HaConfigEntriesMenu extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`

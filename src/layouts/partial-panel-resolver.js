@@ -92,9 +92,6 @@ function ensureLoaded(panel) {
   return imported;
 }
 
-/*
- * @appliesMixin NavigateMixin
- */
 class PartialPanelResolver extends NavigateMixin(PolymerElement) {
   static get template() {
     return html`

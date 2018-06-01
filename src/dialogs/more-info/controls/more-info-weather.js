@@ -4,9 +4,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

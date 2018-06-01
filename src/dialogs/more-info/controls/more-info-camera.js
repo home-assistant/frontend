@@ -5,9 +5,6 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 import emptyImageBase64 from '../../../common/empty_image_base64.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class MoreInfoCamera extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

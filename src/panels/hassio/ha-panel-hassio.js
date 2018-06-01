@@ -5,11 +5,6 @@ import config from '../../../hassio/config.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 import NavigateMixin from '../../mixins/navigate-mixin.js';
 
-/*
- * Mixins are used by ifram to communicate with main frontend.
- * @appliesMixin EventsMixin
- * @appliesMixin NavigateMixin
- */
 class HaPanelHassio extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`

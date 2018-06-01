@@ -14,9 +14,6 @@ import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 Leaflet.Icon.Default.imagePath = '/static/images/leaflet';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaPanelMap extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

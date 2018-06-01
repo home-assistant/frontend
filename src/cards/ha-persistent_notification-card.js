@@ -9,9 +9,6 @@ import '../components/ha-markdown.js';
 import computeStateName from '../common/entity/compute_state_name.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

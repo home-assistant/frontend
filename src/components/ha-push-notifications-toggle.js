@@ -4,9 +4,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

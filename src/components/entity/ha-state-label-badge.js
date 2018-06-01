@@ -15,12 +15,7 @@ import secondsToDuration from '../../common/datetime/seconds_to_duration.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin EventsMixin
- */
-class HaStateLabelBadge extends
-  LocalizeMixin(EventsMixin(PolymerElement)) {
+class HaStateLabelBadge extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>

@@ -16,9 +16,6 @@ import attributeClassNames from '../../../common/entity/attribute_class_names.js
 import featureClassNames from '../../../common/entity/feature_class_names';
 import EventsMixin from '../../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class MoreInfoClimate extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

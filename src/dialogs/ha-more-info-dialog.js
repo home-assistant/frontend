@@ -13,9 +13,6 @@ import isComponentLoaded from '../common/config/is_component_loaded.js';
 
 import DialogMixin from '../mixins/dialog-mixin.js';
 
-/*
- * @appliesMixin DialogMixin
- */
 class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`

@@ -8,9 +8,6 @@ import '../../components/domain-icon.js';
 import formatTime from '../../common/datetime/format_time.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaLogbook extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

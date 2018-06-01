@@ -16,10 +16,6 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
- */
 class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
