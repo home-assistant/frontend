@@ -12,7 +12,7 @@ const buildReplaces = {
   '/frontend_latest/authorize.js': 'authorize.js',
 };
 
-const es5Extra = "<script src='/frontend_es5/custom-elements-es5-adapter.js'></script>";
+const es5Extra = "<script src='/static/custom-elements-es5-adapter.js'></script>";
 
 async function buildAuth(es6) {
   const targetPath = es6 ? config.output : config.output_es5;
