@@ -25,7 +25,7 @@ function setProperties(properties) {
 }
 
 function initialize(panel, properties) {
-  const config = panel.config;
+  const config = panel.config._panel_custom;
   let start = Promise.resolve();
 
   if (!webComponentsSupported) {

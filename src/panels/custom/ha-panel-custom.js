@@ -44,11 +44,13 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
       this.remove(this.lastChild);
     }
 
-    const tempA = document.createElement('a');
-    tempA.href = panel.config.html_url || panel.config.js_url;
+    const config = panel.config._panel_custom;
 
-    if (!panel.config.trust_external && !['localhost', '127.0.0.1', location.hostname].includes(tempA.hostname)) {
-      if (!confirm(`Do you trust the external panel "${panel.config.name}" at "${tempA.href}"?
+    const tempA = document.createElement('a');
+    tempA.href = config.html_url || config.js_url;
+
+    if (!config.trust_external && !['localhost', '127.0.0.1', location.hostname].includes(tempA.hostname)) {
+      if (!confirm(`Do you trust the external panel "${config.name}" at "${tempA.href}"?
 
 It will have access to all data in Home Assistant.
 
@@ -57,11 +59,11 @@ It will have access to all data in Home Assistant.
       }
     }
 
-    if (!panel.config.embed_iframe) {
-      loadCustomPanel(panel.config)
+    if (!config.embed_iframe) {
+      loadCustomPanel(config)
         .then(
           () => {
-            const element = createCustomPanelElement(panel.config);
+            const element = createCustomPanelElement(config);
             this._setProperties = props => setCustomPanelProperties(element, props);
             setCustomPanelProperties(element, {
               panel,
