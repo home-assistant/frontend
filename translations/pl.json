@@ -575,6 +575,17 @@
                     "wsw": "zach. płd.-zach."
                 },
                 "forecast": "Prognoza"
+            },
+            "alarm_control_panel": {
+                "code": "Kod",
+                "clear_code": "Wyczyść",
+                "disarm": "Rozbrojony",
+                "arm_home": "Uzbrojony (w domu)",
+                "arm_away": "Uzbrojony (nieobecny)"
+            },
+            "automation": {
+                "last_triggered": "Ostatnio uruchomione",
+                "trigger": "Wyzwalacz"
             }
         },
         "components": {
