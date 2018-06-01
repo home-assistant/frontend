@@ -3,9 +3,15 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import relativeTime from '../common/datetime/relative_time.js';
 
-class HaRelativeTime extends PolymerElement {
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HaRelativeTime extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
+      hass: Object,
       datetime: {
         type: String,
         observer: 'datetimeChanged',
@@ -16,9 +22,7 @@ class HaRelativeTime extends PolymerElement {
         observer: 'datetimeObjChanged',
       },
 
-      parsedDateTime: {
-        type: Object,
-      },
+      parsedDateTime: Object
     };
   }
 
@@ -51,9 +55,15 @@ class HaRelativeTime extends PolymerElement {
   }
 
   updateRelative() {
-    var root = dom(this);
-    root.innerHTML = this.parsedDateTime ?
-      relativeTime(this.parsedDateTime) : 'never';
+    const root = dom(this);
+    if (!this.parsedDateTime) {
+      root.innerHTML = this.localize('ui.components.relative_time.never');
+    } else {
+      const rel = relativeTime(this.parsedDateTime);
+      const time = this.localize(`ui.duration.${rel.unit}`, 'count', rel.value);
+      const relTime = this.localize(`ui.components.relative_time.${rel.tense}`, 'time', time);
+      root.innerHTML = relTime;
+    }
   }
 }
 

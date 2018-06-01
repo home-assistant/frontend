@@ -26,7 +26,7 @@ class HassioAddons extends NavigateMixin(PolymerElement) {
       <template is="dom-repeat" items="[[addons]]" as="addon" sort="sortAddons">
         <paper-card on-click="addonTapped">
           <div class="card-content">
-            <hassio-card-content title="[[addon.name]]" description="[[addon.description]]" icon="[[computeIcon(addon)]]" icon-title="[[computeIconTitle(addon)]]" icon-class="[[computeIconClass(addon)]]"></hassio-card-content>
+            <hassio-card-content hass="[[hass]]" title="[[addon.name]]" description="[[addon.description]]" icon="[[computeIcon(addon)]]" icon-title="[[computeIconTitle(addon)]]" icon-class="[[computeIconClass(addon)]]"></hassio-card-content>
           </div>
         </paper-card>
       </template>
