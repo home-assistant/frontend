@@ -7,11 +7,9 @@ import '../../../components/buttons/ha-progress-button.js';
 import '../../../layouts/hass-subpage.js';
 import '../../../resources/ha-style.js';
 import '../ha-config-section.js';
+
 import EventsMixin from '../../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

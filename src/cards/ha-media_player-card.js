@@ -11,10 +11,6 @@ import computeStateName from '../common/entity/compute_state_name.js';
 import EventsMixin from '../mixins/events-mixin.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin EventsMixin
- */
 class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`

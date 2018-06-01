@@ -6,9 +6,6 @@ import EventsMixin from '../mixins/events-mixin.js';
 
 import isComponentLoaded from '../common/config/is_component_loaded.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaStartVoiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

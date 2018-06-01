@@ -1,10 +1,5 @@
 import '@polymer/paper-slider/paper-slider.js';
 
-/**
-* @polymer
-* @customElement
-* @appliesMixin paper-slider
-*/
 const PaperSliderClass = customElements.get('paper-slider');
 
 class HaPaperSlider extends PaperSliderClass {

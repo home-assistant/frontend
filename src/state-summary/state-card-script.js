@@ -8,9 +8,6 @@ import '../components/entity/state-info.js';
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class StateCardScript extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

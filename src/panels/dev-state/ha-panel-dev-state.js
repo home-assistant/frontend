@@ -13,9 +13,6 @@ import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaPanelDevState extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

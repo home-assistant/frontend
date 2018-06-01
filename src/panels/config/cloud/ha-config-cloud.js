@@ -22,9 +22,6 @@ import NavigateMixin from '../../../mixins/navigate-mixin.js';
     '/cloud/forgot-password',
   ];
 
-  /*
-   * @appliesMixin NavigateMixin
-   */
   class HaConfigCloud extends NavigateMixin(PolymerElement) {
     static get template() {
       return html`

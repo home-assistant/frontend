@@ -10,10 +10,6 @@ import '../ha-config-section.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin EventsMixin
- */
 class HaConfigSectionTranslation extends
   LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {

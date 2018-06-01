@@ -6,9 +6,6 @@ import '../components/entity/state-info.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
 import HassMediaPlayerEntity from '../util/hass-media-player-model.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

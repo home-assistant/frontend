@@ -30,9 +30,6 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaConfigZwave extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

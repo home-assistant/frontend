@@ -34,10 +34,6 @@ function ScriptEditor(mountEl, props, mergeEl) {
   return render(h(Script, props), mountEl, mergeEl);
 }
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
- */
 class HaScriptEditor extends
   LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {

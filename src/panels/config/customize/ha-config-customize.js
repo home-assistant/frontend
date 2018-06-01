@@ -16,9 +16,6 @@ import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import sortByName from '../../../common/entity/states_sort_by_name.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

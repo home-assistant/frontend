@@ -9,9 +9,6 @@ import '../../../components/ha-push-notifications-toggle.js';
 import '../ha-config-section.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaConfigSectionPushNotifications extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

@@ -7,9 +7,6 @@ import '../components/ha-card.js';
 import EventsMixin from '../mixins/events-mixin.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaWeatherCard extends
   LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {

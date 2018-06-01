@@ -16,10 +16,7 @@ import isComponentLoaded from '../../../common/config/is_component_loaded.js';
     'core',
     'customize',
   ];
-  /*
-   * @appliesMixin LocalizeMixin
-   * @appliesMixin NavigateMixin
-   */
+
   class HaConfigNavigation extends
     LocalizeMixin(NavigateMixin(PolymerElement)) {
     static get template() {

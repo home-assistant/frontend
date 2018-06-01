@@ -18,9 +18,6 @@ import './ha-logbook.js';
 import formatDate from '../../common/datetime/format_date.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

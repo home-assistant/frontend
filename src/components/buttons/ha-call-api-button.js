@@ -5,9 +5,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import './ha-progress-button.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaCallApiButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

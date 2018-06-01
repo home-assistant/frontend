@@ -4,9 +4,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../components/ha-form.js';
 import EventsMixin from '../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaAuthFlow extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

@@ -3,9 +3,6 @@ import EventsMixin from '../mixins/events-mixin.js';
 
 let loaded = null;
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaMarkdown extends EventsMixin(PolymerElement) {
   static get properties() {
     return {

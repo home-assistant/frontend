@@ -5,9 +5,6 @@ import relativeTime from '../common/datetime/relative_time.js';
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaRelativeTime extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {

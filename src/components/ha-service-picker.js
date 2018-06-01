@@ -6,9 +6,6 @@ import './ha-combo-box.js';
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaServicePicker extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

@@ -6,9 +6,6 @@ import EventsMixin from '../mixins/events-mixin.js';
   /* eslint-disable no-console */
   const DEBUG = false;
 
-  /*
-   * @appliesMixin EventsMixin
-   */
   class HaUrlSync extends EventsMixin(PolymerElement) {
     static get properties() {
       return {

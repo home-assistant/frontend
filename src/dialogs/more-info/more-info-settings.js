@@ -10,9 +10,6 @@ import EventsMixin from '../../mixins/events-mixin.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class MoreInfoSettings extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

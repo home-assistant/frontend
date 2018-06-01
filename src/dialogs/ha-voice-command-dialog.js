@@ -6,9 +6,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import DialogMixin from '../mixins/dialog-mixin.js';
 
-/*
- * @appliesMixin DialogMixin
- */
 class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
   static get template() {
     return html`

@@ -9,9 +9,6 @@ import timerTimeRemaining from '../common/entity/timer_time_remaining.js';
 import secondsToDuration from '../common/datetime/seconds_to_duration.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class StateCardTimer extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`

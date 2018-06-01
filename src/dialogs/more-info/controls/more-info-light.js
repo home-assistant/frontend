@@ -22,9 +22,7 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
     16: 'has-color',
     128: 'has-white_value',
   };
-  /*
-   * @appliesMixin EventsMixin
-   */
+
   class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`

@@ -2,10 +2,6 @@ import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class.js';
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
 import { AppLocalizeBehavior } from '../util/app-localize-behavior.js';
 
-/**
- * @polymerMixin
- * @appliesMixin AppLocalizeBehavior
- */
 export default dedupingMixin(superClass =>
   class extends mixinBehaviors([AppLocalizeBehavior], superClass) {
     static get properties() {

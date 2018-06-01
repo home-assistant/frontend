@@ -9,10 +9,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 
 {
   const UPDATE_INTERVAL = 10000; // ms
-  /*
-   * @appliesMixin LocalizeMixin
-   * @appliesMixin EventsMixin
-   */
+
   class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     static get template() {
       return html`

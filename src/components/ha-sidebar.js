@@ -12,10 +12,6 @@ import '../util/hass-translation.js';
 import NavigateMixin from '../mixins/navigate-mixin.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
- */
 class HaSidebar extends
   LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {

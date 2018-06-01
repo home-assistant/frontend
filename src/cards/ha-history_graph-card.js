@@ -9,9 +9,6 @@ import '../data/ha-state-history-data.js';
 import computeStateName from '../common/entity/compute_state_name.js';
 import EventsMixin from '../mixins/events-mixin.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`

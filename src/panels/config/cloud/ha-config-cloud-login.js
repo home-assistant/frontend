@@ -16,10 +16,6 @@ import '../ha-config-section.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
-/*
- * @appliesMixin NavigateMixin
- * @appliesMixin EventsMixin
- */
 class HaConfigCloudLogin extends
   NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {

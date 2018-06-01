@@ -23,9 +23,7 @@ import EventsMixin from '../../mixins/events-mixin.js';
     'configurator',
     'history_graph',
   ];
-  /*
-   * @appliesMixin EventsMixin
-   */
+
   class MoreInfoControls extends EventsMixin(PolymerElement) {
     static get template() {
       return html`

@@ -98,9 +98,6 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
     return { line: unitStates, timeline: timelineDevices };
   }
 
-  /*
-   * @appliesMixin LocalizeMixin
-   */
   class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     static get properties() {
       return {

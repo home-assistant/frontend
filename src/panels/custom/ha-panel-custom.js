@@ -6,11 +6,6 @@ import loadCustomPanel from '../../util/custom-panel/load-custom-panel.js';
 import createCustomPanelElement from '../../util/custom-panel/create-custom-panel-element.js';
 import setCustomPanelProperties from '../../util/custom-panel/set-custom-panel-properties.js';
 
-/*
- * Mixins are used by ifram to communicate with main frontend.
- * @appliesMixin EventsMixin
- * @appliesMixin NavigateMixin
- */
 class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get properties() {
     return {

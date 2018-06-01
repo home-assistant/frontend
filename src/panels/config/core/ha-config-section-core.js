@@ -12,9 +12,6 @@ import '../ha-config-section.js';
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
