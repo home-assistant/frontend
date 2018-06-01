@@ -329,6 +329,24 @@
       "camera": {
         "not_available": "Image not available"
       },
+      "cover": {
+        "position": "Position",
+        "tilt_position": "Tilt position"
+      },
+      "fan": {
+        "speed": "Speed",
+        "oscillate": "Oscillate",
+        "direction": "Direction"
+      },
+      "light": {
+        "brightness": "Brightness",
+        "color_temperature": "Color temperature",
+        "white_value": "White value",
+        "effect": "Effect"
+      },
+      "media_player": {
+        "text_to_speak": "Text to speak"
+      },
       "persistent_notification": {
         "dismiss": "Dismiss"
       },
@@ -381,6 +399,10 @@
         "past": "{time} ago",
         "future": "In {time}",
         "never": "Never"
+      },
+      "history_charts": {
+        "loading_history": "Loading state history...",
+        "no_history_found": "No state history found."
       },
       "service-picker": {
         "service": "Service"

@@ -10,11 +10,13 @@ import CoverEntity from '../../../util/cover-model.js';
 import attributeClassNames from '../../../common/entity/attribute_class_names';
 import featureClassNames from '../../../common/entity/feature_class_names';
 
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
+
 {
   const FEATURE_CLASS_NAMES = {
     128: 'has-set_tilt_position',
   };
-  class MoreInfoCover extends PolymerElement {
+  class MoreInfoCover extends LocalizeMixin(PolymerElement) {
     static get template() {
       return html`
     <style include="iron-flex"></style>
@@ -39,7 +41,7 @@ import featureClassNames from '../../../common/entity/feature_class_names';
 
       <div class="current_position">
         <ha-labeled-slider
-          caption="Position" pin=""
+          caption="[[localize('ui.card.cover.position')]]" pin=""
           value="{{coverPositionSliderValue}}"
           disabled="[[!entityObj.supportsSetPosition]]"
           on-change="coverPositionSliderChanged"
@@ -48,7 +50,7 @@ import featureClassNames from '../../../common/entity/feature_class_names';
 
       <div class="tilt">
         <ha-labeled-slider
-          caption="Tilt position" pin="" extra=""
+          caption="[[localize('ui.card.cover.tilt_position')]]" pin="" extra=""
           value="{{coverTiltPositionSliderValue}}"
           disabled="[[!entityObj.supportsSetTiltPosition]]"
           on-change="coverTiltPositionSliderChanged">
@@ -67,28 +69,17 @@ import featureClassNames from '../../../common/entity/feature_class_names';
 
     static get properties() {
       return {
-        hass: {
-          type: Object,
-        },
-
+        hass: Object,
         stateObj: {
           type: Object,
           observer: 'stateObjChanged',
         },
-
         entityObj: {
           type: Object,
           computed: 'computeEntityObj(hass, stateObj)',
         },
-
-        coverPositionSliderValue: {
-          type: Number,
-        },
-
-        coverTiltPositionSliderValue: {
-          type: Number,
-        },
-
+        coverPositionSliderValue: Number,
+        coverTiltPositionSliderValue: Number
       };
     }
 
