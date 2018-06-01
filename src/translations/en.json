@@ -340,8 +340,8 @@
       },
       "light": {
         "brightness": "Brightness",
-        "color_temperature": "Color Temperature",
-        "white_value": "White Value",
+        "color_temperature": "Color temperature",
+        "white_value": "White value",
         "effect": "Effect"
       },
       "media_player": {
