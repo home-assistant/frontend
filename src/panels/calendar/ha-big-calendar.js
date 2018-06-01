@@ -38,7 +38,7 @@ class HABigCalendar extends PolymerElement {
         views: allViews,
         popup: true,
         selectable: true,
-        onSelectEvent: this.showEventDetails,
+        onSelectEvent: this.hass.eventSelected,
         eventPropGetter: this.setEventStyle,
         defaultDate: new Date(), }
     );

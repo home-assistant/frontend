@@ -5,6 +5,7 @@ import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -61,7 +62,29 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         .iron-selected {
           background-color: #e5e5e5;
           font-weight: normal;
-        }  
+        }
+
+        paper-dialog > div.eventContent {
+          margin: 0px 5px 15px 5px;
+        }
+
+        paper-icon-item {
+          padding: 0px; 
+        }
+
+        paper-item-body.start {
+            padding: 0px 30px 0px 0px;
+        }
+
+        paper-dialog {
+            padding: 0px;
+        }
+
+        paper-dialog > h2 {
+            margin: 0;
+            padding: 20px;
+            background-color: #03A9F4;
+        }
       </style>
 
     <app-header-layout has-scrolling-region>
@@ -90,10 +113,53 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
           </paper-card>
         </div>
         <div class="flex layout horizontal wrap">
-          <ha-big-calendar events=[[items]]></ha-big-calendar>
+          <ha-big-calendar hass='[[hass]]' events="[[items]]"></ha-big-calendar>
         </div>
       </div>
     </app-header-layout>
+
+    <paper-dialog id="eventDetails" entry-animation="fade-in-animation" exit-animation="fade-out-animation" >
+      <h2>[[selectedEvent.title]]</h2>
+
+      <div id="eventContent">
+      <template is="dom-if" if="[[selectedEvent.location]]"> 
+        <paper-icon-item>
+          <iron-icon icon="mdi:map-marker" slot="item-icon"></iron-icon>
+          [[selectedEvent.location]]
+        </paper-icon-item>
+      </template>
+
+      <paper-icon-item>
+        <iron-icon icon="mdi:clock-outline" slot="item-icon"></iron-icon>
+        <paper-item-body two-line class="start">
+          <div secondary>Start</div>
+          <div>[[selectedEvent.start]]</div>
+        </paper-item-body>
+        <template is="dom-if" if="[[selectedEvent.end]]">
+          <paper-item-body two-line>
+            <div secondary>End</div>
+            <div>[[selectedEvent.end]]</div>
+          </paper-item-body>
+        </template>
+      </paper-icon-item>
+
+      <template is="dom-if" if="[[selectedEvent.description]]"> 
+        <paper-icon-item>
+          <iron-icon icon="mdi:message-reply-text" slot="item-icon"></iron-icon>
+          [[selectedEvent.description]]
+        </paper-icon-item>
+      </template>
+
+      <template is="dom-if" if="[[selectedEvent.url]]"> 
+        <paper-icon-item if="">
+          <iron-icon icon="mdi:link-variant" slot="item-icon"></iron-icon>
+          <a href="[[selectedEvent.url]]">[[selectedEvent.url]]</a>
+        </paper-icon-item>
+      </template>
+      </div>
+
+    </paper-dialog>
+
     `;
   }
 
@@ -104,6 +170,9 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
     //  .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
     this._fetchData();
+    this.hass.eventSelected = this.eventSelected;
+
+    this.$.eventDetails.addEventListener('iron-overlay-closed', e => this.eventDetailsClosed(e));
   }
 
   _fetchData() {
@@ -123,7 +192,30 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       for (let i = 0; i < items.length; i++) {
         this.items = this.items.concat(items[i]);
       }
+      for (let i = 0; i < this.items.length; i++) {
+        this.items[i].pol = this;
+        this.items[i].start = new Date(this.items[i].start);
+        if (this.items[i].end) {
+          this.items[i].end = new Date(this.items[i].end);
+        } else {
+          this.items[i].end = null;
+        }
+      }
     });
+  }
+
+  eventDetailsClosed() {
+    this.selectedEvent = null;
+  }
+
+  eventSelected(event_) {
+    event_.pol.selectedEvent = event_;
+  }
+
+  openEventDetails() {
+    if (this.selectedEvent != null) {
+      this.$.eventDetails.open();
+    }
   }
 
   checkAll() {
@@ -146,6 +238,12 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       items: {
         type: Array,
         value: [],
+      },
+
+      selectedEvent: {
+        type: Array,
+        value: null,
+        observer: 'openEventDetails',
       },
 
       calendars: {
