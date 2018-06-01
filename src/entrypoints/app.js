@@ -191,20 +191,28 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
                 name = computeStateName(this.hass.states[serviceData.entity_id]);
               }
               if (service === 'turn_on' && serviceData.entity_id) {
-                message = this.localize('ui.notification_toast.entity_turned_on',
-                  'entity', name || serviceData.entity_id);
+                message = this.localize(
+                  'ui.notification_toast.entity_turned_on',
+                  'entity', name || serviceData.entity_id
+                );
               } else if (service === 'turn_off' && serviceData.entity_id) {
-                message = this.localize('ui.notification_toast.entity_turned_off',
-                  'entity', name || serviceData.entity_id);
+                message = this.localize(
+                  'ui.notification_toast.entity_turned_off',
+                  'entity', name || serviceData.entity_id
+                );
               } else {
-                message = this.localize('ui.notification_toast.service_called',
-                  'service', `${domain}/${service}`);
+                message = this.localize(
+                  'ui.notification_toast.service_called',
+                  'service', `${domain}/${service}`
+                );
               }
               notifications.showNotification(message);
             },
             function () {
-              const msg = this.localize('ui.notification_toast.service_call_failed',
-                'service', `${domain}/${service}`);
+              const msg = this.localize(
+                'ui.notification_toast.service_call_failed',
+                'service', `${domain}/${service}`
+              );
               notifications.showNotification(msg);
               return Promise.reject();
             }
