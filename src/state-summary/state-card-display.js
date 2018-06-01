@@ -46,7 +46,7 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
 
   static get stateInfoTemplate() {
     return html`
-    <state-info state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+    <state-info hass="[[hass]]" state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
 `;
   }
 

@@ -62,7 +62,7 @@ class StateInfo extends PolymerElement {
 
       <template is="dom-if" if="[[inDialog]]">
         <div class="time-ago">
-          <ha-relative-time datetime="[[stateObj.last_changed]]"></ha-relative-time>
+          <ha-relative-time hass="[[hass]]" datetime="[[stateObj.last_changed]]"></ha-relative-time>
         </div>
       </template>
       <template is="dom-if" if="[[!inDialog]]">
@@ -80,14 +80,9 @@ class StateInfo extends PolymerElement {
         type: Boolean,
         value: false,
       },
-
-      stateObj: {
-        type: Object,
-      },
-
-      inDialog: {
-        type: Boolean,
-      },
+      hass: Object,
+      stateObj: Object,
+      inDialog: Boolean
     };
   }
 

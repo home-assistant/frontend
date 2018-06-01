@@ -28,7 +28,7 @@ class MoreInfoAutomation extends LocalizeMixin(PolymerElement) {
         <div>
           [[localize('ui.card.automation.last_triggered')]]:
         </div>
-        <ha-relative-time datetime="[[stateObj.attributes.last_triggered]]"></ha-relative-time>
+        <ha-relative-time hass="[[hass]]" datetime="[[stateObj.attributes.last_triggered]]"></ha-relative-time>
       </div>
 
       <div class="actions">
