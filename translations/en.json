@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
             "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}",
-            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}"
+            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+            "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+            "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}"
         },
         "login-form": {
             "password": "Password",
@@ -586,6 +588,24 @@
             "automation": {
                 "last_triggered": "Last triggered",
                 "trigger": "Trigger"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Tilt position"
+            },
+            "fan": {
+                "speed": "Speed",
+                "oscillate": "Oscillate",
+                "direction": "Direction"
+            },
+            "light": {
+                "brightness": "Brightness",
+                "color_temperature": "Color temperature",
+                "white_value": "White value",
+                "effect": "Effect"
+            },
+            "media_player": {
+                "text_to_speak": "Text to speak"
             }
         },
         "components": {
@@ -596,7 +616,23 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "relative_time": {
+                "past": "{time} ago",
+                "future": "In {time}",
+                "never": "Never"
+            },
+            "history_charts": {
+                "loading_history": "Loading state history...",
+                "no_history_found": "No state history found."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Turned on {entity}.",
+            "entity_turned_off": "Turned off {entity}.",
+            "service_called": "Service {service} called.",
+            "service_call_failed": "Failed to call service {service}.",
+            "connection_lost": "Connection lost. Reconnecting…"
         }
     },
     "domain": {
