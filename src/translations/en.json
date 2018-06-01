@@ -377,6 +377,11 @@
           "entity": "Entity"
         }
       },
+      "relative_time": {
+        "past": "{time} ago",
+        "future": "In {time}",
+        "never": "Never"
+      },
       "service-picker": {
         "service": "Service"
       }
@@ -392,11 +397,6 @@
       "password": "Password",
       "remember": "Remember",
       "log_in": "Log in"
-    },
-    "relative_time": {
-      "past": "{time} ago",
-      "future": "In {time}",
-      "never": "Never"
     },
     "sidebar": {
       "developer_tools": "Developer tools",

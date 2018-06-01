@@ -57,11 +57,11 @@ class HaRelativeTime extends LocalizeMixin(PolymerElement) {
   updateRelative() {
     const root = dom(this);
     if (!this.parsedDateTime) {
-      root.innerHTML = this.localize('ui.relative_time.never');
+      root.innerHTML = this.localize('ui.components.relative_time.never');
     } else {
       const rel = relativeTime(this.parsedDateTime);
       const time = this.localize(`ui.duration.${rel.unit}`, 'count', rel.value);
-      const relTime = this.localize(`ui.relative_time.${rel.tense}`, 'time', time);
+      const relTime = this.localize(`ui.components.relative_time.${rel.tense}`, 'time', time);
       root.innerHTML = relTime;
     }
   }
