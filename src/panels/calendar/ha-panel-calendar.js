@@ -10,6 +10,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
+import moment from 'moment';
 
 import '../../components/ha-menu-button.js';
 import '../../components/state-history-charts.js';
@@ -133,12 +134,12 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         <iron-icon icon="mdi:clock-outline" slot="item-icon"></iron-icon>
         <paper-item-body two-line class="start">
           <div secondary>Start</div>
-          <div>[[selectedEvent.start]]</div>
+          <div>[[selectedEvent.start_str]]</div>
         </paper-item-body>
         <template is="dom-if" if="[[selectedEvent.end]]">
           <paper-item-body two-line>
             <div secondary>End</div>
-            <div>[[selectedEvent.end]]</div>
+            <div>[[selectedEvent.end_str]]</div>
           </paper-item-body>
         </template>
       </paper-icon-item>
@@ -209,6 +210,8 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   }
 
   eventSelected(event_) {
+    event_.start_str = moment(event_.start).format('LLLL');
+    event_.end_str = moment(event_.end).format('LLLL');
     event_.pol.selectedEvent = event_;
   }
 
