@@ -53,7 +53,7 @@ import EventsMixin from '../mixins/events-mixin.js';
       }
     </style>
     <app-route route="{{route}}" pattern="/:view" data="{{routeData}}" active="{{routeMatch}}"></app-route>
-    <ha-app-layout has-scrolling-region="" id="layout">
+    <ha-app-layout id="layout">
       <app-header effects="waterfall" condenses="" fixed="" slot="header">
         <app-toolbar>
           <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
@@ -90,7 +90,7 @@ import EventsMixin from '../mixins/events-mixin.js';
         </div>
       </app-header>
 
-      <iron-pages attr-for-selected="data-view" selected="[[currentView]]" selected-attribute="view-visible">
+      <iron-pages has-scrolling-region="" attr-for-selected="data-view" selected="[[currentView]]" selected-attribute="view-visible">
         <ha-cards data-view="" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]" ordered-group-entities="[[orderedGroupEntities]]"></ha-cards>
 
         <template is="dom-repeat" items="[[views]]">
