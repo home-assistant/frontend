@@ -49,7 +49,7 @@ class MoreInfoLock extends LocalizeMixin(PolymerElement) {
     }
   }
 
-  callService() {
+  callService(ev) {
     const service = ev.target.getAttribute('data-service');
     const data = {
       entity_id: this.stateObj.entity_id,
