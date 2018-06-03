@@ -5,7 +5,12 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
 
-class StateCardConfigurator extends PolymerElement {
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex iron-flex-alignment"></style>
@@ -21,7 +26,7 @@ class StateCardConfigurator extends PolymerElement {
 
     <div class="horizontal justified layout">
       ${this.stateInfoTemplate}
-      <paper-button hidden\$="[[inDialog]]">[[stateObj.state]]</paper-button>
+      <paper-button hidden$="[[inDialog]]">[[_localizeState(stateObj.state)]]</paper-button>
     </div>
 
     <!-- pre load the image so the dialog is rendered the proper size -->
@@ -46,6 +51,10 @@ class StateCardConfigurator extends PolymerElement {
         value: false,
       },
     };
+  }
+
+  _localizeState(state) {
+    return this.localize(`state.configurator.${state}`);
   }
 }
 customElements.define('state-card-configurator', StateCardConfigurator);
