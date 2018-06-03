@@ -5,30 +5,32 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-attributes.js';
 
-class MoreInfoLock extends PolymerElement {
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class MoreInfoLock extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      paper-input {
-        display: inline-block;
-      }
-    </style>
+      <style>
+        paper-input {
+          display: inline-block;
+        }
+      </style>
 
-    <div hidden\$="[[!stateObj.attributes.code_format]]">
-      <paper-input label="code" value="{{enteredCode}}" pattern="[[stateObj.attributes.code_format]]" type="password"></paper-input>
-      <paper-button on-click="handleUnlockTap" hidden\$="[[!isLocked]]">Unlock</paper-button>
-      <paper-button on-click="handleLockTap" hidden\$="[[isLocked]]">Lock</paper-button>
-    </div>
-    <ha-attributes state-obj="[[stateObj]]" extra-filters="code_format"></ha-attributes>
-`;
+      <template is="dom-if" if="[[stateObj.attributes.code_format]]">
+        <paper-input label="[[localize('ui.card.lock.code')]]" value="{{enteredCode}}" pattern="[[stateObj.attributes.code_format]]" type="password"></paper-input>
+        <paper-button on-click="callService" data-service="unlock" hidden$="[[!isLocked]]">[[localize('ui.card.lock.unlock')]]</paper-button>
+        <paper-button on-click="callService" data-service="lock" hidden$="[[isLocked]]">[[localize('ui.card.lock.lock')]]</paper-button>
+      </template>
+      <ha-attributes state-obj="[[stateObj]]" extra-filters="code_format"></ha-attributes>
+    `;
   }
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
+      hass: Object,
       stateObj: {
         type: Object,
         observer: 'stateObjChanged',
@@ -37,16 +39,8 @@ class MoreInfoLock extends PolymerElement {
         type: String,
         value: '',
       },
-      isLocked: Boolean,
+      isLocked: Boolean
     };
-  }
-
-  handleUnlockTap() {
-    this.callService('unlock', { code: this.enteredCode });
-  }
-
-  handleLockTap() {
-    this.callService('lock', { code: this.enteredCode });
   }
 
   stateObjChanged(newVal) {
@@ -55,10 +49,13 @@ class MoreInfoLock extends PolymerElement {
     }
   }
 
-  callService(service, data) {
-    var serviceData = data || {};
-    serviceData.entity_id = this.stateObj.entity_id;
-    this.hass.callService('lock', service, serviceData);
+  callService(ev) {
+    const service = ev.target.getAttribute('data-service');
+    const data = {
+      entity_id: this.stateObj.entity_id,
+      code: this.enteredCode
+    };
+    this.hass.callService('lock', service, data);
   }
 }
 

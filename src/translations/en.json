@@ -344,6 +344,11 @@
         "white_value": "White value",
         "effect": "Effect"
       },
+      "lock": {
+        "code": "[%key:ui::card::alarm_control_panel::code%]",
+        "lock": "Lock",
+        "unlock": "Unlock"
+      },
       "media_player": {
         "text_to_speak": "Text to speak"
       },
