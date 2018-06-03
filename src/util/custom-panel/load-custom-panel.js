@@ -6,8 +6,8 @@ const JS_CACHE = {};
 export default function loadCustomPanel(panelConfig) {
   if ('html_url' in panelConfig) {
     return Promise.all([
-      import('../legacy-support.js'),
-      import('../../resources/html-import/import-href.js'),
+      import(/* webpackChunkName: "legacy-support" */ '../legacy-support.js'),
+      import(/* webpackChunkName: "import-href-polyfill" */ '../../resources/html-import/import-href.js'),
     // eslint-disable-next-line
     ]).then(([{}, { importHrefPromise }]) => importHrefPromise(panelConfig.html_url));
   } else if (panelConfig.js_url) {
