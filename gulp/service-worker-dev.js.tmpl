@@ -1,8 +1,0 @@
-console.warn('Service worker caching disabled in development');
-self.addEventListener('install', function(event) {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', function(event) {
-  self.clients.claim();
-});
