@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {giorno}\nother {giorni}\n}",
             "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}",
-            "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}"
+            "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
+            "minute": "{count} {count, plural,\none {minuto}\nother {minuti}\n}",
+            "hour": "{count} {count, plural,\none {ora}\nother {ore}\n}"
         },
         "login-form": {
             "password": "Password",
@@ -575,6 +577,26 @@
                     "wsw": "WSW"
                 },
                 "forecast": "Previsioni"
+            },
+            "cover": {
+                "position": "Posizione"
+            },
+            "fan": {
+                "speed": "Velocità",
+                "direction": "Direzione"
+            },
+            "light": {
+                "brightness": "Luminosità",
+                "color_temperature": "Temperatura colore",
+                "effect": "Effetto"
+            },
+            "climate": {
+                "currently": "Attualmente",
+                "on_off": "On \/ Off",
+                "target_temperature": "Temperatura target",
+                "target_humidity": "Umidità target",
+                "fan_mode": "Modalità ventilazione",
+                "swing_mode": "Modo oscillazione"
             }
         },
         "components": {
@@ -585,7 +607,19 @@
             },
             "service-picker": {
                 "service": "Servizio"
+            },
+            "relative_time": {
+                "never": "Mai"
+            },
+            "history_charts": {
+                "loading_history": "Caricamento storico",
+                "no_history_found": "Nesuno storico trovato"
             }
+        },
+        "notification_toast": {
+            "service_called": "Servizio {service} chiamato.",
+            "service_call_failed": "Fallita chiamata a servizio {service} .",
+            "connection_lost": "Connessione persa. Riconnessione..."
         }
     },
     "domain": {

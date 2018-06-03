@@ -606,6 +606,22 @@
             },
             "media_player": {
                 "text_to_speak": "Text to speak"
+            },
+            "climate": {
+                "currently": "Currently",
+                "on_off": "On \/ off",
+                "target_temperature": "Target temperature",
+                "target_humidity": "Target humidity",
+                "operation": "Operation",
+                "fan_mode": "Fan mode",
+                "swing_mode": "Swing mode",
+                "away_mode": "Away mode",
+                "aux_heat": "Aux heat"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Lock",
+                "unlock": "Unlock"
             }
         },
         "components": {

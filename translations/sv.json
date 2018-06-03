@@ -575,6 +575,29 @@
                     "wsw": "VSV"
                 },
                 "forecast": "Prognos"
+            },
+            "alarm_control_panel": {
+                "code": "Kod",
+                "clear_code": "Rensa",
+                "disarm": "Larma från"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Tilt position"
+            },
+            "fan": {
+                "speed": "Hastighet",
+                "oscillate": "Pendlar",
+                "direction": "Riktning"
+            },
+            "light": {
+                "brightness": "Ljusstyrka",
+                "color_temperature": "Färgtemperatur",
+                "white_value": "Vitt värde",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text till tal"
             }
         },
         "components": {
@@ -585,7 +608,17 @@
             },
             "service-picker": {
                 "service": "Tjänst"
+            },
+            "relative_time": {
+                "past": "{time} sedan",
+                "never": "Aldrig"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Slog på {entity}.",
+            "entity_turned_off": "Stängde av {entity} .",
+            "service_called": "Tjänsten {service} anropad.",
+            "connection_lost": "Anslutning tappad. Ansluter igen..."
         }
     },
     "domain": {
