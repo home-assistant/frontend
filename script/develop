@@ -17,7 +17,4 @@ cp -r public/__init__.py $OUTPUT_DIR_ES5/
 ./node_modules/.bin/gulp build-translations gen-icons
 cp src/authorize.html $OUTPUT_DIR
 
-# Manually copy over this file as we don't run the ES5 build
-cp node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js.map $OUTPUT_DIR
-
 ./node_modules/.bin/webpack --watch --progress
