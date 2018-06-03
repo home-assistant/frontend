@@ -417,8 +417,7 @@
         "never": "Never"
       },
       "history_charts": {
-        "loading_history": "Loading state history...",
-        "no_history_found": "No state history found."
+        "loading_history": "Loading state history..."
       },
       "service-picker": {
         "service": "Service"

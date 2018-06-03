@@ -13,21 +13,16 @@ class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
     <style>
     :host {
       display: block;
-      /* height of single timeline chart = 58px */
-      min-height: 58px;
     }
     .info {
       text-align: center;
-      line-height: 58px;
+      /* height of single timeline chart = 55px */
+      line-height: 55px;
       color: var(--secondary-text-color);
     }
     </style>
     <template is="dom-if" class="info" if="[[_computeIsLoading(isLoadingData)]]">
       <div class="info">[[localize('ui.components.history_charts.loading_history')]]</div>
-    </template>
-
-    <template is="dom-if" class="info" if="[[_computeIsEmpty(isLoadingData, historyData)]]">
-      <div class="info">[[localize('ui.components.history_charts.no_history_found')]]</div>
     </template>
 
     <template is="dom-if" if="[[historyData.timeline.length]]">
@@ -63,13 +58,6 @@ class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
 
   _computeIsSingleLineChart(data, noSingle) {
     return !noSingle && data && data.length === 1;
-  }
-
-  _computeIsEmpty(isLoadingData, historyData) {
-    const historyDataEmpty = (!historyData || !historyData.timeline || !historyData.line ||
-                              (historyData.timeline.length === 0 &&
-                              historyData.line.length === 0));
-    return !isLoadingData && historyDataEmpty;
   }
 
   _computeIsLoading(isLoading) {
