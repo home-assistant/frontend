@@ -1,7 +1,12 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-class HaClimateState extends PolymerElement {
+import LocalizeMixin from '../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HaClimateState extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -28,14 +33,14 @@ class HaClimateState extends PolymerElement {
 
     <div class="target">
       <span class="state-label">
-        [[stateObj.state]]
+        [[_localizeState(stateObj.state)]]
       </span>
       [[computeTarget(stateObj)]]
     </div>
 
     <template is="dom-if" if="[[currentStatus]]">
       <div class="current">
-        Currently: [[currentStatus]]
+        [[localize('ui.card.climate.currently')]]: [[currentStatus]]
       </div>
     </template>
 `;
@@ -43,6 +48,7 @@ class HaClimateState extends PolymerElement {
 
   static get properties() {
     return {
+      hass: Object,
       stateObj: Object,
       currentStatus: {
         type: String,
@@ -76,6 +82,10 @@ class HaClimateState extends PolymerElement {
     }
 
     return '';
+  }
+
+  _localizeState(state) {
+    return this.localize(`state.climate.${state}`);
   }
 }
 customElements.define('ha-climate-state', HaClimateState);
