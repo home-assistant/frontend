@@ -14,12 +14,15 @@ import '../../../components/ha-paper-slider.js';
 
 import attributeClassNames from '../../../common/entity/attribute_class_names.js';
 import featureClassNames from '../../../common/entity/feature_class_names';
+
 import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class MoreInfoClimate extends EventsMixin(PolymerElement) {
+class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex"></style>
@@ -117,7 +120,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
       <template is="dom-if" if="[[supportsOn(stateObj)]]">
         <div class="container-on">
           <div class="center horizontal layout single-row">
-            <div class="flex">On / Off</div>
+            <div class="flex">[[localize('ui.card.climate.on_off')]]</div>
             <paper-toggle-button checked="[[onToggleChecked]]" on-change="onToggleChanged">
             </paper-toggle-button>
           </div>
@@ -126,8 +129,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
 
       <div class="container-temperature">
         <div class\$="[[stateObj.attributes.operation_mode]]">
-          <div hidden\$="[[!supportsTemperatureControls(stateObj)]]">Target
-            Temperature</div>
+          <div hidden\$="[[!supportsTemperatureControls(stateObj)]]">[[localize('ui.card.climate.target_temperature')]]</div>
           <template is="dom-if" if="[[supportsTemperature(stateObj)]]">
             <ha-climate-control value="[[stateObj.attributes.temperature]]" units="[[stateObj.attributes.unit_of_measurement]]" step="[[computeTemperatureStepSize(stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.max_temp]]" on-change="targetTemperatureChanged">
             </ha-climate-control>
@@ -143,7 +145,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
 
       <template is="dom-if" if="[[supportsHumidity(stateObj)]]">
         <div class="container-humidity">
-          <div>Target Humidity</div>
+          <div>[[localize('ui.card.climate.target_humidity')]]</div>
             <div class="single-row">
               <div class="target-humidity">[[stateObj.attributes.humidity]] %</div>
               <ha-paper-slider class="humidity" min="[[stateObj.attributes.min_humidity]]" max="[[stateObj.attributes.max_humidity]]" secondary-progress="[[stateObj.attributes.max_humidity]]" step="1" pin="" value="[[stateObj.attributes.humidity]]" on-change="targetHumiditySliderChanged" ignore-bar-touch="">
@@ -155,7 +157,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
       <template is="dom-if" if="[[supportsOperationMode(stateObj)]]">
         <div class="container-operation_list">
           <div class="controls">
-            <paper-dropdown-menu class="capitalize" label-float="" dynamic-align="" label="Operation">
+            <paper-dropdown-menu class="capitalize" label-float="" dynamic-align="" label="[[localize('ui.card.climate.operation')]]">
               <paper-listbox slot="dropdown-content" selected="{{operationIndex}}">
                 <template is="dom-repeat" items="[[stateObj.attributes.operation_list]]" on-dom-change="handleOperationListUpdate">
                   <paper-item class="capitalize">[[item]]</paper-item>
@@ -168,7 +170,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
 
       <template is="dom-if" if="[[supportsFanMode(stateObj)]]">
         <div class="container-fan_list">
-          <paper-dropdown-menu label-float="" dynamic-align="" label="Fan Mode">
+          <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.climate.fan_mode')]]">
             <paper-listbox slot="dropdown-content" selected="{{fanIndex}}">
               <template is="dom-repeat" items="[[stateObj.attributes.fan_list]]" on-dom-change="handleFanListUpdate">
                 <paper-item>[[item]]</paper-item>
@@ -180,7 +182,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
 
       <template is="dom-if" if="[[supportsSwingMode(stateObj)]]">
         <div class="container-swing_list">
-          <paper-dropdown-menu label-float="" dynamic-align="" label="Swing Mode">
+          <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.climate.swing_mode')]]">
             <paper-listbox slot="dropdown-content" selected="{{swingIndex}}">
               <template is="dom-repeat" items="[[stateObj.attributes.swing_list]]" on-dom-change="handleSwingListUpdate">
                 <paper-item>[[item]]</paper-item>
@@ -193,7 +195,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
       <template is="dom-if" if="[[supportsAwayMode(stateObj)]]">
         <div class="container-away_mode">
           <div class="center horizontal layout single-row">
-            <div class="flex">Away Mode</div>
+            <div class="flex">[[localize('ui.card.climate.away_mode')]]</div>
             <paper-toggle-button checked="[[awayToggleChecked]]" on-change="awayToggleChanged">
             </paper-toggle-button>
           </div>
@@ -203,7 +205,7 @@ class MoreInfoClimate extends EventsMixin(PolymerElement) {
       <template is="dom-if" if="[[supportsAuxHeat(stateObj)]]">
         <div class="container-aux_heat">
           <div class="center horizontal layout single-row">
-            <div class="flex">Aux Heat</div>
+            <div class="flex">[[localize('ui.card.climate.aux_heat')]]</div>
             <paper-toggle-button checked="[[auxToggleChecked]]" on-change="auxToggleChanged">
             </paper-toggle-button>
           </div>
