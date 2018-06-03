@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
             "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}",
-            "second": "{count} {count, plural,\none {vteřina}\nfew {vteřiny}\nother {vteřin}\n}"
+            "second": "{count} {count, plural,\none {vteřina}\nfew {vteřiny}\nother {vteřin}\n}",
+            "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minut}\n}",
+            "hour": "{count} {count, plural,\none {hodina}\nfew {hodiny}\nother {hodin}\n}"
         },
         "login-form": {
             "password": "Heslo",
@@ -575,6 +577,35 @@
                     "wsw": "ZJZ"
                 },
                 "forecast": "Předpověď"
+            },
+            "alarm_control_panel": {
+                "code": "Kód",
+                "clear_code": "Zrušit",
+                "disarm": "Deaktivovat",
+                "arm_home": "Aktivní doma",
+                "arm_away": "Aktivní v nepřítomnosti"
+            },
+            "automation": {
+                "last_triggered": "Naposledy spuštěno",
+                "trigger": "Spouštěč"
+            },
+            "cover": {
+                "position": "Pozice",
+                "tilt_position": "Náklon"
+            },
+            "fan": {
+                "speed": "Rychlost",
+                "oscillate": "Oscilovat",
+                "direction": "Směr"
+            },
+            "light": {
+                "brightness": "Jas",
+                "color_temperature": "Teplota barvy",
+                "white_value": "Hodnota bílé",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Převod textu na řeč"
             }
         },
         "components": {
@@ -585,7 +616,23 @@
             },
             "service-picker": {
                 "service": "Služba"
+            },
+            "relative_time": {
+                "past": "Před {time}",
+                "future": "Za {time}",
+                "never": "Nikdy"
+            },
+            "history_charts": {
+                "loading_history": "Historie stavu se načítá...",
+                "no_history_found": "Historie stavu chybí."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Zapnuto {entity}.",
+            "entity_turned_off": "Vypnuto {entity}.",
+            "service_called": "Služba {service} volána.",
+            "service_call_failed": "Službu {service} nepodařilo zavolat.",
+            "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu..."
         }
     },
     "domain": {

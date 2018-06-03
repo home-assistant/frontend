@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {Tag}\nother {Tage}\n}",
             "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}",
-            "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}"
+            "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+            "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+            "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}"
         },
         "login-form": {
             "password": "Passwort",
@@ -575,6 +577,35 @@
                     "wsw": "WSW"
                 },
                 "forecast": "Prognose"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Löschen",
+                "disarm": "Deaktivieren",
+                "arm_home": "Aktivieren, zu Hause",
+                "arm_away": "Aktivieren, unterwegs"
+            },
+            "automation": {
+                "last_triggered": "Zuletzt ausgelöst",
+                "trigger": "Auslösen"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Kippstellung"
+            },
+            "fan": {
+                "speed": "Geschwindigkeit",
+                "oscillate": "Oszillieren",
+                "direction": "Richtung"
+            },
+            "light": {
+                "brightness": "Helligkeit",
+                "color_temperature": "Farbtemperatur",
+                "white_value": "Weißwert",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text zum Sprechen"
             }
         },
         "components": {
@@ -585,7 +616,23 @@
             },
             "service-picker": {
                 "service": "Dienst"
+            },
+            "relative_time": {
+                "past": "Vor {time}",
+                "future": "In {time}",
+                "never": "Noch nie"
+            },
+            "history_charts": {
+                "loading_history": "Lade Zustandsverlauf...",
+                "no_history_found": "Kein Zustandsverlauf gefunden."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} eingeschaltet.",
+            "entity_turned_off": "{entity} ausgeschaltet.",
+            "service_called": "Dienst {service} aufgerufen.",
+            "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
+            "connection_lost": "Verbindung getrennt. Verbinde erneut..."
         }
     },
     "domain": {

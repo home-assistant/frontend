@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {일}\nother {일}\n}",
             "week": "{count} {count, plural,\none {주}\nother {주}\n}",
-            "second": "{count} {count, plural,\none {초}\nother {초}\n}"
+            "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+            "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+            "hour": "{count} {count, plural,\none {시}\nother {시}\n}"
         },
         "login-form": {
             "password": "비밀번호",
@@ -579,13 +581,31 @@
             "alarm_control_panel": {
                 "code": "비밀번호",
                 "clear_code": "지움",
-                "disarm": "경보해제",
+                "disarm": "경비 해제",
                 "arm_home": "재실 경비",
                 "arm_away": "외출 경비"
             },
             "automation": {
                 "last_triggered": "최근 트리거 됨",
                 "trigger": "트리거"
+            },
+            "cover": {
+                "position": "위치",
+                "tilt_position": "기울기"
+            },
+            "fan": {
+                "speed": "속도",
+                "oscillate": "회전",
+                "direction": "방향"
+            },
+            "light": {
+                "brightness": "밝기",
+                "color_temperature": "색온도",
+                "white_value": "흰색 값",
+                "effect": "효과"
+            },
+            "media_player": {
+                "text_to_speak": "음성합성 내용 입력 (TTS)"
             }
         },
         "components": {
@@ -596,7 +616,23 @@
             },
             "service-picker": {
                 "service": "서비스"
+            },
+            "relative_time": {
+                "past": "{time} 전",
+                "future": "{time} 후",
+                "never": "해당없음"
+            },
+            "history_charts": {
+                "loading_history": "히스토리 읽는 중...",
+                "no_history_found": "히스토리 내용이 없습니다."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": " {entity} 켜졌습니다.",
+            "entity_turned_off": " {entity} 꺼졌습니다.",
+            "service_called": "{service} 서비스가 호출되었습니다.",
+            "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
+            "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중..."
         }
     },
     "domain": {
