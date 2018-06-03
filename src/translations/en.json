@@ -329,6 +329,17 @@
       "camera": {
         "not_available": "Image not available"
       },
+      "climate": {
+        "currently": "Currently",
+        "on_off": "On / off",
+        "target_temperature": "Target temperature",
+        "target_humidity": "Target humidity",
+        "operation": "Operation",
+        "fan_mode": "Fan mode",
+        "swing_mode": "Swing mode",
+        "away_mode": "Away mode",
+        "aux_heat": "Aux heat"
+      },
       "cover": {
         "position": "Position",
         "tilt_position": "Tilt position"
