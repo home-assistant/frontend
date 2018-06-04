@@ -1,5 +1,9 @@
 import { h, Component } from 'preact';
 
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-radio-button/paper-radio-button.js';
+import '@polymer/paper-radio-group/paper-radio-group.js';
+
 import { onChangeEvent } from '../../../../common/preact/event.js';
 
 export default class SunTrigger extends Component {

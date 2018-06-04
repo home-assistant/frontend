@@ -1,4 +1,6 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-button/paper-button.js';
 
 import ConditionRow from './condition_row.js';
 
