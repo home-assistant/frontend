@@ -1,5 +1,10 @@
 import { h, Component } from 'preact';
 
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-input/paper-input.js';
+import '../ha-config-section.js';
+import '../../../components/ha-markdown.js';
+
 import Trigger from './trigger/index.js';
 import Condition from './condition/index.js';
 import Script from './script/index.js';

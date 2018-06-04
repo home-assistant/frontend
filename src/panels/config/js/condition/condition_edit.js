@@ -1,4 +1,7 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-item/paper-item.js';
 
 import NumericStateCondition from './numeric_state.js';
 import StateCondition from './state.js';

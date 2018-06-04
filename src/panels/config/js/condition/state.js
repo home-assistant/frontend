@@ -1,4 +1,6 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-input/paper-input.js';
+import '../../../../components/entity/ha-entity-picker.js';
 
 import { onChangeEvent } from '../../../../common/preact/event.js';
 

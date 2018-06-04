@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-input/paper-input.js';
 
 import JSONTextArea from '../json_textarea.js';
 import { onChangeEvent } from '../../../../common/preact/event.js';
