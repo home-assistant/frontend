@@ -1,5 +1,9 @@
 import { h, Component } from 'preact';
 
+import '@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+
 import EventTrigger from './event.js';
 import HassTrigger from './homeassistant.js';
 import MQTTTrigger from './mqtt.js';

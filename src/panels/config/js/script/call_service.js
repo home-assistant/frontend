@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import '../../../../components/ha-service-picker.js';
 
 import JSONTextArea from '../json_textarea.js';
 
