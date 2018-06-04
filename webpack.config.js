@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 const translationMetadata = require('./build-translations/translationMetadata.json');
 
 const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -61,6 +62,7 @@ function createConfig(isProdBuild, latestBuild) {
   ];
 
   if (latestBuild) {
+    copyPluginOpts.push({ from: 'public', to: '.' });
     copyPluginOpts.push({ from: 'build-translations/output', to: `translations` });
     copyPluginOpts.push({ from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' });
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
@@ -71,6 +73,7 @@ function createConfig(isProdBuild, latestBuild) {
     entry['hass-icons'] = './src/entrypoints/hass-icons.js';
     entry['service-worker-hass'] = './src/entrypoints/service-worker-hass.js';
   } else {
+    copyPluginOpts.push('public/__init__.py');
     babelOptions.presets = [
       ['es2015', { modules: false }]
     ];
@@ -85,6 +88,15 @@ function createConfig(isProdBuild, latestBuild) {
         // Disabling because it broke output
         mangle: false,
       }
+    }));
+    plugins.push(new CompressionPlugin({
+      cache: true,
+      exclude: [
+        /\.js\.map$/,
+        /\.LICENSE$/,
+        /\.py$/,
+        /\.txt$/,
+      ]
     }));
   }
 
