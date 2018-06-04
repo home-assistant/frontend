@@ -20,8 +20,6 @@ NODE_ENV=production ./node_modules/.bin/webpack
 # Temp for Hass.io
 script/update_mdi.py
 
-./node_modules/.bin/gulp compress
-
 # Generate the __init__ file
 echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR/__init__.py
 echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR/__init__.py

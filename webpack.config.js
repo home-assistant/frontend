@@ -4,6 +4,7 @@ const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 const translationMetadata = require('./build-translations/translationMetadata.json');
 
 const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -87,6 +88,15 @@ function createConfig(isProdBuild, latestBuild) {
         // Disabling because it broke output
         mangle: false,
       }
+    }));
+    plugins.push(new CompressionPlugin({
+      cache: true,
+      exclude: [
+        /\.js\.map$/,
+        /\.LICENSE$/,
+        /\.py$/,
+        /\.txt$/,
+      ]
     }));
   }
 
