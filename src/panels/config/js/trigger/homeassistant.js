@@ -1,4 +1,6 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-radio-button/paper-radio-button.js';
+import '@polymer/paper-radio-group/paper-radio-group.js';
 
 export default class HassTrigger extends Component {
   constructor() {

@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-
+import '../../../../components/entity/ha-entity-picker.js';
 import { onChangeEvent } from '../../../../common/preact/event.js';
 import hasLocation from '../../../../common/entity/has_location.js';
 import computeStateDomain from '../../../../common/entity/compute_state_domain.js';

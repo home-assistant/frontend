@@ -1,4 +1,5 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-input/paper-input.js';
 import { onChangeEvent } from '../../../../common/preact/event.js';
 
 export default class DelayAction extends Component {
