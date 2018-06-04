@@ -61,6 +61,7 @@ function createConfig(isProdBuild, latestBuild) {
   ];
 
   if (latestBuild) {
+    copyPluginOpts.push({ from: 'public', to: '.' });
     copyPluginOpts.push({ from: 'build-translations/output', to: `translations` });
     copyPluginOpts.push({ from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' });
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
@@ -71,6 +72,7 @@ function createConfig(isProdBuild, latestBuild) {
     entry['hass-icons'] = './src/entrypoints/hass-icons.js';
     entry['service-worker-hass'] = './src/entrypoints/service-worker-hass.js';
   } else {
+    copyPluginOpts.push('public/__init__.py');
     babelOptions.presets = [
       ['es2015', { modules: false }]
     ];
