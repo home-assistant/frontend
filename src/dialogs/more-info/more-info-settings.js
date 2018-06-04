@@ -93,13 +93,12 @@ class MoreInfoSettings extends EventsMixin(PolymerElement) {
   }
 
   _save() {
-    const data = {
+    this.hass.connection.sendMessagePromise({
+      type: 'config/entity_registry/update',
+      entity_id: this.stateObj.entity_id,
       name: this._name,
-    };
-
-    this.hass.callApi('post', `config/entity_registry/${this.stateObj.entity_id}`, data)
-      .then(
-        (info) => { this.registryInfo = info; },
+    }).then(
+        (msg) => { this.registryInfo = msg.result; },
         () => { alert('save failed!'); }
       );
   }
