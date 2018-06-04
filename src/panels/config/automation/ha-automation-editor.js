@@ -1,29 +1,13 @@
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-autogrow-textarea/iron-autogrow-textarea.js';
-import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js';
-import '@polymer/paper-fab/paper-fab.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
-import '@polymer/paper-item/paper-item-body.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
-import '@polymer/paper-menu-button/paper-menu-button.js';
-import '@polymer/paper-radio-button/paper-radio-button.js';
-import '@polymer/paper-radio-group/paper-radio-group.js';
+import '@polymer/paper-fab/paper-fab.js';
+
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { h, render } from 'preact';
 
-import '../../../components/entity/ha-entity-picker.js';
-import '../../../components/ha-combo-box.js';
-import '../../../components/ha-markdown.js';
-import '../../../components/ha-service-picker.js';
 import '../../../layouts/ha-app-layout.js';
-
-import '../ha-config-section.js';
 
 import Automation from '../js/automation.js';
 import unmountPreact from '../../../common/preact/unmount.js';

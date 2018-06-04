@@ -1,4 +1,6 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-button/paper-button.js';
 
 import TriggerRow from './trigger_row.js';
 import StateTrigger from './state.js';

@@ -1,4 +1,7 @@
 import { h, Component } from 'preact';
+import '@polymer/paper-radio-button/paper-radio-button.js';
+import '@polymer/paper-radio-group/paper-radio-group.js';
+import '../../../../components/entity/ha-entity-picker.js';
 
 import { onChangeEvent } from '../../../../common/preact/event.js';
 import hasLocation from '../../../../common/entity/has_location.js';

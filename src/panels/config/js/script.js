@@ -1,5 +1,9 @@
 import { h, Component } from 'preact';
 
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-input/paper-input.js';
+import '../ha-config-section.js';
+
 import Script from './script/index.js';
 
 export default class ScriptEditor extends Component {
