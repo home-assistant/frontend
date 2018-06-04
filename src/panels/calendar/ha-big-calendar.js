@@ -19,9 +19,6 @@ import moment from 'moment';
 
 import '../../resources/ha-style.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
 
 class HABigCalendar extends PolymerElement {
   static get template() {
@@ -32,17 +29,15 @@ class HABigCalendar extends PolymerElement {
     BigCalendar.momentLocalizer(moment);
     const allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k]);
 
-    this.bc_element = React.createElement(
+    const BCElement = React.createElement(
       BigCalendar,
       { events: this.events,
         views: allViews,
         popup: true,
-        selectable: true,
-        onSelectEvent: this.hass.eventSelected,
         eventPropGetter: this.setEventStyle,
         defaultDate: new Date(), }
     );
-    render(this.bc_element, this.shadowRoot);
+    render(BCElement, this.shadowRoot);
     // Add react big calendar css
     const style = document.createElement('link');
     style.setAttribute('href', '/static/panels/calendar/react-big-calendar.css');
@@ -65,10 +60,6 @@ class HABigCalendar extends PolymerElement {
 
   static get properties() {
     return {
-      hass: Object,
-
-      bc_element: Object,
-
       events: {
         type: Array,
         observer: 'update',

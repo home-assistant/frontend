@@ -25,14 +25,15 @@
   ],
   "lint": {
     "rules": ["polymer-3"],
-    "ignoreWarnings": ["could-not-resolve-reference", "cant-resolve-module-specifier"],
+    "ignoreWarnings": ["could-not-resolve-reference"],
     "filesToIgnore": [
       "**/*.html",
       "**/src/panels/config/js/**/*.js",
       "**/ha-paper-slider.js",
       "**/ha-iconset-svg.js",
       "**/ha-script-editor.js",
-      "**/ha-automation-editor.js"
+      "**/ha-automation-editor.js",
+      "**/ha-big-calendar.js"
     ]
   },
   "builds": [

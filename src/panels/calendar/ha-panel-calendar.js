@@ -10,7 +10,6 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
-import moment from 'moment';
 
 import '../../components/ha-menu-button.js';
 import '../../components/state-history-charts.js';
@@ -114,53 +113,10 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
           </paper-card>
         </div>
         <div class="flex layout horizontal wrap">
-          <ha-big-calendar hass='[[hass]]' events="[[items]]"></ha-big-calendar>
+          <ha-big-calendar events="[[items]]"></ha-big-calendar>
         </div>
       </div>
     </app-header-layout>
-
-    <paper-dialog id="eventDetails" entry-animation="fade-in-animation" exit-animation="fade-out-animation" >
-      <h2>[[selectedEvent.title]]</h2>
-
-      <div id="eventContent">
-      <template is="dom-if" if="[[selectedEvent.location]]"> 
-        <paper-icon-item>
-          <iron-icon icon="mdi:map-marker" slot="item-icon"></iron-icon>
-          [[selectedEvent.location]]
-        </paper-icon-item>
-      </template>
-
-      <paper-icon-item>
-        <iron-icon icon="mdi:clock-outline" slot="item-icon"></iron-icon>
-        <paper-item-body two-line class="start">
-          <div secondary>Start</div>
-          <div>[[selectedEvent.start_str]]</div>
-        </paper-item-body>
-        <template is="dom-if" if="[[selectedEvent.end]]">
-          <paper-item-body two-line>
-            <div secondary>End</div>
-            <div>[[selectedEvent.end_str]]</div>
-          </paper-item-body>
-        </template>
-      </paper-icon-item>
-
-      <template is="dom-if" if="[[selectedEvent.description]]"> 
-        <paper-icon-item>
-          <iron-icon icon="mdi:message-reply-text" slot="item-icon"></iron-icon>
-          [[selectedEvent.description]]
-        </paper-icon-item>
-      </template>
-
-      <template is="dom-if" if="[[selectedEvent.url]]"> 
-        <paper-icon-item if="">
-          <iron-icon icon="mdi:link-variant" slot="item-icon"></iron-icon>
-          <a href="[[selectedEvent.url]]">[[selectedEvent.url]]</a>
-        </paper-icon-item>
-      </template>
-      </div>
-
-    </paper-dialog>
-
     `;
   }
 
@@ -171,23 +127,16 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
     //  .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
     this._fetchData();
-    this.hass.eventSelected = this.eventSelected;
-
-    this.$.eventDetails.addEventListener('iron-overlay-closed', e => this.eventDetailsClosed(e));
   }
 
   _fetchData() {
-    // Fetch data
     // Fetch calendar list
     this.hass.callApi('get', 'calendars')
       .then((items) => {
         this.calendars = items;
       });
     // Fetch events for selected calendar
-    var calls = [];
-    for (let i = 0; i < this.selectedCalendars.length; i++) {
-      calls.push(this.hass.callApi('get', 'calendar/' + this.selectedCalendars[i]));
-    }
+    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', 'calendar/' + cal));
     Promise.all(calls).then((items) => {
       this.items = [];
       for (let i = 0; i < items.length; i++) {
@@ -203,22 +152,6 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         }
       }
     });
-  }
-
-  eventDetailsClosed() {
-    this.selectedEvent = null;
-  }
-
-  eventSelected(event_) {
-    event_.start_str = moment(event_.start).format('LLLL');
-    event_.end_str = moment(event_.end).format('LLLL');
-    event_.pol.selectedEvent = event_;
-  }
-
-  openEventDetails() {
-    if (this.selectedEvent != null) {
-      this.$.eventDetails.open();
-    }
   }
 
   checkAll() {
@@ -241,12 +174,6 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       items: {
         type: Array,
         value: [],
-      },
-
-      selectedEvent: {
-        type: Array,
-        value: null,
-        observer: 'openEventDetails',
       },
 
       calendars: {
