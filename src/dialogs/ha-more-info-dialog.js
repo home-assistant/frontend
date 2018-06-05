@@ -145,9 +145,9 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         type: 'config/entity_registry/get',
         entity_id: newVal.entity_id,
       }).then(
-          (msg) => { this._registryInfo = msg.result; },
-          () => { this._registryInfo = false; }
-        );
+        (msg) => { this._registryInfo = msg.result; },
+        () => { this._registryInfo = false; }
+      );
     }
 
     requestAnimationFrame(() => requestAnimationFrame(() => {

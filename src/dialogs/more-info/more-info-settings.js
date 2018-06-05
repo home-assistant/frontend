@@ -98,9 +98,9 @@ class MoreInfoSettings extends EventsMixin(PolymerElement) {
       entity_id: this.stateObj.entity_id,
       name: this._name,
     }).then(
-        (msg) => { this.registryInfo = msg.result; },
-        () => { alert('save failed!'); }
-      );
+      (msg) => { this.registryInfo = msg.result; },
+      () => { alert('save failed!'); }
+    );
   }
 }
 customElements.define('more-info-settings', MoreInfoSettings);
