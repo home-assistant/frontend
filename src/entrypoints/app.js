@@ -128,12 +128,12 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
       type: 'frontend/get_translations',
       language,
     })
-    .then((resp) => {
+      .then((resp) => {
       // If we've switched selected languages just ignore this response
-      if ((this.hass.selectedLanguage || this.hass.language) !== language) return;
+        if ((this.hass.selectedLanguage || this.hass.language) !== language) return;
 
-      this._updateResources(language, resp.result.resources);
-    });
+        this._updateResources(language, resp.result.resources);
+      });
   }
 
   _updateResources(language, data) {
@@ -281,7 +281,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
     this.hass.connection.sendMessagePromise({
       type: 'frontend/get_themes',
     }).then((resp) => {
-      this._updateHass({ themes: resp['result'] });
+      this._updateHass({ themes: resp.result });
       applyThemesOnElement(
         document.documentElement,
         resp.result,
