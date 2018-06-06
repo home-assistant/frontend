@@ -217,7 +217,7 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
   }
 
   computeCurrentPanel(hass) {
-    return hass.config.panels[hass.panelUrl];
+    return hass.panels[hass.panelUrl];
   }
 }
 

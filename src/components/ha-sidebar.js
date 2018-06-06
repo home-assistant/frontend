@@ -171,7 +171,7 @@ class HaSidebar extends
   }
 
   computePanels(hass) {
-    var panels = hass.config.panels;
+    var panels = hass.panels;
     var sortValue = {
       map: 1,
       logbook: 2,

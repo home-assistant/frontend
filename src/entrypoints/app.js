@@ -104,7 +104,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
   }
 
   computeShowMain(hass) {
-    return hass && hass.states && hass.config;
+    return hass && hass.states && hass.config && hass.panels;
   }
 
   computeShowLoading(connectionPromise, hass) {
@@ -171,6 +171,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
       states: null,
       config: null,
       themes: null,
+      panels: null,
       panelUrl: this.panelUrl,
 
       language: getActiveTranslation(),
@@ -235,6 +236,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
     var reconnected = () => {
       this._updateHass({ connected: true });
       this.loadBackendTranslations();
+      this._loadPanels();
     };
 
     const disconnected = () => {
@@ -269,6 +271,8 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
     }).then(function (unsub) {
       unsubConfig = unsub;
     });
+
+    this._loadPanels();
 
     var unsubThemes;
 
@@ -369,6 +373,13 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
       this.loadResources(panelUrl);
     }
   }
+
+  _loadPanels() {
+    this.connection.sendMessagePromise({
+      type: 'get_panels'
+    }).then(msg => this._updateHass({ panels: msg.result }));
+  }
+
 
   _updateHass(obj) {
     this.hass = Object.assign({}, this.hass, obj);
