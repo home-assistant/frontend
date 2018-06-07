@@ -40,7 +40,7 @@ class HaConfigManager extends
   <hass-subpage header="Integrations">
     <template is="dom-if" if="[[_progress.length]]">
       <ha-config-section is-wide="[[isWide]]">
-        <span slot="header">In Progress</span>
+        <span slot="header">Discovered</span>
         <paper-card>
           <template is="dom-repeat" items="[[_progress]]">
             <div class="config-entry-row">
@@ -79,7 +79,7 @@ class HaConfigManager extends
     </ha-config-section>
 
     <ha-config-section is-wide="[[isWide]]">
-      <span slot="header">Available</span>
+      <span slot="header">Set up a new integration</span>
       <paper-card>
         <template is="dom-repeat" items="[[_handlers]]">
           <div class="config-entry-row">
