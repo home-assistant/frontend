@@ -141,11 +141,13 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
 
     if (isComponentLoaded(this.hass, 'config.entity_registry') &&
         (!oldVal || oldVal.entity_id !== newVal.entity_id)) {
-      this.hass.callApi('get', `config/entity_registry/${newVal.entity_id}`)
-        .then(
-          (info) => { this._registryInfo = info; },
-          () => { this._registryInfo = false; }
-        );
+      this.hass.connection.sendMessagePromise({
+        type: 'config/entity_registry/get',
+        entity_id: newVal.entity_id,
+      }).then(
+        (msg) => { this._registryInfo = msg.result; },
+        () => { this._registryInfo = false; }
+      );
     }
 
     requestAnimationFrame(() => requestAnimationFrame(() => {
