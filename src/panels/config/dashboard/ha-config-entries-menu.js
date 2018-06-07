@@ -25,7 +25,7 @@ class HaConfigEntriesMenu extends NavigateMixin(PolymerElement) {
       <paper-item on-click="_navigate">
         <paper-item-body two-line="">
           Integrations
-          <div secondary="">EXPERIMENTAL – Manage connected devices and services</div>
+          <div secondary="">Manage connected devices and services</div>
         </paper-item-body>
         <iron-icon icon="hass:chevron-right"></iron-icon>
       </paper-item>
