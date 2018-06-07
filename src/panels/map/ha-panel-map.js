@@ -64,9 +64,9 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     this.$.map.parentNode.appendChild(style);
     map.setView([51.505, -0.09], 13);
     Leaflet.tileLayer(
-      'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
       {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>',
         maxZoom: 18,
       }
     ).addTo(map);
