@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
             "week": "{count} {count, plural,\n  one {tydzień}\n  other {tygodni(e)}\n}",
-            "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekund(y)}\n}"
+            "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekund(y)}\n}",
+            "minute": "{count} {count, plural,\none {minuta}\nother {minut(y)}\n}",
+            "hour": "{count} {count, plural,\none {godzina}\nother {godzin(y)}\n}"
         },
         "login-form": {
             "password": "Hasło",
@@ -586,6 +588,40 @@
             "automation": {
                 "last_triggered": "Ostatnio uruchomione",
                 "trigger": "Wyzwalacz"
+            },
+            "cover": {
+                "position": "Pozycja",
+                "tilt_position": "Pozycja pochylenia"
+            },
+            "fan": {
+                "speed": "Prędkość",
+                "oscillate": "Oscylacja",
+                "direction": "Kierunek"
+            },
+            "light": {
+                "brightness": "Jasność",
+                "color_temperature": "Temperatura barwy",
+                "white_value": "Wartość bieli",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Tekst na mowę"
+            },
+            "climate": {
+                "currently": "obecnie",
+                "on_off": "Wł. \/ wył.",
+                "target_temperature": "Docelowa temperatura",
+                "target_humidity": "Docelowa wilgotność",
+                "operation": "Tryby działania",
+                "fan_mode": "Tryb wentylatora",
+                "swing_mode": "Tryb ruchu łopatek",
+                "away_mode": "Tryb poza domem",
+                "aux_heat": "Dodatkowe źródło ciepła"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "Zablokuj",
+                "unlock": "Odblokuj"
             }
         },
         "components": {
@@ -596,7 +632,23 @@
             },
             "service-picker": {
                 "service": "Usługa"
+            },
+            "relative_time": {
+                "past": "{time} temu",
+                "future": "Za {time}",
+                "never": "Nigdy"
+            },
+            "history_charts": {
+                "loading_history": "Ładowanie historycznych stanów...",
+                "no_history_found": "Nie znaleziono historycznych stanów."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Włączono {entity}.",
+            "entity_turned_off": "Wyłączono {entity}.",
+            "service_called": "Usługa {service} wywołana.",
+            "service_call_failed": "Nie udało się wywołać usługi {service}.",
+            "connection_lost": "Utracono połączenie. Łączę ponownie..."
         }
     },
     "domain": {
