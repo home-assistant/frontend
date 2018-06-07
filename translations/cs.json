@@ -606,6 +606,22 @@
             },
             "media_player": {
                 "text_to_speak": "Převod textu na řeč"
+            },
+            "climate": {
+                "currently": "Momentálně",
+                "on_off": "Zapnout \/ vypnout",
+                "target_temperature": "Cílová teplota",
+                "target_humidity": "Cílová vlhkost",
+                "operation": "Provoz",
+                "fan_mode": "Režim ventilátoru",
+                "swing_mode": "Režim kmitání",
+                "away_mode": "Úsporný režim",
+                "aux_heat": "Pomocné teplo"
+            },
+            "lock": {
+                "code": "Kód",
+                "lock": "Zamknout",
+                "unlock": "Odemknout"
             }
         },
         "components": {

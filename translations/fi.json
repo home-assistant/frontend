@@ -30,7 +30,8 @@
             "pending": "Odottaa",
             "arming": "Viritys",
             "disarming": "Virityksen poisto",
-            "triggered": "Lauennut"
+            "triggered": "Lauennut",
+            "armed_custom_bypass": "Virityksen ohittaminen"
         },
         "automation": {
             "off": "Pois",
@@ -267,6 +268,7 @@
             "pending": "Odot",
             "arming": "Viritys kesken",
             "disarming": "Ei viritetty",
+            "triggered": "Vakaa",
             "armed_custom_bypass": "Viritetty"
         },
         "device_tracker": {
@@ -313,7 +315,7 @@
                             },
                             "reloading": {
                                 "heading": "Asetusten uudelleenlataus",
-                                "introduction": "Jotkut Home Assistantin osat voidaan ladata ilman uudelleenkäynnistystä. Painaessasi uudelleenlatausta, ladataan kyseisen kategorian asetukset uudelleen.",
+                                "introduction": "Jotkut Home Assistantin osat voidaan ladata ilman uudelleenkäynnistystä. Allaolevilla painikkeilla saat ladattua uudelleen yksittäisiä kategorioita.",
                                 "core": "Lataa ydin uudelleen",
                                 "group": "Lataa ryhmät uudelleen",
                                 "automation": "Lataa automaatiot uudelleen",
@@ -321,7 +323,7 @@
                             },
                             "server_management": {
                                 "heading": "Palvelimen hallinta",
-                                "introduction": "Hallitse Home Assistant palvelintasi... suoraan Home Assistantista",
+                                "introduction": "Hallitse Home Assistantia... suoraan Home Assistantista",
                                 "restart": "Käynnistä uudelleen",
                                 "stop": "Pysäytä"
                             }
@@ -333,7 +335,7 @@
                         },
                         "translation": {
                             "header": "Valitse kieli",
-                            "introduction": "Valitse kieli, jota käytetään tällä laitteella Home Assistantin käyttöliittymässä",
+                            "introduction": "Valitse tämän laitteen käyttöliittymän kieli",
                             "language": "Kieli"
                         },
                         "themes": {
@@ -352,9 +354,9 @@
                     "description": "Luo ja muokkaa automaatioita",
                     "picker": {
                         "header": "Automaatioeditori",
-                        "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Ole hyvä ja lue [ohjeet](https:\/\/home-assistant.io\/docs\/automation\/editor\/) (englanniksi), jotta saat konfiguroitua Home Assistantin oikein.",
+                        "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Kannattaa lukea [ohjeet](https:\/\/home-assistant.io\/docs\/automation\/editor\/) (englanniksi), jotta osaat varmasti kirjoittaa automaatiot oikein.",
                         "pick_automation": "Valitse automaatio, jota haluat muokata",
-                        "no_automations": "Emme löytäneet muokattavia automaatioita",
+                        "no_automations": "Ei muokattavia automaatioita",
                         "add_automation": "Lisää automaatio"
                     },
                     "editor": {
@@ -397,7 +399,8 @@
                                 "numeric_state": {
                                     "label": "Numeerinen tila",
                                     "above": "Yli",
-                                    "below": "Alle"
+                                    "below": "Alle",
+                                    "value_template": "Arvomalli (template)"
                                 },
                                 "sun": {
                                     "label": "Aurinko",
@@ -405,6 +408,14 @@
                                     "sunrise": "Auringonnousu",
                                     "sunset": "Auringonlasku",
                                     "offset": "Poikkeama (vapaaehtoinen)"
+                                },
+                                "template": {
+                                    "label": "Malli (template)",
+                                    "value_template": "Arvomalli (template)"
+                                },
+                                "time": {
+                                    "label": "Aika",
+                                    "at": "Kellonaikana"
                                 },
                                 "zone": {
                                     "label": "Alue",
@@ -418,6 +429,7 @@
                         },
                         "conditions": {
                             "header": "Ehdot",
+                            "introduction": "Ehdot ovat vapaaehtoinen osa automaatiosääntöä. Niillä voidaan estää toimintoa tapahtumasta, vaikka se olisi laukaistu. Ehdot näyttävät hyvin samanlaisilta kuin laukaisimet, mutta ne ovat eri asia. Laukaisimen tehtävä on tarkkailla järjestelmän tapahtumia. Ehto kuitenkin katsoo systeemin tilaa vain ja ainoastaan yhdellä hetkellä. Laukaisin voi esimerkiksi huomata, jos jokin vipu käännetään päälle. Ehto voi nähdä vain onko vipu päällä vai pois päältä.\n\n[Lue lisää ehdoista (englanniksi).](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Lisää ehto",
                             "duplicate": "Kopioi",
                             "delete": "Poista",
@@ -432,7 +444,8 @@
                                 "numeric_state": {
                                     "label": "Lukuarvo",
                                     "above": "Yli",
-                                    "below": "Alle"
+                                    "below": "Alle",
+                                    "value_template": "Arvomalli, vapaahtoinen (template)"
                                 },
                                 "sun": {
                                     "label": "Aurinko",
@@ -442,6 +455,10 @@
                                     "after_offset": "Auringonlaskun jälkeen",
                                     "sunrise": "Auringonnousu",
                                     "sunset": "Auringonlasku"
+                                },
+                                "template": {
+                                    "label": "Malli (template)",
+                                    "value_template": "Arvomalli (template)"
                                 },
                                 "time": {
                                     "label": "Aika",
@@ -475,6 +492,7 @@
                                 },
                                 "wait_template": {
                                     "label": "Odota",
+                                    "wait_template": "Odotusmalli (template)",
                                     "timeout": "Aikakatkaisu"
                                 },
                                 "condition": {
@@ -588,6 +606,22 @@
             },
             "media_player": {
                 "text_to_speak": "Tekstistä puheeksi"
+            },
+            "climate": {
+                "currently": "Tällä hetkellä",
+                "on_off": "Päällä \/ pois",
+                "target_temperature": "Tavoitelämpötila",
+                "target_humidity": "Tavoitekosteus",
+                "operation": "Toiminto",
+                "fan_mode": "Tuuletustila",
+                "swing_mode": "Heilutustila",
+                "away_mode": "Poissa kotoa -tila",
+                "aux_heat": "Lisälämpö"
+            },
+            "lock": {
+                "code": "Koodi",
+                "lock": "Lukitse",
+                "unlock": "Avaa lukitus"
             }
         },
         "components": {
@@ -624,6 +658,9 @@
         "calendar": "Kalenteri",
         "camera": "Kamera",
         "climate": "Ilmasto",
+        "configurator": "Asetukset",
+        "conversation": "Keskustelu",
+        "cover": "Kaihtimet",
         "device_tracker": "Laiteseuranta",
         "fan": "Tuuletin",
         "history_graph": "Historiakuvaaja",

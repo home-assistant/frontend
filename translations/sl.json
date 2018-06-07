@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
             "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}",
-            "second": "{count} {count, plural,\none {Sekunda}\nother {Sekund}\n}"
+            "second": "{count} {count, plural,\none {Sekunda}\nother {Sekund}\n}",
+            "minute": "{count} {count, plural,\n  one {Minuta}\n  other {Minut}\n}",
+            "hour": "{count} {count, plural,\n  one {Ura}\n  other {Ur}\n}"
         },
         "login-form": {
             "password": "Geslo",
@@ -575,6 +577,51 @@
                     "wsw": "Zahod-jugozahod"
                 },
                 "forecast": "Napoved"
+            },
+            "alarm_control_panel": {
+                "code": "Koda",
+                "clear_code": "Počisti",
+                "disarm": "Izklopi",
+                "arm_home": "Vklopi doma",
+                "arm_away": "Vklopi odsoten"
+            },
+            "automation": {
+                "last_triggered": "Nazadnje sprožen",
+                "trigger": "Sprožilec"
+            },
+            "cover": {
+                "position": "Položaj",
+                "tilt_position": "Položaj nagiba"
+            },
+            "fan": {
+                "speed": "Hitrost",
+                "oscillate": "Nihanje",
+                "direction": "Smer"
+            },
+            "light": {
+                "brightness": "Svetlost",
+                "color_temperature": "Temperatura barve",
+                "white_value": "Bela vrednost",
+                "effect": "Učinek"
+            },
+            "media_player": {
+                "text_to_speak": "Besedilo v govor"
+            },
+            "climate": {
+                "currently": "Trenutno",
+                "on_off": "Vključen \/ izključen",
+                "target_temperature": "Ciljna temperatura",
+                "target_humidity": "Ciljna vlažnost",
+                "operation": "Delovanje",
+                "fan_mode": "Način ventilatorja",
+                "swing_mode": "Način Swing",
+                "away_mode": "Način odsotnosti",
+                "aux_heat": "Dodatna toplota"
+            },
+            "lock": {
+                "code": "Koda",
+                "lock": "Zakleni",
+                "unlock": "Odkleni"
             }
         },
         "components": {
@@ -585,7 +632,23 @@
             },
             "service-picker": {
                 "service": "Storitev"
+            },
+            "relative_time": {
+                "past": "pred {time} ",
+                "future": "Čez {time}",
+                "never": "Nikoli"
+            },
+            "history_charts": {
+                "loading_history": "Nalagam zgodovino stanj...",
+                "no_history_found": "Ni najdene zgodovine stanj."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Vklopljen je {entity} .",
+            "entity_turned_off": "Izklopljen {entity} .",
+            "service_called": "Storitev {service} klicana.",
+            "service_call_failed": "Storitve ni bilo mogoče poklicati {service}.",
+            "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave..."
         }
     },
     "domain": {

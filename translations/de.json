@@ -606,6 +606,17 @@
             },
             "media_player": {
                 "text_to_speak": "Text zum Sprechen"
+            },
+            "climate": {
+                "currently": "Aktuell",
+                "on_off": "An \/ aus",
+                "target_temperature": "Solltemperatur",
+                "target_humidity": "Soll-Luftfeuchtigkeit"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Verriegeln",
+                "unlock": "Entriegeln"
             }
         },
         "components": {

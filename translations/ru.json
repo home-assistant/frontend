@@ -606,6 +606,21 @@
             },
             "media_player": {
                 "text_to_speak": "Воспроизвести текст"
+            },
+            "climate": {
+                "currently": "Сейчас",
+                "on_off": "Вкл \/ выкл",
+                "target_temperature": "Заданная температура",
+                "target_humidity": "Заданная влажность",
+                "operation": "Операция",
+                "fan_mode": "Режим вентилятора",
+                "away_mode": "Режим ожидания",
+                "aux_heat": "Дополнительный нагрев"
+            },
+            "lock": {
+                "code": "Код",
+                "lock": "Закрыть",
+                "unlock": "Открыть"
             }
         },
         "components": {

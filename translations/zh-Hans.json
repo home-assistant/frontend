@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",
             "week": "{count} {count, plural,\none {周}\nother {周}\n}",
-            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}"
+            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
+            "minute": "{count} {count, plural,\none {分钟}\nother {分钟}\n}",
+            "hour": "{count} {count, plural,\none {小时}\nother {小时}\n}"
         },
         "login-form": {
             "password": "密码",
@@ -575,6 +577,51 @@
                     "wsw": "西南偏西"
                 },
                 "forecast": "预报"
+            },
+            "alarm_control_panel": {
+                "code": "密码",
+                "clear_code": "清除",
+                "disarm": "解除警戒",
+                "arm_home": "在家警戒",
+                "arm_away": "离家警戒"
+            },
+            "automation": {
+                "last_triggered": "上次触发",
+                "trigger": "触发"
+            },
+            "cover": {
+                "position": "位置",
+                "tilt_position": "倾斜位置"
+            },
+            "fan": {
+                "speed": "风速",
+                "oscillate": "摇头",
+                "direction": "方向"
+            },
+            "light": {
+                "brightness": "亮度",
+                "color_temperature": "色温",
+                "white_value": "白度值",
+                "effect": "效果"
+            },
+            "media_player": {
+                "text_to_speak": "要朗读的文本"
+            },
+            "climate": {
+                "currently": "当前",
+                "on_off": "开\/关",
+                "target_temperature": "设定温度",
+                "target_humidity": "设定湿度",
+                "operation": "操作",
+                "fan_mode": "送风模式",
+                "swing_mode": "扫风模式",
+                "away_mode": "离开模式",
+                "aux_heat": "辅热"
+            },
+            "lock": {
+                "code": "密码",
+                "lock": "锁定",
+                "unlock": "解锁"
             }
         },
         "components": {
@@ -585,7 +632,23 @@
             },
             "service-picker": {
                 "service": "服务"
+            },
+            "relative_time": {
+                "past": "{time}前",
+                "future": "{time}后",
+                "never": "从未"
+            },
+            "history_charts": {
+                "loading_history": "正在加载历史状态...",
+                "no_history_found": "没有找到历史状态。"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "已打开 {entity}。",
+            "entity_turned_off": "已关闭 {entity}。",
+            "service_called": "服务 {service} 已调用。 ",
+            "service_call_failed": "调用服务 {service} 失败。",
+            "connection_lost": "连接中断。正在重新连接..."
         }
     },
     "domain": {

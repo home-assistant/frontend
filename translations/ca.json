@@ -29,7 +29,7 @@
             "armed_night": "Activada, nit",
             "pending": "Pendent",
             "arming": "Armant",
-            "disarming": "Desarmant",
+            "disarming": "Desactivant",
             "triggered": "Disparada",
             "armed_custom_bypass": "Activada, bypass personalitzat"
         },
@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dia}\nother {dies}\n}",
             "week": "{count} {count, plural,\none {setmana}\nother {setmanes}\n}",
-            "second": "{count} {count, plural, one {segon} other {segons}}"
+            "second": "{count} {count, plural, one {segon} other {segons}}",
+            "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
+            "hour": "{count} {count, plural,\none {hour}\nother {hours}\n}"
         },
         "login-form": {
             "password": "Contrasenya",
@@ -575,6 +577,51 @@
                     "wsw": "OSO"
                 },
                 "forecast": "Previsió"
+            },
+            "alarm_control_panel": {
+                "code": "Codi",
+                "clear_code": "Netejar",
+                "disarm": "Desactivar",
+                "arm_home": "Activar a casa",
+                "arm_away": "Activar a fora"
+            },
+            "automation": {
+                "last_triggered": "Última activada",
+                "trigger": "Activar"
+            },
+            "cover": {
+                "position": "Posició",
+                "tilt_position": "Inclinació"
+            },
+            "fan": {
+                "speed": "Velocitat",
+                "oscillate": "Oscil·lar",
+                "direction": "Direcció"
+            },
+            "light": {
+                "brightness": "Brillantor",
+                "color_temperature": "Temperatura de color",
+                "white_value": "Valor del blanc",
+                "effect": "Efecte"
+            },
+            "media_player": {
+                "text_to_speak": "Text a veu"
+            },
+            "climate": {
+                "currently": "Actual",
+                "on_off": "On \/ Off",
+                "target_temperature": "Temperatura objectiu",
+                "target_humidity": "Humitat objectiu",
+                "operation": "Funcionament",
+                "fan_mode": "Mode ventilació",
+                "swing_mode": "Mode oscil·lació",
+                "away_mode": "Mode absent",
+                "aux_heat": "Auxiliar calor"
+            },
+            "lock": {
+                "code": "Codi",
+                "lock": "Bloquejar",
+                "unlock": "Desbloquejar"
             }
         },
         "components": {
@@ -585,7 +632,23 @@
             },
             "service-picker": {
                 "service": "Servei"
+            },
+            "relative_time": {
+                "past": "fa {time}",
+                "future": "En {time}",
+                "never": "Mai"
+            },
+            "history_charts": {
+                "loading_history": "Carregant historial d'estats...",
+                "no_history_found": "No s'ha trobat cap historial d'estats."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} apagada.",
+            "entity_turned_off": "{entity} engegada.",
+            "service_called": "S'ha cridat el servei {service}.",
+            "service_call_failed": "Ha fallat la crida al servei {service}.",
+            "connection_lost": "Connexió perduda. Tornant a connectar..."
         }
     },
     "domain": {

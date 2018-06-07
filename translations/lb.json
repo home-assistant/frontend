@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",
             "week": "{count} {count, plural,\none {woch}\nother {woche}\n}",
-            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}"
+            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}",
+            "minute": "{count} {count, plural,\neng {minute}\nméi {minutes}\n}",
+            "hour": "{count} {count, plural,\neng {hour}\nméi {hours}\n}"
         },
         "login-form": {
             "password": "Passwuert",
@@ -586,6 +588,35 @@
             "automation": {
                 "last_triggered": "Läscht ausgeléist",
                 "trigger": "Ausléiser"
+            },
+            "cover": {
+                "position": "Positioun",
+                "tilt_position": "Kippestellung"
+            },
+            "fan": {
+                "speed": "Vitesse",
+                "direction": "Richtung"
+            },
+            "light": {
+                "brightness": "Hellegkeet",
+                "color_temperature": "Faarf Temperatur",
+                "white_value": "Wäisse Wäert",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text zu Sprooch"
+            },
+            "climate": {
+                "currently": "Momentan",
+                "on_off": "Un \/ Aus",
+                "target_temperature": "Zieltemperatur",
+                "target_humidity": "Zielfiichtegkeet",
+                "aux_heat": "Zousätzlech Heizung"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Spären",
+                "unlock": "Entspären"
             }
         },
         "components": {
@@ -596,7 +627,23 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "relative_time": {
+                "past": "virun {time}",
+                "future": "An {time}",
+                "never": "Nie"
+            },
+            "history_charts": {
+                "loading_history": "Lued Status Verlaaf",
+                "no_history_found": "Keen Status Verlaaf fonnt"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} gouf ausgeschalt",
+            "entity_turned_off": "{entity} gouf ugeschalt",
+            "service_called": "Service {service} operuff",
+            "service_call_failed": "Fehler beim opruffen vun {service}",
+            "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut..."
         }
     },
     "domain": {
