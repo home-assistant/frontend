@@ -113,7 +113,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
           </paper-card>
         </div>
         <div class="flex layout horizontal wrap">
-          <ha-big-calendar events="[[items]]"></ha-big-calendar>
+          <ha-big-calendar dateUpdated="[[dateUpdated()]]" events="[[items]]"></ha-big-calendar>
         </div>
       </div>
     </app-header-layout>
@@ -126,21 +126,31 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // TODO implement calendar_updated event
     // this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
     //  .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
+    const now = new Date();
+    const firstMonthDay = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    const nextMonthDay = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime();
+    this.start = firstMonthDay / 1000;
+    this.end = nextMonthDay / 1000;
+
     this._fetchData();
   }
 
   _fetchData() {
     // Fetch calendar list
-    console.log("RRR")
     this.hass.callApi('get', 'calendars')
       .then((items) => {
         this.calendars = items;
       });
     // Fetch events for selected calendar
-    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', 'calendar/' + cal));
+    const params = encodeURI('?start=' + this.start + '&end=' + this.end);
+    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', 'calendar/' + cal + params));
     Promise.all(calls).then((items) => {
       this.items = [];
-      this.items = this.items.concat(items);
+
+      for (let i = 0; i < items.length; i++) {
+        this.items = this.items.concat(items[i]);
+      }
+
       for (let i = 0; i < this.items.length; i++) {
         this.items[i].start = new Date(this.items[i].start);
         if (this.items[i].end) {
@@ -165,9 +175,23 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     }
   }
 
+  dateUpdated() {
+    var pol = this;
+    return function (startDate) {
+      var firstMonthDay = new Date(startDate.getFullYear(), startDate.getMonth(), 1).getTime();
+      var nextMonthDay = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1).getTime();
+      pol.start = firstMonthDay / 1000;
+      pol.end = nextMonthDay / 1000;
+      pol._fetchData();
+    };
+  }
+
   static get properties() {
     return {
       hass: Object,
+
+      start: Number,
+      end: Number,
 
       items: {
         type: Array,

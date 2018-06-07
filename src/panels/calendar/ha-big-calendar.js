@@ -19,7 +19,6 @@ import moment from 'moment';
 
 import '../../resources/ha-style.js';
 
-
 class HABigCalendar extends PolymerElement {
   static get template() {
     return html``;
@@ -34,6 +33,7 @@ class HABigCalendar extends PolymerElement {
       { events: this.events,
         views: allViews,
         popup: true,
+        onNavigate: this.dateupdated,
         eventPropGetter: this.setEventStyle,
         defaultDate: new Date(), }
     );
@@ -60,6 +60,14 @@ class HABigCalendar extends PolymerElement {
 
   static get properties() {
     return {
+      BCElement: Object,
+
+      dateUpdated: Function,
+
+      startDate: Number,
+
+      endDate: Number,
+
       events: {
         type: Array,
         observer: 'update',
