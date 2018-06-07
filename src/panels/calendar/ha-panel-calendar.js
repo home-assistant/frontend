@@ -131,6 +131,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
 
   _fetchData() {
     // Fetch calendar list
+    console.log("RRR")
     this.hass.callApi('get', 'calendars')
       .then((items) => {
         this.calendars = items;
@@ -139,11 +140,8 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', 'calendar/' + cal));
     Promise.all(calls).then((items) => {
       this.items = [];
-      for (let i = 0; i < items.length; i++) {
-        this.items = this.items.concat(items[i]);
-      }
+      this.items = this.items.concat(items);
       for (let i = 0; i < this.items.length; i++) {
-        this.items[i].pol = this;
         this.items[i].start = new Date(this.items[i].start);
         if (this.items[i].end) {
           this.items[i].end = new Date(this.items[i].end);
