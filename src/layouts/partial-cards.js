@@ -52,7 +52,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     }
   </style>
   <app-route route="{{route}}" pattern="/:view" data="{{routeData}}" active="{{routeMatch}}"></app-route>
-  <ha-app-layout has-scrolling-region="" id="layout">
+  <ha-app-layout id="layout">
     <app-header effects="waterfall" condenses="" fixed="" slot="header">
       <app-toolbar>
         <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
