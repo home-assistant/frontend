@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 const config = require('./config.js');
 
 const version = fs.readFileSync('../setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -28,6 +29,15 @@ if (isProdBuild) {
       // Disabling because it broke output
       mangle: false,
     }
+  }));
+  plugins.push(new CompressionPlugin({
+    cache: true,
+    exclude: [
+      /\.js\.map$/,
+      /\.LICENSE$/,
+      /\.py$/,
+      /\.txt$/,
+    ]
   }));
 }
 
