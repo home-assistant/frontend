@@ -37,7 +37,7 @@ module.exports = {
   // Was source-map
   devtool: isProdBuild ? 'none' : 'inline-source-map',
   entry: {
-    entrypoint: './src/entrypoint.js',
+    app: './src/hassio-app.js',
   },
   module: {
     rules: [
@@ -72,7 +72,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     chunkFilename: chunkFilename,
-    path: config.buildDir,
-    publicPath: `${config.publicPath}/`,
+    path: config.buildDirLegacy,
+    publicPath: `${config.publicPathLegacy}/`,
   }
 };
