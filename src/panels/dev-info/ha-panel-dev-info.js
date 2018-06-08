@@ -292,6 +292,14 @@ class HaPanelDevInfo extends PolymerElement {
     super.connectedCallback();
     this.$.scrollable.dialogElement = this.$.showlog;
     this._fetchData();
+    if (!window.CUSTOM_UI_LIST) {
+      // Give custom UI an opportunity to load.
+      setTimeout(() => {
+        this.customUiList = window.CUSTOM_UI_LIST || [];
+      }, 1000);
+    } else {
+      this.customUiList = window.CUSTOM_UI_LIST;
+    }
   }
 
   refreshErrorLog(ev) {
@@ -299,9 +307,9 @@ class HaPanelDevInfo extends PolymerElement {
 
     this.errorLog = 'Loading error log…';
 
-    this.hass.callApi('GET', 'error_log').then(function (log) {
+    this.hass.callApi('GET', 'error_log').then((log) => {
       this.errorLog = log || 'No errors have been reported.';
-    }.bind(this));
+    });
   }
 
   fullTimeStamp(date) {
@@ -325,10 +333,10 @@ class HaPanelDevInfo extends PolymerElement {
   _fetchData() {
     this.updating = true;
     this.hass.callApi('get', 'error/all')
-      .then(function (items) {
+      .then((items) => {
         this.items = items;
         this.updating = false;
-      }.bind(this));
+      });
   }
 }
 
