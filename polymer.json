@@ -9,7 +9,6 @@
     "src/panels/dev-service/ha-panel-dev-service.js",
     "src/panels/dev-state/ha-panel-dev-state.js",
     "src/panels/dev-template/ha-panel-dev-template.js",
-    "src/panels/hassio/ha-panel-hassio.js",
     "src/panels/history/ha-panel-history.js",
     "src/panels/iframe/ha-panel-iframe.js",
     "src/panels/kiosk/ha-panel-kiosk.js",
@@ -17,7 +16,7 @@
     "src/panels/map/ha-panel-map.js",
     "src/panels/shopping-list/ha-panel-shopping-list.js",
     "src/panels/mailbox/ha-panel-mailbox.js",
-    "hassio/src/hassio-app.js"
+    "hassio/src/entrypoint.js"
   ],
   "sources": [
     "src/**/*",
