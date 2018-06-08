@@ -104,7 +104,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             <paper-listbox id="calendar_list" multi on-selected-items-changed="_fetchData" selected-values="{{selectedCalendars}}" attr-for-selected="item-name">
               <template is="dom-repeat" items="[[calendars]]">
                 <paper-item item-name="[[item.entity_id]]">
-                  <span class="calendar_color" style="background-color: [[item.color]]"></span>
+                  <span class="calendar_color" style$="background-color: [[item.color]]"></span>
                   <span class="calendar_color_spacer"></span>
                   [[item.name]]
                 </paper-item>
@@ -113,7 +113,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
           </paper-card>
         </div>
         <div class="flex layout horizontal wrap">
-          <ha-big-calendar dateUpdated="[[dateUpdated()]]" events="[[items]]"></ha-big-calendar>
+          <ha-big-calendar date-Updated="[[dateUpdated()]]" events="[[events]]"></ha-big-calendar>
         </div>
       </div>
     </app-header-layout>
@@ -139,28 +139,28 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     }
     // Fetch calendar list
     this.hass.callApi('get', 'calendars')
-      .then((items) => {
-        this.calendars = items;
+      .then((result) => {
+        this.calendars = result;
       });
     // Fetch events for selected calendar
     const params = encodeURI(`?start=${this.start}&end=${this.end}`);
     const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', `calendar/${cal}${params}`));
     Promise.all(calls).then((results) => {
-      var tmpItems = [];
+      var tmpEvents = [];
 
       for (let i = 0; i < results.length; i++) {
-        tmpItems = tmpItems.concat(results[i]);
+        tmpEvents = tmpEvents.concat(results[i]);
       }
 
-      for (let i = 0; i < tmpItems.length; i++) {
-        tmpItems[i].start = new Date(tmpItems[i].start);
-        if (tmpItems[i].end) {
-          tmpItems[i].end = new Date(tmpItems[i].end);
+      for (let i = 0; i < tmpEvents.length; i++) {
+        tmpEvents[i].start = new Date(tmpEvents[i].start);
+        if (tmpEvents[i].end) {
+          tmpEvents[i].end = new Date(tmpEvents[i].end);
         } else {
-          tmpItems[i].end = null;
+          tmpEvents[i].end = null;
         }
       }
-      this.items = tmpItems;
+      this.events = tmpEvents;
     });
   }
 
@@ -190,10 +190,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     return {
       hass: Object,
 
-      start: Number,
-      end: Number,
-
-      items: {
+      events: {
         type: Array,
         value: [],
       },
@@ -217,12 +214,6 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
-
-      platforms: Array,
-
-      _messages: Array,
-
-      currentMessage: Object,
 
     };
   }

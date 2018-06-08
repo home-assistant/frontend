@@ -1,14 +1,5 @@
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 /* polymer-lint disable */
 import { render } from 'react-dom';
@@ -24,16 +15,16 @@ class HABigCalendar extends PolymerElement {
     return html``;
   }
 
-  update() {
-    BigCalendar.momentLocalizer(moment);
+  update(events) {
+    BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
     const allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k]);
 
     const BCElement = React.createElement(
       BigCalendar,
-      { events: this.events,
+      { events: events,
         views: allViews,
         popup: true,
-        onNavigate: this.dateupdated,
+        onNavigate: this.dateUpdated,
         eventPropGetter: this.setEventStyle,
         defaultDate: new Date(), }
     );
@@ -43,10 +34,6 @@ class HABigCalendar extends PolymerElement {
     style.setAttribute('href', '/static/panels/calendar/react-big-calendar.css');
     style.setAttribute('rel', 'stylesheet');
     this.shadowRoot.appendChild(style);
-  }
-
-  showEventDetails(event) {
-    alert(event);
   }
 
   setEventStyle(event) {
@@ -60,13 +47,7 @@ class HABigCalendar extends PolymerElement {
 
   static get properties() {
     return {
-      BCElement: Object,
-
-      dateUpdated: Function,
-
-      startDate: Number,
-
-      endDate: Number,
+      dateUpdated: Object,
 
       events: {
         type: Array,
