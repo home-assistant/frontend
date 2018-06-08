@@ -7,7 +7,7 @@ let index = fs.readFileSync('index.html', 'utf-8');
 const toReplace = [
   [
     '<!--EXTRA_SCRIPTS-->',
-    "<script src='/static/custom-elements-es5-adapter.js'></script>"
+    "<script src='/frontend_es5/custom-elements-es5-adapter.js'></script>"
   ],
 ];
 
