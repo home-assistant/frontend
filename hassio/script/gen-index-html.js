@@ -15,4 +15,4 @@ for (item of toReplace) {
   index = index.replace(item[0], item[1]);
 }
 
-fs.writeFileSync(`${config.buildDir}/index.html`, index);
+fs.writeFileSync(`${config.buildDirLegacy}/index.html`, index);
