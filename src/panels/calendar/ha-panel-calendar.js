@@ -127,23 +127,24 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
     //  .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
     const now = new Date();
-    const firstMonthDay = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    const nextMonthDay = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime();
-    this.start = firstMonthDay / 1000;
-    this.end = nextMonthDay / 1000;
+    this.start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    this.end = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
 
     this._fetchData();
   }
 
   _fetchData() {
+    if (this.start == null || this.end == null) {
+      return;
+    }
     // Fetch calendar list
     this.hass.callApi('get', 'calendars')
       .then((items) => {
         this.calendars = items;
       });
     // Fetch events for selected calendar
-    const params = encodeURI('?start=' + this.start + '&end=' + this.end);
-    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', 'calendar/' + cal + params));
+    const params = encodeURI(`?start=${this.start}&end=${this.end}`);
+    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', `calendar/${cal}${params}`));
     Promise.all(calls).then((results) => {
       var tmpItems = [];
 
@@ -179,10 +180,8 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   dateUpdated() {
     var pol = this;
     return function (startDate) {
-      var firstMonthDay = new Date(startDate.getFullYear(), startDate.getMonth(), 1).getTime();
-      var nextMonthDay = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1).getTime();
-      pol.start = firstMonthDay / 1000;
-      pol.end = nextMonthDay / 1000;
+      pol.start = new Date(startDate.getFullYear(), startDate.getMonth(), 1).toISOString();
+      pol.end = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1).toISOString();
       pol._fetchData();
     };
   }

@@ -11,8 +11,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 /* polymer-lint disable */
-import React from 'react';
 import { render } from 'react-dom';
+import React from 'react';
 /* polymer-lint enable */
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
