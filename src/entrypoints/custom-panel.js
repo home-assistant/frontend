@@ -25,6 +25,10 @@ function setProperties(properties) {
 }
 
 function initialize(panel, properties) {
+  const style = document.createElement('style');
+  style.innerHTML = 'body{margin:0}';
+  document.head.appendChild(style);
+
   const config = panel.config._panel_custom;
   let start = Promise.resolve();
 
