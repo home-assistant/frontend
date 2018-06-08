@@ -4,10 +4,9 @@
 # Stop on errors
 set -e
 
-OUTPUT_DIR_ES5=build-es5
+OUTPUT_DIR=build
 
-rm -rf $OUTPUT_DIR_ES5
-mkdir $OUTPUT_DIR_ES5
-node script/gen-index-html.js
+rm -rf $OUTPUT_DIR
+mkdir $OUTPUT_DIR
 node script/gen-icons.js
 ../node_modules/.bin/webpack --watch --progress
