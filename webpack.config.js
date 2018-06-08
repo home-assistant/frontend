@@ -37,7 +37,10 @@ function createConfig(isProdBuild, latestBuild) {
     ],
   };
 
-  const copyPluginOpts = [];
+  const copyPluginOpts = [
+    // Leave here until Hass.io no longer references the ES5 build.
+    'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js'
+  ];
 
   const plugins = [
     new webpack.DefinePlugin({
@@ -69,7 +72,6 @@ function createConfig(isProdBuild, latestBuild) {
     copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js.map')
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` });
     copyPluginOpts.push({ from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` });
-    copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js');
     entry['hass-icons'] = './src/entrypoints/hass-icons.js';
     entry['service-worker-hass'] = './src/entrypoints/service-worker-hass.js';
   } else {
