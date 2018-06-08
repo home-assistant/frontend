@@ -144,21 +144,22 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     // Fetch events for selected calendar
     const params = encodeURI('?start=' + this.start + '&end=' + this.end);
     const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', 'calendar/' + cal + params));
-    Promise.all(calls).then((items) => {
-      this.items = [];
+    Promise.all(calls).then((results) => {
+      var tmpItems = [];
 
-      for (let i = 0; i < items.length; i++) {
-        this.items = this.items.concat(items[i]);
+      for (let i = 0; i < results.length; i++) {
+        tmpItems = tmpItems.concat(results[i]);
       }
 
-      for (let i = 0; i < this.items.length; i++) {
-        this.items[i].start = new Date(this.items[i].start);
-        if (this.items[i].end) {
-          this.items[i].end = new Date(this.items[i].end);
+      for (let i = 0; i < tmpItems.length; i++) {
+        tmpItems[i].start = new Date(tmpItems[i].start);
+        if (tmpItems[i].end) {
+          tmpItems[i].end = new Date(tmpItems[i].end);
         } else {
-          this.items[i].end = null;
+          tmpItems[i].end = null;
         }
       }
+      this.items = tmpItems;
     });
   }
 

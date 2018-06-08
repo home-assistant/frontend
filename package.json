@@ -66,6 +66,7 @@
     "chart.js": "~2.7.2",
     "chartjs-chart-timeline": "^0.2.1",
     "es6-object-assign": "^1.1.0",
+    "eslint-import-resolver-webpack": "^0.10.0",
     "fecha": "^2.3.3",
     "home-assistant-js-websocket": "2.0.1",
     "intl-messageformat": "^2.2.0",
