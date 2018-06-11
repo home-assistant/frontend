@@ -10,13 +10,22 @@ import moment from 'moment';
 
 import '../../resources/ha-style.js';
 
+BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
+
 class HABigCalendar extends PolymerElement {
   static get template() {
-    return html``;
+    return html`
+      <link rel="stylesheet" href="/static/panels/calendar/react-big-calendar.css">
+      <style include="iron-flex ha-style">
+        div#root {
+          height: 100%;
+          width: 100%;
+        }
+      </style>
+      <div id="root"></div>`;
   }
 
   update(events) {
-    BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
     const allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k]);
 
     const BCElement = React.createElement(
@@ -28,12 +37,7 @@ class HABigCalendar extends PolymerElement {
         eventPropGetter: this.setEventStyle,
         defaultDate: new Date(), }
     );
-    render(BCElement, this.shadowRoot);
-    // Add react big calendar css
-    const style = document.createElement('link');
-    style.setAttribute('href', '/static/panels/calendar/react-big-calendar.css');
-    style.setAttribute('rel', 'stylesheet');
-    this.shadowRoot.appendChild(style);
+    render(BCElement, this.$.root);
   }
 
   setEventStyle(event) {
