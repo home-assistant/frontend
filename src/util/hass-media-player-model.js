@@ -207,7 +207,7 @@ export default class MediaPlayerEntity {
     this.callService('select_source', { source });
   }
 
-  selectSoundMode(sound_mode) {
+  selectSoundMode(soundMode) {
     this.callService('select_sound_mode', { sound_mode });
   }
 
