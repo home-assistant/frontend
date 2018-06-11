@@ -1,10 +1,10 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-/* polymer-lint disable */
+/* eslint-disable */
 import { render } from 'react-dom';
 import React from 'react';
-/* polymer-lint enable */
+/* eslint-enable */
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 
