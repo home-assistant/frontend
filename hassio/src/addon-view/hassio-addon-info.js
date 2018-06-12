@@ -62,6 +62,9 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
       .right {
         float: right;
       }
+      ha-markdown img {
+        max-width: 100%;
+      }
     </style>
     <template is="dom-if" if="[[computeUpdateAvailable(addon)]]">
       <paper-card heading="Update available! 🎉">
