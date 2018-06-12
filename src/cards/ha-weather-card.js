@@ -80,7 +80,6 @@ class HaWeatherCard extends
         }
 
         .weekday {
-          font-weight: bold;
           text-transform: uppercase;
         }
 
@@ -129,10 +128,11 @@ class HaWeatherCard extends
             <div class="forecast">
               <template is="dom-repeat" items="[[forecast]]">
                 <div>
-                  <div class="weekday">[[computeDate(item.datetime)]]</div>
-                  <template is="dom-if" if="[[!item.templow]]">
-                    <div class="weekday">[[computeTime(item.datetime)]]</div>
-                  </template>
+                  <div class="weekday">[[computeDate(item.datetime)]]
+                    <template is="dom-if" if="[[!item.templow]]">
+                      <br>[[computeTime(item.datetime)]]</br>
+                    </template>
+                  </div>
                   <template is="dom-if" if="[[item.condition]]">
                     <div class="icon">
                       <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
@@ -253,7 +253,7 @@ class HaWeatherCard extends
     const date = new Date(data);
     return date.toLocaleTimeString(
       this.hass.selectedLanguage || this.hass.language,
-      { hour: '2-digit' }
+      { hour: 'numeric' }
     );
   }
 }
