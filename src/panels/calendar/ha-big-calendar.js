@@ -16,7 +16,7 @@ class HABigCalendar extends PolymerElement {
   static get template() {
     return html`
       <link rel="stylesheet" href="/static/panels/calendar/react-big-calendar.css">
-      <style include="iron-flex ha-style">
+      <style>
         div#root {
           height: 100%;
           width: 100%;
@@ -26,7 +26,7 @@ class HABigCalendar extends PolymerElement {
   }
 
   update(events) {
-    const allViews = Object.keys(BigCalendar.Views).map(k => BigCalendar.Views[k]);
+    const allViews = BigCalendar.Views.values;
 
     const BCElement = React.createElement(
       BigCalendar,
