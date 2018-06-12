@@ -81,6 +81,7 @@ class HaWeatherCard extends
 
         .weekday {
           font-weight: bold;
+          text-transform: uppercase;
         }
 
         .attributes,
@@ -128,7 +129,10 @@ class HaWeatherCard extends
             <div class="forecast">
               <template is="dom-repeat" items="[[forecast]]">
                 <div>
-                  <div class="weekday">[[computeDateTime(item.datetime)]]</div>
+                  <div class="weekday">[[computeDate(item.datetime)]]</div>
+                  <template is="dom-if" if="[[!item.templow]]">
+                    <div class="weekday">[[computeTime(item.datetime)]]</div>
+                  </template>
                   <template is="dom-if" if="[[item.condition]]">
                     <div class="icon">
                       <iron-icon icon="[[getWeatherIcon(item.condition)]]"></iron-icon>
@@ -237,16 +241,20 @@ class HaWeatherCard extends
     return typeof item !== 'undefined' && item !== null;
   }
 
-  computeDateTime(data) {
+  computeDate(data) {
     const date = new Date(data);
-    const provider = this.stateObj.attributes.attribution;
-    if (provider === 'Powered by Dark Sky' || provider === 'Data provided by OpenWeatherMap') {
-      return date.toLocaleTimeString(
-        this.hass.selectedLanguage || this.hass.language,
-        { hour: 'numeric' }
-      );
-    }
-    return date.toLocaleDateString(this.hass.selectedLanguage || this.hass.language, { weekday: 'short' });
+    return date.toLocaleDateString(
+      this.hass.selectedLanguage || this.hass.language,
+      { weekday: 'short' }
+    );
+  }
+
+  computeTime(data) {
+    const date = new Date(data);
+    return date.toLocaleTimeString(
+      this.hass.selectedLanguage || this.hass.language,
+      { hour: '2-digit' }
+    );
   }
 }
 customElements.define('ha-weather-card', HaWeatherCard);
