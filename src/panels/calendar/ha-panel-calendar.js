@@ -1,20 +1,11 @@
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-item/paper-item.js';
-import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@vaadin/vaadin-date-picker/vaadin-date-picker.js';
 
 import '../../components/ha-menu-button.js';
-import '../../components/state-history-charts.js';
-import '../../data/ha-state-history-data.js';
-import '../../resources/ha-date-picker-style.js';
 import '../../resources/ha-style.js';
 import './ha-big-calendar.js';
 
@@ -47,44 +38,11 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     ￼     text-align: center;
         }
 
-        span.calendar_color {
-          width: 15px;
-          height: 5px;
-     ￼    margin: 0px 10px 2px 0px;
-     ￼    display: inline-block;
-          background-color: #3174ad;
-        }
-     
-        span.calendar_color_spacer {
-          width: 15px;
-        }
-
         .iron-selected {
           background-color: #e5e5e5;
           font-weight: normal;
         }
 
-        paper-dialog > div.eventContent {
-          margin: 0px 5px 15px 5px;
-        }
-
-        paper-icon-item {
-          padding: 0px; 
-        }
-
-        paper-item-body.start {
-            padding: 0px 30px 0px 0px;
-        }
-
-        paper-dialog {
-            padding: 0px;
-        }
-
-        paper-dialog > h2 {
-            margin: 0;
-            padding: 20px;
-            background-color: #03A9F4;
-        }
       </style>
 
     <app-header-layout has-scrolling-region>
