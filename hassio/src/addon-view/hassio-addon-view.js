@@ -39,6 +39,15 @@ class HassioAddonView extends PolymerElement {
       hassio-addon-logs {
         min-width: 600px;
       }
+      @media only screen and (max-width: 600px) {
+        hassio-addon-info,
+        hassio-addon-network,
+        hassio-addon-audio,
+        hassio-addon-config,
+        hassio-addon-logs {
+          max-width: 100%;
+        }
+      }
     </style>
     <app-route route="[[route]]" pattern="/addon/:slug" data="{{routeData}}" active="{{routeMatches}}"></app-route>
     <app-header-layout has-scrolling-region="">
