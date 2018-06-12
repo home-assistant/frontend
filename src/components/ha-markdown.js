@@ -17,6 +17,7 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
   }
 
   connectedCallback() {
+    super.connectedCallback();
     // 0 = not loaded, 1 = success, 2 = error
     this._scriptLoaded = 0;
     this._renderScheduled = false;
