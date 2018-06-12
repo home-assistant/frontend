@@ -101,6 +101,10 @@ export default class MediaPlayerEntity {
     return (this._feat & 2048) !== 0;
   }
 
+  get supportsSelectSoundMode() {
+    return (this._feat & 65536) !== 0;
+  }
+
   get supportsPlay() {
     return (this._feat & 16384) !== 0;
   }
@@ -138,6 +142,14 @@ export default class MediaPlayerEntity {
 
   get sourceList() {
     return this._attr.source_list;
+  }
+
+  get soundMode() {
+    return this._attr.sound_mode;
+  }
+
+  get soundModeList() {
+    return this._attr.sound_mode_list;
   }
 
   mediaPlayPause() {
@@ -193,6 +205,10 @@ export default class MediaPlayerEntity {
 
   selectSource(source) {
     this.callService('select_source', { source });
+  }
+
+  selectSoundMode(soundMode) {
+    this.callService('select_sound_mode', { sound_mode: soundMode });
   }
 
   // helper method
