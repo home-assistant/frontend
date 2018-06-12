@@ -98,8 +98,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </paper-dropdown-menu>
     </div>
     <!-- SOUND MODE PICKER -->
-    <div class="controls layout horizontal justified">
-      <template is='dom-if' if='[[!computeHideSelectSoundMode(playerObj)]]'>
+    <template is='dom-if' if='[[!computeHideSelectSoundMode(playerObj)]]'>
+      <div class="controls layout horizontal justified">
         <iron-icon class="source-input" icon="mdi:music-note"></iron-icon>
         <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
           <paper-listbox slot="dropdown-content" selected="{{soundModeIndex}}">
@@ -108,8 +108,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-      </template>
-    </div>
+      </div>
+    </template>
     <!-- TTS -->
     <div hidden\$="[[computeHideTTS(ttsLoaded, playerObj)]]" class="layout horizontal end">
       <paper-input id="ttsInput" label="[[localize('ui.card.media_player.text_to_speak')]]" class="flex" value="{{ttsMessage}}" on-keydown="ttsCheckForEnter"></paper-input>
