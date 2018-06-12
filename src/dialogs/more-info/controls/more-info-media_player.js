@@ -102,9 +102,9 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <div class="controls layout horizontal justified">
         <iron-icon class="source-input" icon="mdi:music-note"></iron-icon>
         <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
-          <paper-listbox slot="dropdown-content" selected="{{soundModeIndex}}">
+          <paper-listbox slot="dropdown-content" attr-for-selected="selectedSoundMode" selected="{{SoundModeInput}}">
             <template is='dom-repeat' items='[[playerObj.soundModeList]]'>
-              <paper-item>[[item]]</paper-item>
+              <paper-item selectedSoundMode\$="[[item]]">[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -135,9 +135,9 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         observer: 'handleSourceChanged',
       },
 
-      soundModeIndex: {
-        type: Number,
-        value: 0,
+      SoundModeInput: {
+        type: String,
+        value: '',
         observer: 'handleSoundModeChanged',
       },
 
@@ -164,7 +164,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
 
     if (newVal && newVal.soundModeList !== undefined) {
-      this.soundModeIndex = newVal.soundModeList.indexOf(newVal.soundMode);
+      this.SoundModeInput = newVal.soundMode;
     }
 
     if (oldVal) {
@@ -254,25 +254,21 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playerObj.selectSource(sourceInput);
   }
 
-  handleSoundModeChanged(soundModeIndex, soundModeIndexOld) {
+  handleSoundModeChanged(SoundModeInput, SoundModeInputOld) {
     // Selected Option will transition to '' before transitioning to new value
     if (!this.playerObj
         || !this.playerObj.supportsSelectSoundMode
         || this.playerObj.soundModeList === undefined
-        || soundModeIndex < 0
-        || soundModeIndex >= this.playerObj.soundModeList
-        || soundModeIndexOld === undefined
+        || SoundModeInputOld === undefined
     ) {
       return;
     }
 
-    const soundModeInput = this.playerObj.soundModeList[soundModeIndex];
-
-    if (soundModeInput === this.playerObj.soundMode) {
+    if (SoundModeInput === this.playerObj.soundMode) {
       return;
     }
 
-    this.playerObj.selectSoundMode(soundModeInput);
+    this.playerObj.selectSoundMode(SoundModeInput);
   }
 
   handleVolumeTap() {
