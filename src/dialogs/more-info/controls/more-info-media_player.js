@@ -100,11 +100,11 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     <!-- SOUND MODE PICKER -->
     <template is='dom-if' if='[[!computeHideSelectSoundMode(playerObj)]]'>
       <div class="controls layout horizontal justified">
-        <iron-icon class="source-input" icon="mdi:music-note"></iron-icon>
+        <iron-icon class="source-input" icon="hass:music-note"></iron-icon>
         <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
-          <paper-listbox slot="dropdown-content" attr-for-selected="selectedSoundMode" selected="{{SoundModeInput}}">
+          <paper-listbox slot="dropdown-content" attr-for-selected="item-name" selected="{{SoundModeInput}}">
             <template is='dom-repeat' items='[[playerObj.soundModeList]]'>
-              <paper-item selectedSoundMode\$="[[item]]">[[item]]</paper-item>
+              <paper-item item-name$="[[item]]">[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -254,21 +254,13 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.playerObj.selectSource(sourceInput);
   }
 
-  handleSoundModeChanged(SoundModeInput, SoundModeInputOld) {
-    // Selected Option will transition to '' before transitioning to new value
-    if (!this.playerObj
-        || !this.playerObj.supportsSelectSoundMode
-        || this.playerObj.soundModeList === undefined
-        || SoundModeInputOld === undefined
+  handleSoundModeChanged(newVal, oldVal) {
+    if (oldVal
+        && newVal !== this.playerObj.soundMode
+        && this.playerObj.supportsSelectSoundMode
     ) {
-      return;
+      this.playerObj.selectSoundMode(newVal);
     }
-
-    if (SoundModeInput === this.playerObj.soundMode) {
-      return;
-    }
-
-    this.playerObj.selectSoundMode(SoundModeInput);
   }
 
   handleVolumeTap() {
