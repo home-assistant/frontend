@@ -54,10 +54,12 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
             <td>System</td>
             <td>[[data.operating_system]]</td>
           </tr>
-          <tr>
-            <td>Deployment</td>
-            <td>[[data.deployment]]</td>
-          </tr>
+          <template is="dom-if" if="[[data.deployment]]">
+            <tr>
+              <td>Deployment</td>
+              <td>[[data.deployment]]</td>
+            </tr>
+          </template>
         </tbody></table>
         <paper-button raised="" on-click="_showHardware" class="info">Show hardware</paper-button>
         <template is="dom-if" if="[[errors]]">
