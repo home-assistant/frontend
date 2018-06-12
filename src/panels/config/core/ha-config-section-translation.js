@@ -29,7 +29,7 @@ class HaConfigSectionTranslation extends
           <paper-dropdown-menu label="[[localize('ui.panel.config.core.section.translation.language')]]" dynamic-align="">
             <paper-listbox slot="dropdown-content" attr-for-selected="language-tag" selected="{{languageSelection}}">
               <template is="dom-repeat" items="[[languages]]">
-                <paper-item language-tag\$="[[item.tag]]">[[item.nativeName]]</paper-item>
+                <paper-item language-tag$="[[item.tag]]">[[item.nativeName]]</paper-item>
               </template>
             </paper-listbox>
           &gt;</paper-dropdown-menu>

@@ -97,7 +97,7 @@ class PaperTimeInput extends PolymerElement {
         }
       </style>
 
-      <label hidden\$="[[hideLabel]]">[[label]]</label>
+      <label hidden$="[[hideLabel]]">[[label]]</label>
       <div class="time-input-wrap">
 
         <!-- Hour Input -->
@@ -112,7 +112,7 @@ class PaperTimeInput extends PolymerElement {
         </paper-input>
 
         <!-- Dropdown Menu -->
-        <paper-dropdown-menu id="dropdown" required="" hidden\$="[[_equal(format, 24)]]" no-label-float="" disabled="[[disabled]]">
+        <paper-dropdown-menu id="dropdown" required="" hidden$="[[_equal(format, 24)]]" no-label-float="" disabled="[[disabled]]">
 
           <paper-listbox attr-for-selected="name" selected="{{amPm}}" slot="dropdown-content">
             <paper-item name="AM">AM</paper-item>

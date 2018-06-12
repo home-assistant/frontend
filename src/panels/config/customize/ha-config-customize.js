@@ -33,7 +33,7 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
         </app-toolbar>
       </app-header>
 
-      <div class\$="[[computeClasses(isWide)]]">
+      <div class$="[[computeClasses(isWide)]]">
         <ha-config-section is-wide="[[isWide]]">
           <span slot="header">Customization</span>
           <span slot="introduction">

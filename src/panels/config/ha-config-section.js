@@ -55,9 +55,9 @@ class HaConfigSection extends PolymerElement {
         max-width: 500px;
       }
     </style>
-    <div class\$="[[computeContentClasses(isWide)]]">
+    <div class$="[[computeContentClasses(isWide)]]">
       <div class="header"><slot name="header"></slot></div>
-      <div class\$="[[computeClasses(isWide)]]">
+      <div class$="[[computeClasses(isWide)]]">
         <div class="intro">
           <slot name="introduction"></slot>
         </div>

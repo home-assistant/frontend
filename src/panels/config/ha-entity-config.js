@@ -63,7 +63,7 @@ class HaEntityConfig extends PolymerElement {
             </div>
           </template>
 
-          <div hidden\$="[[!computeShowForm(formState)]]" id="form"></div>
+          <div hidden$="[[!computeShowForm(formState)]]" id="form"></div>
         </div>
       </div>
       <div class="card-actions">

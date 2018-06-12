@@ -61,7 +61,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
         <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
       </app-toolbar>
 
-      <div sticky="" hidden\$="[[areTabsHidden(views, showTabs)]]">
+      <div sticky="" hidden$="[[areTabsHidden(views, showTabs)]]">
         <paper-tabs scrollable="" selected="[[currentView]]" attr-for-selected="data-entity" on-iron-activate="handleViewSelected">
           <paper-tab data-entity="" on-click="scrollToTop">
             <template is="dom-if" if="[[!defaultView]]">
@@ -69,7 +69,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
             </template>
             <template is="dom-if" if="[[defaultView]]">
               <template is="dom-if" if="[[defaultView.attributes.icon]]">
-                <iron-icon title\$="[[_computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></iron-icon>
+                <iron-icon title$="[[_computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></iron-icon>
               </template>
               <template is="dom-if" if="[[!defaultView.attributes.icon]]">
                 [[_computeStateName(defaultView)]]
@@ -77,9 +77,9 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
             </template>
           </paper-tab>
           <template is="dom-repeat" items="[[views]]">
-            <paper-tab data-entity\$="[[item.entity_id]]" on-click="scrollToTop">
+            <paper-tab data-entity$="[[item.entity_id]]" on-click="scrollToTop">
               <template is="dom-if" if="[[item.attributes.icon]]">
-                <iron-icon title\$="[[_computeStateName(item)]]" icon="[[item.attributes.icon]]"></iron-icon>
+                <iron-icon title$="[[_computeStateName(item)]]" icon="[[item.attributes.icon]]"></iron-icon>
               </template>
               <template is="dom-if" if="[[!item.attributes.icon]]">
                 [[_computeStateName(item)]]
@@ -94,7 +94,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
       <ha-cards data-view="" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]" ordered-group-entities="[[orderedGroupEntities]]"></ha-cards>
 
       <template is="dom-repeat" items="[[views]]">
-        <ha-cards data-view\$="[[item.entity_id]]" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]" ordered-group-entities="[[orderedGroupEntities]]"></ha-cards>
+        <ha-cards data-view$="[[item.entity_id]]" states="[[viewStates]]" columns="[[_columns]]" hass="[[hass]]" panel-visible="[[panelVisible]]" ordered-group-entities="[[orderedGroupEntities]]"></ha-cards>
       </template>
 
     </iron-pages>

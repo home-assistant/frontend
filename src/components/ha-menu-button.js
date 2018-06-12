@@ -15,7 +15,7 @@ class HaMenuButton extends EventsMixin(PolymerElement) {
         visibility: hidden;
       }
     </style>
-    <paper-icon-button icon="hass:menu" class\$="[[computeMenuButtonClass(narrow, showMenu)]]" on-click="toggleMenu"></paper-icon-button>
+    <paper-icon-button icon="hass:menu" class$="[[computeMenuButtonClass(narrow, showMenu)]]" on-click="toggleMenu"></paper-icon-button>
 `;
   }
 

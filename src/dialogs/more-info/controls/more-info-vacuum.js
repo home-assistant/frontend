@@ -30,36 +30,36 @@ class MoreInfoVacuum extends PolymerElement {
     </style>
 
     <div class="horizontal justified layout">
-      <div hidden\$="[[!supportsStatus(stateObj)]]">
+      <div hidden$="[[!supportsStatus(stateObj)]]">
         <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.status]]</strong></span>
       </div>
-      <div hidden\$="[[!supportsBattery(stateObj)]]">
+      <div hidden$="[[!supportsBattery(stateObj)]]">
         <span><iron-icon icon="[[stateObj.attributes.battery_icon]]"></iron-icon> [[stateObj.attributes.battery_level]] %</span>
       </div>
     </div>
-    <div hidden\$="[[!supportsCommandBar(stateObj)]]">
+    <div hidden$="[[!supportsCommandBar(stateObj)]]">
       <p></p>
       <div class="status-subtitle">Vacuum cleaner commands:</div>
       <div class="horizontal justified layout">
-        <div hidden\$="[[!supportsPause(stateObj)]]">
+        <div hidden$="[[!supportsPause(stateObj)]]">
           <paper-icon-button icon="hass:play-pause" on-click="onPlayPause" title="Start/Pause"></paper-icon-button>
         </div>
-        <div hidden\$="[[!supportsStop(stateObj)]]">
+        <div hidden$="[[!supportsStop(stateObj)]]">
           <paper-icon-button icon="hass:stop" on-click="onStop" title="Stop"></paper-icon-button>
         </div>
-        <div hidden\$="[[!supportsCleanSpot(stateObj)]]">
+        <div hidden$="[[!supportsCleanSpot(stateObj)]]">
         <paper-icon-button icon="hass:broom" on-click="onCleanSpot" title="Clean spot"></paper-icon-button>
         </div>
-        <div hidden\$="[[!supportsLocate(stateObj)]]">
+        <div hidden$="[[!supportsLocate(stateObj)]]">
         <paper-icon-button icon="hass:map-marker" on-click="onLocate" title="Locate"></paper-icon-button>
         </div>
-        <div hidden\$="[[!supportsReturnHome(stateObj)]]">
+        <div hidden$="[[!supportsReturnHome(stateObj)]]">
         <paper-icon-button icon="hass:home-map-marker" on-click="onReturnHome" title="Return home"></paper-icon-button>
         </div>
       </div>
     </div>
 
-    <div hidden\$="[[!supportsFanSpeed(stateObj)]]">
+    <div hidden$="[[!supportsFanSpeed(stateObj)]]">
       <div class="horizontal justified layout">
         <paper-dropdown-menu label-float="" dynamic-align="" label="Fan speed">
           <paper-listbox slot="dropdown-content" selected="{{fanSpeedIndex}}">

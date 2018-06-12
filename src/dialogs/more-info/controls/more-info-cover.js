@@ -36,7 +36,7 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
       visibility: hidden !important;
     }
   </style>
-  <div class\$="[[computeClassNames(stateObj)]]">
+  <div class$="[[computeClassNames(stateObj)]]">
 
     <div class="current_position">
       <ha-labeled-slider
@@ -55,7 +55,7 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
         on-change="coverTiltPositionSliderChanged">
 
         <ha-cover-tilt-controls
-          slot="extra" hidden\$="[[entityObj.isTiltOnly]]"
+          slot="extra" hidden$="[[entityObj.isTiltOnly]]"
           hass="[[hass]]" state-obj="[[stateObj]]"
         ></ha-cover-tilt-controls>
 

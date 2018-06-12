@@ -120,28 +120,28 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
           <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
           <div class="card-actions">
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="refresh_node" service-data="[[computeNodeServiceData(selectedNode)]]">Refresh Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="refresh_node" hidden\$="[[!showHelp]]"></ha-service-description>
+            <ha-service-description hass="[[hass]]" domain="zwave" service="refresh_node" hidden$="[[!showHelp]]"></ha-service-description>
 
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="remove_failed_node" service-data="[[computeNodeServiceData(selectedNode)]]">Remove Failed Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="remove_failed_node" hidden\$="[[!showHelp]]"></ha-service-description>
+            <ha-service-description hass="[[hass]]" domain="zwave" service="remove_failed_node" hidden$="[[!showHelp]]"></ha-service-description>
 
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="replace_failed_node" service-data="[[computeNodeServiceData(selectedNode)]]">Replace Failed Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="replace_failed_node" hidden\$="[[!showHelp]]"></ha-service-description>
+            <ha-service-description hass="[[hass]]" domain="zwave" service="replace_failed_node" hidden$="[[!showHelp]]"></ha-service-description>
 
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="print_node" service-data="[[computeNodeServiceData(selectedNode)]]">Print Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="print_node" hidden\$="[[!showHelp]]"></ha-service-description>
+            <ha-service-description hass="[[hass]]" domain="zwave" service="print_node" hidden$="[[!showHelp]]"></ha-service-description>
 
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="heal_node" service-data="[[computeHealNodeServiceData(selectedNode)]]">Heal Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="heal_node" hidden\$="[[!showHelp]]"></ha-service-description>
+            <ha-service-description hass="[[hass]]" domain="zwave" service="heal_node" hidden$="[[!showHelp]]"></ha-service-description>
 
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="test_node" service-data="[[computeNodeServiceData(selectedNode)]]">Test Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="test_node" hidden\$="[[!showHelp]]"></ha-service-description>
+            <ha-service-description hass="[[hass]]" domain="zwave" service="test_node" hidden$="[[!showHelp]]"></ha-service-description>
           </div>
           <div class="card-actions">
             <paper-input float-label="New node name" type="text" value="{{newNodeNameInput}}" placeholder="[[computeGetNodeName(selectedNode)]]">
             </paper-input>
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="rename_node" service-data="[[computeNodeNameServiceData(newNodeNameInput)]]">Rename Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="rename_node" hidden\$="[[!showHelp]]"></ha-service-description>
+            <ha-service-description hass="[[hass]]" domain="zwave" service="rename_node" hidden$="[[!showHelp]]"></ha-service-description>
            </div>
 
            <div class="device-picker">
@@ -156,7 +156,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
            <template is="dom-if" if="[[!computeIsEntitySelected(selectedEntity)]]">
            <div class="card-actions">
              <ha-call-service-button hass="[[hass]]" domain="zwave" service="refresh_entity" service-data="[[computeRefreshEntityServiceData(selectedEntity)]]">Refresh Entity</ha-call-service-button>
-             <ha-service-description hass="[[hass]]" domain="zwave" service="refresh_entity" hidden\$="[[!showHelp]]"></ha-service-description>
+             <ha-service-description hass="[[hass]]" domain="zwave" service="refresh_entity" hidden$="[[!showHelp]]"></ha-service-description>
            </div>
            <div class="form-group">
              <paper-checkbox checked="{{entityIgnored}}" class="form-control">

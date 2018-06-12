@@ -58,7 +58,7 @@ class StateInfo extends PolymerElement {
   static get infoTemplate() {
     return html`
     <div class="info">
-      <div class="name" in-dialog\$="[[inDialog]]">[[computeStateName(stateObj)]]</div>
+      <div class="name" in-dialog$="[[inDialog]]">[[computeStateName(stateObj)]]</div>
 
       <template is="dom-if" if="[[inDialog]]">
         <div class="time-ago">

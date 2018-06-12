@@ -93,11 +93,11 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
         <div class="card-actions">
           <ha-call-service-button hass="[[hass]]" domain="homeassistant" service="reload_core_config">[[localize('ui.panel.config.core.section.core.reloading.core')]]
           </ha-call-service-button>
-          <ha-call-service-button hass="[[hass]]" domain="group" service="reload" hidden\$="[[!groupLoaded(hass)]]">[[localize('ui.panel.config.core.section.core.reloading.group')]]
+          <ha-call-service-button hass="[[hass]]" domain="group" service="reload" hidden$="[[!groupLoaded(hass)]]">[[localize('ui.panel.config.core.section.core.reloading.group')]]
           </ha-call-service-button>
-          <ha-call-service-button hass="[[hass]]" domain="automation" service="reload" hidden\$="[[!automationLoaded(hass)]]">[[localize('ui.panel.config.core.section.core.reloading.automation')]]
+          <ha-call-service-button hass="[[hass]]" domain="automation" service="reload" hidden$="[[!automationLoaded(hass)]]">[[localize('ui.panel.config.core.section.core.reloading.automation')]]
           </ha-call-service-button>
-          <ha-call-service-button hass="[[hass]]" domain="script" service="reload" hidden\$="[[!scriptLoaded(hass)]]">[[localize('ui.panel.config.core.section.core.reloading.script')]]
+          <ha-call-service-button hass="[[hass]]" domain="script" service="reload" hidden$="[[!scriptLoaded(hass)]]">[[localize('ui.panel.config.core.section.core.reloading.script')]]
           </ha-call-service-button>
         </div>
       </paper-card>

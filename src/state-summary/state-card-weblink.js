@@ -24,7 +24,7 @@ class StateCardWeblink extends PolymerElement {
     </style>
 
     ${this.stateBadgeTemplate}
-    <a href\$="[[stateObj.state]]" target="_blank" class="name" id="link">[[_computeStateName(stateObj)]]</a>
+    <a href$="[[stateObj.state]]" target="_blank" class="name" id="link">[[_computeStateName(stateObj)]]</a>
 `;
   }
 
