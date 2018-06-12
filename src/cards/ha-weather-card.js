@@ -80,7 +80,7 @@ class HaWeatherCard extends
         }
 
         .weekday {
-          text-transform: uppercase;
+          font-weight: bold;
         }
 
         .attributes,
@@ -128,9 +128,9 @@ class HaWeatherCard extends
             <div class="forecast">
               <template is="dom-repeat" items="[[forecast]]">
                 <div>
-                  <div class="weekday">[[computeDate(item.datetime)]]
+                  <div class="weekday">[[computeDate(item.datetime)]]<br>
                     <template is="dom-if" if="[[!item.templow]]">
-                      <br>[[computeTime(item.datetime)]]</br>
+                      [[computeTime(item.datetime)]]
                     </template>
                   </div>
                   <template is="dom-if" if="[[item.condition]]">
