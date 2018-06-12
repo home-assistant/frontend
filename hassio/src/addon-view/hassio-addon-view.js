@@ -25,14 +25,19 @@ class HassioAddonView extends PolymerElement {
       }
       .content {
         padding: 24px 0 32px;
-        max-width: 600px;
-        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       hassio-addon-info,
       hassio-addon-network,
       hassio-addon-audio,
       hassio-addon-config {
         margin-bottom: 24px;
+        width: 600px;
+      }
+      hassio-addon-logs {
+        min-width: 600px;
       }
     </style>
     <app-route route="[[route]]" pattern="/addon/:slug" data="{{routeData}}" active="{{routeMatches}}"></app-route>
