@@ -49,7 +49,7 @@ class HaConfigFlow extends
         </template>
         <template is="dom-if" if="[[step]]">
           <template is="dom-if" if="[[_equals(step.type, &quot;abort&quot;)]]">
-            <p>[[_computeStepAbortedReason(localize, step)]]</p>
+            <ha-markdown content="[[_computeStepAbortedReason(localize, step)]]"></ha-markdown>
           </template>
 
           <template is="dom-if" if="[[_equals(step.type, &quot;create_entry&quot;)]]">
@@ -178,7 +178,13 @@ class HaConfigFlow extends
   }
 
   _computeStepDescription(localize, step) {
-    return localize(`component.${step.handler}.config.step.${step.step_id}.description`);
+    const args = [`component.${step.handler}.config.step.${step.step_id}.description`];
+    const placeholders = step.description_placeholders || {};
+    Object.keys(placeholders).forEach((key) => {
+      args.push(key);
+      args.push(placeholders[key]);
+    });
+    return localize(...args);
   }
 
   _computeLabelCallback(localize, step) {
