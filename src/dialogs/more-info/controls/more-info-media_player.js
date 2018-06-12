@@ -17,6 +17,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
+ * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
 class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
@@ -89,7 +90,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     <!-- SOURCE PICKER -->
     <div class="controls layout horizontal justified" hidden\$="[[computeHideSelectSource(playerObj)]]">
       <iron-icon class="source-input" icon="hass:login-variant"></iron-icon>
-      <paper-dropdown-menu class="flex source-input" dynamic-align="" label-float="" label="Source">
+      <paper-dropdown-menu class="flex source-input" dynamic-align="" label-float="" label="[[localize('ui.card.media_player.source')]]">
         <paper-listbox slot="dropdown-content" selected="{{sourceIndex}}">
           <template is="dom-repeat" items="[[playerObj.sourceList]]">
             <paper-item>[[item]]</paper-item>
@@ -101,7 +102,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     <template is='dom-if' if='[[!computeHideSelectSoundMode(playerObj)]]'>
       <div class="controls layout horizontal justified">
         <iron-icon class="source-input" icon="hass:music-note"></iron-icon>
-        <paper-dropdown-menu class="flex source-input" dynamic-align label-float label='Sound Mode'>
+        <paper-dropdown-menu class="flex source-input" dynamic-align label-float label="[[localize('ui.card.media_player.sound_mode')]]">
           <paper-listbox slot="dropdown-content" attr-for-selected="item-name" selected="{{SoundModeInput}}">
             <template is='dom-repeat' items='[[playerObj.soundModeList]]'>
               <paper-item item-name$="[[item]]">[[item]]</paper-item>
