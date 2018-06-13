@@ -526,8 +526,6 @@
             "cancel": "Canslo"
         },
         "duration": {
-            "day": "Dydd",
-            "week": "Wythnos",
             "second": "Eiliad"
         },
         "login-form": {

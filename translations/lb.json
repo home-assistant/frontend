@@ -528,9 +528,7 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",
             "week": "{count} {count, plural,\none {woch}\nother {woche}\n}",
-            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}",
-            "minute": "{count} {count, plural,\neng {minute}\nméi {minutes}\n}",
-            "hour": "{count} {count, plural,\neng {hour}\nméi {hours}\n}"
+            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}"
         },
         "login-form": {
             "password": "Passwuert",

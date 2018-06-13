@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
             "week": "{count} {count, plural,\none {uke}\nother {uker}\n}",
-            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}"
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "minute": "{count} {count, plural,\none {minutt}\nother {minutter}\n}",
+            "hour": "{count} {count, plural,\none {time}\nother {timer}\n}"
         },
         "login-form": {
             "password": "Passord",
@@ -575,6 +577,51 @@
                     "wsw": "VSV"
                 },
                 "forecast": "Prognose"
+            },
+            "alarm_control_panel": {
+                "code": "Kode",
+                "clear_code": "Klarer",
+                "disarm": "Deaktiver",
+                "arm_home": "Armer hjemme",
+                "arm_away": "Armer bort"
+            },
+            "automation": {
+                "last_triggered": "Sist utløst",
+                "trigger": "Utløs"
+            },
+            "cover": {
+                "position": "Posisjon",
+                "tilt_position": "Vend posisjon"
+            },
+            "fan": {
+                "speed": "Hastighet",
+                "oscillate": "Svinge",
+                "direction": "Retning"
+            },
+            "light": {
+                "brightness": "Lysstyrke",
+                "color_temperature": "Fargetemperatur",
+                "white_value": "Hvit verdi",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Tekst til tale"
+            },
+            "climate": {
+                "currently": "Er nå",
+                "on_off": "På \/ av",
+                "target_temperature": "Ønsket temperatur",
+                "target_humidity": "Ønsket luftfuktighet",
+                "operation": "Operasjon",
+                "fan_mode": "Viftemodus",
+                "swing_mode": "Svingmodus",
+                "away_mode": "Bortemodus",
+                "aux_heat": "Aux varme"
+            },
+            "lock": {
+                "code": "Kode",
+                "lock": "Lås",
+                "unlock": "Låse opp"
             }
         },
         "components": {
@@ -585,7 +632,23 @@
             },
             "service-picker": {
                 "service": "Tjeneste"
+            },
+            "relative_time": {
+                "past": "For {time} siden",
+                "future": "Om {time}",
+                "never": "Aldri"
+            },
+            "history_charts": {
+                "loading_history": "Laster statushistorikk...",
+                "no_history_found": "Ingen status history funnet."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Slo på {entity}.",
+            "entity_turned_off": "Slo av {entity}.",
+            "service_called": "Tjenesten {service} kalt.",
+            "service_call_failed": "Kunne ikke tilkalle tjenesten {service}.",
+            "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt..."
         }
     },
     "domain": {

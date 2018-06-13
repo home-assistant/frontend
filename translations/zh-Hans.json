@@ -612,8 +612,8 @@
                 "on_off": "开\/关",
                 "target_temperature": "设定温度",
                 "target_humidity": "设定湿度",
-                "operation": "操作",
-                "fan_mode": "送风模式",
+                "operation": "运行模式",
+                "fan_mode": "风速",
                 "swing_mode": "扫风模式",
                 "away_mode": "离开模式",
                 "aux_heat": "辅热"

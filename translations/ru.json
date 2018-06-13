@@ -595,7 +595,7 @@
             },
             "fan": {
                 "speed": "Скорость",
-                "oscillate": "Частота",
+                "oscillate": "Колебания",
                 "direction": "Направление"
             },
             "light": {

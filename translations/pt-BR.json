@@ -137,7 +137,7 @@
             "auto": "Automático",
             "dry": "Seco",
             "fan_only": "Apenas ventilador",
-            "eco": "",
+            "eco": "Econômico",
             "electric": "Elétrico",
             "performance": "Desempenho",
             "high_demand": "Alta demanda",
@@ -175,7 +175,7 @@
             "stopped": "Parado",
             "locked": "Trancado",
             "unlocked": "Destrancado",
-            "ok": "",
+            "ok": "OK",
             "problem": "Problema"
         },
         "input_boolean": {
@@ -291,7 +291,7 @@
                 "showing_entries": "Exibindo entradas para"
             },
             "mailbox": {
-                "empty": "Você não tem nenhuma mensagem",
+                "empty": "Você não tem mensagens",
                 "playback_title": "Reprodução da mensagem",
                 "delete_prompt": "Excluir esta mensagem?",
                 "delete_button": "Excluir"
@@ -392,7 +392,7 @@
                                     "shutdown": "Desligar"
                                 },
                                 "mqtt": {
-                                    "label": "",
+                                    "label": "MQTT",
                                     "topic": "Tópico",
                                     "payload": "Valor (opcional)"
                                 },
@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dia}\nother {dias}\n}",
             "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}",
-            "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}"
+            "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}",
+            "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
+            "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}"
         },
         "login-form": {
             "password": "Senha",
@@ -575,6 +577,51 @@
                     "wsw": "OSO"
                 },
                 "forecast": "Previsão"
+            },
+            "alarm_control_panel": {
+                "code": "Código",
+                "clear_code": "Limpar",
+                "disarm": "Desarmar",
+                "arm_home": "Armar em casa",
+                "arm_away": "Armar ausente"
+            },
+            "automation": {
+                "last_triggered": "Último disparo",
+                "trigger": "Gatilho"
+            },
+            "cover": {
+                "position": "Posição",
+                "tilt_position": "Posição de inclinação"
+            },
+            "fan": {
+                "speed": "Velocidade",
+                "oscillate": "Oscilar",
+                "direction": "Direção"
+            },
+            "light": {
+                "brightness": "Brilho",
+                "color_temperature": "Temperatura de cor",
+                "white_value": " Balanço de branco",
+                "effect": "Efeito"
+            },
+            "media_player": {
+                "text_to_speak": "Texto para falar"
+            },
+            "climate": {
+                "currently": "Atualmente",
+                "on_off": "Lig. \/ Des.",
+                "target_temperature": "Temperatura desejada",
+                "target_humidity": "Umidade desejada",
+                "operation": "Operação",
+                "fan_mode": "Modo ventilação",
+                "swing_mode": "Modo oscilante",
+                "away_mode": "Modo ausente",
+                "aux_heat": "Aquecedor aux"
+            },
+            "lock": {
+                "code": "Código",
+                "lock": "Trancar",
+                "unlock": "Destrancar"
             }
         },
         "components": {
@@ -585,7 +632,23 @@
             },
             "service-picker": {
                 "service": "Serviço"
+            },
+            "relative_time": {
+                "past": "{time} atrás",
+                "future": "Em {time}",
+                "never": "Nunca"
+            },
+            "history_charts": {
+                "loading_history": "Carregando histórico do estado ...",
+                "no_history_found": "Histórico de estado não encontrado."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entidade} ligado(a).",
+            "entity_turned_off": "{entidade} desligado(a).",
+            "service_called": "Serviço {service} chamado.",
+            "service_call_failed": "Falha ao chamar o serviço {service}.",
+            "connection_lost": "Conexão perdida. Reconectando…"
         }
     },
     "domain": {
