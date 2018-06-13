@@ -13,7 +13,7 @@ class HaFormCustomizeAttributes extends MutableData(PolymerElement) {
       }
     </style>
     <template is="dom-repeat" items="{{attributes}}" mutable-data="">
-      <ha-customize-attribute item="{{item}}" hidden\$="[[item.closed]]">
+      <ha-customize-attribute item="{{item}}" hidden$="[[item.closed]]">
       </ha-customize-attribute>
     </template>
 `;

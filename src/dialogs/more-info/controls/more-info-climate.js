@@ -115,7 +115,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
       }
     </style>
 
-    <div class\$="[[computeClassNames(stateObj)]]">
+    <div class$="[[computeClassNames(stateObj)]]">
 
       <template is="dom-if" if="[[supportsOn(stateObj)]]">
         <div class="container-on">
@@ -128,8 +128,8 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </template>
 
       <div class="container-temperature">
-        <div class\$="[[stateObj.attributes.operation_mode]]">
-          <div hidden\$="[[!supportsTemperatureControls(stateObj)]]">[[localize('ui.card.climate.target_temperature')]]</div>
+        <div class$="[[stateObj.attributes.operation_mode]]">
+          <div hidden$="[[!supportsTemperatureControls(stateObj)]]">[[localize('ui.card.climate.target_temperature')]]</div>
           <template is="dom-if" if="[[supportsTemperature(stateObj)]]">
             <ha-climate-control value="[[stateObj.attributes.temperature]]" units="[[stateObj.attributes.unit_of_measurement]]" step="[[computeTemperatureStepSize(stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.max_temp]]" on-change="targetTemperatureChanged">
             </ha-climate-control>
