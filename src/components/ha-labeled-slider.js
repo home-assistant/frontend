@@ -34,7 +34,7 @@ class HaLabeledSlider extends PolymerElement {
       <slot name="extra"></slot>
     </div>
     <div class="slider-container">
-      <iron-icon icon="[[icon]]" hidden\$="[[!icon]]"></iron-icon>
+      <iron-icon icon="[[icon]]" hidden$="[[!icon]]"></iron-icon>
       <ha-paper-slider
         min="[[min]]" max="[[max]]" step="[[step]]"
         pin="[[pin]]" disabled="[[disabled]]" disabled="[[disabled]]"

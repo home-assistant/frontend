@@ -39,7 +39,7 @@ class StateBadge extends PolymerElement {
     }
     </style>
 
-    <ha-state-icon id="icon" state-obj="[[stateObj]]" data-domain\$="[[computeDomain(stateObj)]]" data-state\$="[[stateObj.state]]"></ha-state-icon>
+    <ha-state-icon id="icon" state-obj="[[stateObj]]" data-domain$="[[computeDomain(stateObj)]]" data-state$="[[stateObj.state]]"></ha-state-icon>
 `;
   }
 

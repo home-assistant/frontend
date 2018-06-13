@@ -45,7 +45,7 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
         </app-toolbar>
       </app-header>
 
-      <div class\$="[[computeClasses(isWide)]]">
+      <div class$="[[computeClasses(isWide)]]">
         <ha-config-section-core is-wide="[[isWide]]" hass="[[hass]]"></ha-config-section-core>
 
         <template is="dom-if" if="[[pushSupported]]">

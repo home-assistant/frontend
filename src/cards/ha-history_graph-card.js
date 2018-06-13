@@ -40,7 +40,7 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
       }
     </style>
     <ha-state-history-data hass="[[hass]]" filter-type="recent-entity" entity-id="[[computeHistoryEntities(stateObj)]]" data="{{stateHistory}}" is-loading="{{stateHistoryLoading}}" cache-config="[[cacheConfig]]"></ha-state-history-data>
-    <paper-card dialog\$="[[inDialog]]" on-click="cardTapped" elevation="[[computeElevation(inDialog)]]">
+    <paper-card dialog$="[[inDialog]]" on-click="cardTapped" elevation="[[computeElevation(inDialog)]]">
       <div class="header">[[computeTitle(stateObj)]]</div>
       <div class="content">
          <state-history-charts hass="[[hass]]" history-data="[[stateHistory]]" is-loading-data="[[stateHistoryLoading]]" up-to-now no-single>

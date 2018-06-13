@@ -108,8 +108,8 @@ class HaChartBase extends mixinBehaviors([
       <div class="chartLegend">
         <ul>
           <template is="dom-repeat" items="[[metas]]">
-            <li on-click="_legendClick" data-hidden\$="[[item.hidden]]">
-              <em style\$="background-color:[[item.bgColor]]"></em>
+            <li on-click="_legendClick" data-hidden$="[[item.hidden]]">
+              <em style$="background-color:[[item.bgColor]]"></em>
               [[item.label]]
             </li>
           </template>
@@ -119,12 +119,12 @@ class HaChartBase extends mixinBehaviors([
   </template>
   <div id="chartTarget" style="height:40px; width:100%">
     <canvas id="chartCanvas"></canvas>
-    <div class\$="chartTooltip [[tooltip.yAlign]]" style\$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px">
+    <div class$="chartTooltip [[tooltip.yAlign]]" style$="opacity:[[tooltip.opacity]]; top:[[tooltip.top]]; left:[[tooltip.left]]; padding:[[tooltip.yPadding]]px [[tooltip.xPadding]]px">
       <div class="title">[[tooltip.title]]</div>
       <div>
         <ul>
           <template is="dom-repeat" items="[[tooltip.lines]]">
-            <li><em style\$="background-color:[[item.bgColor]]"></em>[[item.text]]</li>
+            <li><em style$="background-color:[[item.bgColor]]"></em>[[item.text]]</li>
           </template>
         </ul>
       </div>

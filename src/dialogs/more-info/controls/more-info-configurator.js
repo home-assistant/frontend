@@ -53,7 +53,7 @@ class MoreInfoConfigurator extends PolymerElement {
       <template is="dom-if" if="[[isConfigurable]]">
         <ha-markdown content="[[stateObj.attributes.description]]"></ha-markdown>
 
-        <p class="error" hidden\$="[[!stateObj.attributes.errors]]">
+        <p class="error" hidden$="[[!stateObj.attributes.errors]]">
           [[stateObj.attributes.errors]]
         </p>
 
@@ -61,7 +61,7 @@ class MoreInfoConfigurator extends PolymerElement {
           <paper-input label="[[item.name]]" name="[[item.id]]" type="[[item.type]]" on-change="fieldChanged"></paper-input>
         </template>
 
-        <p class="submit" hidden\$="[[!stateObj.attributes.submit_caption]]">
+        <p class="submit" hidden$="[[!stateObj.attributes.submit_caption]]">
           <paper-button raised="" disabled="[[isConfiguring]]" on-click="submitClicked">
             <paper-spinner active="[[isConfiguring]]" hidden="[[!isConfiguring]]" alt="Configuring"></paper-spinner>
             [[stateObj.attributes.submit_caption]]

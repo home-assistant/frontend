@@ -156,7 +156,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       }
     </style>
 
-    <div class\$="[[computeBannerClasses(playerObj)]]">
+    <div class$="[[computeBannerClasses(playerObj)]]">
       <div class="cover" id="cover"></div>
 
       <div class="caption">
@@ -166,15 +166,15 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </div>
     </div>
 
-    <paper-progress max="[[stateObj.attributes.media_duration]]" value="[[playbackPosition]]" hidden\$="[[computeHideProgress(playerObj)]]" class="progress"></paper-progress>
+    <paper-progress max="[[stateObj.attributes.media_duration]]" value="[[playbackPosition]]" hidden$="[[computeHideProgress(playerObj)]]" class="progress"></paper-progress>
 
     <div class="controls layout horizontal justified">
-      <paper-icon-button icon="hass:power" on-click="handleTogglePower" invisible\$="[[computeHidePowerButton(playerObj)]]" class="self-center secondary"></paper-icon-button>
+      <paper-icon-button icon="hass:power" on-click="handleTogglePower" invisible$="[[computeHidePowerButton(playerObj)]]" class="self-center secondary"></paper-icon-button>
 
       <div>
-        <paper-icon-button icon="hass:skip-previous" invisible\$="[[!playerObj.supportsPreviousTrack]]" disabled="[[playerObj.isOff]]" on-click="handlePrevious"></paper-icon-button>
-        <paper-icon-button class="primary" icon="[[computePlaybackControlIcon(playerObj)]]" invisible\$="[[!computePlaybackControlIcon(playerObj)]]" disabled="[[playerObj.isOff]]" on-click="handlePlaybackControl"></paper-icon-button>
-        <paper-icon-button icon="hass:skip-next" invisible\$="[[!playerObj.supportsNextTrack]]" disabled="[[playerObj.isOff]]" on-click="handleNext"></paper-icon-button>
+        <paper-icon-button icon="hass:skip-previous" invisible$="[[!playerObj.supportsPreviousTrack]]" disabled="[[playerObj.isOff]]" on-click="handlePrevious"></paper-icon-button>
+        <paper-icon-button class="primary" icon="[[computePlaybackControlIcon(playerObj)]]" invisible$="[[!computePlaybackControlIcon(playerObj)]]" disabled="[[playerObj.isOff]]" on-click="handlePlaybackControl"></paper-icon-button>
+        <paper-icon-button icon="hass:skip-next" invisible$="[[!playerObj.supportsNextTrack]]" disabled="[[playerObj.isOff]]" on-click="handleNext"></paper-icon-button>
       </div>
 
       <paper-icon-button icon="hass:dots-vertical" on-click="handleOpenMoreInfo" class="self-center secondary"></paper-icon-button>

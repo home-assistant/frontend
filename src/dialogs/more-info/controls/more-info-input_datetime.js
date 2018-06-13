@@ -13,7 +13,7 @@ import attributeClassNames from '../../../common/entity/attribute_class_names.js
 class DatetimeInput extends PolymerElement {
   static get template() {
     return html`
-    <div class\$="[[computeClassNames(stateObj)]]">
+    <div class$="[[computeClassNames(stateObj)]]">
       <template is="dom-if" if="[[doesHaveDate(stateObj)]]" restamp="">
         <div>
           <vaadin-date-picker id="dateInput" on-value-changed="dateTimeChanged" label="Date" value="{{selectedDate}}"></vaadin-date-picker>

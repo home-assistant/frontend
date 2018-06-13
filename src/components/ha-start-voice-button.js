@@ -12,7 +12,7 @@ import isComponentLoaded from '../common/config/is_component_loaded.js';
 class HaStartVoiceButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <paper-icon-button icon="hass:microphone" hidden\$="[[!canListen]]" on-click="handleListenClick"></paper-icon-button>
+    <paper-icon-button icon="hass:microphone" hidden$="[[!canListen]]" on-click="handleListenClick"></paper-icon-button>
 `;
   }
 

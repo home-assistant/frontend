@@ -80,7 +80,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
   </style>
 
-  <div class\$="[[computeClassNames(stateObj)]]">
+  <div class$="[[computeClassNames(stateObj)]]">
 
     <div class="control brightness">
       <ha-labeled-slider caption="[[localize('ui.card.light.brightness')]]" icon="hass:brightness-5" max="255" value="{{brightnessSliderValue}}" on-change="brightnessSliderChanged"></ha-labeled-slider>
