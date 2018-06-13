@@ -361,6 +361,8 @@
         "unlock": "Unlock"
       },
       "media_player": {
+        "source": "Source",
+        "sound_mode": "Sound mode",
         "text_to_speak": "Text to speak"
       },
       "persistent_notification": {
