@@ -582,7 +582,7 @@
                 "code": "Code",
                 "clear_code": "Löschen",
                 "disarm": "Deaktivieren",
-                "arm_home": "Aktivieren, zu Hause",
+                "arm_home": "Aktivieren, Zuhause",
                 "arm_away": "Aktivieren, unterwegs"
             },
             "automation": {
@@ -610,7 +610,7 @@
             "climate": {
                 "currently": "Aktuell",
                 "on_off": "An \/ aus",
-                "target_temperature": "Solltemperatur",
+                "target_temperature": "Soll-Temperatur",
                 "target_humidity": "Soll-Luftfeuchtigkeit"
             },
             "lock": {

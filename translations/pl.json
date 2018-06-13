@@ -126,14 +126,14 @@
         "camera": {
             "recording": "nagrywanie",
             "streaming": "strumieniowanie",
-            "idle": "bezczynna"
+            "idle": "nieaktywna"
         },
         "climate": {
             "off": "wyłączony",
             "on": "włączony",
             "heat": "ogrzewanie",
             "cool": "chłodzenie",
-            "idle": "bezczynny",
+            "idle": "nieaktywny",
             "auto": "automatyczny",
             "dry": "osuszanie",
             "fan_only": "tylko wentylator",
@@ -195,7 +195,7 @@
             "on": "włączony",
             "playing": "odtwarzanie",
             "paused": "pauza",
-            "idle": "bezczynny",
+            "idle": "nieaktywny",
             "standby": "tryb czuwania"
         },
         "plant": {
@@ -591,7 +591,7 @@
             },
             "cover": {
                 "position": "Pozycja",
-                "tilt_position": "Pozycja pochylenia"
+                "tilt_position": "Pochylenie"
             },
             "fan": {
                 "speed": "Prędkość",
@@ -601,19 +601,19 @@
             "light": {
                 "brightness": "Jasność",
                 "color_temperature": "Temperatura barwy",
-                "white_value": "Wartość bieli",
+                "white_value": "Biel",
                 "effect": "Efekt"
             },
             "media_player": {
-                "text_to_speak": "Tekst na mowę"
+                "text_to_speak": "Zamień tekst na mowę"
             },
             "climate": {
-                "currently": "obecnie",
+                "currently": "Obecnie",
                 "on_off": "Wł. \/ wył.",
                 "target_temperature": "Docelowa temperatura",
                 "target_humidity": "Docelowa wilgotność",
-                "operation": "Tryby działania",
-                "fan_mode": "Tryb wentylatora",
+                "operation": "Tryb działania",
+                "fan_mode": "Tryb pracy wentylatora",
                 "swing_mode": "Tryb ruchu łopatek",
                 "away_mode": "Tryb poza domem",
                 "aux_heat": "Dodatkowe źródło ciepła"
@@ -639,8 +639,8 @@
                 "never": "Nigdy"
             },
             "history_charts": {
-                "loading_history": "Ładowanie historycznych stanów...",
-                "no_history_found": "Nie znaleziono historycznych stanów."
+                "loading_history": "Ładowanie historii...",
+                "no_history_found": "Nie znaleziono historii."
             }
         },
         "notification_toast": {

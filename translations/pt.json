@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
             "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}",
-            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}"
+            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+            "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+            "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}"
         },
         "login-form": {
             "password": "Palavra-passe",
@@ -584,8 +586,42 @@
                 "arm_away": "Armado ausente"
             },
             "automation": {
-                "last_triggered": "Último disparo",
-                "trigger": "Acionamento"
+                "last_triggered": "Última ocorrência",
+                "trigger": "Despoletar"
+            },
+            "cover": {
+                "position": "Posição",
+                "tilt_position": "Posição de inclinação"
+            },
+            "fan": {
+                "speed": "Velocidade",
+                "oscillate": "Oscilar",
+                "direction": "Direção"
+            },
+            "light": {
+                "brightness": "Brilho",
+                "color_temperature": "Temperatura de cor",
+                "white_value": "Quantidade de branco",
+                "effect": "Efeito"
+            },
+            "media_player": {
+                "text_to_speak": "Texto para fala"
+            },
+            "climate": {
+                "currently": "Atualmente",
+                "on_off": "Lig. \/ Des.",
+                "target_temperature": "Temperatura pretendida",
+                "target_humidity": "Humidade pretendida",
+                "operation": "Operação",
+                "fan_mode": "Modo ventilar",
+                "swing_mode": "Modo oscilante",
+                "away_mode": "Modo ausente",
+                "aux_heat": "Calor auxiliar"
+            },
+            "lock": {
+                "code": "Código",
+                "lock": "Trancar",
+                "unlock": "Destrancar"
             }
         },
         "components": {
@@ -596,7 +632,23 @@
             },
             "service-picker": {
                 "service": "Serviço"
+            },
+            "relative_time": {
+                "past": "{time} atrás",
+                "future": "Às {time}",
+                "never": "Nunca"
+            },
+            "history_charts": {
+                "loading_history": "A carregar histórico de estados...",
+                "no_history_found": "Nenhum histórico de estado encontrado."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Ativou {entity} .",
+            "entity_turned_off": "Desativou {entity} .",
+            "service_called": "Serviço {service} chamado.",
+            "service_call_failed": "Falha ao chamar o serviço {service} .",
+            "connection_lost": "Ligação perdida. A ligar de novo..."
         }
     },
     "domain": {

@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {nap}\nother {nap}\n}",
             "week": "{count} {count, plural,\none {hét}\nother {hét}\n}",
-            "second": "{count} {count, plural,\none {mp}\nother {mp}\n}"
+            "second": "{count} {count, plural,\none {mp}\nother {mp}\n}",
+            "minute": "{count} {count, plural,\none {perc}\nother {perc}\n}",
+            "hour": "{count} {count, plural,\none {óra}\nother {óra}\n}"
         },
         "login-form": {
             "password": "Jelszó",
@@ -582,6 +584,31 @@
                 "disarm": "Hatástalanít",
                 "arm_home": "Élesít (otthon)",
                 "arm_away": "Élesít (távozó)"
+            },
+            "automation": {
+                "last_triggered": "Utoljára aktiválva",
+                "trigger": "Aktivál"
+            },
+            "cover": {
+                "position": "Pozíció",
+                "tilt_position": "Döntési pozíció"
+            },
+            "fan": {
+                "speed": "Sebesség",
+                "direction": "Irány"
+            },
+            "light": {
+                "brightness": "Fényerő",
+                "color_temperature": "Színhőmérséklet",
+                "effect": "Hatás"
+            },
+            "climate": {
+                "currently": "Jelenleg"
+            },
+            "lock": {
+                "code": "Kód",
+                "lock": "Bezár",
+                "unlock": "Kinyit"
             }
         },
         "components": {
@@ -592,7 +619,23 @@
             },
             "service-picker": {
                 "service": "Szolgáltatás"
+            },
+            "relative_time": {
+                "past": "{time} ezelőtt",
+                "future": "{time} múlva",
+                "never": "Soha"
+            },
+            "history_charts": {
+                "loading_history": "Állapot előzmények betöltése...",
+                "no_history_found": "Nem található előzmény."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} bekapcsolva.",
+            "entity_turned_off": "{entity} kikapcsolva.",
+            "service_called": "Szolgáltatás {service} meghívva.",
+            "service_call_failed": "Nem sikerült meghívni a szolgáltatást {service}.",
+            "connection_lost": "A kapcsolat megszakadt. Újracsatlakozás…"
         }
     },
     "domain": {

@@ -285,7 +285,7 @@
             },
             "history": {
                 "showing_entries": "選擇要查看的時間",
-                "period": "選擇要查看的期間"
+                "period": "期間長"
             },
             "logbook": {
                 "showing_entries": "選擇要查看的時間"
@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",
             "week": "{count} {count, plural,\none {週}\nother {週}\n}",
-            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}"
+            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
+            "minute": "{count} {count, plural,\n  one {分鐘}\n  other {分鐘}\n}",
+            "hour": "{count} {count, plural,\n  one {小時}\n  other {小時}\n}"
         },
         "login-form": {
             "password": "密碼",
@@ -575,6 +577,51 @@
                     "wsw": "西南西"
                 },
                 "forecast": "預報"
+            },
+            "alarm_control_panel": {
+                "code": "密碼",
+                "clear_code": "清除",
+                "disarm": "解除警戒",
+                "arm_home": "在家警戒",
+                "arm_away": "離家警戒"
+            },
+            "automation": {
+                "last_triggered": "上次觸發",
+                "trigger": "觸發自動化"
+            },
+            "cover": {
+                "position": "位置",
+                "tilt_position": "葉片位置"
+            },
+            "fan": {
+                "speed": "風速",
+                "oscillate": "擺動",
+                "direction": "方向"
+            },
+            "light": {
+                "brightness": "亮度",
+                "color_temperature": "色溫",
+                "white_value": "白色值",
+                "effect": "場景"
+            },
+            "media_player": {
+                "text_to_speak": "所要閱讀的文字"
+            },
+            "climate": {
+                "currently": "目前狀態",
+                "on_off": "開 \/ 關",
+                "target_temperature": "設定溫度",
+                "target_humidity": "設定濕度",
+                "operation": "運轉模式",
+                "fan_mode": "風速模式",
+                "swing_mode": "擺動模式",
+                "away_mode": "外出模式",
+                "aux_heat": "輔助暖氣"
+            },
+            "lock": {
+                "code": "密碼",
+                "lock": "鎖定",
+                "unlock": "解鎖"
             }
         },
         "components": {
@@ -585,7 +632,23 @@
             },
             "service-picker": {
                 "service": "服務"
+            },
+            "relative_time": {
+                "past": "{time} 前",
+                "future": "{time} 後",
+                "never": "未執行"
+            },
+            "history_charts": {
+                "loading_history": "正在載入狀態歷史...",
+                "no_history_found": "找不到狀態歷史。"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} 已開啟。",
+            "entity_turned_off": "{entity} 已關閉。",
+            "service_called": "服務 {service} 已執行。",
+            "service_call_failed": "服務 {service} 執行失敗。",
+            "connection_lost": "連線中斷。重新連線中..."
         }
     },
     "domain": {

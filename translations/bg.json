@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count}{count, plural,\n  one {ден}\n  other {дни}\n}",
             "week": "{count}{count, plural,\n  one {седмица}\n  other {седмици}\n}",
-            "second": "{count}{count, plural,\n  one {секунда}\n  other {секунди}\n}"
+            "second": "{count}{count, plural,\n  one {секунда}\n  other {секунди}\n}",
+            "minute": "{count} {count, plural,\n  one {минута}\n  other {минути}\n}",
+            "hour": "{count} {count, plural,\n  one {час}\n  other {часа}\n}"
         },
         "login-form": {
             "password": "Парола",
@@ -586,6 +588,40 @@
             "automation": {
                 "last_triggered": "Последно задействане",
                 "trigger": "Тригер"
+            },
+            "cover": {
+                "position": "Позиция",
+                "tilt_position": "Наклон"
+            },
+            "fan": {
+                "speed": "Скорост",
+                "oscillate": "Въртене",
+                "direction": "Посока"
+            },
+            "light": {
+                "brightness": "Яркост",
+                "color_temperature": "Цветова температура",
+                "white_value": "Стойност на бялото",
+                "effect": "Ефект"
+            },
+            "media_player": {
+                "text_to_speak": "Текст за произнасяне"
+            },
+            "climate": {
+                "currently": "В момента",
+                "on_off": "Вкл. \/ Изкл",
+                "target_temperature": "Желана температура",
+                "target_humidity": "Желана влажност",
+                "operation": "Режим",
+                "fan_mode": "Режим на вентилатора",
+                "swing_mode": "Режим на люлеене",
+                "away_mode": "Режим на отсъствие",
+                "aux_heat": "Помощен нагревател"
+            },
+            "lock": {
+                "code": "Код",
+                "lock": "Заключване",
+                "unlock": "Отключване"
             }
         },
         "components": {
@@ -596,7 +632,23 @@
             },
             "service-picker": {
                 "service": "Услуга"
+            },
+            "relative_time": {
+                "past": "Преди {time}",
+                "future": "След {time}",
+                "never": "Никога"
+            },
+            "history_charts": {
+                "loading_history": "Зареждане на история за състоянието...",
+                "no_history_found": "Не е намерена история за състоянието"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Включване на {entity}.",
+            "entity_turned_off": "Изключване на {entity}.",
+            "service_called": "Повикване на услуга {service}.",
+            "service_call_failed": "Неуспешно повикване на услуга {service}.",
+            "connection_lost": "Връзката е прекъсната. Повторно свързване..."
         }
     },
     "domain": {
