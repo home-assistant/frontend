@@ -612,7 +612,7 @@
                 "on_off": "켜기 \/ 끄기",
                 "target_temperature": "희망 온도",
                 "target_humidity": "희망 습도",
-                "operation": "운전",
+                "operation": "운전 모드",
                 "fan_mode": "송풍 모드",
                 "swing_mode": "회전 모드",
                 "away_mode": "외출 모드",

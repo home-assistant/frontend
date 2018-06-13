@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
             "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}",
-            "second": "{count} {count, plural,\nen {sekund}\nflera {sekunder}\n}"
+            "second": "{count} {count, plural,\nen {sekund}\nflera {sekunder}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+            "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}"
         },
         "login-form": {
             "password": "Lösenord",
@@ -579,7 +581,13 @@
             "alarm_control_panel": {
                 "code": "Kod",
                 "clear_code": "Rensa",
-                "disarm": "Larma från"
+                "disarm": "Larma från",
+                "arm_home": "Larma hemmaläge",
+                "arm_away": "Larma bortaläge"
+            },
+            "automation": {
+                "last_triggered": "Utlöstes senast",
+                "trigger": "Aktivera"
             },
             "cover": {
                 "position": "Position",
@@ -598,6 +606,22 @@
             },
             "media_player": {
                 "text_to_speak": "Text till tal"
+            },
+            "climate": {
+                "currently": "För närvarande",
+                "on_off": "På \/ av",
+                "target_temperature": "Måltemperatur",
+                "target_humidity": "Målluftfuktighet",
+                "operation": "Läge",
+                "fan_mode": "Fläktläge",
+                "swing_mode": "Svepläge",
+                "away_mode": "Bortaläge",
+                "aux_heat": "Underhållsvärme"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "Lås",
+                "unlock": "Lås upp"
             }
         },
         "components": {
@@ -611,13 +635,19 @@
             },
             "relative_time": {
                 "past": "{time} sedan",
+                "future": "Om {time}",
                 "never": "Aldrig"
+            },
+            "history_charts": {
+                "loading_history": "Laddar historik...",
+                "no_history_found": "Ingen historik hittad."
             }
         },
         "notification_toast": {
             "entity_turned_on": "Slog på {entity}.",
             "entity_turned_off": "Stängde av {entity} .",
             "service_called": "Tjänsten {service} anropad.",
+            "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
             "connection_lost": "Anslutning tappad. Ansluter igen..."
         }
     },
