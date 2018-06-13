@@ -28,7 +28,7 @@
             "armed_away": "Activada, fora",
             "armed_night": "Activada, nit",
             "pending": "Pendent",
-            "arming": "Armant",
+            "arming": "Activant",
             "disarming": "Desactivant",
             "triggered": "Disparada",
             "armed_custom_bypass": "Activada, bypass personalitzat"
@@ -125,7 +125,7 @@
         },
         "camera": {
             "recording": "Enregistrant",
-            "streaming": "Enviant video",
+            "streaming": "Transmetent vídeo",
             "idle": "Inactiu"
         },
         "climate": {
@@ -136,7 +136,7 @@
             "idle": "Inactiu",
             "auto": "Automàtic",
             "dry": "Assecar",
-            "fan_only": "Ventilador només",
+            "fan_only": "Només ventilador",
             "eco": "Econòmic",
             "electric": "Elèctric",
             "performance": "Rendiment",
@@ -266,7 +266,7 @@
             "armed_away": "Activ.",
             "armed_night": "Activ.",
             "pending": "Pend.",
-            "arming": "Armant",
+            "arming": "Activant",
             "disarming": "Desactiv.",
             "triggered": "Alarma",
             "armed_custom_bypass": "Activada"
@@ -279,7 +279,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Treure completats",
+                "clear_completed": "Esborrar completats",
                 "add_item": "Afegir element",
                 "microphone_tip": "Toqueu el micròfon a la part superior dreta i dieu \"Add candy to my shopping list\""
             },
@@ -291,7 +291,7 @@
                 "showing_entries": "S'estan mostrant entrades per a"
             },
             "mailbox": {
-                "empty": "No teniu cap missatge",
+                "empty": "No teniu missatges",
                 "playback_title": "Reproducció de missatges",
                 "delete_prompt": "Vols suprimir aquest missatge?",
                 "delete_button": "Suprimir"
@@ -350,7 +350,7 @@
                     "description": "Personalitza les teves entitats (customization)"
                 },
                 "automation": {
-                    "caption": "Automatismes",
+                    "caption": "Automatisme",
                     "description": "Crear i editar automatismes",
                     "picker": {
                         "header": "Editor d'automatismes",
@@ -360,7 +360,7 @@
                         "add_automation": "Afegir automatisme"
                     },
                     "editor": {
-                        "introduction": "Useu automatismes per donar vida a la vostra casa",
+                        "introduction": "Utilitzeu els automatismes per donar vida a la vostra casa",
                         "default_name": "Nou automatisme",
                         "save": "Desar",
                         "unsaved_confirm": "Hi han canvis no desats. Segur que voleu sortir?",
@@ -371,8 +371,8 @@
                             "add": "Afegir activador",
                             "duplicate": "Duplicar",
                             "delete": "Suprimir",
-                            "delete_confirm": "Segur que voleu suprimir?",
-                            "unsupported_platform": "Plataforma no suportada: {platform}",
+                            "delete_confirm": "Segur que voleu suprimir-ho?",
+                            "unsupported_platform": "Plataforma {platform} no suportada.",
                             "type_select": "Tipus d'activador",
                             "type": {
                                 "event": {
@@ -388,7 +388,7 @@
                                 "homeassistant": {
                                     "label": "Home Assistant",
                                     "event": "Esdeveniment:",
-                                    "start": "Inici",
+                                    "start": "Iniciar",
                                     "shutdown": "Aturar"
                                 },
                                 "mqtt": {
@@ -400,7 +400,7 @@
                                     "label": "Estat numèric",
                                     "above": "Per sobre de",
                                     "below": "Per sota de",
-                                    "value_template": "Plantilla (opcional)"
+                                    "value_template": "Plantilla de valor (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -411,7 +411,7 @@
                                 },
                                 "template": {
                                     "label": "Plantilla",
-                                    "value_template": "Plantilla de condició"
+                                    "value_template": "Plantilla de valor"
                                 },
                                 "time": {
                                     "label": "Temps",
@@ -433,8 +433,8 @@
                             "add": "Afegir condició",
                             "duplicate": "Duplicar",
                             "delete": "Suprimir",
-                            "delete_confirm": "Segur que voleu suprimir?",
-                            "unsupported_condition": "Condició no suportada: {condition}",
+                            "delete_confirm": "Segur que voleu suprimir-ho?",
+                            "unsupported_condition": "Condició {condition} no suportada.",
                             "type_select": "Tipus de condició",
                             "type": {
                                 "state": {
@@ -445,20 +445,20 @@
                                     "label": "Estat numèric",
                                     "above": "Per sobre de",
                                     "below": "Per sota de",
-                                    "value_template": "Plantilla (opcional)"
+                                    "value_template": "Plantilla de valor (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
                                     "before": "Abans:",
                                     "after": "Després:",
-                                    "before_offset": "Diferencial (opcional)",
-                                    "after_offset": "Diferencial (opcional)",
+                                    "before_offset": "Diferencial previ (opcional)",
+                                    "after_offset": "Diferencial posterior (opcional)",
                                     "sunrise": "Alba",
                                     "sunset": "Capvespre"
                                 },
                                 "template": {
                                     "label": "Plantilla",
-                                    "value_template": "Plantilla de condició"
+                                    "value_template": "Plantilla de valor"
                                 },
                                 "time": {
                                     "label": "Temps",
@@ -478,8 +478,8 @@
                             "add": "Afegir acció",
                             "duplicate": "Duplicar",
                             "delete": "Suprimir",
-                            "delete_confirm": "Segur que voleu suprimir?",
-                            "unsupported_action": "Acció no suportada: {action}",
+                            "delete_confirm": "Segur que voleu suprimir-ho?",
+                            "unsupported_action": "Acció {action} no suportada.",
                             "type_select": "Tipus d'acció",
                             "type": {
                                 "service": {
@@ -528,9 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dia}\nother {dies}\n}",
             "week": "{count} {count, plural,\none {setmana}\nother {setmanes}\n}",
-            "second": "{count} {count, plural, one {segon} other {segons}}",
-            "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
-            "hour": "{count} {count, plural,\none {hour}\nother {hours}\n}"
+            "second": "{count} {count, plural,\none {segon}\nother {segons}\n}",
+            "minute": "{count} {count, plural,\none {minut}\nother {minuts}\n}",
+            "hour": "{count} {count, plural,\none {hora}\nother {hores}\n}"
         },
         "login-form": {
             "password": "Contrasenya",
@@ -580,13 +580,13 @@
             },
             "alarm_control_panel": {
                 "code": "Codi",
-                "clear_code": "Netejar",
+                "clear_code": "Esborrar",
                 "disarm": "Desactivar",
                 "arm_home": "Activar a casa",
                 "arm_away": "Activar a fora"
             },
             "automation": {
-                "last_triggered": "Última activada",
+                "last_triggered": "Última activació",
                 "trigger": "Activar"
             },
             "cover": {
@@ -610,13 +610,13 @@
             "climate": {
                 "currently": "Actual",
                 "on_off": "On \/ Off",
-                "target_temperature": "Temperatura objectiu",
-                "target_humidity": "Humitat objectiu",
+                "target_temperature": "Temperatura desitjada",
+                "target_humidity": "Humitat desitjada",
                 "operation": "Funcionament",
                 "fan_mode": "Mode ventilació",
                 "swing_mode": "Mode oscil·lació",
                 "away_mode": "Mode absent",
-                "aux_heat": "Auxiliar calor"
+                "aux_heat": "Calefactor auxiliar"
             },
             "lock": {
                 "code": "Codi",
@@ -634,8 +634,8 @@
                 "service": "Servei"
             },
             "relative_time": {
-                "past": "fa {time}",
-                "future": "En {time}",
+                "past": "Fa {time}",
+                "future": "D'aquí a {time}",
                 "never": "Mai"
             },
             "history_charts": {
@@ -644,17 +644,17 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "{entity} apagada.",
-            "entity_turned_off": "{entity} engegada.",
+            "entity_turned_on": "S'ha engegat {entity}.",
+            "entity_turned_off": "S'ha apagat {entity}.",
             "service_called": "S'ha cridat el servei {service}.",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "connection_lost": "Connexió perduda. Tornant a connectar..."
         }
     },
     "domain": {
-        "alarm_control_panel": "Panell d'alarmes",
-        "automation": "Automatismes",
-        "binary_sensor": "Sensors binaris",
+        "alarm_control_panel": "Panell d'alarma",
+        "automation": "Automatisme",
+        "binary_sensor": "Sensor binari",
         "calendar": "Calendari",
         "camera": "Càmera",
         "climate": "Climatització",
@@ -671,16 +671,16 @@
         "input_select": "Entrada de selecció",
         "input_number": "Entrada numèrica",
         "input_text": "Entrada de text",
-        "light": "Llums",
-        "lock": "Panys",
+        "light": "Llum",
+        "lock": "Pany",
         "mailbox": "Bústia",
-        "media_player": "Reproductors de medis",
+        "media_player": "Reproductor",
         "notify": "Notificacions",
-        "plant": "Plantes",
+        "plant": "Planta",
         "proximity": "Proximitat",
         "remote": "Comandaments",
         "scene": "Escenes",
-        "script": "Programes",
+        "script": "Programa",
         "sensor": "Sensors",
         "sun": "Sol",
         "switch": "Interruptor",

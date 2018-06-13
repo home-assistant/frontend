@@ -434,7 +434,7 @@
                             "duplicate": "Duplica",
                             "delete": "Cancella",
                             "delete_confirm": "Sicuro di voler eliminare?",
-                            "unsupported_condition": "Condizione non supportata: {condizione}",
+                            "unsupported_condition": "Condizione non supportata: {condition}",
                             "type_select": "Tipo di condizione",
                             "type": {
                                 "state": {
@@ -479,7 +479,7 @@
                             "duplicate": "Duplica",
                             "delete": "Cancella",
                             "delete_confirm": "Sicuro di voler eliminare?",
-                            "unsupported_action": "Azione non supportata: {azione}",
+                            "unsupported_action": "Azione non supportata: {action}",
                             "type_select": "Tipo di azione",
                             "type": {
                                 "service": {
@@ -578,25 +578,50 @@
                 },
                 "forecast": "Previsioni"
             },
+            "alarm_control_panel": {
+                "code": "Codice",
+                "clear_code": "Canc",
+                "disarm": "Disattivato",
+                "arm_home": "Attivo in casa",
+                "arm_away": "Attiva Fuori Casa"
+            },
+            "automation": {
+                "last_triggered": "Ultima attivazione",
+                "trigger": "Attiva"
+            },
             "cover": {
-                "position": "Posizione"
+                "position": "Posizione",
+                "tilt_position": "Inclinazione"
             },
             "fan": {
                 "speed": "Velocità",
+                "oscillate": "Oscillante",
                 "direction": "Direzione"
             },
             "light": {
                 "brightness": "Luminosità",
                 "color_temperature": "Temperatura colore",
+                "white_value": "Valore bianco",
                 "effect": "Effetto"
             },
+            "media_player": {
+                "text_to_speak": "Parole testo"
+            },
             "climate": {
-                "currently": "Attualmente",
+                "currently": "Attuale",
                 "on_off": "On \/ Off",
-                "target_temperature": "Temperatura target",
-                "target_humidity": "Umidità target",
-                "fan_mode": "Modalità ventilazione",
-                "swing_mode": "Modo oscillazione"
+                "target_temperature": "Temperatura",
+                "target_humidity": "Umidità",
+                "operation": "operazione",
+                "fan_mode": "Ventilazione",
+                "swing_mode": "Modo oscillazione",
+                "away_mode": "Modalità Assente",
+                "aux_heat": "Riscaldamento ausiliario"
+            },
+            "lock": {
+                "code": "Codice",
+                "lock": "Blocco",
+                "unlock": "Sbloccato"
             }
         },
         "components": {
@@ -609,6 +634,8 @@
                 "service": "Servizio"
             },
             "relative_time": {
+                "past": "{time} fà",
+                "future": "mancano {time}",
                 "never": "Mai"
             },
             "history_charts": {
@@ -617,6 +644,8 @@
             }
         },
         "notification_toast": {
+            "entity_turned_on": "Accesa {entity}.",
+            "entity_turned_off": "Spenta {entity}.",
             "service_called": "Servizio {service} chiamato.",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
             "connection_lost": "Connessione persa. Riconnessione..."

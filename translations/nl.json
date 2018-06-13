@@ -585,7 +585,13 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "relative_time": {
+                "never": "Nooit"
             }
+        },
+        "notification_toast": {
+            "connection_lost": "Verbinding verbroken. Bezig met verbinden..."
         }
     },
     "domain": {
