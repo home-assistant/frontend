@@ -42,7 +42,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     }
 
     ha-app-layout {
-      height: 100%;
+      min-height: 100%;
       background-color: var(--secondary-background-color, #E5E5E5);
     }
 
