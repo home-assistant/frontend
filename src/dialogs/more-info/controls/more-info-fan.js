@@ -43,7 +43,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
       }
     </style>
 
-    <div class\$="[[computeClassNames(stateObj)]]">
+    <div class$="[[computeClassNames(stateObj)]]">
 
       <div class="container-speed_list">
         <paper-dropdown-menu label-float="" dynamic-align="" label="[[localize('ui.card.fan.speed')]]">

@@ -82,15 +82,15 @@ class HaLabelBadge extends PolymerElement {
 
     <div class="badge-container">
       <div class="label-badge" id="badge">
-        <div class\$="[[computeValueClasses(value)]]">
-          <iron-icon icon="[[icon]]" hidden\$="[[computeHideIcon(icon, value, image)]]"></iron-icon>
-          <span hidden\$="[[computeHideValue(value, image)]]">[[value]]</span>
+        <div class$="[[computeValueClasses(value)]]">
+          <iron-icon icon="[[icon]]" hidden$="[[computeHideIcon(icon, value, image)]]"></iron-icon>
+          <span hidden$="[[computeHideValue(value, image)]]">[[value]]</span>
         </div>
-        <div hidden\$="[[computeHideLabel(label)]]" class\$="[[computeLabelClasses(label)]]">
+        <div hidden$="[[computeHideLabel(label)]]" class$="[[computeLabelClasses(label)]]">
           <span>[[label]]</span>
         </div>
       </div>
-      <div class="title" hidden\$="[[!description]]">[[description]]</div>
+      <div class="title" hidden$="[[!description]]">[[description]]</div>
     </div>
 `;
   }

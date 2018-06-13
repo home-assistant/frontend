@@ -105,7 +105,7 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
       <hass-loading-screen narrow="[[narrow]]" show-menu="[[showMenu]]"></hass-loading-screen>
     </template>
 
-    <span id="panel" hidden\$="[[!resolved]]"></span>
+    <span id="panel" hidden$="[[!resolved]]"></span>
 `;
   }
 

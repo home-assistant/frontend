@@ -44,7 +44,7 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
     <div class="horizontal justified layout">
       ${this.stateInfoTemplate}
       <div class="state">
-        <div class="main-text" take-height\$="[[!playerObj.secondaryTitle]]">[[computePrimaryText(localize, playerObj)]]</div>
+        <div class="main-text" take-height$="[[!playerObj.secondaryTitle]]">[[computePrimaryText(localize, playerObj)]]</div>
         <div class="secondary-text">[[playerObj.secondaryTitle]]</div>
       </div>
     </div>

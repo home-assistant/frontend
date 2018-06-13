@@ -30,8 +30,8 @@ class HaEntityToggle extends PolymerElement {
     </style>
 
     <template is="dom-if" if="[[stateObj.attributes.assumed_state]]">
-      <paper-icon-button icon="hass:flash-off" on-click="turnOff" state-active\$="[[!isOn]]"></paper-icon-button>
-      <paper-icon-button icon="hass:flash" on-click="turnOn" state-active\$="[[isOn]]"></paper-icon-button>
+      <paper-icon-button icon="hass:flash-off" on-click="turnOff" state-active$="[[!isOn]]"></paper-icon-button>
+      <paper-icon-button icon="hass:flash" on-click="turnOn" state-active$="[[isOn]]"></paper-icon-button>
     </template>
     <template is="dom-if" if="[[!stateObj.attributes.assumed_state]]">
       <paper-toggle-button checked="[[toggleChecked]]" on-change="toggleChanged"></paper-toggle-button>
