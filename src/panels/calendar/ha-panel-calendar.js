@@ -2,6 +2,9 @@ import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-checkbox/paper-checkbox.js';
+import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import moment from 'moment';
@@ -116,18 +119,19 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     Promise.all(calls).then((results) => {
       var tmpEvents = [];
 
-      for (let i = 0; i < results.length; i++) {
-        tmpEvents = tmpEvents.concat(results[i]);
-      }
-
-      for (let i = 0; i < tmpEvents.length; i++) {
-        tmpEvents[i].start = new Date(tmpEvents[i].start);
-        if (tmpEvents[i].end) {
-          tmpEvents[i].end = new Date(tmpEvents[i].end);
-        } else {
-          tmpEvents[i].end = null;
-        }
-      }
+      results.map((res) => {
+        res.map((ev) => {
+          ev.start = new Date(ev.start);
+          if (ev.end) {
+            ev.end = new Date(ev.end);
+          } else {
+            ev.end = null;
+          }
+          tmpEvents.push(ev);
+          return null;
+        });
+        return null;
+      });
       this.events = tmpEvents;
     });
   }
