@@ -86,7 +86,7 @@ class HaAutomationPicker extends
         </paper-card>
       </ha-config-section>
 
-      <paper-fab slot="fab" is-wide\$="[[isWide]]" icon="hass:plus" title="[[localize('ui.panel.config.automation.picker.add_automation')]]" on-click="addAutomation"></paper-fab>
+      <paper-fab slot="fab" is-wide$="[[isWide]]" icon="hass:plus" title="[[localize('ui.panel.config.automation.picker.add_automation')]]" on-click="addAutomation"></paper-fab>
     </ha-app-layout>
 `;
   }

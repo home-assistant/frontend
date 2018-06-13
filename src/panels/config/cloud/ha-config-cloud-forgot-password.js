@@ -52,7 +52,7 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
             <p>
               Enter your email address and we will send you a link to reset your password.
             </p>
-            <div class="error" hidden\$="[[!_error]]">[[_error]]</div>
+            <div class="error" hidden$="[[!_error]]">[[_error]]</div>
             <paper-input autofocus="" id="email" label="E-mail" value="{{email}}" type="email" on-keydown="_keyDown" error-message="Invalid email"></paper-input>
           </div>
           <div class="card-actions">

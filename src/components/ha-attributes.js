@@ -25,7 +25,7 @@ class HaAttributes extends PolymerElement {
           <div class="value">[[formatAttributeValue(stateObj, attribute)]]</div>
         </div>
       </template>
-      <div class="attribution" hidden\$="[[!computeAttribution(stateObj)]]">[[computeAttribution(stateObj)]]</div>
+      <div class="attribution" hidden$="[[!computeAttribution(stateObj)]]">[[computeAttribution(stateObj)]]</div>
     </div>
 `;
   }

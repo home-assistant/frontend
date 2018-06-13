@@ -113,7 +113,7 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
     <div class="content">
       <div class="messages" id="messages">
         <template is="dom-repeat" items="[[_conversation]]" as="message">
-          <div class\$="[[_computeMessageClasses(message)]]">[[message.text]]</div>
+          <div class$="[[_computeMessageClasses(message)]]">[[message.text]]</div>
         </template>
       </div>
       <template is="dom-if" if="[[results]]">
@@ -125,7 +125,7 @@ class HaVoiceCommandDialog extends DialogMixin(PolymerElement) {
           </div>
         </div>
       </template>
-      <div class="icon" hidden\$="[[results]]">
+      <div class="icon" hidden$="[[results]]">
         <paper-icon-button icon="hass:text-to-speech" on-click="startListening"></paper-icon-button>
       </div>
     </div>

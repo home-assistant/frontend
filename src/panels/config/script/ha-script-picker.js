@@ -82,7 +82,7 @@ class HaScriptPicker extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         </paper-card>
       </ha-config-section>
 
-      <paper-fab slot="fab" is-wide\$="[[isWide]]" icon="hass:plus" title="Add Script" on-click="addScript"></paper-fab>
+      <paper-fab slot="fab" is-wide$="[[isWide]]" icon="hass:plus" title="Add Script" on-click="addScript"></paper-fab>
     </ha-app-layout>
 `;
   }

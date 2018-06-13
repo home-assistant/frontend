@@ -64,7 +64,7 @@ class HaConfigCloudRegister extends EventsMixin(PolymerElement) {
             <div class="card-content">
               <div class="header">
                 <h1>Register</h1>
-                <div class="error" hidden\$="[[!_error]]">[[_error]]</div>
+                <div class="error" hidden$="[[!_error]]">[[_error]]</div>
               </div>
               <paper-input autofocus="" id="email" label="Email address" type="email" value="{{email}}" on-keydown="_keyDown" error-message="Invalid email"></paper-input>
               <paper-input id="password" label="Password" value="{{_password}}" type="password" on-keydown="_keyDown" error-message="Your password needs to be at least 8 characters"></paper-input>

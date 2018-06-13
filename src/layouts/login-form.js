@@ -53,14 +53,14 @@ class LoginForm extends LocalizeMixin(PolymerElement) {
       <img src="/static/icons/favicon-192x192.png" height="192">
       <a href="#" id="hideKeyboardOnFocus"></a>
       <div class="interact">
-        <div id="loginform" hidden\$="[[showSpinner]]">
+        <div id="loginform" hidden$="[[showSpinner]]">
           <paper-input id="passwordInput" label="[[localize('ui.login-form.password')]]" type="password" autofocus="" invalid="[[errorMessage]]" error-message="[[errorMessage]]" value="{{password}}"></paper-input>
           <div class="layout horizontal center">
             <paper-checkbox for="" id="rememberLogin">[[localize('ui.login-form.remember')]]</paper-checkbox>
             <paper-button on-click="validatePassword">[[localize('ui.login-form.log_in')]]</paper-button>
           </div>
         </div>
-        <div id="validatebox" hidden\$="[[!showSpinner]]">
+        <div id="validatebox" hidden$="[[!showSpinner]]">
           <paper-spinner active="true"></paper-spinner><br>
           <div class="validatemessage">[[computeLoadingMsg(isValidating)]]</div>
         </div>

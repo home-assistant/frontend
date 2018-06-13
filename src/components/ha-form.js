@@ -63,7 +63,7 @@ class HaForm extends EventsMixin(PolymerElement) {
         <paper-dropdown-menu label="[[computeLabel(schema)]]">
           <paper-listbox slot="dropdown-content" attr-for-selected="item-name" selected="{{data}}">
             <template is="dom-repeat" items="[[schema.options]]">
-              <paper-item item-name\$="[[item]]">[[item]]</paper-item>
+              <paper-item item-name$="[[item]]">[[item]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>

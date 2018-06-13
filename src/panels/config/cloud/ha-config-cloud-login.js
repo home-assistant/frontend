@@ -74,7 +74,7 @@ class HaConfigCloudLogin extends
             <p><a href="https://www.home-assistant.io/components/cloud/" target="_blank">Learn more</a></p>
           </span>
 
-          <paper-card hidden\$="[[!flashMessage]]">
+          <paper-card hidden$="[[!flashMessage]]">
             <div class="card-content flash-msg">
               [[flashMessage]]
               <paper-icon-button icon="hass:close" on-click="_dismissFlash">Dismiss</paper-icon-button>
@@ -85,7 +85,7 @@ class HaConfigCloudLogin extends
           <paper-card>
             <div class="card-content">
               <h1>Sign In</h1>
-              <div class="error" hidden\$="[[!_error]]">[[_error]]</div>
+              <div class="error" hidden$="[[!_error]]">[[_error]]</div>
               <paper-input label="Email" id="email" type="email" value="{{email}}" on-keydown="_keyDown" error-message="Invalid email"></paper-input>
               <paper-input id="password" label="Password" value="{{_password}}" type="password" on-keydown="_keyDown" error-message="Passwords are at least 8 characters"></paper-input>
             </div>

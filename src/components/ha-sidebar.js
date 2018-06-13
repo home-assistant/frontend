@@ -102,7 +102,7 @@ class HaSidebar extends
 
     <app-toolbar>
       <div main-title="">Home Assistant</div>
-      <paper-icon-button icon="hass:chevron-left" hidden\$="[[narrow]]" on-click="toggleMenu"></paper-icon-button>
+      <paper-icon-button icon="hass:chevron-left" hidden$="[[narrow]]" on-click="toggleMenu"></paper-icon-button>
     </app-toolbar>
 
     <paper-listbox attr-for-selected="data-panel" selected="[[hass.panelUrl]]">
