@@ -12,7 +12,9 @@ import '../../resources/ha-style.js';
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
 
-class HABigCalendar extends PolymerElement {
+const DEFAULT_VIEW = 'month';
+
+class HaBigCalendar extends PolymerElement {
   static get template() {
     return html`
       <link rel="stylesheet" href="/static/panels/calendar/react-big-calendar.css">
@@ -34,8 +36,11 @@ class HABigCalendar extends PolymerElement {
         views: allViews,
         popup: true,
         onNavigate: this.dateUpdated,
+        onView: this.viewUpdated,
         eventPropGetter: this.setEventStyle,
-        defaultDate: new Date(), }
+        defaultView: this.defaultView,
+        defaultDate: new Date(),
+      }
     );
     render(BCElement, this.$.root);
   }
@@ -53,6 +58,18 @@ class HABigCalendar extends PolymerElement {
     return {
       dateUpdated: Object,
 
+      viewUpdated: Object,
+
+      defaultView: {
+        type: String,
+        value: DEFAULT_VIEW
+      },
+
+      defaultDate: {
+        type: Object,
+        value: new Date()
+      },
+
       events: {
         type: Array,
         observer: 'update',
@@ -62,4 +79,4 @@ class HABigCalendar extends PolymerElement {
   }
 }
 
-customElements.define('ha-big-calendar', HABigCalendar);
+customElements.define('ha-big-calendar', HaBigCalendar);
