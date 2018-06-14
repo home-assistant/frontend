@@ -7,6 +7,7 @@ import React from 'react';
 /* eslint-enable */
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
+import EventsMixin from '../../mixins/events-mixin.js';
 
 import '../../resources/ha-style.js';
 
@@ -14,7 +15,7 @@ BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
 
 const DEFAULT_VIEW = 'month';
 
-class HaBigCalendar extends PolymerElement {
+class HaBigCalendar extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
       <link rel="stylesheet" href="/static/panels/calendar/react-big-calendar.css">
@@ -35,8 +36,8 @@ class HaBigCalendar extends PolymerElement {
       { events: events,
         views: allViews,
         popup: true,
-        onNavigate: this.dateUpdated,
-        onView: this.viewUpdated,
+        onNavigate: (date, viewName) => this.fire('navigate', { date, viewName }),
+        onView: viewName => this.fire('view', { viewName }),
         eventPropGetter: this.setEventStyle,
         defaultView: this.defaultView,
         defaultDate: new Date(),

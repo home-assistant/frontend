@@ -81,8 +81,8 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             <ha-big-calendar
               default-date="[[currentDate]]"
               default-view="[[currentView]]"
-              view-updated="[[viewUpdated()]]"
-              date-updated="[[dateUpdated()]]"
+              on-navigate='handleNavigate'
+              on-view='handleNavigate'
               events="[[events]]">
             </ha-big-calendar>
           </div>
@@ -155,23 +155,17 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     return [startDate.toISOString(), endDate.toISOString()];
   }
 
-  viewUpdated() {
+  handleView(ev) {
     // Calendar view changed
-    var pol = this;
-    return function (viewName) {
-      this.currentView = viewName;
-      pol._fetchData();
-    };
+    this.currentView = ev.detail.viewName;
+    this._fetchData();
   }
 
-  dateUpdated() {
+  handleNavigate(ev) {
     // Calendar date range changed
-    var pol = this;
-    return function (date, viewName) {
-      this.currentDate = date;
-      this.currentView = viewName;
-      pol._fetchData();
-    };
+    this.currentDate = ev.detail.date;
+    this.currentView = ev.detail.viewName;
+    this._fetchData();
   }
 
   checkAll(ev) {
