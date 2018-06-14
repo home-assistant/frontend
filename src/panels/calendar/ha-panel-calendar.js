@@ -142,7 +142,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     if (this.currentView === 'day') {
       startDate = moment(this.currentDate).startOf('day');
       endDate = moment(this.currentDate).startOf('day');
-    } else if (this.currentView === 'isoWeek') {
+    } else if (this.currentView === 'week') {
       startDate = moment(this.currentDate).startOf('isoWeek');
       endDate = moment(this.currentDate).endOf('isoWeek');
     } else if (this.currentView === 'month') {
