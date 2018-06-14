@@ -8,13 +8,13 @@ import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import moment from 'moment';
+import dates from 'react-big-calendar/lib/utils/dates';
 
 import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
 import './ha-big-calendar.js';
 
 import LocalizeMixin from '../../mixins/localize-mixin.js';
-
 
 const DEFAULT_VIEW = 'month';
 
@@ -82,7 +82,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
               default-date="[[currentDate]]"
               default-view="[[currentView]]"
               on-navigate='handleNavigate'
-              on-view='handleNavigate'
+              on-view='handleView'
               events="[[events]]">
             </ha-big-calendar>
           </div>
@@ -108,9 +108,12 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   }
 
   _fetchData() {
-    var dates = this._getDateRange();
-    var start = dates[0];
-    var end = dates[1];
+    // TODO: Improve me
+    var start = dates.firstVisibleDay(this.currentDate).toISOString();
+    var end = dates.lastVisibleDay(this.currentDate).toISOString();
+    // var dates = this._getDateRange();
+    // var start = dates[0];
+    // var end = dates[1];
     // Fetch calendar list
     this._fetchCalendar();
     // Fetch events for selected calendar
@@ -119,8 +122,8 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
     Promise.all(calls).then((results) => {
       var tmpEvents = [];
 
-      results.map((res) => {
-        res.map((ev) => {
+      results.forEach((res) => {
+        res.forEach((ev) => {
           ev.start = new Date(ev.start);
           if (ev.end) {
             ev.end = new Date(ev.end);
@@ -128,15 +131,14 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             ev.end = null;
           }
           tmpEvents.push(ev);
-          return null;
         });
-        return null;
       });
       this.events = tmpEvents;
     });
   }
 
   _getDateRange() {
+    // TODO: Delete me
     var startDate;
     var endDate;
     if (this.currentView === 'day') {
