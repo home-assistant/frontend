@@ -134,9 +134,6 @@ class HaSidebar extends
         <paper-icon-button icon="hass:code-tags" data-panel="dev-state" alt="[[localize('panel.dev-states')]]" title="[[localize('panel.dev-states')]]" on-click="menuClicked"></paper-icon-button>
         <paper-icon-button icon="hass:radio-tower" data-panel="dev-event" alt="[[localize('panel.dev-events')]]" title="[[localize('panel.dev-events')]]" on-click="menuClicked"></paper-icon-button>
         <paper-icon-button icon="hass:file-xml" data-panel="dev-template" alt="[[localize('panel.dev-templates')]]" title="[[localize('panel.dev-templates')]]" on-click="menuClicked"></paper-icon-button>
-        <template is="dom-if" if="[[_mqttLoaded(hass)]]">
-          <paper-icon-button icon="hass:altimeter" data-panel="dev-mqtt" alt="[[localize('panel.dev-mqtt')]]" title="[[localize('panel.dev-mqtt')]]" on-click="menuClicked"></paper-icon-button>
-        </template>
         <paper-icon-button icon="hass:information-outline" data-panel="dev-info" alt="[[localize('panel.dev-info')]]" title="[[localize('panel.dev-info')]]" on-click="menuClicked"></paper-icon-button>
       </div>
     </div>
@@ -160,10 +157,6 @@ class HaSidebar extends
         computed: 'computePanels(hass)',
       },
     };
-  }
-
-  _mqttLoaded(hass) {
-    return hass.config.core.components.indexOf('mqtt') !== -1;
   }
 
   computePanelName(localize, panel) {

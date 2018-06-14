@@ -5,7 +5,6 @@
     "src/panels/config/ha-panel-config.js",
     "src/panels/dev-event/ha-panel-dev-event.js",
     "src/panels/dev-info/ha-panel-dev-info.js",
-    "src/panels/dev-mqtt/ha-panel-dev-mqtt.js",
     "src/panels/dev-service/ha-panel-dev-service.js",
     "src/panels/dev-state/ha-panel-dev-state.js",
     "src/panels/dev-template/ha-panel-dev-template.js",

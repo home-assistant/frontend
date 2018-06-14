@@ -33,10 +33,6 @@ function ensureLoaded(panel) {
       imported = import(/* webpackChunkName: "panel-dev-info" */ '../panels/dev-info/ha-panel-dev-info.js');
       break;
 
-    case 'dev-mqtt':
-      imported = import(/* webpackChunkName: "panel-dev-mqtt" */ '../panels/dev-mqtt/ha-panel-dev-mqtt.js');
-      break;
-
     case 'dev-service':
       imported = import(/* webpackChunkName: "panel-dev-service" */ '../panels/dev-service/ha-panel-dev-service.js');
       break;

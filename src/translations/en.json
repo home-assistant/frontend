@@ -48,7 +48,6 @@
     "dev-states": "States",
     "dev-events": "Events",
     "dev-templates": "Templates",
-    "dev-mqtt": "MQTT",
     "dev-info": "Info"
   },
   "state": {
@@ -544,11 +543,6 @@
                   "event": "Event:",
                   "start": "Start",
                   "shutdown": "Shutdown"
-                },
-                "mqtt": {
-                  "label": "MQTT",
-                  "topic": "Topic",
-                  "payload": "Payload (optional)"
                 },
                 "numeric_state": {
                   "label": "Numeric state",
