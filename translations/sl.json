@@ -605,7 +605,9 @@
                 "effect": "Učinek"
             },
             "media_player": {
-                "text_to_speak": "Besedilo v govor"
+                "text_to_speak": "Besedilo v govor",
+                "source": "Vir",
+                "sound_mode": "Zvočni način"
             },
             "climate": {
                 "currently": "Trenutno",

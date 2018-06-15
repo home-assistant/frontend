@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {deň}\nfew {dni}\nother {dní}\n}",
             "week": "{count} {count, plural,\none {týždeň}\nfew {týždne}\nother {týždňov}\n}",
-            "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekúnd}\n}"
+            "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekúnd}\n}",
+            "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
+            "hour": "{count} {count, plural,\n  one {hodina}\n  other {hodiny}\n}"
         },
         "login-form": {
             "password": "Heslo",
@@ -575,6 +577,53 @@
                     "wsw": "ZJZ"
                 },
                 "forecast": "Predpoveď"
+            },
+            "alarm_control_panel": {
+                "code": "Kód",
+                "clear_code": "Zrušiť",
+                "disarm": "Odkódovať",
+                "arm_home": "Zakódovať doma",
+                "arm_away": "Zakódovať odchod"
+            },
+            "automation": {
+                "last_triggered": "Naposledy spustené",
+                "trigger": "Spustiť"
+            },
+            "cover": {
+                "position": "Poloha",
+                "tilt_position": "Poloha sklonu"
+            },
+            "fan": {
+                "speed": "Rýchlosť",
+                "oscillate": "Pohyblivý smer",
+                "direction": "Smer"
+            },
+            "light": {
+                "brightness": "Jas",
+                "color_temperature": "Teplota farby",
+                "white_value": "Hodnota bielej",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text, ktorý chcete hovoriť",
+                "source": "Zdroj",
+                "sound_mode": "Režim zvuku"
+            },
+            "climate": {
+                "currently": "Aktuálne",
+                "on_off": "Zapnúť \/ vypnúť",
+                "target_temperature": "Cieľová teplota",
+                "target_humidity": "Cieľová vlhkosť",
+                "operation": "Prevádzka",
+                "fan_mode": "Režim ventilátora",
+                "swing_mode": "Vejárový režim",
+                "away_mode": "Režim neprítomnosti",
+                "aux_heat": "Prídavné kúrenie"
+            },
+            "lock": {
+                "code": "Kód",
+                "lock": "Zamknúť",
+                "unlock": "Odomknúť"
             }
         },
         "components": {
@@ -585,7 +634,23 @@
             },
             "service-picker": {
                 "service": "Služba"
+            },
+            "relative_time": {
+                "past": "Pred {time}",
+                "future": "O {time}",
+                "never": "Nikdy"
+            },
+            "history_charts": {
+                "loading_history": "Načítavam históriu stavov",
+                "no_history_found": "Nenašla sa žiadna história stavov"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Zapnuté {entity}.",
+            "entity_turned_off": "Vypnuté {entity}.",
+            "service_called": "Služba {service} zavolaná.",
+            "service_call_failed": "Nepodarilo sa zavolať službu {service}.",
+            "connection_lost": "Prerušené spojenie. Opätovné pripájanie..."
         }
     },
     "domain": {

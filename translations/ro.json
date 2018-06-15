@@ -525,6 +525,35 @@
             },
             "persistent_notification": {
                 "dismiss": "Ascunde"
+            },
+            "script": {
+                "execute": "Executa"
+            },
+            "fan": {
+                "direction": "Direcţie"
+            },
+            "light": {
+                "brightness": "Luminozitate",
+                "color_temperature": "Temperatura de culoare",
+                "white_value": "Valoare albă",
+                "effect": "Efect"
+            },
+            "climate": {
+                "on_off": "Pornit \/ Oprit",
+                "target_temperature": "Temperatura țintă",
+                "target_humidity": "Țintă umiditate",
+                "operation": "Operație",
+                "fan_mode": "Mod ventilator",
+                "swing_mode": "Mod baleare",
+                "away_mode": "Plecat"
+            },
+            "lock": {
+                "lock": "Blocat",
+                "unlock": "Deblocare"
+            },
+            "media_player": {
+                "source": "Sursă",
+                "sound_mode": "Mod sunet"
             }
         },
         "components": {
@@ -535,6 +564,9 @@
             },
             "service-picker": {
                 "service": "Serviciu"
+            },
+            "history_charts": {
+                "no_history_found": "Nici un istoric de stare nu a fost găsit."
             }
         }
     },

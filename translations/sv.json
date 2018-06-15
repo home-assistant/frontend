@@ -605,7 +605,9 @@
                 "effect": "Effekt"
             },
             "media_player": {
-                "text_to_speak": "Text till tal"
+                "text_to_speak": "Text till tal",
+                "source": "Källa",
+                "sound_mode": "Ljudläge"
             },
             "climate": {
                 "currently": "För närvarande",

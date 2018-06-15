@@ -605,7 +605,9 @@
                 "effect": "Efecte"
             },
             "media_player": {
-                "text_to_speak": "Text a veu"
+                "text_to_speak": "Text a veu",
+                "source": "Entrada",
+                "sound_mode": "Mode de so"
             },
             "climate": {
                 "currently": "Actual",
