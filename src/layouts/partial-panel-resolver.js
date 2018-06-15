@@ -77,6 +77,10 @@ function ensureLoaded(panel) {
       imported = import(/* webpackChunkName: "panel-shopping-list" */ '../panels/shopping-list/ha-panel-shopping-list.js');
       break;
 
+    case 'calendar':
+      imported = import(/* webpackChunkName: "panel-calendar" */ '../panels/calendar/ha-panel-calendar.js');
+      break;
+
     default:
       imported = null;
   }

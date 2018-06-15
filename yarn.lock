@@ -2188,6 +2188,10 @@ array-find-index@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/array-find-index/-/array-find-index-1.0.2.tgz#df010aa1287e164bbda6f9723b0a96a1ec4187a1"
 
+array-find@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/array-find/-/array-find-1.0.0.tgz#6c8e286d11ed768327f8e62ecee87353ca3e78b8"
+
 array-flatten@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/array-flatten/-/array-flatten-1.1.1.tgz#9a5f699051b1e7073328f2a008968b64ea2955d2"
@@ -3871,6 +3875,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+classnames@^2.1.3, classnames@^2.2.5:
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
+
 clean-css@3.4.x:
   version "3.4.28"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-3.4.28.tgz#bf1945e82fc808f55695e6ddeaec01400efd03ff"
@@ -4462,6 +4470,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+date-arithmetic@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/date-arithmetic/-/date-arithmetic-3.1.0.tgz#1fcd03dbd504b9dbee2b9078c85a5f1c7d3cc2d3"
+
 date-fns@^1.27.2:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
@@ -4734,6 +4746,10 @@ doctrine@^2.0.0, doctrine@^2.0.2, doctrine@^2.1.0:
   dependencies:
     esutils "^2.0.2"
 
+"dom-helpers@^2.3.0 || ^3.0.0", dom-helpers@^3.2.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-3.3.1.tgz#fc1a4e15ffdf60ddde03a480a9c0fece821dd4a6"
+
 dom-serializer@0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/dom-serializer/-/dom-serializer-0.1.0.tgz#073c697546ce0780ce23be4a28e293e40bc30c82"
@@ -4960,6 +4976,14 @@ enhanced-resolve@^4.0.0:
     memory-fs "^0.4.0"
     tapable "^1.0.0"
 
+enhanced-resolve@~0.9.0:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-0.9.1.tgz#4d6e689b3725f86090927ccc86cd9f1635b89e2e"
+  dependencies:
+    graceful-fs "^4.1.2"
+    memory-fs "^0.2.0"
+    tapable "^0.1.8"
+
 entities@^1.1.1, entities@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
@@ -5059,6 +5083,21 @@ eslint-import-resolver-node@^0.3.1:
   dependencies:
     debug "^2.6.8"
     resolve "^1.2.0"
+
+eslint-import-resolver-webpack@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/eslint-import-resolver-webpack/-/eslint-import-resolver-webpack-0.10.0.tgz#b6f2468dc3e8b4ea076e5d75bece8da932789b07"
+  dependencies:
+    array-find "^1.0.0"
+    debug "^2.6.8"
+    enhanced-resolve "~0.9.0"
+    find-root "^1.1.0"
+    has "^1.0.1"
+    interpret "^1.0.0"
+    lodash "^4.17.4"
+    node-libs-browser "^1.0.0 || ^2.0.0"
+    resolve "^1.4.0"
+    semver "^5.3.0"
 
 eslint-module-utils@^2.1.1:
   version "2.1.1"
@@ -5628,6 +5667,10 @@ find-replace@^2.0.1:
   dependencies:
     array-back "^2.0.0"
     test-value "^3.0.0"
+
+find-root@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/find-root/-/find-root-1.1.0.tgz#abcfc8ba76f708c42a97b3d685b7e9450bfb9ce4"
 
 find-up@^1.0.0:
   version "1.1.2"
@@ -6895,6 +6938,12 @@ ignore@^3.3.3, ignore@^3.3.5:
   version "3.3.8"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.8.tgz#3f8e9c35d38708a3a7e0e9abb6c73e7ee7707b2b"
 
+immutability-helper@^2.1.2:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/immutability-helper/-/immutability-helper-2.7.0.tgz#4ea9916cc8f45142ec3e3f0fce75fa5d66fa1b38"
+  dependencies:
+    invariant "^2.2.0"
+
 import-lazy@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-lazy/-/import-lazy-2.1.0.tgz#05698e3d45c88e8d7e9d92cb0584e77f096f3e43"
@@ -7024,7 +7073,7 @@ into-stream@^3.1.0:
     from2 "^2.1.1"
     p-is-promise "^1.1.0"
 
-invariant@^2.2.0, invariant@^2.2.2:
+invariant@^2.1.0, invariant@^2.2.0, invariant@^2.2.2:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"
   dependencies:
@@ -8336,6 +8385,10 @@ mem@^1.1.0:
   dependencies:
     mimic-fn "^1.0.0"
 
+memory-fs@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/memory-fs/-/memory-fs-0.2.0.tgz#f2bb25368bc121e391c2520de92969caee0a0290"
+
 memory-fs@^0.4.0, memory-fs@~0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/memory-fs/-/memory-fs-0.4.1.tgz#3a9a20b8462523e447cfbc7e8bb80ed667bfc552"
@@ -8596,7 +8649,7 @@ mocha@^5.0.0:
     mkdirp "0.5.1"
     supports-color "4.4.0"
 
-moment@^2.10.2, moment@^2.20.0, moment@^2.22.0:
+moment@^2.10.2, moment@^2.22.0, moment@^2.22.1:
   version "2.22.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.1.tgz#529a2e9bf973f259c9643d237fda84de3a26e8ad"
 
@@ -8772,7 +8825,7 @@ node-fetch@^1.0.1:
     encoding "^0.1.11"
     is-stream "^1.0.1"
 
-node-libs-browser@^2.0.0:
+"node-libs-browser@^1.0.0 || ^2.0.0", node-libs-browser@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.1.0.tgz#5f94263d404f6e44767d726901fff05478d600df"
   dependencies:
@@ -9816,6 +9869,26 @@ posix-character-classes@^0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/posix-character-classes/-/posix-character-classes-0.1.1.tgz#01eac0fe3b5af71a2a6c02feabb8c1fef7e00eab"
 
+preact-compat@^3.18.0:
+  version "3.18.0"
+  resolved "https://registry.yarnpkg.com/preact-compat/-/preact-compat-3.18.0.tgz#ca430cc1f67193fb9feaf7c510832957b2ebe701"
+  dependencies:
+    immutability-helper "^2.1.2"
+    preact-render-to-string "^3.6.0"
+    preact-transition-group "^1.1.0"
+    prop-types "^15.5.8"
+    standalone-react-addons-pure-render-mixin "^0.1.1"
+
+preact-render-to-string@^3.6.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/preact-render-to-string/-/preact-render-to-string-3.7.0.tgz#7db4177454bc01395e0d01d6ac07bc5e838e31ee"
+  dependencies:
+    pretty-format "^3.5.1"
+
+preact-transition-group@^1.1.0:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/preact-transition-group/-/preact-transition-group-1.1.1.tgz#f0a49327ea515ece34ea2be864c4a7d29e5d6e10"
+
 preact@^8.2.6:
   version "8.2.7"
   resolved "https://registry.yarnpkg.com/preact/-/preact-8.2.7.tgz#316249fb678cd5e93e7cee63cea7bfb62dbd6814"
@@ -9843,6 +9916,10 @@ prettier@^1.5.3:
 pretty-bytes@^4.0.2:
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-4.0.2.tgz#b2bf82e7350d65c6c33aa95aaa5a4f6327f61cd9"
+
+pretty-format@^3.5.1:
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-3.8.0.tgz#bfbed56d5e9a776645f4b1ff7aa1a3ac4fa3c385"
 
 pretty-hrtime@^1.0.0:
   version "1.0.3"
@@ -9900,6 +9977,21 @@ promisify-node@^0.4.0:
   dependencies:
     nodegit-promise "~4.0.0"
     object-assign "^4.0.1"
+
+prop-types-extra@^1.0.1:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/prop-types-extra/-/prop-types-extra-1.1.0.tgz#32609910ea2dcf190366bacd3490d5a6412a605f"
+  dependencies:
+    react-is "^16.3.2"
+    warning "^3.0.0"
+
+prop-types@^15.5.10, prop-types@^15.5.8:
+  version "15.6.1"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
+  dependencies:
+    fbjs "^0.8.16"
+    loose-envify "^1.3.1"
+    object-assign "^4.1.1"
 
 prop-types@^15.6.0:
   version "15.6.0"
@@ -10057,6 +10149,41 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     ini "~1.3.0"
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
+
+react-big-calendar@^0.19.1:
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/react-big-calendar/-/react-big-calendar-0.19.1.tgz#ace5a24009bef21c09378f162c2234f9b34a7975"
+  dependencies:
+    classnames "^2.1.3"
+    date-arithmetic "^3.0.0"
+    dom-helpers "^2.3.0 || ^3.0.0"
+    invariant "^2.1.0"
+    lodash "^4.17.4"
+    prop-types "^15.5.8"
+    react-overlays "^0.7.0"
+    react-prop-types "^0.4.0"
+    uncontrollable "^4.0.0"
+    warning "^2.0.0"
+
+react-is@^16.3.2:
+  version "16.3.2"
+  resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.3.2.tgz#f4d3d0e2f5fbb6ac46450641eb2e25bf05d36b22"
+
+react-overlays@^0.7.0:
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/react-overlays/-/react-overlays-0.7.4.tgz#ef2ec652c3444ab8aa014262b18f662068e56d5c"
+  dependencies:
+    classnames "^2.2.5"
+    dom-helpers "^3.2.1"
+    prop-types "^15.5.10"
+    prop-types-extra "^1.0.1"
+    warning "^3.0.0"
+
+react-prop-types@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/react-prop-types/-/react-prop-types-0.4.0.tgz#f99b0bfb4006929c9af2051e7c1414a5c75b93d0"
+  dependencies:
+    warning "^3.0.0"
 
 read-all-stream@^3.0.0:
   version "3.1.0"
@@ -11259,6 +11386,10 @@ stacky@^1.3.1:
     chalk "^1.1.1"
     lodash "^3.0.0"
 
+standalone-react-addons-pure-render-mixin@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/standalone-react-addons-pure-render-mixin/-/standalone-react-addons-pure-render-mixin-0.1.1.tgz#3c7409f4c79c40de9ac72c616cf679a994f37551"
+
 static-extend@^0.1.1:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/static-extend/-/static-extend-0.1.2.tgz#60809c39cbff55337226fd5e0b520f341f1fb5c6"
@@ -11536,6 +11667,10 @@ table@4.0.2:
     lodash "^4.17.4"
     slice-ansi "1.0.0"
     string-width "^2.1.1"
+
+tapable@^0.1.8:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/tapable/-/tapable-0.1.10.tgz#29c35707c2b70e50d07482b5d202e8ed446dafd4"
 
 tapable@^1.0.0:
   version "1.0.0"
@@ -11935,6 +12070,12 @@ unc-path-regex@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/unc-path-regex/-/unc-path-regex-0.1.2.tgz#e73dd3d7b0d7c5ed86fbac6b0ae7d8c6a69d50fa"
 
+uncontrollable@^4.0.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/uncontrollable/-/uncontrollable-4.1.0.tgz#e0358291252e1865222d90939b19f2f49f81c1a9"
+  dependencies:
+    invariant "^2.1.0"
+
 underscore.string@3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/underscore.string/-/underscore.string-3.3.4.tgz#2c2a3f9f83e64762fdc45e6ceac65142864213db"
@@ -12327,6 +12468,18 @@ vscode-uri@^1.0.1:
 walkdir@^0.0.11:
   version "0.0.11"
   resolved "https://registry.yarnpkg.com/walkdir/-/walkdir-0.0.11.tgz#a16d025eb931bd03b52f308caed0f40fcebe9532"
+
+warning@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/warning/-/warning-2.1.0.tgz#21220d9c63afc77a8c92111e011af705ce0c6901"
+  dependencies:
+    loose-envify "^1.0.0"
+
+warning@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/warning/-/warning-3.0.0.tgz#32e5377cb572de4ab04753bdf8821c01ed605b7c"
+  dependencies:
+    loose-envify "^1.0.0"
 
 watchpack@^1.5.0:
   version "1.6.0"
