@@ -605,7 +605,9 @@
                 "effect": "效果"
             },
             "media_player": {
-                "text_to_speak": "要朗读的文本"
+                "text_to_speak": "要朗读的文本",
+                "source": "信号源",
+                "sound_mode": "声音模式"
             },
             "climate": {
                 "currently": "当前",

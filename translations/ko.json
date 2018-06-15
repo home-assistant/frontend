@@ -605,7 +605,9 @@
                 "effect": "효과"
             },
             "media_player": {
-                "text_to_speak": "음성합성 내용 입력 (TTS)"
+                "text_to_speak": "음성합성 내용 입력 (TTS)",
+                "source": "입력 소스",
+                "sound_mode": "사운드 모드"
             },
             "climate": {
                 "currently": "현재 온도",
