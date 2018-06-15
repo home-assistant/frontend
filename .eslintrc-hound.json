@@ -9,6 +9,11 @@
   "settings": {
     "react": {
       "pragma": "h"
+    },
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.js"
+      }
     }
   },
   "globals": {
