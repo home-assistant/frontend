@@ -38,6 +38,11 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         #calendars {
           padding-right: 16px;
           width: 15%;
+          min-width: 170px;
+        }
+
+        paper-item {
+          cursor: pointer;
         }
 
         div.all_calendars {
@@ -50,6 +55,13 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
           font-weight: normal;
         }
 
+        :host([narrow]) .content {
+          flex-direction: column;
+        }
+        :host([narrow]) #calendars {
+          margin-bottom: 24px;
+          width: 100%;
+        }
       </style>
 
       <app-header-layout has-scrolling-region>
@@ -63,10 +75,13 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
         <div class="flex content">
           <div id="calendars" class="layout vertical wrap">
             <paper-card heading="Calendars">
-              <div class="all_calendars">
-                <paper-checkbox id="all_calendars" on-change="checkAll" checked>All calendars</paper-checkbox>
-              </div>
-              <paper-listbox id="calendar_list" multi on-selected-items-changed="_fetchData" selected-values="{{selectedCalendars}}" attr-for-selected="item-name">
+              <paper-listbox
+                id="calendar_list"
+                multi
+                on-selected-items-changed="_fetchData"
+                selected-values="{{selectedCalendars}}"
+                attr-for-selected="item-name"
+              >
                 <template is="dom-repeat" items="[[calendars]]">
                   <paper-item item-name="[[item.entity_id]]">
                     <span class="calendar_color" style$="background-color: [[item.color]]"></span>
@@ -81,106 +96,13 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             <ha-big-calendar
               default-date="[[currentDate]]"
               default-view="[[currentView]]"
-              on-navigate='handleNavigate'
-              on-view='handleView'
+              on-navigate='_handleNavigate'
+              on-view='_handleViewChanged'
               events="[[events]]">
             </ha-big-calendar>
           </div>
         </div>
       </app-header-layout>`;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this._fetchData = this._fetchData.bind(this);
-    // TODO implement calendar_updated event
-    // this.hass.connection.subscribeEvents(this._fetchData, 'calendar_updated')
-    //  .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
-    this._fetchCalendar();
-  }
-
-  _fetchCalendar() {
-    // Fetch calendar list
-    this.hass.callApi('get', 'calendars')
-      .then((result) => {
-        this.calendars = result;
-      });
-  }
-
-  _fetchData() {
-    // TODO: Improve me
-    var start = dates.firstVisibleDay(this.currentDate).toISOString();
-    var end = dates.lastVisibleDay(this.currentDate).toISOString();
-    // var dates = this._getDateRange();
-    // var start = dates[0];
-    // var end = dates[1];
-    // Fetch calendar list
-    this._fetchCalendar();
-    // Fetch events for selected calendar
-    const params = encodeURI(`?start=${start}&end=${end}`);
-    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', `calendar/${cal}${params}`));
-    Promise.all(calls).then((results) => {
-      var tmpEvents = [];
-
-      results.forEach((res) => {
-        res.forEach((ev) => {
-          ev.start = new Date(ev.start);
-          if (ev.end) {
-            ev.end = new Date(ev.end);
-          } else {
-            ev.end = null;
-          }
-          tmpEvents.push(ev);
-        });
-      });
-      this.events = tmpEvents;
-    });
-  }
-
-  _getDateRange() {
-    // TODO: Delete me
-    var startDate;
-    var endDate;
-    if (this.currentView === 'day') {
-      startDate = moment(this.currentDate).startOf('day');
-      endDate = moment(this.currentDate).startOf('day');
-    } else if (this.currentView === 'week') {
-      startDate = moment(this.currentDate).startOf('isoWeek');
-      endDate = moment(this.currentDate).endOf('isoWeek');
-    } else if (this.currentView === 'month') {
-      startDate = moment(this.currentDate).startOf('month').subtract(7, 'days');
-      endDate = moment(this.currentDate).endOf('month').add(7, 'days');
-    } else if (this.currentView === 'agenda') {
-      startDate = moment(this.currentDate).startOf('day');
-      endDate = moment(this.currentDate).endOf('day').add(1, 'month');
-    }
-    return [startDate.toISOString(), endDate.toISOString()];
-  }
-
-  handleView(ev) {
-    // Calendar view changed
-    this.currentView = ev.detail.viewName;
-    this._fetchData();
-  }
-
-  handleNavigate(ev) {
-    // Calendar date range changed
-    this.currentDate = ev.detail.date;
-    this.currentView = ev.detail.viewName;
-    this._fetchData();
-  }
-
-  checkAll(ev) {
-    // Check all calendars
-    if (ev.target.checked) {
-      const selectedIndex = this.selectedCalendars
-        .map(x => this.calendars.map(y => y.entity_id).indexOf(x));
-      for (let i = 0; i < this.calendars.length; i++) {
-        if (selectedIndex.indexOf(i) === -1) {
-          this.$.calendar_list.selectIndex(i);
-        }
-      }
-    }
   }
 
   static get properties() {
@@ -214,7 +136,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
 
       narrow: {
         type: Boolean,
-        value: false,
+        reflectToAttribute: true,
       },
 
       showMenu: {
@@ -223,6 +145,74 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       },
 
     };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._fetchCalendars();
+  }
+
+  _fetchCalendars() {
+    this.hass.callApi('get', 'calendars')
+      .then((result) => {
+        this.calendars = result;
+        this.selectedCalendars = result.map(cal => cal.entity_id);
+      });
+  }
+
+  _fetchData() {
+    const start = dates.firstVisibleDay(this.currentDate).toISOString();
+    const end = dates.lastVisibleDay(this.currentDate).toISOString();
+    const params = encodeURI(`?start=${start}&end=${end}`);
+    const calls = this.selectedCalendars.map(cal => this.hass.callApi('get', `calendars/${cal}${params}`));
+    Promise.all(calls).then((results) => {
+      const tmpEvents = [];
+
+      results.forEach((res) => {
+        res.forEach((ev) => {
+          ev.start = new Date(ev.start);
+          if (ev.end) {
+            ev.end = new Date(ev.end);
+          } else {
+            ev.end = null;
+          }
+          tmpEvents.push(ev);
+        });
+      });
+      this.events = tmpEvents;
+    });
+  }
+
+  _getDateRange() {
+    let startDate;
+    let endDate;
+    if (this.currentView === 'day') {
+      startDate = moment(this.currentDate).startOf('day');
+      endDate = moment(this.currentDate).startOf('day');
+    } else if (this.currentView === 'week') {
+      startDate = moment(this.currentDate).startOf('isoWeek');
+      endDate = moment(this.currentDate).endOf('isoWeek');
+    } else if (this.currentView === 'month') {
+      startDate = moment(this.currentDate).startOf('month').subtract(7, 'days');
+      endDate = moment(this.currentDate).endOf('month').add(7, 'days');
+    } else if (this.currentView === 'agenda') {
+      startDate = moment(this.currentDate).startOf('day');
+      endDate = moment(this.currentDate).endOf('day').add(1, 'month');
+    }
+    return [startDate.toISOString(), endDate.toISOString()];
+  }
+
+  _handleViewChanged(ev) {
+    // Calendar view changed
+    this.currentView = ev.detail.viewName;
+    this._fetchData();
+  }
+
+  _handleNavigate(ev) {
+    // Calendar date range changed
+    this.currentDate = ev.detail.date;
+    this.currentView = ev.detail.viewName;
+    this._fetchData();
   }
 }
 
