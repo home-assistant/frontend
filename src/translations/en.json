@@ -37,6 +37,7 @@
     "zwave": "Z-Wave"
   },
   "panel": {
+    "calendar": "Calendar",
     "config": "Configuration",
     "states": "Overview",
     "map": "Map",

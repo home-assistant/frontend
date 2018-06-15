@@ -11,6 +11,7 @@ const MDI_OUTPUT_PATH = path.resolve(OUTPUT_DIR, 'mdi.html');
 const HASS_OUTPUT_PATH = path.resolve(OUTPUT_DIR, 'hass-icons.html');
 
 const BUILT_IN_PANEL_ICONS = [
+  'calendar', // Calendar
   'settings', // Config
   'home-assistant', // Hass.io
   'poll-box', // History panel
