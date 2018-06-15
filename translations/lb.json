@@ -528,7 +528,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",
             "week": "{count} {count, plural,\none {woch}\nother {woche}\n}",
-            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}"
+            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}",
+            "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutten}\n}",
+            "hour": "{count} {count, plural,\n  one {stonn}\n  other {stonnen}\n}"
         },
         "login-form": {
             "password": "Passwuert",
@@ -602,7 +604,9 @@
                 "effect": "Effekt"
             },
             "media_player": {
-                "text_to_speak": "Text zu Sprooch"
+                "text_to_speak": "Text zu Sprooch",
+                "source": "Quell",
+                "sound_mode": "Toun Modus"
             },
             "climate": {
                 "currently": "Momentan",

@@ -609,6 +609,9 @@
                 "code": "Kód",
                 "lock": "Bezár",
                 "unlock": "Kinyit"
+            },
+            "media_player": {
+                "source": "Forrás"
             }
         },
         "components": {

@@ -605,7 +605,9 @@
                 "effect": "Efekt"
             },
             "media_player": {
-                "text_to_speak": "Převod textu na řeč"
+                "text_to_speak": "Převod textu na řeč",
+                "source": "Zdroj",
+                "sound_mode": "Režim zvuku"
             },
             "climate": {
                 "currently": "Momentálně",

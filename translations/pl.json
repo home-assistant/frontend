@@ -605,7 +605,9 @@
                 "effect": "Efekt"
             },
             "media_player": {
-                "text_to_speak": "Zamień tekst na mowę"
+                "text_to_speak": "Zamień tekst na mowę",
+                "source": "Źródło",
+                "sound_mode": "Tryb dźwięku"
             },
             "climate": {
                 "currently": "Obecnie",
