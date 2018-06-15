@@ -31,7 +31,8 @@
       "**/ha-paper-slider.js",
       "**/ha-iconset-svg.js",
       "**/ha-script-editor.js",
-      "**/ha-automation-editor.js"
+      "**/ha-automation-editor.js",
+      "**/ha-big-calendar.js"
     ]
   },
   "builds": [
