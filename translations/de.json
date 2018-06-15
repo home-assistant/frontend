@@ -605,13 +605,20 @@
                 "effect": "Effekt"
             },
             "media_player": {
-                "text_to_speak": "Text zum Sprechen"
+                "text_to_speak": "Text zum Sprechen",
+                "source": "Quelle",
+                "sound_mode": "Sound-Modus"
             },
             "climate": {
                 "currently": "Aktuell",
                 "on_off": "An \/ aus",
                 "target_temperature": "Soll-Temperatur",
-                "target_humidity": "Soll-Luftfeuchtigkeit"
+                "target_humidity": "Soll-Luftfeuchtigkeit",
+                "operation": "Aktion",
+                "fan_mode": "Ventilator-Modus",
+                "swing_mode": "Schwenk-Modus",
+                "away_mode": "Abwesenheitsmodus",
+                "aux_heat": "Hilfswärme"
             },
             "lock": {
                 "code": "Code",
