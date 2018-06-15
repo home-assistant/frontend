@@ -6,14 +6,16 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 import computeStateName from '../../common/entity/compute_state_name.js';
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class MoreInfoSettings extends EventsMixin(PolymerElement) {
+class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -42,11 +44,11 @@ class MoreInfoSettings extends EventsMixin(PolymerElement) {
     <app-toolbar>
       <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
       <div main-title="">[[_computeStateName(stateObj)]]</div>
-      <paper-button on-click="_save">Save</paper-button>
+      <paper-button on-click="_save">[[localize('ui.dialogs.more_info_settings.save')]]</paper-button>
     </app-toolbar>
 
     <div class="form">
-      <paper-input value="{{_name}}" label="Name"></paper-input>
+      <paper-input value="{{_name}}" label="[[localize('ui.dialogs.more_info_settings.name')]]"></paper-input>
     </div>
 `;
   }
