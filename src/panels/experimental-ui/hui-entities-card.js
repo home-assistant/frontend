@@ -18,9 +18,8 @@ function stateElement(hass, entityId, stateObj) {
     return 'state-card-display';
   } else if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
     return stateObj.attributes.custom_ui_state_card;
-  } else {
-    return 'state-card-' + stateCardType(hass, stateObj);
   }
+  return 'state-card-' + stateCardType(hass, stateObj);
 }
 
 class HuiEntitiesCard extends PolymerElement {
@@ -73,6 +72,11 @@ class HuiEntitiesCard extends PolymerElement {
     this._elements = [];
   }
 
+  getCardSize() {
+    // +1 for the header
+    return 1 + (this.config ? this.config.entities.length : 0);
+  }
+
   _computeTitle(config) {
     return config.title;
   }
@@ -80,7 +84,7 @@ class HuiEntitiesCard extends PolymerElement {
   _configChanged(config) {
     const root = this.$.states;
 
-    while(root.lastChild) {
+    while (root.lastChild) {
       root.removeChild(root.lastChild);
     }
 
@@ -89,9 +93,9 @@ class HuiEntitiesCard extends PolymerElement {
     for (let i = 0; i < config.entities.length; i++) {
       const entityId = config.entities[i];
       const stateObj = this.hass.states[entityId];
-      let tag = stateElement(this.hass, entityId, stateObj);
+      const tag = stateElement(this.hass, entityId, stateObj);
       const element = document.createElement(tag);
-      element.stateObj = stateObj
+      element.stateObj = stateObj;
       element.hass = this.hass;
       this._elements.push({ entityId, element });
       root.appendChild(element);
@@ -99,7 +103,7 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _hassChanged(hass) {
-    for(let i = 0; i < this._elements.length; i++) {
+    for (let i = 0; i < this._elements.length; i++) {
       const { entityId, element } = this._elements[i];
       const stateObj = hass.states[entityId];
       element.stateObj = stateObj;

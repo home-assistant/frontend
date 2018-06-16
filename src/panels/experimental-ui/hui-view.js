@@ -7,7 +7,7 @@ import './hui-entity-filter-card.js';
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
 
 const VALID_TYPES = ['entities', 'entity-filter'];
-const CUSTOM_TYPE_PREFIX = 'custom:'
+const CUSTOM_TYPE_PREFIX = 'custom:';
 
 function cardElement(type) {
   if (VALID_TYPES.includes(type)) {
@@ -19,6 +19,55 @@ function cardElement(type) {
 }
 
 class HaView extends PolymerElement {
+  static get template() {
+    return html`
+      <style>
+      :host {
+        display: block;
+        padding-top: 8px;
+        padding-right: 8px;
+        transform: translateZ(0);
+        position: relative;
+      }
+
+      #columns {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .column {
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 500px;
+        overflow-x: hidden;
+      }
+
+      .column > * {
+        display: block;
+        margin-left: 8px;
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: 500px) {
+        :host {
+          padding-right: 0;
+        }
+
+        .column > * {
+          margin-left: 0;
+        }
+      }
+
+      @media (max-width: 599px) {
+        .column {
+          max-width: 600px;
+        }
+      }
+      </style>
+      <div id='columns'></div>
+    `;
+  }
   static get properties() {
     return {
       hass: {
@@ -26,10 +75,15 @@ class HaView extends PolymerElement {
         observer: '_hassChanged',
       },
 
+      columns: {
+        type: Number,
+        observer: '_configChanged',
+      },
+
       config: {
         type: Object,
         observer: '_configChanged',
-      }
+      },
     };
   }
 
@@ -38,41 +92,88 @@ class HaView extends PolymerElement {
     this._elements = [];
   }
 
-  ready() {
-    super.ready();
-    this.innerHTML = 'Loading config';
-  }
+  _getElements(cards) {
+    const elements = [];
 
-  _configChanged(config) {
-    const root = this;
-
-    while(root.lastChild) {
-      root.removeChild(root.lastChild);
-    }
-
-    this._elements = [];
-
-    for (let i = 0; i < config.cards.length; i++) {
-      const cardConfig = config.cards[i];
-      let tag = cardElement(cardConfig.type);
+    for (let i = 0; i < cards.length; i++) {
+      const cardConfig = cards[i];
+      const tag = cardElement(cardConfig.type);
       if (!tag) {
+        // eslint-disable-next-line
         console.error('Unknown type encountered:', cardConfig.type);
         continue;
       }
       const element = document.createElement(tag);
       element.config = cardConfig;
       element.hass = this.hass;
-      this._elements.push(element);
-      root.appendChild(element);
+      elements.push(element);
     }
 
+    return elements;
+  }
+
+  _configChanged() {
+    const root = this.$.columns;
+    const config = this.config;
+
+    while (root.lastChild) {
+      root.removeChild(root.lastChild);
+    }
+
+    if (!config) {
+      this._elements = [];
+      return;
+    }
+
+    const elements = this._getElements(config.cards);
+
+    let columns = [];
+    const columnEntityCount = [];
+    for (let i = 0; i < this.columns; i++) {
+      columns.push([]);
+      columnEntityCount.push(0);
+    }
+
+    // Find column with < 5 entities, else column with lowest count
+    function getColumnIndex(size) {
+      let minIndex = 0;
+      for (let i = 0; i < columnEntityCount.length; i++) {
+        if (columnEntityCount[i] < 5) {
+          minIndex = i;
+          break;
+        }
+        if (columnEntityCount[i] < columnEntityCount[minIndex]) {
+          minIndex = i;
+        }
+      }
+
+      columnEntityCount[minIndex] += size;
+
+      return minIndex;
+    }
+
+    elements.forEach(el =>
+      columns[getColumnIndex(el.getCardSize())].push(el));
+
+    // Remove empty columns
+    columns = columns.filter(val => val.length > 0);
+
+    columns.forEach((column) => {
+      const columnEl = document.createElement('div');
+      columnEl.classList.add('column');
+      column.forEach(el => columnEl.appendChild(el));
+      root.appendChild(columnEl);
+    });
+
+    this._elements = elements;
+
     if ('theme' in config) {
-      applyThemesOnElement(this, this.hass.themes, config.theme)
+      applyThemesOnElement(root, this.hass.themes, config.theme);
     }
   }
 
   _hassChanged(hass) {
-    for(let i = 0; i < this._elements.length; i++) {
+    for (let i = 0; i < this._elements.length; i++) {
       this._elements[i].hass = hass;
     }
   }

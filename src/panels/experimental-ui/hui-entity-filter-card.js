@@ -22,25 +22,33 @@ class HuiEntitiesCard extends PolymerElement {
     };
   }
 
-  _computeCardConfig(hass, config) {
+  getCardSize() {
+    // +1 for the header
+    return 1 + this._getEntities(this.hass, this.config.filter).length;
+  }
+
+  // Return a list of entities based on a filter.
+  _getEntities(hass, filter) {
     const filters = [];
 
-    if (config.filter.domain) {
-      const domain = config.filter.domain;
+    if (filter.domain) {
+      const domain = filter.domain;
       filters.push(stateObj => computeStateDomain(stateObj) === domain);
     }
 
-    if (config.filter.state) {
-      const state = config.filter.state;
+    if (filter.state) {
+      const state = filter.state;
       filters.push(stateObj => stateObj.state === state);
     }
 
-    const entities = Object.values(hass.states)
-      .filter(stateObj => filters.every(filter => filter(stateObj)))
+    return Object.values(hass.states)
+      .filter(stateObj => filters.every(filterFunc => filterFunc(stateObj)))
       .map(stateObj => stateObj.entity_id);
+  }
 
+  _computeCardConfig(hass, config) {
     return Object.assign({}, config.card_config || {}, {
-      entities
+      entities: this._getEntities(hass, config.filter),
     });
   }
 }
