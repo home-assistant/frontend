@@ -18,7 +18,7 @@ class HaCustomizeIcon extends PolymerElement {
       }
     </style>
     <iron-icon class="icon-image" icon="[[item.value]]"></iron-icon>
-    <paper-input auto-validate="" pattern="(hass:.*)?" error-message="Must start with 'hass:'" disabled="[[item.secondary]]" label="icon" value="{{item.value}}">
+    <paper-input disabled="[[item.secondary]]" label="icon" value="{{item.value}}">
     </paper-input>
 `;
   }
