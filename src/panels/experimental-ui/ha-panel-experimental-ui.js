@@ -27,7 +27,7 @@ class ExperimentalUI extends PolymerElement {
           config='[[_config]]'
           columns='[[_columns]]'
           on-config-refresh='_fetchConfig'
-        ></hui-view>
+        ></hui-root>
       </template>
     `;
   }
