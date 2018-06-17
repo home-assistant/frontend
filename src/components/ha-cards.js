@@ -82,8 +82,7 @@ class HaCards extends PolymerElement {
   <style>
     :host {
       display: block;
-      padding-top: 8px;
-      padding-right: 8px;
+      padding: 4px 4px 0;
       transform: translateZ(0);
       position: relative;
     }
@@ -100,17 +99,18 @@ class HaCards extends PolymerElement {
 
     ha-card-chooser {
       display: block;
-      margin-left: 8px;
-      margin-bottom: 8px;
+      margin: 4px 4px 8px;
     }
 
     @media (max-width: 500px) {
       :host {
+        padding-left: 0;
         padding-right: 0;
       }
 
       ha-card-chooser {
         margin-left: 0;
+        margin-right: 0;
       }
     }
 

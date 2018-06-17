@@ -9,19 +9,6 @@ import '../../components/ha-card.js';
 // just importing this now as shortcut to import correct state-card-*
 import '../../state-summary/state-card-content.js';
 
-// Support for overriding type from attributes should be removed
-// Instead, it should be coded inside entity config.
-// stateCardType requires `hass` because we check if a service exists.
-// This should also be determined during runtime.
-function stateElement(hass, entityId, stateObj) {
-  if (!stateObj) {
-    return 'state-card-display';
-  } else if (stateObj.attributes && 'custom_ui_state_card' in stateObj.attributes) {
-    return stateObj.attributes.custom_ui_state_card;
-  }
-  return 'state-card-' + stateCardType(hass, stateObj);
-}
-
 class HuiEntitiesCard extends PolymerElement {
   static get template() {
     return html`
@@ -93,7 +80,7 @@ class HuiEntitiesCard extends PolymerElement {
     for (let i = 0; i < config.entities.length; i++) {
       const entityId = config.entities[i];
       const stateObj = this.hass.states[entityId];
-      const tag = stateElement(this.hass, entityId, stateObj);
+      const tag = stateObj ? `state-card-${stateCardType(this.hass, stateObj)}` : 'state-card-display';
       const element = document.createElement(tag);
       element.stateObj = stateObj;
       element.hass = this.hass;

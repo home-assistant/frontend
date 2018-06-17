@@ -199,8 +199,7 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
   }
 
   panelLoadError(panel) {
-    alert(`I don't know how to resolve panel ${panel.component_name}`);
-    this.navigate('/states');
+    alert(`Failed to resolve panel ${panel.component_name}`);
   }
 
   retrySetPanelForWebkit(panel) {
