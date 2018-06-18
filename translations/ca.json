@@ -12,7 +12,8 @@
         "dev-events": "Esdeveniments",
         "dev-templates": "Plantilles",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informació"
+        "dev-info": "Informació",
+        "calendar": "Calendari"
     },
     "state": {
         "default": {
@@ -651,6 +652,12 @@
             "service_called": "S'ha cridat el servei {service}.",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "connection_lost": "Connexió perduda. Tornant a connectar..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Desa",
+                "name": "Nom"
+            }
         }
     },
     "domain": {

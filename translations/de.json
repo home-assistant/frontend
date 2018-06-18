@@ -12,7 +12,8 @@
         "dev-events": "Ereignisse",
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -651,6 +652,12 @@
             "service_called": "Dienst {service} aufgerufen.",
             "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
             "connection_lost": "Verbindung getrennt. Verbinde erneut..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Speichern",
+                "name": "Name"
+            }
         }
     },
     "domain": {
