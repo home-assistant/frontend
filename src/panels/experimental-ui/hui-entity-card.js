@@ -1,4 +1,3 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeDomain from '../../common/entity/compute_domain.js';
@@ -26,7 +25,7 @@ class HuiEntityCard extends PolymerElement {
   }
 
   getCardSize() {
-    return this._entityId ? DOMAINS_WITH_CARD[domain] : 3;
+    return this._entityId ? DOMAINS_WITH_CARD[computeDomain(this._entityId)] : 3;
   }
 
   _configChanged(config) {
