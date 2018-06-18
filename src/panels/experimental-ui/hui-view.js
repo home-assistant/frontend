@@ -3,6 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hui-entities-card.js';
 import './hui-entity-filter-card.js';
+import './hui-error-card.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
 
@@ -96,16 +97,20 @@ class HUIView extends PolymerElement {
     const elements = [];
 
     for (let i = 0; i < cards.length; i++) {
-      const cardConfig = cards[i];
-      const tag = cardElement(cardConfig.type);
-      if (!tag) {
-        // eslint-disable-next-line
-        console.error('Unknown type encountered:', cardConfig.type);
-        continue;
-      } else if (!customElements.get(tag)) {
-        // eslint-disable-next-line
-        console.error('Custom element doesn\'t exist:', tag);
-        continue;
+      let cardConfig = cards[i];
+      let tag;
+      if (!cardConfig.type) {
+        cardConfig._error = 'Card type not configured.';
+        tag = 'hui-error-card';
+      } else {
+        tag = cardElement(cardConfig.type);
+        if (tag === null) {
+          cardConfig._error = `Unknown card type encountered: "${cardConfig.type}".`;
+          tag = 'hui-error-card';
+        } else if (!customElements.get(tag)) {
+          cardConfig._error = `Custom element doesn\'t exist: "${tag}".`;
+          tag = 'hui-error-card';
+        }
       }
       const element = document.createElement(tag);
       element.config = cardConfig;
