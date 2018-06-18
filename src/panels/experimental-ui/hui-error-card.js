@@ -12,7 +12,7 @@ class HuiErrorCard extends PolymerElement {
           padding: 8px;
         }
       </style>
-      [[config._error]]
+      [[config.error]]
     `;
   }
 
