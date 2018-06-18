@@ -16,6 +16,7 @@ import './hassio-addon-logs.js';
 import './hassio-addon-network.js';
 
 class HassioAddonView extends PolymerElement {
+  // For hassio-iconset: <ha-menu-button> hassio:menu
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -53,7 +54,8 @@ class HassioAddonView extends PolymerElement {
     <app-header-layout has-scrolling-region="">
       <app-header fixed="" slot="header">
         <app-toolbar>
-          <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
+          // hassio:menu
+          <ha-menu-button hassio narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
           <paper-icon-button icon="hassio:arrow-left" on-click="backTapped"></paper-icon-button>
           <div main-title="">Hass.io: add-on details</div>
         </app-toolbar>
