@@ -25,6 +25,7 @@ import { getActiveTranslation, getTranslation } from '../util/hass-translation.j
 import '../util/legacy-support';
 import '../util/roboto.js';
 import hassCallApi from '../util/hass-call-api.js';
+import makeDialogManager from '../dialogs/dialog-manager.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import applyThemesOnElement from '../common/dom/apply_themes_on_element.js';
@@ -94,6 +95,11 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
         observer: 'panelUrlChanged',
       },
     };
+  }
+
+  constructor() {
+    super();
+    makeDialogManager(this);
   }
 
   ready() {
