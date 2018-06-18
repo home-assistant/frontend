@@ -12,7 +12,8 @@
         "dev-events": "Händelser",
         "dev-templates": "Mallar",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -651,6 +652,12 @@
             "service_called": "Tjänsten {service} anropad.",
             "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
             "connection_lost": "Anslutning tappad. Ansluter igen..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Spara",
+                "name": "Namn"
+            }
         }
     },
     "domain": {

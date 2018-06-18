@@ -12,7 +12,8 @@
         "dev-events": "Hendelser",
         "dev-templates": "Maler",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -605,7 +606,9 @@
                 "effect": "Effekt"
             },
             "media_player": {
-                "text_to_speak": "Tekst til tale"
+                "text_to_speak": "Tekst til tale",
+                "source": "Kilde",
+                "sound_mode": "Lydmodus"
             },
             "climate": {
                 "currently": "Er nå",
@@ -649,6 +652,12 @@
             "service_called": "Tjenesten {service} kalt.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten {service}.",
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Lagre",
+                "name": "Navn"
+            }
         }
     },
     "domain": {

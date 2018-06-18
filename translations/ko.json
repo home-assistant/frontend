@@ -12,7 +12,8 @@
         "dev-events": "이벤트",
         "dev-templates": "템플릿",
         "dev-mqtt": "MQTT",
-        "dev-info": "정보"
+        "dev-info": "정보",
+        "calendar": "캘린더"
     },
     "state": {
         "default": {
@@ -651,6 +652,12 @@
             "service_called": "{service} 서비스가 호출되었습니다.",
             "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
             "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "저장",
+                "name": "이름"
+            }
         }
     },
     "domain": {
