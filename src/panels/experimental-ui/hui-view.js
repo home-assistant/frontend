@@ -156,7 +156,7 @@ class HUIView extends PolymerElement {
       return minIndex;
     }
 
-    elements.forEach(el => {
+    elements.forEach((el) => {
       const cardSize = typeof el.getCardSize === 'function' ? el.getCardSize() : 1;
       columns[getColumnIndex(cardSize)].push(el);
     });
