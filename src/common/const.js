@@ -45,7 +45,7 @@ export const DOMAINS_WITH_MORE_INFO = [
 ];
 
 /** Domains that show no more info dialog. */
-export const HIDE_MORE_INFO = [
+export const DOMAINS_HIDE_MORE_INFO = [
   'input_number',
   'input_select',
   'input_text',

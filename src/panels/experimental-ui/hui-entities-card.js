@@ -4,7 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import stateCardType from '../../common/entity/state_card_type.js';
 import computeDomain from '../../common/entity/compute_domain.js';
-import { HIDE_MORE_INFO } from '../../common/const.js';
+import { DOMAINS_HIDE_MORE_INFO } from '../../common/const.js';
 
 import '../../components/ha-card.js';
 
@@ -92,7 +92,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       const stateObj = this.hass.states[entityId];
       const tag = stateObj ? `state-card-${stateCardType(this.hass, stateObj)}` : 'state-card-display';
       const element = document.createElement(tag);
-      if (!HIDE_MORE_INFO.includes(computeDomain(entityId))) {
+      if (!DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
         element.classList.add('state-card-dialog');
         element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
       }
