@@ -22,6 +22,36 @@ export const DOMAINS_WITH_CARD = [
   'weblink',
 ];
 
+/** Domains with separate more info dialog. */
+export const DOMAINS_WITH_MORE_INFO = [
+  'alarm_control_panel',
+  'automation',
+  'camera',
+  'climate',
+  'configurator',
+  'cover',
+  'fan',
+  'group',
+  'history_graph',
+  'input_datetime',
+  'light',
+  'lock',
+  'media_player',
+  'script',
+  'sun',
+  'updater',
+  'vacuum',
+  'weather'
+];
+
+/** Domains that show no more info dialog. */
+export const DOMAINS_HIDE_MORE_INFO = [
+  'input_number',
+  'input_select',
+  'input_text',
+  'scene'
+];
+
 /** Domains that should have the history hidden in the more info dialog. */
 export const DOMAINS_MORE_INFO_NO_HISTORY = [
   'camera',
