@@ -102,6 +102,10 @@ class HUIView extends PolymerElement {
         // eslint-disable-next-line
         console.error('Unknown type encountered:', cardConfig.type);
         continue;
+      } else if (!customElements.get(tag)) {
+        // eslint-disable-next-line
+        console.error('Custom element doesn\'t exist:', tag);
+        continue;
       }
       const element = document.createElement(tag);
       element.config = cardConfig;
@@ -152,8 +156,10 @@ class HUIView extends PolymerElement {
       return minIndex;
     }
 
-    elements.forEach(el =>
-      columns[getColumnIndex(el.getCardSize())].push(el));
+    elements.forEach((el) => {
+      const cardSize = typeof el.getCardSize === 'function' ? el.getCardSize() : 1;
+      columns[getColumnIndex(cardSize)].push(el);
+    });
 
     // Remove empty columns
     columns = columns.filter(val => val.length > 0);
