@@ -8,6 +8,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../src/components/ha-menu-button.js';
+// For hassio-iconset: hassio:menu
 import '../../src/resources/ha-style.js';
 import './addon-store/hassio-addon-store.js';
 import './dashboard/hassio-dashboard.js';
@@ -34,7 +35,7 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
     <app-header-layout has-scrolling-region="">
       <app-header fixed="" slot="header">
         <app-toolbar>
-          <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
+          <ha-menu-button hassio narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
           <div main-title="">Hass.io</div>
           <template is="dom-if" if="[[showRefreshButton(page)]]">
             <paper-icon-button icon="hassio:refresh" on-click="refreshClicked"></paper-icon-button>
