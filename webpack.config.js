@@ -48,6 +48,7 @@ function createConfig(isProdBuild, latestBuild) {
       __BUILD__: JSON.stringify(latestBuild ? 'latest' : 'es5'),
       __VERSION__: JSON.stringify(VERSION),
       __PUBLIC_PATH__: JSON.stringify(publicPath),
+      'process.env.NODE_ENV': JSON.stringify(isProdBuild ? 'production' : 'development'),
     }),
     new CopyWebpackPlugin(copyPluginOpts),
     // Ignore moment.js locales
