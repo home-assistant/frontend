@@ -7,8 +7,18 @@
 /** Icon to use when no icon specified for domain. */
 export const DEFAULT_DOMAIN_ICON = 'hass:bookmark';
 
+/** Domains that have a card + card size. */
+export const DOMAINS_WITH_CARD = {
+  camera: 4,
+  history_graph: 4,
+  media_player: 3,
+  persistent_notification: 2,
+  plant: 3,
+  weather: 4
+};
+
 /** Domains that have a state card. */
-export const DOMAINS_WITH_CARD = [
+export const DOMAINS_WITH_STATE_CARD = [
   'climate',
   'cover',
   'configurator',

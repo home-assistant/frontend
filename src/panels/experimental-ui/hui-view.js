@@ -1,19 +1,22 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import './hui-entity-card.js';
 import './hui-entities-card.js';
 import './hui-entity-filter-card.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
 
-const VALID_TYPES = ['entities', 'entity-filter'];
+const VALID_TYPES = ['entity', 'entities', 'entity-filter'];
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
 function cardElement(type) {
-  if (VALID_TYPES.includes(type)) {
-    return `hui-${type}-card`;
-  } else if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    return type.substr(CUSTOM_TYPE_PREFIX.length);
+  if (type) {
+    if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
+      return type.substr(CUSTOM_TYPE_PREFIX.length);
+    } else if (VALID_TYPES.includes(type)) {
+      return `hui-${type}-card`;
+    }
   }
   return null;
 }

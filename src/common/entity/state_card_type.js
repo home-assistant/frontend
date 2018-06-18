@@ -1,6 +1,6 @@
 import canToggleState from './can_toggle_state.js';
 import computeStateDomain from './compute_state_domain.js';
-import { DOMAINS_WITH_CARD } from '../const.js';
+import { DOMAINS_WITH_STATE_CARD } from '../const.js';
 
 export default function stateCardType(hass, stateObj) {
   if (stateObj.state === 'unavailable') {
@@ -9,7 +9,7 @@ export default function stateCardType(hass, stateObj) {
 
   const domain = computeStateDomain(stateObj);
 
-  if (DOMAINS_WITH_CARD.includes(domain)) {
+  if (DOMAINS_WITH_STATE_CARD.includes(domain)) {
     return domain;
   } else if (canToggleState(hass, stateObj) &&
              stateObj.attributes.control !== 'hidden') {
