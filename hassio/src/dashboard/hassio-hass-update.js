@@ -13,7 +13,6 @@ class HassioHassUpdate extends PolymerElement {
     <style include="ha-style hassio-style">
       paper-card {
         display: block;
-        height: 100%;
         margin-bottom: 32px;
       }
       .errors {
