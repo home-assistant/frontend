@@ -12,22 +12,14 @@ class HuiErrorCard extends PolymerElement {
           padding: 8px;
         }
       </style>
-      [[_error]]
+      [[config._error]]
     `;
   }
 
   static get properties() {
     return {
-      config: Object,
-      _error: {
-        type: String,
-        computed: 'computeError(config)'
-      }
-    };
-  }
-
-  computeError(config) {
-    return this._error || config._error;
+      config: Object
+    }
   }
 
   getCardSize() {

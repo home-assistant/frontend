@@ -97,7 +97,7 @@ class HUIView extends PolymerElement {
     const elements = [];
 
     for (let i = 0; i < cards.length; i++) {
-      let cardConfig = cards[i];
+      const cardConfig = cards[i];
       let tag;
       if (!cardConfig.type) {
         cardConfig._error = 'Card type not configured.';
@@ -108,7 +108,7 @@ class HUIView extends PolymerElement {
           cardConfig._error = `Unknown card type encountered: "${cardConfig.type}".`;
           tag = 'hui-error-card';
         } else if (!customElements.get(tag)) {
-          cardConfig._error = `Custom element doesn\'t exist: "${tag}".`;
+          cardConfig._error = `Custom element doesn't exist: "${tag}".`;
           tag = 'hui-error-card';
         }
       }
