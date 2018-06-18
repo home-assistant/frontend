@@ -7,6 +7,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../src/components/ha-menu-button.js';
+// For hassio-iconset: hassio:menu
 import '../../../src/resources/ha-style.js';
 import '../hassio-markdown-dialog.js';
 import './hassio-addon-audio.js';
@@ -16,7 +17,6 @@ import './hassio-addon-logs.js';
 import './hassio-addon-network.js';
 
 class HassioAddonView extends PolymerElement {
-  // For hassio-iconset: <ha-menu-button> hassio:menu
   static get template() {
     return html`
     <style include="iron-flex ha-style">
