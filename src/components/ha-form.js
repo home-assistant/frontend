@@ -35,7 +35,13 @@ class HaForm extends EventsMixin(PolymerElement) {
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;string&quot;)]]" restamp="">
-        <paper-input label="[[computeLabel(schema)]]" value="{{data}}"></paper-input>
+        <paper-input
+          label="[[computeLabel(schema)]]"
+          value="{{data}}"
+          required="[[schema.required]]"
+          auto-validate="[[schema.required]]"
+          error-message='Required'
+        ></paper-input>
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;integer&quot;)]]" restamp="">
@@ -46,13 +52,26 @@ class HaForm extends EventsMixin(PolymerElement) {
           </div>
         </template>
         <template is="dom-if" if="[[!_isRange(schema)]]" restamp="">
-          <paper-input label="[[computeLabel(schema)]]" value="{{data}}" type="number"></paper-input>
+          <paper-input
+            label="[[computeLabel(schema)]]"
+            value="{{data}}"
+            type="number"
+            required="[[schema.required]]"
+            auto-validate="[[schema.required]]"
+            error-message='Required'
+          ></paper-input>
         </template>
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;float&quot;)]]" restamp="">
         <!--TODO-->
-        <paper-input label="[[computeLabel(schema)]]" value="{{data}}"></paper-input>
+        <paper-input
+          label="[[computeLabel(schema)]]"
+          value="{{data}}"
+          required="[[schema.required]]"
+          auto-validate="[[schema.required]]"
+          error-message='Required'
+      ></paper-input>
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;boolean&quot;)]]" restamp="">

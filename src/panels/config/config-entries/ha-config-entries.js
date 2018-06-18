@@ -4,14 +4,17 @@ import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-item/paper-item-body.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
+import { timeOut } from '@polymer/polymer/lib/utils/async.js';
 
 import '../../../layouts/hass-subpage.js';
 import '../../../resources/ha-style.js';
 
 import '../ha-config-section.js';
-import './ha-config-flow.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
+
+let registeredDialog = false;
 
 /*
  * @appliesMixin LocalizeMixin
@@ -39,7 +42,7 @@ class HaConfigManager extends
 
   <hass-subpage header="Integrations">
     <template is="dom-if" if="[[_progress.length]]">
-      <ha-config-section is-wide="[[isWide]]">
+      <ha-config-section>
         <span slot="header">Discovered</span>
         <paper-card>
           <template is="dom-repeat" items="[[_progress]]">
@@ -54,23 +57,21 @@ class HaConfigManager extends
       </ha-config-section>
     </template>
 
-    <ha-config-section is-wide="[[isWide]]">
+    <ha-config-section>
       <span slot="header">Configured</span>
       <paper-card>
         <template is="dom-if" if="[[!_entries.length]]">
           <div class="config-entry-row">
-            <paper-item-body>
-              Nothing configured yet
+            <paper-item-body two-line>
+              <div>Nothing configured yet</div>
             </paper-item-body>
           </div>
         </template>
         <template is="dom-repeat" items="[[_entries]]">
           <div class="config-entry-row">
-            <paper-item-body three-line="">
-              [[item.title]]
-              <div secondary="">Integration: [[_computeIntegrationTitle(localize, item.domain)]]</div>
-              <div secondary="">Added by: [[item.source]]</div>
-              <div secondary="">State: [[item.state]]</div>
+            <paper-item-body two-line>
+              <div>[[_computeIntegrationTitle(localize, item.domain)]]: [[item.title]]</div>
+              <div secondary>[[item.state]] – added by [[item.source]]</div>
             </paper-item-body>
             <paper-button on-click="_removeEntry">Remove</paper-button>
           </div>
@@ -78,7 +79,7 @@ class HaConfigManager extends
       </paper-card>
     </ha-config-section>
 
-    <ha-config-section is-wide="[[isWide]]">
+    <ha-config-section>
       <span slot="header">Set up a new integration</span>
       <paper-card>
         <template is="dom-repeat" items="[[_handlers]]">
@@ -92,8 +93,6 @@ class HaConfigManager extends
       </paper-card>
     </ha-config-section>
   </hass-subpage>
-
-  <ha-config-flow hass="[[hass]]" flow-id="[[_flowId]]" step="{{_flowStep}}" on-flow-closed="_flowClose"></ha-config-flow>
 `;
   }
 
@@ -101,15 +100,6 @@ class HaConfigManager extends
     return {
       hass: Object,
       isWide: Boolean,
-
-      _flowId: {
-        type: String,
-        value: null,
-      },
-      /*
-       * The step of the current selected flow, if available.
-       */
-      _flowStep: Object,
 
       /**
        * Existing entries.
@@ -131,22 +121,45 @@ class HaConfigManager extends
     this._loadData();
   }
 
-  _createFlow(ev) {
-    this.hass.callApi('post', 'config/config_entries/flow', { handler: ev.model.item })
-      .then((flow) => {
-        this._userCreatedFlow = true;
-        this.setProperties({
-          _flowStep: flow,
-          _flowId: flow.flow_id,
-        });
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (!registeredDialog) {
+      registeredDialog = true;
+      this.fire('register-dialog', {
+        dialogShowEvent: 'show-config-flow',
+        dialogTag: 'ha-config-flow',
+        dialogImport: () => import('./ha-config-flow.js'),
       });
+    }
+
+    this.hass.connection.subscribeEvents(() => {
+      this._debouncer = Debouncer.debounce(
+        this._debouncer,
+        timeOut.after(500),
+        () => this._loadData()
+      );
+    }, 'config_entry_discovered').then((unsub) => { this._unsubEvents = unsub; });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubEvents) this._unsubEvents();
+  }
+
+  _createFlow(ev) {
+    this.fire('show-config-flow', {
+      hass: this.hass,
+      newFlowForHandler: ev.model.item,
+      dialogClosedCallback: () => this._loadData(),
+    });
   }
 
   _continueFlow(ev) {
-    this._userCreatedFlow = false;
-    this.setProperties({
-      _flowId: ev.model.item.flow_id,
-      _flowStep: null,
+    this.fire('show-config-flow', {
+      hass: this.hass,
+      continueFlowId: ev.model.item.flow_id,
+      dialogClosedCallback: () => this._loadData(),
     });
   }
 
@@ -162,19 +175,6 @@ class HaConfigManager extends
           alert('Restart Home Assistant to finish removing this integration');
         }
       });
-  }
-
-  _flowClose(ev) {
-    // Was the flow completed?
-    if (ev.detail.flowFinished) {
-      this._loadData();
-
-    // Remove a flow if it was not finished and was started by the user
-    } else if (this._userCreatedFlow) {
-      this.hass.callApi('delete', `config/config_entries/flow/${this._flowId}`);
-    }
-
-    this._flowId = null;
   }
 
   _loadData() {
