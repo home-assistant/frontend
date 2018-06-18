@@ -7,6 +7,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../src/components/ha-menu-button.js';
+// For hassio-iconset: hassio:menu
 import '../../../src/resources/ha-style.js';
 import '../hassio-markdown-dialog.js';
 import './hassio-addon-audio.js';
@@ -53,7 +54,7 @@ class HassioAddonView extends PolymerElement {
     <app-header-layout has-scrolling-region="">
       <app-header fixed="" slot="header">
         <app-toolbar>
-          <ha-menu-button narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
+          <ha-menu-button hassio narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
           <paper-icon-button icon="hassio:arrow-left" on-click="backTapped"></paper-icon-button>
           <div main-title="">Hass.io: add-on details</div>
         </app-toolbar>
