@@ -19,7 +19,7 @@ class HuiErrorCard extends PolymerElement {
   static get properties() {
     return {
       config: Object
-    }
+    };
   }
 
   getCardSize() {
