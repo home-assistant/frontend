@@ -3,13 +3,20 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import stateCardType from '../../common/entity/state_card_type.js';
+import computeDomain from '../../common/entity/compute_domain.js';
+import { HIDE_MORE_INFO } from '../../common/const.js';
 
 import '../../components/ha-card.js';
 
 // just importing this now as shortcut to import correct state-card-*
 import '../../state-summary/state-card-content.js';
 
-class HuiEntitiesCard extends PolymerElement {
+import EventsMixin from '../../mixins/events-mixin.js';
+
+/*
+ * @appliesMixin EventsMixin
+ */
+class HuiEntitiesCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
@@ -29,6 +36,9 @@ class HuiEntitiesCard extends PolymerElement {
       }
       .header .name {
         @apply --paper-font-common-nowrap;
+      }
+      .state-card-dialog {
+        cursor: pointer;
       }
     </style>
 
@@ -82,6 +92,10 @@ class HuiEntitiesCard extends PolymerElement {
       const stateObj = this.hass.states[entityId];
       const tag = stateObj ? `state-card-${stateCardType(this.hass, stateObj)}` : 'state-card-display';
       const element = document.createElement(tag);
+      if (!HIDE_MORE_INFO.includes(computeDomain(entityId))) {
+        element.classList.add('state-card-dialog');
+        element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
+      }
       element.stateObj = stateObj;
       element.hass = this.hass;
       this._elements.push({ entityId, element });
@@ -98,4 +112,5 @@ class HuiEntitiesCard extends PolymerElement {
     }
   }
 }
+
 customElements.define('hui-entities-card', HuiEntitiesCard);
