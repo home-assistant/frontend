@@ -12,7 +12,8 @@
         "dev-events": "События",
         "dev-templates": "Шаблоны",
         "dev-mqtt": "MQTT",
-        "dev-info": "Информация"
+        "dev-info": "Информация",
+        "calendar": "Календарь"
     },
     "state": {
         "default": {
@@ -605,7 +606,9 @@
                 "effect": "Эффект"
             },
             "media_player": {
-                "text_to_speak": "Воспроизвести текст"
+                "text_to_speak": "Воспроизвести текст",
+                "source": "Источник",
+                "sound_mode": "Режим звука"
             },
             "climate": {
                 "currently": "Сейчас",
@@ -648,6 +651,12 @@
             "service_called": "Вызов службы {service}.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
             "connection_lost": "Соединение потеряно. Переподключение ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Сохранить",
+                "name": "Название"
+            }
         }
     },
     "domain": {

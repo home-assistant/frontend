@@ -12,7 +12,8 @@
         "dev-events": "Evenementer",
         "dev-templates": "Modeller",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalenner"
     },
     "state": {
         "default": {
@@ -595,6 +596,7 @@
             },
             "fan": {
                 "speed": "Vitesse",
+                "oscillate": "Pendele",
                 "direction": "Richtung"
             },
             "light": {
@@ -613,6 +615,10 @@
                 "on_off": "Un \/ Aus",
                 "target_temperature": "Zieltemperatur",
                 "target_humidity": "Zielfiichtegkeet",
+                "operation": "Aktioun",
+                "fan_mode": "Ventilatioun Modus",
+                "swing_mode": "Schwenk Modus",
+                "away_mode": "Modus Keen Doheem",
                 "aux_heat": "Zousätzlech Heizung"
             },
             "lock": {
@@ -646,6 +652,12 @@
             "service_called": "Service {service} operuff",
             "service_call_failed": "Fehler beim opruffen vun {service}",
             "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Späicheren",
+                "name": "Numm"
+            }
         }
     },
     "domain": {

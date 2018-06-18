@@ -12,7 +12,8 @@
         "dev-events": "Sự kiện",
         "dev-templates": "Mẫu sẵn",
         "dev-mqtt": "MQTT",
-        "dev-info": "Thông tin"
+        "dev-info": "Thông tin",
+        "calendar": "Lịch"
     },
     "state": {
         "default": {
@@ -31,7 +32,7 @@
             "arming": "Vũ trang",
             "disarming": "Giải giáp",
             "triggered": "Kích hoạt",
-            "armed_custom_bypass": "Vũ trang chỉnh bỏ qua"
+            "armed_custom_bypass": "Tùy chỉnh bỏ qua Vũ trang"
         },
         "automation": {
             "off": "Tắt",
@@ -222,13 +223,34 @@
                 "sleeping": "Ngủ",
                 "ready": "Sẵn sàng"
             }
+        },
+        "weather": {
+            "clear_night": "Trời trong, đêm",
+            "cloudy": "Nhiều mây",
+            "fog": "Sương mù",
+            "hail": "Mưa đá",
+            "lightning": "Sét",
+            "lightning_rainy": "Sét, mưa",
+            "partlycloudy": "Mây rải rác",
+            "pouring": "Mưa lớn",
+            "rainy": "Mưa",
+            "snowy": "Tuyết",
+            "snowy_rainy": "Tuyết, mưa",
+            "sunny": "Nắng đẹp",
+            "windy": "Gió nhẹ",
+            "windy_variant": "Gió nhẹ"
         }
     },
     "state_badge": {
+        "default": {
+            "unknown": "KB",
+            "unavailable": "KKD"
+        },
         "alarm_control_panel": {
-            "armed": "Vũ trang",
+            "armed": "VT",
             "disarmed": "Giải giáp",
-            "arming": "Đang vũ trang",
+            "pending": "Chờ",
+            "arming": "Đang VT",
             "disarming": "Giải giáp"
         },
         "device_tracker": {
@@ -464,6 +486,86 @@
             },
             "persistent_notification": {
                 "dismiss": "Bỏ qua"
+            },
+            "scene": {
+                "activate": "Kích hoạt"
+            },
+            "script": {
+                "execute": "Thi hành"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Áp suất không khí",
+                    "humidity": "Độ ẩm",
+                    "temperature": "Nhiệt độ",
+                    "visibility": "Tầm nhìn",
+                    "wind_speed": "Tốc độ gió"
+                },
+                "cardinal_direction": {
+                    "e": "Đ",
+                    "ene": "ĐĐB",
+                    "ese": "ĐĐN",
+                    "n": "B",
+                    "ne": "ĐB",
+                    "nne": "BĐB",
+                    "nw": "TB",
+                    "nnw": "BTB",
+                    "s": "N",
+                    "se": "ĐN",
+                    "sse": "NĐN",
+                    "ssw": "NTN",
+                    "sw": "TN",
+                    "w": "T",
+                    "wnw": "TTB",
+                    "wsw": "TTN"
+                },
+                "forecast": "Dự báo"
+            },
+            "alarm_control_panel": {
+                "code": "Mã số",
+                "clear_code": "Xóa",
+                "disarm": "Không vũ trang",
+                "arm_home": "VT Ở nhà",
+                "arm_away": "VT Đi vắng"
+            },
+            "automation": {
+                "last_triggered": "Kích hoạt lần cuối",
+                "trigger": "Kích hoạt"
+            },
+            "cover": {
+                "position": "Vị trí",
+                "tilt_position": "Nghiêng vị trí"
+            },
+            "fan": {
+                "speed": "Tốc độ",
+                "oscillate": "Dao động",
+                "direction": "Hướng"
+            },
+            "light": {
+                "brightness": "Độ sáng",
+                "color_temperature": "Nhiệt độ màu",
+                "white_value": "Giá trị trắng",
+                "effect": "Hiệu ứng"
+            },
+            "media_player": {
+                "text_to_speak": "Văn bản sang giọng nói",
+                "source": "Nguồn",
+                "sound_mode": "Chế độ âm thanh"
+            },
+            "climate": {
+                "currently": "Hiện tại",
+                "on_off": "Bật \/ tắt",
+                "target_temperature": "Nhiệt độ mục tiêu",
+                "target_humidity": "Độ ẩm mục tiêu",
+                "operation": "Chế độ hoạt động",
+                "fan_mode": "Chế độ quạt",
+                "swing_mode": "Chế độ swing",
+                "away_mode": "Chế độ đi vắng",
+                "aux_heat": "Nhiệt phụ trợ"
+            },
+            "lock": {
+                "lock": "Khóa",
+                "unlock": "Mở khóa"
             }
         },
         "components": {
@@ -474,6 +576,28 @@
             },
             "service-picker": {
                 "service": "Dịch vụ"
+            },
+            "relative_time": {
+                "past": "{time} trước",
+                "future": "Trong {time}",
+                "never": "Không bao giờ"
+            },
+            "history_charts": {
+                "loading_history": "Đang tải lịch sử trạng thái ...",
+                "no_history_found": "Không tìm thấy lịch sử trạng thái."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Đã bật {entity} .",
+            "entity_turned_off": "Đã tắt {entity} .",
+            "service_called": "Đã gọi dịch vụ {service} .",
+            "service_call_failed": "Không thể gọi dịch vụ {service} .",
+            "connection_lost": "Kết nối bị mất. Đang kết nối lại…"
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Lưu",
+                "name": "Tên"
             }
         }
     },
@@ -486,7 +610,7 @@
         "climate": "Khí hậu",
         "configurator": "Trình cấu hình",
         "conversation": "Hội thoại",
-        "cover": "Bao phủ",
+        "cover": "Rèm, cửa cuốn",
         "device_tracker": "Trình theo dõi thiết bị",
         "fan": "Quạt",
         "history_graph": "Biểu đồ lịch sử",

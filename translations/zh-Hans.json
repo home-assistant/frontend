@@ -12,7 +12,8 @@
         "dev-events": "事件",
         "dev-templates": "模板",
         "dev-mqtt": "MQTT",
-        "dev-info": "信息"
+        "dev-info": "信息",
+        "calendar": "日历"
     },
     "state": {
         "default": {
@@ -651,6 +652,12 @@
             "service_called": "服务 {service} 已调用。 ",
             "service_call_failed": "调用服务 {service} 失败。",
             "connection_lost": "连接中断。正在重新连接..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "保存",
+                "name": "名称"
+            }
         }
     },
     "domain": {

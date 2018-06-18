@@ -12,7 +12,8 @@
         "dev-events": "事件",
         "dev-templates": "模板",
         "dev-mqtt": "MQTT",
-        "dev-info": "資訊"
+        "dev-info": "資訊",
+        "calendar": "行事曆"
     },
     "state": {
         "default": {
@@ -605,7 +606,9 @@
                 "effect": "場景"
             },
             "media_player": {
-                "text_to_speak": "所要閱讀的文字"
+                "text_to_speak": "所要閱讀的文字",
+                "source": "來源",
+                "sound_mode": "音效模式"
             },
             "climate": {
                 "currently": "目前狀態",
@@ -634,8 +637,8 @@
                 "service": "服務"
             },
             "relative_time": {
-                "past": "{time} 前",
-                "future": "{time} 後",
+                "past": "{time}前",
+                "future": "{time}後",
                 "never": "未執行"
             },
             "history_charts": {
@@ -649,6 +652,12 @@
             "service_called": "服務 {service} 已執行。",
             "service_call_failed": "服務 {service} 執行失敗。",
             "connection_lost": "連線中斷。重新連線中..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "儲存",
+                "name": "名稱"
+            }
         }
     },
     "domain": {
