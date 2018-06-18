@@ -33,6 +33,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   'fan',
   'group',
   'history_graph',
+  'input_datetime',
   'light',
   'lock',
   'media_player',
@@ -40,16 +41,15 @@ export const DOMAINS_WITH_MORE_INFO = [
   'sun',
   'updater',
   'vacuum',
-  'input_datetime',
   'weather'
 ];
 
 /** Domains that show no more info dialog. */
 export const HIDE_MORE_INFO = [
-  'input_select',
-  'scene',
   'input_number',
-  'input_text'
+  'input_select',
+  'input_text',
+  'scene'
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */
