@@ -123,10 +123,6 @@ class HaConfigFlow extends
         value: false,
       },
 
-      _flowId: {
-        type: String,
-      },
-
       _step: {
         type: Object,
         value: null,
@@ -215,6 +211,7 @@ class HaConfigFlow extends
       flowFinished,
     });
 
+    this._errorMsg = null;
     this._step = null;
     this._stepData = {};
     this._dialogClosedCallback = null;
