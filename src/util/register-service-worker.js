@@ -12,10 +12,9 @@ export default () => {
         if (installingWorker.state === 'installed' &&
             navigator.serviceWorker.controller &&
             !__DEV__) {
-          alert('Detected new frontend version. Reloading page.');
           location.reload();
         }
       });
     });
   });
-}
+};
