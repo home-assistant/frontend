@@ -21,5 +21,5 @@ export default () => {
   // If the active service worker changes, refresh the page because the cache has changed
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     location.reload();
-  })
+  });
 };
