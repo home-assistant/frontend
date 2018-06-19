@@ -3,11 +3,24 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hui-entities-card.js';
 import './hui-entity-filter-card.js';
+import './hui-camera-preview-card.js';
+import './hui-history-graph-card.js';
+import './hui-media-control-card.js';
+import './hui-plant-status-card.js';
+import './hui-weather-forecast-card';
 import './hui-error-card.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
 
-const VALID_TYPES = ['entities', 'entity-filter'];
+const VALID_TYPES = [
+  'camera-preview',
+  'entities',
+  'entity-filter',
+  'history-graph',
+  'media-control',
+  'plant-status',
+  'weather-forecast'
+];
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
 function cardElement(type) {
