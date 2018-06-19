@@ -195,10 +195,7 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
         });
         this._state = 'loaded';
       },
-
-      (err) => {
-        this._state = 'error';
-      },
+      () => { this._state = 'error'; },
     );
   }
 
