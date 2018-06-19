@@ -10,6 +10,9 @@ class HassioSupervisorLog extends PolymerElement {
       paper-card {
         display: block;
       }
+      pre {
+        overflow-x: auto;
+      }
     </style>
     <paper-card>
       <div class="card-content">
