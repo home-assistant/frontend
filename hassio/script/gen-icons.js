@@ -3,10 +3,11 @@ const fs = require('fs');
 const {
   findIcons,
   generateIconset,
+  MENU_BUTTON_ICON
 } = require('../../gulp/tasks/gen-icons.js');
 
 function genHassIcons() {
-  const iconNames = findIcons('./src', 'hassio');
+  const iconNames = findIcons('./src', 'hassio').concat(MENU_BUTTON_ICON);
   fs.writeFileSync('./hassio-icons.html', generateIconset('hassio', iconNames));
 }
 
