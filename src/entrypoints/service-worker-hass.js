@@ -111,11 +111,16 @@ function initPushNotifications() {
   });
 }
 
+self.addEventListener('message', (message) => {
+  if (message.data.type === 'skipWaiting') {
+    self.skipWaiting();
+    clients.claim();
+  }
+});
+
 workbox.setConfig({
   debug: __DEV__
 });
-workbox.skipWaiting();
-workbox.clientsClaim();
 
 if (!__DEV__) {
   initRouting();
