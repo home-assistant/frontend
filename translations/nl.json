@@ -12,7 +12,8 @@
         "dev-events": "Gebeurtenissen",
         "dev-templates": "Sjablonen",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -575,6 +576,48 @@
                     "wsw": "WZW"
                 },
                 "forecast": "Weersvoorspelling"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Wis",
+                "disarm": "Uitgeschakeld",
+                "arm_home": "Ingeschakeld thuis",
+                "arm_away": "Ingeschakeld afwezig"
+            },
+            "automation": {
+                "last_triggered": "Voor het laatst uitgevoerd",
+                "trigger": "Uitvoeren"
+            },
+            "cover": {
+                "position": "Positie",
+                "tilt_position": "Kantelpositie"
+            },
+            "fan": {
+                "speed": "Snelheid",
+                "direction": "Richting"
+            },
+            "light": {
+                "brightness": "Helderheid",
+                "color_temperature": "Kleurtemperatuur",
+                "white_value": "Wit waarde",
+                "effect": "Effect"
+            },
+            "climate": {
+                "currently": "Momenteel",
+                "on_off": "Aan \/ uit",
+                "target_temperature": "Gewenste temperatuur",
+                "target_humidity": "Gewenste luchtvochtigheid",
+                "operation": "Werking",
+                "fan_mode": "Ventilator modus",
+                "away_mode": "Afwezigheidsmodus"
+            },
+            "lock": {
+                "lock": "Vergrendelen",
+                "unlock": "Ontgrendelen"
+            },
+            "media_player": {
+                "source": "Bron",
+                "sound_mode": "Geluidsmodus"
             }
         },
         "components": {
@@ -587,11 +630,27 @@
                 "service": "Service"
             },
             "relative_time": {
+                "past": "{time} geleden",
+                "future": "Over {time}",
                 "never": "Nooit"
+            },
+            "history_charts": {
+                "loading_history": "Geschiedenis laden ...",
+                "no_history_found": "Geen geschiedenis gevonden"
             }
         },
         "notification_toast": {
+            "entity_turned_on": "{entity} ingeschakeld.",
+            "entity_turned_off": "{entity} uitgeschakeld.",
+            "service_called": "Service {service} aangeroepen",
+            "service_call_failed": "Kan service {service} niet aanroepen",
             "connection_lost": "Verbinding verbroken. Bezig met verbinden..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Opslaan",
+                "name": "Naam"
+            }
         }
     },
     "domain": {
