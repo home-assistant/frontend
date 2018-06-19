@@ -5,7 +5,7 @@ import computeDomain from '../../common/entity/compute_domain.js';
 import '../../cards/ha-weather-card.js';
 import './hui-error-card.js';
 
-class HuiWeatherPredictionCard extends PolymerElement {
+class HuiWeatherForecastCard extends PolymerElement {
   static get properties() {
     return {
       hass: {
@@ -25,8 +25,8 @@ class HuiWeatherPredictionCard extends PolymerElement {
 
   _configChanged(config) {
     this._entityId = null;
-    if (this.childNodes.length) {
-      this.removeChild(this.childNodes[0]);
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
     }
 
     let error = null;
@@ -62,7 +62,7 @@ class HuiWeatherPredictionCard extends PolymerElement {
   }
 
   _hassChanged(hass) {
-    if (this.childNodes.length && this._entityId) {
+    if (this.lastChild && this._entityId) {
       const element = this.childNodes[0];
       const stateObj = hass.states[this._entityId];
       element.stateObj = stateObj;
@@ -71,4 +71,4 @@ class HuiWeatherPredictionCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-weather-prediction-card', HuiWeatherPredictionCard);
+customElements.define('hui-weather-forecast-card', HuiWeatherForecastCard);

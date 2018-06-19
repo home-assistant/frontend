@@ -25,8 +25,8 @@ class HuiHistoryGraphCard extends PolymerElement {
 
   _configChanged(config) {
     this._entityId = null;
-    if (this.childNodes.length) {
-      this.removeChild(this.childNodes[0]);
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
     }
 
     let error = null;
@@ -62,7 +62,7 @@ class HuiHistoryGraphCard extends PolymerElement {
   }
 
   _hassChanged(hass) {
-    if (this.childNodes.length && this._entityId) {
+    if (this.lastChild && this._entityId) {
       const element = this.childNodes[0];
       const stateObj = hass.states[this._entityId];
       element.stateObj = stateObj;

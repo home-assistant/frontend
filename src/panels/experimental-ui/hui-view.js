@@ -6,22 +6,20 @@ import './hui-entity-filter-card.js';
 import './hui-camera-preview-card.js';
 import './hui-history-graph-card.js';
 import './hui-media-control-card.js';
-import './hui-notification-card.js';
 import './hui-plant-status-card.js';
-import './hui-weather-prediction-card.js';
+import './hui-weather-forecast-card';
 import './hui-error-card.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
 
 const VALID_TYPES = [
+  'camera-preview',
   'entities',
   'entity-filter',
-  'camera-preview',
   'history-graph',
   'media-control',
-  'notification',
   'plant-status',
-  'weather-prediction'
+  'weather-forecast'
 ];
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
