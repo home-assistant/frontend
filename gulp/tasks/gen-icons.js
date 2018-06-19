@@ -21,8 +21,6 @@ const BUILT_IN_PANEL_ICONS = [
   'cart', // Shopping List
 ];
 
-const MENU_BUTTON_ICON = 'menu';
-
 // Given an icon name, load the SVG file
 function loadIcon(name) {
   const iconPath = path.resolve(ICON_PATH, `${name}.svg`);
@@ -93,13 +91,14 @@ function findIcons(path, iconsetName) {
 }
 
 function genHassIcons() {
-  const iconNames = findIcons('./src', 'hass').concat(BUILT_IN_PANEL_ICONS, MENU_BUTTON_ICON);
+  const iconNames = findIcons('./src', 'hass').concat(BUILT_IN_PANEL_ICONS);
   fs.existsSync(OUTPUT_DIR) || fs.mkdirSync(OUTPUT_DIR);
   fs.writeFileSync(HASS_OUTPUT_PATH, generateIconset('hass', iconNames));
 }
 
 gulp.task('gen-icons-mdi', () => genMDIIcons());
 gulp.task('gen-icons-hass', () => genHassIcons());
+gulp.task('gen-icons-hassio', () => genHassIcons());
 gulp.task('gen-icons', ['gen-icons-hass', 'gen-icons-mdi'], () => {});
 
 module.exports = {
