@@ -6,6 +6,7 @@ class HuiErrorCard extends PolymerElement {
     return html`
       <style>
         :host {
+          display: block;
           background-color: red;
           color: white;
           text-align: center;
