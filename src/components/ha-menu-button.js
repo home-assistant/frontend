@@ -48,6 +48,7 @@ class HaMenuButton extends EventsMixin(PolymerElement) {
   }
 
   _getIcon(hassio) {
+    // hass:menu
     return `${hassio ? 'hassio' : 'hass'}:menu`;
   }
 }
