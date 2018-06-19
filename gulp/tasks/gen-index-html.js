@@ -23,10 +23,6 @@ function generateIndex(es6) {
   ];
 
   if (!es6) {
-    toReplace.push([
-      '/service_worker.js', '/service_worker_es5.js'
-    ]);
-
     const compatibilityPath = `/frontend_es5/compatibility-${md5(path.resolve(config.output_es5, 'compatibility.js'))}.js`;
     const es5Extra = `
     <script src='${compatibilityPath}'></script>
