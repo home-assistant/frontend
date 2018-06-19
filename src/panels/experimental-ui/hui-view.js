@@ -26,12 +26,10 @@ const VALID_TYPES = [
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
 function cardElement(type) {
-  if (type) {
-    if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-      return type.substr(CUSTOM_TYPE_PREFIX.length);
-    } else if (VALID_TYPES.includes(type)) {
-      return `hui-${type}-card`;
-    }
+  if (VALID_TYPES.includes(type)) {
+    return `hui-${type}-card`;
+  } else if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
+    return type.substr(CUSTOM_TYPE_PREFIX.length);
   }
   return null;
 }
