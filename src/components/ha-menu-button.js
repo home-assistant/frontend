@@ -15,7 +15,7 @@ class HaMenuButton extends EventsMixin(PolymerElement) {
         visibility: hidden;
       }
     </style>
-    <paper-icon-button icon="hass:menu" class$="[[computeMenuButtonClass(narrow, showMenu)]]" on-click="toggleMenu"></paper-icon-button>
+    <paper-icon-button icon="[[_getIcon(hassio)]]" class$="[[computeMenuButtonClass(narrow, showMenu)]]" on-click="toggleMenu"></paper-icon-button>
 `;
   }
 
@@ -30,6 +30,11 @@ class HaMenuButton extends EventsMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
+
+      hassio: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 
@@ -40,6 +45,10 @@ class HaMenuButton extends EventsMixin(PolymerElement) {
   toggleMenu(ev) {
     ev.stopPropagation();
     this.fire('hass-open-menu');
+  }
+
+  _getIcon(hassio) {
+    return `${hassio ? 'hassio' : 'hass'}:menu`;
   }
 }
 

@@ -180,8 +180,10 @@ class HUIView extends PolymerElement {
       return minIndex;
     }
 
-    elements.forEach(el =>
-      columns[getColumnIndex(el.getCardSize())].push(el));
+    elements.forEach((el) => {
+      const cardSize = typeof el.getCardSize === 'function' ? el.getCardSize() : 1;
+      columns[getColumnIndex(cardSize)].push(el);
+    });
 
     // Remove empty columns
     columns = columns.filter(val => val.length > 0);
