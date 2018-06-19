@@ -90,11 +90,6 @@
           document.write(e.outerHTML);
         }());
       }
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register('/service_worker.js');
-        });
-      }
     </script>
     <!--EXTRA_SCRIPTS-->
     <script src='/frontend_latest/core.js'></script>

@@ -8,6 +8,7 @@ import '@polymer/paper-styles/typography.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
@@ -26,6 +27,7 @@ import '../util/legacy-support';
 import '../util/roboto.js';
 import hassCallApi from '../util/hass-call-api.js';
 import makeDialogManager from '../dialogs/dialog-manager.js';
+import registerServiceWorker from '../util/register-service-worker.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import applyThemesOnElement from '../common/dom/apply_themes_on_element.js';
@@ -107,6 +109,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
     this.addEventListener('settheme', e => this.setTheme(e));
     this.addEventListener('hass-language-select', e => this.selectLanguage(e));
     this.loadResources();
+    afterNextRender(null, registerServiceWorker);
   }
 
   computeShowMain(hass) {
