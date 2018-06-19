@@ -8,10 +8,19 @@ import '../cards/ha-badges-card.js';
 import '../cards/ha-card-chooser.js';
 import './ha-demo-badge.js';
 
-import { DOMAINS_WITH_CARD } from '../common/const.js';
 import computeStateDomain from '../common/entity/compute_state_domain.js';
 import splitByGroups from '../common/entity/split_by_groups.js';
 import getGroupEntities from '../common/entity/get_group_entities.js';
+
+// mapping domain to size of the card.
+const DOMAINS_WITH_CARD = {
+  camera: 4,
+  history_graph: 4,
+  media_player: 3,
+  persistent_notification: 0,
+  plant: 3,
+  weather: 4,
+};
 
 // 4 types:
 // badges: 0 .. 10
