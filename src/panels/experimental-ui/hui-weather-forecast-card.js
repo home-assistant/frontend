@@ -63,7 +63,7 @@ class HuiWeatherForecastCard extends PolymerElement {
 
   _hassChanged(hass) {
     if (this.lastChild && this._entityId) {
-      const element = this.childNodes[0];
+      const element = this.lastChild;
       const stateObj = hass.states[this._entityId];
       element.stateObj = stateObj;
       element.hass = hass;
