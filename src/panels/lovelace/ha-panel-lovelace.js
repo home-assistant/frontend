@@ -18,6 +18,8 @@ class Lovelace extends PolymerElement {
     return html`
       <template is='dom-if' if='[[_equal(_state, "loaded")]]' restamp>
         <hui-root
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
           hass='[[hass]]'
           config='[[_config]]'
           columns='[[_columns]]'
