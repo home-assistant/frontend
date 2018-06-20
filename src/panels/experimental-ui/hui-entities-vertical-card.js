@@ -1,6 +1,5 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/iron-icon/iron-icon.js';
 
 import computeDomain from '../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../common/entity/compute_state_display.js';
