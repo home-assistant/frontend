@@ -52,7 +52,7 @@ class HuiSceneCard extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <ha-card on-click="_openDialog">
+      <ha-card on-click="_callService">
         <img src="[[config.image]]">
         <div class="text">
           <div class="title">[[_computeTitle(config.entity, hass.states)]]</div>
@@ -92,7 +92,7 @@ class HuiSceneCard extends LocalizeMixin(PolymerElement) {
     return entityId && computeStateName(states[entityId]);
   }
 
-  _openDialog() {
+  _callService() {
     if (this.config && this.config.entity) {
       this.hass.callService('scene', 'turn_on', { entity_id: this.config.entity });
     }
