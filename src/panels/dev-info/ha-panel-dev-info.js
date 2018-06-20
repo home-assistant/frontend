@@ -141,7 +141,7 @@ class HaPanelDevInfo extends PolymerElement {
           <p>
             Built using
             <a href='https://www.python.org'>Python 3</a>,
-            <a href='https://www.polymer-project.org' target='_blank'>Polymer [[polymerVersion]]</a>,
+            <a href='https://www.polymer-project.org' target='_blank'>Polymer</a>,
             Icons by <a href='https://www.google.com/design/icons/' target='_blank'>Google</a> and <a href='https://MaterialDesignIcons.com' target='_blank'>MaterialDesignIcons.com</a>.
           </p>
           <p>
@@ -157,6 +157,7 @@ class HaPanelDevInfo extends PolymerElement {
               </div>
             </template>
           </p>
+          <p><a href='/lovelace'>Try out the new Lovelace UI (experimental)</a></p>
         </div>
 
         <div class="system-log-intro">
@@ -231,11 +232,6 @@ class HaPanelDevInfo extends PolymerElement {
       showMenu: {
         type: Boolean,
         value: false,
-      },
-
-      polymerVersion: {
-        type: String,
-        value: Polymer.version,
       },
 
       errorLog: {
