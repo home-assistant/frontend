@@ -1,7 +1,6 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeDomain from '../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../common/entity/compute_state_display.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 
@@ -11,13 +10,11 @@ import '../../components/ha-card.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-const VALID_DOMAINS = ['binary_sensor', 'light', 'sensor'];
-
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  */
-class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
+class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -39,8 +36,6 @@ class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement))
           padding: 4px 0;
           display: flex;
           flex-wrap: wrap;
-          flex: 1 0 minmax(100px, 20%);
-          justify-content: space-around;
         }
         .entity {
           padding: 0 4px;
@@ -48,6 +43,19 @@ class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement))
           flex-direction: column;
           align-items: center;
           cursor: pointer;
+          width: 18%;
+        }
+        .entity div, .entity state-badge {
+          width: 100%;
+          text-align: center;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .error {
+          background-color: red;
+          color: white;
+          text-align: center;
         }
       </style>
 
@@ -56,7 +64,7 @@ class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement))
           <div class="name">[[_computeTitle(config)]]</div>
         </div>
         <div class="entities">
-          <template is="dom-repeat" items="[[entities]]">
+          <template is="dom-repeat" items="[[_entities]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
               <div class="entity" on-click="_openDialog">
                 <div>[[_computeName(item, hass.states)]]</div>
@@ -66,6 +74,9 @@ class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement))
             </template>
           </template>
         </div>
+        <template is="dom-if" if="[[_error]]">
+          <div class="error">[[_error]]</div>
+        </template>
       </ha-card>
     `;
   }
@@ -74,10 +85,11 @@ class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement))
     return {
       hass: Object,
       config: Object,
-      entities: {
+      _entities: {
         type: Array,
         computed: '_computeEntities(config)'
-      }
+      },
+      _error: String
     };
   }
 
@@ -90,12 +102,16 @@ class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement))
   }
 
   _computeEntities(config) {
-    return config && config.entities && Array.isArray(config.entities) ?
-      config.entities.filter(entity => VALID_DOMAINS.includes(computeDomain(entity))) : [];
+    if (config && config.entities && Array.isArray(config.entities)) {
+      this._error = null;
+      return config.entities;
+    }
+    this._error = 'Error in card configuration.';
+    return [];
   }
 
   _showEntity(item, states) {
-    return states && states[item] ? true : false;
+    return item in states;
   }
 
   _computeName(item, states) {
@@ -115,4 +131,4 @@ class HuiEntitiesVerticalCard extends LocalizeMixin(EventsMixin(PolymerElement))
   }
 }
 
-customElements.define('hui-entities-vertical-card', HuiEntitiesVerticalCard);
+customElements.define('hui-glance-card', HuiGlanceCard);
