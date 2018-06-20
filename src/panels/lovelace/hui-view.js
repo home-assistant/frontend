@@ -1,9 +1,10 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import './hui-camera-preview-card.js';
 import './hui-entities-card.js';
 import './hui-entity-filter-card.js';
-import './hui-camera-preview-card.js';
+import './hui-glance-card';
 import './hui-history-graph-card.js';
 import './hui-media-control-card.js';
 import './hui-plant-status-card.js';
@@ -16,6 +17,7 @@ const VALID_TYPES = [
   'camera-preview',
   'entities',
   'entity-filter',
+  'glance',
   'history-graph',
   'media-control',
   'plant-status',
