@@ -6,7 +6,12 @@ import '../../components/ha-card.js';
 import computeDomain from '../../common/entity/compute_domain.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 
-class HuiSceneCard extends PolymerElement {
+import LocalizeMixin from '../../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HuiSceneCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -21,7 +26,7 @@ class HuiSceneCard extends PolymerElement {
           height: auto;
           border-radius: 2px;
         }
-        .title {
+        .text {
           @apply --paper-font-common-nowrap;
           position: absolute;
           left: 0;
@@ -30,11 +35,15 @@ class HuiSceneCard extends PolymerElement {
           background-color: rgba(0, 0, 0, 0.3);
           padding: 16px;
           font-size: 16px;
-          font-weight: 500;
           line-height: 16px;
           color: white;
           border-bottom-left-radius: 2px;
           border-bottom-right-radius: 2px;
+          display: flex;
+          justify-content: space-between;
+        }
+        .text .title {
+          font-weight: 500;
         }
         .error {
           background-color: red;
@@ -45,7 +54,10 @@ class HuiSceneCard extends PolymerElement {
 
       <ha-card on-click="_openDialog">
         <img src="[[config.image]]">
-        <div class="title">[[_computeTitle(config.entity, hass.states)]]</div>
+        <div class="text">
+          <div class="title">[[_computeTitle(config.entity, hass.states)]]</div>
+          <div>[[localize('ui.card.scene.activate')]]</div>
+        </div>
         <template is="dom-if" if="[[_error]]">
           <div class="error">[[_error]]</div>
         </template>
