@@ -10,18 +10,28 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../layouts/hass-loading-screen.js';
+import '../../layouts/hass-error-screen.js';
 import './hui-root.js';
 
-class ExperimentalUI extends PolymerElement {
+class Lovelace extends PolymerElement {
   static get template() {
     return html`
-      <template is='dom-if' if='[[!_config]]' restamp>
+      <template is='dom-if' if='[[_equal(_state, "loading")]]' restamp>
         <hass-loading-screen
+          title='Lovelace'
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
         ></hass-loading-screen>
       </template>
-      <template is='dom-if' if='[[_config]]' restamp>
+      <template is='dom-if' if='[[_equal(_state, "error")]]' restamp>
+        <hass-error-screen
+          title='Lovelace'
+          error='[[_errorMsg]]'
+          narrow="[[narrow]]"
+          show-menu="[[showMenu]]"
+        ></hass-error-screen>
+      </template>
+      <template is='dom-if' if='[[_equal(_state, "loaded")]]' restamp>
         <hui-root
           hass='[[hass]]'
           config='[[_config]]'
@@ -51,6 +61,13 @@ class ExperimentalUI extends PolymerElement {
         value: 1,
       },
 
+      _state: {
+        type: String,
+        value: 'loading',
+      },
+
+      _errorMsg: String,
+
       _config: {
         type: Object,
         value: null,
@@ -77,9 +94,22 @@ class ExperimentalUI extends PolymerElement {
   }
 
   _fetchConfig() {
-    this.hass.connection.sendMessagePromise({ type: 'frontend/experimental_ui' })
-      .then((conf) => { this._config = conf.result; });
+    this.hass.connection.sendMessagePromise({ type: 'frontend/lovelace_config' })
+      .then(
+        (conf) => this.setProperties({
+          _config: conf.result,
+          _state: 'loaded',
+        }),
+        (err) => this.setProperties({
+          _state: 'error',
+          _errorMsg: err.message,
+        })
+      );
+  }
+
+  _equal(a, b) {
+    return a === b;
   }
 }
 
-customElements.define('ha-panel-experimental-ui', ExperimentalUI);
+customElements.define('ha-panel-lovelace', Lovelace);
