@@ -50,8 +50,8 @@ function ensureLoaded(panel) {
       imported = import(/* webpackChunkName: "panel-dev-template" */ '../panels/dev-template/ha-panel-dev-template.js');
       break;
 
-    case 'experimental-ui':
-      imported = import(/* webpackChunkName: "panel-experimental-ui" */ '../panels/experimental-ui/ha-panel-experimental-ui.js');
+    case 'lovelace':
+      imported = import(/* webpackChunkName: "panel-lovelace" */ '../panels/lovelace/ha-panel-lovelace.js');
       break;
 
     case 'history':
@@ -180,7 +180,7 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
     }
 
     if (loadingProm === null) {
-      this.panelLoadError(panel);
+      this._state = 'error';
       return;
     }
 
@@ -197,10 +197,6 @@ class PartialPanelResolver extends NavigateMixin(PolymerElement) {
       },
       () => { this._state = 'error'; },
     );
-  }
-
-  panelLoadError(panel) {
-    alert(`Failed to resolve panel ${panel.component_name}`);
   }
 
   updateAttributes() {

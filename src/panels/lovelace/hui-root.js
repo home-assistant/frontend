@@ -31,12 +31,18 @@ class HUIRoot extends EventsMixin(PolymerElement) {
         --paper-tabs-selection-bar-color: var(--text-primary-color, #FFF);
         text-transform: uppercase;
       }
+      app-toolbar a {
+        color: var(--text-primary-color, white);
+      }
     </style>
     <ha-app-layout id="layout">
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
+          <a href='https://developers.home-assistant.io/docs/en/lovelace_index.html' tabindex='-1' target='_blank'>
+            <paper-icon-button icon='hass:help-circle-outline'></paper-icon-button>
+          </a>
           <paper-icon-button icon='hass:refresh' on-click='_handleRefresh'></paper-icon-button>
         </app-toolbar>
 
