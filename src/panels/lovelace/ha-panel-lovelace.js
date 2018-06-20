@@ -26,7 +26,6 @@ class Lovelace extends PolymerElement {
       </template>
       <template is='dom-if' if='[[_equal(_state, "loading")]]' restamp>
         <hass-loading-screen
-          title='Lovelace'
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
         ></hass-loading-screen>

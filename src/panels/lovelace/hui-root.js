@@ -97,7 +97,7 @@ class HUIRoot extends EventsMixin(PolymerElement) {
   }
 
   _computeTitle(config) {
-    return config.title || 'Home Assistant';
+    return config.name || 'Home Assistant';
   }
 
   _computeTabsHidden(views) {
