@@ -36,6 +36,8 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           padding: 4px 0;
           display: flex;
           flex-wrap: wrap;
+          flex-basis: 20%;
+          justify-content: space-around;
         }
         .entity {
           padding: 0 4px;
