@@ -19,6 +19,7 @@ class HuiSceneCard extends PolymerElement {
         img {
           width: 100%;
           height: auto;
+          border-radius: 2px;
         }
         .title {
           @apply --paper-font-common-nowrap;
@@ -32,6 +33,8 @@ class HuiSceneCard extends PolymerElement {
           font-weight: 500;
           line-height: 16px;
           color: white;
+          border-bottom-left-radius: 2px;
+          border-bottom-right-radius: 2px;
         }
         .error {
           background-color: red;
