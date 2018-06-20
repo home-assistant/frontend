@@ -138,7 +138,7 @@ class HUIRoot extends EventsMixin(PolymerElement) {
     this.$.view.lastChild.hass = hass;
   }
 
-  _configChanged(config) {
+  _configChanged() {
     // On config change, recreate the view from scratch.
     this._selectView(this._curView);
   }
