@@ -62,28 +62,38 @@ class HUIRoot extends EventsMixin(PolymerElement) {
         </div>
       </app-header>
 
-      <hui-view
-        hass='[[hass]]'
-        config='[[_computeViewConfig(config.views, _curView)]]'
-        columns='[[columns]]'
-      ></hui-view>
+      <span id='view'></span>
     </app-header-layout>
     `;
   }
 
   static get properties() {
     return {
-      hass: Object,
       narrow: Boolean,
       showMenu: Boolean,
-      config: Object,
-      columns: Number,
+      hass: {
+        type: Object,
+        observer: '_hassChanged',
+      },
+      config: {
+        type: Object,
+        observer: '_configChanged',
+      },
+      columns: {
+        type: Number,
+        observer: '_columnsChanged',
+      },
 
       _curView: {
         type: Number,
         value: 0,
       }
     };
+  }
+
+  ready() {
+    super.ready();
+    this._selectView(0);
   }
 
   _computeTitle(config) {
@@ -98,17 +108,46 @@ class HUIRoot extends EventsMixin(PolymerElement) {
     return view.tab_title || view.name || 'Unnamed View';
   }
 
-  _computeViewConfig(views, _curView) {
-    return views[_curView];
-  }
-
   _handleRefresh() {
     this.fire('config-refresh');
   }
 
   _handleViewSelected(ev) {
-    this._curView = ev.detail.selected;
+    this._selectView(ev.detail.selected);
   }
+
+  _selectView(viewIndex) {
+    this._curView = viewIndex;
+
+    // Recreate a new element to clear the applied themes.
+    const root = this.$.view;
+    if (root.lastChild) {
+      root.removeChild(root.lastChild);
+    }
+    const view = document.createElement('hui-view');
+    view.setProperties({
+      hass: this.hass,
+      config: this.config.views[this._curView],
+      columns: this.columns,
+    });
+    root.appendChild(view);
+  }
+
+  _hassChanged(hass) {
+    if (!this.$.view.lastChild) return;
+    this.$.view.lastChild.hass = hass;
+  }
+
+  _configChanged(config) {
+    // On config change, recreate the view from scratch.
+    this._selectView(this._curView);
+  }
+
+  _columnsChanged(columns) {
+    if (!this.$.view.lastChild) return;
+    this.$.view.lastChild.columns = columns;
+  }
+
 
   /**
    * Scroll to a specific y coordinate.

@@ -16,6 +16,14 @@ import './hui-root.js';
 class Lovelace extends PolymerElement {
   static get template() {
     return html`
+      <template is='dom-if' if='[[_equal(_state, "loaded")]]' restamp>
+        <hui-root
+          hass='[[hass]]'
+          config='[[_config]]'
+          columns='[[_columns]]'
+          on-config-refresh='_fetchConfig'
+        ></hui-root>
+      </template>
       <template is='dom-if' if='[[_equal(_state, "loading")]]' restamp>
         <hass-loading-screen
           title='Lovelace'
@@ -30,14 +38,6 @@ class Lovelace extends PolymerElement {
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
         ></hass-error-screen>
-      </template>
-      <template is='dom-if' if='[[_equal(_state, "loaded")]]' restamp>
-        <hui-root
-          hass='[[hass]]'
-          config='[[_config]]'
-          columns='[[_columns]]'
-          on-config-refresh='_fetchConfig'
-        ></hui-root>
       </template>
     `;
   }
