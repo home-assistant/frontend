@@ -96,11 +96,11 @@ class Lovelace extends PolymerElement {
   _fetchConfig() {
     this.hass.connection.sendMessagePromise({ type: 'frontend/lovelace_config' })
       .then(
-        (conf) => this.setProperties({
+        conf => this.setProperties({
           _config: conf.result,
           _state: 'loaded',
         }),
-        (err) => this.setProperties({
+        err => this.setProperties({
           _state: 'error',
           _errorMsg: err.message,
         })
