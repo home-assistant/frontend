@@ -8,6 +8,7 @@ import './hui-glance-card';
 import './hui-history-graph-card.js';
 import './hui-media-control-card.js';
 import './hui-plant-status-card.js';
+import './hui-scene-card.js';
 import './hui-weather-forecast-card';
 import './hui-error-card.js';
 
@@ -21,6 +22,7 @@ const VALID_TYPES = [
   'history-graph',
   'media-control',
   'plant-status',
+  'scene',
   'weather-forecast'
 ];
 const CUSTOM_TYPE_PREFIX = 'custom:';
