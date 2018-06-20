@@ -35,17 +35,17 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         .entities {
           padding: 4px 0;
           display: flex;
+          margin-bottom: -12px;
           flex-wrap: wrap;
-          flex-basis: 20%;
-          justify-content: space-around;
         }
         .entity {
+          box-sizing: border-box;
           padding: 0 4px;
           display: flex;
           flex-direction: column;
-          align-items: center;
           cursor: pointer;
-          width: 18%;
+          margin-bottom: 12px;
+          width: 20%;
         }
         .entity div, .entity state-badge {
           width: 100%;
