@@ -55,10 +55,7 @@ class HuiSceneCard extends PolymerElement {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-        observer: '_hassChanged'
-      },
+      hass: Object,
       config: {
         type: Object,
         observer: '_configChanged'
