@@ -11,7 +11,7 @@ import '../../components/ha-card.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-const VALID_DOMAINS = ['binary_sensor', 'sensor'];
+const VALID_DOMAINS = ['binary_sensor', 'light', 'sensor'];
 
 /*
  * @appliesMixin EventsMixin
