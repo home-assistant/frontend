@@ -129,9 +129,8 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       if (config.force_dialog) {
         dialog = config.entities;
       } else {
-        dialog = config.entities.filter(
-          entity => DOMAINS_FORCE_DIALOG.includes(computeDomain(entity))
-        );
+        dialog = config.entities
+          .filter(entity => DOMAINS_FORCE_DIALOG.includes(computeDomain(entity)));
         service = config.entities.filter(entity => !dialog.includes(entity));
       }
     } else {
