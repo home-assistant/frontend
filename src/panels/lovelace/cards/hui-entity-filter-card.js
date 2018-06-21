@@ -10,8 +10,8 @@ import './hui-picture-glance-card';
 import './hui-plant-status-card.js';
 import './hui-weather-forecast-card';
 
-import computeStateDomain from '../../common/entity/compute_state_domain.js';
-import computeCardElement from './common/compute-card-element.js';
+import computeStateDomain from '../../../common/entity/compute_state_domain.js';
+import computeCardElement from '../common/compute-card-element.js';
 
 class HuiEntitiesCard extends PolymerElement {
   static get properties() {
@@ -25,6 +25,11 @@ class HuiEntitiesCard extends PolymerElement {
         observer: '_configChanged'
       }
     };
+  }
+
+  constructor() {
+    super();
+    this._whenDefined = {};
   }
 
   getCardSize() {
@@ -75,6 +80,10 @@ class HuiEntitiesCard extends PolymerElement {
       error = `Unknown card type encountered: "${config.card}".`;
     } else if (!customElements.get(tag)) {
       error = `Custom element doesn't exist: "${tag}".`;
+      if (!(tag in this._whenDefined)) {
+        this._whenDefined[tag] = customElements.whenDefined(tag)
+          .then(() => this._configChanged(this.config));
+      }
     } else if (!config.filter || !Array.isArray(config.filter)) {
       error = 'No or incorrect filter.';
     }
@@ -100,14 +109,11 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _computeCardConfig(config) {
-    const cardConfig = Object.assign(
+    return Object.assign(
       {},
-      config,
+      config.card_config,
       { entities: this._getEntities(this.hass, config.filter) }
     );
-    delete cardConfig.card;
-    delete cardConfig.filter;
-    return cardConfig;
   }
 }
 customElements.define('hui-entity-filter-card', HuiEntitiesCard);
