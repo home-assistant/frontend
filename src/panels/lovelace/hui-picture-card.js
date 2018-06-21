@@ -101,7 +101,7 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
   }
 
   _computeTitle(entityId, states) {
-    return entityId && computeStateName(states[entityId]);
+    return entityId && entityId in states && computeStateName(states[entityId]);
   }
 
   _computeState(entityId, states) {
