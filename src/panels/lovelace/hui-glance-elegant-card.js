@@ -13,7 +13,7 @@ import stateIcon from '../../common/entity/state_icon.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-const DOMAIN_SENSORS = ['binary_sensor', 'device_tracker', 'sensor'];
+const DOMAINS_FORCE_DIALOG = ['binary_sensor', 'device_tracker', 'sensor'];
 
 /*
  * @appliesMixin EventsMixin
@@ -137,7 +137,7 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     const entityId = ev.model.item;
     const domain = computeDomain(entityId);
 
-    if (DOMAIN_SENSORS.includes(domain) || this.config.force_dialog) {
+    if (DOMAINS_FORCE_DIALOG.includes(domain) || this.config.force_dialog) {
       this.fire('hass-more-info', { entityId });
     } else {
       const isOn = STATES_ON.includes(this.hass.states[entityId].state);
