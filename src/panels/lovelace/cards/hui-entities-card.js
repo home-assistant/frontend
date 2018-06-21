@@ -26,8 +26,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       #states {
         margin: -4px 0;
       }
-      #states > * {
-        display: block;
+      #states > div {
         margin: 4px 0;
       }
       .header {
@@ -103,7 +102,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       element.stateObj = stateObj;
       element.hass = this.hass;
       this._elements.push({ entityId, element });
-      root.appendChild(element);
+      const container = document.createElement('div');
+      container.appendChild(element);
+      root.appendChild(container);
     }
   }
 
