@@ -14,7 +14,6 @@ const DOMAINS_NO_STATE = ['scene', 'script', 'weblink'];
 
 /*
  * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
  */
 class HuiPictureCard extends LocalizeMixin(PolymerElement) {
   static get template() {
