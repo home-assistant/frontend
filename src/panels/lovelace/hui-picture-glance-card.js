@@ -124,16 +124,18 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _configChanged(config) {
     let dialog = [];
     let service = [];
-    let _error = null
+    let _error = null;
     if (config && config.entities && Array.isArray(config.entities) && config.image) {
       if (config.force_dialog) {
         dialog = config.entities;
       } else {
-        dialog = config.entities.filter(entity => DOMAINS_FORCE_DIALOG.includes(computeDomain(entity)));
+        dialog = config.entities.filter(
+          entity => DOMAINS_FORCE_DIALOG.includes(computeDomain(entity))
+        );
         service = config.entities.filter(entity => !dialog.includes(entity));
       }
     } else {
-      error = 'Error in card configuration.';
+      _error = 'Error in card configuration.';
     }
     this.setProperties({
       _entitiesDialog: dialog,
