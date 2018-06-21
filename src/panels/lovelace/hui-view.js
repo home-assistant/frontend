@@ -5,9 +5,9 @@ import './hui-camera-preview-card.js';
 import './hui-entities-card.js';
 import './hui-entity-filter-card.js';
 import './hui-glance-card';
-import './hui-glance-elegant-card';
 import './hui-history-graph-card.js';
 import './hui-media-control-card.js';
+import './hui-picture-glance-card';
 import './hui-plant-status-card.js';
 import './hui-weather-forecast-card';
 import './hui-error-card.js';
@@ -19,9 +19,9 @@ const VALID_TYPES = [
   'entities',
   'entity-filter',
   'glance',
-  'glance-elegant',
   'history-graph',
   'media-control',
+  'picture-glance',
   'plant-status',
   'weather-forecast'
 ];

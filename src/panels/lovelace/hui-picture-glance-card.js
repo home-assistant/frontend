@@ -19,7 +19,7 @@ const DOMAINS_FORCE_DIALOG = ['binary_sensor', 'device_tracker', 'sensor'];
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  */
-class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
+class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -73,7 +73,19 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="box">
           <div class="title">[[config.title]]</div>
           <div>
-            <template is="dom-repeat" items="[[_entities]]">
+            <template is="dom-repeat" items="[[_entitiesDialog]]">
+              <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
+                <paper-icon-button
+                  on-click="_openDialog"
+                  class$="[[_computeClass(item, hass.states)]]"
+                  icon="[[_computeIcon(item, hass.states)]]"
+                  title="[[_computeTooltip(item, hass.states)]]"
+                ></paper-icon-button>
+              </template>
+            </template>
+          </div>
+          <div>
+            <template is="dom-repeat" items="[[_entitiesService]]">
               <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
                 <paper-icon-button
                   on-click="_callService"
@@ -95,11 +107,12 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get properties() {
     return {
       hass: Object,
-      config: Object,
-      _entities: {
-        type: Array,
-        computed: '_computeEntities(config)'
+      config: {
+        type: Object,
+        observer: '_configChanged'
       },
+      _entitiesDialog: Array,
+      _entitiesService: Array,
       _error: String
     };
   }
@@ -108,13 +121,25 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return 3;
   }
 
-  _computeEntities(config) {
+  _configChanged(config) {
+    let dialog = [];
+    let service = [];
+    let _error = null
     if (config && config.entities && Array.isArray(config.entities) && config.image) {
-      this._error = null;
-      return config.entities;
+      if (config.force_dialog) {
+        dialog = config.entities;
+      } else {
+        dialog = config.entities.filter(entity => DOMAINS_FORCE_DIALOG.includes(computeDomain(entity)));
+        service = config.entities.filter(entity => !dialog.includes(entity));
+      }
+    } else {
+      error = 'Error in card configuration.';
     }
-    this._error = 'Error in card configuration.';
-    return [];
+    this.setProperties({
+      _entitiesDialog: dialog,
+      _entitiesService: service,
+      _error
+    });
   }
 
   _showEntity(entityId, states) {
@@ -133,31 +158,30 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return `${computeStateName(states[entityId])}: ${computeStateDisplay(this.localize, states[entityId])}`;
   }
 
+  _openDialog(ev) {
+    this.fire('hass-more-info', { entityId: ev.model.item });
+  }
+
   _callService(ev) {
     const entityId = ev.model.item;
     const domain = computeDomain(entityId);
-
-    if (DOMAINS_FORCE_DIALOG.includes(domain) || this.config.force_dialog) {
-      this.fire('hass-more-info', { entityId });
-    } else {
-      const isOn = STATES_ON.includes(this.hass.states[entityId].state);
-      let service;
-      switch (domain) {
-        case 'lock':
-          service = isOn ? 'unlock' : 'lock';
-          break;
-        case 'cover':
-          service = isOn ? 'close' : 'open';
-          break;
-        case 'scene':
-          service = 'turn_on';
-          break;
-        default:
-          service = isOn ? 'turn_off' : 'turn_on';
-      }
-      this.hass.callService(domain, service, { entity_id: entityId });
+    const isOn = STATES_ON.includes(this.hass.states[entityId].state);
+    let service;
+    switch (domain) {
+      case 'lock':
+        service = isOn ? 'unlock' : 'lock';
+        break;
+      case 'cover':
+        service = isOn ? 'close' : 'open';
+        break;
+      case 'scene':
+        service = 'turn_on';
+        break;
+      default:
+        service = isOn ? 'turn_off' : 'turn_on';
     }
+    this.hass.callService(domain, service, { entity_id: entityId });
   }
 }
 
-customElements.define('hui-glance-elegant-card', HuiGlanceElegantCard);
+customElements.define('hui-picture-glance-card', HuiPictureGlanceCard);
