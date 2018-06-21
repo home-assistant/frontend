@@ -57,7 +57,7 @@ class PaperTimeInput extends PolymerElement {
           padding: 0;
           /* Force ripple to use the whole container */
           --paper-dropdown-menu-ripple: {
-            color: var(--paper-time-input-dropdown-ripple-color, --primary-color);
+            color: var(--paper-time-input-dropdown-ripple-color, var(--primary-color));
           };
           --paper-input-container-input: {
             @apply --paper-font-button;
