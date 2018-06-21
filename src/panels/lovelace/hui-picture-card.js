@@ -110,7 +110,7 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
       case 'scene':
         return this.localize('ui.card.scene.activate');
       case 'script':
-      return this.localize('ui.card.script.execute');
+        return this.localize('ui.card.script.execute');
       case 'weblink':
         return 'Open';
       default:
