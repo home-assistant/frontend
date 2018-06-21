@@ -1,11 +1,11 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeDomain from '../../common/entity/compute_domain.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
 
-import '../../cards/ha-weather-card.js';
+import '../../../cards/ha-camera-card.js';
 import './hui-error-card.js';
 
-class HuiWeatherForecastCard extends PolymerElement {
+class HuiCameraPreviewCard extends PolymerElement {
   static get properties() {
     return {
       hass: {
@@ -35,12 +35,12 @@ class HuiWeatherForecastCard extends PolymerElement {
 
     const entityId = config && config.entity;
     if (entityId) {
-      if (computeDomain(entityId) === 'weather') {
+      if (computeDomain(entityId) === 'camera') {
         this._entityId = entityId;
-        tag = 'ha-weather-card';
+        tag = 'ha-camera-card';
         cardConfig = config;
       } else {
-        error = 'Entity domain must be "weather"';
+        error = 'Entity domain must be "camera"';
       }
     } else {
       error = 'Entity not defined in card config';
@@ -71,4 +71,4 @@ class HuiWeatherForecastCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-weather-forecast-card', HuiWeatherForecastCard);
+customElements.define('hui-camera-preview-card', HuiCameraPreviewCard);

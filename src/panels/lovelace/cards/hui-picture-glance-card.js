@@ -2,16 +2,16 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 
-import '../../components/ha-card.js';
+import '../../../components/ha-card.js';
 
-import { STATES_ON } from '../../common/const.js';
-import computeDomain from '../../common/entity/compute_domain.js';
-import computeStateDisplay from '../../common/entity/compute_state_display.js';
-import computeStateName from '../../common/entity/compute_state_name.js';
-import stateIcon from '../../common/entity/state_icon.js';
+import { STATES_ON } from '../../../common/const.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
+import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import computeStateName from '../../../common/entity/compute_state_name.js';
+import stateIcon from '../../../common/entity/state_icon.js';
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 const DOMAINS_FORCE_DIALOG = ['binary_sensor', 'device_tracker', 'sensor'];
 

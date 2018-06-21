@@ -22,6 +22,9 @@ class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       ha-card {
         padding: 16px;
       }
+      .states {
+        margin: -4px 0;
+      }
       .state {
         padding: 4px 0;
       }
