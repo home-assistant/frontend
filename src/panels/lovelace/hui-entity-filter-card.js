@@ -101,8 +101,11 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _computeCardConfig(config) {
-    const cardConfig = Object.assign({}, config,
-      { entities: this._getEntities(this.hass, config.filter) });
+    const cardConfig = Object.assign(
+      {},
+      config,
+      { entities: this._getEntities(this.hass, config.filter) }
+    );
     delete cardConfig.card;
     delete cardConfig.filter;
     return cardConfig;
