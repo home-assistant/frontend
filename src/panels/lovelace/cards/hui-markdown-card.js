@@ -33,10 +33,6 @@ class HuiMarkdownCard extends PolymerElement {
         ha-markdown img {
           max-width: 100%;
         }
-        paper-button {
-          margin: 8px;
-          font-weight: 500;
-        }
       </style>
       <ha-card header="[[config.title]]">
         <ha-markdown content='[[config.content]]'></ha-markdown>
