@@ -7,6 +7,7 @@ import './hui-entity-filter-card.js';
 import './hui-glance-card';
 import './hui-history-graph-card.js';
 import './hui-media-control-card.js';
+import './hui-picture-card.js';
 import './hui-picture-glance-card';
 import './hui-plant-status-card.js';
 import './hui-weather-forecast-card';
@@ -87,6 +88,7 @@ class HUIView extends PolymerElement {
   constructor() {
     super();
     this._elements = [];
+    this._whenDefined = {};
   }
 
   _getElements(cards) {
@@ -104,6 +106,10 @@ class HUIView extends PolymerElement {
           error = `Unknown card type encountered: "${cardConfig.type}".`;
         } else if (!customElements.get(tag)) {
           error = `Custom element doesn't exist: "${tag}".`;
+          if (!(tag in this._whenDefined)) {
+            this._whenDefined[tag] = customElements.whenDefined(tag)
+              .then(() => this._configChanged());
+          }
         }
       }
       if (error) {
