@@ -40,7 +40,7 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           right: 0;
           bottom: 0;
           background-color: rgba(0, 0, 0, 0.3);
-          padding: 16px;
+          padding: 4px 16px;
           font-size: 16px;
           line-height: 40px;
           color: white;
