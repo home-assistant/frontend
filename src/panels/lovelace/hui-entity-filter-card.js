@@ -18,8 +18,7 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   getCardSize() {
-    // +1 for the header
-    return 1 + (this._cardSize || 2);
+    return this.lastChild ? this.lastChild.getCardSize() : 1;
   }
 
   // Return a list of entities based on filters.
