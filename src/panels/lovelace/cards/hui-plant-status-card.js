@@ -1,8 +1,8 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeDomain from '../../common/entity/compute_domain.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
 
-import '../../cards/ha-plant-card.js';
+import '../../../cards/ha-plant-card.js';
 import './hui-error-card.js';
 
 class HuiPlantStatusCard extends PolymerElement {

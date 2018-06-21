@@ -1,14 +1,14 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../components/ha-card.js';
+import '../../../components/ha-card.js';
 
-import { STATES_ON } from '../../common/const.js';
-import computeDomain from '../../common/entity/compute_domain.js';
-import computeStateDisplay from '../../common/entity/compute_state_display.js';
-import computeStateName from '../../common/entity/compute_state_name.js';
+import { STATES_ON } from '../../../common/const.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
+import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import computeStateName from '../../../common/entity/compute_state_name.js';
 
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 const DOMAINS_NO_STATE = ['scene', 'script', 'weblink'];
 
@@ -141,4 +141,4 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('hui-picture-card', HuiPictureCard);
+customElements.define('hui-entity-picture-card', HuiPictureCard);
