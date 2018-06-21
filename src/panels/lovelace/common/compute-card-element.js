@@ -1,6 +1,7 @@
 const CARD_TYPES = [
   'camera-preview',
   'entities',
+  'entity-picture',
   'entity-filter',
   'glance',
   'history-graph',

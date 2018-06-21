@@ -1,14 +1,14 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeStateDisplay from '../../common/entity/compute_state_display.js';
-import computeStateName from '../../common/entity/compute_state_name.js';
+import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import computeStateName from '../../../common/entity/compute_state_name.js';
 
-import '../../components/entity/state-badge.js';
-import '../../components/ha-card.js';
+import '../../../components/entity/state-badge.js';
+import '../../../components/ha-card.js';
 
-import EventsMixin from '../../mixins/events-mixin.js';
-import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin EventsMixin

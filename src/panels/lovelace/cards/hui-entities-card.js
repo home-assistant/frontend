@@ -2,16 +2,16 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import stateCardType from '../../common/entity/state_card_type.js';
-import computeDomain from '../../common/entity/compute_domain.js';
-import { DOMAINS_HIDE_MORE_INFO } from '../../common/const.js';
+import stateCardType from '../../../common/entity/state_card_type.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
+import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 
-import '../../components/ha-card.js';
+import '../../../components/ha-card.js';
 
 // just importing this now as shortcut to import correct state-card-*
-import '../../state-summary/state-card-content.js';
+import '../../../state-summary/state-card-content.js';
 
-import EventsMixin from '../../mixins/events-mixin.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 /*
  * @appliesMixin EventsMixin

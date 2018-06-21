@@ -1,11 +1,11 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeDomain from '../../common/entity/compute_domain.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
 
-import '../../cards/ha-history_graph-card.js';
+import '../../../cards/ha-media_player-card.js';
 import './hui-error-card.js';
 
-class HuiHistoryGraphCard extends PolymerElement {
+class HuiMediaControlCard extends PolymerElement {
   static get properties() {
     return {
       hass: {
@@ -20,7 +20,7 @@ class HuiHistoryGraphCard extends PolymerElement {
   }
 
   getCardSize() {
-    return 4;
+    return 3;
   }
 
   _configChanged(config) {
@@ -35,12 +35,12 @@ class HuiHistoryGraphCard extends PolymerElement {
 
     const entityId = config && config.entity;
     if (entityId) {
-      if (computeDomain(entityId) === 'history_graph') {
+      if (computeDomain(entityId) === 'media_player') {
         this._entityId = entityId;
-        tag = 'ha-history_graph-card';
+        tag = 'ha-media_player-card';
         cardConfig = config;
       } else {
-        error = 'Entity domain must be "history_graph"';
+        error = 'Entity domain must be "media_player"';
       }
     } else {
       error = 'Entity not defined in card config';
@@ -71,4 +71,4 @@ class HuiHistoryGraphCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-history-graph-card', HuiHistoryGraphCard);
+customElements.define('hui-media-control-card', HuiMediaControlCard);
