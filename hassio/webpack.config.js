@@ -57,7 +57,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [
-              ['es2015', { modules: false }]
+              [require('babel-preset-env').default, { modules: false }]
             ],
             plugins: [
               // Only support the syntax, Webpack will handle it.
