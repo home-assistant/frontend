@@ -3,15 +3,21 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../components/ha-card.js';
 
+import { STATES_ON } from '../../common/const.js';
 import computeDomain from '../../common/entity/compute_domain.js';
+import computeStateDisplay from '../../common/entity/compute_state_display.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 
 import LocalizeMixin from '../../mixins/localize-mixin.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
+
+const DOMAINS_NO_STATE = ['scene', 'script', 'weblink'];
 
 /*
  * @appliesMixin LocalizeMixin
+ * @appliesMixin NavigateMixin
  */
-class HuiSceneCard extends LocalizeMixin(PolymerElement) {
+class HuiPictureCard extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -25,6 +31,9 @@ class HuiSceneCard extends LocalizeMixin(PolymerElement) {
           width: 100%;
           height: auto;
           border-radius: 2px;
+        }
+        img.state-off {
+          filter: grayscale(100%);
         }
         .text {
           @apply --paper-font-common-nowrap;
@@ -52,11 +61,11 @@ class HuiSceneCard extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <ha-card on-click="_callService">
-        <img src="[[config.image]]">
+      <ha-card on-click="_cardClicked">
+        <img class$="[[_computeClass(config.entity, hass.states)]]" src="[[config.image]]">
         <div class="text">
           <div class="title">[[_computeTitle(config.entity, hass.states)]]</div>
-          <div>[[localize('ui.card.scene.activate')]]</div>
+          <div>[[_computeState(config.entity, hass.states)]]</div>
         </div>
         <template is="dom-if" if="[[_error]]">
           <div class="error">[[_error]]</div>
@@ -81,22 +90,57 @@ class HuiSceneCard extends LocalizeMixin(PolymerElement) {
   }
 
   _configChanged(config) {
-    if (config && config.entity && computeDomain(config.entity) === 'scene' && config.image) {
+    if (config && config.entity && config.image) {
       this._error = null;
     } else {
       this._error = 'Error in card configuration.';
     }
   }
 
+  _computeClass(entityId, states) {
+    return DOMAINS_NO_STATE.includes(computeDomain(entityId)) ||
+      STATES_ON.includes(states[entityId].state) ? '' : 'state-off';
+  }
+
   _computeTitle(entityId, states) {
     return entityId && computeStateName(states[entityId]);
   }
 
-  _callService() {
-    if (this.config && this.config.entity) {
-      this.hass.callService('scene', 'turn_on', { entity_id: this.config.entity });
+  _computeState(entityId, states) {
+    const domain = computeDomain(entityId);
+    switch (domain) {
+      case 'scene':
+        return this.localize('ui.card.scene.activate');
+      case 'script':
+      return this.localize('ui.card.script.execute');
+      case 'weblink':
+        return 'Open';
+      default:
+        return computeStateDisplay(this.localize, states[entityId]);
+    }
+  }
+
+  _cardClicked() {
+    const entityId = this.config.entity;
+    const domain = computeDomain(entityId);
+    if (domain === 'weblink') {
+      this.navigate(this.hass.states[entityId].state);
+    } else {
+      const isOn = STATES_ON.includes(this.hass.states[entityId].state);
+      let service;
+      switch (domain) {
+        case 'lock':
+          service = isOn ? 'unlock' : 'lock';
+          break;
+        case 'cover':
+          service = isOn ? 'close' : 'open';
+          break;
+        default:
+          service = isOn ? 'turn_off' : 'turn_on';
+      }
+      this.hass.callService(domain, service, { entity_id: entityId });
     }
   }
 }
 
-customElements.define('hui-scene-card', HuiSceneCard);
+customElements.define('hui-picture-card', HuiPictureCard);
