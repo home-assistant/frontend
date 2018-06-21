@@ -11,7 +11,11 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
 import '../../layouts/ha-app-layout.js';
+import { loadModule, loadJS } from '../../common/dom/load_resource.js';
 import './hui-view.js';
+
+// JS should only be imported once. Modules and HTML are safe.
+const JS_CACHE = {};
 
 class HUIRoot extends EventsMixin(PolymerElement) {
   static get template() {
@@ -138,7 +142,8 @@ class HUIRoot extends EventsMixin(PolymerElement) {
     this.$.view.lastChild.hass = hass;
   }
 
-  _configChanged() {
+  _configChanged(config) {
+    this._loadResources(config.resources);
     // On config change, recreate the view from scratch.
     this._selectView(this._curView);
   }
@@ -148,6 +153,29 @@ class HUIRoot extends EventsMixin(PolymerElement) {
     this.$.view.lastChild.columns = columns;
   }
 
+  _loadResources(resources) {
+    resources.forEach((resource) => {
+      switch (resource.type) {
+        case 'js':
+          if (resource.url in JS_CACHE) break;
+          JS_CACHE[resource.url] = loadJS(resource.url);
+          break;
+
+        case 'module':
+          loadModule(resource.url);
+          break;
+
+        case 'html':
+          import(/* webpackChunkName: "import-href-polyfill" */ '../../resources/html-import/import-href.js')
+            .then(({ importHref }) => importHref(resource.url));
+          break;
+
+        default:
+          // eslint-disable-next-line
+          console.warn('Unknown resource type specified: ${resource.type}');
+      }
+    });
+  }
 
   /**
    * Scroll to a specific y coordinate.
