@@ -79,7 +79,7 @@ function createConfig(isProdBuild, latestBuild) {
   } else {
     copyPluginOpts.push('public/__init__.py');
     babelOptions.presets = [
-      ['es2015', { modules: false }]
+      [require('babel-preset-env').default, { modules: false }]
     ];
     entry.compatibility = './src/entrypoints/compatibility.js';
   }
