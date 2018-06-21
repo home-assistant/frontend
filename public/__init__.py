@@ -3,13 +3,13 @@ import os
 from user_agents import parse
 
 FAMILY_MIN_VERSION = {
-    'Chrome': 54,          # Object.values
-    'Chrome Mobile': 54,
-    'Firefox': 47,         # Object.values
-    'Firefox Mobile': 47,
-    'Opera': 41,           # Object.values
-    'Edge': 14,            # Array.prototype.includes added in 14
-    'Safari': 10,          # Many features not supported by 9
+    'Chrome': 55,          # Async/await
+    'Chrome Mobile': 55,
+    'Firefox': 52,         # Async/await
+    'Firefox Mobile': 52,
+    'Opera': 42,           # Async/await
+    'Edge': 15,            # Async/await
+    'Safari': 10.1,        # Async/await
 }
 
 
