@@ -1,6 +1,5 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 
 import '../../components/ha-card.js';
@@ -11,14 +10,16 @@ import computeStateDisplay from '../../common/entity/compute_state_display.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 import stateIcon from '../../common/entity/state_icon.js';
 
+import EventsMixin from '../../mixins/events-mixin.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 const DOMAIN_SENSORS = ['binary_sensor', 'device_tracker', 'sensor'];
 
 /*
+ * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
  */
-class HuiGlanceToggleCard extends LocalizeMixin(PolymerElement) {
+class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -74,21 +75,12 @@ class HuiGlanceToggleCard extends LocalizeMixin(PolymerElement) {
           <div>
             <template is="dom-repeat" items="[[_entities]]">
               <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
-                <template is="dom-if" if="[[_hasService(item)]]">
-                  <paper-icon-button
-                    on-click="_callService"
-                    class$="[[_computeClass(item, hass.states)]]"
-                    icon="[[_computeIcon(item, hass.states)]]"
-                    title="[[_computeTooltip(item, hass.states)]]"
-                  ></paper-icon-button>
-                </template>
-                <template is="dom-if" if="[[!_hasService(item)]]">
-                  <iron-icon
-                    class$="[[_computeClass(item, hass.states)]]"
-                    icon="[[_computeIcon(item, hass.states)]]"
-                    title="[[_computeTooltip(item, hass.states)]]"
-                  ></iron-icon>
-                </template>
+                <paper-icon-button
+                  on-click="_callService"
+                  class$="[[_computeClass(item, hass.states)]]"
+                  icon="[[_computeIcon(item, hass.states)]]"
+                  title="[[_computeTooltip(item, hass.states)]]"
+                ></paper-icon-button>
               </template>
             </template>
           </div>
@@ -129,10 +121,6 @@ class HuiGlanceToggleCard extends LocalizeMixin(PolymerElement) {
     return entityId in states;
   }
 
-  _hasService(entityId) {
-    return !DOMAIN_SENSORS.includes(computeDomain(entityId));
-  }
-
   _computeIcon(entityId, states) {
     return stateIcon(states[entityId]);
   }
@@ -148,22 +136,27 @@ class HuiGlanceToggleCard extends LocalizeMixin(PolymerElement) {
   _callService(ev) {
     const entityId = ev.model.item;
     const domain = computeDomain(entityId);
-    const isOn = STATES_ON.includes(this.hass.states[entityId].state);
-    switch (domain) {
-      case 'lock':
-        service = isOn ? 'unlock' : 'lock';
-        break;
-      case 'cover':
-        service = isOn ? 'close' : 'open';
-        break;
-      case 'scene':
-        service = 'turn_on';
-        break;
-      default:
-        service = isOn ? 'turn_off' : 'turn_on';
+
+    if (DOMAIN_SENSORS.includes(domain)) {
+      this.fire('hass-more-info', { entityId: entityId });
+    } else {
+      const isOn = STATES_ON.includes(this.hass.states[entityId].state);
+      switch (domain) {
+        case 'lock':
+          service = isOn ? 'unlock' : 'lock';
+          break;
+        case 'cover':
+          service = isOn ? 'close' : 'open';
+          break;
+        case 'scene':
+          service = 'turn_on';
+          break;
+        default:
+          service = isOn ? 'turn_off' : 'turn_on';
+      }
+      this.hass.callService(domain, service, { entity_id: entityId });
     }
-    this.hass.callService(domain, service, { entity_id: entityId });
   }
 }
 
-customElements.define('hui-glance-toggle-card', HuiGlanceToggleCard);
+customElements.define('hui-glance-elegant-card', HuiGlanceElegantCard);
