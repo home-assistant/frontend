@@ -17,9 +17,9 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
     <style>
 
       :host {
-        @apply(--layout-horizontal);
-        @apply(--layout-justified);
-        @apply(--layout-baseline);
+        @apply --layout-horizontal;
+        @apply --layout-justified;
+        @apply --layout-baseline;
       }
 
       state-info {

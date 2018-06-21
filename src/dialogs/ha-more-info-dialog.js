@@ -50,7 +50,7 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
           --more-info-header-color: var(--text-primary-color);
         }
         :host {
-          @apply(--ha-dialog-fullscreen);
+          @apply --ha-dialog-fullscreen;
         }
         :host::before {
           content: "";
