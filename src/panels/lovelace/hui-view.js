@@ -15,8 +15,6 @@ import './hui-error-card.js';
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
 import computeCardElement from './common/compute-card-element.js';
 
-const CUSTOM_TYPE_PREFIX = 'custom:';
-
 class HUIView extends PolymerElement {
   static get template() {
     return html`

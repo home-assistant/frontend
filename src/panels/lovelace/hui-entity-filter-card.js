@@ -23,24 +23,35 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   // Return a list of entities based on filters.
-  _getEntities(hass, filters) {
+  _getEntities(hass, filterList) {
     const entities = new Set;
-
-    filters.forEach((filter) => {
-      const _filters = [];
+    filterList.forEach((filter) => {
+      const filters = [];
       if (filter.domain) {
-        _filters.push(stateObj => computeStateDomain(stateObj) === filter.domain);
+        filters.push(stateObj => computeStateDomain(stateObj) === filter.domain);
+      }
+      if (filter.entity_id) {
+        filters.push(stateObj => this._filterEntityId(stateObj, filter.entity_id));
       }
       if (filter.state) {
         filters.push(stateObj => stateObj.state === filter.state);
       }
 
-      Object.keys(hass.states).forEach((stateObj) => {
-        if (_filters.every(filterFunc => filterFunc(stateObj))) {
+      Object.values(hass.states).forEach((stateObj) => {
+        if (filters.every(filterFunc => filterFunc(stateObj))) {
           entities.add(stateObj.entity_id);
         }
       });
     });
+    return Array.from(entities);
+  }
+
+  _filterEntityId(stateObj, pattern) {
+    if (pattern.indexOf('*') === -1) {
+      return stateObj.entity_id === pattern;
+    }
+    const regEx = new RegExp(`^${pattern.replace(/\*/g, '.*')}$`);
+    return stateObj.entity_id.search(regEx) === 0;
   }
 
   _configChanged(config) {
@@ -80,7 +91,7 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _computeCardConfig(config) {
-    const cardConfig = { ...config, entities: this._getEntities(this.hass, config.filter) };
+    const cardConfig = Object.assign({}, config, { entities: this._getEntities(this.hass, config.filter) });
     delete cardConfig.card;
     delete cardConfig.filter;
     return cardConfig;

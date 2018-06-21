@@ -1,6 +1,8 @@
 import { CARD_TYPES } from './const.js';
 
-export default computeCardElement(type) {
+const CUSTOM_TYPE_PREFIX = 'custom:';
+
+export default function computeCardElement(type) {
   if (CARD_TYPES.includes(type)) {
     return `hui-${type}-card`;
   } else if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
