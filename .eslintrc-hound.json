@@ -50,6 +50,7 @@
     "no-multi-assign": 0,
     "radix": 0,
     "no-alert": 0,
+    "no-return-await": 0,
     "prefer-destructuring": 0,
     "no-restricted-globals": [2, "event"],
     "prefer-promise-reject-errors": 0,

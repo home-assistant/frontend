@@ -240,7 +240,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
           // If we connect with access token and get 401, refresh token and try again
           const accessToken = await window.refreshToken();
           conn.options.accessToken = accessToken;
-          return await hassCallApi(host, auth, method, path, parameters)
+          return await hassCallApi(host, auth, method, path, parameters);
         }
       },
     }, this.$.storage.getStoredState());
@@ -337,7 +337,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
 
     try {
       this.connection = await prom;
-    } catch(err) {
+    } catch (err) {
       this.connectionPromise = null;
     }
   }
