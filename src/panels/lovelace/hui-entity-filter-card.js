@@ -33,7 +33,7 @@ class HuiEntitiesCard extends PolymerElement {
 
   // Return a list of entities based on filters.
   _getEntities(hass, filterList) {
-    const entities = new Set;
+    const entities = new Set();
     filterList.forEach((filter) => {
       const filters = [];
       if (filter.domain) {
@@ -101,7 +101,8 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _computeCardConfig(config) {
-    const cardConfig = Object.assign({}, config, { entities: this._getEntities(this.hass, config.filter) });
+    const cardConfig = Object.assign({}, config,
+      { entities: this._getEntities(this.hass, config.filter) });
     delete cardConfig.card;
     delete cardConfig.filter;
     return cardConfig;
