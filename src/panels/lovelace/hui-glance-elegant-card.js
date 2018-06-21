@@ -126,7 +126,7 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeClass(entityId, states) {
-    return STATES_ON.includes(states[entityId].state) ? 'state-on': '';
+    return STATES_ON.includes(states[entityId].state) ? 'state-on' : '';
   }
 
   _computeTooltip(entityId, states) {
@@ -137,10 +137,11 @@ class HuiGlanceElegantCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     const entityId = ev.model.item;
     const domain = computeDomain(entityId);
 
-    if (DOMAIN_SENSORS.includes(domain)) {
-      this.fire('hass-more-info', { entityId: entityId });
+    if (DOMAIN_SENSORS.includes(domain) || this.config.force_dialog) {
+      this.fire('hass-more-info', { entityId });
     } else {
       const isOn = STATES_ON.includes(this.hass.states[entityId].state);
+      let service;
       switch (domain) {
         case 'lock':
           service = isOn ? 'unlock' : 'lock';
