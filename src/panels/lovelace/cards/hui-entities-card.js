@@ -23,8 +23,12 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       ha-card {
         padding: 16px;
       }
-      .state {
-        padding: 4px 0;
+      #states {
+        margin: -4px 0;
+      }
+      #states > * {
+        display: block;
+        margin: 4px 0;
       }
       .header {
         @apply --paper-font-headline;
