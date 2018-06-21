@@ -155,7 +155,7 @@ class HUIRoot extends EventsMixin(PolymerElement) {
 
   _loadResources(resources) {
     resources.forEach((resource) => {
-      switch(resource.type) {
+      switch (resource.type) {
         case 'js':
           if (resource.url in JS_CACHE) break;
           JS_CACHE[resource.url] = loadJS(resource.url);
@@ -171,6 +171,7 @@ class HUIRoot extends EventsMixin(PolymerElement) {
           break;
 
         default:
+          // eslint-disable-next-line
           console.warn('Unknown resource type specified: ${resource.type}');
       }
     });
