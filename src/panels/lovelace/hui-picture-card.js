@@ -9,7 +9,6 @@ import computeStateDisplay from '../../common/entity/compute_state_display.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 
 import LocalizeMixin from '../../mixins/localize-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
 const DOMAINS_NO_STATE = ['scene', 'script', 'weblink'];
 
@@ -17,7 +16,7 @@ const DOMAINS_NO_STATE = ['scene', 'script', 'weblink'];
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
  */
-class HuiPictureCard extends LocalizeMixin(NavigateMixin(PolymerElement)) {
+class HuiPictureCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -124,7 +123,7 @@ class HuiPictureCard extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     const entityId = this.config.entity;
     const domain = computeDomain(entityId);
     if (domain === 'weblink') {
-      this.navigate(this.hass.states[entityId].state);
+      window.open(this.hass.states[entityId].state);
     } else {
       const isOn = STATES_ON.includes(this.hass.states[entityId].state);
       let service;
