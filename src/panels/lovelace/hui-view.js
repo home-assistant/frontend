@@ -13,28 +13,9 @@ import './hui-weather-forecast-card';
 import './hui-error-card.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
+import computeCardElement from './common/compute-card-element.js';
 
-const VALID_TYPES = [
-  'camera-preview',
-  'entities',
-  'entity-filter',
-  'glance',
-  'history-graph',
-  'media-control',
-  'picture-glance',
-  'plant-status',
-  'weather-forecast'
-];
 const CUSTOM_TYPE_PREFIX = 'custom:';
-
-function cardElement(type) {
-  if (VALID_TYPES.includes(type)) {
-    return `hui-${type}-card`;
-  } else if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    return type.substr(CUSTOM_TYPE_PREFIX.length);
-  }
-  return null;
-}
 
 class HUIView extends PolymerElement {
   static get template() {
@@ -120,7 +101,7 @@ class HUIView extends PolymerElement {
       if (!cardConfig.type) {
         error = 'Card type not configured.';
       } else {
-        tag = cardElement(cardConfig.type);
+        tag = computeCardElement(cardConfig.type);
         if (tag === null) {
           error = `Unknown card type encountered: "${cardConfig.type}".`;
         } else if (!customElements.get(tag)) {
