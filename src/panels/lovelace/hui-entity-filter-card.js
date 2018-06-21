@@ -52,7 +52,6 @@ class HuiEntitiesCard extends PolymerElement {
         }
       });
     });
-    this._cardSize = entities.size;
     return Array.from(entities);
   }
 
