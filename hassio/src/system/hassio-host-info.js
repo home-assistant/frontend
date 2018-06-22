@@ -67,14 +67,17 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
         </template>
       </div>
       <div class="card-actions">
-        <template is="dom-if" if="[[computeRebootAvailable(data)]]">
+        <template is="dom-if" if="[[_featureAvailable(data, 'reboot')]]">
           <ha-call-api-button class="warning" hass="[[hass]]" path="hassio/host/reboot">Reboot</ha-call-api-button>
         </template>
-        <template is="dom-if" if="[[computeShutdownAvailable(data)]]">
+        <template is="dom-if" if="[[_featureAvailable(data, 'shutdown')]]">
           <ha-call-api-button class="warning" hass="[[hass]]" path="hassio/host/shutdown">Shutdown</ha-call-api-button>
         </template>
-        <template is="dom-if" if="[[computeUpdateAvailable(data)]]">
-          <ha-call-api-button hass="[[hass]]" path="hassio/host/update">Update</ha-call-api-button>
+        <template is="dom-if" if="[[_featureAvailable(data, 'hassos')]]">
+          <ha-call-api-button class="warning" hass="[[hass]]" path="hassio/hassos/config/sync">Load host configs from USB</ha-call-api-button>
+        </template>
+        <template is="dom-if" if="[[_computeUpdateAvailable(_hassOs)]]">
+          <ha-call-api-button hass="[[hass]]" path="hassio/hassos/update">Update</ha-call-api-button>
         </template>
       </div>
     </paper-card>
@@ -84,8 +87,12 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      data: Object,
+      data: {
+        type: Object,
+        observer: '_dataChanged'
+      },
       errors: String,
+      _hassOs: Object
     };
   }
 
@@ -109,16 +116,22 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
     }
   }
 
-  computeUpdateAvailable(data) {
-    return data.version !== data.last_version;
+  _dataChanged(data) {
+    if (data.features && data.features.includes('hassos')) {
+      this.hass.callApi('get', 'hassio/hassos/info')
+        .then((resp) => {
+          this._hassOs = resp.data;
+        });
+    }
+    this._hassOs = {};
   }
 
-  computeRebootAvailable(data) {
-    return data.features && data.features.includes('reboot');
+  _computeUpdateAvailable(data) {
+    return data && data.version !== data.version_latest;
   }
 
-  computeShutdownAvailable(data) {
-    return data.features && data.features.includes('shutdown');
+  _featureAvailable(data, feature) {
+    return data && data.features && data.features.includes(feature);
   }
 
   _showHardware() {
