@@ -82,7 +82,7 @@ class HassioRepositoriesEditor extends PolymerElement {
   }
 
   computeAddRepoData(repoList, url) {
-    const list = repoList.map(repo => repo.url);
+    const list = repoList ? repoList.map(repo => repo.url) : [];
     list.push(url);
     return { addons_repositories: list };
   }
