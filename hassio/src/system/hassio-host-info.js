@@ -122,8 +122,9 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
         .then((resp) => {
           this._hassOs = resp.data;
         });
+    } else {
+      this._hassOs = {};
     }
-    this._hassOs = {};
   }
 
   _computeUpdateAvailable(data) {
