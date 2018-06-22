@@ -21,6 +21,7 @@ function createConfig(isProdBuild, latestBuild) {
     app: './src/entrypoints/app.js',
     authorize: './src/entrypoints/authorize.js',
     core: './src/entrypoints/core.js',
+    compatibility: './src/entrypoints/compatibility.js',
     'custom-panel': './src/entrypoints/custom-panel.js',
   };
 
@@ -81,7 +82,6 @@ function createConfig(isProdBuild, latestBuild) {
     babelOptions.presets = [
       [require('babel-preset-env').default, { modules: false }]
     ];
-    entry.compatibility = './src/entrypoints/compatibility.js';
   }
 
   if (isProdBuild) {
