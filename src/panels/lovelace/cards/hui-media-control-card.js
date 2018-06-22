@@ -65,11 +65,13 @@ class HuiMediaControlCard extends PolymerElement {
   }
 
   _hassChanged(hass) {
-    if (this.lastChild && this._entityId) {
+    if (this.lastChild && this._entityId && this._entityId in hass.states) {
       const element = this.lastChild;
       const stateObj = hass.states[this._entityId];
       element.stateObj = stateObj;
       element.hass = hass;
+    } else {
+      this._configChanged(this.config);
     }
   }
 }
