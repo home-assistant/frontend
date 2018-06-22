@@ -116,15 +116,11 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
     }
   }
 
-  _dataChanged(data) {
-    if (data.features && data.features.includes('hassos')) {
-      this.hass.callApi('get', 'hassio/hassos/info')
-        .then((resp) => {
-          this._hassOs = resp.data;
-        });
-    } else {
-      this._hassOs = {};
-    }
+  async _dataChanged(data) {
+    if (!data.features || !data.features.includes('hassos')) return;
+
+    const resp = await this.hass.callApi('get', 'hassio/hassos/info');
+    this._hassOs = resp.data;
   }
 
   _computeUpdateAvailable(data) {
