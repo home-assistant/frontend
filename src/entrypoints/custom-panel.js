@@ -12,7 +12,10 @@ let es5Loaded = null;
 
 window.loadES5Adapter = () => {
   if (!es5Loaded) {
-    es5Loaded = loadJS(`${__PUBLIC_PATH__}custom-elements-es5-adapter.js`).catch();
+    es5Loaded = Promise.all([
+      loadJS(`${__PUBLIC_PATH__}custom-elements-es5-adapter.js`).catch(),
+      loadJS(`${__PUBLIC_PATH__}compatibility.js`),
+    ]);
   }
   return es5Loaded;
 };
