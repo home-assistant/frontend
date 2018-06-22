@@ -92,6 +92,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
     for (let i = 0; i < config.entities.length; i++) {
       const entityId = config.entities[i];
+      if (!entityId in this.hass.states) continue;
       const stateObj = this.hass.states[entityId];
       const tag = stateObj ? `state-card-${stateCardType(this.hass, stateObj)}` : 'state-card-display';
       const element = document.createElement(tag);

@@ -28,12 +28,15 @@ class HuiHistoryGraphCard extends PolymerElement {
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+    const entityId = config && config.entity;
+    if (entityId && !(entityId in this.hass.states)) {
+      return;
+    }
 
     let error = null;
     let cardConfig;
     let tag;
 
-    const entityId = config && config.entity;
     if (entityId) {
       if (computeDomain(entityId) === 'history_graph') {
         this._entityId = entityId;

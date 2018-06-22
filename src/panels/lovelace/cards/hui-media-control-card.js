@@ -28,12 +28,15 @@ class HuiMediaControlCard extends PolymerElement {
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+    const entityId = config && config.entity;
+    if (entityId && !(entityId in this.hass.states)) {
+      return;
+    }
 
     let error = null;
     let cardConfig;
     let tag;
 
-    const entityId = config && config.entity;
     if (entityId) {
       if (computeDomain(entityId) === 'media_player') {
         this._entityId = entityId;
