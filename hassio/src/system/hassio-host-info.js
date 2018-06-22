@@ -74,7 +74,7 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
           <ha-call-api-button class="warning" hass="[[hass]]" path="hassio/host/shutdown">Shutdown</ha-call-api-button>
         </template>
         <template is="dom-if" if="[[_featureAvailable(data, 'hassos')]]">
-          <ha-call-api-button class="warning" hass="[[hass]]" path="hassio/hassos/config/sync">Load host configs from USB</ha-call-api-button>
+          <ha-call-api-button class="warning" hass="[[hass]]" path="hassio/hassos/config/sync" title="Load HassOS configs or updates from USB">Import from USB</ha-call-api-button>
         </template>
         <template is="dom-if" if="[[_computeUpdateAvailable(_hassOs)]]">
           <ha-call-api-button hass="[[hass]]" path="hassio/hassos/update">Update</ha-call-api-button>
@@ -116,11 +116,15 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
     }
   }
 
-  async _dataChanged(data) {
-    if (!data.features || !data.features.includes('hassos')) return;
-
-    const resp = await this.hass.callApi('get', 'hassio/hassos/info');
-    this._hassOs = resp.data;
+  _dataChanged(data) {
+    if (data.features && data.features.includes('hassos')) {
+      this.hass.callApi('get', 'hassio/hassos/info')
+        .then((resp) => {
+          this._hassOs = resp.data;
+        });
+    } else {
+      this._hassOs = {};
+    }
   }
 
   _computeUpdateAvailable(data) {
