@@ -28,12 +28,15 @@ class HuiCameraPreviewCard extends PolymerElement {
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+    const entityId = config && config.entity;
+    if (entityId && !(entityId in this.hass.states)) {
+      return;
+    }
 
     let error = null;
     let cardConfig;
     let tag;
 
-    const entityId = config && config.entity;
     if (entityId) {
       if (computeDomain(entityId) === 'camera') {
         this._entityId = entityId;
@@ -62,11 +65,13 @@ class HuiCameraPreviewCard extends PolymerElement {
   }
 
   _hassChanged(hass) {
-    if (this.lastChild && this._entityId) {
+    if (this.lastChild && this._entityId && this._entityId in hass.states) {
       const element = this.lastChild;
       const stateObj = hass.states[this._entityId];
       element.stateObj = stateObj;
       element.hass = hass;
+    } else {
+      this._configChanged(this.config);
     }
   }
 }
