@@ -65,7 +65,7 @@ class HuiEntitiesCard extends PolymerElement {
     if (!config.filter || !Array.isArray(config.filter)) {
       error = 'Incorrect filter config.';
     } else if (!config.card) {
-      error = 'Missing config for child card.';
+      config.card = { type: 'entities' };
     } else if (!config.card.type) {
       config.card.type = 'entities';
     }
