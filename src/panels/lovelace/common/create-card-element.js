@@ -24,13 +24,34 @@ const CARD_TYPES = [
   'plant-status',
   'weather-forecast'
 ];
+
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
-export default function computeCardElement(type) {
-  if (CARD_TYPES.includes(type)) {
-    return `hui-${type}-card`;
-  } else if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    return type.substr(CUSTOM_TYPE_PREFIX.length);
+export default function createCardElement(config) {
+  let error;
+  let tag;
+  if (config && config.type) {
+    if (CARD_TYPES.includes(config.type)) {
+      tag = `hui-${config.type}-card`;
+    } else if (config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
+      tag = config.type.substr(CUSTOM_TYPE_PREFIX.length);
+    }
+
+    if (tag) {
+      if (!customElements.get(tag)) {
+        error = 'Custom element doesn\'t exist.';
+      }
+    } else {
+      error = 'Unknown card type encountered.';
+    }
+  } else {
+    error = 'No card type configured.';
   }
-  return null;
+
+  if (error) {
+    const element = document.createElement('hui-error-card');
+    element.error = error;
+    return element;
+  }
+  return document.createElement(tag);
 }

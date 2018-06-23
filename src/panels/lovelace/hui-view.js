@@ -2,7 +2,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
-import computeCardElement from './common/compute-card-element.js';
+import createCardElement from './common/create-card-element';
 
 class HUIView extends PolymerElement {
   static get template() {
@@ -83,29 +83,8 @@ class HUIView extends PolymerElement {
     const elements = [];
 
     for (let i = 0; i < cards.length; i++) {
-      let error = null;
-      let cardConfig = cards[i];
-      let tag;
-      if (!cardConfig.type) {
-        error = 'Card type not configured.';
-      } else {
-        tag = computeCardElement(cardConfig.type);
-        if (tag === null) {
-          error = `Unknown card type encountered: "${cardConfig.type}".`;
-        } else if (!customElements.get(tag)) {
-          error = `Custom element doesn't exist: "${tag}".`;
-          if (!(tag in this._whenDefined)) {
-            this._whenDefined[tag] = customElements.whenDefined(tag)
-              .then(() => this._configChanged());
-          }
-        }
-      }
-      if (error) {
-        tag = 'hui-error-card';
-        cardConfig = { error };
-      }
-      const element = document.createElement(tag);
-      element.config = cardConfig;
+      const element = createCardElement(cards[i]);
+      element.config = cards[i];
       element.hass = this.hass;
       elements.push(element);
     }
