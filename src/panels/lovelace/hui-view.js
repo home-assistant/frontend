@@ -76,7 +76,6 @@ class HUIView extends PolymerElement {
   constructor() {
     super();
     this._elements = [];
-    this._whenDefined = {};
   }
 
   _getElements(cards) {
