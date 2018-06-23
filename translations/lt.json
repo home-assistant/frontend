@@ -1,1 +1,70 @@
-{"panel":{"config":"Konfigūracija","states":"Valdymas","map":"Žemėlapis","logbook":"Veiksmų žurnalas","history":"Istorija","mailbox":"Pašto dėžutė","shopping_list":"Pirkinių sąrašas","dev-mqtt":"MQTT"},"ui":{"sidebar":{"log_out":"Atsijungti"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Konfigūracija",
+        "states": "Valdymas",
+        "map": "Žemėlapis",
+        "logbook": "Veiksmų žurnalas",
+        "history": "Istorija",
+        "mailbox": "Pašto dėžutė",
+        "shopping_list": "Pirkinių sąrašas",
+        "dev-mqtt": "MQTT"
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "Atsijungti"
+        },
+        "panel": {
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "label": "Saulė",
+                                    "before": "Prieš:",
+                                    "after": "Po:",
+                                    "sunrise": "Saulėtekis",
+                                    "sunset": "Saulėlydis"
+                                },
+                                "time": {
+                                    "label": "Laikas",
+                                    "after": "Po",
+                                    "before": "Prieš"
+                                },
+                                "zone": {
+                                    "label": "Vieta",
+                                    "zone": "Vieta"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Veiksmai",
+                            "add": "Pridėti veiksmą",
+                            "duplicate": "Dublikuoti",
+                            "delete": "Trinti",
+                            "delete_confirm": "Ar tikrai norite ištrinti?",
+                            "type": {
+                                "delay": {
+                                    "delay": "Uždelsta"
+                                },
+                                "wait_template": {
+                                    "label": "Laukti"
+                                },
+                                "event": {
+                                    "label": "Sukurti įvykį",
+                                    "event": "Įvykiai"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    }
+}

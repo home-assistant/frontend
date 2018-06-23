@@ -1,1 +1,707 @@
-{"panel":{"config":"配置","states":"概览","map":"地图","logbook":"日志","history":"历史","mailbox":"邮箱","shopping_list":"购物清单","dev-services":"服务","dev-states":"状态","dev-events":"事件","dev-templates":"模板","dev-mqtt":"MQTT","dev-info":"信息"},"state":{"default":{"off":"关闭","on":"开","unknown":"未知","unavailable":"不可用"},"alarm_control_panel":{"armed":"警戒","disarmed":"警戒解除","armed_home":"在家警戒","armed_away":"离家警戒","armed_night":"夜间警戒","pending":"挂起","arming":"警戒中","disarming":"警戒解除","triggered":"已触发","armed_custom_bypass":"自定义区域警戒"},"automation":{"off":"关闭","on":"开启"},"binary_sensor":{"default":{"off":"关闭","on":"开启"},"moisture":{"off":"干燥","on":"湿润"},"gas":{"off":"正常","on":"触发"},"motion":{"off":"未触发","on":"触发"},"occupancy":{"off":"未触发","on":"已触发"},"smoke":{"off":"正常","on":"触发"},"sound":{"off":"正常","on":"触发"},"vibration":{"off":"正常","on":"触发"},"opening":{"off":"关闭","on":"开启"},"safety":{"off":"安全","on":"危险"},"presence":{"off":"离开","on":"在家"},"battery":{"off":"正常","on":"低"},"problem":{"off":"正常","on":"异常"},"connectivity":{"off":"已断开","on":"已连接"},"cold":{"off":"正常","on":"过冷"},"door":{"off":"关闭","on":"开启"},"garage_door":{"off":"关闭","on":"开启"},"heat":{"off":"正常","on":"过热"},"window":{"off":"关闭","on":"开启"}},"calendar":{"off":"关","on":"开"},"camera":{"recording":"录制中","streaming":"监控中","idle":"待机"},"climate":{"off":"关","on":"开启","heat":"制热","cool":"制冷","idle":"待机","auto":"自动","dry":"除湿","fan_only":"仅送风","eco":"节能","electric":"电驱模式","performance":"性能","high_demand":"高需求","heat_pump":"热泵","gas":"燃气"},"configurator":{"configure":"设置","configured":"设置成功"},"cover":{"open":"已打开","opening":"正在打开","closed":"已关闭","closing":"正在关闭","stopped":"已停止"},"device_tracker":{"home":"在家","not_home":"离开"},"fan":{"off":"关闭","on":"开启"},"group":{"off":"关闭","on":"开启","home":"在家","not_home":"离开","open":"开启","opening":"正在打开","closed":"关闭","closing":"正在关闭","stopped":"已停止","locked":"已锁定","unlocked":"已解锁","ok":"正常","problem":"异常"},"input_boolean":{"off":"关闭","on":"开启"},"light":{"off":"关","on":"开"},"lock":{"locked":"锁定","unlocked":"解锁"},"media_player":{"off":"关闭","on":"开启","playing":"正在播放","paused":"已暂停","idle":"空闲","standby":"待机"},"plant":{"ok":"正常","problem":"异常"},"remote":{"off":"关闭","on":"开启"},"scene":{"scening":"场景启用中"},"script":{"off":"关闭","on":"开启"},"sensor":{"off":"关闭","on":"开启"},"sun":{"above_horizon":"日出","below_horizon":"日落"},"switch":{"off":"关","on":"开"},"zwave":{"default":{"initializing":"初始化","dead":"断线","sleeping":"休眠","ready":"就绪"},"query_stage":{"initializing":"初始化","dead":"断线 ({query_stage})"}}},"state_badge":{"default":{"unknown":"未知","unavailable":"不可用"},"alarm_control_panel":{"armed":"警戒中","disarmed":"警戒解除","armed_home":"警戒中","armed_away":"警戒中","armed_night":"警戒中","pending":"挂起","arming":"警戒准备","disarming":"警戒解除","triggered":"触发","armed_custom_bypass":"警戒中"},"device_tracker":{"home":"在家","not_home":"离开"}},"ui":{"panel":{"shopping-list":{"clear_completed":"清除已完成项目","add_item":"添加项目","microphone_tip":"点击右上角麦克风图标并说 “Add candy to my shopping list”"},"history":{"showing_entries":"显示自以下日期图表","period":"日期范围"},"logbook":{"showing_entries":"显示以下日期的条目"},"mailbox":{"empty":"您还没有任何消息","playback_title":"消息回放","delete_prompt":"删除此消息？","delete_button":"删除"}},"sidebar":{"log_out":"退出","developer_tools":"开发者工具"},"common":{"loading":"加载中","cancel":"取消"},"duration":{"day":"{count} {count, plural,\none {天}\nother {天}\n}","week":"{count} {count, plural,\none {周}\nother {周}\n}","second":"{count} {count, plural,\none {秒}\nother {秒}\n}"},"login-form":{"password":"密码","remember":"记住密码","log_in":"登录"}},"domain":{"alarm_control_panel":"警报控制器","automation":"自动化","binary_sensor":"二元传感器","calendar":"日历","camera":"摄像头","climate":"空调","configurator":"配置器","conversation":"语音对话","cover":"卷帘","device_tracker":"设备跟踪器","fan":"风扇","history_graph":"历史图表","group":"群组","image_processing":"图像处理","input_boolean":"二元选择器","input_datetime":"日期选择器","input_select":"多项选择器","input_number":"数值选择器","input_text":"文字输入","light":"灯光","lock":"锁","mailbox":"邮箱","media_player":"播放器","notify":"通知","plant":"植物","proximity":"距离","remote":"遥控","scene":"场景","script":"脚本","sensor":"传感器","sun":"太阳","switch":"开关","updater":"更新提示","weblink":"网址","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "配置",
+        "states": "概览",
+        "map": "地图",
+        "logbook": "日志",
+        "history": "历史",
+        "mailbox": "邮箱",
+        "shopping_list": "购物清单",
+        "dev-services": "服务",
+        "dev-states": "状态",
+        "dev-events": "事件",
+        "dev-templates": "模板",
+        "dev-mqtt": "MQTT",
+        "dev-info": "信息",
+        "calendar": "日历"
+    },
+    "state": {
+        "default": {
+            "off": "关闭",
+            "on": "开",
+            "unknown": "未知",
+            "unavailable": "不可用"
+        },
+        "alarm_control_panel": {
+            "armed": "警戒",
+            "disarmed": "警戒解除",
+            "armed_home": "在家警戒",
+            "armed_away": "离家警戒",
+            "armed_night": "夜间警戒",
+            "pending": "挂起",
+            "arming": "警戒中",
+            "disarming": "警戒解除",
+            "triggered": "已触发",
+            "armed_custom_bypass": "自定义区域警戒"
+        },
+        "automation": {
+            "off": "关闭",
+            "on": "开启"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "关闭",
+                "on": "开启"
+            },
+            "moisture": {
+                "off": "干燥",
+                "on": "湿润"
+            },
+            "gas": {
+                "off": "正常",
+                "on": "触发"
+            },
+            "motion": {
+                "off": "未触发",
+                "on": "触发"
+            },
+            "occupancy": {
+                "off": "未触发",
+                "on": "已触发"
+            },
+            "smoke": {
+                "off": "正常",
+                "on": "触发"
+            },
+            "sound": {
+                "off": "正常",
+                "on": "触发"
+            },
+            "vibration": {
+                "off": "正常",
+                "on": "触发"
+            },
+            "opening": {
+                "off": "关闭",
+                "on": "开启"
+            },
+            "safety": {
+                "off": "安全",
+                "on": "危险"
+            },
+            "presence": {
+                "off": "离开",
+                "on": "在家"
+            },
+            "battery": {
+                "off": "正常",
+                "on": "低"
+            },
+            "problem": {
+                "off": "正常",
+                "on": "异常"
+            },
+            "connectivity": {
+                "off": "已断开",
+                "on": "已连接"
+            },
+            "cold": {
+                "off": "正常",
+                "on": "过冷"
+            },
+            "door": {
+                "off": "关闭",
+                "on": "开启"
+            },
+            "garage_door": {
+                "off": "关闭",
+                "on": "开启"
+            },
+            "heat": {
+                "off": "正常",
+                "on": "过热"
+            },
+            "window": {
+                "off": "关闭",
+                "on": "开启"
+            },
+            "lock": {
+                "off": "上锁",
+                "on": "解锁"
+            }
+        },
+        "calendar": {
+            "off": "关",
+            "on": "开"
+        },
+        "camera": {
+            "recording": "录制中",
+            "streaming": "监控中",
+            "idle": "待机"
+        },
+        "climate": {
+            "off": "关",
+            "on": "开启",
+            "heat": "制热",
+            "cool": "制冷",
+            "idle": "待机",
+            "auto": "自动",
+            "dry": "除湿",
+            "fan_only": "仅送风",
+            "eco": "节能",
+            "electric": "电驱模式",
+            "performance": "性能",
+            "high_demand": "高需求",
+            "heat_pump": "热泵",
+            "gas": "燃气"
+        },
+        "configurator": {
+            "configure": "设置",
+            "configured": "设置成功"
+        },
+        "cover": {
+            "open": "已打开",
+            "opening": "正在打开",
+            "closed": "已关闭",
+            "closing": "正在关闭",
+            "stopped": "已停止"
+        },
+        "device_tracker": {
+            "home": "在家",
+            "not_home": "离开"
+        },
+        "fan": {
+            "off": "关闭",
+            "on": "开启"
+        },
+        "group": {
+            "off": "关闭",
+            "on": "开启",
+            "home": "在家",
+            "not_home": "离开",
+            "open": "开启",
+            "opening": "正在打开",
+            "closed": "关闭",
+            "closing": "正在关闭",
+            "stopped": "已停止",
+            "locked": "已锁定",
+            "unlocked": "已解锁",
+            "ok": "正常",
+            "problem": "异常"
+        },
+        "input_boolean": {
+            "off": "关闭",
+            "on": "开启"
+        },
+        "light": {
+            "off": "关",
+            "on": "开"
+        },
+        "lock": {
+            "locked": "锁定",
+            "unlocked": "解锁"
+        },
+        "media_player": {
+            "off": "关闭",
+            "on": "开启",
+            "playing": "正在播放",
+            "paused": "已暂停",
+            "idle": "空闲",
+            "standby": "待机"
+        },
+        "plant": {
+            "ok": "正常",
+            "problem": "异常"
+        },
+        "remote": {
+            "off": "关闭",
+            "on": "开启"
+        },
+        "scene": {
+            "scening": "场景启用中"
+        },
+        "script": {
+            "off": "关闭",
+            "on": "开启"
+        },
+        "sensor": {
+            "off": "关闭",
+            "on": "开启"
+        },
+        "sun": {
+            "above_horizon": "日出",
+            "below_horizon": "日落"
+        },
+        "switch": {
+            "off": "关",
+            "on": "开"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "初始化",
+                "dead": "断开",
+                "sleeping": "休眠",
+                "ready": "就绪"
+            },
+            "query_stage": {
+                "initializing": "初始化 ({query_stage})",
+                "dead": "断线 ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "夜间晴朗",
+            "cloudy": "多云",
+            "fog": "雾",
+            "hail": "冰雹",
+            "lightning": "雷电",
+            "lightning_rainy": "雷阵雨",
+            "partlycloudy": "局部多云",
+            "pouring": "暴雨",
+            "rainy": "雨",
+            "snowy": "雪",
+            "snowy_rainy": "雨夹雪",
+            "sunny": "晴",
+            "windy": "有风",
+            "windy_variant": "有风"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "未知",
+            "unavailable": "不可用"
+        },
+        "alarm_control_panel": {
+            "armed": "警戒中",
+            "disarmed": "警戒解除",
+            "armed_home": "警戒中",
+            "armed_away": "警戒中",
+            "armed_night": "警戒中",
+            "pending": "挂起",
+            "arming": "警戒准备",
+            "disarming": "警戒解除",
+            "triggered": "触发",
+            "armed_custom_bypass": "警戒中"
+        },
+        "device_tracker": {
+            "home": "在家",
+            "not_home": "离开"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "清除已完成项目",
+                "add_item": "添加项目",
+                "microphone_tip": "点击右上角麦克风图标并说 “Add candy to my shopping list”"
+            },
+            "history": {
+                "showing_entries": "显示自以下日期的图表",
+                "period": "日期范围"
+            },
+            "logbook": {
+                "showing_entries": "显示以下日期的条目"
+            },
+            "mailbox": {
+                "empty": "您还没有任何消息",
+                "playback_title": "消息回放",
+                "delete_prompt": "删除此消息？",
+                "delete_button": "删除"
+            },
+            "config": {
+                "header": "配置 Home Assistant",
+                "introduction": "你可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
+                "core": {
+                    "caption": "通用",
+                    "description": "检查你的配置文件及服务器控制",
+                    "section": {
+                        "core": {
+                            "header": "配置及服务器控制",
+                            "introduction": "更改配置的过程可能有些抓狂，我们懂的。这部分将帮助你减轻一些工作。",
+                            "validation": {
+                                "heading": "配置检查",
+                                "introduction": "此处可以帮助你检验最新修改的配置文件有效性",
+                                "check_config": "检查配置",
+                                "valid": "配置有效！",
+                                "invalid": "配置无效"
+                            },
+                            "reloading": {
+                                "heading": "配置重载",
+                                "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
+                                "core": "重载核心配置",
+                                "group": "重载分组",
+                                "automation": "重载自动化",
+                                "script": "重载脚本"
+                            },
+                            "server_management": {
+                                "heading": "服务管理",
+                                "introduction": "在这里即可控制 Home Assistant 服务。",
+                                "restart": "重启服务",
+                                "stop": "停止服务"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "设置通知推送",
+                            "introduction": "启用此项以在本设备接受通知推送",
+                            "push_notifications": "通知推送"
+                        },
+                        "translation": {
+                            "header": "选择语言",
+                            "introduction": "选择 Home Assistant 在本设备显示的语言",
+                            "language": "语言"
+                        },
+                        "themes": {
+                            "header": "设定主题",
+                            "introduction": "为本设备选择一个主题，或选择 “Backend-selected” 使用后端默认主题",
+                            "theme": "主题"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "自定义",
+                    "description": "自定义设备"
+                },
+                "automation": {
+                    "caption": "自动化",
+                    "description": "创建和编辑自动化",
+                    "picker": {
+                        "header": "自动化编辑器",
+                        "introduction": "自动化编辑器方便你创建及编辑自动化。请阅读相关[说明](https:\/\/home-assistant.io\/docs\/automation\/editor\/)以确保正确配置。",
+                        "pick_automation": "选择要编辑的自动化",
+                        "no_automations": "未找到可编辑的自动化",
+                        "add_automation": "添加自动化"
+                    },
+                    "editor": {
+                        "introduction": "使用自动化让你的家聪明起来",
+                        "default_name": "新建自动化",
+                        "save": "保存",
+                        "unsaved_confirm": "有更改尚未保存，确定离开页面吗？",
+                        "alias": "名称",
+                        "triggers": {
+                            "header": "触发条件",
+                            "introduction": "触发条件是整个自动化流程的起点。一个自动化实例中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证环境条件（Conditions）是否符合，如果符合，则执行动作（Actions）。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "添加触发条件",
+                            "duplicate": "复制",
+                            "delete": "删除",
+                            "delete_confirm": "确认删除？",
+                            "unsupported_platform": "不支持的平台：{platform}",
+                            "type_select": "触发条件类型",
+                            "type": {
+                                "event": {
+                                    "label": "事件",
+                                    "event_type": "事件类型",
+                                    "event_data": "事件数据"
+                                },
+                                "state": {
+                                    "label": "状态",
+                                    "from": "从",
+                                    "to": "变为"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "事件：",
+                                    "start": "启动",
+                                    "shutdown": "关闭"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic",
+                                    "payload": "参数（可选）"
+                                },
+                                "numeric_state": {
+                                    "label": "数字类状态",
+                                    "above": "大于",
+                                    "below": "小于",
+                                    "value_template": "自定义值（可选）"
+                                },
+                                "sun": {
+                                    "label": "日出\/日落",
+                                    "event": "事件：",
+                                    "sunrise": "日出",
+                                    "sunset": "日落",
+                                    "offset": "偏移（可选）"
+                                },
+                                "template": {
+                                    "label": "自定义模板",
+                                    "value_template": "自定义值"
+                                },
+                                "time": {
+                                    "label": "时间",
+                                    "at": "当"
+                                },
+                                "zone": {
+                                    "label": "地点",
+                                    "entity": "位置追踪设备",
+                                    "zone": "地点",
+                                    "event": "事件：",
+                                    "enter": "进入",
+                                    "leave": "离开"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "环境条件",
+                            "introduction": "环境条件是自动化流程中的可选条件，可用于避免触发条件满足时动作的执行。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统的状态。例如，“灯被打开”这个事件属于触发条件，“灯是开着的”这个状态就属于环境条件。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "添加环境条件",
+                            "duplicate": "复制",
+                            "delete": "删除",
+                            "delete_confirm": "确认删除？",
+                            "unsupported_condition": "不支持的环境条件：{condition}",
+                            "type_select": "环境条件类型",
+                            "type": {
+                                "state": {
+                                    "label": "状态",
+                                    "state": "状态"
+                                },
+                                "numeric_state": {
+                                    "label": "数字型状态",
+                                    "above": "大于",
+                                    "below": "小于",
+                                    "value_template": "自定义值（可选）"
+                                },
+                                "sun": {
+                                    "label": "日出\/日落",
+                                    "before": "早于：",
+                                    "after": "晚于：",
+                                    "before_offset": "提前：（可选）",
+                                    "after_offset": "延后：（可选）",
+                                    "sunrise": "日出",
+                                    "sunset": "日落"
+                                },
+                                "template": {
+                                    "label": "模板",
+                                    "value_template": "自定义模板"
+                                },
+                                "time": {
+                                    "label": "时间",
+                                    "after": "晚于",
+                                    "before": "早于"
+                                },
+                                "zone": {
+                                    "label": "地点",
+                                    "entity": "位置追踪设备",
+                                    "zone": "地点"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "动作",
+                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\n\n[了解更多关于 Actions 的信息](https:\/\/home-assistant.io\/docs\/automation\/action)",
+                            "add": "添加动作",
+                            "duplicate": "复制",
+                            "delete": "删除",
+                            "delete_confirm": "确认删除？",
+                            "unsupported_action": "不支持的操作: {action}",
+                            "type_select": "动作类型",
+                            "type": {
+                                "service": {
+                                    "label": "调用服务",
+                                    "service_data": "服务数据"
+                                },
+                                "delay": {
+                                    "label": "延迟",
+                                    "delay": "延迟"
+                                },
+                                "wait_template": {
+                                    "label": "延时",
+                                    "wait_template": "延时自定义值",
+                                    "timeout": "超时（可选）"
+                                },
+                                "condition": {
+                                    "label": "环境条件"
+                                },
+                                "event": {
+                                    "label": "触发事件",
+                                    "event": "事件：",
+                                    "service_data": "服务数据"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "脚本",
+                    "description": "创建和编辑脚本"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "管理 Z-Wave 网络"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "退出",
+            "developer_tools": "开发者工具"
+        },
+        "common": {
+            "loading": "加载中",
+            "cancel": "取消"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {天}\nother {天}\n}",
+            "week": "{count} {count, plural,\none {周}\nother {周}\n}",
+            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
+            "minute": "{count} {count, plural,\none {分钟}\nother {分钟}\n}",
+            "hour": "{count} {count, plural,\none {小时}\nother {小时}\n}"
+        },
+        "login-form": {
+            "password": "密码",
+            "remember": "记住密码",
+            "log_in": "登录"
+        },
+        "card": {
+            "camera": {
+                "not_available": "无图像"
+            },
+            "persistent_notification": {
+                "dismiss": "忽略"
+            },
+            "scene": {
+                "activate": "激活"
+            },
+            "script": {
+                "execute": "执行"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "气压",
+                    "humidity": "湿度",
+                    "temperature": "温度",
+                    "visibility": "能见度",
+                    "wind_speed": "风速"
+                },
+                "cardinal_direction": {
+                    "e": "东",
+                    "ene": "东北偏东",
+                    "ese": "东南偏东",
+                    "n": "北",
+                    "ne": "东北",
+                    "nne": "东北偏北",
+                    "nw": "西北",
+                    "nnw": "西北偏北",
+                    "s": "南",
+                    "se": "东南",
+                    "sse": "东南偏南",
+                    "ssw": "西南偏南",
+                    "sw": "西南",
+                    "w": "西",
+                    "wnw": "西北偏西",
+                    "wsw": "西南偏西"
+                },
+                "forecast": "预报"
+            },
+            "alarm_control_panel": {
+                "code": "密码",
+                "clear_code": "清除",
+                "disarm": "解除警戒",
+                "arm_home": "在家警戒",
+                "arm_away": "离家警戒"
+            },
+            "automation": {
+                "last_triggered": "上次触发",
+                "trigger": "触发"
+            },
+            "cover": {
+                "position": "位置",
+                "tilt_position": "倾斜位置"
+            },
+            "fan": {
+                "speed": "风速",
+                "oscillate": "摇头",
+                "direction": "方向"
+            },
+            "light": {
+                "brightness": "亮度",
+                "color_temperature": "色温",
+                "white_value": "白度值",
+                "effect": "效果"
+            },
+            "media_player": {
+                "text_to_speak": "要朗读的文本",
+                "source": "信号源",
+                "sound_mode": "声音模式"
+            },
+            "climate": {
+                "currently": "当前",
+                "on_off": "开\/关",
+                "target_temperature": "设定温度",
+                "target_humidity": "设定湿度",
+                "operation": "运行模式",
+                "fan_mode": "风速",
+                "swing_mode": "扫风模式",
+                "away_mode": "离开模式",
+                "aux_heat": "辅热"
+            },
+            "lock": {
+                "code": "密码",
+                "lock": "锁定",
+                "unlock": "解锁"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "设备\/实体"
+                }
+            },
+            "service-picker": {
+                "service": "服务"
+            },
+            "relative_time": {
+                "past": "{time}前",
+                "future": "{time}后",
+                "never": "从未"
+            },
+            "history_charts": {
+                "loading_history": "正在加载历史状态...",
+                "no_history_found": "没有找到历史状态。"
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "已打开 {entity}。",
+            "entity_turned_off": "已关闭 {entity}。",
+            "service_called": "服务 {service} 已调用。 ",
+            "service_call_failed": "调用服务 {service} 失败。",
+            "connection_lost": "连接中断。正在重新连接..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "保存",
+                "name": "名称"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "警报控制器",
+        "automation": "自动化",
+        "binary_sensor": "二元传感器",
+        "calendar": "日历",
+        "camera": "摄像头",
+        "climate": "空调",
+        "configurator": "配置器",
+        "conversation": "语音对话",
+        "cover": "卷帘",
+        "device_tracker": "设备跟踪器",
+        "fan": "风扇",
+        "history_graph": "历史图表",
+        "group": "群组",
+        "image_processing": "图像处理",
+        "input_boolean": "二元选择器",
+        "input_datetime": "日期选择器",
+        "input_select": "多项选择器",
+        "input_number": "数值选择器",
+        "input_text": "文字输入",
+        "light": "灯光",
+        "lock": "锁",
+        "mailbox": "邮箱",
+        "media_player": "播放器",
+        "notify": "通知",
+        "plant": "植物",
+        "proximity": "距离",
+        "remote": "遥控",
+        "scene": "场景",
+        "script": "脚本",
+        "sensor": "传感器",
+        "sun": "太阳",
+        "switch": "开关",
+        "updater": "更新提示",
+        "weblink": "网址",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "湿度",
+            "visibility": "能见度",
+            "wind_speed": "风速"
+        }
+    }
+}

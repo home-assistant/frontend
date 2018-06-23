@@ -1,1 +1,194 @@
-{"panel":{"config":"कॉंफ़िगरेशन","states":"स्थिति","map":"नक्शा","logbook":"रिपोर्ट","history":"इतिहास","mailbox":"मेलबॉक्स","shopping_list":"खरीदारी की सूची","dev-services":"सेवाएं","dev-events":"घटनाओं","dev-templates":"टेम्पलेट्स","dev-mqtt":"MQTT","dev-info":"जानकारी"},"state":{"default":{"off":"बंद","unknown":"अनजान","unavailable":"अनुपलब्ध"},"binary_sensor":{"opening":{"on":"खुला"},"battery":{"off":"보통","on":" 낮음"}},"camera":{"recording":"रिकॉर्डिंग"},"climate":{"heat":"गर्मी","cool":"ठंडा","dry":"सूखा"},"device_tracker":{"home":"घर"},"fan":{"on":"चालू"},"group":{"on":"चालू"},"input_boolean":{"off":"बंद","on":"चालू"},"light":{"off":"बंद","on":"चालू"},"lock":{"locked":"अवरोधित","unlocked":"खुला"},"media_player":{"off":"बंद","on":"चालू"},"plant":{"ok":"ठीक है","problem":"समस्या"},"remote":{"off":"बंद","on":"चालू"},"script":{"off":"बंद","on":"चालू"},"sensor":{"off":"बंद","on":"चालू"},"sun":{"above_horizon":"क्षितिज से ऊपर","below_horizon":"क्षितिज के नीचे"},"switch":{"off":"बंद","on":"चालू"},"zwave":{"default":{"sleeping":"सोया हुआ","ready":"तैयार"},"query_stage":{"initializing":"आरंभ ({query_stage})"}}},"state_badge":{"default":{"unknown":"अज्ञात","unavailable":"अनुपलब्ध"},"alarm_control_panel":{"pending":"अपूर्ण"},"device_tracker":{"home":"घर","not_home":"बाहर"}},"ui":{"panel":{"shopping-list":{"add_item":"आइटम जोड़ें","microphone_tip":"ऊपर दाईं ओर माइक्रोफ़ोन टैप करें और \"मेरी खरीदारी सूची में कैंडी जोड़ें\" कहें"}},"sidebar":{"log_out":"लॉग आउट","developer_tools":"डेवलपर उपकरण"}},"domain":{"automation":"स्वचालन","climate":"जलवायु","device_tracker":"डिवाइस ट्रैकर","fan":"पंखा","history_graph":"इतिहास ग्राफ","group":"समूह","image_processing":"इमेज प्रोसेसिंग","input_boolean":"इनपुट बूलियन","input_datetime":"इनपुट दिनांक समय","input_select":"इनपुट का चयन करें","input_number":"इनपुट संख्या","input_text":"इनपुट टेक्स्ट","light":"रोशनी","lock":"ताला","mailbox":"मेलबॉक्स","media_player":"मीडिया प्लेयर","notify":"सूचित","proximity":"निकटता","remote":"रिमोट","scene":"दृश्य","sensor":"सेंसर","sun":"सूरज","switch":"स्विच","weblink":"वेब लिंक","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "कॉंफ़िगरेशन",
+        "states": "स्थिति",
+        "map": "नक्शा",
+        "logbook": "रिपोर्ट",
+        "history": "इतिहास",
+        "mailbox": "मेलबॉक्स",
+        "shopping_list": "खरीदारी की सूची",
+        "dev-services": "सेवाएं",
+        "dev-events": "घटनाओं",
+        "dev-templates": "टेम्पलेट्स",
+        "dev-mqtt": "MQTT",
+        "dev-info": "जानकारी"
+    },
+    "state": {
+        "default": {
+            "off": "बंद",
+            "unknown": "अनजान",
+            "unavailable": "अनुपलब्ध"
+        },
+        "binary_sensor": {
+            "opening": {
+                "on": "खुला"
+            },
+            "battery": {
+                "off": "보통",
+                "on": " 낮음"
+            }
+        },
+        "camera": {
+            "recording": "रिकॉर्डिंग"
+        },
+        "climate": {
+            "heat": "गर्मी",
+            "cool": "ठंडा",
+            "dry": "सूखा"
+        },
+        "device_tracker": {
+            "home": "घर"
+        },
+        "fan": {
+            "on": "चालू"
+        },
+        "group": {
+            "on": "चालू"
+        },
+        "input_boolean": {
+            "off": "बंद",
+            "on": "चालू"
+        },
+        "light": {
+            "off": "बंद",
+            "on": "चालू"
+        },
+        "lock": {
+            "locked": "अवरोधित",
+            "unlocked": "खुला"
+        },
+        "media_player": {
+            "off": "बंद",
+            "on": "चालू"
+        },
+        "plant": {
+            "ok": "ठीक है",
+            "problem": "समस्या"
+        },
+        "remote": {
+            "off": "बंद",
+            "on": "चालू"
+        },
+        "script": {
+            "off": "बंद",
+            "on": "चालू"
+        },
+        "sensor": {
+            "off": "बंद",
+            "on": "चालू"
+        },
+        "sun": {
+            "above_horizon": "क्षितिज से ऊपर",
+            "below_horizon": "क्षितिज के नीचे"
+        },
+        "switch": {
+            "off": "बंद",
+            "on": "चालू"
+        },
+        "zwave": {
+            "default": {
+                "sleeping": "सोया हुआ",
+                "ready": "तैयार"
+            },
+            "query_stage": {
+                "initializing": "आरंभ ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "अज्ञात",
+            "unavailable": "अनुपलब्ध"
+        },
+        "alarm_control_panel": {
+            "pending": "अपूर्ण"
+        },
+        "device_tracker": {
+            "home": "घर",
+            "not_home": "बाहर"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "add_item": "आइटम जोड़ें",
+                "microphone_tip": "ऊपर दाईं ओर माइक्रोफ़ोन टैप करें और \"मेरी खरीदारी सूची में कैंडी जोड़ें\" कहें"
+            },
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "homeassistant": {
+                                    "start": "शुरू",
+                                    "shutdown": "शटडाउन"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "विषय"
+                                },
+                                "numeric_state": {
+                                    "above": "ऊपर",
+                                    "below": "नीचे"
+                                },
+                                "sun": {
+                                    "label": "सूरज",
+                                    "sunrise": "सूर्योदय",
+                                    "sunset": "सूर्यास्त"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "before": "पहले:",
+                                    "after": "बाद:",
+                                    "sunrise": "सूर्योदय",
+                                    "sunset": "सूर्यास्त"
+                                },
+                                "time": {
+                                    "after": "बाद",
+                                    "before": "पहले"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "लॉग आउट",
+            "developer_tools": "डेवलपर उपकरण"
+        }
+    },
+    "domain": {
+        "automation": "स्वचालन",
+        "climate": "जलवायु",
+        "device_tracker": "डिवाइस ट्रैकर",
+        "fan": "पंखा",
+        "history_graph": "इतिहास ग्राफ",
+        "group": "समूह",
+        "image_processing": "इमेज प्रोसेसिंग",
+        "input_boolean": "इनपुट बूलियन",
+        "input_datetime": "इनपुट दिनांक समय",
+        "input_select": "इनपुट का चयन करें",
+        "input_number": "इनपुट संख्या",
+        "input_text": "इनपुट टेक्स्ट",
+        "light": "रोशनी",
+        "lock": "ताला",
+        "mailbox": "मेलबॉक्स",
+        "media_player": "मीडिया प्लेयर",
+        "notify": "सूचित",
+        "proximity": "निकटता",
+        "remote": "रिमोट",
+        "scene": "दृश्य",
+        "sensor": "सेंसर",
+        "sun": "सूरज",
+        "switch": "स्विच",
+        "weblink": "वेब लिंक",
+        "zwave": "Z-Wave"
+    }
+}

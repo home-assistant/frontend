@@ -1,1 +1,700 @@
-{"panel":{"config":"Nastavení","states":"Přehled","map":"Mapa","logbook":"Záznamy","history":"Historie","mailbox":"Schránka","shopping_list":"Nákupní seznam","dev-services":"Služby","dev-states":"Stavy","dev-events":"Události","dev-templates":"Šablony","dev-mqtt":"MQTT","dev-info":"Informace"},"state":{"default":{"off":"Neaktivní","on":"Aktivní","unknown":"Nezjištěno","unavailable":"Není k dispozici"},"alarm_control_panel":{"armed":"Aktivní","disarmed":"Neaktivní","armed_home":"Aktivní doma","armed_away":"Aktivní v nepřítomnosti","armed_night":"Aktivní v noci","pending":"Nadcházející","arming":"Aktivace zahájena","disarming":"Deaktivace zahájena","triggered":"Spuštěno","armed_custom_bypass":"Specifické obejítí alarmu"},"automation":{"off":"Neaktivní","on":"Aktivní"},"binary_sensor":{"default":{"off":"Neaktivní","on":"Aktivní"},"moisture":{"off":"Sucho","on":"Vlhko"},"gas":{"off":"Žádný plyn","on":"Zjištěn plyn"},"motion":{"off":"Bez pohybu","on":"Zaznamenán pohyb"},"occupancy":{"off":"Volno","on":"Obsazeno"},"smoke":{"off":"Žádný dým","on":"Zjištěn dým"},"sound":{"off":"Ticho","on":"Zachycen zvuk"},"vibration":{"off":"Klid","on":"Zjištěny vibrace"},"opening":{"off":"Zavřeno","on":"Otevřeno"},"safety":{"off":"Zajištěno","on":"Nezajištěno"},"presence":{"off":"Pryč","on":"Doma"},"battery":{"off":"Normální","on":"Nízký stav"},"problem":{"off":"V pořádku","on":"Problém"},"connectivity":{"off":"Odpojeno","on":"Připojeno"},"cold":{"off":"Normální","on":"Chaldné"},"door":{"off":"Zavřeno","on":"Otevřeno"},"garage_door":{"off":"Zavřeno","on":"Otevřeno"},"heat":{"off":"Normální","on":"Horké"},"window":{"off":"Zavřeno","on":"Otevřeno"}},"calendar":{"off":"Neaktivní","on":"Aktivní"},"camera":{"recording":"Záznam","streaming":"Streamování","idle":"Nečinný"},"climate":{"off":"Neaktivní","on":"Aktivní","heat":"Topení","cool":"Chlazení","idle":"Nečinný","auto":"Automatika","dry":"Vysoušení","fan_only":"Jen ventilátor","eco":"Ekonomický režim","electric":"Elektrické","performance":"Vysoký výkon","high_demand":"Vysoký výkon","heat_pump":"Tepelné čerpadlo","gas":"Plyn"},"configurator":{"configure":"Nakonfigurovat","configured":"Nakonfigurováno"},"cover":{"open":"Otevřeno","opening":"Otevírání zahájeno","closed":"Zavřeno","closing":"Zavírání zahájeno","stopped":"Zastaveno"},"device_tracker":{"home":"Doma","not_home":"Pryč"},"fan":{"off":"Neaktivní","on":"Aktivní"},"group":{"off":"Neaktivní","on":"Aktivní","home":"Doma","not_home":"Pryč","open":"Otevřeno","opening":"Otevírání zahájeno","closed":"Zavřeno","closing":"Zavírání zahájeno","stopped":"Zastaveno","locked":"Zamčeno","unlocked":"Odemčeno","ok":"V pořádku","problem":"Problém"},"input_boolean":{"off":"Neaktivní","on":"Aktivní"},"light":{"off":"Nesvítí","on":"Svítí"},"lock":{"locked":"Zamčeno","unlocked":"Odemčeno"},"media_player":{"off":"Neaktivní","on":"Aktivní","playing":"Přehrávání","paused":"Pozastaveno","idle":"Nečinný","standby":"Pohotovostní režim"},"plant":{"ok":"V pořádku","problem":"Problém"},"remote":{"off":"Neaktivní","on":"Aktivní"},"scene":{"scening":"Scenérie"},"script":{"off":"Neaktivní","on":"Aktivní"},"sensor":{"off":"Neaktivní","on":"Aktivní"},"sun":{"above_horizon":"Nad horizontem","below_horizon":"Za horizontem"},"switch":{"off":"Neaktivní","on":"Aktivní"},"zwave":{"default":{"initializing":"Inicializace","dead":"Nereaguje","sleeping":"Úsporný režim","ready":"Připraveno"},"query_stage":{"initializing":"Inicializace ({query_stage})","dead":"Nereaguje ({query_stage})"}}},"state_badge":{"default":{"unknown":"Neví se","unavailable":"Není"},"alarm_control_panel":{"armed":"Aktivní","disarmed":"Neaktivní","armed_home":"Aktivní","armed_away":"Aktivní","armed_night":"Aktivní","pending":"Čeká","arming":"Aktivace","disarming":"Deaktivace","triggered":"Běží","armed_custom_bypass":"Aktivní"},"device_tracker":{"home":"Doma","not_home":"Pryč"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Vymazat nakoupené","add_item":"Přidat položku","microphone_tip":"Klepněte na mikrofon vpravo nahoře a řekněte \"Přidat cukroví do mého nákupního seznamu\""},"history":{"showing_entries":"Zobrazuji údaje pro","period":"Období"},"logbook":{"showing_entries":"Zobrazuji údaje pro"},"mailbox":{"empty":"Nemáte žádné zprávy","playback_title":"Přehrávání zpráv","delete_prompt":"Smazat tuto zprávu?","delete_button":"Odstranit"}},"sidebar":{"log_out":"Odhlásit se","developer_tools":"Vývojářské nástroje"},"common":{"loading":"Načítání","cancel":"Zrušit"},"duration":{"day":"{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}","week":"{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}","second":"{count} {count, plural,\none {vteřina}\nfew {vteřiny}\nother {vteřin}\n}"},"login-form":{"password":"Heslo","remember":"Zapamatovat","log_in":"Přihlásit se"}},"domain":{"alarm_control_panel":"Ovládací panel alarmu","automation":"Automatizace","binary_sensor":"Binární snímač","calendar":"Kalendář","camera":"Kamera","climate":"Klimatizace","configurator":"Konfigurátor","conversation":"Konverzace","cover":"Kryt","device_tracker":"Sledovač zařízení","fan":"Ventilátor","history_graph":"Graf historie","group":"Skupina","image_processing":"Zpracování obrazu","input_boolean":"Zadání ano\/ne","input_datetime":"Zadání času","input_select":"Zadání volby","input_number":"Zadání čísla","input_text":"Zadání textu","light":"Světlo","lock":"Zámek","mailbox":"Poštovní schránka","media_player":"Přehrávač médií","notify":"Oznámení","plant":"Rostlina","proximity":"Přiblížení","remote":"Dálkové","scene":"Scéna","script":"Skript","sensor":"Snímač","sun":"Slunce","switch":"Spínač","updater":"Aktualizátor","weblink":"Webový odkaz","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Nastavení",
+        "states": "Přehled",
+        "map": "Mapa",
+        "logbook": "Záznamy",
+        "history": "Historie",
+        "mailbox": "Schránka",
+        "shopping_list": "Nákupní seznam",
+        "dev-services": "Služby",
+        "dev-states": "Stavy",
+        "dev-events": "Události",
+        "dev-templates": "Šablony",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Informace"
+    },
+    "state": {
+        "default": {
+            "off": "Neaktivní",
+            "on": "Aktivní",
+            "unknown": "Nezjištěno",
+            "unavailable": "Není k dispozici"
+        },
+        "alarm_control_panel": {
+            "armed": "Aktivní",
+            "disarmed": "Neaktivní",
+            "armed_home": "Aktivní doma",
+            "armed_away": "Aktivní v nepřítomnosti",
+            "armed_night": "Aktivní v noci",
+            "pending": "Nadcházející",
+            "arming": "Aktivace zahájena",
+            "disarming": "Deaktivace zahájena",
+            "triggered": "Spuštěno",
+            "armed_custom_bypass": "Specifické obejítí alarmu"
+        },
+        "automation": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Neaktivní",
+                "on": "Aktivní"
+            },
+            "moisture": {
+                "off": "Sucho",
+                "on": "Vlhko"
+            },
+            "gas": {
+                "off": "Žádný plyn",
+                "on": "Zjištěn plyn"
+            },
+            "motion": {
+                "off": "Bez pohybu",
+                "on": "Zaznamenán pohyb"
+            },
+            "occupancy": {
+                "off": "Volno",
+                "on": "Obsazeno"
+            },
+            "smoke": {
+                "off": "Žádný dým",
+                "on": "Zjištěn dým"
+            },
+            "sound": {
+                "off": "Ticho",
+                "on": "Zachycen zvuk"
+            },
+            "vibration": {
+                "off": "Klid",
+                "on": "Zjištěny vibrace"
+            },
+            "opening": {
+                "off": "Zavřeno",
+                "on": "Otevřeno"
+            },
+            "safety": {
+                "off": "Zajištěno",
+                "on": "Nezajištěno"
+            },
+            "presence": {
+                "off": "Pryč",
+                "on": "Doma"
+            },
+            "battery": {
+                "off": "Normální",
+                "on": "Nízký stav"
+            },
+            "problem": {
+                "off": "V pořádku",
+                "on": "Problém"
+            },
+            "connectivity": {
+                "off": "Odpojeno",
+                "on": "Připojeno"
+            },
+            "cold": {
+                "off": "Normální",
+                "on": "Chaldné"
+            },
+            "door": {
+                "off": "Zavřeno",
+                "on": "Otevřeno"
+            },
+            "garage_door": {
+                "off": "Zavřeno",
+                "on": "Otevřeno"
+            },
+            "heat": {
+                "off": "Normální",
+                "on": "Horké"
+            },
+            "window": {
+                "off": "Zavřeno",
+                "on": "Otevřeno"
+            },
+            "lock": {
+                "off": "Zamčeno",
+                "on": "Odemčeno"
+            }
+        },
+        "calendar": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "camera": {
+            "recording": "Záznam",
+            "streaming": "Streamování",
+            "idle": "Nečinný"
+        },
+        "climate": {
+            "off": "Neaktivní",
+            "on": "Aktivní",
+            "heat": "Topení",
+            "cool": "Chlazení",
+            "idle": "Nečinný",
+            "auto": "Automatika",
+            "dry": "Vysoušení",
+            "fan_only": "Jen ventilátor",
+            "eco": "Ekonomický režim",
+            "electric": "Elektrické",
+            "performance": "Vysoký výkon",
+            "high_demand": "Vysoký výkon",
+            "heat_pump": "Tepelné čerpadlo",
+            "gas": "Plyn"
+        },
+        "configurator": {
+            "configure": "Nakonfigurovat",
+            "configured": "Nakonfigurováno"
+        },
+        "cover": {
+            "open": "Otevřeno",
+            "opening": "Otevírání zahájeno",
+            "closed": "Zavřeno",
+            "closing": "Zavírání zahájeno",
+            "stopped": "Zastaveno"
+        },
+        "device_tracker": {
+            "home": "Doma",
+            "not_home": "Pryč"
+        },
+        "fan": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "group": {
+            "off": "Neaktivní",
+            "on": "Aktivní",
+            "home": "Doma",
+            "not_home": "Pryč",
+            "open": "Otevřeno",
+            "opening": "Otevírání zahájeno",
+            "closed": "Zavřeno",
+            "closing": "Zavírání zahájeno",
+            "stopped": "Zastaveno",
+            "locked": "Zamčeno",
+            "unlocked": "Odemčeno",
+            "ok": "V pořádku",
+            "problem": "Problém"
+        },
+        "input_boolean": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "light": {
+            "off": "Nesvítí",
+            "on": "Svítí"
+        },
+        "lock": {
+            "locked": "Zamčeno",
+            "unlocked": "Odemčeno"
+        },
+        "media_player": {
+            "off": "Neaktivní",
+            "on": "Aktivní",
+            "playing": "Přehrávání",
+            "paused": "Pozastaveno",
+            "idle": "Nečinný",
+            "standby": "Pohotovostní režim"
+        },
+        "plant": {
+            "ok": "V pořádku",
+            "problem": "Problém"
+        },
+        "remote": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "scene": {
+            "scening": "Scenérie"
+        },
+        "script": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "sensor": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "sun": {
+            "above_horizon": "Nad horizontem",
+            "below_horizon": "Za horizontem"
+        },
+        "switch": {
+            "off": "Neaktivní",
+            "on": "Aktivní"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Inicializace",
+                "dead": "Nereaguje",
+                "sleeping": "Úsporný režim",
+                "ready": "Připraveno"
+            },
+            "query_stage": {
+                "initializing": "Inicializace ({query_stage})",
+                "dead": "Nereaguje ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "Jasná noc",
+            "cloudy": "Zataženo",
+            "fog": "Mlha",
+            "hail": "Krupobití",
+            "lightning": "Bouře",
+            "lightning_rainy": "Bouře a déšť",
+            "partlycloudy": "Polojasno",
+            "pouring": "Liják",
+            "rainy": "Déšť",
+            "snowy": "Sníh",
+            "snowy_rainy": "Déšť se sněhem",
+            "sunny": "Slunečno",
+            "windy": "Větrno",
+            "windy_variant": "Větrno"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Neví se",
+            "unavailable": "Není"
+        },
+        "alarm_control_panel": {
+            "armed": "Aktivní",
+            "disarmed": "Neaktivní",
+            "armed_home": "Aktivní",
+            "armed_away": "Aktivní",
+            "armed_night": "Aktivní",
+            "pending": "Čeká",
+            "arming": "Aktivace",
+            "disarming": "Deaktivace",
+            "triggered": "Běží",
+            "armed_custom_bypass": "Aktivní"
+        },
+        "device_tracker": {
+            "home": "Doma",
+            "not_home": "Pryč"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Vymazat nakoupené",
+                "add_item": "Přidat položku",
+                "microphone_tip": "Klepněte na mikrofon vpravo nahoře a řekněte \"Přidat cukroví do mého nákupního seznamu\""
+            },
+            "history": {
+                "showing_entries": "Zobrazuji údaje pro",
+                "period": "Období"
+            },
+            "logbook": {
+                "showing_entries": "Zobrazuji údaje pro"
+            },
+            "mailbox": {
+                "empty": "Nemáte žádné zprávy",
+                "playback_title": "Přehrávání zpráv",
+                "delete_prompt": "Smazat tuto zprávu?",
+                "delete_button": "Odstranit"
+            },
+            "config": {
+                "header": "Konfigurace Home Assistant",
+                "introduction": "Zde je možné konfigurovat komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
+                "core": {
+                    "caption": "Obecné",
+                    "description": "Ověřte konfigurační soubor a spravujte server",
+                    "section": {
+                        "core": {
+                            "header": "Konfigurace a správa serveru",
+                            "introduction": "Změna konfigurace může být únavný proces. Víme. Tato sekce se pokusí udělat váš život alespoň trochu jednodušší.",
+                            "validation": {
+                                "heading": "Ověření konfigurace",
+                                "introduction": "Ověřte konfiguraci, pokud jste nedávno provedli některé změny konfigurace a chcete se ujistit, že je vše v pořádku",
+                                "check_config": "Zkontrolujte konfiguraci",
+                                "valid": "Konfigurace je v pořádku!",
+                                "invalid": "Konfigurace není v pořádku"
+                            },
+                            "reloading": {
+                                "heading": "Konfigurace se načítá",
+                                "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba reloadu zahodí jejich aktuální konfiguraci a načte novou.",
+                                "core": "Znovu načíst jádro",
+                                "group": "Znovu načíst skupiny",
+                                "automation": "Znovu načíst automatizace",
+                                "script": "Znovu načíst skripty"
+                            },
+                            "server_management": {
+                                "heading": "Správa serveru",
+                                "introduction": "Ovládejte svůj Home Assistant server... z Home Assistant.",
+                                "restart": "Restartovat",
+                                "stop": "Stop"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Nastavte push oznámení",
+                            "introduction": "Povolte toto nastavení, aby bylo v tomto zařízení přijímáno push oznámení",
+                            "push_notifications": "Push oznámení"
+                        },
+                        "translation": {
+                            "header": "Zvolte jazyk",
+                            "introduction": "Zvolte jazyk pro rozhraní Home Assistant v tomto zařízení",
+                            "language": "Jazyk"
+                        },
+                        "themes": {
+                            "header": "Nastavení motivu",
+                            "introduction": "Zvolte možnost 'Backend-selected' pro volbu motivu backendem, nebo vyberte téma pro toto zařízení",
+                            "theme": "Motiv"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Přizpůsobení",
+                    "description": "Přizpůsobte své entity"
+                },
+                "automation": {
+                    "caption": "Automatizace",
+                    "description": "Vytvářejte a upravujte automatizaci",
+                    "picker": {
+                        "header": "Editor automatizací",
+                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), abyste se ujistili, že správně jste správně nakonfigurovali aplikaci Home Assistant.",
+                        "pick_automation": "Vyberte automatizaci kterou chcete upravit",
+                        "no_automations": "Nelze najít žádnou upravitelnou automatizaci",
+                        "add_automation": "Přidejte automatizaci"
+                    },
+                    "editor": {
+                        "introduction": "Použijte automatizaci, abyste svůj domov oživili",
+                        "default_name": "Nová automatizace",
+                        "save": "Uložit",
+                        "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?",
+                        "alias": "Název",
+                        "triggers": {
+                            "header": "Spouštěče",
+                            "introduction": "Spouštěče spouštějí zpracování automatizačního pravidla. Pro stejné pravidlo je možné zadat více spouštěčů. Po spuštění spouštěče ověří Home Assistant případné podmínky a zavolá akci. \n\n [Další informace o spouštěčích.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Přidat spouštěč",
+                            "duplicate": "Duplikát",
+                            "delete": "Odstranit",
+                            "delete_confirm": "Opravdu smazat?",
+                            "unsupported_platform": "Nepodporovaná platforma: {platform}",
+                            "type_select": "Typ spouštěče",
+                            "type": {
+                                "event": {
+                                    "label": "Událost",
+                                    "event_type": "Typ události",
+                                    "event_data": "Data události"
+                                },
+                                "state": {
+                                    "label": "Stav",
+                                    "from": "Od",
+                                    "to": "Do"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Událost:",
+                                    "start": "Spustit",
+                                    "shutdown": "Ukončit"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic",
+                                    "payload": "Datová část (volitelné)"
+                                },
+                                "numeric_state": {
+                                    "label": "Číselný stav",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Šablona hodnoty (volitelné)"
+                                },
+                                "sun": {
+                                    "label": "Slunce",
+                                    "event": "Událost:",
+                                    "sunrise": "Východ slunce",
+                                    "sunset": "Západ slunce",
+                                    "offset": "Posun"
+                                },
+                                "template": {
+                                    "label": "Šablona",
+                                    "value_template": "Šablona hodnoty"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "at": "v"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entita s umístěním",
+                                    "zone": "Zóna",
+                                    "event": "Událost:",
+                                    "enter": "Vstup",
+                                    "leave": "Opuštění"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Podmínky",
+                            "introduction": "Podmínky jsou volitelnou součástí automatizačního pravidla a mohou být použity k zabránění spuštění akce. Podmínky vypadají velmi podobně jako spouštěče, ale jsou velmi odlišné. Spouštěč se podívá na události, ke kterým dochází v systému, zatímco podmínka se zabývá pouze tím, jak systém vypadá právě teď. Pro spouštěč se může jevit že je spínač zapnutý. Stav může vidět pouze tehdy, je-li přepínač aktuálně zapnutý nebo vypnutý. \n\n [Další informace o podmínkách.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Přidat podmínku",
+                            "duplicate": "Duplikát",
+                            "delete": "Odstranit",
+                            "delete_confirm": "Opravdu smazat?",
+                            "unsupported_condition": "Nepodporovaná podmínka: {condition}",
+                            "type_select": "Typ podmínky",
+                            "type": {
+                                "state": {
+                                    "label": "Stav",
+                                    "state": "Stav"
+                                },
+                                "numeric_state": {
+                                    "label": "Číselný stav",
+                                    "above": "Nad",
+                                    "below": "Pod",
+                                    "value_template": "Šablona hodnoty (volitelné)"
+                                },
+                                "sun": {
+                                    "label": "Slunce",
+                                    "before": "Před:",
+                                    "after": "Po:",
+                                    "before_offset": "Prodleva před (volitelné)",
+                                    "after_offset": "Prodleva po (volitelné)",
+                                    "sunrise": "Východ slunce",
+                                    "sunset": "Západ slunce"
+                                },
+                                "template": {
+                                    "label": "Šablona",
+                                    "value_template": "Šablona hodnoty"
+                                },
+                                "time": {
+                                    "label": "Čas",
+                                    "after": "Po",
+                                    "before": "Před"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entita s umístěním",
+                                    "zone": "Zóna"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Akce",
+                            "introduction": "Akce jsou to, co domácí pomocník provede při spuštění automatizace. \n\n [Více informací o akcích.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Přidat akci",
+                            "duplicate": "Duplikát",
+                            "delete": "Odstranit",
+                            "delete_confirm": "Opravdu smazat?",
+                            "unsupported_action": "Nepodporovaná akce: {action}",
+                            "type_select": "Typ akce",
+                            "type": {
+                                "service": {
+                                    "label": "Zavolejte službu",
+                                    "service_data": "Data služby"
+                                },
+                                "delay": {
+                                    "label": "Zpoždění",
+                                    "delay": "Zpoždění"
+                                },
+                                "wait_template": {
+                                    "label": "Čekání",
+                                    "wait_template": "Čekací Šablona",
+                                    "timeout": "Časový limit (volitelné)"
+                                },
+                                "condition": {
+                                    "label": "Stav"
+                                },
+                                "event": {
+                                    "label": "Spustit událost",
+                                    "event": "Událost:",
+                                    "service_data": "Data služby"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Skript",
+                    "description": "Vytvářejte a upravujte skripty"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Spravujte svou síť Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Odhlásit se",
+            "developer_tools": "Vývojářské nástroje"
+        },
+        "common": {
+            "loading": "Načítání",
+            "cancel": "Zrušit"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
+            "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}",
+            "second": "{count} {count, plural,\none {vteřina}\nfew {vteřiny}\nother {vteřin}\n}",
+            "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minut}\n}",
+            "hour": "{count} {count, plural,\none {hodina}\nfew {hodiny}\nother {hodin}\n}"
+        },
+        "login-form": {
+            "password": "Heslo",
+            "remember": "Zapamatovat",
+            "log_in": "Přihlásit se"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Obrázek není k dispozici"
+            },
+            "persistent_notification": {
+                "dismiss": "Zavřít"
+            },
+            "scene": {
+                "activate": "Aktivovat"
+            },
+            "script": {
+                "execute": "Vykonat"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Tlak vzduchu",
+                    "humidity": "Vlhkost vzduchu",
+                    "temperature": "Teplota",
+                    "visibility": "Viditelnost",
+                    "wind_speed": "Rychlost větru"
+                },
+                "cardinal_direction": {
+                    "e": "V",
+                    "ene": "VSV",
+                    "ese": "VJV",
+                    "n": "S",
+                    "ne": "SV",
+                    "nne": "SSV",
+                    "nw": "SZ",
+                    "nnw": "SSZ",
+                    "s": "J",
+                    "se": "JV",
+                    "sse": "JJV",
+                    "ssw": "JJZ",
+                    "sw": "JZ",
+                    "w": "Z",
+                    "wnw": "ZSZ",
+                    "wsw": "ZJZ"
+                },
+                "forecast": "Předpověď"
+            },
+            "alarm_control_panel": {
+                "code": "Kód",
+                "clear_code": "Zrušit",
+                "disarm": "Deaktivovat",
+                "arm_home": "Aktivní doma",
+                "arm_away": "Aktivní v nepřítomnosti"
+            },
+            "automation": {
+                "last_triggered": "Naposledy spuštěno",
+                "trigger": "Spouštěč"
+            },
+            "cover": {
+                "position": "Pozice",
+                "tilt_position": "Náklon"
+            },
+            "fan": {
+                "speed": "Rychlost",
+                "oscillate": "Oscilovat",
+                "direction": "Směr"
+            },
+            "light": {
+                "brightness": "Jas",
+                "color_temperature": "Teplota barvy",
+                "white_value": "Hodnota bílé",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Převod textu na řeč",
+                "source": "Zdroj",
+                "sound_mode": "Režim zvuku"
+            },
+            "climate": {
+                "currently": "Momentálně",
+                "on_off": "Zapnout \/ vypnout",
+                "target_temperature": "Cílová teplota",
+                "target_humidity": "Cílová vlhkost",
+                "operation": "Provoz",
+                "fan_mode": "Režim ventilátoru",
+                "swing_mode": "Režim kmitání",
+                "away_mode": "Úsporný režim",
+                "aux_heat": "Pomocné teplo"
+            },
+            "lock": {
+                "code": "Kód",
+                "lock": "Zamknout",
+                "unlock": "Odemknout"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entita"
+                }
+            },
+            "service-picker": {
+                "service": "Služba"
+            },
+            "relative_time": {
+                "past": "Před {time}",
+                "future": "Za {time}",
+                "never": "Nikdy"
+            },
+            "history_charts": {
+                "loading_history": "Historie stavu se načítá...",
+                "no_history_found": "Historie stavu chybí."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Zapnuto {entity}.",
+            "entity_turned_off": "Vypnuto {entity}.",
+            "service_called": "Služba {service} volána.",
+            "service_call_failed": "Službu {service} nepodařilo zavolat.",
+            "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu..."
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Ovládací panel alarmu",
+        "automation": "Automatizace",
+        "binary_sensor": "Binární snímač",
+        "calendar": "Kalendář",
+        "camera": "Kamera",
+        "climate": "Klimatizace",
+        "configurator": "Konfigurátor",
+        "conversation": "Konverzace",
+        "cover": "Kryt",
+        "device_tracker": "Sledovač zařízení",
+        "fan": "Ventilátor",
+        "history_graph": "Graf historie",
+        "group": "Skupina",
+        "image_processing": "Zpracování obrazu",
+        "input_boolean": "Zadání ano\/ne",
+        "input_datetime": "Zadání času",
+        "input_select": "Zadání volby",
+        "input_number": "Zadání čísla",
+        "input_text": "Zadání textu",
+        "light": "Světlo",
+        "lock": "Zámek",
+        "mailbox": "Poštovní schránka",
+        "media_player": "Přehrávač médií",
+        "notify": "Oznámení",
+        "plant": "Rostlina",
+        "proximity": "Přiblížení",
+        "remote": "Dálkové",
+        "scene": "Scéna",
+        "script": "Skript",
+        "sensor": "Snímač",
+        "sun": "Slunce",
+        "switch": "Spínač",
+        "updater": "Aktualizátor",
+        "weblink": "Webový odkaz",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Vlhkost vzduchu",
+            "visibility": "Viditelnost",
+            "wind_speed": "Rychlost větru"
+        }
+    }
+}

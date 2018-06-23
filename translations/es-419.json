@@ -1,1 +1,335 @@
-{"panel":{"config":"","states":"","map":"","logbook":"","history":"","mailbox":"","shopping_list":"Lista de compras","dev-mqtt":""},"state":{"default":{"off":"Desactivado","on":"Encendido","unknown":"Desconocido","unavailable":"No Disponible"},"alarm_control_panel":{"armed":"Armado","disarmed":"Desarmado","armed_home":"Armado en Casa","armed_away":"Armado  Fuera de Casa","armed_night":"Armado Nocturno","pending":"Pendiente","arming":"Armando","disarming":"Desarmando","triggered":"Activado","armed_custom_bypass":"Armada zona específica "},"automation":{"off":"apagado","on":"Encendido"},"binary_sensor":{"default":{"off":"Desactivado","on":"Encendido"},"moisture":{"off":"Seco","on":"Humedo"},"gas":{"off":"Despejado","on":"Detectado"},"motion":{"off":"Despejado","on":"Detectado"},"occupancy":{"off":"Despejado","on":"Detectado"},"smoke":{"off":"Despejado","on":"Detectado"},"sound":{"off":"Despejado","on":"Detectado"},"vibration":{"off":"Despejado","on":"Detectado"},"opening":{"off":"Cerrado","on":"Abierto"},"safety":{"off":"Seguro","on":"Inseguro"},"presence":{"off":"Casa Vacía","on":"Casa"}},"calendar":{"off":"Desactivado","on":"Activado"},"camera":{"recording":"Grabando","streaming":"Streaming","idle":"Inactivo"},"climate":{"off":"Desactivar","on":"Activar","heat":"Calentar","cool":"Enfriar","idle":"Inactivo","auto":"Automatico","dry":"Seco","fan_only":"Solo Ventilador","eco":"Eco","electric":"Electrico","performance":"Rendimiento","high_demand":"Alta Demanda","heat_pump":"Bomba de Calor","gas":"Gas"},"configurator":{"configure":"Configurar","configured":"Configurado"},"cover":{"open":"Abierto","opening":"Abriendo","closed":"Cerrado","closing":"Cerrando","stopped":"Detenido"},"device_tracker":{"home":"En Casa","not_home":"Fuera de Casa"},"fan":{"off":"Apagado","on":"Encendido"},"group":{"off":"Apagado","on":"Encendido","home":"En Casa","not_home":"Fuera de Casa","open":"Abierto","opening":"Abriendo","closed":"Cerrado","closing":"Cerrando","stopped":"Detenido","locked":"Cerrado","unlocked":"Abierto","ok":"OK","problem":"Problema"},"input_boolean":{"off":"Apagadp","on":"Encendido"},"light":{"off":"Apagado","on":"Encendido"},"lock":{"locked":"Cerrado","unlocked":"Abierto"},"media_player":{"off":"Apagado","on":"Encendido","playing":"Reproduciendo","paused":"Pausado","idle":"Inactivo","standby":"Modo de espera"},"plant":{"ok":"OK","problem":"Problema"},"remote":{"off":"Apagado","on":"Encendido"},"scene":{"scening":"Reproduciendo Escena"},"script":{"off":"","on":""},"sensor":{"off":"","on":""},"sun":{"above_horizon":"Sobre el horizonte","below_horizon":"Bajo el horizonte"},"switch":{"off":"","on":""},"zwave":{"default":{"initializing":"Iniciando","dead":"Desconectado","sleeping":"Hibernacion","ready":"Listo"},"query_stage":{"initializing":"Inicializando","dead":"No encontrado ({etapa_de_búsqueda})"}}},"state_badge":{"default":{"unknown":"Desconocido","unavailable":"No Disponible"},"alarm_control_panel":{"armed":"Activado","disarmed":"Desactivado","armed_home":"Activado","armed_away":"Activado","armed_night":"Activado","pending":"Pendiente","arming":"Activando","disarming":"Desarmar","triggered":"Activado","armed_custom_bypass":"Armada"},"device_tracker":{"home":"En Casa","not_home":"Fuera de Casa"}},"ui":{"sidebar":{"log_out":""}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "",
+        "states": "",
+        "map": "",
+        "logbook": "",
+        "history": "",
+        "mailbox": "",
+        "shopping_list": "Lista de compras",
+        "dev-mqtt": ""
+    },
+    "state": {
+        "default": {
+            "off": "Desactivado",
+            "on": "Encendido",
+            "unknown": "Desconocido",
+            "unavailable": "No Disponible"
+        },
+        "alarm_control_panel": {
+            "armed": "Armado",
+            "disarmed": "Desarmado",
+            "armed_home": "Armado en Casa",
+            "armed_away": "Armado  Fuera de Casa",
+            "armed_night": "Armado Nocturno",
+            "pending": "Pendiente",
+            "arming": "Armando",
+            "disarming": "Desarmando",
+            "triggered": "Activado",
+            "armed_custom_bypass": "Armada zona específica "
+        },
+        "automation": {
+            "off": "apagado",
+            "on": "Encendido"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Desactivado",
+                "on": "Encendido"
+            },
+            "moisture": {
+                "off": "Seco",
+                "on": "Humedo"
+            },
+            "gas": {
+                "off": "Despejado",
+                "on": "Detectado"
+            },
+            "motion": {
+                "off": "Despejado",
+                "on": "Detectado"
+            },
+            "occupancy": {
+                "off": "Despejado",
+                "on": "Detectado"
+            },
+            "smoke": {
+                "off": "Despejado",
+                "on": "Detectado"
+            },
+            "sound": {
+                "off": "Despejado",
+                "on": "Detectado"
+            },
+            "vibration": {
+                "off": "Despejado",
+                "on": "Detectado"
+            },
+            "opening": {
+                "off": "Cerrado",
+                "on": "Abierto"
+            },
+            "safety": {
+                "off": "Seguro",
+                "on": "Inseguro"
+            },
+            "presence": {
+                "off": "Fuera de Casa",
+                "on": "Casa"
+            },
+            "window": {
+                "on": "Abierta"
+            }
+        },
+        "calendar": {
+            "off": "Desactivado",
+            "on": "Activado"
+        },
+        "camera": {
+            "recording": "Grabando",
+            "streaming": "Streaming",
+            "idle": "Inactivo"
+        },
+        "climate": {
+            "off": "Desactivar",
+            "on": "Activar",
+            "heat": "Calentar",
+            "cool": "Enfriar",
+            "idle": "Inactivo",
+            "auto": "Automatico",
+            "dry": "Seco",
+            "fan_only": "Solo Ventilador",
+            "eco": "Eco",
+            "electric": "Electrico",
+            "performance": "Rendimiento",
+            "high_demand": "Alta Demanda",
+            "heat_pump": "Bomba de Calor",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Configurar",
+            "configured": "Configurado"
+        },
+        "cover": {
+            "open": "Abierto",
+            "opening": "Abriendo",
+            "closed": "Cerrado",
+            "closing": "Cerrando",
+            "stopped": "Detenido"
+        },
+        "device_tracker": {
+            "home": "En Casa",
+            "not_home": "Fuera de Casa"
+        },
+        "fan": {
+            "off": "Apagado",
+            "on": "Encendido"
+        },
+        "group": {
+            "off": "Apagado",
+            "on": "Encendido",
+            "home": "En Casa",
+            "not_home": "Fuera de Casa",
+            "open": "Abierto",
+            "opening": "Abriendo",
+            "closed": "Cerrado",
+            "closing": "Cerrando",
+            "stopped": "Detenido",
+            "locked": "Cerrado",
+            "unlocked": "Abierto",
+            "ok": "OK",
+            "problem": "Problema"
+        },
+        "input_boolean": {
+            "off": "Apagadp",
+            "on": "Encendido"
+        },
+        "light": {
+            "off": "Apagado",
+            "on": "Encendido"
+        },
+        "lock": {
+            "locked": "Cerrado",
+            "unlocked": "Abierto"
+        },
+        "media_player": {
+            "off": "Apagado",
+            "on": "Encendido",
+            "playing": "Reproduciendo",
+            "paused": "Pausado",
+            "idle": "Inactivo",
+            "standby": "Modo de espera"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Problema"
+        },
+        "remote": {
+            "off": "Apagado",
+            "on": "Encendido"
+        },
+        "scene": {
+            "scening": "Reproduciendo Escena"
+        },
+        "script": {
+            "off": "",
+            "on": ""
+        },
+        "sensor": {
+            "off": "",
+            "on": ""
+        },
+        "sun": {
+            "above_horizon": "Sobre el horizonte",
+            "below_horizon": "Bajo el horizonte"
+        },
+        "switch": {
+            "off": "",
+            "on": ""
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Iniciando",
+                "dead": "Desconectado",
+                "sleeping": "Hibernacion",
+                "ready": "Listo"
+            },
+            "query_stage": {
+                "initializing": "Inicializando ({query_stage})",
+                "dead": "No encontrado ({query_stage})"
+            }
+        },
+        "weather": {
+            "partlycloudy": "Parcialmente nublado",
+            "pouring": "Torrencial",
+            "rainy": "Lluvioso",
+            "snowy": "Nevado",
+            "snowy_rainy": "Nevado, lluvioso",
+            "sunny": "Soleado",
+            "windy": "Ventoso",
+            "windy_variant": "Ventoso"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Desconocido",
+            "unavailable": "No Disponible"
+        },
+        "alarm_control_panel": {
+            "armed": "Activado",
+            "disarmed": "Desactivado",
+            "armed_home": "Activado",
+            "armed_away": "Activado",
+            "armed_night": "Activado",
+            "pending": "Pendiente",
+            "arming": "Activando",
+            "disarming": "Desarmar",
+            "triggered": "Activado",
+            "armed_custom_bypass": "Armada"
+        },
+        "device_tracker": {
+            "home": "En Casa",
+            "not_home": "Fuera de Casa"
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": ""
+        },
+        "panel": {
+            "mailbox": {
+                "empty": "No tienes ningún mensaje"
+            },
+            "config": {
+                "core": {
+                    "section": {
+                        "themes": {
+                            "theme": "Plantilla"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Personalización",
+                    "description": "Personaliza tus entidades"
+                },
+                "automation": {
+                    "caption": "Automatización",
+                    "description": "Crear y editar automatizaciones",
+                    "editor": {
+                        "actions": {
+                            "add": "Agregar acción",
+                            "duplicate": "Duplicar",
+                            "delete": "Eliminar",
+                            "delete_confirm": "Seguro deseas eliminar?",
+                            "unsupported_action": "Acción no soportada: {action}",
+                            "type_select": "Tipo de acción",
+                            "type": {
+                                "service": {
+                                    "label": "Llamar servico",
+                                    "service_data": "Datos"
+                                },
+                                "delay": {
+                                    "label": "Retardo",
+                                    "delay": "Retardo"
+                                },
+                                "wait_template": {
+                                    "label": "Espera",
+                                    "wait_template": "Plantilla de espera",
+                                    "timeout": "Timeout (opcional)"
+                                },
+                                "condition": {
+                                    "label": "Condición"
+                                },
+                                "event": {
+                                    "label": "Disparar evento",
+                                    "event": "Evento",
+                                    "service_data": "Datos"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Crear y editar scripts"
+                },
+                "zwave": {
+                    "caption": ""
+                }
+            }
+        },
+        "card": {
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Presión atmosférica",
+                    "humidity": "Humedad",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilidad",
+                    "wind_speed": "Velocidad del viento"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NO",
+                    "nnw": "NNO",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
+                },
+                "forecast": "Pronóstico"
+            }
+        }
+    },
+    "domain": {
+        "zwave": ""
+    }
+}

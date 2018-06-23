@@ -21,19 +21,16 @@ fi
 [ -z "${LOKALISE_TOKEN-}" ] && LOKALISE_TOKEN="$(<.lokalise_token)"
 
 PROJECT_ID="3420425759f6d6d241f598.13594006"
-LOCAL_DIR="$(pwd)/build-temp"
+LOCAL_DIR="$(pwd)/translations"
 FILE_FORMAT=json
 
 mkdir -p ${LOCAL_DIR}
 
 docker run \
-     -v ${LOCAL_DIR}:/opt/dest \
-     lokalise/lokalise-cli lokalise \
+     -v ${LOCAL_DIR}:/opt/dest/locale \
+     lokalise/lokalise-cli@sha256:79b3108211ed1fcc9f7b09a011bfc53c240fc2f3b7fa7f0c8390f593271b4cd7 lokalise \
      --token ${LOKALISE_TOKEN} \
      export ${PROJECT_ID} \
      --export_empty skip \
      --type json \
-     --dest /opt/dest
-
-# Extract and and minify the downloaded translations
-./node_modules/.bin/gulp translations-extract
+     --unzip_to /opt/dest

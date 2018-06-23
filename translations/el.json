@@ -1,1 +1,231 @@
-{"panel":{"config":"Ρυθμίσεις","states":"Επισκόπηση","map":"Χάρτης","logbook":"Αρχείο Συμβάντων","history":"Ιστορικό","mailbox":"Γραμματοκιβώτιο","shopping_list":"Λίστα αγορών","dev-mqtt":"MQTT"},"state":{"default":{"off":"Κλειστό","on":"Ανοιχτό","unknown":"Άγνωστη","unavailable":"Μη Διαθέσιμο"},"alarm_control_panel":{"armed":"Οπλισμένος","disarmed":"Αφοπλισμένος","armed_home":"Σπίτι Οπλισμένο","armed_away":"Οπλισμένος μακριά","armed_night":"Οπλισμένο βράδυ","pending":"εκκρεμής","arming":"Όπλιση","disarming":"Αφόπλιση","triggered":"παραβίαση"},"automation":{"off":"Ανενεργός","on":"Ενεργός "},"binary_sensor":{"default":{"off":"Ανενεργός","on":"Ενεργός "},"moisture":{"off":"Ξηρό","on":"Υγρό"},"gas":{"off":"Δεν Εντοπίστηκε","on":"Εντοπίστηκε"},"motion":{"off":"Δεν Εντοπίστηκε","on":"Εντοπίστηκε"},"occupancy":{"off":"Δεν Εντοπίστηκε","on":"Εντοπίστηκε"},"smoke":{"off":"Δεν Εντοπίστηκε","on":"Εντοπίστηκε"},"sound":{"off":"Δεν Εντοπίστηκε","on":"Εντοπίστηκε"},"vibration":{"off":"Δεν Εντοπίστηκε","on":"Εντοπίστηκε"},"opening":{"off":"Κλειστό","on":"Ανοιχτό"},"safety":{"off":"Ασφαλής","on":"Ανασφαλής"}},"calendar":{"off":"Απενεργοποιημένο","on":"Ενεργοποιημένο"},"camera":{"recording":"Εγγραφή","streaming":"Μετάδοση Ροής","idle":"Σε αδράνεια"},"climate":{"off":"Ανενεργό","on":"Ενεργό","heat":"Θερμό","cool":"Δροσερό","idle":"Σε αδράνεια","auto":"Αυτόματο","dry":"Ξηρό","fan_only":"Ανεμιστήρας μόνο","eco":"Eco","electric":"Ηλεκτρικό","performance":"Απόδοση","high_demand":"Υψηλή ζήτηση","heat_pump":"Αντλία θερμότητας","gas":"Φυσικού αερίου"},"configurator":{"configure":"Διαμορφώστε","configured":"Διαμορφώθηκε"},"cover":{"open":"Ανοιχτό","opening":"Άνοιγμα","closed":"Κλειστό","closing":"Κλείσιμο","stopped":"Σταμάτησε"},"device_tracker":{"home":"Σπίτι","not_home":"Εκτός Σπιτιού"},"fan":{"off":"Απενεργοποίηση","on":"Ενεργοποίηση"},"group":{"off":"Ανενεργό","on":"Ενεργό ","home":"Σπίτι","not_home":"Εκτός Σπιτιού","open":"Ενεργό","opening":"Άνοιγμα","closed":"Ανενεργό","closing":"Κλείσιμο","stopped":"Σταμάτησε","locked":"Κλειδωμένο","unlocked":"Ξεκλείδωτο","ok":"Ένταξη","problem":"Πρόβλημα"},"input_boolean":{"off":"Κλειστό","on":"Ανοιχτό"},"light":{"off":"Κλειστό","on":"Ανοιχτό"},"lock":{"locked":"Κλειδωμένη","unlocked":"Ξεκλείδωτη"},"media_player":{"off":"Απενεργοποίηση","on":"Ενεργοποίηση","playing":"Κατάσταση Αναπαραγωγής","paused":"Σε Παύση","idle":"Σε αδράνεια","standby":"Κατάσταση αναμονής"},"plant":{"ok":"Εντάξει","problem":"Πρόβλημα"},"remote":{"off":"Κλειστό","on":"Ανοιχτό"},"scene":{"scening":"Σκίτσο"},"script":{"off":"Ανενεργό","on":"Ενεργό"},"sensor":{"off":"Κλειστό","on":"Ανοιχτό"},"sun":{"above_horizon":"Πάνω από τον ορίζοντα","below_horizon":"Κάτω από τον ορίζοντα"},"switch":{"off":"Κλειστό","on":"Ανοιχτό"},"zwave":{"default":{"initializing":"Αρχικοποίηση","dead":"Νεκρό","sleeping":"Κοιμάται","ready":"Έτοιμο"},"query_stage":{"initializing":"Αρχικοποίηση","dead":"νεκρός"}}},"state_badge":{"default":{"unknown":"Άγνωστο","unavailable":"Μη Διαθέσιμος"},"alarm_control_panel":{"armed":"Οπλισμένο","disarmed":"Αφόπλιση","armed_home":"Οπλισμένο","armed_away":"Οπλισμένο","armed_night":"Οπλισμένο","pending":"Εκκρεμής","arming":"Όπλιση","disarming":"Αφοπλισμένος","triggered":"Παραβίαση"},"device_tracker":{"home":"Σπίτι","not_home":"Εκτός Σπιτιού"}},"ui":{"sidebar":{"log_out":"Αποσύνδεση"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Ρυθμίσεις",
+        "states": "Επισκόπηση",
+        "map": "Χάρτης",
+        "logbook": "Αρχείο Συμβάντων",
+        "history": "Ιστορικό",
+        "mailbox": "Γραμματοκιβώτιο",
+        "shopping_list": "Λίστα αγορών",
+        "dev-mqtt": "MQTT"
+    },
+    "state": {
+        "default": {
+            "off": "Κλειστό",
+            "on": "Ανοιχτό",
+            "unknown": "Άγνωστη",
+            "unavailable": "Μη Διαθέσιμο"
+        },
+        "alarm_control_panel": {
+            "armed": "Οπλισμένος",
+            "disarmed": "Αφοπλισμένος",
+            "armed_home": "Σπίτι Οπλισμένο",
+            "armed_away": "Οπλισμένος μακριά",
+            "armed_night": "Οπλισμένο βράδυ",
+            "pending": "εκκρεμής",
+            "arming": "Όπλιση",
+            "disarming": "Αφόπλιση",
+            "triggered": "παραβίαση"
+        },
+        "automation": {
+            "off": "Ανενεργός",
+            "on": "Ενεργός "
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Ανενεργός",
+                "on": "Ενεργός "
+            },
+            "moisture": {
+                "off": "Ξηρό",
+                "on": "Υγρό"
+            },
+            "gas": {
+                "off": "Δεν Εντοπίστηκε",
+                "on": "Εντοπίστηκε"
+            },
+            "motion": {
+                "off": "Δεν Εντοπίστηκε",
+                "on": "Εντοπίστηκε"
+            },
+            "occupancy": {
+                "off": "Δεν Εντοπίστηκε",
+                "on": "Εντοπίστηκε"
+            },
+            "smoke": {
+                "off": "Δεν Εντοπίστηκε",
+                "on": "Εντοπίστηκε"
+            },
+            "sound": {
+                "off": "Δεν Εντοπίστηκε",
+                "on": "Εντοπίστηκε"
+            },
+            "vibration": {
+                "off": "Δεν Εντοπίστηκε",
+                "on": "Εντοπίστηκε"
+            },
+            "opening": {
+                "off": "Κλειστό",
+                "on": "Ανοιχτό"
+            },
+            "safety": {
+                "off": "Ασφαλής",
+                "on": "Ανασφαλής"
+            }
+        },
+        "calendar": {
+            "off": "Απενεργοποιημένο",
+            "on": "Ενεργοποιημένο"
+        },
+        "camera": {
+            "recording": "Εγγραφή",
+            "streaming": "Μετάδοση Ροής",
+            "idle": "Σε αδράνεια"
+        },
+        "climate": {
+            "off": "Ανενεργό",
+            "on": "Ενεργό",
+            "heat": "Θερμό",
+            "cool": "Δροσερό",
+            "idle": "Σε αδράνεια",
+            "auto": "Αυτόματο",
+            "dry": "Ξηρό",
+            "fan_only": "Ανεμιστήρας μόνο",
+            "eco": "Eco",
+            "electric": "Ηλεκτρικό",
+            "performance": "Απόδοση",
+            "high_demand": "Υψηλή ζήτηση",
+            "heat_pump": "Αντλία θερμότητας",
+            "gas": "Φυσικού αερίου"
+        },
+        "configurator": {
+            "configure": "Διαμορφώστε",
+            "configured": "Διαμορφώθηκε"
+        },
+        "cover": {
+            "open": "Ανοιχτό",
+            "opening": "Άνοιγμα",
+            "closed": "Κλειστό",
+            "closing": "Κλείσιμο",
+            "stopped": "Σταμάτησε"
+        },
+        "device_tracker": {
+            "home": "Σπίτι",
+            "not_home": "Εκτός Σπιτιού"
+        },
+        "fan": {
+            "off": "Απενεργοποίηση",
+            "on": "Ενεργοποίηση"
+        },
+        "group": {
+            "off": "Ανενεργό",
+            "on": "Ενεργό ",
+            "home": "Σπίτι",
+            "not_home": "Εκτός Σπιτιού",
+            "open": "Ενεργό",
+            "opening": "Άνοιγμα",
+            "closed": "Ανενεργό",
+            "closing": "Κλείσιμο",
+            "stopped": "Σταμάτησε",
+            "locked": "Κλειδωμένο",
+            "unlocked": "Ξεκλείδωτο",
+            "ok": "Ένταξη",
+            "problem": "Πρόβλημα"
+        },
+        "input_boolean": {
+            "off": "Κλειστό",
+            "on": "Ανοιχτό"
+        },
+        "light": {
+            "off": "Κλειστό",
+            "on": "Ανοιχτό"
+        },
+        "lock": {
+            "locked": "Κλειδωμένη",
+            "unlocked": "Ξεκλείδωτη"
+        },
+        "media_player": {
+            "off": "Απενεργοποίηση",
+            "on": "Ενεργοποίηση",
+            "playing": "Κατάσταση Αναπαραγωγής",
+            "paused": "Σε Παύση",
+            "idle": "Σε αδράνεια",
+            "standby": "Κατάσταση αναμονής"
+        },
+        "plant": {
+            "ok": "Εντάξει",
+            "problem": "Πρόβλημα"
+        },
+        "remote": {
+            "off": "Κλειστό",
+            "on": "Ανοιχτό"
+        },
+        "scene": {
+            "scening": "Σκίτσο"
+        },
+        "script": {
+            "off": "Ανενεργό",
+            "on": "Ενεργό"
+        },
+        "sensor": {
+            "off": "Κλειστό",
+            "on": "Ανοιχτό"
+        },
+        "sun": {
+            "above_horizon": "Πάνω από τον ορίζοντα",
+            "below_horizon": "Κάτω από τον ορίζοντα"
+        },
+        "switch": {
+            "off": "Κλειστό",
+            "on": "Ανοιχτό"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Αρχικοποίηση",
+                "dead": "Νεκρό",
+                "sleeping": "Κοιμάται",
+                "ready": "Έτοιμο"
+            },
+            "query_stage": {
+                "initializing": "Αρχικοποίηση ({query_stage})",
+                "dead": "νεκρός ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Άγνωστο",
+            "unavailable": "Μη Διαθέσιμος"
+        },
+        "alarm_control_panel": {
+            "armed": "Οπλισμένο",
+            "disarmed": "Αφόπλιση",
+            "armed_home": "Οπλισμένο",
+            "armed_away": "Οπλισμένο",
+            "armed_night": "Οπλισμένο",
+            "pending": "Εκκρεμής",
+            "arming": "Όπλιση",
+            "disarming": "Αφοπλισμένος",
+            "triggered": "Παραβίαση"
+        },
+        "device_tracker": {
+            "home": "Σπίτι",
+            "not_home": "Εκτός Σπιτιού"
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "Αποσύνδεση"
+        },
+        "panel": {
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    }
+}

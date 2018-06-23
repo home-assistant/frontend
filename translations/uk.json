@@ -1,1 +1,231 @@
-{"panel":{"config":"Конфігурація","states":"Огляд","map":"Мапа","logbook":"Журнал","history":"Історія","mailbox":"Поштова скринька","shopping_list":"Список покупок","dev-mqtt":"MQTT"},"state":{"default":{"off":"Вимкнено","on":"Увімкнено","unknown":"Невідомий","unavailable":"Недоступний"},"alarm_control_panel":{"armed":"Охорона","disarmed":"Знято","armed_home":"Будинкова охорона","armed_away":"Охорона двору","armed_night":"Нічна охорона","pending":"Очікую","arming":"Ставлю на охорону","disarming":"Зняття","triggered":"Тривога"},"automation":{"off":"Вимкнено","on":"Увімкнено"},"binary_sensor":{"default":{"off":"Вимкнено","on":"Увімкнено"},"moisture":{"off":"Сухо","on":"Волого"},"gas":{"off":"Чисто","on":"Виявлено"},"motion":{"off":"Чисто","on":"Виявлено"},"occupancy":{"off":"Чисто","on":"Виявлено"},"smoke":{"off":"Чисто","on":"Виявлено"},"sound":{"off":"Чисто","on":"Виявлено"},"vibration":{"off":"Чисто","on":"Виявлено"},"opening":{"off":"Закриття","on":"Відкриття"},"safety":{"off":"Безпека","on":"Небезпечно"}},"calendar":{"off":"Вимкнено","on":"Увімкнено"},"camera":{"recording":"Запис","streaming":"Трансляція","idle":"Очікування"},"climate":{"off":"Вимкнено","on":"Увімкнено","heat":"Тепло","cool":"Холод","idle":"Очікування","auto":"Автоматично","dry":"Сухість","fan_only":"Лише вентилятор","eco":"Еко","electric":"Електро","performance":"Продуктивність","high_demand":"Велике споживання","heat_pump":"Тепловий насос","gas":"Газ"},"configurator":{"configure":"Налаштувати","configured":"Налаштовано"},"cover":{"open":"Відчинено","opening":"Відкривається","closed":"Зачинено","closing":"Закривається","stopped":"Призупинено"},"device_tracker":{"home":"Вдома","not_home":"Відсутній"},"fan":{"off":"Вимкнено","on":"Увімкнено"},"group":{"off":"Вимкнено","on":"Увімкнено","home":"Вдома","not_home":"Не вдома","open":"Відчинено","opening":"Відкривається","closed":"Зачинено","closing":"Закривається","stopped":"Призупинено","locked":"Заблоковано","unlocked":"Розблоковано","ok":"ОК","problem":"Халепа"},"input_boolean":{"off":"Вимкнено","on":"Увімкнено"},"light":{"off":"Вимкнено","on":"Увімкнено"},"lock":{"locked":"Заблоковано","unlocked":"Розблоковано"},"media_player":{"off":"Вимкнено","on":"Увімкнено","playing":"Програвання","paused":"Призупинено","idle":"Бездіяльність","standby":"Очікування"},"plant":{"ok":"ОК","problem":"Халепа"},"remote":{"off":"Вимкнено","on":"Увімкнено"},"scene":{"scening":"Налаштування сцени"},"script":{"off":"Вимкнено","on":"Увімкнено"},"sensor":{"off":"Вимкнено","on":"Увімкнено"},"sun":{"above_horizon":"Над горизонтом","below_horizon":"За горизонтом"},"switch":{"off":"Вимкнено","on":"Увімкнено"},"zwave":{"default":{"initializing":"Ініціалізація","dead":"Неробоча","sleeping":"Сплячка","ready":"Готовий"},"query_stage":{"initializing":"Ініціалізація({query_stage})","dead":"Неробоча({query_stage})"}}},"state_badge":{"default":{"unknown":"Невід","unavailable":"Недост"},"alarm_control_panel":{"armed":"Охорона","disarmed":"Вимкн","armed_home":"Охорона","armed_away":"Охорона","armed_night":"Охорона","pending":"Очік","arming":"Ставлю","disarming":"Зняття","triggered":"Тривога"},"device_tracker":{"home":"Вдома","not_home":"Відсутній"}},"ui":{"sidebar":{"log_out":"Вийти"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Конфігурація",
+        "states": "Огляд",
+        "map": "Мапа",
+        "logbook": "Журнал",
+        "history": "Історія",
+        "mailbox": "Поштова скринька",
+        "shopping_list": "Список покупок",
+        "dev-mqtt": "MQTT"
+    },
+    "state": {
+        "default": {
+            "off": "Вимкнено",
+            "on": "Увімкнено",
+            "unknown": "Невідомий",
+            "unavailable": "Недоступний"
+        },
+        "alarm_control_panel": {
+            "armed": "Охорона",
+            "disarmed": "Знято",
+            "armed_home": "Будинкова охорона",
+            "armed_away": "Охорона двору",
+            "armed_night": "Нічна охорона",
+            "pending": "Очікую",
+            "arming": "Ставлю на охорону",
+            "disarming": "Зняття",
+            "triggered": "Тривога"
+        },
+        "automation": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Вимкнено",
+                "on": "Увімкнено"
+            },
+            "moisture": {
+                "off": "Сухо",
+                "on": "Волого"
+            },
+            "gas": {
+                "off": "Чисто",
+                "on": "Виявлено"
+            },
+            "motion": {
+                "off": "Чисто",
+                "on": "Виявлено"
+            },
+            "occupancy": {
+                "off": "Чисто",
+                "on": "Виявлено"
+            },
+            "smoke": {
+                "off": "Чисто",
+                "on": "Виявлено"
+            },
+            "sound": {
+                "off": "Чисто",
+                "on": "Виявлено"
+            },
+            "vibration": {
+                "off": "Чисто",
+                "on": "Виявлено"
+            },
+            "opening": {
+                "off": "Закриття",
+                "on": "Відкриття"
+            },
+            "safety": {
+                "off": "Безпека",
+                "on": "Небезпечно"
+            }
+        },
+        "calendar": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "camera": {
+            "recording": "Запис",
+            "streaming": "Трансляція",
+            "idle": "Очікування"
+        },
+        "climate": {
+            "off": "Вимкнено",
+            "on": "Увімкнено",
+            "heat": "Тепло",
+            "cool": "Холод",
+            "idle": "Очікування",
+            "auto": "Автоматично",
+            "dry": "Сухість",
+            "fan_only": "Лише вентилятор",
+            "eco": "Еко",
+            "electric": "Електро",
+            "performance": "Продуктивність",
+            "high_demand": "Велике споживання",
+            "heat_pump": "Тепловий насос",
+            "gas": "Газ"
+        },
+        "configurator": {
+            "configure": "Налаштувати",
+            "configured": "Налаштовано"
+        },
+        "cover": {
+            "open": "Відчинено",
+            "opening": "Відкривається",
+            "closed": "Зачинено",
+            "closing": "Закривається",
+            "stopped": "Призупинено"
+        },
+        "device_tracker": {
+            "home": "Вдома",
+            "not_home": "Відсутній"
+        },
+        "fan": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "group": {
+            "off": "Вимкнено",
+            "on": "Увімкнено",
+            "home": "Вдома",
+            "not_home": "Не вдома",
+            "open": "Відчинено",
+            "opening": "Відкривається",
+            "closed": "Зачинено",
+            "closing": "Закривається",
+            "stopped": "Призупинено",
+            "locked": "Заблоковано",
+            "unlocked": "Розблоковано",
+            "ok": "ОК",
+            "problem": "Халепа"
+        },
+        "input_boolean": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "light": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "lock": {
+            "locked": "Заблоковано",
+            "unlocked": "Розблоковано"
+        },
+        "media_player": {
+            "off": "Вимкнено",
+            "on": "Увімкнено",
+            "playing": "Програвання",
+            "paused": "Призупинено",
+            "idle": "Бездіяльність",
+            "standby": "Очікування"
+        },
+        "plant": {
+            "ok": "ОК",
+            "problem": "Халепа"
+        },
+        "remote": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "scene": {
+            "scening": "Налаштування сцени"
+        },
+        "script": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "sensor": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "sun": {
+            "above_horizon": "Над горизонтом",
+            "below_horizon": "За горизонтом"
+        },
+        "switch": {
+            "off": "Вимкнено",
+            "on": "Увімкнено"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Ініціалізація",
+                "dead": "Неробоча",
+                "sleeping": "Сплячка",
+                "ready": "Готовий"
+            },
+            "query_stage": {
+                "initializing": "Ініціалізація ({query_stage})",
+                "dead": "Неробоча ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Невід",
+            "unavailable": "Недост"
+        },
+        "alarm_control_panel": {
+            "armed": "Охорона",
+            "disarmed": "Вимкн",
+            "armed_home": "Охорона",
+            "armed_away": "Охорона",
+            "armed_night": "Охорона",
+            "pending": "Очік",
+            "arming": "Ставлю",
+            "disarming": "Зняття",
+            "triggered": "Тривога"
+        },
+        "device_tracker": {
+            "home": "Вдома",
+            "not_home": "Відсутній"
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "Вийти"
+        },
+        "panel": {
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    }
+}

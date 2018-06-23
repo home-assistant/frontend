@@ -1,1 +1,350 @@
-{"panel":{"config":"הגדרות","states":"סקירה כללית","map":"מפה","logbook":"יומן אירועים","history":"היסטוריה","mailbox":"תיבת דואר","shopping_list":"רשימת קניות","dev-services":"שירותים","dev-states":"מצבים","dev-events":"אירועים","dev-templates":"תבניות","dev-mqtt":"MQTT","dev-info":"מידע"},"state":{"default":{"off":"כבוי","on":"מופעל","unknown":"לא ידוע","unavailable":"לא זמין"},"alarm_control_panel":{"armed":"דרוך","disarmed":"מנוטרל","armed_home":"הבית דרוך","armed_away":"דרוך לא בבית","armed_night":"דרוך לילה","pending":"ממתין","arming":"מפעיל","disarming":"מנטרל","triggered":"הופעל","armed_custom_bypass":"מעקף מותאם אישית דרוך"},"automation":{"off":"כבוי","on":"דלוק"},"binary_sensor":{"default":{"off":"כבוי","on":"דלוק"},"moisture":{"off":"יבש","on":"רטוב"},"gas":{"off":"נקי","on":"אותר"},"motion":{"off":"נקי","on":"זוהה"},"occupancy":{"off":"נקי","on":"זוהה"},"smoke":{"off":"נקי","on":"אותר"},"sound":{"off":"נקי","on":"אותר"},"vibration":{"off":"נקי","on":"אותר"},"opening":{"off":"סגור","on":"פתוח"},"safety":{"off":"בטוח","on":"לא בטוח"},"presence":{"off":"לא נמצא","on":"בבית"},"battery":{"off":"נורמלי","on":"נמוך"},"problem":{"off":"אוקיי","on":"בעייה"},"connectivity":{"off":"מנותק","on":"מחובר"},"cold":{"off":"רגיל","on":"קַר"},"door":{"off":"סגור","on":"פתוח"},"garage_door":{"off":"סגור","on":"פתוח"},"heat":{"off":"רגיל","on":"חם"},"window":{"off":"סגור","on":"פתוח"}},"calendar":{"off":"כבוי","on":"דלוק"},"camera":{"recording":"מקליט","streaming":"מזרים","idle":"מחכה"},"climate":{"off":"כבוי","on":"דלוק","heat":"חום","cool":"קריר","idle":"ממתין","auto":"אוטומטי","dry":"יבש","fan_only":"מאוורר בלבד","eco":"חסכוני","electric":"חשמלי","performance":"ביצועים","high_demand":"ביקוש גבוה","heat_pump":"משאבת חום","gas":"גז"},"configurator":{"configure":"הגדר","configured":"הוגדר"},"cover":{"open":"פתוח","opening":"פותח","closed":"נסגר","closing":"סוגר","stopped":"עצור"},"device_tracker":{"home":"בבית","not_home":"לא בבית"},"fan":{"off":"כבוי","on":"דלוק"},"group":{"off":"כבוי","on":"דלוק","home":"בבית","not_home":"לא בבית","open":"פתוח","opening":"פותח","closed":"סגור","closing":"סוגר","stopped":"נעצר","locked":"נעול","unlocked":"פתוח","ok":"תקין","problem":"בעיה"},"input_boolean":{"off":"כבוי","on":"דלוק"},"light":{"off":"כבוי","on":"דלוק"},"lock":{"locked":"נעול","unlocked":"פתוח"},"media_player":{"off":"כבוי","on":"דלוק","playing":"מנגן","paused":"מושהה","idle":"ממתין","standby":"מצב המתנה"},"plant":{"ok":"תקין","problem":"בעיה"},"remote":{"off":"כבוי","on":"דלוק"},"scene":{"scening":"מפעיל סצנה"},"script":{"off":"כבוי","on":"דלוק"},"sensor":{"off":"כבוי","on":"דלוק"},"sun":{"above_horizon":"מעל האופק","below_horizon":"מתחת לאופק"},"switch":{"off":"כבוי","on":"דלוק"},"zwave":{"default":{"initializing":"מאתחל","dead":"מת","sleeping":"ישן","ready":"מוכן"},"query_stage":{"initializing":"מאתחל ({query_stage})","dead":"מת ({query_stage})"}}},"state_badge":{"default":{"unknown":"לא ידוע","unavailable":"לא זמין"},"alarm_control_panel":{"armed":"מופעל","disarmed":"לא דרוך","armed_home":"מופעל","armed_away":"מופעל","armed_night":"מופעל לילה","pending":"ממתין","arming":"דורך","disarming":"מבטל","triggered":"מופעל","armed_custom_bypass":"דרוך"},"device_tracker":{"home":"בבית","not_home":"לא בבית"}},"ui":{"panel":{"shopping-list":{"clear_completed":"ניקוי הושלם","add_item":"הוסף פריט","microphone_tip":"לחץ על המיקרופון למעלה מצד ימין ותאמר \"הוסף סוכריה לרשימת הקניות שלי\""},"history":{"showing_entries":"מציג רשומות עבור","period":"תקופה"},"logbook":{"showing_entries":"מציג רשומות עבור"},"mailbox":{"empty":"אין לך הודעות","playback_title":"הודעת ניגון","delete_prompt":"למחוק הודעה זו?","delete_button":"מחיקה"}},"sidebar":{"log_out":"התנתק","developer_tools":"כלים למפתחים"},"common":{"loading":"טוען","cancel":"ביטול"},"duration":{"day":"יום ימים","week":"שבוע שבועות","second":"שניה שניות"},"login-form":{"password":"סיסמה","remember":"זכור","log_in":"התחבר"}},"domain":{"alarm_control_panel":"לוח בקרה של אזעקה","automation":"אוטומציה","binary_sensor":"חיישן בינארי","calendar":"לוּחַ שָׁנָה","camera":"מַצלֵמָה","climate":"אַקלִים","configurator":"קונפיגורטור","conversation":"שִׂיחָה","cover":"וילון","device_tracker":"מעקב מכשיר","fan":"מאוורר","history_graph":"גרף היסטוריה","group":"קְבוּצָה","image_processing":"עיבוד תמונה","input_boolean":"קלט בוליאני","input_datetime":"קלט תאריך וזמן","input_select":"קלט בחירה","input_number":"קלט מספר","input_text":"קלט טקסט","light":"אוֹר","lock":"מנעול","mailbox":"תיבת דואר","media_player":"נגן מדיה","notify":"התראה","plant":"צמח","proximity":"קִרבָה","remote":"מְרוּחָק","scene":"סצנה","script":"תַסרִיט","sensor":"חיישן","sun":"שמש","switch":"מתג","updater":"המעדכן","weblink":"קישור","zwave":"זיווייב"}}
+{
+    "panel": {
+        "config": "הגדרות",
+        "states": "סקירה כללית",
+        "map": "מפה",
+        "logbook": "יומן אירועים",
+        "history": "היסטוריה",
+        "mailbox": "תיבת דואר",
+        "shopping_list": "רשימת קניות",
+        "dev-services": "שירותים",
+        "dev-states": "מצבים",
+        "dev-events": "אירועים",
+        "dev-templates": "תבניות",
+        "dev-mqtt": "MQTT",
+        "dev-info": "מידע"
+    },
+    "state": {
+        "default": {
+            "off": "כבוי",
+            "on": "מופעל",
+            "unknown": "לא ידוע",
+            "unavailable": "לא זמין"
+        },
+        "alarm_control_panel": {
+            "armed": "דרוך",
+            "disarmed": "מנוטרל",
+            "armed_home": "הבית דרוך",
+            "armed_away": "דרוך לא בבית",
+            "armed_night": "דרוך לילה",
+            "pending": "ממתין",
+            "arming": "מפעיל",
+            "disarming": "מנטרל",
+            "triggered": "הופעל",
+            "armed_custom_bypass": "מעקף מותאם אישית דרוך"
+        },
+        "automation": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "כבוי",
+                "on": "דלוק"
+            },
+            "moisture": {
+                "off": "יבש",
+                "on": "רטוב"
+            },
+            "gas": {
+                "off": "נקי",
+                "on": "אותר"
+            },
+            "motion": {
+                "off": "נקי",
+                "on": "זוהה"
+            },
+            "occupancy": {
+                "off": "נקי",
+                "on": "זוהה"
+            },
+            "smoke": {
+                "off": "נקי",
+                "on": "אותר"
+            },
+            "sound": {
+                "off": "נקי",
+                "on": "אותר"
+            },
+            "vibration": {
+                "off": "נקי",
+                "on": "אותר"
+            },
+            "opening": {
+                "off": "סגור",
+                "on": "פתוח"
+            },
+            "safety": {
+                "off": "בטוח",
+                "on": "לא בטוח"
+            },
+            "presence": {
+                "off": "לא נמצא",
+                "on": "בבית"
+            },
+            "battery": {
+                "off": "נורמלי",
+                "on": "נמוך"
+            },
+            "problem": {
+                "off": "אוקיי",
+                "on": "בעייה"
+            },
+            "connectivity": {
+                "off": "מנותק",
+                "on": "מחובר"
+            },
+            "cold": {
+                "off": "רגיל",
+                "on": "קַר"
+            },
+            "door": {
+                "off": "סגור",
+                "on": "פתוח"
+            },
+            "garage_door": {
+                "off": "סגור",
+                "on": "פתוח"
+            },
+            "heat": {
+                "off": "רגיל",
+                "on": "חם"
+            },
+            "window": {
+                "off": "סגור",
+                "on": "פתוח"
+            }
+        },
+        "calendar": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "camera": {
+            "recording": "מקליט",
+            "streaming": "מזרים",
+            "idle": "מחכה"
+        },
+        "climate": {
+            "off": "כבוי",
+            "on": "דלוק",
+            "heat": "חום",
+            "cool": "קריר",
+            "idle": "ממתין",
+            "auto": "אוטומטי",
+            "dry": "יבש",
+            "fan_only": "מאוורר בלבד",
+            "eco": "חסכוני",
+            "electric": "חשמלי",
+            "performance": "ביצועים",
+            "high_demand": "ביקוש גבוה",
+            "heat_pump": "משאבת חום",
+            "gas": "גז"
+        },
+        "configurator": {
+            "configure": "הגדר",
+            "configured": "הוגדר"
+        },
+        "cover": {
+            "open": "פתוח",
+            "opening": "פותח",
+            "closed": "נסגר",
+            "closing": "סוגר",
+            "stopped": "עצור"
+        },
+        "device_tracker": {
+            "home": "בבית",
+            "not_home": "לא בבית"
+        },
+        "fan": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "group": {
+            "off": "כבוי",
+            "on": "דלוק",
+            "home": "בבית",
+            "not_home": "לא בבית",
+            "open": "פתוח",
+            "opening": "פותח",
+            "closed": "סגור",
+            "closing": "סוגר",
+            "stopped": "נעצר",
+            "locked": "נעול",
+            "unlocked": "פתוח",
+            "ok": "תקין",
+            "problem": "בעיה"
+        },
+        "input_boolean": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "light": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "lock": {
+            "locked": "נעול",
+            "unlocked": "פתוח"
+        },
+        "media_player": {
+            "off": "כבוי",
+            "on": "דלוק",
+            "playing": "מנגן",
+            "paused": "מושהה",
+            "idle": "ממתין",
+            "standby": "מצב המתנה"
+        },
+        "plant": {
+            "ok": "תקין",
+            "problem": "בעיה"
+        },
+        "remote": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "scene": {
+            "scening": "מפעיל סצנה"
+        },
+        "script": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "sensor": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "sun": {
+            "above_horizon": "מעל האופק",
+            "below_horizon": "מתחת לאופק"
+        },
+        "switch": {
+            "off": "כבוי",
+            "on": "דלוק"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "מאתחל",
+                "dead": "מת",
+                "sleeping": "ישן",
+                "ready": "מוכן"
+            },
+            "query_stage": {
+                "initializing": "מאתחל ({query_stage})",
+                "dead": "מת ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "לא ידוע",
+            "unavailable": "לא זמין"
+        },
+        "alarm_control_panel": {
+            "armed": "מופעל",
+            "disarmed": "לא דרוך",
+            "armed_home": "מופעל",
+            "armed_away": "מופעל",
+            "armed_night": "מופעל לילה",
+            "pending": "ממתין",
+            "arming": "דורך",
+            "disarming": "מבטל",
+            "triggered": "מופעל",
+            "armed_custom_bypass": "דרוך"
+        },
+        "device_tracker": {
+            "home": "בבית",
+            "not_home": "לא בבית"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "ניקוי הושלם",
+                "add_item": "הוסף פריט",
+                "microphone_tip": "לחץ על המיקרופון למעלה מצד ימין ותאמר \"הוסף סוכריה לרשימת הקניות שלי\""
+            },
+            "history": {
+                "showing_entries": "מציג רשומות עבור",
+                "period": "תקופה"
+            },
+            "logbook": {
+                "showing_entries": "מציג רשומות עבור"
+            },
+            "mailbox": {
+                "empty": "אין לך הודעות",
+                "playback_title": "הודעת ניגון",
+                "delete_prompt": "למחוק הודעה זו?",
+                "delete_button": "מחיקה"
+            },
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "type": {
+                                "condition": {
+                                    "label": "תנאי"
+                                },
+                                "event": {
+                                    "event": "ארוע"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "התנתק",
+            "developer_tools": "כלים למפתחים"
+        },
+        "common": {
+            "loading": "טוען",
+            "cancel": "ביטול"
+        },
+        "login-form": {
+            "password": "סיסמה",
+            "remember": "זכור",
+            "log_in": "התחבר"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "לוח בקרה של אזעקה",
+        "automation": "אוטומציה",
+        "binary_sensor": "חיישן בינארי",
+        "calendar": "לוּחַ שָׁנָה",
+        "camera": "מַצלֵמָה",
+        "climate": "אַקלִים",
+        "configurator": "קונפיגורטור",
+        "conversation": "שִׂיחָה",
+        "cover": "וילון",
+        "device_tracker": "מעקב מכשיר",
+        "fan": "מאוורר",
+        "history_graph": "גרף היסטוריה",
+        "group": "קְבוּצָה",
+        "image_processing": "עיבוד תמונה",
+        "input_boolean": "קלט בוליאני",
+        "input_datetime": "קלט תאריך וזמן",
+        "input_select": "קלט בחירה",
+        "input_number": "קלט מספר",
+        "input_text": "קלט טקסט",
+        "light": "אוֹר",
+        "lock": "מנעול",
+        "mailbox": "תיבת דואר",
+        "media_player": "נגן מדיה",
+        "notify": "התראה",
+        "plant": "צמח",
+        "proximity": "קִרבָה",
+        "remote": "מְרוּחָק",
+        "scene": "סצנה",
+        "script": "תַסרִיט",
+        "sensor": "חיישן",
+        "sun": "שמש",
+        "switch": "מתג",
+        "updater": "המעדכן",
+        "weblink": "קישור",
+        "zwave": "Z-Wave"
+    }
+}

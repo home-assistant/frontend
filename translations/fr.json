@@ -1,1 +1,698 @@
-{"panel":{"config":"Configuration","states":"Aperçu","map":"Carte","logbook":"Journal","history":"Historique","mailbox":"Boîtes aux lettres","shopping_list":"Liste de courses","dev-services":"Services","dev-states":"États","dev-events":"Événements","dev-templates":"Modèles","dev-mqtt":"MQTT","dev-info":"Info"},"state":{"default":{"off":"Off","on":"On","unknown":"Inconnu","unavailable":"Indisponible"},"alarm_control_panel":{"armed":"Enclenchée","disarmed":"Désactivé","armed_home":"Enclenchée (présent)","armed_away":"Enclenché (absent)","armed_night":"Enclenché (nuit)","pending":"En attente","arming":"Activation","disarming":"Désactivation","triggered":"Déclenché","armed_custom_bypass":"Activée avec exception"},"automation":{"off":"Off","on":"On"},"binary_sensor":{"default":{"off":"Off","on":"On"},"moisture":{"off":"Sec","on":"Humide"},"gas":{"off":"Non décelé","on":"Détecté"},"motion":{"off":"RAS","on":"Détecté"},"occupancy":{"off":"RAS","on":"Détecté"},"smoke":{"off":"RAS","on":"Détecté"},"sound":{"off":"RAS","on":"Détecté"},"vibration":{"off":"RAS","on":"Détecté"},"opening":{"off":"Fermé","on":"Ouvert"},"safety":{"off":"Sécurisé","on":"Dangereux"},"presence":{"off":"Absent","on":"Présent"},"battery":{"off":"Normal","on":"Faible"},"problem":{"off":"OK","on":"Problème"},"connectivity":{"off":"Déconnecté","on":"Connecté"},"cold":{"off":"Normale","on":"Froid"},"door":{"off":"Fermée","on":"Ouverte"},"garage_door":{"off":"Fermée","on":"Ouverte"},"heat":{"off":"Normale","on":"Chaud"},"window":{"off":"Fermée","on":"Ouverte"}},"calendar":{"off":"Off","on":"On"},"camera":{"recording":"Enregistrement","streaming":"Diffusion en cours","idle":"Inactif"},"climate":{"off":"Off","on":"On","heat":"Chaleur","cool":"Frais","idle":"Inactif","auto":"Auto","dry":"Sec","fan_only":"Ventilateur seul","eco":"Éco","electric":"Électrique","performance":"Performance","high_demand":"Forte demande","heat_pump":"Pompe à chaleur","gas":"Gaz"},"configurator":{"configure":"Configurer","configured":"Configuré"},"cover":{"open":"Ouvert","opening":"Ouverture","closed":"Fermé","closing":"Fermeture","stopped":"Arrêté"},"device_tracker":{"home":"Présent","not_home":"Absent"},"fan":{"off":"Off","on":"On"},"group":{"off":"Off","on":"On","home":"Présent","not_home":"Absent","open":"Ouvert","opening":"Ouverture","closed":"Fermé","closing":"Fermeture","stopped":"Arrêté","locked":"Verrouillé","unlocked":"Déverrouillé","ok":"OK","problem":"Problème"},"input_boolean":{"off":"Off","on":"On"},"light":{"off":"Off","on":"On"},"lock":{"locked":"Verrouillé","unlocked":"Déverrouillé"},"media_player":{"off":"Off","on":"On","playing":"Lecture en cours","paused":"En pause","idle":"Inactif","standby":"En veille"},"plant":{"ok":"OK","problem":"Problème"},"remote":{"off":"Off","on":"On"},"scene":{"scening":"Scénario"},"script":{"off":"Off","on":"On"},"sensor":{"off":"Off","on":"On"},"sun":{"above_horizon":"Au-dessus de l'horizon","below_horizon":"Sous l’horizon"},"switch":{"off":"Off","on":"On"},"zwave":{"default":{"initializing":"Initialisation","dead":"Mort","sleeping":"En veille","ready":"Prêt"},"query_stage":{"initializing":"Initialisation","dead":"Mort"}}},"state_badge":{"default":{"unknown":"Inconnu","unavailable":"Indisponible"},"alarm_control_panel":{"armed":"Activé","disarmed":"Désactivé","armed_home":"Activée (présent)","armed_away":"Armée (absent)","armed_night":"Activé","pending":"En cours","arming":"Activer","disarming":"Désarmement","triggered":"Déclenchée","armed_custom_bypass":"Activée"},"device_tracker":{"home":"Maison","not_home":"Absent.e"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Effacement complété","add_item":"Ajouter un élément","microphone_tip":"Cliquez sur le microphone en haut à droite et dites “Ajouter des bonbons à ma liste d'achat”"},"history":{"showing_entries":"Afficher les entrées pour","period":"Période"},"logbook":{"showing_entries":"Afficher les entrées pour"},"mailbox":{"empty":"Vous n'avez pas de message","playback_title":"Lecture de messages","delete_prompt":"Effacer ce message?","delete_button":"Effacer"}},"sidebar":{"log_out":"Déconnexion","developer_tools":"Outils de développement"},"common":{"loading":"Chargement","cancel":"Annuler"},"duration":{"day":"{count} {count, plural,\none {jour}\nother {jours}\n}","week":"{count} {count, plural,\none {semaine}\nother {semaines}\n}","second":"{count} {count, plural,\none {seconde}\nother {secondes}\n}"},"login-form":{"password":"Mot de passe","remember":"Se rappeler","log_in":"Identifiant"}},"domain":{"alarm_control_panel":"Panneau de contrôle d'alarme","automation":"Automatisation","binary_sensor":"Capteur binaire","calendar":"Calendrier","camera":"Caméra","climate":"Thermostat","configurator":"Configurateur","conversation":"Conversation","cover":"Volets","device_tracker":"Dispositif de suivi","fan":"Ventilateur","history_graph":"Graphe de l’historique","group":"Groupe","image_processing":"Traitement d’image","input_boolean":"Entrée logique","input_datetime":"Entrée calendrier","input_select":"Sélection","input_number":"Entrée numérique","input_text":"Saisie de texte","light":"Lumière","lock":"Verrou","mailbox":"Boites aux lettres","media_player":"Lecteur multimédia","notify":"Aviser","plant":"Plante","proximity":"Proximité","remote":"Distant","scene":"Scène","script":"Script","sensor":"Capteur","sun":"Soleil","switch":"Interrupteur","updater":"Mise à jour","weblink":"Lien","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Configuration",
+        "states": "Aperçu",
+        "map": "Carte",
+        "logbook": "Journal",
+        "history": "Historique",
+        "mailbox": "Boîtes aux lettres",
+        "shopping_list": "Liste de courses",
+        "dev-services": "Services",
+        "dev-states": "États",
+        "dev-events": "Événements",
+        "dev-templates": "Templates",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Off",
+            "on": "On",
+            "unknown": "Inconnu",
+            "unavailable": "Indisponible"
+        },
+        "alarm_control_panel": {
+            "armed": "Enclenchée",
+            "disarmed": "Désactivée",
+            "armed_home": "Enclenchée (présent)",
+            "armed_away": "Enclenchée (absent)",
+            "armed_night": "Enclenché (nuit)",
+            "pending": "En attente",
+            "arming": "Activation",
+            "disarming": "Désactivation",
+            "triggered": "Déclenché",
+            "armed_custom_bypass": "Activée avec exception"
+        },
+        "automation": {
+            "off": "Off",
+            "on": "On"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Off",
+                "on": "On"
+            },
+            "moisture": {
+                "off": "Sec",
+                "on": "Humide"
+            },
+            "gas": {
+                "off": "Non détecté",
+                "on": "Détecté"
+            },
+            "motion": {
+                "off": "RAS",
+                "on": "Détecté"
+            },
+            "occupancy": {
+                "off": "RAS",
+                "on": "Détecté"
+            },
+            "smoke": {
+                "off": "RAS",
+                "on": "Détecté"
+            },
+            "sound": {
+                "off": "RAS",
+                "on": "Détecté"
+            },
+            "vibration": {
+                "off": "RAS",
+                "on": "Détecté"
+            },
+            "opening": {
+                "off": "Fermé",
+                "on": "Ouvert"
+            },
+            "safety": {
+                "off": "Sécurisé",
+                "on": "Dangereux"
+            },
+            "presence": {
+                "off": "Absent",
+                "on": "Présent"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Faible"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problème"
+            },
+            "connectivity": {
+                "off": "Déconnecté",
+                "on": "Connecté"
+            },
+            "cold": {
+                "off": "Normale",
+                "on": "Froid"
+            },
+            "door": {
+                "off": "Fermée",
+                "on": "Ouverte"
+            },
+            "garage_door": {
+                "off": "Fermée",
+                "on": "Ouverte"
+            },
+            "heat": {
+                "off": "Normale",
+                "on": "Chaud"
+            },
+            "window": {
+                "off": "Fermée",
+                "on": "Ouverte"
+            },
+            "lock": {
+                "off": "Verrouillé",
+                "on": "Déverrouillé"
+            }
+        },
+        "calendar": {
+            "off": "Off",
+            "on": "On"
+        },
+        "camera": {
+            "recording": "Enregistrement",
+            "streaming": "Diffusion en cours",
+            "idle": "En veille"
+        },
+        "climate": {
+            "off": "Off",
+            "on": "On",
+            "heat": "Chaleur",
+            "cool": "Frais",
+            "idle": "Inactif",
+            "auto": "Auto",
+            "dry": "Sec",
+            "fan_only": "Ventilateur seul",
+            "eco": "Éco",
+            "electric": "Électrique",
+            "performance": "Performance",
+            "high_demand": "Forte demande",
+            "heat_pump": "Pompe à chaleur",
+            "gas": "Gaz"
+        },
+        "configurator": {
+            "configure": "Configurer",
+            "configured": "Configuré"
+        },
+        "cover": {
+            "open": "Ouvert",
+            "opening": "Ouverture",
+            "closed": "Fermé",
+            "closing": "Fermeture",
+            "stopped": "Arrêté"
+        },
+        "device_tracker": {
+            "home": "Présent",
+            "not_home": "Absent"
+        },
+        "fan": {
+            "off": "Off",
+            "on": "On"
+        },
+        "group": {
+            "off": "Off",
+            "on": "On",
+            "home": "Présent",
+            "not_home": "Absent",
+            "open": "Ouvert",
+            "opening": "Ouverture",
+            "closed": "Fermé",
+            "closing": "Fermeture",
+            "stopped": "Arrêté",
+            "locked": "Verrouillé",
+            "unlocked": "Déverrouillé",
+            "ok": "OK",
+            "problem": "Problème"
+        },
+        "input_boolean": {
+            "off": "Off",
+            "on": "On"
+        },
+        "light": {
+            "off": "Off",
+            "on": "On"
+        },
+        "lock": {
+            "locked": "Verrouillé",
+            "unlocked": "Déverrouillé"
+        },
+        "media_player": {
+            "off": "Off",
+            "on": "On",
+            "playing": "Lecture en cours",
+            "paused": "En pause",
+            "idle": "En veille",
+            "standby": "En veille"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Problème"
+        },
+        "remote": {
+            "off": "Off",
+            "on": "On"
+        },
+        "scene": {
+            "scening": "Scénario"
+        },
+        "script": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sensor": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sun": {
+            "above_horizon": "Au-dessus de l'horizon",
+            "below_horizon": "Sous l’horizon"
+        },
+        "switch": {
+            "off": "Off",
+            "on": "On"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initialisation",
+                "dead": "Morte",
+                "sleeping": "En veille",
+                "ready": "Prêt"
+            },
+            "query_stage": {
+                "initializing": "Initialisation ({query_stage})",
+                "dead": "Morte ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "Nuit dégagée",
+            "cloudy": "Nuageux",
+            "fog": "Brouillard",
+            "hail": "Grêle",
+            "lightning": "Orage",
+            "lightning_rainy": "Orage \/ Pluie",
+            "partlycloudy": "Partiellement nuageux",
+            "pouring": "Averses",
+            "rainy": "Pluie",
+            "snowy": "Neige",
+            "snowy_rainy": "Neige \/ Pluie",
+            "sunny": "Soleil",
+            "windy": "Vent",
+            "windy_variant": "Vent"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Inconnu",
+            "unavailable": "Indisponible"
+        },
+        "alarm_control_panel": {
+            "armed": "Activé",
+            "disarmed": "Désactivé",
+            "armed_home": "Activée (présent)",
+            "armed_away": "Armée (absent)",
+            "armed_night": "Activé",
+            "pending": "En cours",
+            "arming": "Activer",
+            "disarming": "Désarmement",
+            "triggered": "Déclenchée",
+            "armed_custom_bypass": "Activée"
+        },
+        "device_tracker": {
+            "home": "Maison",
+            "not_home": "Absent.e"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Effacement accompli",
+                "add_item": "Ajouter un élément",
+                "microphone_tip": "Cliquez sur le microphone en haut à droite et dites “Ajouter des bonbons à ma liste d'achat”"
+            },
+            "history": {
+                "showing_entries": "Afficher les entrées pour",
+                "period": "Période"
+            },
+            "logbook": {
+                "showing_entries": "Afficher les entrées pour"
+            },
+            "mailbox": {
+                "empty": "Vous n'avez aucun message",
+                "playback_title": "Lecture de messages",
+                "delete_prompt": "Supprimer ce message ?",
+                "delete_button": "Effacer"
+            },
+            "config": {
+                "header": "Configurer Home Assistant",
+                "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "core": {
+                    "caption": "Général",
+                    "description": "Validez votre fichier de configuration et contrôlez le serveur",
+                    "section": {
+                        "core": {
+                            "header": "Configuration et contrôle du serveur",
+                            "introduction": "Changer votre configuration peut être un processus fastidieux. Nous le savons. Cette section va essayer de vous rendre la vie un peu plus facile.",
+                            "validation": {
+                                "heading": "Validation de la configuration",
+                                "introduction": "Validez votre configuration si vous l'avez récemment modifiée et que vous voulez vous assurer que tout est valide",
+                                "check_config": "Vérifiez la configuration",
+                                "valid": "Configuration valide !",
+                                "invalid": "Configuration invalide"
+                            },
+                            "reloading": {
+                                "heading": "Rechargement de la configuration",
+                                "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter un redémarrage. Appuyer sur \"recharger\" déchargera leur configuration actuelle et chargera la nouvelle.",
+                                "core": "Recharger le noyau",
+                                "group": "Recharger les groupes",
+                                "automation": "Recharger les automatisations",
+                                "script": "Recharger les scripts"
+                            },
+                            "server_management": {
+                                "heading": "Gestion du serveur",
+                                "introduction": "Contrôlez votre serveur Home Assistant... depuis Home Assistant.",
+                                "restart": "Redémarrer",
+                                "stop": "Arrêter"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Configurer les notifications push",
+                            "introduction": "Activer ce paramètre pour recevoir des notifications push sur cet appareil",
+                            "push_notifications": "Notifications push"
+                        },
+                        "translation": {
+                            "header": "Choisissez une langue",
+                            "introduction": "Choisissez une langue pour l'interface Home Assistant sur cet appareil",
+                            "language": "Langue"
+                        },
+                        "themes": {
+                            "header": "Définir un thème",
+                            "introduction": "Choisissez « Backend-selected » pour utiliser le thème choisi par le backend ou choisissez un thème pour cet appareil",
+                            "theme": "Thème"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Personnalisation",
+                    "description": "Personnalisez vos entités"
+                },
+                "automation": {
+                    "caption": "Automatisation",
+                    "description": "Créer et modifier des automatisations",
+                    "picker": {
+                        "header": "Éditeur d'automatisation",
+                        "introduction": "L'éditeur d'automatisation vous permet de créer et éditer des automatisations. Veuillez lire [les instructions](https:\/\/home-assistant.io\/docs\/automation\/editor\/) pour être sûr d'avoir configuré Home-Assistant correctement.",
+                        "pick_automation": "Choisissez l'automatisation à éditer",
+                        "no_automations": "Il n'y a aucune automatisation modifiable.",
+                        "add_automation": "Ajouter une automatisation"
+                    },
+                    "editor": {
+                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
+                        "default_name": "Nouvelle automatisation",
+                        "save": "Sauvegarder",
+                        "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
+                        "alias": "Nom",
+                        "triggers": {
+                            "header": "Déclencheurs",
+                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Ajouter un déclencheur",
+                            "duplicate": "Dupliquer",
+                            "delete": "Efface",
+                            "delete_confirm": "Voulez-vous effacer ?",
+                            "unsupported_platform": "Platefome non supportée : {platform}",
+                            "type_select": "Type de déclencheur",
+                            "type": {
+                                "event": {
+                                    "label": "Événement :",
+                                    "event_type": "Type d'événement",
+                                    "event_data": "Données de l'événement"
+                                },
+                                "state": {
+                                    "label": "État",
+                                    "from": "De",
+                                    "to": "À"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Événement :",
+                                    "start": "Démarrage",
+                                    "shutdown": "Arrêt"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Sujet",
+                                    "payload": "Payload (optionnel)"
+                                },
+                                "numeric_state": {
+                                    "label": "État numérique",
+                                    "above": "Au-dessus de",
+                                    "below": "En-dessous de",
+                                    "value_template": "Contenu du template (optionnel)"
+                                },
+                                "sun": {
+                                    "label": "Soleil",
+                                    "event": "Événement :",
+                                    "sunrise": "Lever du soleil",
+                                    "sunset": "Coucher du soleil",
+                                    "offset": "Décalage (optionnel)"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Contenu du template"
+                                },
+                                "time": {
+                                    "label": "Heure",
+                                    "at": "À"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entité avec emplacement",
+                                    "zone": "Zone",
+                                    "event": "Événement :",
+                                    "enter": "Entre",
+                                    "leave": "Quitter"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Conditions",
+                            "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemblent aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.\n\n[En apprendre plus sur les conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Ajouter une condition",
+                            "duplicate": "Dupliquer",
+                            "delete": "Effacement",
+                            "delete_confirm": "Voulez-vous effacer ?",
+                            "unsupported_condition": "Condition non supportée : {condition}",
+                            "type_select": "Type de condition",
+                            "type": {
+                                "state": {
+                                    "label": "État",
+                                    "state": "État"
+                                },
+                                "numeric_state": {
+                                    "label": "État numérique",
+                                    "above": "Dessus",
+                                    "below": "Sous",
+                                    "value_template": "Contenu du template (optionnel)"
+                                },
+                                "sun": {
+                                    "label": "Soleil",
+                                    "before": "Avant :",
+                                    "after": "Après :",
+                                    "before_offset": "Décalage avant (optionnel)",
+                                    "after_offset": "Décalage après (optionnel)",
+                                    "sunrise": "Lever du soleil",
+                                    "sunset": "Coucher du soleil"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Contenu du template"
+                                },
+                                "time": {
+                                    "label": "Heure",
+                                    "after": "Après",
+                                    "before": "Avant"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Entité avec localisation",
+                                    "zone": "Zone"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Actions",
+                            "introduction": "Les actions sont ce que Home Assistant fera quand une automatisation est déclenchée.\n\n[En apprendre plus sur les actions.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Ajouter une action",
+                            "duplicate": "Dupliquer",
+                            "delete": "Effacer",
+                            "delete_confirm": "Voulez-vous vraiment effacer ?",
+                            "unsupported_action": "Action non supportée : {action}",
+                            "type_select": "Type d'action",
+                            "type": {
+                                "service": {
+                                    "label": "Appeler un service",
+                                    "service_data": "Données du service"
+                                },
+                                "delay": {
+                                    "label": "Délai",
+                                    "delay": "Délais"
+                                },
+                                "wait_template": {
+                                    "label": "Attendre",
+                                    "wait_template": "Template d'attente",
+                                    "timeout": "Délai d'expiration (optionnel)"
+                                },
+                                "condition": {
+                                    "label": "Condition"
+                                },
+                                "event": {
+                                    "label": "Déclencher l'évènement",
+                                    "event": "Évènement :",
+                                    "service_data": "Données du service"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Créer et modifier des scripts"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Gérez votre réseau Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Déconnexion",
+            "developer_tools": "Outils de développement"
+        },
+        "common": {
+            "loading": "Chargement",
+            "cancel": "Annuler"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
+            "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}",
+            "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
+            "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
+            "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}"
+        },
+        "login-form": {
+            "password": "Mot de passe",
+            "remember": "Se rappeler",
+            "log_in": "Connexion"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Image non disponible"
+            },
+            "persistent_notification": {
+                "dismiss": "Ignorer"
+            },
+            "scene": {
+                "activate": "Activer"
+            },
+            "script": {
+                "execute": "Exécuter"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pression atmosphérique",
+                    "humidity": "Humidité",
+                    "temperature": "Température",
+                    "visibility": "Visibilité",
+                    "wind_speed": "Vitesse du vent"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "E-NE",
+                    "ese": "E-SE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "N-NE",
+                    "nw": "NW",
+                    "nnw": "N-NW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "S-SE",
+                    "ssw": "S-SO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "O-NO",
+                    "wsw": "O-SO"
+                },
+                "forecast": "Prévisions"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Effacer",
+                "disarm": "Désarmer",
+                "arm_home": "Armer (domicile)",
+                "arm_away": "Armer (absent)"
+            },
+            "automation": {
+                "last_triggered": "Dernier déclenchement",
+                "trigger": "Déclencheur"
+            },
+            "cover": {
+                "position": "Emplacement",
+                "tilt_position": "Inclinaison"
+            },
+            "fan": {
+                "speed": "Vitesse",
+                "oscillate": "Osciller",
+                "direction": "Direction"
+            },
+            "light": {
+                "brightness": "Luminosité",
+                "color_temperature": "Température de couleur",
+                "white_value": "Niveau de blanc",
+                "effect": "Effet"
+            },
+            "media_player": {
+                "text_to_speak": "Texte à lire"
+            },
+            "climate": {
+                "currently": "Actuellement",
+                "on_off": "Allumé \/ Éteint",
+                "target_temperature": "Température cible",
+                "target_humidity": "Humidité cible",
+                "operation": "Opération",
+                "fan_mode": "Mode de ventilation",
+                "swing_mode": "Mode de balancement",
+                "away_mode": "Mode \"Absent\"",
+                "aux_heat": "Chauffage d'appoint"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Verrouiller",
+                "unlock": "Déverrouiller"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entité"
+                }
+            },
+            "service-picker": {
+                "service": "Service"
+            },
+            "relative_time": {
+                "past": "{time} auparavant",
+                "future": "Dans {time}",
+                "never": "Jamais"
+            },
+            "history_charts": {
+                "loading_history": "Chargement de l'historique des valeurs ...",
+                "no_history_found": "Aucun historique des valeurs trouvé."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Allumage de \"{entity}\".",
+            "entity_turned_off": "Extinction de \"{entity}\".",
+            "service_called": "Service \"{service}\" appelé.",
+            "service_call_failed": "Échec d'appel du service \"{service}\".",
+            "connection_lost": "Connexion perdue. Reconnexion en cours ..."
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Panneau de contrôle d'alarme",
+        "automation": "Automatisation",
+        "binary_sensor": "Capteur binaire",
+        "calendar": "Calendrier",
+        "camera": "Caméra",
+        "climate": "Thermostat",
+        "configurator": "Configurateur",
+        "conversation": "Conversation",
+        "cover": "Volets",
+        "device_tracker": "Dispositif de suivi",
+        "fan": "Ventilateur",
+        "history_graph": "Graphique historique",
+        "group": "Groupe",
+        "image_processing": "Traitement d’image",
+        "input_boolean": "Entrée logique",
+        "input_datetime": "Entrée calendrier",
+        "input_select": "Sélection",
+        "input_number": "Entrée numérique",
+        "input_text": "Saisie de texte",
+        "light": "Lumière",
+        "lock": "Verrou",
+        "mailbox": "Boites aux lettres",
+        "media_player": "Lecteur multimédia",
+        "notify": "Notifier",
+        "plant": "Plante",
+        "proximity": "Proximité",
+        "remote": "Distant",
+        "scene": "Scène",
+        "script": "Script",
+        "sensor": "Capteur",
+        "sun": "Soleil",
+        "switch": "Interrupteur",
+        "updater": "Mise à jour",
+        "weblink": "Lien",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Humidité",
+            "visibility": "Visibilité",
+            "wind_speed": "Vitesse du vent"
+        }
+    }
+}

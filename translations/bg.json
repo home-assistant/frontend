@@ -1,1 +1,698 @@
-{"panel":{"config":"Конфигурация","states":"Състояние","map":"Карта","logbook":"Дневник","history":"История","mailbox":"Пощенска кутия","shopping_list":"Списък за пазаруване","dev-services":"Услуги","dev-states":"Състояния","dev-events":"Събития","dev-templates":"Шаблони","dev-mqtt":"MQTT","dev-info":"Информация"},"state":{"default":{"off":"Изключен","on":"Включен","unknown":"Неизвестно","unavailable":"Недостъпен"},"alarm_control_panel":{"armed":"Под охрана","disarmed":"Деактивирана","armed_home":"Под охрана - вкъщи","armed_away":"Под охрана","armed_night":"Под охрана - нощ","pending":"В очакване","arming":"Активиране","disarming":"Деактивиране","triggered":"Задействан","armed_custom_bypass":"Под охрана"},"automation":{"off":"Изключен","on":"Включен"},"binary_sensor":{"default":{"off":"Изключен","on":"Включен"},"moisture":{"off":"Сух","on":"Мокър"},"gas":{"off":"Чисто","on":"Регистриран"},"motion":{"off":"Чисто","on":"Регистрирано"},"occupancy":{"off":"Чисто","on":"Регистриран"},"smoke":{"off":"Чисто","on":"Регистриран"},"sound":{"off":"Чисто","on":"Регистриран"},"vibration":{"off":"Чисто","on":"Регистрирана"},"opening":{"off":"Затворен","on":"Отворен"},"safety":{"off":"Безопасен","on":"Опасност"},"presence":{"off":"Отсъства","on":"У дома"},"battery":{"off":"Нормална","on":"Изтощена"},"problem":{"off":"ОК","on":"Проблем"},"connectivity":{"off":"Изключен","on":"Свързан"},"door":{"off":"Затворена","on":"Отворена"},"garage_door":{"off":"Затворена","on":"Отворена"}},"calendar":{"off":"Изключен","on":"Включен"},"camera":{"recording":"Записване","streaming":"Предава","idle":"Неработещ"},"climate":{"off":"Изключен","on":"Включен","heat":"Отопление","cool":"Охлаждане","idle":"Неработещ","auto":"Автоматичен","dry":"Сух","fan_only":"Само вентилатор","eco":"Еко","electric":"Електрически","performance":"Производителност","high_demand":"Високо натоварване","heat_pump":"Термопомпа","gas":"Газ"},"configurator":{"configure":"Настройване","configured":"Настроен"},"cover":{"open":"Отворена","opening":"Отваряне","closed":"Затворена","closing":"Затваряне","stopped":"Спряна"},"device_tracker":{"home":"У дома","not_home":"Отсъства"},"fan":{"off":"Изключен","on":"Включен"},"group":{"off":"Изключен","on":"Включена","home":"Вкъщи","not_home":"Отсъства","open":"Отворена","opening":"Отваряне","closed":"Затворена","closing":"Затваряне","stopped":"Спряна","locked":"Заключена","unlocked":"Отключена","ok":"Добре","problem":"Проблем"},"input_boolean":{"off":"Изключен","on":"Включен"},"light":{"off":"Изключена","on":"Включен"},"lock":{"locked":"Заключен","unlocked":"Отключен"},"media_player":{"off":"Изключен","on":"Включен","playing":"Възпроизвеждане","paused":"В пауза","idle":"Неработещ","standby":"Режим на готовност"},"plant":{"ok":"Добре","problem":"Проблем"},"remote":{"off":"Изключен","on":"Включен"},"scene":{"scening":"Промяна на сцена"},"script":{"off":"Изключен","on":"Включен"},"sensor":{"off":"Изключен","on":"Включен"},"sun":{"above_horizon":"Над хоризонта","below_horizon":"Под хоризонта"},"switch":{"off":"Изключен","on":"Включен"},"zwave":{"default":{"initializing":"Инициализация","dead":"Мъртъв","sleeping":"Спящ","ready":"Готов"},"query_stage":{"initializing":"Инициализиране ({query_stage})","dead":"Мъртъв"}}},"state_badge":{"default":{"unknown":"Неизвестно","unavailable":"Недост"},"alarm_control_panel":{"armed":"Под охрана","disarmed":"Деактивирана","armed_home":"Под охрана","armed_away":"Под охрана","armed_night":"Под охрана","pending":"Изчаква","arming":"Активиране","disarming":"Деактивирaне","triggered":"Задействана","armed_custom_bypass":"Под охрана"},"device_tracker":{"home":"У дома","not_home":"Отсъства"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Изчистването завършено","add_item":"Добави артикул","microphone_tip":"Докоснете микрофона горе вдясно и кажете \"Add candy to my shopping list\""},"history":{"period":"Период"},"mailbox":{"empty":"Нямате съобщения","delete_prompt":"Изтриване на това съобщение?","delete_button":"Изтрий"}},"sidebar":{"log_out":"Излез","developer_tools":"Инструменти за разработчици"},"common":{"loading":"Зареждане","cancel":"Отмени"},"login-form":{"password":"Парола","remember":"Запомни"}},"domain":{"alarm_control_panel":"Контрол на аларма","automation":"Автоматизация","binary_sensor":"Двоичен сензор","calendar":"Календар","camera":"Камера","climate":"Климат","configurator":"Конфигуратор","conversation":"Разговор","cover":"Параван","device_tracker":"Проследяване на устройства","fan":"Вентилатор","history_graph":"Хронологична графика","group":"Група","image_processing":"Обработка на изображениe","input_boolean":"Булеви промеливи","input_datetime":"Въвеждане на дата и час","input_select":"Избор","input_number":"Въвеждане на число","input_text":"Въвеждане на текст","light":"Осветление","lock":"Ключалка","mailbox":"Пощенска кутия","media_player":"Медиен плейър","notify":"Известяване","plant":"Растение","proximity":"Близост","remote":"Дистанционно","scene":"Сцена","script":"Скрипт","sensor":"Сензор","sun":"Слънце","switch":"Ключ","updater":"Обновяване","weblink":"Уеб връзка","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Конфигурация",
+        "states": "Състояние",
+        "map": "Карта",
+        "logbook": "Дневник",
+        "history": "История",
+        "mailbox": "Пощенска кутия",
+        "shopping_list": "Списък за пазаруване",
+        "dev-services": "Услуги",
+        "dev-states": "Състояния",
+        "dev-events": "Събития",
+        "dev-templates": "Шаблони",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Информация"
+    },
+    "state": {
+        "default": {
+            "off": "Изключен",
+            "on": "Включен",
+            "unknown": "Неизвестно",
+            "unavailable": "Недостъпен"
+        },
+        "alarm_control_panel": {
+            "armed": "Под охрана",
+            "disarmed": "Деактивирана",
+            "armed_home": "Под охрана - вкъщи",
+            "armed_away": "Под охрана",
+            "armed_night": "Под охрана - нощ",
+            "pending": "В очакване",
+            "arming": "Активиране",
+            "disarming": "Деактивиране",
+            "triggered": "Задействан",
+            "armed_custom_bypass": "Под охрана"
+        },
+        "automation": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Изключен",
+                "on": "Включен"
+            },
+            "moisture": {
+                "off": "Сух",
+                "on": "Мокър"
+            },
+            "gas": {
+                "off": "Чисто",
+                "on": "Регистриран"
+            },
+            "motion": {
+                "off": "Чисто",
+                "on": "Регистрирано"
+            },
+            "occupancy": {
+                "off": "Чисто",
+                "on": "Регистриран"
+            },
+            "smoke": {
+                "off": "Чисто",
+                "on": "Регистриран"
+            },
+            "sound": {
+                "off": "Чисто",
+                "on": "Регистриран"
+            },
+            "vibration": {
+                "off": "Чисто",
+                "on": "Регистрирана"
+            },
+            "opening": {
+                "off": "Затворен",
+                "on": "Отворен"
+            },
+            "safety": {
+                "off": "Безопасен",
+                "on": "Опасност"
+            },
+            "presence": {
+                "off": "Отсъства",
+                "on": "У дома"
+            },
+            "battery": {
+                "off": "Нормална",
+                "on": "Изтощена"
+            },
+            "problem": {
+                "off": "ОК",
+                "on": "Проблем"
+            },
+            "connectivity": {
+                "off": "Изключен",
+                "on": "Свързан"
+            },
+            "cold": {
+                "off": "Нормално",
+                "on": "Студено"
+            },
+            "door": {
+                "off": "Затворена",
+                "on": "Отворена"
+            },
+            "garage_door": {
+                "off": "Затворена",
+                "on": "Отворена"
+            },
+            "heat": {
+                "off": "Нормално",
+                "on": "Горещо"
+            },
+            "window": {
+                "off": "Затворен",
+                "on": "Отворен"
+            },
+            "lock": {
+                "off": "Заключено",
+                "on": "Отключено"
+            }
+        },
+        "calendar": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "camera": {
+            "recording": "Записване",
+            "streaming": "Предава",
+            "idle": "Неработещ"
+        },
+        "climate": {
+            "off": "Изключен",
+            "on": "Включен",
+            "heat": "Отопление",
+            "cool": "Охлаждане",
+            "idle": "Неработещ",
+            "auto": "Автоматичен",
+            "dry": "Сух",
+            "fan_only": "Само вентилатор",
+            "eco": "Еко",
+            "electric": "Електрически",
+            "performance": "Производителност",
+            "high_demand": "Високо натоварване",
+            "heat_pump": "Термопомпа",
+            "gas": "Газ"
+        },
+        "configurator": {
+            "configure": "Настройване",
+            "configured": "Настроен"
+        },
+        "cover": {
+            "open": "Отворена",
+            "opening": "Отваряне",
+            "closed": "Затворена",
+            "closing": "Затваряне",
+            "stopped": "Спряна"
+        },
+        "device_tracker": {
+            "home": "У дома",
+            "not_home": "Отсъства"
+        },
+        "fan": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "group": {
+            "off": "Изключен",
+            "on": "Включена",
+            "home": "Вкъщи",
+            "not_home": "Отсъства",
+            "open": "Отворена",
+            "opening": "Отваряне",
+            "closed": "Затворена",
+            "closing": "Затваряне",
+            "stopped": "Спряна",
+            "locked": "Заключена",
+            "unlocked": "Отключена",
+            "ok": "Добре",
+            "problem": "Проблем"
+        },
+        "input_boolean": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "light": {
+            "off": "Изключена",
+            "on": "Включен"
+        },
+        "lock": {
+            "locked": "Заключен",
+            "unlocked": "Отключен"
+        },
+        "media_player": {
+            "off": "Изключен",
+            "on": "Включен",
+            "playing": "Възпроизвеждане",
+            "paused": "В пауза",
+            "idle": "Неработещ",
+            "standby": "Режим на готовност"
+        },
+        "plant": {
+            "ok": "Добре",
+            "problem": "Проблем"
+        },
+        "remote": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "scene": {
+            "scening": "Промяна на сцена"
+        },
+        "script": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "sensor": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "sun": {
+            "above_horizon": "Над хоризонта",
+            "below_horizon": "Под хоризонта"
+        },
+        "switch": {
+            "off": "Изключен",
+            "on": "Включен"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Инициализация",
+                "dead": "Мъртъв",
+                "sleeping": "Спящ",
+                "ready": "Готов"
+            },
+            "query_stage": {
+                "initializing": "Инициализиране ({query_stage})",
+                "dead": "Мъртъв ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "Ясно, нощ",
+            "cloudy": "Облачно",
+            "fog": "Мъгла",
+            "hail": "Градушка",
+            "lightning": "Светкавица",
+            "lightning_rainy": "Светкавица, дъждовно",
+            "partlycloudy": "Частична облачност",
+            "pouring": "Обилен дъжд",
+            "rainy": "Дъждовно",
+            "snowy": "Снежно",
+            "snowy_rainy": "Снежно, дъждовно",
+            "sunny": "Слънчево",
+            "windy": "Ветровито",
+            "windy_variant": "Ветровито"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Неизвестно",
+            "unavailable": "Недост"
+        },
+        "alarm_control_panel": {
+            "armed": "Под охрана",
+            "disarmed": "Деактивирана",
+            "armed_home": "Под охрана",
+            "armed_away": "Под охрана",
+            "armed_night": "Под охрана",
+            "pending": "Изчаква",
+            "arming": "Активиране",
+            "disarming": "Деактивирaне",
+            "triggered": "Задействана",
+            "armed_custom_bypass": "Под охрана"
+        },
+        "device_tracker": {
+            "home": "У дома",
+            "not_home": "Отсъства"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Изчистването завършено",
+                "add_item": "Добави артикул",
+                "microphone_tip": "Докоснете микрофона горе вдясно и кажете \"Add candy to my shopping list\""
+            },
+            "history": {
+                "showing_entries": "Показване на записите за",
+                "period": "Период"
+            },
+            "logbook": {
+                "showing_entries": "Показване на записите за"
+            },
+            "mailbox": {
+                "empty": "Нямате съобщения",
+                "playback_title": "Възпроизвеждане на съобщение",
+                "delete_prompt": "Изтриване на това съобщение?",
+                "delete_button": "Изтрий"
+            },
+            "config": {
+                "header": "Конфигуриране на Home Assistant",
+                "introduction": "Тук е възможно да конфигурирате Вашите компоненти и Home Assistant. Не всичко е възможно да се конфигурира от Интерфейса, но работим по върпоса.",
+                "core": {
+                    "caption": "Общи",
+                    "description": "Проверка на конфигурацията и управление на сървъра",
+                    "section": {
+                        "core": {
+                            "header": "Конфигуриране и управление на сървъра",
+                            "introduction": "Промяната на конфигурацията може да бъде труден процес. Знаем това. Този раздел ще се опита да направи живота Ви малко по-лесен.",
+                            "validation": {
+                                "heading": "Проверка на конфигурацията",
+                                "introduction": "Проверете конфигурацията, ако скоро сте направили промени и искате да се уверите, че всичко работи",
+                                "check_config": "Проверка на конфигурацията",
+                                "valid": "Валидна конфигурация!",
+                                "invalid": "Невалидна конфигурация"
+                            },
+                            "reloading": {
+                                "heading": "Презареждане на конфигурацията",
+                                "introduction": "Някои части от Home Assistant могат да се презаредят без да е необходимо рестартиране. Натискането на Презареди ще зареди новата конфигурация.",
+                                "core": "Презареждане на ядрото",
+                                "group": "Презареждане на групи",
+                                "automation": "Презареждане на автоматизациите",
+                                "script": "Презареждане на скриптовете"
+                            },
+                            "server_management": {
+                                "heading": "Управление на сървъра",
+                                "introduction": "Управление на Home Assistant сървъра... от Home Assistant.",
+                                "restart": "Рестарт",
+                                "stop": "Спиране"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Конфигуриране на известия",
+                            "introduction": "Активирайте тази настройка, за да получавате известия на това устройство",
+                            "push_notifications": "Известия"
+                        },
+                        "translation": {
+                            "header": "Избор на език",
+                            "introduction": "Изберете език за интерфейса на Home Assistant на това устройство.",
+                            "language": "Език"
+                        },
+                        "themes": {
+                            "header": "Избор на тема",
+                            "introduction": "Изберете \"Backend-selected\", за да използвате каквито и да е теми, избрани от бекенда, или да изберете тема за това устройство",
+                            "theme": "Тема"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Персонализиране",
+                    "description": "Персонализирайте вашите обекти"
+                },
+                "automation": {
+                    "caption": "Автоматизация",
+                    "description": "Създаване и редактиране на автоматизации",
+                    "picker": {
+                        "header": "Редактор на автоматизации",
+                        "introduction": "Редакторът на автоматизации позволява да създавате и редактирате автоматизации. Моля, прочетете [указанията](https:\/\/home-assistant.io\/docs\/automation\/editor\/), за да се уверите, че Home Assistant е правилно конфигуриран.",
+                        "pick_automation": "Изберете автоматизация за редактиране",
+                        "no_automations": "Не можахме да намерим никакви автоматизации подлежащи на редакция",
+                        "add_automation": "Добавяне на автоматизация"
+                    },
+                    "editor": {
+                        "introduction": "Използвайте автоматизация, за да съживите дома си",
+                        "default_name": "Нова автоматизация",
+                        "save": "Запази",
+                        "unsaved_confirm": "Имате незапазени промени. Сигурни ли сте, че искате да напуснете?",
+                        "alias": "Име",
+                        "triggers": {
+                            "header": "Тригери",
+                            "introduction": "Тригерите са това, което стартира обработката на правило за автоматизация. Възможно е да се зададат множество тригери за едно и също правило. След като тригера стартира, Home Assistant ще провери условията, ако има такива, и ще стартира действието. \n\n[Научете повече за тригерите.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Добавяне на тригер",
+                            "duplicate": "Копирай",
+                            "delete": "Изтрий",
+                            "delete_confirm": "Сигурни ли сте, че искате да изтриете?",
+                            "unsupported_platform": "Неподдържана платформа: {platform}",
+                            "type_select": "Тип на тригера",
+                            "type": {
+                                "event": {
+                                    "label": "Събитие",
+                                    "event_type": "Тип на събитието",
+                                    "event_data": "Данни на събитието"
+                                },
+                                "state": {
+                                    "label": "Състояние",
+                                    "from": "От",
+                                    "to": "Във"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Събитие",
+                                    "start": "Стартиране",
+                                    "shutdown": "Изключване"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Тема",
+                                    "payload": "Съобщение (незадължително)"
+                                },
+                                "numeric_state": {
+                                    "label": "Състояние на число",
+                                    "above": "Над",
+                                    "below": "Под",
+                                    "value_template": "Шаблон за стойност (незадължително)"
+                                },
+                                "sun": {
+                                    "label": "Слънце",
+                                    "event": "Събитие",
+                                    "sunrise": "Изгрев",
+                                    "sunset": "Залез",
+                                    "offset": "Офсет (незадължително)"
+                                },
+                                "template": {
+                                    "label": "Шаблон",
+                                    "value_template": "Шаблон за стойност"
+                                },
+                                "time": {
+                                    "label": "Време",
+                                    "at": "В"
+                                },
+                                "zone": {
+                                    "label": "Зона",
+                                    "entity": "Обект с местоположение",
+                                    "zone": "Зона",
+                                    "event": "Събитие",
+                                    "enter": "Влизане",
+                                    "leave": "Излизане"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Условия",
+                            "introduction": "Условията са незадължителна част от правилото за автоматизация и могат да се използват, за да се предотврати настъпването на действие, когато се задейства. Условията изглеждат много близки до тригерите, но са много различни. Тригерът ще разглежда събитията, случващи се в системата, докато условието разглежда само как системата изглежда в момента. Тригера може да наблюдава включването на ключ. Състоянието вижда само да види дали ключ е включен или изключен в момента. \n\n[Научете повече за условията.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Добавяне на условие",
+                            "duplicate": "Копирай",
+                            "delete": "Изтрий",
+                            "delete_confirm": "Сигурни ли сте, че искате да изтриете?",
+                            "unsupported_condition": "Неподдържано условие: {condition}",
+                            "type_select": "Тип на условие",
+                            "type": {
+                                "state": {
+                                    "label": "Състояние",
+                                    "state": "Състояние"
+                                },
+                                "numeric_state": {
+                                    "label": "Състояние на число",
+                                    "above": "Над",
+                                    "below": "Под",
+                                    "value_template": "Шаблон за стойност (незадължително)"
+                                },
+                                "sun": {
+                                    "label": "Слънце",
+                                    "before": "Преди:",
+                                    "after": "След:",
+                                    "before_offset": "Отместване преди (незадължително)",
+                                    "after_offset": "Отместване след (незадължително)",
+                                    "sunrise": "Изгрев",
+                                    "sunset": "Залез"
+                                },
+                                "template": {
+                                    "label": "Шаблон",
+                                    "value_template": "Шаблон за стойност"
+                                },
+                                "time": {
+                                    "label": "Време",
+                                    "after": "След",
+                                    "before": "Преди"
+                                },
+                                "zone": {
+                                    "label": "Зона",
+                                    "entity": "Обект с местоположение",
+                                    "zone": "Зона"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Действия",
+                            "introduction": "Действията са това, което Home Assistant ще направи, когато се активира автоматизацията. \n\n[Научете повече за действията.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Добавяне на действие",
+                            "duplicate": "Копиране",
+                            "delete": "Изтриване",
+                            "delete_confirm": "Сигурни ли сте, че искате да изтриете?",
+                            "unsupported_action": "Неподдържано действие: {action}",
+                            "type_select": "Тип действие",
+                            "type": {
+                                "service": {
+                                    "label": "Извикване на услуга",
+                                    "service_data": "Данни за услугата"
+                                },
+                                "delay": {
+                                    "label": "Забавяне",
+                                    "delay": "Забавяне"
+                                },
+                                "wait_template": {
+                                    "label": "Изчакване",
+                                    "wait_template": "Шаблон за изчакване",
+                                    "timeout": "Изчакване (по избор)"
+                                },
+                                "condition": {
+                                    "label": "Състояние"
+                                },
+                                "event": {
+                                    "label": "Пусни събитието",
+                                    "event": "Събитие",
+                                    "service_data": "Сервизна информация"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Скрипт",
+                    "description": "Създаване и редактиране на скриптове"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Управлявайте своята Z-Wave мрежа "
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Изход",
+            "developer_tools": "Инструменти за разработчици"
+        },
+        "common": {
+            "loading": "Зареждане",
+            "cancel": "Отмени"
+        },
+        "duration": {
+            "day": "{count}{count, plural,\n  one {ден}\n  other {дни}\n}",
+            "week": "{count}{count, plural,\n  one {седмица}\n  other {седмици}\n}",
+            "second": "{count}{count, plural,\n  one {секунда}\n  other {секунди}\n}",
+            "minute": "{count} {count, plural,\n  one {минута}\n  other {минути}\n}",
+            "hour": "{count} {count, plural,\n  one {час}\n  other {часа}\n}"
+        },
+        "login-form": {
+            "password": "Парола",
+            "remember": "Запомни",
+            "log_in": "Вход"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Няма налично изображение"
+            },
+            "persistent_notification": {
+                "dismiss": "Отхвърли"
+            },
+            "scene": {
+                "activate": "Активирай"
+            },
+            "script": {
+                "execute": "Изпълни"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Въздушно налягане",
+                    "humidity": "Влажност",
+                    "temperature": "Температура",
+                    "visibility": "Видимост",
+                    "wind_speed": "Скорост на вятъра"
+                },
+                "cardinal_direction": {
+                    "e": "И",
+                    "ene": "ИСИ",
+                    "ese": "ИЮИ",
+                    "n": "С",
+                    "ne": "СИ",
+                    "nne": "ССИ",
+                    "nw": "СЗ",
+                    "nnw": "ССЗ",
+                    "s": "Ю",
+                    "se": "ЮИ",
+                    "sse": "ЮЮИ",
+                    "ssw": "ЮЮЗ",
+                    "sw": "ЮЗ",
+                    "w": "З",
+                    "wnw": "ЗСЗ",
+                    "wsw": "ЗЮЗ"
+                },
+                "forecast": "Прогноза"
+            },
+            "alarm_control_panel": {
+                "code": "Код",
+                "clear_code": "Изчистване",
+                "disarm": "Деактивирaне",
+                "arm_home": "Под охрана - вкъщи",
+                "arm_away": "Под охрана"
+            },
+            "automation": {
+                "last_triggered": "Последно задействане",
+                "trigger": "Тригер"
+            },
+            "cover": {
+                "position": "Позиция",
+                "tilt_position": "Наклон"
+            },
+            "fan": {
+                "speed": "Скорост",
+                "oscillate": "Въртене",
+                "direction": "Посока"
+            },
+            "light": {
+                "brightness": "Яркост",
+                "color_temperature": "Цветова температура",
+                "white_value": "Стойност на бялото",
+                "effect": "Ефект"
+            },
+            "media_player": {
+                "text_to_speak": "Текст за произнасяне"
+            },
+            "climate": {
+                "currently": "В момента",
+                "on_off": "Вкл. \/ Изкл",
+                "target_temperature": "Желана температура",
+                "target_humidity": "Желана влажност",
+                "operation": "Режим",
+                "fan_mode": "Режим на вентилатора",
+                "swing_mode": "Режим на люлеене",
+                "away_mode": "Режим на отсъствие",
+                "aux_heat": "Помощен нагревател"
+            },
+            "lock": {
+                "code": "Код",
+                "lock": "Заключване",
+                "unlock": "Отключване"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Обект"
+                }
+            },
+            "service-picker": {
+                "service": "Услуга"
+            },
+            "relative_time": {
+                "past": "Преди {time}",
+                "future": "След {time}",
+                "never": "Никога"
+            },
+            "history_charts": {
+                "loading_history": "Зареждане на история за състоянието...",
+                "no_history_found": "Не е намерена история за състоянието"
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Включване на {entity}.",
+            "entity_turned_off": "Изключване на {entity}.",
+            "service_called": "Повикване на услуга {service}.",
+            "service_call_failed": "Неуспешно повикване на услуга {service}.",
+            "connection_lost": "Връзката е прекъсната. Повторно свързване..."
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Контрол на аларма",
+        "automation": "Автоматизация",
+        "binary_sensor": "Двоичен сензор",
+        "calendar": "Календар",
+        "camera": "Камера",
+        "climate": "Климат",
+        "configurator": "Конфигуратор",
+        "conversation": "Разговор",
+        "cover": "Параван",
+        "device_tracker": "Проследяване на устройства",
+        "fan": "Вентилатор",
+        "history_graph": "Хронологична графика",
+        "group": "Група",
+        "image_processing": "Обработка на изображениe",
+        "input_boolean": "Булеви промеливи",
+        "input_datetime": "Въвеждане на дата и час",
+        "input_select": "Избор",
+        "input_number": "Въвеждане на число",
+        "input_text": "Въвеждане на текст",
+        "light": "Осветление",
+        "lock": "Ключалка",
+        "mailbox": "Пощенска кутия",
+        "media_player": "Медиен плейър",
+        "notify": "Известяване",
+        "plant": "Растение",
+        "proximity": "Близост",
+        "remote": "Дистанционно",
+        "scene": "Сцена",
+        "script": "Скрипт",
+        "sensor": "Сензор",
+        "sun": "Слънце",
+        "switch": "Ключ",
+        "updater": "Обновяване",
+        "weblink": "Уеб връзка",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Влажност",
+            "visibility": "Видимост",
+            "wind_speed": "Скорост на вятъра"
+        }
+    }
+}

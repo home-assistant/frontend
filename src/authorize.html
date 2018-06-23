@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Home Assistant</title>
+    <!--EXTRA_SCRIPTS-->
+  </head>
+  <body>
+    <ha-authorize>Loading</ha-authorize>
+    <script>
+    var webComponentsSupported = (
+      'customElements' in window &&
+      'content' in document.createElement('template'));
+    if (!webComponentsSupported) {
+      var e = document.createElement('script');
+      e.src = '/static/webcomponents-bundle.js';
+      document.write(e.outerHTML);
+    }
+    </script>
+    <script src="/frontend_latest/authorize.js"></script>
+  </body>
+</html>

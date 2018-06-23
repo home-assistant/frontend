@@ -14,6 +14,9 @@
 	"cs": {
 		"nativeName": "Čeština"
 	},
+	"cy": {
+		"nativeName": "Cymraeg"
+	},
 	"da": {
 		"nativeName": "Dansk"
 	},
@@ -59,6 +62,9 @@
 	"hu": {
 		"nativeName": "Magyar"
 	},
+	"id": {
+		"nativeName": "Indonesia"
+	},
 	"it": {
 		"nativeName": "Italiano"
 	},
@@ -79,6 +85,9 @@
 	},
 	"nl": {
 		"nativeName": "Nederlands"
+	},
+	"nn": {
+		"nativeName": "Norsk Nynorsk"
 	},
 	"no": {
 		"nativeName": "Norsk"

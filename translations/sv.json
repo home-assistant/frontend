@@ -1,1 +1,707 @@
-{"panel":{"config":"Konfiguration","states":"Översikt","map":"Karta","logbook":"Loggbok","history":"Historik","mailbox":"Brevlåda","shopping_list":"Inköpslista","dev-services":"Tjänster","dev-states":"Tillstånd","dev-events":"Händelser","dev-templates":"Mallar","dev-mqtt":"MQTT","dev-info":"Info"},"state":{"default":{"off":"Av","on":"På","unknown":"Okänd","unavailable":"Otillgänglig"},"alarm_control_panel":{"armed":"Larmat","disarmed":"Avlarmat","armed_home":"Hemmalarmat","armed_away":"Larmat","armed_night":"Nattlarmat","pending":"Väntande","arming":"Tillkopplar","disarming":"Frånkopplar","triggered":"Utlöst","armed_custom_bypass":"Larm förbikopplat"},"automation":{"off":"Av","on":"På"},"binary_sensor":{"default":{"off":"Av","on":"På"},"moisture":{"off":"Torr","on":"Blöt"},"gas":{"off":"Klart","on":"Detekterad"},"motion":{"off":"Av","on":"Detekterad"},"occupancy":{"off":"Klart","on":"Detekterad"},"smoke":{"off":"Av","on":"Detekterad"},"sound":{"off":"Av","on":"På"},"vibration":{"off":"Klart","on":"Detekterad"},"opening":{"off":"Stängd","on":"Öppen"},"safety":{"off":"Säker","on":"Osäker"},"presence":{"off":"Borta","on":"Hemma"},"battery":{"off":"Normal","on":"Låg"},"problem":{"off":"Ok","on":"Problem"},"connectivity":{"off":"Frånkopplad","on":"Ansluten"},"cold":{"off":"Normal","on":"Kallt"},"door":{"off":"Stängd","on":"Öppen"},"garage_door":{"off":"Stängd","on":"Öppen"},"heat":{"off":"Normal","on":"Varmt"},"window":{"off":"Stängt","on":"Öppet"}},"calendar":{"off":"Av","on":"På"},"camera":{"recording":"Spelar in","streaming":"Strömmar","idle":"Inaktiv"},"climate":{"off":"Av","on":"På","heat":"Värme","cool":"Kylning","idle":"Inaktiv","auto":"Automatisk","dry":"Torr","fan_only":"Endast fläkt","eco":"Eco","electric":"Elektrisk","performance":"Prestanda","high_demand":"Hög efterfrågan","heat_pump":"Värmepump","gas":"Gas"},"configurator":{"configure":"Konfigurera","configured":"Konfigurerad"},"cover":{"open":"Öppen","opening":"Öppnar","closed":"Stängd","closing":"Stänger","stopped":"Stoppad"},"device_tracker":{"home":"Hemma","not_home":"Borta"},"fan":{"off":"Av","on":"På"},"group":{"off":"Av","on":"På","home":"Hemma","not_home":"Borta","open":"Öppen","opening":"Öppnar","closed":"Stängd","closing":"Stänger","stopped":"Stoppad","locked":"Låst","unlocked":"Olåst","ok":"Ok","problem":"Problem"},"input_boolean":{"off":"Av","on":"På"},"light":{"off":"Av","on":"På"},"lock":{"locked":"Låst","unlocked":"Olåst"},"media_player":{"off":"Av","on":"På","playing":"Spelar","paused":"Pausad","idle":"Inaktiv","standby":"Viloläge"},"plant":{"ok":"Ok","problem":"Problem"},"remote":{"off":"Av","on":"På"},"scene":{"scening":"Aktiverar scen"},"script":{"off":"Av","on":"På"},"sensor":{"off":"Av","on":"På"},"sun":{"above_horizon":"Ovanför horisonten","below_horizon":"Nedanför horisonten"},"switch":{"off":"Av","on":"På"},"zwave":{"default":{"initializing":"Initierar","dead":"Död","sleeping":"Sovande","ready":"Redo"},"query_stage":{"initializing":"Initierar ({query_stage})","dead":"Död ({query_stage})"}}},"state_badge":{"default":{"unknown":"Okänd","unavailable":"Otillgänglig"},"alarm_control_panel":{"armed":"Tillkopplat","disarmed":"Frånkopplat","armed_home":"Larmat","armed_away":"Larmat","armed_night":"Larmat","pending":"Väntar","arming":"Tillkopplar","disarming":"Frånkopplar","triggered":"Utlöst","armed_custom_bypass":"Larmat"},"device_tracker":{"home":"Hemma","not_home":"Borta"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Rensa klara","add_item":"Lägg till objekt","microphone_tip":"Tryck på mikrofonen längst upp till höger och säg \"Add candy to my shopping list\""},"history":{"showing_entries":"Visar poster för","period":"Period"},"logbook":{"showing_entries":"Visar poster för"},"mailbox":{"empty":"Du har inga meddelanden","playback_title":"Meddelandeuppspelning","delete_prompt":"Vill du ta bort det här meddelandet?","delete_button":"Ta bort"}},"sidebar":{"log_out":"Logga ut","developer_tools":"Utvecklarverktyg"},"common":{"loading":"Läser in","cancel":"Avbryt"},"duration":{"day":"{count} {count, plural,\none {dag}\nother {dagar}\n}","week":"{count} {count, plural,\none {vecka}\nother {veckor}\n}","second":"{count} {count, plural,\none {sekund}\nother {sekunder}\n}"},"login-form":{"password":"Lösenord","remember":"Kom ihåg","log_in":"Logga in"}},"domain":{"alarm_control_panel":"Larmkontrollpanel","automation":"Automation","binary_sensor":"Binär sensor","calendar":"Kalender","camera":"Kamera","climate":"Klimat","configurator":"Konfiguratorn","conversation":"Samtal","cover":"Rullgardin","device_tracker":"Enhetsspårare","fan":"Fläkt","history_graph":"Historikdiagram","group":"Grupp","image_processing":"Bildbehandling","input_boolean":"Välj av eller på","input_datetime":"Mata in datum och tid","input_select":"Välj","input_number":"Mata in tal","input_text":"Mata in text","light":"Lampor","lock":"Lås","mailbox":"Brevlåda","media_player":"Mediaspelare","notify":"Meddela","plant":"Växt","proximity":"Närhet","remote":"Fjärrkontroll","scene":"Scen","script":"Skript","sensor":"Sensor","sun":"Sol","switch":"Kontakt","updater":"Uppdaterare","weblink":"Webblänk","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Konfiguration",
+        "states": "Översikt",
+        "map": "Karta",
+        "logbook": "Loggbok",
+        "history": "Historik",
+        "mailbox": "Brevlåda",
+        "shopping_list": "Inköpslista",
+        "dev-services": "Tjänster",
+        "dev-states": "Tillstånd",
+        "dev-events": "Händelser",
+        "dev-templates": "Mallar",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info",
+        "calendar": "Kalender"
+    },
+    "state": {
+        "default": {
+            "off": "Av",
+            "on": "På",
+            "unknown": "Okänd",
+            "unavailable": "Otillgänglig"
+        },
+        "alarm_control_panel": {
+            "armed": "Larmat",
+            "disarmed": "Avlarmat",
+            "armed_home": "Hemmalarmat",
+            "armed_away": "Larmat",
+            "armed_night": "Nattlarmat",
+            "pending": "Väntande",
+            "arming": "Tillkopplar",
+            "disarming": "Frånkopplar",
+            "triggered": "Utlöst",
+            "armed_custom_bypass": "Larm förbikopplat"
+        },
+        "automation": {
+            "off": "Av",
+            "on": "På"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Av",
+                "on": "På"
+            },
+            "moisture": {
+                "off": "Torr",
+                "on": "Blöt"
+            },
+            "gas": {
+                "off": "Klart",
+                "on": "Detekterad"
+            },
+            "motion": {
+                "off": "Av",
+                "on": "Detekterad"
+            },
+            "occupancy": {
+                "off": "Klart",
+                "on": "Detekterad"
+            },
+            "smoke": {
+                "off": "Av",
+                "on": "Detekterad"
+            },
+            "sound": {
+                "off": "Av",
+                "on": "På"
+            },
+            "vibration": {
+                "off": "Klart",
+                "on": "Detekterad"
+            },
+            "opening": {
+                "off": "Stängd",
+                "on": "Öppen"
+            },
+            "safety": {
+                "off": "Säker",
+                "on": "Osäker"
+            },
+            "presence": {
+                "off": "Borta",
+                "on": "Hemma"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Låg"
+            },
+            "problem": {
+                "off": "Ok",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Frånkopplad",
+                "on": "Ansluten"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Kallt"
+            },
+            "door": {
+                "off": "Stängd",
+                "on": "Öppen"
+            },
+            "garage_door": {
+                "off": "Stängd",
+                "on": "Öppen"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Varmt"
+            },
+            "window": {
+                "off": "Stängt",
+                "on": "Öppet"
+            },
+            "lock": {
+                "off": "Låst",
+                "on": "Olåst"
+            }
+        },
+        "calendar": {
+            "off": "Av",
+            "on": "På"
+        },
+        "camera": {
+            "recording": "Spelar in",
+            "streaming": "Strömmar",
+            "idle": "Inaktiv"
+        },
+        "climate": {
+            "off": "Av",
+            "on": "På",
+            "heat": "Värme",
+            "cool": "Kylning",
+            "idle": "Inaktiv",
+            "auto": "Automatisk",
+            "dry": "Torr",
+            "fan_only": "Endast fläkt",
+            "eco": "Eco",
+            "electric": "Elektrisk",
+            "performance": "Prestanda",
+            "high_demand": "Hög efterfrågan",
+            "heat_pump": "Värmepump",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Konfigurera",
+            "configured": "Konfigurerad"
+        },
+        "cover": {
+            "open": "Öppen",
+            "opening": "Öppnar",
+            "closed": "Stängd",
+            "closing": "Stänger",
+            "stopped": "Stoppad"
+        },
+        "device_tracker": {
+            "home": "Hemma",
+            "not_home": "Borta"
+        },
+        "fan": {
+            "off": "Av",
+            "on": "På"
+        },
+        "group": {
+            "off": "Av",
+            "on": "På",
+            "home": "Hemma",
+            "not_home": "Borta",
+            "open": "Öppen",
+            "opening": "Öppnar",
+            "closed": "Stängd",
+            "closing": "Stänger",
+            "stopped": "Stoppad",
+            "locked": "Låst",
+            "unlocked": "Olåst",
+            "ok": "Ok",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Av",
+            "on": "På"
+        },
+        "light": {
+            "off": "Av",
+            "on": "På"
+        },
+        "lock": {
+            "locked": "Låst",
+            "unlocked": "Olåst"
+        },
+        "media_player": {
+            "off": "Av",
+            "on": "På",
+            "playing": "Spelar",
+            "paused": "Pausad",
+            "idle": "Inaktiv",
+            "standby": "Viloläge"
+        },
+        "plant": {
+            "ok": "Ok",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Av",
+            "on": "På"
+        },
+        "scene": {
+            "scening": "Aktiverar scen"
+        },
+        "script": {
+            "off": "Av",
+            "on": "På"
+        },
+        "sensor": {
+            "off": "Av",
+            "on": "På"
+        },
+        "sun": {
+            "above_horizon": "Ovanför horisonten",
+            "below_horizon": "Nedanför horisonten"
+        },
+        "switch": {
+            "off": "Av",
+            "on": "På"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initierar",
+                "dead": "Död",
+                "sleeping": "Sovande",
+                "ready": "Redo"
+            },
+            "query_stage": {
+                "initializing": "Initierar ({query_stage})",
+                "dead": "Död ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "Klart, natt",
+            "cloudy": "Molnigt",
+            "fog": "Dimma",
+            "hail": "Hagel",
+            "lightning": "Åska",
+            "lightning_rainy": "Åska, regnigt",
+            "partlycloudy": "Delvis molnigt",
+            "pouring": "Ösregn",
+            "rainy": "Regnigt",
+            "snowy": "Snöigt",
+            "snowy_rainy": "Snöigt, regnigt",
+            "sunny": "Soligt",
+            "windy": "Blåsigt",
+            "windy_variant": "Blåsigt"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Okänd",
+            "unavailable": "Otillgänglig"
+        },
+        "alarm_control_panel": {
+            "armed": "Tillkopplat",
+            "disarmed": "Frånkopplat",
+            "armed_home": "Larmat",
+            "armed_away": "Larmat",
+            "armed_night": "Larmat",
+            "pending": "Väntar",
+            "arming": "Tillkopplar",
+            "disarming": "Frånkopplar",
+            "triggered": "Utlöst",
+            "armed_custom_bypass": "Larmat"
+        },
+        "device_tracker": {
+            "home": "Hemma",
+            "not_home": "Borta"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Rensa klara",
+                "add_item": "Lägg till objekt",
+                "microphone_tip": "Tryck på mikrofonen längst upp till höger och säg \"Add candy to my shopping list\""
+            },
+            "history": {
+                "showing_entries": "Visar poster för",
+                "period": "Period"
+            },
+            "logbook": {
+                "showing_entries": "Visar poster för"
+            },
+            "mailbox": {
+                "empty": "Du har inga meddelanden",
+                "playback_title": "Meddelandeuppspelning",
+                "delete_prompt": "Vill du ta bort det här meddelandet?",
+                "delete_button": "Ta bort"
+            },
+            "config": {
+                "header": "Konfigurera Home Assistant",
+                "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
+                "core": {
+                    "caption": "Allmänt",
+                    "description": "Kontrollera din konfiguration och hantera servern.",
+                    "section": {
+                        "core": {
+                            "header": "Konfiguration och serverhantering",
+                            "introduction": "Att ändra din konfiguration kan vara en tröttsam process. Vi vet. Den här avdelningen försöker göra ditt liv lite enklare.",
+                            "validation": {
+                                "heading": "Validering av konfiguration",
+                                "introduction": "Kontrollera din konfiguration om du nyligen gjort ändringar och vill säkerställa att den fortfarande är giltig",
+                                "check_config": "Kontrollera konfigurationen",
+                                "valid": "Konfigurationen är giltig!",
+                                "invalid": "Konfigurationen är inte giltig"
+                            },
+                            "reloading": {
+                                "heading": "Uppdatering av konfigurationen",
+                                "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"Uppdatera\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
+                                "core": "Uppdatera core",
+                                "group": "Uppdatera grupper",
+                                "automation": "Uppdatera automationer",
+                                "script": "Uppdatera skript"
+                            },
+                            "server_management": {
+                                "heading": "Serverhantering",
+                                "introduction": "Hantera din Home Assistant-server... från Home Assistant.",
+                                "restart": "Starta om",
+                                "stop": "Stoppa"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfigurera push-notiser",
+                            "introduction": "Aktivera den här inställningen för att ta emot push-notiser på den här enheten",
+                            "push_notifications": "Push-notiser"
+                        },
+                        "translation": {
+                            "header": "Välj ett språk",
+                            "introduction": "Välj ett språk för Home Assistants gränssnitt på denna enhet",
+                            "language": "Språk"
+                        },
+                        "themes": {
+                            "header": "Välj ett tema",
+                            "introduction": "Välj \"Backend-selected\" för att använda det tema som \"backend\" väljer, eller välj ett tema att använda på den här enheten.",
+                            "theme": "Tema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Anpassning",
+                    "description": "Anpassa dina enheter"
+                },
+                "automation": {
+                    "caption": "Automationer",
+                    "description": "Skapa och redigera automationer",
+                    "picker": {
+                        "header": "Automatiseringseditor",
+                        "introduction": "Automatiseringseditorn låter dig skapa och redigera automationer. Läs [instruktionerna](https:\/\/home-assistant.io\/docs\/automation\/editor\/) för att se till att du har konfigurerat Home Assistant korrekt.",
+                        "pick_automation": "Välj automation att redigera",
+                        "no_automations": "Vi kunde inte hitta några redigerbara automationer",
+                        "add_automation": "Lägg till automatisering"
+                    },
+                    "editor": {
+                        "introduction": "Använd automatiseringar för väcka liv i ditt hem",
+                        "default_name": "Ny automation",
+                        "save": "Spara",
+                        "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?",
+                        "alias": "Namn",
+                        "triggers": {
+                            "header": "Triggers",
+                            "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden\n\n[Läs mer om triggers.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Lägg till händelse",
+                            "duplicate": "Duplicera",
+                            "delete": "Radera",
+                            "delete_confirm": "Säker på att du vill radera?",
+                            "unsupported_platform": "Plattform stöds inte: {platform}",
+                            "type_select": "Aktiveringstyp",
+                            "type": {
+                                "event": {
+                                    "label": "Händelse",
+                                    "event_type": "Händelsetyp",
+                                    "event_data": "Händelsedata"
+                                },
+                                "state": {
+                                    "label": "Tillstånd",
+                                    "from": "Från",
+                                    "to": "Till"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Händelse:",
+                                    "start": "Starta",
+                                    "shutdown": "Stoppa"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Ämne",
+                                    "payload": "Nyttolast (tillval)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numeriskt tillstånd",
+                                    "above": "Över",
+                                    "below": "Under",
+                                    "value_template": "Värdesmall (valfritt)"
+                                },
+                                "sun": {
+                                    "label": "Solen",
+                                    "event": "Händelse",
+                                    "sunrise": "Soluppgång",
+                                    "sunset": "Solnedgång",
+                                    "offset": "Förskjutning (valfritt)"
+                                },
+                                "template": {
+                                    "label": "Mall",
+                                    "value_template": "Värdemall"
+                                },
+                                "time": {
+                                    "label": "Tid",
+                                    "at": "När"
+                                },
+                                "zone": {
+                                    "label": "Zon",
+                                    "entity": "Enhet med position",
+                                    "zone": "Zon",
+                                    "event": "Händelse",
+                                    "enter": "Ankommer",
+                                    "leave": "Lämnar"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Villkor",
+                            "introduction": "Villkoren är en valfri del av en automatiseringsregel och kan användas för att förhindra att en åtgärd inträffar när den triggas. Villkoren liknar triggers men är väldigt olika. En trigger kommer att se på händelser som händer i systemet medan ett villkor bara tittar på hur systemet ser ut just nu. En trigger kan observera att en strömbrytare slås på. Ett villkor kan bara se om en strömbrytare är på eller av. \n\n [Lär dig mer om villkoren.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Lägg till villkor",
+                            "duplicate": "Duplicera",
+                            "delete": "Radera",
+                            "delete_confirm": "Säker på att du vill radera?",
+                            "unsupported_condition": "Villkor stöds inte: {{condition}}",
+                            "type_select": "Villkorstyp",
+                            "type": {
+                                "state": {
+                                    "label": "Tillstånd",
+                                    "state": "Tillstånd"
+                                },
+                                "numeric_state": {
+                                    "label": "Siffervärde",
+                                    "above": "Över",
+                                    "below": "Under",
+                                    "value_template": "Värdemall (valfritt)"
+                                },
+                                "sun": {
+                                    "label": "Solen",
+                                    "before": "Före:",
+                                    "after": "Efter:",
+                                    "before_offset": "Förskjutning innan (valfritt)",
+                                    "after_offset": "Förskjutning efter (valfritt)",
+                                    "sunrise": "Soluppgång",
+                                    "sunset": "Solnedgång"
+                                },
+                                "template": {
+                                    "label": "Mall",
+                                    "value_template": "Värdemall"
+                                },
+                                "time": {
+                                    "label": "Tid",
+                                    "after": "Efter",
+                                    "before": "Före"
+                                },
+                                "zone": {
+                                    "label": "Zon",
+                                    "entity": "Enhet med position",
+                                    "zone": "Zon"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Åtgärder",
+                            "introduction": "Åtgärderna är vad Home Assistent gör när automatiseringen utlöses. \n\n [Lär dig mer om åtgärder.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Lägg till åtgärd",
+                            "duplicate": "Duplicera",
+                            "delete": "Radera",
+                            "delete_confirm": "Är du säker på att du vill radera?",
+                            "unsupported_action": "Åtgärd stöds inte: {action}",
+                            "type_select": "Åtgärdstyp",
+                            "type": {
+                                "service": {
+                                    "label": "Kör tjänst",
+                                    "service_data": "Händelsedata"
+                                },
+                                "delay": {
+                                    "label": "Paus",
+                                    "delay": "Fördröjning"
+                                },
+                                "wait_template": {
+                                    "label": "paus",
+                                    "wait_template": "pause mall",
+                                    "timeout": "Timeout (valfritt)"
+                                },
+                                "condition": {
+                                    "label": "Villkor"
+                                },
+                                "event": {
+                                    "label": "Fire event",
+                                    "event": "Händelse",
+                                    "service_data": "Tjänstedata"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Skript",
+                    "description": "Skapa och redigera skript"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Hantera ditt Z-Wave-nätverk"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Logga ut",
+            "developer_tools": "Utvecklarverktyg"
+        },
+        "common": {
+            "loading": "Läser in",
+            "cancel": "Avbryt"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+            "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}",
+            "second": "{count} {count, plural,\nen {sekund}\nflera {sekunder}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+            "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}"
+        },
+        "login-form": {
+            "password": "Lösenord",
+            "remember": "Kom ihåg",
+            "log_in": "Logga in"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Bilden är inte tillgänglig"
+            },
+            "persistent_notification": {
+                "dismiss": "Avfärda"
+            },
+            "scene": {
+                "activate": "Aktivera"
+            },
+            "script": {
+                "execute": "Kör"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Lufttryck",
+                    "humidity": "Luftfuktighet",
+                    "temperature": "Temperatur",
+                    "visibility": "Sikt",
+                    "wind_speed": "Vindhastighet"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NV",
+                    "nnw": "NNV",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSV",
+                    "sw": "SV",
+                    "w": "V",
+                    "wnw": "VNV",
+                    "wsw": "VSV"
+                },
+                "forecast": "Prognos"
+            },
+            "alarm_control_panel": {
+                "code": "Kod",
+                "clear_code": "Rensa",
+                "disarm": "Larma från",
+                "arm_home": "Larma hemmaläge",
+                "arm_away": "Larma bortaläge"
+            },
+            "automation": {
+                "last_triggered": "Utlöstes senast",
+                "trigger": "Aktivera"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Tilt position"
+            },
+            "fan": {
+                "speed": "Hastighet",
+                "oscillate": "Pendlar",
+                "direction": "Riktning"
+            },
+            "light": {
+                "brightness": "Ljusstyrka",
+                "color_temperature": "Färgtemperatur",
+                "white_value": "Vitt värde",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text till tal",
+                "source": "Källa",
+                "sound_mode": "Ljudläge"
+            },
+            "climate": {
+                "currently": "För närvarande",
+                "on_off": "På \/ av",
+                "target_temperature": "Måltemperatur",
+                "target_humidity": "Målluftfuktighet",
+                "operation": "Läge",
+                "fan_mode": "Fläktläge",
+                "swing_mode": "Svepläge",
+                "away_mode": "Bortaläge",
+                "aux_heat": "Underhållsvärme"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "Lås",
+                "unlock": "Lås upp"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Enhet"
+                }
+            },
+            "service-picker": {
+                "service": "Tjänst"
+            },
+            "relative_time": {
+                "past": "{time} sedan",
+                "future": "Om {time}",
+                "never": "Aldrig"
+            },
+            "history_charts": {
+                "loading_history": "Laddar historik...",
+                "no_history_found": "Ingen historik hittad."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Slog på {entity}.",
+            "entity_turned_off": "Stängde av {entity} .",
+            "service_called": "Tjänsten {service} anropad.",
+            "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
+            "connection_lost": "Anslutning tappad. Ansluter igen..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Spara",
+                "name": "Namn"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Larmkontrollpanel",
+        "automation": "Automation",
+        "binary_sensor": "Binär sensor",
+        "calendar": "Kalender",
+        "camera": "Kamera",
+        "climate": "Klimat",
+        "configurator": "Konfiguratorn",
+        "conversation": "Samtal",
+        "cover": "Rullgardin",
+        "device_tracker": "Enhetsspårare",
+        "fan": "Fläkt",
+        "history_graph": "Historikdiagram",
+        "group": "Grupp",
+        "image_processing": "Bildbehandling",
+        "input_boolean": "Välj av eller på",
+        "input_datetime": "Mata in datum och tid",
+        "input_select": "Välj",
+        "input_number": "Mata in tal",
+        "input_text": "Mata in text",
+        "light": "Lampor",
+        "lock": "Lås",
+        "mailbox": "Brevlåda",
+        "media_player": "Mediaspelare",
+        "notify": "Meddela",
+        "plant": "Växt",
+        "proximity": "Närhet",
+        "remote": "Fjärrkontroll",
+        "scene": "Scen",
+        "script": "Skript",
+        "sensor": "Sensor",
+        "sun": "Sol",
+        "switch": "Kontakt",
+        "updater": "Uppdaterare",
+        "weblink": "Webblänk",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Luftfuktighet",
+            "visibility": "Sikt",
+            "wind_speed": "Vindhastighet"
+        }
+    }
+}

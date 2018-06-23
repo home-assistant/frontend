@@ -1,1 +1,453 @@
-{"panel":{"config":"Istellige","states":"Übersicht","map":"Charte","logbook":"Logbuech","history":"Vrlouf","mailbox":"Postigang","shopping_list":"Ichoufsliste","dev-mqtt":"MQTT"},"state":{"default":{"off":"Us","on":"Ah","unknown":"Unbekannt","unavailable":"Nid verfüägbar"},"alarm_control_panel":{"armed":"Scharf","disarmed":"Nid scharf","armed_home":"Scharf dihei","armed_away":"Scharf usswerts","armed_night":"Scharf Nacht","pending":"Usstehehnd","arming":"Scharf stelä","disarming":"Entsperrä","triggered":"Usglösst"},"automation":{"off":"Us","on":"Ah"},"binary_sensor":{"default":{"off":"Us","on":"Ah"},"moisture":{"off":"Trochä","on":"Nass"},"gas":{"off":"Frei","on":"Erkännt"},"motion":{"off":"Ok","on":"Erchänt"},"occupancy":{"off":"Ok","on":"Erchänt"},"smoke":{"off":"Ok","on":"Erchänt"},"sound":{"off":"Ok","on":"Erchänt"},"vibration":{"off":"Ok","on":"Erchänt"},"opening":{"off":"Gschlosä","on":"Offä"},"safety":{"off":"Sicher","on":"Unsicher"}},"calendar":{"off":"Us","on":"Ah"},"camera":{"recording":"Nimt uf","streaming":"Streamt","idle":"Läärlauf"},"climate":{"off":"Us","on":"Ah","heat":"Heizä","cool":"Chüälä","idle":"Läärlauf","auto":"Automatik","dry":"Trochä","fan_only":"Nur Lüfter","eco":"Öko","electric":"Strom","performance":"Leistig","high_demand":"Grossi Nachfrag","heat_pump":"Heizigspumpi","gas":"Gas"},"configurator":{"configure":"Konfiguriärä","configured":"Konfiguriärt"},"cover":{"open":"Offä","opening":"Am öffnä","closed":"Gschlossä","closing":"Am schliesse","stopped":"Gstoppt"},"device_tracker":{"home":"Dahei","not_home":"Nid Dahei"},"fan":{"off":"Us","on":"Ah"},"group":{"off":"Us","on":"Ah","home":"Dahei","not_home":"Nid Dahei","open":"Offä","opening":"Am öffnä","closed":"Gschlossä","closing":"Schlüssä","stopped":"Gstoppt","locked":"Gsperrt","unlocked":"Entsperrt","ok":"Ok","problem":"Problem"},"input_boolean":{"off":"Us","on":"Ah"},"light":{"off":"Us","on":"Ah"},"lock":{"locked":"Gsperrt","unlocked":"Entsperrt"},"media_player":{"off":"Us","on":"Ah","playing":"Am spilä","paused":"Pousiärä","idle":"Läärlauf","standby":"Standby"},"plant":{"ok":"OK","problem":"Problem"},"remote":{"off":"Us","on":"Ah"},"scene":{"scening":"Szenä"},"script":{"off":"Us","on":"Ah"},"sensor":{"off":"Us","on":"Ah"},"sun":{"above_horizon":"Überem Horizont","below_horizon":"Underem Horizont"},"switch":{"off":"Us","on":"Ah"},"zwave":{"default":{"initializing":"Inizialisiärä","dead":"Tod","sleeping":"Schlafä","ready":"Parat"},"query_stage":{"initializing":"Inizialisiärä","dead":"Tod"}}},"state_badge":{"default":{"unknown":"Unbekannt","unavailable":"Nid verfüägbar"},"alarm_control_panel":{"armed":"Scharf","disarmed":"Entschärft","armed_home":"Scharf Dahei","armed_away":"Scharf usswerts","armed_night":"Scharf nachts","pending":"Usstehend","arming":"Scharf steue","disarming":"Deaktiviärt","triggered":"Usglöst"},"device_tracker":{"home":"Dahei","not_home":"Wäg"}},"ui":{"sidebar":{"log_out":"Uslogge"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Istellige",
+        "states": "Übersicht",
+        "map": "Charte",
+        "logbook": "Logbuech",
+        "history": "Vrlouf",
+        "mailbox": "Postigang",
+        "shopping_list": "Ichoufsliste",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Us",
+            "on": "Ah",
+            "unknown": "Unbekannt",
+            "unavailable": "Nid verfüägbar"
+        },
+        "alarm_control_panel": {
+            "armed": "Scharf",
+            "disarmed": "Nid scharf",
+            "armed_home": "Scharf dihei",
+            "armed_away": "Scharf usswerts",
+            "armed_night": "Scharf Nacht",
+            "pending": "Usstehehnd",
+            "arming": "Scharf stelä",
+            "disarming": "Entsperrä",
+            "triggered": "Usglösst"
+        },
+        "automation": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Us",
+                "on": "Ah"
+            },
+            "moisture": {
+                "off": "Trochä",
+                "on": "Nass"
+            },
+            "gas": {
+                "off": "Frei",
+                "on": "Erkännt"
+            },
+            "motion": {
+                "off": "Ok",
+                "on": "Erchänt"
+            },
+            "occupancy": {
+                "off": "Ok",
+                "on": "Erchänt"
+            },
+            "smoke": {
+                "off": "Ok",
+                "on": "Erchänt"
+            },
+            "sound": {
+                "off": "Ok",
+                "on": "Erchänt"
+            },
+            "vibration": {
+                "off": "Ok",
+                "on": "Erchänt"
+            },
+            "opening": {
+                "off": "Gschlosä",
+                "on": "Offä"
+            },
+            "safety": {
+                "off": "Sicher",
+                "on": "Unsicher"
+            },
+            "battery": {
+                "off": "Normau",
+                "on": "Nidrig"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Trennt",
+                "on": "Verbunge"
+            },
+            "heat": {
+                "on": "Heiss"
+            }
+        },
+        "calendar": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "camera": {
+            "recording": "Nimt uf",
+            "streaming": "Streamt",
+            "idle": "Läärlauf"
+        },
+        "climate": {
+            "off": "Us",
+            "on": "Ah",
+            "heat": "Heizä",
+            "cool": "Chüälä",
+            "idle": "Läärlauf",
+            "auto": "Automatik",
+            "dry": "Trochä",
+            "fan_only": "Nur Lüfter",
+            "eco": "Öko",
+            "electric": "Strom",
+            "performance": "Leistig",
+            "high_demand": "Grossi Nachfrag",
+            "heat_pump": "Heizigspumpi",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Konfiguriärä",
+            "configured": "Konfiguriärt"
+        },
+        "cover": {
+            "open": "Offä",
+            "opening": "Am öffnä",
+            "closed": "Gschlossä",
+            "closing": "Am schliesse",
+            "stopped": "Gstoppt"
+        },
+        "device_tracker": {
+            "home": "Dahei",
+            "not_home": "Nid Dahei"
+        },
+        "fan": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "group": {
+            "off": "Us",
+            "on": "Ah",
+            "home": "Dahei",
+            "not_home": "Nid Dahei",
+            "open": "Offä",
+            "opening": "Am öffnä",
+            "closed": "Gschlossä",
+            "closing": "Schlüssä",
+            "stopped": "Gstoppt",
+            "locked": "Gsperrt",
+            "unlocked": "Entsperrt",
+            "ok": "Ok",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "light": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "lock": {
+            "locked": "Gsperrt",
+            "unlocked": "Entsperrt"
+        },
+        "media_player": {
+            "off": "Us",
+            "on": "Ah",
+            "playing": "Am spilä",
+            "paused": "Pousiärä",
+            "idle": "Läärlauf",
+            "standby": "Standby"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "scene": {
+            "scening": "Szenä"
+        },
+        "script": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "sensor": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "sun": {
+            "above_horizon": "Überem Horizont",
+            "below_horizon": "Underem Horizont"
+        },
+        "switch": {
+            "off": "Us",
+            "on": "Ah"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Inizialisiärä",
+                "dead": "Tod",
+                "sleeping": "Schlafä",
+                "ready": "Parat"
+            },
+            "query_stage": {
+                "initializing": "Inizialisiärä ({query_stage})",
+                "dead": "Tod ({query_stage})"
+            }
+        },
+        "weather": {
+            "cloudy": "Bedeckt",
+            "fog": "Näbu",
+            "hail": "Hägu",
+            "lightning": "Blitzä",
+            "sunny": "sunnig",
+            "windy": "windig"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Unbekannt",
+            "unavailable": "Nid verfüägbar"
+        },
+        "alarm_control_panel": {
+            "armed": "Scharf",
+            "disarmed": "Entschärft",
+            "armed_home": "Scharf Dahei",
+            "armed_away": "Scharf usswerts",
+            "armed_night": "Scharf nachts",
+            "pending": "Usstehend",
+            "arming": "Scharf steue",
+            "disarming": "Deaktiviärt",
+            "triggered": "Usglöst"
+        },
+        "device_tracker": {
+            "home": "Dahei",
+            "not_home": "Wäg"
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "Uslogge"
+        },
+        "common": {
+            "loading": "Lade"
+        },
+        "panel": {
+            "history": {
+                "period": "Periode"
+            },
+            "mailbox": {
+                "delete_button": "Lösche"
+            },
+            "config": {
+                "core": {
+                    "section": {
+                        "core": {
+                            "server_management": {
+                                "restart": "Neustart",
+                                "stop": "Stop"
+                            }
+                        },
+                        "translation": {
+                            "header": "Sprach wähle",
+                            "language": "Sprach"
+                        }
+                    }
+                },
+                "automation": {
+                    "caption": "Automation",
+                    "editor": {
+                        "default_name": "Nöii Automation",
+                        "save": "Spichere",
+                        "alias": "Name",
+                        "triggers": {
+                            "type": {
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "start": "Starte",
+                                    "shutdown": "Abefahre"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic"
+                                },
+                                "numeric_state": {
+                                    "above": "Über",
+                                    "below": "Unger"
+                                },
+                                "sun": {
+                                    "label": "Sunne",
+                                    "sunrise": "Sunneungergang",
+                                    "sunset": "Sunneufgang"
+                                },
+                                "time": {
+                                    "label": "Zyt"
+                                },
+                                "zone": {
+                                    "label": "Zone"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "before": "Vorhär:",
+                                    "after": "Nachhär:",
+                                    "sunrise": "Sunneungergang",
+                                    "sunset": "Sunneufgang"
+                                },
+                                "time": {
+                                    "after": "Nachhär",
+                                    "before": "Vorhär"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Aktione",
+                            "type": {
+                                "wait_template": {
+                                    "label": "Warte"
+                                },
+                                "condition": {
+                                    "label": "Bedingig"
+                                },
+                                "event": {
+                                    "label": "Event uslöse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        },
+        "login-form": {
+            "password": "Passwort"
+        },
+        "components": {
+            "service-picker": {
+                "service": "Service"
+            },
+            "relative_time": {
+                "never": "Niä"
+            }
+        },
+        "card": {
+            "scene": {
+                "activate": "Aktiviere"
+            },
+            "script": {
+                "execute": "Usfüähre"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Luftdruck",
+                    "humidity": "Feuchtigkeit",
+                    "temperature": "Temperatur",
+                    "wind_speed": "Windgschwindigkeit"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Vorhärsag"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Lösche"
+            },
+            "automation": {
+                "trigger": "Uslöser"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Kipp-Position"
+            },
+            "fan": {
+                "speed": "Geschwindigkeit",
+                "oscillate": "Ozilliere",
+                "direction": "Richtig"
+            },
+            "light": {
+                "brightness": "Häuigkeit",
+                "color_temperature": "Farb-Temperatur",
+                "white_value": "Wiss-Wärt",
+                "effect": "Effekt"
+            },
+            "climate": {
+                "currently": "Aktuell",
+                "on_off": "I \/ us",
+                "target_temperature": "Ziu-Temperatur",
+                "target_humidity": "Ziu-Fuächtigkeit",
+                "operation": "Aktion",
+                "fan_mode": "Ventilator-Modus",
+                "swing_mode": "Schwing-Modus",
+                "away_mode": "Wäg-Modus"
+            },
+            "lock": {
+                "lock": "Zuätuä",
+                "unlock": "Uftuä"
+            },
+            "media_player": {
+                "source": "Quelle",
+                "sound_mode": "Sound-Modus"
+            }
+        }
+    },
+    "domain": {
+        "automation": "Automation",
+        "binary_sensor": "Binäre Sensor",
+        "calendar": "Kaländer",
+        "camera": "Kamera",
+        "climate": "Klima",
+        "configurator": "Configurator",
+        "conversation": "Gspräch",
+        "cover": "Roulade",
+        "group": "Gruppe",
+        "light": "Liächt",
+        "lock": "Schloss",
+        "plant": "Pflanze",
+        "remote": "Entfernt",
+        "scene": "Szene",
+        "script": "Skript",
+        "sensor": "Sensor",
+        "sun": "Sunne",
+        "switch": "Schauter",
+        "updater": "Updater",
+        "weblink": "Weblink",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "wind_speed": "Windgschwindigkeit"
+        }
+    }
+}

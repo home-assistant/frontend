@@ -1,0 +1,582 @@
+{
+    "panel": {
+        "config": "Konfigurasi",
+        "states": "Ikhtisar",
+        "map": "Peta",
+        "logbook": "Buku Catatan",
+        "history": "Riwayat",
+        "mailbox": "Kotak pesan",
+        "shopping_list": "Daftar belanja",
+        "dev-services": "Layanan",
+        "dev-states": "Status",
+        "dev-events": "Event",
+        "dev-templates": "Template",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info"
+    },
+    "state": {
+        "default": {
+            "off": "Off",
+            "on": "On",
+            "unknown": "Tidak diketahui",
+            "unavailable": "Tidak tersedia"
+        },
+        "alarm_control_panel": {
+            "pending": "Tertunda",
+            "triggered": "Terpicu"
+        },
+        "automation": {
+            "off": "Off",
+            "on": "On"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Off",
+                "on": "On"
+            },
+            "moisture": {
+                "off": "Kering",
+                "on": "Basah"
+            },
+            "gas": {
+                "off": "Kosong",
+                "on": "Terdeteksi"
+            },
+            "motion": {
+                "off": "Tidak ada",
+                "on": "Terdeteksi"
+            },
+            "occupancy": {
+                "off": "Tidak ada",
+                "on": "Terdeteksi"
+            },
+            "smoke": {
+                "off": "Tidak ada",
+                "on": "Terdeteksi"
+            },
+            "sound": {
+                "off": "Tidak ada",
+                "on": "Terdeteksi"
+            },
+            "vibration": {
+                "off": "Tidak ada",
+                "on": "Terdeteksi"
+            },
+            "opening": {
+                "off": "Tertutup",
+                "on": "Terbuka"
+            },
+            "safety": {
+                "off": "Aman",
+                "on": "Tidak aman"
+            },
+            "presence": {
+                "off": "di luar",
+                "on": "di rumah"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Rendah"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Masalah"
+            },
+            "connectivity": {
+                "off": "Terputus",
+                "on": "Terhubung"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Dingin"
+            },
+            "door": {
+                "off": "Tertutup",
+                "on": "Terbuka"
+            },
+            "garage_door": {
+                "off": "Tertutup",
+                "on": "Terbuka"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Panas"
+            },
+            "window": {
+                "off": "Tertutup",
+                "on": "Terbuka"
+            },
+            "lock": {
+                "off": "Terkunci",
+                "on": "Terbuka"
+            }
+        },
+        "calendar": {
+            "off": "Off",
+            "on": "On"
+        },
+        "camera": {
+            "recording": "Merekam",
+            "streaming": "Streaming",
+            "idle": "Siaga"
+        },
+        "climate": {
+            "off": "Off",
+            "on": "On",
+            "heat": "Panas",
+            "cool": "Sejuk",
+            "auto": "Auto",
+            "dry": "Kering",
+            "eco": "Eco",
+            "electric": "Petir",
+            "gas": "Gas"
+        },
+        "configurator": {
+            "configure": "Konfigurasi",
+            "configured": "Terkonfigurasi"
+        },
+        "cover": {
+            "open": "Buka",
+            "opening": "Membuka",
+            "closed": "Tertutup",
+            "closing": "Menutup",
+            "stopped": "Terhenti"
+        },
+        "device_tracker": {
+            "home": "Di rumah",
+            "not_home": "Keluar"
+        },
+        "fan": {
+            "off": "Off",
+            "on": "On"
+        },
+        "group": {
+            "off": "Off",
+            "on": "On",
+            "home": "Di rumah",
+            "not_home": "Keluar",
+            "open": "Terbuka",
+            "opening": "Membuka",
+            "closed": "Tertutup",
+            "closing": "Menutup",
+            "stopped": "Tertutup",
+            "locked": "Terkunci",
+            "unlocked": "Terbuka",
+            "ok": "OK",
+            "problem": "Malasah"
+        },
+        "input_boolean": {
+            "off": "Off",
+            "on": "On"
+        },
+        "light": {
+            "off": "Off",
+            "on": "On"
+        },
+        "lock": {
+            "locked": "Terkunci",
+            "unlocked": "Terbuka"
+        },
+        "media_player": {
+            "off": "Off",
+            "on": "On",
+            "playing": "Memainkan",
+            "paused": "Jeda",
+            "standby": "Siaga"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Masalah"
+        },
+        "remote": {
+            "off": "Off",
+            "on": "On"
+        },
+        "script": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sensor": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sun": {
+            "above_horizon": "Terbit",
+            "below_horizon": "Tenggelam"
+        },
+        "switch": {
+            "off": "Off",
+            "on": "On"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Inisialisasi",
+                "dead": "Mati",
+                "sleeping": "Tidur",
+                "ready": "Siap"
+            }
+        },
+        "weather": {
+            "clear_night": "Cerah, malam",
+            "cloudy": "Berawan",
+            "fog": "Kabut",
+            "hail": "Hujan es",
+            "lightning": "Petir",
+            "lightning_rainy": "Petir, hujan",
+            "partlycloudy": "Sebagian berawan",
+            "pouring": "Hujan lebat",
+            "rainy": "Hujan",
+            "snowy": "Bersalju",
+            "snowy_rainy": "Bersalju, hujan",
+            "sunny": "Cerah",
+            "windy": "Berangin"
+        }
+    },
+    "state_badge": {
+        "device_tracker": {
+            "home": "di rumah",
+            "not_home": "di luar"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Hapus yang sudah",
+                "add_item": "Tambah item",
+                "microphone_tip": "Sentuh mikrofon di kanan atas dan ucapkan \"Tambahkan permen ke daftar belanjaku\""
+            },
+            "history": {
+                "showing_entries": "Menampilkan daftar dari",
+                "period": "Periode"
+            },
+            "logbook": {
+                "showing_entries": "Menampilkan daftar dari"
+            },
+            "mailbox": {
+                "empty": "Anda tidak memiliki pesan apa pun",
+                "playback_title": "Pemutaran pesan",
+                "delete_prompt": "Hapus pesan ini?",
+                "delete_button": "Hapus"
+            },
+            "config": {
+                "header": "Mengkonfigurasi Home Assistant",
+                "introduction": "Di sini memungkinkan untuk mengkonfigurasi komponen dan Home Assistant. Belum semua dapat dikonfigurasikan dari UI, tapi kami sedang mengusahakannya.",
+                "core": {
+                    "caption": "Umum",
+                    "description": "Memvalidasi file konfigurasi anda dan mengontrol server",
+                    "section": {
+                        "core": {
+                            "header": "Konfigurasi dan kontrol server",
+                            "introduction": "Mengubah konfigurasi anda bisa menjadi proses yang melelahkan. Kita tahu. Bagian ini akan mencoba membuat hidup anda menjadi sedikit lebih mudah.",
+                            "validation": {
+                                "heading": "Validasi konfigurasi",
+                                "introduction": "Validasikan konfigurasi anda jika anda baru saja membuat beberapa perubahan pada konfigurasi anda dan ingin memastikan semuanya valid",
+                                "check_config": "Periksa konfigurasi",
+                                "valid": "Konfigurasi valid!",
+                                "invalid": "Konfigurasi tidak valid"
+                            },
+                            "reloading": {
+                                "heading": "Memuat ulang konfigurasi",
+                                "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan restart. Menekan tombol reload akan membatalkan konfigurasi sekarang dan memuat konfigurasi yang baru.",
+                                "core": "Muat ulang core",
+                                "group": "Muat ulang grup",
+                                "automation": "Muat ulang otomasi",
+                                "script": "Muat ulang script"
+                            },
+                            "server_management": {
+                                "heading": "Pengelolaan server",
+                                "introduction": "Kontrol server Home Assistant anda ... dari Home Assistant.",
+                                "restart": "Ulang kembali",
+                                "stop": "Stop"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfigurasikan notifikasi push",
+                            "introduction": "Aktifkan setelan ini untuk menerima pemberitahuan push pada perangkat ini",
+                            "push_notifications": "Pemberitahuan push"
+                        },
+                        "translation": {
+                            "header": "Pilih bahasa",
+                            "introduction": "Pilih bahasa untuk antarmuka Home Assistant pada perangkat ini",
+                            "language": "Bahasa"
+                        },
+                        "themes": {
+                            "header": "Tetapkan tema",
+                            "introduction": "Pilih 'Backend-selected' untuk menggunakan tema apa pun yang dipilih oleh backend atau pilih tema untuk perangkat ini",
+                            "theme": "Tema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Penyesuaian",
+                    "description": "Sesuaikan entitas anda"
+                },
+                "automation": {
+                    "caption": "Otomasi",
+                    "description": "Buat dan edit otomasi",
+                    "picker": {
+                        "header": "Editor otomasi",
+                        "introduction": "Editor otomasi memungkinkan Anda untuk membuat dan mengedit otomasi. Silakan baca [petunjuk] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) untuk memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
+                        "pick_automation": "Pilih otomasi untuk diedit",
+                        "no_automations": "Kami tidak dapat menemukan otomasi yang dapat diedit",
+                        "add_automation": "Tambah otomasi"
+                    },
+                    "editor": {
+                        "introduction": "Gunakan otomasi untuk menghidupkan rumah Anda",
+                        "default_name": "Otomasi baru",
+                        "save": "Simpan",
+                        "unsaved_confirm": "Anda memiliki perubahan yang belum disimpan. Anda yakin ingin keluar?",
+                        "alias": "Nama",
+                        "triggers": {
+                            "header": "Pemicu",
+                            "introduction": "Pemicu adalah apa yang memulai pemrosesan pengaturan otomasi. Adalah mungkin untuk menentukan beberapa pemicu untuk aturan yang sama. Setelah pemicu dimulai, Home Assistant akan memvalidasi Kondisi, jika ada, dan memanggil tindakan. ",
+                            "add": "Tambah pemicu",
+                            "duplicate": "Gandakan",
+                            "delete": "Hapus",
+                            "delete_confirm": "Anda yakin ingin menghapus?",
+                            "unsupported_platform": "Platform tidak terdukung",
+                            "type_select": "Jenis pemicu",
+                            "type": {
+                                "event": {
+                                    "label": "Event",
+                                    "event_type": "Jenis event",
+                                    "event_data": "Data event"
+                                },
+                                "state": {
+                                    "label": "Status",
+                                    "from": "Dari",
+                                    "to": "Ke"
+                                },
+                                "homeassistant": {
+                                    "event": "Event:",
+                                    "start": "Mulai",
+                                    "shutdown": "Matikan"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topik"
+                                },
+                                "numeric_state": {
+                                    "label": "Status nomor",
+                                    "above": "Lebih dari",
+                                    "below": "Di bawah",
+                                    "value_template": "Nilai template (opsional)"
+                                },
+                                "sun": {
+                                    "label": "Matahari",
+                                    "event": "Event",
+                                    "sunrise": "Matahari terbit",
+                                    "sunset": "Matahari terbenam",
+                                    "offset": "Offset (opsional)"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Nilai template"
+                                },
+                                "time": {
+                                    "label": "Waktu",
+                                    "at": "Jam"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entiti dengan lokasi",
+                                    "zone": "Zona",
+                                    "event": "Event",
+                                    "enter": "Masuk",
+                                    "leave": "Keluar"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Kondisi",
+                            "introduction": "Kondisi merupakan bagian opsional dari aturan otomasi dan dapat digunakan untuk mencegah Event terjadi saat dipicu. Kondisi terlihat sangat mirip dengan pemicu tetapi sangat berbeda. Pemicu akan melihat peristiwa yang terjadi di sistem sementara kondisi hanya melihat bagaimana sistem terlihat sekarang. Pemicu dapat mengamati bahwa saklar sedang dinyalakan. Suatu kondisi hanya dapat melihat apakah switch sedang aktif atau tidak aktif. ",
+                            "add": "Tambah kondisi",
+                            "duplicate": "Gandakan",
+                            "delete": "Hapus",
+                            "delete_confirm": "Anda yakin ingin menghapus?",
+                            "unsupported_condition": "Kondisi tidak didukung: {condition}",
+                            "type_select": "Jenis kondisi",
+                            "type": {
+                                "state": {
+                                    "label": "Status",
+                                    "state": "Status"
+                                },
+                                "numeric_state": {
+                                    "label": "Status Nomor",
+                                    "above": "Lebih dari",
+                                    "below": "Kurang dari",
+                                    "value_template": "Nilai template (opsional)"
+                                },
+                                "sun": {
+                                    "label": "Matahari",
+                                    "before": "Sebelum",
+                                    "after": "Sesudah",
+                                    "before_offset": "Offset sebelum",
+                                    "after_offset": "Offset setelah",
+                                    "sunrise": "Matahari terbit",
+                                    "sunset": "Matahari terbenam"
+                                },
+                                "template": {
+                                    "label": "Template",
+                                    "value_template": "Nilai template"
+                                },
+                                "time": {
+                                    "label": "Waktu",
+                                    "after": "Sesudah",
+                                    "before": "Sebelum"
+                                },
+                                "zone": {
+                                    "label": "Zona",
+                                    "entity": "Entiti dengan lokasi",
+                                    "zone": "Zona"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Aksi",
+                            "introduction": "Aksi adalah apa yang Home Assistant akan lakukan ketika otomasi terpicu",
+                            "add": "Tambah aksi",
+                            "duplicate": "Gandakan",
+                            "delete": "Hapus",
+                            "delete_confirm": "Anda yakin ingin menghapus?",
+                            "unsupported_action": "Aksi tidak didukung: {condition}",
+                            "type_select": "Jenis aksi",
+                            "type": {
+                                "service": {
+                                    "label": "Panggil layanan",
+                                    "service_data": "Data layanan"
+                                },
+                                "delay": {
+                                    "label": "Tunda",
+                                    "delay": "Tunda"
+                                },
+                                "wait_template": {
+                                    "label": "Tunggu",
+                                    "wait_template": "Template tunggu",
+                                    "timeout": "Timeout (opsional)"
+                                },
+                                "condition": {
+                                    "label": "Kondisi"
+                                },
+                                "event": {
+                                    "label": "Jalankan Event",
+                                    "event": "Event",
+                                    "service_data": "Data layanan"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Buat dan edit script"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Kelola jaringan Z-Wave anda"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Keluar",
+            "developer_tools": "Alat pengembang"
+        },
+        "common": {
+            "loading": "Memuat",
+            "cancel": "Batalkan"
+        },
+        "duration": {
+            "day": "{count}{count, plural,\n  one { hari }\n  other { hari }\n}",
+            "week": "{count}{count, plural,\n  one { minggu }\n  other { minggu }\n}",
+            "second": "{count}{count, plural,\n  one { detik }\n  other { detik }\n}"
+        },
+        "login-form": {
+            "password": "Kata sandi",
+            "remember": "Ingat",
+            "log_in": "Masuk"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Gambar tidak tersedia"
+            },
+            "persistent_notification": {
+                "dismiss": "Abaikan"
+            },
+            "scene": {
+                "activate": "Aktifkan"
+            },
+            "script": {
+                "execute": "Menjalankan"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Tekanan udara",
+                    "humidity": "Kelembaban",
+                    "temperature": "Suhu",
+                    "visibility": "Jarak pandang",
+                    "wind_speed": "Kecepatan angin"
+                },
+                "cardinal_direction": {
+                    "e": "T",
+                    "n": "U",
+                    "ne": "Timur Laut",
+                    "nw": "Barat Laut",
+                    "s": "S",
+                    "se": "Tenggara",
+                    "sw": "Barat Daya",
+                    "w": "B"
+                },
+                "forecast": "Ramalan cuaca"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entiti"
+                }
+            },
+            "service-picker": {
+                "service": "Layanan"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Kontrol panel alarm",
+        "automation": "Otomasi",
+        "binary_sensor": "Sensor binary",
+        "calendar": "Kalender",
+        "camera": "Kamera",
+        "climate": "Cuaca",
+        "configurator": "Konfigurator",
+        "conversation": "Percakapan",
+        "cover": "Jendela",
+        "device_tracker": "Pelacak perangkat",
+        "fan": "Kipas angin",
+        "history_graph": "Riwayat Grafik",
+        "group": "Grup",
+        "image_processing": "Pengolahan gambar",
+        "input_boolean": "Masukan boolean",
+        "input_datetime": "Masukkan tanggal waktu",
+        "input_select": "Pilih input",
+        "input_number": "Masukkan angka",
+        "input_text": "Masukkan teks",
+        "light": "Lampu",
+        "lock": "Kunci",
+        "mailbox": "Kotak pesan",
+        "media_player": "Pemutar media",
+        "notify": "Memberitahu",
+        "scene": "Scene",
+        "script": "Script",
+        "sensor": "Sensor",
+        "sun": "Matahari",
+        "switch": "Sakelar",
+        "updater": "Updater"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Kelembaban",
+            "visibility": "Jarak pandang",
+            "wind_speed": "Kecepatan angin"
+        }
+    }
+}

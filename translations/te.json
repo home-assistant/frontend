@@ -1,1 +1,486 @@
-{"panel":{"config":"అమరిక","states":"టూకీగా","map":"మ్యాప్","logbook":"చిట్టా","history":"చరిత్ర","mailbox":"మెయిల్ బాక్స్","shopping_list":"షాపింగ్ జాబితా","dev-services":"సేవలు","dev-states":"స్టేట్స్","dev-events":"సంఘటనలు","dev-templates":"టెంప్లేట్లు","dev-mqtt":"MQTT","dev-info":"సమాచారం"},"state":{"default":{"off":"ఆఫ్","on":"ఆన్","unknown":"తెలియదు","unavailable":"అందుబాటులో లేదు"},"alarm_control_panel":{"armed":"భద్రత వుంది","disarmed":"భద్రత లేదు","armed_home":"ఇంటి భద్రత","armed_away":"ఇంట బయట భద్రత","armed_night":"రాత్రి పూట భద్రత","pending":"పెండింగ్","arming":"భద్రించుట","disarming":"భద్రత తీసివేయుట","triggered":"ఊపందుకుంది","armed_custom_bypass":"భద్రత కస్టమ్ బైపాస్"},"automation":{"off":"ఆఫ్","on":"ఆన్"},"binary_sensor":{"default":{"off":"ఆఫ్","on":"ఆన్"},"moisture":{"off":"పొడి","on":"తడి"},"gas":{"off":"గ్యాస్ ఆఫ్","on":"గ్యాస్ ఆన్"},"motion":{"off":"కదలిక లేదు","on":"కదలిక వుంది"},"occupancy":{"off":"ఉనికిడి లేదు","on":"ఉనికిడి ఉంది"},"smoke":{"off":"పొగ లేదు","on":"పొగ వుంది"},"sound":{"off":"శబ్ధం లేదు","on":"శబ్ధం వుంది"},"vibration":{"off":"కదలట్లేదు","on":"కదులుతోంది"},"opening":{"off":"మూసివుంది","on":"తెరుచుకుంటోంది"},"safety":{"off":"క్షేమం","on":"క్షేమం కాదు"},"presence":{"off":"బయట","on":"ఇంట"},"battery":{"off":"సాధారణ","on":"తక్కువ"},"problem":{"off":"OK","on":"సమస్య"},"connectivity":{"off":"డిస్కనెక్ట్","on":"కనెక్ట్"},"cold":{"on":"చల్లని"},"door":{"off":"మూసుకుంది","on":"తెరిచివుంది"},"garage_door":{"off":"మూసుకుంది","on":"తెరిచివుంది"},"heat":{"off":"సాధారణ","on":"వేడి"},"window":{"off":"మూసుకుంది","on":"తెరిచివుంది"}},"calendar":{"off":"ఆఫ్","on":"ఆన్"},"camera":{"recording":"రికార్డింగ్","streaming":"ప్రసారం","idle":"ఐడిల్"},"climate":{"off":"ఆఫ్","on":"ఆన్","heat":"వెచ్చగా","cool":"చల్లగా","idle":"ఐడిల్","auto":"దానంతట అదే","dry":"పొడి","fan_only":"ఫ్యాన్ మాత్రమే","eco":"పర్యావరణం","electric":"ఎలక్ట్రిక్","performance":"ప్రదర్శన","high_demand":"అధిక డిమాండ్","heat_pump":"వేడి పంపు","gas":"వాయువు"},"configurator":{"configure":"కాన్ఫిగర్","configured":"కాన్ఫిగర్"},"cover":{"open":"తెరిచివుంది","opening":"తెరుచుకుంటోంది","closed":"మూసుకుంది","closing":"మూసుకుంటోంది","stopped":"ఆగివుంది"},"device_tracker":{"home":"ఇంట","not_home":"బయట"},"fan":{"off":"ఆఫ్","on":"ఆన్"},"group":{"off":"ఆఫ్","on":"ఆన్","home":"ఇంట","not_home":"బయట","open":"తెరిచివుంది","opening":"తెరుచుకుంటోంది","closed":"మూసుకుంది","closing":"మూసుకుంటోంది","stopped":"ఆపివుంది","locked":"మూసి వుండు","unlocked":"తెరుచి వుండు","ok":"అలాగే","problem":"సమస్య"},"input_boolean":{"off":"ఆఫ్","on":"ఆన్"},"light":{"off":"ఆఫ్","on":"ఆన్"},"lock":{"locked":"మూసి వుండు","unlocked":"తెరుచి వుండు"},"media_player":{"off":"ఆఫ్","on":"ఆన్","playing":"ఆడుతోంది","paused":"ఆపివుంది","idle":"ఐడిల్","standby":"నిలకడ"},"plant":{"ok":"అలాగే","problem":"సమస్య"},"remote":{"off":"ఆఫ్","on":"ఆన్"},"scene":{"scening":"సీనింగ్"},"script":{"off":"ఆఫ్","on":"ఆన్"},"sensor":{"off":"ఆఫ్","on":"ఆన్"},"sun":{"above_horizon":"హోరిజోన్ పైన","below_horizon":"హోరిజోన్ క్రింద"},"switch":{"off":"ఆఫ్","on":"ఆన్"},"zwave":{"default":{"initializing":"సిద్ధం అవుతోంది","dead":"మృత పరికరం","sleeping":"నిద్రిస్తోంది","ready":"రెడీ"},"query_stage":{"initializing":"మొదటి దశ","dead":"మృత స్థితి"}}},"state_badge":{"default":{"unknown":"తెలియదు","unavailable":"అందుబాటులో లేదు"},"alarm_control_panel":{"armed":"భద్రంగా ఉంది","disarmed":"భద్రత లేదు","armed_home":"ఇల్లు భద్రం","armed_away":"ఇంట బయట భద్రత","armed_night":"రాత్రి పూట భద్రత","pending":"నిలుపు","arming":"భద్రించుట","disarming":"భద్రత లేదు","triggered":"ఊపందుకుంది","armed_custom_bypass":"ఇంటి భద్రత"},"device_tracker":{"home":"ఇంట్లో","not_home":"బయట"}},"ui":{"panel":{"shopping-list":{"clear_completed":"పూర్తయినవి తొలిగించు","add_item":"క్రొత్తది జోడించు","microphone_tip":"కుడి వైపున మైక్రోఫోన్ను నొక్కి, “Add candy to my shopping list”"},"history":{"period":"కాలం"},"mailbox":{"empty":"మీకు ఏ సందేశాలు లేవు","playback_title":"సందేశం ప్లేబ్యాక్","delete_prompt":"ఈ సందేశాన్ని తొలగించాలా?","delete_button":"తొలగించు"}},"sidebar":{"log_out":"లాగ్ అవుట్","developer_tools":"డెవలపర్ టూల్స్"},"common":{"loading":"లోడింగ్","cancel":"రద్దు"},"login-form":{"password":"పాస్వర్డ్","remember":"గుర్తుంచుకో","log_in":"లాగిన్"}},"domain":{"alarm_control_panel":"అలారం నియంత్రణ ప్యానెల్","automation":"ఆటోమేషన్","binary_sensor":"బైనరీ సెన్సార్","calendar":"క్యాలెండరు","camera":"కెమేరా","climate":"వాతావరణం","configurator":"కాన్ఫిగరేటర్","conversation":"సంభాషణ","cover":"కవర్","device_tracker":"పరికరం ట్రాకర్","fan":"ఫ్యాన్","history_graph":"చరిత్ర గ్రాఫ్","group":"గ్రూప్","image_processing":"ఇమేజ్ ప్రాసెసింగ్","input_boolean":"ఇన్పుట్ బూలియన్","input_datetime":"ఇన్పుట్ తేదీసమయం","input_select":"ఇన్పుట్ ఎంచుకో","input_number":"ఇన్పుట్ సంఖ్య","input_text":"ఇన్పుట్ టెక్స్ట్","light":"లైట్","lock":"లాక్","mailbox":"మెయిల్ బాక్స్","media_player":"మీడియా ప్లేయర్","notify":"తెలియజేయి","plant":"మొక్క","proximity":"సామీప్యత","remote":"రిమోట్","scene":"దృశ్యం","script":"స్క్రిప్ట్","sensor":"సెన్సర్","sun":"సూర్యుడు","switch":"స్విచ్","updater":"Updater","weblink":"వెబ్ లింకు","zwave":"Z-వేవు"}}
+{
+    "panel": {
+        "config": "అమరిక",
+        "states": "టూకీగా",
+        "map": "మ్యాప్",
+        "logbook": "చిట్టా",
+        "history": "చరిత్ర",
+        "mailbox": "మెయిల్ బాక్స్",
+        "shopping_list": "షాపింగ్ జాబితా",
+        "dev-services": "సేవలు",
+        "dev-states": "స్టేట్స్",
+        "dev-events": "సంఘటనలు",
+        "dev-templates": "టెంప్లేట్లు",
+        "dev-mqtt": "MQTT",
+        "dev-info": "సమాచారం"
+    },
+    "state": {
+        "default": {
+            "off": "ఆఫ్",
+            "on": "ఆన్",
+            "unknown": "తెలియదు",
+            "unavailable": "అందుబాటులో లేదు"
+        },
+        "alarm_control_panel": {
+            "armed": "భద్రత వుంది",
+            "disarmed": "భద్రత లేదు",
+            "armed_home": "ఇంటి భద్రత",
+            "armed_away": "ఇంట బయట భద్రత",
+            "armed_night": "రాత్రి పూట భద్రత",
+            "pending": "పెండింగ్",
+            "arming": "భద్రించుట",
+            "disarming": "భద్రత తీసివేయుట",
+            "triggered": "ఊపందుకుంది",
+            "armed_custom_bypass": "భద్రత కస్టమ్ బైపాస్"
+        },
+        "automation": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "ఆఫ్",
+                "on": "ఆన్"
+            },
+            "moisture": {
+                "off": "పొడి",
+                "on": "తడి"
+            },
+            "gas": {
+                "off": "గ్యాస్ ఆఫ్",
+                "on": "గ్యాస్ ఆన్"
+            },
+            "motion": {
+                "off": "కదలిక లేదు",
+                "on": "కదలిక వుంది"
+            },
+            "occupancy": {
+                "off": "ఉనికిడి లేదు",
+                "on": "ఉనికిడి ఉంది"
+            },
+            "smoke": {
+                "off": "పొగ లేదు",
+                "on": "పొగ వుంది"
+            },
+            "sound": {
+                "off": "శబ్ధం లేదు",
+                "on": "శబ్ధం వుంది"
+            },
+            "vibration": {
+                "off": "కదలట్లేదు",
+                "on": "కదులుతోంది"
+            },
+            "opening": {
+                "off": "మూసివుంది",
+                "on": "తెరుచుకుంటోంది"
+            },
+            "safety": {
+                "off": "క్షేమం",
+                "on": "క్షేమం కాదు"
+            },
+            "presence": {
+                "off": "బయట",
+                "on": "ఇంట"
+            },
+            "battery": {
+                "off": "సాధారణ",
+                "on": "తక్కువ"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "సమస్య"
+            },
+            "connectivity": {
+                "off": "డిస్కనెక్ట్",
+                "on": "కనెక్ట్"
+            },
+            "cold": {
+                "on": "చల్లని"
+            },
+            "door": {
+                "off": "మూసుకుంది",
+                "on": "తెరిచివుంది"
+            },
+            "garage_door": {
+                "off": "మూసుకుంది",
+                "on": "తెరిచివుంది"
+            },
+            "heat": {
+                "off": "సాధారణ",
+                "on": "వేడి"
+            },
+            "window": {
+                "off": "మూసుకుంది",
+                "on": "తెరిచివుంది"
+            }
+        },
+        "calendar": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "camera": {
+            "recording": "రికార్డింగ్",
+            "streaming": "ప్రసారం",
+            "idle": "ఐడిల్"
+        },
+        "climate": {
+            "off": "ఆఫ్",
+            "on": "ఆన్",
+            "heat": "వెచ్చగా",
+            "cool": "చల్లగా",
+            "idle": "ఐడిల్",
+            "auto": "దానంతట అదే",
+            "dry": "పొడి",
+            "fan_only": "ఫ్యాన్ మాత్రమే",
+            "eco": "పర్యావరణం",
+            "electric": "ఎలక్ట్రిక్",
+            "performance": "ప్రదర్శన",
+            "high_demand": "అధిక డిమాండ్",
+            "heat_pump": "వేడి పంపు",
+            "gas": "వాయువు"
+        },
+        "configurator": {
+            "configure": "కాన్ఫిగర్",
+            "configured": "కాన్ఫిగర్"
+        },
+        "cover": {
+            "open": "తెరిచివుంది",
+            "opening": "తెరుచుకుంటోంది",
+            "closed": "మూసుకుంది",
+            "closing": "మూసుకుంటోంది",
+            "stopped": "ఆగివుంది"
+        },
+        "device_tracker": {
+            "home": "ఇంట",
+            "not_home": "బయట"
+        },
+        "fan": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "group": {
+            "off": "ఆఫ్",
+            "on": "ఆన్",
+            "home": "ఇంట",
+            "not_home": "బయట",
+            "open": "తెరిచివుంది",
+            "opening": "తెరుచుకుంటోంది",
+            "closed": "మూసుకుంది",
+            "closing": "మూసుకుంటోంది",
+            "stopped": "ఆపివుంది",
+            "locked": "మూసి వుండు",
+            "unlocked": "తెరుచి వుండు",
+            "ok": "అలాగే",
+            "problem": "సమస్య"
+        },
+        "input_boolean": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "light": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "lock": {
+            "locked": "మూసి వుండు",
+            "unlocked": "తెరుచి వుండు"
+        },
+        "media_player": {
+            "off": "ఆఫ్",
+            "on": "ఆన్",
+            "playing": "ఆడుతోంది",
+            "paused": "ఆపివుంది",
+            "idle": "ఐడిల్",
+            "standby": "నిలకడ"
+        },
+        "plant": {
+            "ok": "అలాగే",
+            "problem": "సమస్య"
+        },
+        "remote": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "scene": {
+            "scening": "సీనింగ్"
+        },
+        "script": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "sensor": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "sun": {
+            "above_horizon": "హోరిజోన్ పైన",
+            "below_horizon": "హోరిజోన్ క్రింద"
+        },
+        "switch": {
+            "off": "ఆఫ్",
+            "on": "ఆన్"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "సిద్ధం అవుతోంది",
+                "dead": "మృత పరికరం",
+                "sleeping": "నిద్రిస్తోంది",
+                "ready": "రెడీ"
+            },
+            "query_stage": {
+                "initializing": "మొదటి దశ ({query_stage})",
+                "dead": "మృత స్థితి ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "తెలియదు",
+            "unavailable": "అందుబాటులో లేదు"
+        },
+        "alarm_control_panel": {
+            "armed": "భద్రంగా ఉంది",
+            "disarmed": "భద్రత లేదు",
+            "armed_home": "ఇల్లు భద్రం",
+            "armed_away": "ఇంట బయట భద్రత",
+            "armed_night": "రాత్రి పూట భద్రత",
+            "pending": "నిలుపు",
+            "arming": "భద్రించుట",
+            "disarming": "భద్రత లేదు",
+            "triggered": "ఊపందుకుంది",
+            "armed_custom_bypass": "ఇంటి భద్రత"
+        },
+        "device_tracker": {
+            "home": "ఇంట్లో",
+            "not_home": "బయట"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "పూర్తయినవి తొలిగించు",
+                "add_item": "క్రొత్తది జోడించు",
+                "microphone_tip": "కుడి వైపున మైక్రోఫోన్ను నొక్కి, “Add candy to my shopping list”"
+            },
+            "history": {
+                "period": "కాలం"
+            },
+            "mailbox": {
+                "empty": "మీకు ఏ సందేశాలు లేవు",
+                "playback_title": "సందేశం ప్లేబ్యాక్",
+                "delete_prompt": "ఈ సందేశాన్ని తొలగించాలా?",
+                "delete_button": "తొలగించు"
+            },
+            "config": {
+                "header": "కాన్ఫిగర్ Home Assistant",
+                "core": {
+                    "section": {
+                        "core": {
+                            "validation": {
+                                "check_config": "కాన్ఫిగరేషన్ను తనిఖీ చేయండి",
+                                "valid": "మంచి కాన్ఫిగరేషన్!",
+                                "invalid": "చెల్లని కాన్ఫిగరేషన్"
+                            },
+                            "reloading": {
+                                "core": "రీలోడ్ కోర్",
+                                "group": "గ్రూప్స్  మళ్లీ లోడ్ చేయండి",
+                                "automation": "ఆటోమేషన్లను మళ్లీ లోడ్ చేయండి",
+                                "script": "స్క్రిప్ట్లను మళ్లీ లోడ్ చేయండి"
+                            },
+                            "server_management": {
+                                "heading": "సర్వర్ నిర్వహణ",
+                                "restart": "పునఃప్రారంభించు",
+                                "stop": "ఆపు"
+                            }
+                        },
+                        "translation": {
+                            "header": "భాషను ఎంచుకోండి",
+                            "introduction": "ఇచ్చట Home Assistant భాషను ఎంచుకోండి",
+                            "language": "భాష"
+                        },
+                        "themes": {
+                            "header": "థీమ్ను సెట్ చేయండి",
+                            "theme": "థీమ్"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "మార్పులు చేర్పులు"
+                },
+                "automation": {
+                    "caption": "ఆటోమేషన్",
+                    "description": "ఆటోమేషన్లను సృష్టించండి మరియు సవరించండి",
+                    "picker": {
+                        "header": "ఆటోమేషన్ ఎడిటర్",
+                        "pick_automation": "సవరించడానికి ఆటోమేషన్ను ఎంచుకోండి",
+                        "no_automations": "సవరించగలిగే ఆటోమేషన్లు లేవు",
+                        "add_automation": "కొత్త ఆటోమేషన్"
+                    },
+                    "editor": {
+                        "introduction": "ఆటోమేషన్ల ద్వారా మీ ఇంటికి ప్రాణం పోయండి",
+                        "default_name": "కొత్త ఆటోమేషన్",
+                        "save": "సేవ్",
+                        "triggers": {
+                            "add": "క్రొత్తది జోడించు",
+                            "duplicate": "నకిలీ",
+                            "delete_confirm": "ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?",
+                            "type_select": "ట్రిగ్గర్ రకం",
+                            "type": {
+                                "event": {
+                                    "label": "ఈవెంట్",
+                                    "event_type": "ఈవెంట్ రకం",
+                                    "event_data": "ఈవెంట్ డేటా"
+                                },
+                                "state": {
+                                    "label": "స్థితి",
+                                    "from": "నుండి",
+                                    "to": "టు"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "ఈవెంట్"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "విషయం",
+                                    "payload": "పేలోడ్ "
+                                },
+                                "numeric_state": {
+                                    "label": "సంఖ్యా స్థితి",
+                                    "above": "పైన",
+                                    "below": "క్రింద"
+                                },
+                                "sun": {
+                                    "sunrise": "సూర్యోదయం",
+                                    "sunset": "సూర్యాస్తమయం"
+                                },
+                                "template": {
+                                    "label": "టెంప్లేట్"
+                                },
+                                "time": {
+                                    "label": "సమయం",
+                                    "at": "At"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "add": "అంశాన్ని జోడించు",
+                            "type_select": "కండిషన్ రకం",
+                            "type": {
+                                "sun": {
+                                    "before": "ముందు",
+                                    "after": "తరువాత",
+                                    "before_offset": "ఆఫ్సెట్కు ముందు (ఐచ్ఛికం)",
+                                    "after_offset": "ఆఫ్సెట్ తర్వాత (ఐచ్ఛికం)",
+                                    "sunrise": "సూర్యోదయం",
+                                    "sunset": "సూర్యాస్తమయం"
+                                },
+                                "time": {
+                                    "after": "తరువాత",
+                                    "before": "ముందు"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "చర్యలు",
+                            "add": "అంశాన్ని జోడించు",
+                            "unsupported_action": "మద్దతు లేని చర్య: {action}",
+                            "type_select": "యాక్షన్ రకం",
+                            "type": {
+                                "delay": {
+                                    "label": "ఆలస్యము"
+                                },
+                                "wait_template": {
+                                    "timeout": "సమయం ముగిసింది (ఐచ్ఛికం)"
+                                },
+                                "condition": {
+                                    "label": "కండిషన్"
+                                },
+                                "event": {
+                                    "label": "ఫైర్ ఈవెంట్"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "స్క్రిప్ట్",
+                    "description": "స్క్రిప్ట్లను సృష్టించండి మరియు సవరించండి"
+                },
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "లాగ్ అవుట్",
+            "developer_tools": "డెవలపర్ టూల్స్"
+        },
+        "common": {
+            "loading": "లోడింగ్",
+            "cancel": "రద్దు"
+        },
+        "login-form": {
+            "password": "పాస్వర్డ్",
+            "remember": "గుర్తుంచుకో",
+            "log_in": "లాగిన్"
+        },
+        "card": {
+            "camera": {
+                "not_available": "చిత్రం అందుబాటులో లేదు"
+            },
+            "persistent_notification": {
+                "dismiss": "తొలగించు"
+            }
+        },
+        "components": {
+            "service-picker": {
+                "service": "సర్వీస్"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "అలారం నియంత్రణ ప్యానెల్",
+        "automation": "ఆటోమేషన్",
+        "binary_sensor": "బైనరీ సెన్సార్",
+        "calendar": "క్యాలెండరు",
+        "camera": "కెమేరా",
+        "climate": "వాతావరణం",
+        "configurator": "కాన్ఫిగరేటర్",
+        "conversation": "సంభాషణ",
+        "cover": "కవర్",
+        "device_tracker": "పరికరం ట్రాకర్",
+        "fan": "ఫ్యాన్",
+        "history_graph": "చరిత్ర గ్రాఫ్",
+        "group": "గ్రూప్",
+        "image_processing": "ఇమేజ్ ప్రాసెసింగ్",
+        "input_boolean": "ఇన్పుట్ బూలియన్",
+        "input_datetime": "ఇన్పుట్ తేదీసమయం",
+        "input_select": "ఇన్పుట్ ఎంచుకో",
+        "input_number": "ఇన్పుట్ సంఖ్య",
+        "input_text": "ఇన్పుట్ టెక్స్ట్",
+        "light": "లైట్",
+        "lock": "లాక్",
+        "mailbox": "మెయిల్ బాక్స్",
+        "media_player": "మీడియా ప్లేయర్",
+        "notify": "తెలియజేయి",
+        "plant": "మొక్క",
+        "proximity": "సామీప్యత",
+        "remote": "రిమోట్",
+        "scene": "దృశ్యం",
+        "script": "స్క్రిప్ట్",
+        "sensor": "సెన్సర్",
+        "sun": "సూర్యుడు",
+        "switch": "స్విచ్",
+        "updater": "Updater",
+        "weblink": "వెబ్ లింకు",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "తేమ",
+            "visibility": "దృష్టి గోచరత",
+            "wind_speed": "గాలి వేగం"
+        }
+    }
+}

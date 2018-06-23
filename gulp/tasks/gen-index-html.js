@@ -7,8 +7,8 @@ const md5 = require('../common/md5');
 const { minifyStream } = require('../common/transform');
 
 const buildReplaces = {
-  '/home-assistant-polymer/build/core.js': 'core.js',
-  '/home-assistant-polymer/src/home-assistant.html': 'frontend.html',
+  '/frontend_latest/core.js': 'core.js',
+  '/frontend_latest/app.js': 'app.js',
 };
 
 function generateIndex(es6) {
@@ -18,19 +18,15 @@ function generateIndex(es6) {
   const toReplace = [
     // Needs to look like a color during CSS minifiaction
     ['{{ theme_color }}', '#THEME'],
-    ['/home-assistant-polymer/hass_frontend/mdi.html',
-      `/static/mdi-${md5(path.resolve(config.output, 'mdi.html'))}.html`],
+    ['/frontend_latest/hass-icons.js',
+      `/frontend_latest/hass-icons-${md5(path.resolve(config.output, 'hass-icons.js'))}.js`],
   ];
 
   if (!es6) {
-    toReplace.push([
-      '/service_worker.js', '/service_worker_es5.js'
-    ]);
-
     const compatibilityPath = `/frontend_es5/compatibility-${md5(path.resolve(config.output_es5, 'compatibility.js'))}.js`;
     const es5Extra = `
     <script src='${compatibilityPath}'></script>
-    <script src='/frontend_es5/custom-elements-es5-adapter.js'></script>
+    <script src='/static/custom-elements-es5-adapter.js'></script>
     `;
 
     toReplace.push([

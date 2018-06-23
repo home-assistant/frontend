@@ -1,1 +1,267 @@
-{"panel":{"config":"پیکربندی","states":"وضعیت","map":"نقشه","logbook":"گزارش روزانه","history":"تاریخچه","mailbox":"صندوق پستی","shopping_list":"لیست خرید","dev-mqtt":"MQTT"},"state":{"default":{"off":"خاموش","on":"روشن","unknown":"نامشخص","unavailable":"غیر قابل دسترس"},"alarm_control_panel":{"armed":"مصلح شده","disarmed":"غیر مسلح","armed_home":"مسلح شده خانه","armed_away":"مسلح شده بیرون","armed_night":"مسلح شده شب","pending":"در انتظار","arming":"در حال مسلح کردن","disarming":"در حال غیر مسلح کردن","triggered":"راه انداخته شده"},"automation":{"off":"غیرفعال","on":"فعال"},"binary_sensor":{"default":{"off":"خاموش","on":"روشن"},"moisture":{"off":"خشک","on":"مرطوب"},"gas":{"off":"عادی","on":"شناسایی شد"},"motion":{"off":"عادی","on":"شناسایی شد"},"occupancy":{"off":"عادی","on":"شناسایی شد"},"smoke":{"off":"عادی","on":"شناسایی شد"},"sound":{"off":"عادی","on":"شناسایی شد"},"vibration":{"off":"عادی","on":"شناسایی شد"},"opening":{"off":"بسته شده","on":"باز"},"safety":{"off":"امن","on":"نا امن"},"presence":{"off":"بیرون","on":"خانه"}},"calendar":{"off":"غیرفعال","on":"فعال"},"camera":{"recording":"در حال ضبط","streaming":"در حال پخش","idle":"بیکار"},"climate":{"off":"خاموش","on":"روشن","heat":"حرارت","cool":"خنک","idle":"بیکار","auto":"خودکار","dry":"خشک","fan_only":"فقط پنکه","eco":"سازگار با محیط زیست","electric":"الکتریکی","performance":"کارایی","high_demand":"تقاضای بالا","heat_pump":"پمپ حرارتی","gas":"گاز"},"configurator":{"configure":"پیکربندی","configured":"پیکربندی شده"},"cover":{"open":"باز","opening":"در حال باز شدن","closed":"بسته شده","closing":"در حال بسته شدن","stopped":"متوقف"},"device_tracker":{"home":"خانه","not_home":"بیرون"},"fan":{"off":"خاموش","on":"روشن"},"group":{"off":"غیرفعال","on":"فعال","home":"خانه","not_home":"بیرون","open":"باز","opening":"در حال باز شدن","closed":"بسته شده","closing":"در حال بسته شدن","stopped":"متوقف","locked":"قفل شده","unlocked":"باز","ok":"خوب","problem":"مشکل"},"input_boolean":{"off":"غیرفعال","on":"فعال"},"light":{"off":"خاموش","on":"روشن"},"lock":{"locked":"قفل شده","unlocked":"باز"},"media_player":{"off":"خاموش","on":"روشن","playing":"در حال پخش","paused":"در حالت مکث","idle":"بیکار","standby":"آماده به کار"},"plant":{"ok":"خوب","problem":"مشکل"},"remote":{"off":"خاموش","on":"روشن"},"scene":{"scening":"فعال"},"script":{"off":"غیرفعال","on":"فعال"},"sensor":{"off":"غیر فعال","on":"فعال"},"sun":{"above_horizon":"بالای افق","below_horizon":"زیر افق"},"switch":{"off":"خاموش","on":"روشن"},"zwave":{"default":{"initializing":"در حال آماده شدن","dead":"مرده","sleeping":"در حال خواب","ready":"آماده"},"query_stage":{"initializing":"در حال آماده شدن ({query_stage})","dead":"مرده ({query_stage})"}}},"state_badge":{"default":{"unknown":"نامشخص","unavailable":"غیر قابل دسترس"},"alarm_control_panel":{"armed":"مصلح شده","disarmed":"غیر مسلح","armed_home":"مسلح شده خانه","armed_away":"مسلح شده بیرون","armed_night":"مسلح شده شب","pending":"در انتظار","arming":"در حال مسلح کردن","disarming":"در حال غیر مسلح کردن","triggered":"راه انداخته شده","armed_custom_bypass":"مسلح شده"},"device_tracker":{"home":"خانه","not_home":"بیرون"}},"ui":{"sidebar":{"log_out":"خروج"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "پیکربندی",
+        "states": "وضعیت",
+        "map": "نقشه",
+        "logbook": "گزارش روزانه",
+        "history": "تاریخچه",
+        "mailbox": "صندوق پستی",
+        "shopping_list": "لیست خرید",
+        "dev-mqtt": "MQTT"
+    },
+    "state": {
+        "default": {
+            "off": "خاموش",
+            "on": "روشن",
+            "unknown": "نامشخص",
+            "unavailable": "غیر قابل دسترس"
+        },
+        "alarm_control_panel": {
+            "armed": "مصلح شده",
+            "disarmed": "غیر مسلح",
+            "armed_home": "مسلح شده خانه",
+            "armed_away": "مسلح شده بیرون",
+            "armed_night": "مسلح شده شب",
+            "pending": "در انتظار",
+            "arming": "در حال مسلح کردن",
+            "disarming": "در حال غیر مسلح کردن",
+            "triggered": "راه انداخته شده"
+        },
+        "automation": {
+            "off": "غیرفعال",
+            "on": "فعال"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "خاموش",
+                "on": "روشن"
+            },
+            "moisture": {
+                "off": "خشک",
+                "on": "مرطوب"
+            },
+            "gas": {
+                "off": "عادی",
+                "on": "شناسایی شد"
+            },
+            "motion": {
+                "off": "عادی",
+                "on": "شناسایی شد"
+            },
+            "occupancy": {
+                "off": "عادی",
+                "on": "شناسایی شد"
+            },
+            "smoke": {
+                "off": "عادی",
+                "on": "شناسایی شد"
+            },
+            "sound": {
+                "off": "عادی",
+                "on": "شناسایی شد"
+            },
+            "vibration": {
+                "off": "عادی",
+                "on": "شناسایی شد"
+            },
+            "opening": {
+                "off": "بسته شده",
+                "on": "باز"
+            },
+            "safety": {
+                "off": "امن",
+                "on": "نا امن"
+            },
+            "presence": {
+                "off": "بیرون",
+                "on": "خانه"
+            }
+        },
+        "calendar": {
+            "off": "غیرفعال",
+            "on": "فعال"
+        },
+        "camera": {
+            "recording": "در حال ضبط",
+            "streaming": "در حال پخش",
+            "idle": "بیکار"
+        },
+        "climate": {
+            "off": "خاموش",
+            "on": "روشن",
+            "heat": "حرارت",
+            "cool": "خنک",
+            "idle": "بیکار",
+            "auto": "خودکار",
+            "dry": "خشک",
+            "fan_only": "فقط پنکه",
+            "eco": "سازگار با محیط زیست",
+            "electric": "الکتریکی",
+            "performance": "کارایی",
+            "high_demand": "تقاضای بالا",
+            "heat_pump": "پمپ حرارتی",
+            "gas": "گاز"
+        },
+        "configurator": {
+            "configure": "پیکربندی",
+            "configured": "پیکربندی شده"
+        },
+        "cover": {
+            "open": "باز",
+            "opening": "در حال باز شدن",
+            "closed": "بسته شده",
+            "closing": "در حال بسته شدن",
+            "stopped": "متوقف"
+        },
+        "device_tracker": {
+            "home": "خانه",
+            "not_home": "بیرون"
+        },
+        "fan": {
+            "off": "خاموش",
+            "on": "روشن"
+        },
+        "group": {
+            "off": "غیرفعال",
+            "on": "فعال",
+            "home": "خانه",
+            "not_home": "بیرون",
+            "open": "باز",
+            "opening": "در حال باز شدن",
+            "closed": "بسته شده",
+            "closing": "در حال بسته شدن",
+            "stopped": "متوقف",
+            "locked": "قفل شده",
+            "unlocked": "باز",
+            "ok": "خوب",
+            "problem": "مشکل"
+        },
+        "input_boolean": {
+            "off": "غیرفعال",
+            "on": "فعال"
+        },
+        "light": {
+            "off": "خاموش",
+            "on": "روشن"
+        },
+        "lock": {
+            "locked": "قفل شده",
+            "unlocked": "باز"
+        },
+        "media_player": {
+            "off": "خاموش",
+            "on": "روشن",
+            "playing": "در حال پخش",
+            "paused": "در حالت مکث",
+            "idle": "بیکار",
+            "standby": "آماده به کار"
+        },
+        "plant": {
+            "ok": "خوب",
+            "problem": "مشکل"
+        },
+        "remote": {
+            "off": "خاموش",
+            "on": "روشن"
+        },
+        "scene": {
+            "scening": "فعال"
+        },
+        "script": {
+            "off": "غیرفعال",
+            "on": "فعال"
+        },
+        "sensor": {
+            "off": "غیر فعال",
+            "on": "فعال"
+        },
+        "sun": {
+            "above_horizon": "بالای افق",
+            "below_horizon": "زیر افق"
+        },
+        "switch": {
+            "off": "خاموش",
+            "on": "روشن"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "در حال آماده شدن",
+                "dead": "مرده",
+                "sleeping": "در حال خواب",
+                "ready": "آماده"
+            },
+            "query_stage": {
+                "initializing": "در حال آماده شدن ({query_stage})",
+                "dead": "مرده ({query_stage})"
+            }
+        },
+        "weather": {
+            "cloudy": "ابری",
+            "fog": "مه",
+            "lightning": "رعد و برق",
+            "partlycloudy": "نیمه ابری",
+            "rainy": "بارانی",
+            "snowy": "برفی",
+            "sunny": "آفتابی"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "نامشخص",
+            "unavailable": "غیر قابل دسترس"
+        },
+        "alarm_control_panel": {
+            "armed": "مصلح شده",
+            "disarmed": "غیر مسلح",
+            "armed_home": "مسلح شده خانه",
+            "armed_away": "مسلح شده بیرون",
+            "armed_night": "مسلح شده شب",
+            "pending": "در انتظار",
+            "arming": "در حال مسلح کردن",
+            "disarming": "در حال غیر مسلح کردن",
+            "triggered": "راه انداخته شده",
+            "armed_custom_bypass": "مسلح شده"
+        },
+        "device_tracker": {
+            "home": "خانه",
+            "not_home": "بیرون"
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "خروج"
+        },
+        "panel": {
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        },
+        "card": {
+            "scene": {
+                "activate": "فعال سازی"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "فشار هوا",
+                    "humidity": "رطوبت",
+                    "temperature": "دما",
+                    "wind_speed": "سرعت باد"
+                },
+                "cardinal_direction": {
+                    "se": "جنوب شرقی"
+                },
+                "forecast": "پیش بینی"
+            }
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "رطوبت"
+        }
+    }
+}

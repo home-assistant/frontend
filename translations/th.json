@@ -1,1 +1,630 @@
-{"panel":{"config":"การตั้งค่า","states":"ภาพรวม","map":"แผนที่","logbook":"สมุดบันทึก","history":"ประวัติ","mailbox":"กล่องจดหมาย","shopping_list":"รายการช้อปปิ้ง","dev-services":"บริการ","dev-states":"สถานะ","dev-events":"เหตุการณ์","dev-templates":"แม่แบบ","dev-mqtt":"MQTT","dev-info":"ข้อมูล"},"state":{"default":{"off":"ปิด","on":"เปิด","unknown":"ไม่ทราบสถานะ","unavailable":"ไม่พร้อมใช้งาน"},"alarm_control_panel":{"armed":"เปิดการป้องกัน","disarmed":"ปลดการป้องกัน","armed_home":"เปิดการป้องกัน-โหมดอยู่บ้าน","armed_away":"เปิดการป้องกัน-โหมดไม่อยู่บ้าน","armed_night":"เปิดการป้องกัน-โหมดกลางคืน","pending":"ค้างอยู่","arming":"เปิดการป้องกัน","disarming":"ปลดการป้องกัน","triggered":"ถูกกระตุ้น","armed_custom_bypass":"ป้องกันโดยกำหนดเอง"},"automation":{"off":"ปิด","on":"เปิด"},"binary_sensor":{"default":{"off":"ปิด","on":"เปิด"},"moisture":{"off":"แห้ง","on":"เปียก"},"gas":{"off":"ไม่พบแก๊ส","on":"ตรวจพบแก๊ส"},"motion":{"off":"ไม่พบการเคลื่อนไหว","on":"พบการเคลื่อนไหว"},"occupancy":{"off":"ไม่พบ","on":"พบ"},"smoke":{"off":"ไม่พบควัน","on":"พบควัน"},"sound":{"off":"ไม่ได้ยิน","on":"ได้ยิน"},"vibration":{"off":"ไม่พบการสั่น","on":"พบการสั่น"},"opening":{"off":"ปิด","on":"เปิด"},"safety":{"off":"ปิด","on":"เปิด"},"presence":{"off":"ไม่อยู่","on":"อยูบ้าน"},"battery":{"off":"ปกติ","on":"ต่ำ"},"problem":{"off":"ตกลง","on":"ปัญหา"},"connectivity":{"off":"ตัดการเชื่อมต่อ","on":"เชื่อมต่อแล้ว"},"cold":{"off":"ปิด","on":"หนาว"},"door":{"off":"ปิด","on":"เปิด"},"garage_door":{"off":"ปิด","on":"เปิด"},"heat":{"off":"ปกติ","on":"ร้อน"},"window":{"off":"ปิด","on":"เปิด"}},"calendar":{"off":"ปิด","on":"เปิด"},"camera":{"recording":"กำลังบันทึก","streaming":"สตรีมมิ่ง","idle":"ไม่ได้ใช้งาน"},"climate":{"off":"ปิด","on":"เปิด","heat":"ร้อน","cool":"เย็น","idle":"ไม่ได้ใช้งาน","auto":"อัตโนมัติ","dry":"แห้ง","fan_only":"เฉพาะพัดลม","eco":"อีโค","electric":"ไฟฟ้า","performance":"ประสิทธิภาพ","high_demand":"ความต้องการสูง","heat_pump":"ปั๊มความร้อน","gas":"แก๊ส"},"configurator":{"configure":"ตั้งค่า","configured":"ตั้งค่าแล้ว"},"cover":{"open":"เปิด","opening":"กำลังเปิด","closed":"ปิด","closing":"กำลังปิด","stopped":"หยุด"},"device_tracker":{"home":"อยู่บ้าน","not_home":"ไม่อยู่"},"fan":{"off":"ปิด","on":"เปิด"},"group":{"off":"ปิด","on":"เปิด","home":"อยู่บ้าน","not_home":"ไม่อยู่บ้าน","open":"เปิด","opening":"กำลังเปิด","closed":"ปิด","closing":"กำลังปิด","stopped":"หยุด","locked":"ล็อค","unlocked":"ปลดล็อค","ok":"พร้อมใช้งาน","problem":"มีปัญหา"},"input_boolean":{"off":"ปิด","on":"เปิด"},"light":{"off":"ปิด","on":"เปิด"},"lock":{"locked":"ล็อค","unlocked":"ปลดล็อค"},"media_player":{"off":"ปิด","on":"เปิด","playing":"กำลังเล่น","paused":"หยุดชั่วคราว","idle":"ไม่ได้ใช้งาน","standby":"แสตนด์บาย"},"plant":{"ok":"พร้อมใช้งาน","problem":"มีปัญหา"},"remote":{"off":"ปิด","on":"เปิด"},"scene":{"scening":"ซีน"},"script":{"off":"ปิด","on":"เปิด"},"sensor":{"off":"ปิด","on":"เปิด"},"sun":{"above_horizon":"เหนือขอบฟ้า","below_horizon":"ตกดิน"},"switch":{"off":"ปิด","on":"เปิด"},"zwave":{"default":{"initializing":"กำลังเริ่มต้น","dead":"ไม่พร้อมใช้งาน","sleeping":"กำลังหลับ","ready":"พร้อมใช้งาน"},"query_stage":{"initializing":"กำลังเริ่มต้น","dead":"ไม่พร้อมใช้งาน"}}},"state_badge":{"default":{"unknown":"ไม่ทราบสถานะ","unavailable":"ไม่พร้อมใช้งาน"},"alarm_control_panel":{"armed":"เปิดการป้องกัน","disarmed":"ปลดการป้องกัน","armed_home":"เปิดการป้องกัน-โหมดอยู่บ้าน","armed_away":"เปิดการป้องกัน-โหมดไม่อยู่บ้าน","armed_night":"เปิดการป้องกัน-โหมดกลางคืน","pending":"ค้างอยู่","arming":"กำลังเปิดการป้องกัน","disarming":"กำลังปลดการป้องกัน","triggered":"ถูกกระตุ้น","armed_custom_bypass":"ป้องกัน"},"device_tracker":{"home":"อยู่บ้าน","not_home":"ไม่อยู่"}},"ui":{"panel":{"shopping-list":{"clear_completed":"จัดการเรียบร้อย","add_item":"เพิ่มรายการ","microphone_tip":"แตะไมโครโฟนที่ด้านบนขวาและพูดว่า \"เพิ่มลูกอมลงในรายการช้อปปิ้งของฉัน\""},"history":{"showing_entries":"แสดงรายการ","period":"ระยะเวลา"},"logbook":{"showing_entries":"แสดงรายการ"},"mailbox":{"empty":"ไม่มีข้อความ","playback_title":"เล่นข้อความ","delete_prompt":"ลบข้อความนี้หรือไม่?","delete_button":"ลบ"}},"sidebar":{"log_out":"ออกจากระบบ","developer_tools":"เครื่องมือสำหรับนักพัฒนา"},"common":{"loading":"กำลังโหลด","cancel":"ยกเลิก"},"duration":{"day":"วัน","week":"จำนวน","second":"วินาที"},"login-form":{"password":"รหัสผ่าน","remember":"จดจำ","log_in":"ลงชื่อเข้า"}},"domain":{"alarm_control_panel":"แผงควบคุมสัญญาณเตือนภัย","automation":"การทำงานอัตโนมัติ","binary_sensor":"เซ็นเซอร์แบบไบนารี","calendar":"ปฏิทิน","camera":"กล้อง","climate":"สภาพอากาศ","configurator":"ตัวตั้งค่า","conversation":"การสนทนา","cover":"ม่าน","device_tracker":"อุปกรณ์ติดตาม","fan":"พัดลม","history_graph":"กราฟประวัติ","group":"กลุ่ม","image_processing":"การประมวลผลภาพ","input_boolean":"ป้อนค่าตรรกะ","input_datetime":"ป้อนวันเวลา","input_select":"เลือกข้อมูล","input_number":"ป้อนตัวเลข","input_text":"ป้อนข้อความ","light":"แสงสว่าง","lock":"ล็อค","mailbox":"กล่องจดหมาย","media_player":"เครื่องเล่นสื่อ","notify":"แจ้ง","plant":"พืช","proximity":"ใกล้ชิด","remote":"รีโมต","scene":"ฉาก","script":"สคริปต์","sensor":"เซนเซอร์","sun":"ดวงอาทิตย์","switch":"สวิตซ์","updater":"อัพเดต","weblink":"เว็บลิงค์","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "การตั้งค่า",
+        "states": "ภาพรวม",
+        "map": "แผนที่",
+        "logbook": "สมุดบันทึก",
+        "history": "ประวัติ",
+        "mailbox": "กล่องจดหมาย",
+        "shopping_list": "รายการช้อปปิ้ง",
+        "dev-services": "บริการ",
+        "dev-states": "สถานะ",
+        "dev-events": "เหตุการณ์",
+        "dev-templates": "แม่แบบ",
+        "dev-mqtt": "MQTT",
+        "dev-info": "ข้อมูล"
+    },
+    "state": {
+        "default": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "unknown": "ไม่ทราบสถานะ",
+            "unavailable": "ไม่พร้อมใช้งาน"
+        },
+        "alarm_control_panel": {
+            "armed": "เปิดการป้องกัน",
+            "disarmed": "ปลดการป้องกัน",
+            "armed_home": "เปิดการป้องกัน-โหมดอยู่บ้าน",
+            "armed_away": "เปิดการป้องกัน-โหมดไม่อยู่บ้าน",
+            "armed_night": "เปิดการป้องกัน-โหมดกลางคืน",
+            "pending": "ค้างอยู่",
+            "arming": "เปิดการป้องกัน",
+            "disarming": "ปลดการป้องกัน",
+            "triggered": "ถูกกระตุ้น",
+            "armed_custom_bypass": "ป้องกันโดยกำหนดเอง"
+        },
+        "automation": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "moisture": {
+                "off": "แห้ง",
+                "on": "เปียก"
+            },
+            "gas": {
+                "off": "ไม่พบแก๊ส",
+                "on": "ตรวจพบแก๊ส"
+            },
+            "motion": {
+                "off": "ไม่พบการเคลื่อนไหว",
+                "on": "พบการเคลื่อนไหว"
+            },
+            "occupancy": {
+                "off": "ไม่พบ",
+                "on": "พบ"
+            },
+            "smoke": {
+                "off": "ไม่พบควัน",
+                "on": "พบควัน"
+            },
+            "sound": {
+                "off": "ไม่ได้ยิน",
+                "on": "ได้ยิน"
+            },
+            "vibration": {
+                "off": "ไม่พบการสั่น",
+                "on": "พบการสั่น"
+            },
+            "opening": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "safety": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "presence": {
+                "off": "ไม่อยู่",
+                "on": "อยูบ้าน"
+            },
+            "battery": {
+                "off": "ปกติ",
+                "on": "ต่ำ"
+            },
+            "problem": {
+                "off": "ตกลง",
+                "on": "ปัญหา"
+            },
+            "connectivity": {
+                "off": "ตัดการเชื่อมต่อ",
+                "on": "เชื่อมต่อแล้ว"
+            },
+            "cold": {
+                "off": "ปิด",
+                "on": "หนาว"
+            },
+            "door": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "garage_door": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "heat": {
+                "off": "ปกติ",
+                "on": "ร้อน"
+            },
+            "window": {
+                "off": "ปิด",
+                "on": "เปิด"
+            },
+            "lock": {
+                "off": "ล็อค",
+                "on": "ปลดล็อค"
+            }
+        },
+        "calendar": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "camera": {
+            "recording": "กำลังบันทึก",
+            "streaming": "สตรีมมิ่ง",
+            "idle": "ไม่ได้ใช้งาน"
+        },
+        "climate": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "heat": "ร้อน",
+            "cool": "เย็น",
+            "idle": "ไม่ได้ใช้งาน",
+            "auto": "อัตโนมัติ",
+            "dry": "แห้ง",
+            "fan_only": "เฉพาะพัดลม",
+            "eco": "อีโค",
+            "electric": "ไฟฟ้า",
+            "performance": "ประสิทธิภาพ",
+            "high_demand": "ความต้องการสูง",
+            "heat_pump": "ปั๊มความร้อน",
+            "gas": "แก๊ส"
+        },
+        "configurator": {
+            "configure": "ตั้งค่า",
+            "configured": "ตั้งค่าแล้ว"
+        },
+        "cover": {
+            "open": "เปิด",
+            "opening": "กำลังเปิด",
+            "closed": "ปิด",
+            "closing": "กำลังปิด",
+            "stopped": "หยุด"
+        },
+        "device_tracker": {
+            "home": "อยู่บ้าน",
+            "not_home": "ไม่อยู่"
+        },
+        "fan": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "group": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "home": "อยู่บ้าน",
+            "not_home": "ไม่อยู่บ้าน",
+            "open": "เปิด",
+            "opening": "กำลังเปิด",
+            "closed": "ปิด",
+            "closing": "กำลังปิด",
+            "stopped": "หยุด",
+            "locked": "ล็อค",
+            "unlocked": "ปลดล็อค",
+            "ok": "พร้อมใช้งาน",
+            "problem": "มีปัญหา"
+        },
+        "input_boolean": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "light": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "lock": {
+            "locked": "ล็อค",
+            "unlocked": "ปลดล็อค"
+        },
+        "media_player": {
+            "off": "ปิด",
+            "on": "เปิด",
+            "playing": "กำลังเล่น",
+            "paused": "หยุดชั่วคราว",
+            "idle": "ไม่ได้ใช้งาน",
+            "standby": "แสตนด์บาย"
+        },
+        "plant": {
+            "ok": "พร้อมใช้งาน",
+            "problem": "มีปัญหา"
+        },
+        "remote": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "scene": {
+            "scening": "ซีน"
+        },
+        "script": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "sensor": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "sun": {
+            "above_horizon": "เหนือขอบฟ้า",
+            "below_horizon": "ตกดิน"
+        },
+        "switch": {
+            "off": "ปิด",
+            "on": "เปิด"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "กำลังเริ่มต้น",
+                "dead": "ไม่พร้อมใช้งาน",
+                "sleeping": "กำลังหลับ",
+                "ready": "พร้อมใช้งาน"
+            },
+            "query_stage": {
+                "initializing": "กำลังเริ่มต้น ({query_stage})",
+                "dead": "ไม่พร้อมใช้งาน ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "เคลียร์, กลางคืน",
+            "cloudy": "มีเมฆมาก",
+            "fog": "หมอก",
+            "hail": "ลูกเห็บ",
+            "lightning": "ฟ้าแลบ",
+            "lightning_rainy": "ฟ้าแลบ, ฝนตก",
+            "partlycloudy": "มีเมฆบางส่วน",
+            "pouring": "เท",
+            "rainy": "ฝน",
+            "snowy": "หิมะ",
+            "snowy_rainy": "หิมะ, ฝน",
+            "sunny": "แดดจัด",
+            "windy": "ลมแรง",
+            "windy_variant": "ลมแรง"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "ไม่ทราบสถานะ",
+            "unavailable": "ไม่พร้อมใช้งาน"
+        },
+        "alarm_control_panel": {
+            "armed": "เปิดการป้องกัน",
+            "disarmed": "ปลดการป้องกัน",
+            "armed_home": "เปิดการป้องกัน-โหมดอยู่บ้าน",
+            "armed_away": "เปิดการป้องกัน-โหมดไม่อยู่บ้าน",
+            "armed_night": "เปิดการป้องกัน-โหมดกลางคืน",
+            "pending": "ค้างอยู่",
+            "arming": "กำลังเปิดการป้องกัน",
+            "disarming": "กำลังปลดการป้องกัน",
+            "triggered": "ถูกกระตุ้น",
+            "armed_custom_bypass": "ป้องกัน"
+        },
+        "device_tracker": {
+            "home": "อยู่บ้าน",
+            "not_home": "ไม่อยู่"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "จัดการเรียบร้อย",
+                "add_item": "เพิ่มรายการ",
+                "microphone_tip": "แตะไมโครโฟนที่ด้านบนขวาและพูดว่า \"เพิ่มลูกอมลงในรายการช้อปปิ้งของฉัน\""
+            },
+            "history": {
+                "showing_entries": "แสดงรายการ",
+                "period": "ระยะเวลา"
+            },
+            "logbook": {
+                "showing_entries": "แสดงรายการ"
+            },
+            "mailbox": {
+                "empty": "ไม่มีข้อความ",
+                "playback_title": "เล่นข้อความ",
+                "delete_prompt": "ลบข้อความนี้หรือไม่?",
+                "delete_button": "ลบ"
+            },
+            "config": {
+                "header": "ปรับแต่ง Home Assistant",
+                "introduction": "เป็นไปได้ที่จะกำหนดค่าคอมโพเนนต์และ Home Assistant ของคุณที่ีนี่. ยังจะกำหนดค่าจาก UI ได้ทั้งหมด, แต่เรากำลังดำเนินการอยู่",
+                "core": {
+                    "caption": "ทั่วไป",
+                    "description": "ตรวจสอบไฟล์การกำหนดค่าและควบคุมเซิร์ฟเวอร์",
+                    "section": {
+                        "core": {
+                            "header": "การปรับแต่งและควบคุมเซิร์ฟเวอร์",
+                            "introduction": "การเปลี่ยนการกำหนดค่าอาจเป็นกระบวนการที่น่าเบื่อ พวกเรารู้. ส่วนนี้จะทำให้ชีวิตของคุณง่ายขึ้นนิดหน่อย",
+                            "validation": {
+                                "heading": "ตรวจสอบการกำหนดค่า",
+                                "introduction": "ตรวจสอบความถูกต้องการกำหนดค่าของคุณหากคุณเพิ่งทำการเปลี่ยนแปลงบางอย่างกับการกำหนดค่าของคุณและต้องการตรวจสอบให้แน่ใจว่าถูกต้องทั้งหมด",
+                                "check_config": "ตรวจสอบการกำหนดค่า",
+                                "valid": "การกำหนดค่าถูกต้อง!",
+                                "invalid": "การกำหนดค่าไม่ถูกต้อง"
+                            },
+                            "reloading": {
+                                "heading": "กำลังโหลดการกำหนดค่า",
+                                "introduction": "Home Assistant บางส่วนสามารถโหลดซ้ำได้โดยไม่ต้องรีสตาร์ท การกดปุ่มโหลดจะยกเลิกการโหลดค่าปัจจุบันและโหลดไฟล์ใหม่",
+                                "core": "โหลดส่วนกลางใหม่",
+                                "group": "โหลดกลุ่มใหม่",
+                                "automation": "โหลดระบบอัตโนมัติใหม่",
+                                "script": "โหลดสคริปต์อีกครั้ง"
+                            },
+                            "server_management": {
+                                "heading": "การจัดการเซิร์ฟเวอร์",
+                                "introduction": "ควบคุมเซิร์ฟเวอร์ Home Assistant ... จาก Home Assistant",
+                                "restart": "เริ่มต้นใหม่",
+                                "stop": "หยุด"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "ปรับแต่งผลักการแจ้งให้ทราบต่างๆ",
+                            "introduction": "เปิดใช้งานการตั้งค่านี้เพื่อรับการแจ้งเตือนบนอุปกรณ์นี้",
+                            "push_notifications": "การแจ้งเตือน"
+                        },
+                        "translation": {
+                            "header": "เลือกภาษา",
+                            "introduction": "เลือกภาษาสำหรับการแสดงผล Home Assistant บนอุปกรณ์นี้",
+                            "language": "ภาษา"
+                        },
+                        "themes": {
+                            "header": "ตั้งค่าชุดตกแต่ง",
+                            "introduction": "เลือก'ปรับแต่งโปรแกรมเบื้องหลัง'เพื่อเลือกใช้ชุดตกแต่งที่เลือกปรับแต่งโปรแกรมเบื้องหลังหรือเลือกชุดตกแต่งสำหรับอุปกรณ์นี้",
+                            "theme": "ชุดตกแต่ง"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "การปรับแต่ง",
+                    "description": "ปรับแต่งรายการของคุณ"
+                },
+                "automation": {
+                    "caption": "การทำงานอัตโนมัติ",
+                    "description": "สร้างและแก้ไขระบบอัตโนมัติ",
+                    "picker": {
+                        "header": "เครื่องมือแก้ไข ระบบอัตโนมัติ",
+                        "introduction": "ตัวแก้ไขอัตโนมัติช่วยให้คุณสามารถสร้างและแก้ไขระบบอัตโนมัติได้. \nโปรดอ่าน [คำแนะนำ] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) เพื่อให้แน่ใจว่าคุณได้กำหนดค่า Home Assistant อย่างถูกต้อง.",
+                        "pick_automation": "เลือกระบบอัตโนมัติเพื่อแก้ไข",
+                        "no_automations": "เราไม่พบระบบอัตโนมัติใด ๆ สามารถแก้ไขได้",
+                        "add_automation": "เพิ่มระบบอัตโนมัติ"
+                    },
+                    "editor": {
+                        "introduction": "ใช้ระบบอัตโนมัติเพื่อทำให้บ้านของคุณมีชีวิตชีวา",
+                        "default_name": "ระบบอัตโนมัติใหม่",
+                        "save": "บันทึก",
+                        "unsaved_confirm": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการออก?",
+                        "alias": "ชื่อ",
+                        "triggers": {
+                            "header": "ทริกเกอร์",
+                            "introduction": "ทริกเกอร์คือสิ่งที่เริ่มต้นในการประมวลผลกฎอัตโนมัติ คุณสามารถระบุทริกเกอร์หลายรายการสำหรับกฎเดียวกันได้ เมื่อตัวทริกเกอร์เริ่มทำงานผู้ช่วยแรกจะตรวจสอบเงื่อนไขหากมีและเรียกการดำเนินการ.\n\n[เรียนรู้เพิ่มเติมเกี่ยวกับทริกเกอร์] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "เพิ่มทริกเกอร์",
+                            "duplicate": "ซ้ำ",
+                            "delete": "ลบ",
+                            "delete_confirm": "แน่ใจหรือว่าต้องการจะลบ?",
+                            "unsupported_platform": "แพลตฟอร์มที่ไม่สนับสนุน: {platform}",
+                            "type_select": "ประเภททริกเกอร์",
+                            "type": {
+                                "event": {
+                                    "label": "เหตุการณ์",
+                                    "event_type": "ชนิดเหตุการณ์",
+                                    "event_data": "ข้อมูลเหตุการณ์"
+                                },
+                                "state": {
+                                    "label": "สถานะ",
+                                    "from": "จาก",
+                                    "to": "ไปยัง"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "เหตุการณ์:",
+                                    "start": "เริ่มต้น",
+                                    "shutdown": "ปิด"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "หัวข้อเรื่อง",
+                                    "payload": "Payload (ตัวเลือก)"
+                                },
+                                "numeric_state": {
+                                    "label": "สถานะตัวเลข",
+                                    "above": "เหนือกว่า",
+                                    "below": "ต่ำกว่า",
+                                    "value_template": "ค่าแบบ (เลือกเพิ่ม)"
+                                },
+                                "sun": {
+                                    "label": "พระอาทิตย์",
+                                    "event": "เหตุการณ์",
+                                    "sunrise": "พระอาทิตย์ขึ้น",
+                                    "sunset": "พระอาทิตย์ตกดิน",
+                                    "offset": "ช่วงเวลา(เลือกเพิ่ม)"
+                                },
+                                "template": {
+                                    "label": "แบบ",
+                                    "value_template": "ค่าแบบ"
+                                },
+                                "time": {
+                                    "label": "เวลา",
+                                    "at": "ที่"
+                                },
+                                "zone": {
+                                    "label": "โซน",
+                                    "entity": "รายละเอียดพร้อมสถานที่ตั้ง",
+                                    "zone": "โซน",
+                                    "event": "เหตุการณ์",
+                                    "enter": "เข้าสู่",
+                                    "leave": "ออกจาก"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "เงื่อนไข",
+                            "introduction": "เงื่อนไขเป็นส่วนเสริมของกฎอัตโนมัติและสามารถใช้เพื่อป้องกันไม่ให้เกิดการกระทำเมื่อถูกเรียกใช้งาน เงื่อนไขดูคล้ายกับทริกเกอร์ แต่แตกต่างกันมาก ทริกเกอร์จะพิจารณาเหตุการณ์ที่เกิดขึ้นในระบบในขณะที่เงื่อนไขจะดูเฉพาะที่ระบบจะดูในตอนนี้เท่านั้น ทริกเกอร์สามารถสังเกตได้ว่าสวิตช์กำลังเปิดอยู่ เงื่อนไขสามารถดูได้เฉพาะเมื่อสวิตช์เปิดหรือปิดอยู่เท่านั้น.\n\n[เรียนรู้เพิ่มเติมเกี่ยวกับเงื่อนไข] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "เพิ่มเงื่อนไข",
+                            "duplicate": "ซ้ำ",
+                            "delete": "ลบ",
+                            "delete_confirm": "แน่ใจหรือว่าคุณต้องการลบ?",
+                            "unsupported_condition": "เงื่อนไขที่ไม่สนับสนุน: {condition}",
+                            "type_select": "ประเภทเงื่อนไข",
+                            "type": {
+                                "state": {
+                                    "label": "สถานะ",
+                                    "state": "สถานะ"
+                                },
+                                "numeric_state": {
+                                    "label": "สถานะตัวเลข",
+                                    "above": "เหนือกว่า",
+                                    "below": "ต่ำกว่า",
+                                    "value_template": "ค่าแบบ (เพิ่มเติม)"
+                                },
+                                "sun": {
+                                    "label": "พระอาทิตย์",
+                                    "before": "ก่อน:",
+                                    "after": "หลังจาก:",
+                                    "before_offset": "ก่อนช่วงเวลา(เลือกเพิ่ม)",
+                                    "after_offset": "หลังจากช่วงเวลา(เลือกเพิ่ม)",
+                                    "sunrise": "พระอาทิตย์ขึ้น",
+                                    "sunset": "พระอาทิตย์ตก"
+                                },
+                                "template": {
+                                    "label": "แบบ",
+                                    "value_template": "ค่าแบบ"
+                                },
+                                "time": {
+                                    "label": "เวลา",
+                                    "after": "หลังจาก",
+                                    "before": "ก่อนที่จะ"
+                                },
+                                "zone": {
+                                    "label": "โซน",
+                                    "entity": "เอกลักษณ์",
+                                    "zone": "โซน"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "การกระทำ",
+                            "introduction": "การดำเนินการเป็นสิ่งที่ผู้ช่วยโฮมจะทำเมื่อระบบอัตโนมัติถูกเรียกใช้งาน \n\n [เรียนรู้เพิ่มเติมเกี่ยวกับการดำเนินการ] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "เพิ่มการกระทำ",
+                            "duplicate": "ซ้ำซ้อน",
+                            "delete": "ลบ",
+                            "delete_confirm": "แน่ใจว่าจะลบ?",
+                            "unsupported_action": "การดำเนินการที่ไม่สนับสนุน: {action}",
+                            "type_select": "ประเภทการทำงาน",
+                            "type": {
+                                "service": {
+                                    "label": "เรียกบริการ",
+                                    "service_data": "ข้อมูลบริการ"
+                                },
+                                "delay": {
+                                    "label": "หน่วงเวลา",
+                                    "delay": "หน่วง"
+                                },
+                                "wait_template": {
+                                    "label": "รอ",
+                                    "wait_template": "แบบ รอ",
+                                    "timeout": "หมดเวลา (ตัวเลือก)"
+                                },
+                                "condition": {
+                                    "label": "สถานะ"
+                                },
+                                "event": {
+                                    "label": "กระทำเหตุการณ์",
+                                    "event": "เหตุการณ์",
+                                    "service_data": "ข้อมูลบริการ"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "สคริปต์",
+                    "description": "สร้างและแก้ไขสคริปต์"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "จัดการเครือข่าย Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "ออกจากระบบ",
+            "developer_tools": "เครื่องมือสำหรับนักพัฒนา"
+        },
+        "common": {
+            "loading": "กำลังโหลด",
+            "cancel": "ยกเลิก"
+        },
+        "login-form": {
+            "password": "รหัสผ่าน",
+            "remember": "จดจำ",
+            "log_in": "ลงชื่อเข้า"
+        },
+        "card": {
+            "camera": {
+                "not_available": "ไม่มีรูปภาพ"
+            },
+            "persistent_notification": {
+                "dismiss": "ยกเลิก"
+            },
+            "scene": {
+                "activate": "กระตุ้น"
+            },
+            "script": {
+                "execute": "ปฏิบัติ"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "ความดันอากาศ",
+                    "humidity": "ความชื้น",
+                    "temperature": "อุณหภูมิ",
+                    "visibility": "ความชัดเจน",
+                    "wind_speed": "ความเร็วลม"
+                },
+                "cardinal_direction": {
+                    "e": "ทิศตะวันออก",
+                    "ene": "ทิศอีสานเฉียงตะวันออก",
+                    "ese": "ทิศอาคเนย์เฉียงตะวันออก",
+                    "n": "ทิศเหนือ",
+                    "ne": "ทิศตะวันออกเฉียงเหนือ",
+                    "nne": "ทิศอีสานเฉียงเหนือ",
+                    "nw": "ทิศตะวันตกเฉียงเหนือ",
+                    "nnw": "ทิศพายัพเฉียงเหนือ",
+                    "s": "ทิศใต้",
+                    "se": "ทิศตะวันออกเฉียงใต้",
+                    "sse": "ทิศอาคเนย์เฉียงใต้",
+                    "ssw": "ทิศหรดีเฉียงใต้",
+                    "sw": "ทิศตะวันตกเฉียงใต้",
+                    "w": "ทิศตะวันตก",
+                    "wnw": "ทิศพายัพเฉียงตะวันตก",
+                    "wsw": "ทิศหรดีเฉียงตะวันตก"
+                },
+                "forecast": "พยากรณ์"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "รายการ"
+                }
+            },
+            "service-picker": {
+                "service": "บริการ"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "แผงควบคุมสัญญาณเตือนภัย",
+        "automation": "การทำงานอัตโนมัติ",
+        "binary_sensor": "เซ็นเซอร์แบบไบนารี",
+        "calendar": "ปฏิทิน",
+        "camera": "กล้อง",
+        "climate": "สภาพอากาศ",
+        "configurator": "ตัวตั้งค่า",
+        "conversation": "การสนทนา",
+        "cover": "ม่าน",
+        "device_tracker": "อุปกรณ์ติดตาม",
+        "fan": "พัดลม",
+        "history_graph": "กราฟประวัติ",
+        "group": "กลุ่ม",
+        "image_processing": "การประมวลผลภาพ",
+        "input_boolean": "ป้อนค่าตรรกะ",
+        "input_datetime": "ป้อนวันเวลา",
+        "input_select": "เลือกข้อมูล",
+        "input_number": "ป้อนตัวเลข",
+        "input_text": "ป้อนข้อความ",
+        "light": "แสงสว่าง",
+        "lock": "ล็อค",
+        "mailbox": "กล่องจดหมาย",
+        "media_player": "เครื่องเล่นสื่อ",
+        "notify": "แจ้ง",
+        "plant": "พืช",
+        "proximity": "ใกล้ชิด",
+        "remote": "รีโมต",
+        "scene": "ฉาก",
+        "script": "สคริปต์",
+        "sensor": "เซนเซอร์",
+        "sun": "ดวงอาทิตย์",
+        "switch": "สวิตซ์",
+        "updater": "อัพเดต",
+        "weblink": "เว็บลิงค์",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "ความชื้น",
+            "visibility": "ความชัดเจน",
+            "wind_speed": "ความเร็วลม"
+        }
+    }
+}

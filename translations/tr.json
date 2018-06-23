@@ -1,1 +1,417 @@
-{"panel":{"config":"Ayarlar","states":"Genel durum","map":"Harita","logbook":"Kayıt defteri","history":"Geçmiş","mailbox":"Posta kutusu","shopping_list":"Alışveriş listesi","dev-mqtt":"MQTT"},"state":{"default":{"off":"Kapalı","on":"Açık","unknown":"Bilinmeyen","unavailable":"Mevcut değil"},"alarm_control_panel":{"armed":"Etkin","disarmed":"Etkisiz","armed_home":"Etkin evde","armed_away":"Etkin dışarıda","armed_night":"Etkin gece","pending":"Beklemede","arming":"Etkinleşiyor","disarming":"Etkisizleştiriliyor","triggered":"Tetiklendi"},"automation":{"off":"Kapalı","on":"Açık"},"binary_sensor":{"default":{"off":"Kapalı","on":"Açık"},"moisture":{"off":"Kuru","on":"Islak "},"gas":{"off":"Temiz","on":"Algılandı"},"motion":{"off":"Temiz","on":"Algılandı"},"occupancy":{"off":"Temiz","on":"Algılandı"},"smoke":{"off":"Temiz","on":"Algılandı"},"sound":{"off":"Temiz","on":"Algılandı"},"vibration":{"off":"Temiz","on":"Algılandı"},"opening":{"off":"Kapalı","on":"Açık"},"safety":{"off":"Güvenli","on":"Güvensiz"}},"calendar":{"off":"Kapalı","on":"Açık"},"camera":{"recording":"Kaydediliyor","streaming":"Yayın akışı","idle":"Boşta"},"climate":{"off":"Kapalı","on":"Açık","heat":"Sıcak","cool":"Serin","idle":"Boşta","auto":"Otomatik","dry":"Kuru","fan_only":"Sadece fan","eco":"Eko","electric":"Elektrikli","performance":"Performans","high_demand":"Yüksek talep","heat_pump":"Isı pompası","gas":"Gaz"},"configurator":{"configure":"Ayarla","configured":"Ayarlandı"},"cover":{"open":"Açık","opening":"Açılıyor","closed":"Kapalı","closing":"Kapanıyor","stopped":"Durduruldu"},"device_tracker":{"home":"Evde","not_home":"Dışarıda"},"fan":{"off":"Kapalı","on":"Açık"},"group":{"off":"Kapalı","on":"Açık","home":"Evde","not_home":"Dışarıda","open":"Açık","opening":"Açılıyor","closed":"Kapandı","closing":"Kapanıyor","stopped":"Durduruldu","locked":"Kilitli","unlocked":"Kilitli değil","ok":"Tamam","problem":"Problem"},"input_boolean":{"off":"Kapalı","on":"Açık"},"light":{"off":"Kapalı","on":"Açık"},"lock":{"locked":"Kilitli","unlocked":"Kilitli değil"},"media_player":{"off":"Kapalı","on":"Açık","playing":"Oynuyor","paused":"Durduruldu","idle":"Boşta","standby":"Bekleme modu"},"plant":{"ok":"Tamam","problem":"Problem"},"remote":{"off":"Kapalı","on":"Açık"},"scene":{"scening":"sahneler"},"script":{"off":"Kapalı","on":"Açık"},"sensor":{"off":"Kapalı","on":"Açık"},"sun":{"above_horizon":"Ufkun üzerinde","below_horizon":"Ufkun altında"},"switch":{"off":"Kapalı","on":"Açık"},"zwave":{"default":{"initializing":"Başlatılıyor","dead":"Ölü","sleeping":"Uyuyor","ready":"Hazır"},"query_stage":{"initializing":"Başlatılıyor","dead":"Ölü"}}},"state_badge":{"default":{"unknown":"Bilinmiyor","unavailable":"Namüsait"},"alarm_control_panel":{"armed":"Etkin","disarmed":"Etkisiz","armed_home":"Etkin","armed_away":"Etkin","armed_night":"Etkin","pending":"Askıda","arming":"Etkinleştir","disarming":"Etkisiz","triggered":"Tetiklendi"},"device_tracker":{"home":"Evde","not_home":"Dışarıda"}},"ui":{"sidebar":{"log_out":"Çıkış yap"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Ayarlar",
+        "states": "Genel durum",
+        "map": "Harita",
+        "logbook": "Kayıt defteri",
+        "history": "Geçmiş",
+        "mailbox": "Posta kutusu",
+        "shopping_list": "Alışveriş listesi",
+        "dev-services": "Servisler",
+        "dev-states": "Durumlar",
+        "dev-events": "Olaylar",
+        "dev-templates": "Taslaklar",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Bilgi"
+    },
+    "state": {
+        "default": {
+            "off": "Kapalı",
+            "on": "Açık",
+            "unknown": "Bilinmeyen",
+            "unavailable": "Mevcut değil"
+        },
+        "alarm_control_panel": {
+            "armed": "Etkin",
+            "disarmed": "Etkisiz",
+            "armed_home": "Etkin evde",
+            "armed_away": "Etkin dışarıda",
+            "armed_night": "Etkin gece",
+            "pending": "Beklemede",
+            "arming": "Etkinleşiyor",
+            "disarming": "Etkisizleştiriliyor",
+            "triggered": "Tetiklendi",
+            "armed_custom_bypass": "Özel alarm atlatması"
+        },
+        "automation": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Kapalı",
+                "on": "Açık"
+            },
+            "moisture": {
+                "off": "Kuru",
+                "on": "Islak "
+            },
+            "gas": {
+                "off": "Temiz",
+                "on": "Algılandı"
+            },
+            "motion": {
+                "off": "Temiz",
+                "on": "Algılandı"
+            },
+            "occupancy": {
+                "off": "Temiz",
+                "on": "Algılandı"
+            },
+            "smoke": {
+                "off": "Temiz",
+                "on": "Algılandı"
+            },
+            "sound": {
+                "off": "Temiz",
+                "on": "Algılandı"
+            },
+            "vibration": {
+                "off": "Temiz",
+                "on": "Algılandı"
+            },
+            "opening": {
+                "off": "Kapalı",
+                "on": "Açık"
+            },
+            "safety": {
+                "off": "Güvenli",
+                "on": "Güvensiz"
+            },
+            "presence": {
+                "off": "[%key:state::device_tracker::dışarda%]",
+                "on": "[%key:state::device_tracker::ev%]"
+            },
+            "battery": {
+                "off": "Normal",
+                "on": "Düşük"
+            },
+            "problem": {
+                "off": "Tamam",
+                "on": "Sorun"
+            },
+            "connectivity": {
+                "off": "Bağlantı kesildi",
+                "on": "Bağlı"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Soğuk"
+            },
+            "door": {
+                "off": "[%key:state::cover::kapalı%]",
+                "on": "[%key:state::cover::açık%]"
+            },
+            "garage_door": {
+                "off": "[%key:state::cover::kapalı%]",
+                "on": "[%key:state::cover::açık%]"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Sıcak"
+            },
+            "window": {
+                "off": "[%key:state::cover::kapalı%]",
+                "on": "[%key:state::cover::açık%]"
+            }
+        },
+        "calendar": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "camera": {
+            "recording": "Kaydediliyor",
+            "streaming": "Yayın akışı",
+            "idle": "Boşta"
+        },
+        "climate": {
+            "off": "Kapalı",
+            "on": "Açık",
+            "heat": "Sıcak",
+            "cool": "Serin",
+            "idle": "Boşta",
+            "auto": "Otomatik",
+            "dry": "Kuru",
+            "fan_only": "Sadece fan",
+            "eco": "Eko",
+            "electric": "Elektrikli",
+            "performance": "Performans",
+            "high_demand": "Yüksek talep",
+            "heat_pump": "Isı pompası",
+            "gas": "Gaz"
+        },
+        "configurator": {
+            "configure": "Ayarla",
+            "configured": "Ayarlandı"
+        },
+        "cover": {
+            "open": "Açık",
+            "opening": "Açılıyor",
+            "closed": "Kapalı",
+            "closing": "Kapanıyor",
+            "stopped": "Durduruldu"
+        },
+        "device_tracker": {
+            "home": "Evde",
+            "not_home": "Dışarıda"
+        },
+        "fan": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "group": {
+            "off": "Kapalı",
+            "on": "Açık",
+            "home": "Evde",
+            "not_home": "Dışarıda",
+            "open": "Açık",
+            "opening": "Açılıyor",
+            "closed": "Kapandı",
+            "closing": "Kapanıyor",
+            "stopped": "Durduruldu",
+            "locked": "Kilitli",
+            "unlocked": "Kilitli değil",
+            "ok": "Tamam",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "light": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "lock": {
+            "locked": "Kilitli",
+            "unlocked": "Kilitli değil"
+        },
+        "media_player": {
+            "off": "Kapalı",
+            "on": "Açık",
+            "playing": "Oynuyor",
+            "paused": "Durduruldu",
+            "idle": "Boşta",
+            "standby": "Bekleme modu"
+        },
+        "plant": {
+            "ok": "Tamam",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "scene": {
+            "scening": "sahneler"
+        },
+        "script": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "sensor": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "sun": {
+            "above_horizon": "Ufkun üzerinde",
+            "below_horizon": "Ufkun altında"
+        },
+        "switch": {
+            "off": "Kapalı",
+            "on": "Açık"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Başlatılıyor",
+                "dead": "Ölü",
+                "sleeping": "Uyuyor",
+                "ready": "Hazır"
+            },
+            "query_stage": {
+                "initializing": "Başlatılıyor ({query_stage})",
+                "dead": "Ölü ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Bilinmiyor",
+            "unavailable": "Namüsait"
+        },
+        "alarm_control_panel": {
+            "armed": "Etkin",
+            "disarmed": "Etkisiz",
+            "armed_home": "Etkin",
+            "armed_away": "Etkin",
+            "armed_night": "Etkin",
+            "pending": "Askıda",
+            "arming": "Etkinleştir",
+            "disarming": "Etkisiz",
+            "triggered": "Tetiklendi",
+            "armed_custom_bypass": "[%key:state_badge::alarm_control_panel::alarm_kuruldu%]"
+        },
+        "device_tracker": {
+            "home": "Evde",
+            "not_home": "Dışarıda"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Tamamlananları Temizle",
+                "add_item": "Öge Ekle",
+                "microphone_tip": "Sağ üstteki mikrofona dokunun ve \"alışveriş listeme şeker ekle\" deyin"
+            },
+            "history": {
+                "showing_entries": "Gösterilen girişler",
+                "period": "Dönem"
+            },
+            "logbook": {
+                "showing_entries": "Gösterilen girişler"
+            },
+            "mailbox": {
+                "empty": "Herhangi bir mesaj yok",
+                "playback_title": "Mesajı dinleme",
+                "delete_prompt": "Bu mesajı sil?",
+                "delete_button": "Sil"
+            },
+            "config": {
+                "header": "Home Assistant'ı yapılandır",
+                "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
+                "core": {
+                    "caption": "Genel",
+                    "description": "Yapılandırma dosyanızı doğrulayın ve sunucuyu kontrol edin",
+                    "section": {
+                        "core": {
+                            "header": "Yapılandırma ve sunucu kontrolü",
+                            "introduction": "Yapılandırmanızı değiştirmek, yorucu bir işlem olabilir. Biliyoruz. Bu bölüm hayatınızı biraz daha kolay hale getirmeye çalışacaktır.",
+                            "validation": {
+                                "heading": "Yapılandırma doğrulaması",
+                                "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",
+                                "check_config": "Yapılandırmayı kontrol et",
+                                "valid": "Yapılandırma geçerli!",
+                                "invalid": "Yapılandırma geçersiz"
+                            },
+                            "reloading": {
+                                "heading": "Yapılandırma yeniden yükleniyor",
+                                "introduction": "Bazı Home Assistant bileşenleri yeniden başlatmadan yenilenebilinir. Yeniden yükle tuşuna basarak güncel yapılandırmayı bırakarak yenisinin yüklenmesini sağlayabilirsiniz.",
+                                "core": "Çekirdeği yeniden yükle",
+                                "group": "Grupları yeniden yükle",
+                                "automation": "Otomasyonları yeniden yükle",
+                                "script": "Senaryoları yeniden yükle"
+                            },
+                            "server_management": {
+                                "heading": "Sunucu yönetimi",
+                                "introduction": "Home Assistant sunucunuzu kontrol edin.. Home Assistant üzerinden",
+                                "restart": "Yeniden başlat",
+                                "stop": "Durdur"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Bildirimleri ayarlayın",
+                            "introduction": "Bu cihazda bildirim almak için bu ayarı etkinleştirin",
+                            "push_notifications": "Bildirimler"
+                        },
+                        "translation": {
+                            "header": "Bir dil seçin",
+                            "introduction": "Bu cihazdaki Home Assistant arayüzü için bir dil seçin",
+                            "language": "Dil"
+                        },
+                        "themes": {
+                            "header": "Bir tema ayarla",
+                            "introduction": "'Seçili-arkauç' un seçtiği temayı kullanın veya bu cihaz için yeni bir tema seçiniz.",
+                            "theme": "Tema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Özelleştirme",
+                    "description": "Varlıklarınızı kişiselleştirin"
+                },
+                "automation": {
+                    "caption": "Otomasyon",
+                    "description": "Otomasyonları oluşturun ve düzenleyin"
+                },
+                "script": {
+                    "caption": "Senaryo",
+                    "description": "Senaryoları oluşturun ve düzenleyin"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Z-Wave ağınızı yönetin"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Çıkış yap",
+            "developer_tools": "Geliştirici araçları"
+        },
+        "common": {
+            "loading": "Yükleniyor",
+            "cancel": "İptal"
+        },
+        "duration": {
+            "day": "{count}{count, plural,\n  one { gün }\n  other { gün }\n}",
+            "week": "{count}{count, plural,\n  one { hafta }\n  other { hafta }\n}",
+            "second": "{count}{count, plural,\n  one { saniye }\n  other { saniye }\n}"
+        },
+        "login-form": {
+            "password": "Şifre",
+            "remember": "Hatırla",
+            "log_in": "Oturum aç"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Resim mevcut değil"
+            },
+            "persistent_notification": {
+                "dismiss": "Kapat"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Alarm kontrol paneli",
+        "automation": "Otomasyon",
+        "binary_sensor": "İkili sensör",
+        "calendar": "Takvim",
+        "camera": "Kamera",
+        "climate": "İklim",
+        "configurator": "Yapılandırıcı",
+        "conversation": "Konuşma",
+        "cover": "Kapak",
+        "device_tracker": "Cihaz izleyici",
+        "fan": "Fan",
+        "history_graph": "Geçmiş grafiği",
+        "group": "Grup",
+        "image_processing": "Görüntü işleme",
+        "input_boolean": "Doğru\/Yanlış giriniz",
+        "input_datetime": "Giriş Tarih\/Saat",
+        "input_select": "Girdi seçiniz",
+        "input_number": "Numara giriniz",
+        "input_text": "Metin giriniz",
+        "light": "Işık",
+        "lock": "Kilit",
+        "mailbox": "Posta kutusu",
+        "media_player": "Medya oynatıcı",
+        "notify": "Bildir",
+        "plant": "Bitki",
+        "proximity": "Yakınlık",
+        "remote": "Uzaktan Kumanda",
+        "scene": "Sahne",
+        "script": "Senaryo",
+        "sensor": "Sensör",
+        "sun": "Güneş",
+        "switch": "Anahtar",
+        "updater": "Güncelleyici",
+        "weblink": "Web bağlantısı",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Nem",
+            "visibility": "Görünürlük",
+            "wind_speed": "Rüzgar hızı"
+        }
+    }
+}

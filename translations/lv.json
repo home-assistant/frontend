@@ -1,1 +1,152 @@
-{"panel":{"config":"Konfigurācija","states":"Pārskats","map":"Karte","history":"Vēsture","mailbox":"Pastkaste","shopping_list":"Iepirkumu saraksts","dev-mqtt":"MQTT"},"state":{"binary_sensor":{"safety":{"off":"Drošs","on":"Nedrošs"}},"camera":{"recording":"Ieraksta","streaming":"Straumē"},"climate":{"heat":"Sildīt","cool":"Dzesēt","dry":"Sauss","high_demand":"Augsts pieprasījums","heat_pump":"Siltumsūknis","gas":"Gāze"},"configurator":{"configure":"Konfigurēt","configured":"Konfigurēts"},"cover":{"stopped":"Apturēts"},"device_tracker":{"home":"Mājās","not_home":"Prom"},"media_player":{"playing":"Atskaņo"},"plant":{"ok":"Labi","problem":"Problēma"},"sun":{"above_horizon":"Virs horizonta","below_horizon":"Zem horizonta"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Konfigurācija",
+        "states": "Pārskats",
+        "map": "Karte",
+        "logbook": "Žurnāls",
+        "history": "Vēsture",
+        "mailbox": "Pastkaste",
+        "shopping_list": "Iepirkumu saraksts",
+        "dev-mqtt": "MQTT"
+    },
+    "state": {
+        "default": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts",
+            "unknown": "Nezināms"
+        },
+        "alarm_control_panel": {
+            "pending": "Gaida"
+        },
+        "binary_sensor": {
+            "moisture": {
+                "off": "Sauss",
+                "on": "Slapjš"
+            },
+            "safety": {
+                "off": "Drošs",
+                "on": "Nedrošs"
+            }
+        },
+        "camera": {
+            "recording": "Ieraksta",
+            "streaming": "Straumē"
+        },
+        "climate": {
+            "heat": "Sildīt",
+            "cool": "Dzesēt",
+            "dry": "Sauss",
+            "fan_only": "Tikai ventilators",
+            "eco": "Eko",
+            "high_demand": "Augsts pieprasījums",
+            "heat_pump": "Siltumsūknis",
+            "gas": "Gāze"
+        },
+        "configurator": {
+            "configure": "Konfigurēt",
+            "configured": "Konfigurēts"
+        },
+        "cover": {
+            "open": "Atvērts",
+            "closed": "Aizvērts",
+            "stopped": "Apturēts"
+        },
+        "device_tracker": {
+            "home": "Mājās",
+            "not_home": "Prom"
+        },
+        "media_player": {
+            "playing": "Atskaņo"
+        },
+        "plant": {
+            "ok": "Labi",
+            "problem": "Problēma"
+        },
+        "sun": {
+            "above_horizon": "Virs horizonta",
+            "below_horizon": "Zem horizonta"
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "Iziet",
+            "developer_tools": "Izstrādātāju rīki"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}"
+        },
+        "panel": {
+            "history": {
+                "showing_entries": "Rāda ierakstus par",
+                "period": "Periods"
+            },
+            "mailbox": {
+                "empty": "Jums nav ziņu",
+                "playback_title": "Ziņu atskaņošana",
+                "delete_prompt": "Vai dzēst šo ziņojumu?",
+                "delete_button": "Dzēst"
+            },
+            "config": {
+                "header": "Configure Home pārvaldība",
+                "core": {
+                    "section": {
+                        "core": {
+                            "header": "Konfigurācijas un servera pārvaldība",
+                            "validation": {
+                                "heading": "Konfigurācijas pārbaude",
+                                "introduction": "Veidiet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta",
+                                "check_config": "Pārbaudīt",
+                                "valid": "Konfigurācija korekta!",
+                                "invalid": "Konfigurācija kļūdaina"
+                            },
+                            "reloading": {
+                                "core": "Pārlādēt kodolu",
+                                "group": "Pārlādēt grupas",
+                                "script": "Pārlādēt skriptus"
+                            },
+                            "server_management": {
+                                "heading": "Servera pārvaldība",
+                                "introduction": "Pārvaldiet Home Assistant serveri no Home Assistant saskarnes.",
+                                "restart": "Restartēt",
+                                "stop": "Apturēt"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfigurēt pašpiegādes paziņojumus",
+                            "push_notifications": "Pašpiegādes paziņojumi"
+                        },
+                        "translation": {
+                            "header": "Izvēlēties valodu",
+                            "introduction": "Izvēlieties Home Assistant saskarnes valodu šajā ierīcē",
+                            "language": "Valoda"
+                        },
+                        "themes": {
+                            "header": "Iestatīt motīvu",
+                            "theme": "Motīvs"
+                        }
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        },
+        "common": {
+            "cancel": "Atcelt"
+        },
+        "login-form": {
+            "password": "Parole",
+            "remember": "Atcerēties"
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Gaisa mitrums",
+            "visibility": "Redzamība",
+            "wind_speed": "Vēja ātrums"
+        }
+    }
+}

@@ -1,1 +1,408 @@
-{"panel":{"config":"Seaded","states":"Ülevaade","map":"Kaart","logbook":"Logi","history":"Ajalugu","mailbox":"Postkast","shopping_list":"Ostunimekiri","dev-services":"Teenused","dev-states":"Olekud","dev-events":"Sündmused","dev-templates":"Mallid","dev-mqtt":"MQTT","dev-info":"Info"},"state":{"default":{"off":"Off","on":"On","unknown":"Teadmata","unavailable":"Kadund"},"alarm_control_panel":{"armed":"Valves","disarmed":"Maas","armed_home":"Valves kodu","armed_away":"Valves eemal","armed_night":"Öö-valves","pending":"Ootel","arming":"Valvestab","disarming":"Maas...","triggered":"Häires","armed_custom_bypass":"Valves, eranditega"},"automation":{"off":"Off","on":"On"},"binary_sensor":{"default":{"off":"Off","on":"On"},"moisture":{"off":"Kuiv","on":"Märg"},"gas":{"off":"Puudub","on":"Tuvastatud"},"motion":{"off":"Puudub","on":"Tuvastatud"},"occupancy":{"off":"Puudub","on":"Tuvastatud"},"smoke":{"off":"Puudub","on":"Tuvastatud"},"sound":{"off":"Puudub","on":"Tuvastatud"},"vibration":{"off":"Puudub","on":"Tuvastatud"},"opening":{"off":"Suletud","on":"Avatud"},"safety":{"off":"Ohutu","on":"Ohtlik"},"presence":{"off":"Eemal","on":"Kodus"},"battery":{"off":"Tavaline","on":"Madal"}},"calendar":{"off":"Off","on":"On"},"camera":{"recording":"Salvestab","streaming":"Voogedastab","idle":"Ootel"},"climate":{"off":"Off","on":"On","heat":"Soojenda","cool":"Jahuta","idle":"Ootel","auto":"Automaatne","dry":"Kuiv","fan_only":"Ainult ventilaator","eco":"Öko","electric":"Elektriline","performance":"Jõudlus","high_demand":"Kõrge nõudlus","heat_pump":"Soojuspump","gas":"Gaas"},"configurator":{"configure":"Seadista","configured":"Seadistatud"},"cover":{"open":"Avatud","opening":"Avaneb","closed":"Suletud","closing":"Sulgub","stopped":"Peatatud"},"device_tracker":{"home":"Kodus","not_home":"Eemal"},"fan":{"off":"Off","on":"On"},"group":{"off":"Off","on":"On","home":"Kodu","not_home":"Eemal","open":"Avatud","opening":"Avaneb","closed":"Suletud","closing":"Sulgub","stopped":"Peatatud","locked":"Lukus","unlocked":"Lahti","ok":"OK","problem":"Probleem"},"input_boolean":{"off":"Off","on":"On"},"light":{"off":"Off","on":"On"},"lock":{"locked":"Lukus","unlocked":"Lahti"},"media_player":{"off":"Off","on":"On","playing":"Mängib","paused":"Peatatud","idle":"Ootel","standby":"Unerežiimil"},"plant":{"ok":"OK","problem":"Probleem"},"remote":{"off":"Off","on":"On"},"scene":{"scening":"Stseenis"},"script":{"off":"Off","on":"On"},"sensor":{"off":"Off","on":"On"},"sun":{"above_horizon":"Tõusnud","below_horizon":"Loojunud"},"switch":{"off":"Väljas","on":"Sees"},"zwave":{"default":{"initializing":"Initisialiseerib","dead":"Surnud","sleeping":"Ootel","ready":"Valmis"},"query_stage":{"initializing":"Initsialiseerib ({query_stage})","dead":"Surnud ({query_stage})"}}},"state_badge":{"default":{"unknown":"?","unavailable":"Kadund"},"alarm_control_panel":{"armed":"Valves","disarmed":"Maas","armed_home":"Valves","armed_away":"Valves","armed_night":"Valves","pending":"Ootel","arming":"Valvestab","disarming":"Maas...","triggered":"Häire","armed_custom_bypass":"Valves"},"device_tracker":{"home":"Kodus","not_home":"Eemal"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Tühjenda täidetud","add_item":"Lisa toode","microphone_tip":"Puudutage paremas ülanurgas asuvat mikrofoni ikooni ja öelge: \"Add candy to my shopping list\""}},"sidebar":{"log_out":"Logi välja","developer_tools":"Arendaja tööriistad"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Seaded",
+        "states": "Ülevaade",
+        "map": "Kaart",
+        "logbook": "Logi",
+        "history": "Ajalugu",
+        "mailbox": "Postkast",
+        "shopping_list": "Ostunimekiri",
+        "dev-services": "Teenused",
+        "dev-states": "Olekud",
+        "dev-events": "Sündmused",
+        "dev-templates": "Mallid",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info",
+        "calendar": "Kalender"
+    },
+    "state": {
+        "default": {
+            "off": "Off",
+            "on": "On",
+            "unknown": "Teadmata",
+            "unavailable": "Kadunud"
+        },
+        "alarm_control_panel": {
+            "armed": "Valves",
+            "disarmed": "Maas",
+            "armed_home": "Valves kodu",
+            "armed_away": "Valves eemal",
+            "armed_night": "Öö-valves",
+            "pending": "Ootel",
+            "arming": "Valvestab",
+            "disarming": "Maas...",
+            "triggered": "Häires",
+            "armed_custom_bypass": "Valves, eranditega"
+        },
+        "automation": {
+            "off": "Off",
+            "on": "On"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Off",
+                "on": "On"
+            },
+            "moisture": {
+                "off": "Kuiv",
+                "on": "Märg"
+            },
+            "gas": {
+                "off": "Puudub",
+                "on": "Tuvastatud"
+            },
+            "motion": {
+                "off": "Puudub",
+                "on": "Tuvastatud"
+            },
+            "occupancy": {
+                "off": "Puudub",
+                "on": "Tuvastatud"
+            },
+            "smoke": {
+                "off": "Puudub",
+                "on": "Tuvastatud"
+            },
+            "sound": {
+                "off": "Puudub",
+                "on": "Tuvastatud"
+            },
+            "vibration": {
+                "off": "Puudub",
+                "on": "Tuvastatud"
+            },
+            "opening": {
+                "off": "Suletud",
+                "on": "Avatud"
+            },
+            "safety": {
+                "off": "Ohutu",
+                "on": "Ohtlik"
+            },
+            "presence": {
+                "off": "Eemal",
+                "on": "Kodus"
+            },
+            "battery": {
+                "off": "Tavaline",
+                "on": "Madal"
+            },
+            "problem": {
+                "on": "Probleem"
+            }
+        },
+        "calendar": {
+            "off": "Off",
+            "on": "On"
+        },
+        "camera": {
+            "recording": "Salvestab",
+            "streaming": "Voogedastab",
+            "idle": "Ootel"
+        },
+        "climate": {
+            "off": "Off",
+            "on": "On",
+            "heat": "Soojenda",
+            "cool": "Jahuta",
+            "idle": "Ootel",
+            "auto": "Automaatne",
+            "dry": "Kuiv",
+            "fan_only": "Ainult ventilaator",
+            "eco": "Öko",
+            "electric": "Elektriline",
+            "performance": "Jõudlus",
+            "high_demand": "Kõrge nõudlus",
+            "heat_pump": "Soojuspump",
+            "gas": "Gaas"
+        },
+        "configurator": {
+            "configure": "Seadista",
+            "configured": "Seadistatud"
+        },
+        "cover": {
+            "open": "Avatud",
+            "opening": "Avaneb",
+            "closed": "Suletud",
+            "closing": "Sulgub",
+            "stopped": "Peatatud"
+        },
+        "device_tracker": {
+            "home": "Kodus",
+            "not_home": "Eemal"
+        },
+        "fan": {
+            "off": "Off",
+            "on": "On"
+        },
+        "group": {
+            "off": "Off",
+            "on": "On",
+            "home": "Kodu",
+            "not_home": "Eemal",
+            "open": "Avatud",
+            "opening": "Avaneb",
+            "closed": "Suletud",
+            "closing": "Sulgub",
+            "stopped": "Peatatud",
+            "locked": "Lukus",
+            "unlocked": "Lahti",
+            "ok": "OK",
+            "problem": "Probleem"
+        },
+        "input_boolean": {
+            "off": "Off",
+            "on": "On"
+        },
+        "light": {
+            "off": "Off",
+            "on": "On"
+        },
+        "lock": {
+            "locked": "Lukus",
+            "unlocked": "Lahti"
+        },
+        "media_player": {
+            "off": "Off",
+            "on": "On",
+            "playing": "Mängib",
+            "paused": "Peatatud",
+            "idle": "Ootel",
+            "standby": "Unerežiimil"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Probleem"
+        },
+        "remote": {
+            "off": "Off",
+            "on": "On"
+        },
+        "scene": {
+            "scening": "Stseenis"
+        },
+        "script": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sensor": {
+            "off": "Off",
+            "on": "On"
+        },
+        "sun": {
+            "above_horizon": "Tõusnud",
+            "below_horizon": "Loojunud"
+        },
+        "switch": {
+            "off": "Väljas",
+            "on": "Sees"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Initisialiseerib",
+                "dead": "Surnud",
+                "sleeping": "Ootel",
+                "ready": "Valmis"
+            },
+            "query_stage": {
+                "initializing": "Initsialiseerib ({query_stage})",
+                "dead": "Surnud ({query_stage})"
+            }
+        },
+        "weather": {
+            "cloudy": "Pilvine",
+            "fog": "Udu",
+            "hail": "Rahe",
+            "partlycloudy": "Osaliselt pilvine",
+            "rainy": "Vihmane",
+            "snowy": "Lumine",
+            "snowy_rainy": "Lörtsine",
+            "sunny": "Päikeseline",
+            "windy": "Tuuline",
+            "windy_variant": "Tuuline"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "?",
+            "unavailable": "Kadunud"
+        },
+        "alarm_control_panel": {
+            "armed": "Valves",
+            "disarmed": "Maas",
+            "armed_home": "Valves",
+            "armed_away": "Valves",
+            "armed_night": "Valves",
+            "pending": "Ootel",
+            "arming": "Valvestab",
+            "disarming": "Maas...",
+            "triggered": "Häire",
+            "armed_custom_bypass": "Valves"
+        },
+        "device_tracker": {
+            "home": "Kodus",
+            "not_home": "Eemal"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Tühjenda täidetud",
+                "add_item": "Lisa toode",
+                "microphone_tip": "Puudutage paremas ülanurgas asuvat mikrofoni ikooni ja öelge: \"Add candy to my shopping list\""
+            },
+            "history": {
+                "showing_entries": "Näita kuupäeva",
+                "period": "Periood"
+            },
+            "logbook": {
+                "showing_entries": "Näita kuupäeva"
+            },
+            "mailbox": {
+                "empty": "Teile pole ühtegi sõnumit",
+                "playback_title": "Sõnumi esitus",
+                "delete_prompt": "Kas kustutada sõnum?",
+                "delete_button": "Kustuta"
+            },
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                },
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "add": "Lisa toiming",
+                            "unsupported_action": "Toetamata tegevus: {tegevus}",
+                            "type_select": "Tegevuse tüüp",
+                            "type": {
+                                "service": {
+                                    "label": "Kutsu teenus",
+                                    "service_data": "Teenuse andmed"
+                                },
+                                "wait_template": {
+                                    "label": "Oota",
+                                    "wait_template": "Ootamise mall",
+                                    "timeout": "Aegumine (valikuline)"
+                                },
+                                "condition": {
+                                    "label": "Tingimus"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Logi välja",
+            "developer_tools": "Arendaja tööriistad"
+        },
+        "common": {
+            "cancel": "Loobu"
+        },
+        "login-form": {
+            "password": "Salasõna",
+            "remember": "Jäta meelde",
+            "log_in": "Logi sisse"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Kujutis pole saadaval"
+            },
+            "persistent_notification": {
+                "dismiss": "Loobu"
+            },
+            "scene": {
+                "activate": "Aktiveeri"
+            },
+            "script": {
+                "execute": "Täida"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Õhurõhk",
+                    "humidity": "Niiskus",
+                    "temperature": "Temperatuur",
+                    "visibility": "Nähtavus",
+                    "wind_speed": "Tuule kiirus"
+                },
+                "forecast": "Ennustus"
+            },
+            "alarm_control_panel": {
+                "code": "Kood",
+                "clear_code": "Puhasta",
+                "disarm": "Valvest maha",
+                "arm_home": "Valvesta kodu",
+                "arm_away": "Valves eemal"
+            },
+            "automation": {
+                "last_triggered": "Viimati käivitatud",
+                "trigger": "Käivita"
+            },
+            "cover": {
+                "position": "Asend",
+                "tilt_position": "Kalde asend"
+            },
+            "fan": {
+                "speed": "Kiirus",
+                "oscillate": "Võnkumine",
+                "direction": "Suund"
+            },
+            "light": {
+                "brightness": "Heledus",
+                "color_temperature": "Värvi temperatuur",
+                "white_value": "Valge väärtus",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Tekst kõneks",
+                "source": "Allikas",
+                "sound_mode": "Heli režiim"
+            },
+            "climate": {
+                "on_off": "Sees \/ väljas",
+                "fan_mode": "Ventilaatori režiim"
+            },
+            "lock": {
+                "lock": "Lukusta",
+                "unlock": "Ava"
+            }
+        },
+        "components": {
+            "relative_time": {
+                "past": "{aega} tagasi",
+                "future": "{Aeg}",
+                "never": "Iial"
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Sisse lülitatud {üksus} .",
+            "entity_turned_off": "Välja lülitatud {üksus}.",
+            "connection_lost": "Ühendus kadunud. Taasühendamine..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Salvesta",
+                "name": "Nimi"
+            }
+        }
+    },
+    "domain": {
+        "calendar": "Kalender",
+        "camera": "Kaamera",
+        "input_text": "Teksti sisestamine",
+        "light": "Tuled",
+        "lock": "Lukk",
+        "sensor": "Andur",
+        "sun": "Päike",
+        "switch": "Lüliti",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Niiskus",
+            "visibility": "Nähtavus",
+            "wind_speed": "Tuule kiirus"
+        }
+    }
+}

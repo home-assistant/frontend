@@ -1,1 +1,124 @@
-{"panel":{"config":"設定","states":"状態","map":"地図","logbook":"ログブック","history":"履歴","mailbox":"メールボックス","shopping_list":"買い物リスト","dev-mqtt":"MQTT"},"state":{"default":{"off":"オフ","on":"オン","unknown":"不明","unavailable":"利用不可"},"alarm_control_panel":{"triggered":"トリガー"},"automation":{"off":"オフ","on":"オン"},"binary_sensor":{"default":{"off":"オフ","on":"オン"},"moisture":{"off":"ドライ","on":"ウェット"}},"calendar":{"off":"オフ","on":"オン"},"camera":{"idle":"アイドル"},"climate":{"off":"オフ","on":"オン","idle":"アイドル","auto":"オート","dry":"ドライ","fan_only":"ファンのみ","eco":"エコ","performance":"パフォーマンス","gas":"ガス"},"configurator":{"configure":"設定","configured":"設定済み"},"fan":{"off":"オフ","on":"オン"},"group":{"off":"オフ","on":"オン"},"input_boolean":{"off":"オフ","on":"オン"},"light":{"off":"オフ","on":"オン"},"media_player":{"off":"オフ","on":"オン","paused":"一時停止","idle":"アイドル"},"plant":{"ok":"OK"},"remote":{"off":"オフ","on":"オン"},"script":{"off":"オフ","on":"オン"},"sensor":{"off":"オフ","on":"オン"},"sun":{"above_horizon":"地平線の上","below_horizon":"地平線より下"},"switch":{"off":"オフ","on":"オン"},"zwave":{"default":{"initializing":"初期化中"}}},"ui":{"sidebar":{"log_out":"ログアウト"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "設定",
+        "states": "状態",
+        "map": "地図",
+        "logbook": "ログブック",
+        "history": "履歴",
+        "mailbox": "メールボックス",
+        "shopping_list": "買い物リスト",
+        "dev-mqtt": "MQTT"
+    },
+    "state": {
+        "default": {
+            "off": "オフ",
+            "on": "オン",
+            "unknown": "不明",
+            "unavailable": "利用不可"
+        },
+        "alarm_control_panel": {
+            "triggered": "トリガー"
+        },
+        "automation": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "オフ",
+                "on": "オン"
+            },
+            "moisture": {
+                "off": "ドライ",
+                "on": "ウェット"
+            }
+        },
+        "calendar": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "camera": {
+            "idle": "アイドル"
+        },
+        "climate": {
+            "off": "オフ",
+            "on": "オン",
+            "idle": "アイドル",
+            "auto": "オート",
+            "dry": "ドライ",
+            "fan_only": "ファンのみ",
+            "eco": "エコ",
+            "performance": "パフォーマンス",
+            "gas": "ガス"
+        },
+        "configurator": {
+            "configure": "設定",
+            "configured": "設定済み"
+        },
+        "fan": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "group": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "input_boolean": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "light": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "media_player": {
+            "off": "オフ",
+            "on": "オン",
+            "paused": "一時停止",
+            "idle": "アイドル"
+        },
+        "plant": {
+            "ok": "OK"
+        },
+        "remote": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "script": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "sensor": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "sun": {
+            "above_horizon": "地平線の上",
+            "below_horizon": "地平線より下"
+        },
+        "switch": {
+            "off": "オフ",
+            "on": "オン"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "初期化中"
+            }
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "ログアウト"
+        },
+        "panel": {
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    }
+}

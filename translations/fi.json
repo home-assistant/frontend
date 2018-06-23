@@ -1,1 +1,698 @@
-{"panel":{"config":"Asetukset","states":"Yleisnäkymä","map":"Kartta","logbook":"Lokikirja","history":"Historia","mailbox":"Postilaatikko","shopping_list":"Ostoslista","dev-mqtt":"MQTT"},"state":{"default":{"off":"Pois","on":"Päällä","unknown":"Tuntematon","unavailable":"Ei saatavissa"},"alarm_control_panel":{"armed":"Viritetty","pending":"Odottaa"},"automation":{"off":"Pois","on":"Päällä"},"binary_sensor":{"default":{"off":"Pois","on":"Päällä"},"moisture":{"off":"Kuiva","on":"Kostea"},"gas":{"off":"Pois","on":"Havaittu"},"motion":{"on":"Havaittu"},"smoke":{"on":"Havaittu"},"sound":{"on":"Havaittu"},"vibration":{"on":"Havaittu"},"opening":{"off":"Suljettu","on":"Auki"},"safety":{"off":"Turvallinen","on":"Vaarallinen"}},"calendar":{"on":"Päällä"},"camera":{"recording":"Tallentaa","streaming":"Toistaa","idle":"Lepotilassa"},"climate":{"off":"Pois päältä","on":"Päällä","heat":"Lämmitys","cool":"Jäähdytys","idle":"Lepotilassa","auto":"Automaatilla","dry":"Kuivaus","fan_only":"Tuuletus","eco":"Eko","electric":"Sähköinen","performance":"Tehokas","high_demand":"Täysi teho","heat_pump":"Lämpöpumppu","gas":"Kaasu"},"configurator":{"configure":"Määrittele","configured":"Määritetty"},"cover":{"open":"Auki","opening":"Avataan","closed":"Suljettu","closing":"Suljetaan","stopped":"Pysäytetty"},"device_tracker":{"home":"Kotona","not_home":"Poissa"},"fan":{"off":"Sammutettu","on":"Käynnissä"},"group":{"off":"Suljettu","on":"Päällä","home":"Kotona","not_home":"Poissa","open":"Auki","opening":"Avataan","closed":"Suljettu","closing":"Suljetaan","stopped":"Pysäytetty","locked":"Lukittu","unlocked":"Avattu","ok":"OK","problem":"Ongelma"},"input_boolean":{"off":"Kiinni","on":"Päällä"},"light":{"off":"Pois","on":"Päällä"},"lock":{"locked":"Lukittu","unlocked":"Auki"},"media_player":{"off":"Sammutettu","on":"Päällä","playing":"Toistaa","paused":"Pysäytetty","idle":"Lepotilassa","standby":"Lepotilassa"},"plant":{"ok":"Ok","problem":"Ongelma"},"remote":{"off":"Pois päältä","on":"Päällä"},"script":{"off":"Pois päältä","on":"Päällä"},"sensor":{"off":"Pois päältä","on":"Päällä"},"sun":{"above_horizon":"Horisontin yllä","below_horizon":"Horisontin alapuolella"},"switch":{"off":"Pois","on":"Päällä"},"zwave":{"default":{"initializing":"Alustaa","dead":"Kuollut","sleeping":"Lepotilassa","ready":"Valmis"},"query_stage":{"initializing":"Alustaa","dead":"Kuollut"}}},"state_badge":{"default":{"unknown":"Tunt","unavailable":"Ei saat"},"alarm_control_panel":{"pending":"Odot"},"device_tracker":{"home":"Kotona","not_home":"Pois"}},"ui":{"sidebar":{"log_out":"Kirjaudu ulos"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Asetukset",
+        "states": "Yleisnäkymä",
+        "map": "Kartta",
+        "logbook": "Lokikirja",
+        "history": "Historia",
+        "mailbox": "Postilaatikko",
+        "shopping_list": "Ostoslista",
+        "dev-services": "Palvelut",
+        "dev-states": "Tilat",
+        "dev-events": "Tapahtumat",
+        "dev-templates": "Mallit",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Tiedot"
+    },
+    "state": {
+        "default": {
+            "off": "Pois",
+            "on": "Päällä",
+            "unknown": "Tuntematon",
+            "unavailable": "Ei saatavissa"
+        },
+        "alarm_control_panel": {
+            "armed": "Viritetty",
+            "disarmed": "Viritys pois",
+            "armed_home": "Viritetty (kotona)",
+            "armed_away": "Viritetty (poissa)",
+            "armed_night": "Viritetty (yö)",
+            "pending": "Odottaa",
+            "arming": "Viritys",
+            "disarming": "Virityksen poisto",
+            "triggered": "Lauennut",
+            "armed_custom_bypass": "Virityksen ohittaminen"
+        },
+        "automation": {
+            "off": "Pois",
+            "on": "Päällä"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Pois",
+                "on": "Päällä"
+            },
+            "moisture": {
+                "off": "Kuiva",
+                "on": "Kostea"
+            },
+            "gas": {
+                "off": "Pois",
+                "on": "Havaittu"
+            },
+            "motion": {
+                "off": "Tyhjennä",
+                "on": "Havaittu"
+            },
+            "occupancy": {
+                "off": "Tyhjennä",
+                "on": "Havaittu"
+            },
+            "smoke": {
+                "off": "Tyhjennä",
+                "on": "Havaittu"
+            },
+            "sound": {
+                "off": "Tyhjennä",
+                "on": "Havaittu"
+            },
+            "vibration": {
+                "off": "Tyhjennä",
+                "on": "Havaittu"
+            },
+            "opening": {
+                "off": "Suljettu",
+                "on": "Auki"
+            },
+            "safety": {
+                "off": "Turvallinen",
+                "on": "Vaarallinen"
+            },
+            "presence": {
+                "off": "Poissa",
+                "on": "Kotona"
+            },
+            "battery": {
+                "off": "Normaali",
+                "on": "Alhainen"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Ongelma"
+            },
+            "connectivity": {
+                "off": "Ei yhteyttä",
+                "on": "Yhdistetty"
+            },
+            "cold": {
+                "off": "Normaali",
+                "on": "Kylmä"
+            },
+            "door": {
+                "off": "Suljettu",
+                "on": "Auki"
+            },
+            "garage_door": {
+                "off": "Suljettu",
+                "on": "Auki"
+            },
+            "heat": {
+                "off": "Normaali",
+                "on": "Kuuma"
+            },
+            "window": {
+                "off": "Suljettu",
+                "on": "Auki"
+            },
+            "lock": {
+                "off": "Lukittu",
+                "on": "Auki"
+            }
+        },
+        "calendar": {
+            "off": "Pois päältä",
+            "on": "Päällä"
+        },
+        "camera": {
+            "recording": "Tallentaa",
+            "streaming": "Toistaa",
+            "idle": "Lepotilassa"
+        },
+        "climate": {
+            "off": "Pois päältä",
+            "on": "Päällä",
+            "heat": "Lämmitys",
+            "cool": "Jäähdytys",
+            "idle": "Lepotilassa",
+            "auto": "Automaatilla",
+            "dry": "Kuivaus",
+            "fan_only": "Tuuletus",
+            "eco": "Eko",
+            "electric": "Sähköinen",
+            "performance": "Tehokas",
+            "high_demand": "Täysi teho",
+            "heat_pump": "Lämpöpumppu",
+            "gas": "Kaasu"
+        },
+        "configurator": {
+            "configure": "Määrittele",
+            "configured": "Määritetty"
+        },
+        "cover": {
+            "open": "Auki",
+            "opening": "Avataan",
+            "closed": "Suljettu",
+            "closing": "Suljetaan",
+            "stopped": "Pysäytetty"
+        },
+        "device_tracker": {
+            "home": "Kotona",
+            "not_home": "Poissa"
+        },
+        "fan": {
+            "off": "Sammutettu",
+            "on": "Käynnissä"
+        },
+        "group": {
+            "off": "Suljettu",
+            "on": "Päällä",
+            "home": "Kotona",
+            "not_home": "Poissa",
+            "open": "Auki",
+            "opening": "Avataan",
+            "closed": "Suljettu",
+            "closing": "Suljetaan",
+            "stopped": "Pysäytetty",
+            "locked": "Lukittu",
+            "unlocked": "Avattu",
+            "ok": "OK",
+            "problem": "Ongelma"
+        },
+        "input_boolean": {
+            "off": "Kiinni",
+            "on": "Päällä"
+        },
+        "light": {
+            "off": "Pois",
+            "on": "Päällä"
+        },
+        "lock": {
+            "locked": "Lukittu",
+            "unlocked": "Auki"
+        },
+        "media_player": {
+            "off": "Sammutettu",
+            "on": "Päällä",
+            "playing": "Toistaa",
+            "paused": "Pysäytetty",
+            "idle": "Lepotilassa",
+            "standby": "Lepotilassa"
+        },
+        "plant": {
+            "ok": "Ok",
+            "problem": "Ongelma"
+        },
+        "remote": {
+            "off": "Pois päältä",
+            "on": "Päällä"
+        },
+        "scene": {
+            "scening": "Skenehallinta"
+        },
+        "script": {
+            "off": "Pois päältä",
+            "on": "Päällä"
+        },
+        "sensor": {
+            "off": "Pois päältä",
+            "on": "Päällä"
+        },
+        "sun": {
+            "above_horizon": "Horisontin yllä",
+            "below_horizon": "Horisontin alapuolella"
+        },
+        "switch": {
+            "off": "Pois",
+            "on": "Päällä"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Alustaa",
+                "dead": "Kuollut",
+                "sleeping": "Lepotilassa",
+                "ready": "Valmis"
+            },
+            "query_stage": {
+                "initializing": "Alustaa ({query_stage})",
+                "dead": "Kuollut ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "Selkeää yöllä",
+            "cloudy": "Pilvistä",
+            "fog": "Sumuista",
+            "hail": "Raekuuro",
+            "lightning": "Ukkosvaara",
+            "lightning_rainy": "Ukkosvaara, sateista",
+            "partlycloudy": "Osittain pilvistä",
+            "pouring": "Tihkuista",
+            "rainy": "Sateista",
+            "snowy": "Lumisadetta",
+            "snowy_rainy": "Räntäsadetta",
+            "sunny": "Aurinkoinen",
+            "windy": "Tuulinen",
+            "windy_variant": "Tuulinen"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Tunt",
+            "unavailable": "Ei saat"
+        },
+        "alarm_control_panel": {
+            "armed": "Viritetty",
+            "disarmed": "Ei viritetty",
+            "armed_home": "Viritetty",
+            "armed_away": "Viritetty",
+            "armed_night": "Viritetty",
+            "pending": "Odot",
+            "arming": "Viritys kesken",
+            "disarming": "Ei viritetty",
+            "triggered": "Vakaa",
+            "armed_custom_bypass": "Viritetty"
+        },
+        "device_tracker": {
+            "home": "Kotona",
+            "not_home": "Poissa"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Poista valmiit",
+                "add_item": "Lisää tavara",
+                "microphone_tip": "Paina mikrofonia oikeassa yläkulmassa ja sano \"Lisää karkkipussi ostoslistalleni\""
+            },
+            "history": {
+                "showing_entries": "Näytetään tapahtumat alkaen",
+                "period": "aikajakso"
+            },
+            "logbook": {
+                "showing_entries": "Näytetään kirjaukset ajalta"
+            },
+            "mailbox": {
+                "empty": "Sinulle ei ole yhtään viestiä",
+                "playback_title": "Toista viesti",
+                "delete_prompt": "Poistetaanko tämä viesti?",
+                "delete_button": "Poista"
+            },
+            "config": {
+                "header": "Säädä Home Assistanttia",
+                "introduction": "Täällä voit säätää Home Assistanttia ja sen komponentteja. Huomioithan, ettei kaikkea voi vielä säätää käyttöliittymän kautta, mutta teemme jatkuvasti töitä sen mahdollistamiseksi.",
+                "core": {
+                    "caption": "Yleinen",
+                    "description": "Tarkista asetustiedostosi ja hallitse palvelinta",
+                    "section": {
+                        "core": {
+                            "header": "Asetusten ja palvelimen hallinta",
+                            "introduction": "Tiedämme, että asetusten muuttaminen saattaa olla työlästä. Täältä löydät työkaluja, jotka toivottavasti helpottavat elämääsi.",
+                            "validation": {
+                                "heading": "Asetusten tarkistus",
+                                "introduction": "Voit tarkistaa asetuksesi varmistuaksesi, että niissä ei ole virheitä",
+                                "check_config": "Tarkista asetukset",
+                                "valid": "Asetukset kunnossa!",
+                                "invalid": "Asetukset ei kelpaa"
+                            },
+                            "reloading": {
+                                "heading": "Asetusten uudelleenlataus",
+                                "introduction": "Jotkut Home Assistantin osat voidaan ladata ilman uudelleenkäynnistystä. Allaolevilla painikkeilla saat ladattua uudelleen yksittäisiä kategorioita.",
+                                "core": "Lataa ydin uudelleen",
+                                "group": "Lataa ryhmät uudelleen",
+                                "automation": "Lataa automaatiot uudelleen",
+                                "script": "Lataa skriptit uudelleen"
+                            },
+                            "server_management": {
+                                "heading": "Palvelimen hallinta",
+                                "introduction": "Hallitse Home Assistantia... suoraan Home Assistantista",
+                                "restart": "Käynnistä uudelleen",
+                                "stop": "Pysäytä"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Konfiguroi push-notifikaatioita",
+                            "introduction": "Valitse tämä asetus, jos haluat sallia push-notifikaatiot tältä laitteelta",
+                            "push_notifications": "Ilmoitukset"
+                        },
+                        "translation": {
+                            "header": "Valitse kieli",
+                            "introduction": "Valitse tämän laitteen käyttöliittymän kieli",
+                            "language": "Kieli"
+                        },
+                        "themes": {
+                            "header": "Valitse teema",
+                            "introduction": "Valitse 'Backend-selected', jos haluat käyttää palvelimen valitsemaa teemaa tällä laitteella",
+                            "theme": "Teema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Muokkaus",
+                    "description": "Muokkaa laitteita"
+                },
+                "automation": {
+                    "caption": "Automaatiot",
+                    "description": "Luo ja muokkaa automaatioita",
+                    "picker": {
+                        "header": "Automaatioeditori",
+                        "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Kannattaa lukea [ohjeet](https:\/\/home-assistant.io\/docs\/automation\/editor\/) (englanniksi), jotta osaat varmasti kirjoittaa automaatiot oikein.",
+                        "pick_automation": "Valitse automaatio, jota haluat muokata",
+                        "no_automations": "Ei muokattavia automaatioita",
+                        "add_automation": "Lisää automaatio"
+                    },
+                    "editor": {
+                        "introduction": "Käytä automaatioita herättääksesi kotisi eloon",
+                        "default_name": "Uusi automaatio",
+                        "save": "Tallenna",
+                        "unsaved_confirm": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?",
+                        "alias": "Nimi",
+                        "triggers": {
+                            "header": "Laukaisuehdot",
+                            "introduction": "Laukaisuehdot määrittelevät, milloin automaatiota aletaan suorittaa. Samassa säännössä voi olla useita laukaisuehtoja. Kun laukaisuehto täyttyy, Home Assistant varmistaa ehdot. Jos ehdot täyttyvät, toiminto suoritetaan.\n\n[Lue lisää laukaisuehdoista (englanniksi).](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Laukaisuehto",
+                            "duplicate": "Kopioi",
+                            "delete": "Poista",
+                            "delete_confirm": "Haluatko varmasti poistaa tämän?",
+                            "unsupported_platform": "Alustaa {platform} ei tueta",
+                            "type_select": "Laukaisimen tyyppi",
+                            "type": {
+                                "event": {
+                                    "label": "Tapahtuma",
+                                    "event_type": "Tapahtuman tyyppi",
+                                    "event_data": "Tapahtuman tietosisältö"
+                                },
+                                "state": {
+                                    "label": "Tila",
+                                    "from": "Lähtötila",
+                                    "to": "Kohdetila"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Tapahtuma:",
+                                    "start": "Käynnistys",
+                                    "shutdown": "Sammutus"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Aihe",
+                                    "payload": "Tietosisältö (payload)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numeerinen tila",
+                                    "above": "Yli",
+                                    "below": "Alle",
+                                    "value_template": "Arvomalli (template)"
+                                },
+                                "sun": {
+                                    "label": "Aurinko",
+                                    "event": "Tapahtuma:",
+                                    "sunrise": "Auringonnousu",
+                                    "sunset": "Auringonlasku",
+                                    "offset": "Poikkeama (vapaaehtoinen)"
+                                },
+                                "template": {
+                                    "label": "Malli (template)",
+                                    "value_template": "Arvomalli (template)"
+                                },
+                                "time": {
+                                    "label": "Aika",
+                                    "at": "Kellonaikana"
+                                },
+                                "zone": {
+                                    "label": "Alue",
+                                    "entity": "Kokonaisuus, jolla on sijainti",
+                                    "zone": "Alue",
+                                    "event": "Tapahtuma",
+                                    "enter": "Saapuminen alueelle",
+                                    "leave": "Poistuminen alueelta"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Ehdot",
+                            "introduction": "Ehdot ovat vapaaehtoinen osa automaatiosääntöä. Niillä voidaan estää toimintoa tapahtumasta, vaikka se olisi laukaistu. Ehdot näyttävät hyvin samanlaisilta kuin laukaisimet, mutta ne ovat eri asia. Laukaisimen tehtävä on tarkkailla järjestelmän tapahtumia. Ehto kuitenkin katsoo systeemin tilaa vain ja ainoastaan yhdellä hetkellä. Laukaisin voi esimerkiksi huomata, jos jokin vipu käännetään päälle. Ehto voi nähdä vain onko vipu päällä vai pois päältä.\n\n[Lue lisää ehdoista (englanniksi).](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Lisää ehto",
+                            "duplicate": "Kopioi",
+                            "delete": "Poista",
+                            "delete_confirm": "Haluatko varmasti poistaa tämän?",
+                            "unsupported_condition": "Ehtoa ei tueta: {condition}",
+                            "type_select": "Ehdon tyyppi",
+                            "type": {
+                                "state": {
+                                    "label": "Tila",
+                                    "state": "Tila"
+                                },
+                                "numeric_state": {
+                                    "label": "Lukuarvo",
+                                    "above": "Yli",
+                                    "below": "Alle",
+                                    "value_template": "Arvomalli, vapaahtoinen (template)"
+                                },
+                                "sun": {
+                                    "label": "Aurinko",
+                                    "before": "Ennen",
+                                    "after": "Jälkeen",
+                                    "before_offset": "Ennen auringonlaskua",
+                                    "after_offset": "Auringonlaskun jälkeen",
+                                    "sunrise": "Auringonnousu",
+                                    "sunset": "Auringonlasku"
+                                },
+                                "template": {
+                                    "label": "Malli (template)",
+                                    "value_template": "Arvomalli (template)"
+                                },
+                                "time": {
+                                    "label": "Aika",
+                                    "after": "Jälkeen",
+                                    "before": "Ennen"
+                                },
+                                "zone": {
+                                    "label": "Alue",
+                                    "entity": "Kokonaisuus, jolla on sijainti",
+                                    "zone": "Alue"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Toiminnot",
+                            "introduction": "Home Assistant suorittaa toiminnot, kun automaatio laukaistaan.\n\n[Opi lisää toiminnoista (englanniksi).](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Lisää toiminto",
+                            "duplicate": "Kopioi",
+                            "delete": "Poista",
+                            "delete_confirm": "Haluatko varmasti poistaa tämän?",
+                            "unsupported_action": "Toimintoa {action} ei tueta",
+                            "type_select": "Toiminnon tyyppi",
+                            "type": {
+                                "service": {
+                                    "label": "Kutsu palvelua",
+                                    "service_data": "Palvelun data"
+                                },
+                                "delay": {
+                                    "label": "Viive",
+                                    "delay": "Viive"
+                                },
+                                "wait_template": {
+                                    "label": "Odota",
+                                    "wait_template": "Odotusmalli (template)",
+                                    "timeout": "Aikakatkaisu"
+                                },
+                                "condition": {
+                                    "label": "Ehto"
+                                },
+                                "event": {
+                                    "label": "Lähetä tapahtuma",
+                                    "event": "Tapahtuma",
+                                    "service_data": "Palvelun data"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Skripti",
+                    "description": "Luo ja muokkaa skriptejä"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Z-Wave -verkon asetukset"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Kirjaudu ulos",
+            "developer_tools": "Kehittäjän työkalut"
+        },
+        "common": {
+            "loading": "Ladataan",
+            "cancel": "Peruuta"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
+            "week": "{count} {count, plural,\n  one {viikkoa}\n  other {viikkoa}\n}",
+            "second": "{count} {count, plural,\none {sekunti}\nother {sekuntia}\n}",
+            "minute": "{count} {count, plural,\none {minuutti}\nother {minuuttia}\n}",
+            "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n}"
+        },
+        "login-form": {
+            "password": "Salasana",
+            "remember": "Muista",
+            "log_in": "Kirjaudu sisään"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Kuvaa ei saatavilla"
+            },
+            "persistent_notification": {
+                "dismiss": "Peruuta"
+            },
+            "scene": {
+                "activate": "Aktivoi"
+            },
+            "script": {
+                "execute": "Suorita"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Ilmanpaine",
+                    "humidity": "Kosteus",
+                    "temperature": "Lämpötila",
+                    "visibility": "Näkyvyys",
+                    "wind_speed": "Tuulennopeus"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "Länsi",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Sääennuste"
+            },
+            "alarm_control_panel": {
+                "code": "Koodi",
+                "clear_code": "Tyhjennä",
+                "disarm": "Poista hälytys",
+                "arm_home": "Viritä (kotona)",
+                "arm_away": "Viritä (poissa)"
+            },
+            "automation": {
+                "last_triggered": "Viimeksi käynnistetty",
+                "trigger": "Käynnistysehto"
+            },
+            "cover": {
+                "position": "Sijainti",
+                "tilt_position": "Kallistus"
+            },
+            "fan": {
+                "speed": "Nopeus",
+                "oscillate": "Kääntyminen",
+                "direction": "Suunta"
+            },
+            "light": {
+                "brightness": "Kirkkaus",
+                "color_temperature": "Värilämpötila",
+                "white_value": "Valkoisuusarvo",
+                "effect": "Efekti"
+            },
+            "media_player": {
+                "text_to_speak": "Tekstistä puheeksi"
+            },
+            "climate": {
+                "currently": "Tällä hetkellä",
+                "on_off": "Päällä \/ pois",
+                "target_temperature": "Tavoitelämpötila",
+                "target_humidity": "Tavoitekosteus",
+                "operation": "Toiminto",
+                "fan_mode": "Tuuletustila",
+                "swing_mode": "Heilutustila",
+                "away_mode": "Poissa kotoa -tila",
+                "aux_heat": "Lisälämpö"
+            },
+            "lock": {
+                "code": "Koodi",
+                "lock": "Lukitse",
+                "unlock": "Avaa lukitus"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Kohde"
+                }
+            },
+            "service-picker": {
+                "service": "Palvelu"
+            },
+            "relative_time": {
+                "past": "{time} sitten",
+                "future": "{time} kuluttua",
+                "never": "Ei koskaan"
+            },
+            "history_charts": {
+                "loading_history": "Ladataan tilahistoriaa...",
+                "no_history_found": "Tilahistoriaa ei löydetty"
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} asetettiin päälle.",
+            "entity_turned_off": "{entity} asetettiin pois päältä.",
+            "service_called": "Palvelua {service} kutsuttiin.",
+            "service_call_failed": "Palvelua {service} ei onnistuttu kutsumaan.",
+            "connection_lost": "Ei yhteyttä. Yritetään muodostaa yhteys uudelleen..."
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Hälytysasetukset",
+        "automation": "Automaatio",
+        "binary_sensor": "Binäärisensori",
+        "calendar": "Kalenteri",
+        "camera": "Kamera",
+        "climate": "Ilmasto",
+        "configurator": "Asetukset",
+        "conversation": "Keskustelu",
+        "cover": "Kaihtimet",
+        "device_tracker": "Laiteseuranta",
+        "fan": "Tuuletin",
+        "history_graph": "Historiakuvaaja",
+        "group": "Ryhmä",
+        "image_processing": "Kuvantunnistus",
+        "input_boolean": "Syötä totuusarvo",
+        "input_datetime": "Syötä päivämäärä",
+        "input_select": "Valinta",
+        "input_number": "Syötä numero",
+        "input_text": "Syötä teksti",
+        "light": "Valo",
+        "lock": "Lukko",
+        "mailbox": "Postilaatikko",
+        "media_player": "Mediatoistin",
+        "notify": "Ilmoita",
+        "plant": "Kasvi",
+        "proximity": "Läheisyys",
+        "remote": "Etä",
+        "scene": "Skene",
+        "script": "Skripti",
+        "sensor": "Sensori",
+        "sun": "Aurinko",
+        "switch": "Kytkin",
+        "updater": "Päivitys",
+        "weblink": "Linkki",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Kosteus",
+            "visibility": "Näkyvyys",
+            "wind_speed": "Tuulennopeus"
+        }
+    }
+}

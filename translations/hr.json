@@ -1,1 +1,290 @@
-{"panel":{"config":"Konfiguracija","states":"Pregled","map":"Karta","logbook":"Dnenik","history":"Povijest","mailbox":"Pošta","shopping_list":"Popis za kupovinu","dev-services":"Usluge","dev-states":"Status","dev-events":"Događaji","dev-templates":"Predlošci","dev-mqtt":"MQTT","dev-info":"Informacije"},"state":{"default":{"off":"Isključen","on":"Uključen","unknown":"Nepoznato","unavailable":"Nedostupan"},"alarm_control_panel":{"armed":"Aktiviran","disarmed":"Deaktiviran","armed_home":"Aktiviran doma","armed_away":"Aktiviran odsutno","armed_night":"Aktiviran nočni","pending":"U tijeku","arming":"Aktiviranje","disarming":"Deaktiviranje","triggered":"Okinut","armed_custom_bypass":"Aktiviran"},"automation":{"off":"Isključen","on":"Uključen"},"binary_sensor":{"default":{"off":"Isključen","on":"Uključen"},"moisture":{"off":"Suho","on":"Mokro"},"gas":{"off":"Čisto","on":"Otkriveno"},"motion":{"off":"Čisto","on":"Otkriveno"},"occupancy":{"off":"Čisto","on":"Otkriveno"},"smoke":{"off":"Čisto","on":"Otkriveno"},"sound":{"off":"Čisto","on":"Otkriveno"},"vibration":{"off":"Čisto","on":"Otkriveno"},"opening":{"off":"Zatvoreno","on":"Otvoreno"},"safety":{"off":"Sigurno","on":"Nesigurno"},"presence":{"off":"Odsutan","on":"Doma"},"battery":{"off":"Normalno","on":"Prazna"},"problem":{"off":"OK","on":"Problem"}},"calendar":{"off":"Isključen","on":"Uključen"},"camera":{"recording":"Snimanje","streaming":"Odašilja","idle":"Besposlen"},"climate":{"off":"Isključen","on":"Uključen","heat":"Grijanje","cool":"Hlađenje","idle":"Besposlen","auto":"Auto","dry":"Suho","fan_only":"Samo ventilator","eco":"Eko","electric":"Električni","performance":"Performanse","high_demand":"Velike potražnje","heat_pump":"Toplinska pumpa","gas":"Plin"},"configurator":{"configure":"Konfiguriranje","configured":"Konfiguriran"},"cover":{"open":"Otvoreno","opening":"Otvaranje","closed":"Zatvoreno","closing":"Zatvaranje","stopped":"zaustavljen"},"device_tracker":{"home":"Doma","not_home":"Odsutan"},"fan":{"off":"Isključen","on":"Uključen"},"group":{"off":"Uključeno","on":"Uključeno","home":"Doma","not_home":"Odsutan","open":"Otvoreno","opening":"Otvaranje","closed":"Zatvoreno","closing":"Zatvaranje","stopped":"Zautavljeno","locked":"Zaključano","unlocked":"Otključano","ok":"U redu","problem":"Problem"},"input_boolean":{"off":"Isključen","on":"Uključen"},"light":{"off":"Isključeno","on":"Uključeno"},"lock":{"locked":"Zaključan","unlocked":"Otključan"},"media_player":{"off":"Isključen","on":"Uključen","playing":"Prikazivanje","paused":"Pauzirano","idle":"Besposlen","standby":"U stanju čekanja"},"plant":{"ok":"u redu","problem":"Problem"},"remote":{"off":"Isključen","on":"Uključen"},"scene":{"scening":"Scene"},"script":{"off":"Isključen","on":"Uključen"},"sensor":{"off":"Isključen","on":"Uključen"},"sun":{"above_horizon":"Iznad horizonta","below_horizon":"Ispod horizonta"},"switch":{"off":"Isključen","on":"Uključen"},"zwave":{"default":{"initializing":"Inicijalizacija","dead":"Mrtav","sleeping":"Spavanje","ready":"Spreman"},"query_stage":{"initializing":"Inicijalizacija","dead":"Mrtav"}}},"state_badge":{"default":{"unknown":"Nepoznato","unavailable":"Nedostupno"},"alarm_control_panel":{"armed":"Aktivirano","disarmed":"Deaktiviraj","armed_home":"Aktivirano","armed_away":"Aktivirano","armed_night":"Aktivirano","pending":"U tijeku","arming":"Aktiviranje","disarming":"Deaktiviraj","triggered":"Okinut","armed_custom_bypass":"Aktiviran"},"device_tracker":{"home":"Doma","not_home":"Odsutan"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Očisti završeno","add_item":"Dodaj stavku","microphone_tip":"Dodirnite mikrofon u gornjem desnom kutu i recite “Add candy to my shopping list”"}},"sidebar":{"log_out":"Odjava","developer_tools":"Razvojni alati"}},"domain":{"alarm_control_panel":"Upravljačka ploča za alarm","automation":"Automatizacija","binary_sensor":"Binarni senzor","calendar":"Kalendar","camera":"Kamera","climate":"Klima","configurator":"Konfigurator","conversation":"Razgovor","cover":"Poklopac","device_tracker":"Praćenje uređaja","fan":"Ventilator","history_graph":"Grafikon povijesti","group":"Grupa","image_processing":"Obrada slike","input_boolean":"Input boolean","input_datetime":"Unos datuma i vremena","input_select":"Izbor unosa","input_number":"Unesite broj","input_text":"Unesite tekst","light":"Svjetlo","lock":"Zaključavanje","mailbox":"Poštanski sandučić","media_player":"Media player","notify":"Obavijestiti","plant":"Biljka","proximity":"Blizina","remote":"Daljinski","scene":"Scena","script":"Skripta","sensor":"Senzor","sun":"Sunce","switch":"Prekidač","updater":"Ažuriranje","weblink":"WebLink","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Konfiguracija",
+        "states": "Pregled",
+        "map": "Karta",
+        "logbook": "Dnenik",
+        "history": "Povijest",
+        "mailbox": "Pošta",
+        "shopping_list": "Popis za kupovinu",
+        "dev-services": "Usluge",
+        "dev-states": "Status",
+        "dev-events": "Događaji",
+        "dev-templates": "Predlošci",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Informacije"
+    },
+    "state": {
+        "default": {
+            "off": "Isključen",
+            "on": "Uključen",
+            "unknown": "Nepoznato",
+            "unavailable": "Nedostupan"
+        },
+        "alarm_control_panel": {
+            "armed": "Aktiviran",
+            "disarmed": "Deaktiviran",
+            "armed_home": "Aktiviran doma",
+            "armed_away": "Aktiviran odsutno",
+            "armed_night": "Aktiviran nočni",
+            "pending": "U tijeku",
+            "arming": "Aktiviranje",
+            "disarming": "Deaktiviranje",
+            "triggered": "Okinut",
+            "armed_custom_bypass": "Aktiviran"
+        },
+        "automation": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Isključen",
+                "on": "Uključen"
+            },
+            "moisture": {
+                "off": "Suho",
+                "on": "Mokro"
+            },
+            "gas": {
+                "off": "Čisto",
+                "on": "Otkriveno"
+            },
+            "motion": {
+                "off": "Čisto",
+                "on": "Otkriveno"
+            },
+            "occupancy": {
+                "off": "Čisto",
+                "on": "Otkriveno"
+            },
+            "smoke": {
+                "off": "Čisto",
+                "on": "Otkriveno"
+            },
+            "sound": {
+                "off": "Čisto",
+                "on": "Otkriveno"
+            },
+            "vibration": {
+                "off": "Čisto",
+                "on": "Otkriveno"
+            },
+            "opening": {
+                "off": "Zatvoreno",
+                "on": "Otvoreno"
+            },
+            "safety": {
+                "off": "Sigurno",
+                "on": "Nesigurno"
+            },
+            "presence": {
+                "off": "Odsutan",
+                "on": "Doma"
+            },
+            "battery": {
+                "off": "Normalno",
+                "on": "Prazna"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problem"
+            }
+        },
+        "calendar": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "camera": {
+            "recording": "Snimanje",
+            "streaming": "Odašilja",
+            "idle": "Besposlen"
+        },
+        "climate": {
+            "off": "Isključen",
+            "on": "Uključen",
+            "heat": "Grijanje",
+            "cool": "Hlađenje",
+            "idle": "Besposlen",
+            "auto": "Auto",
+            "dry": "Suho",
+            "fan_only": "Samo ventilator",
+            "eco": "Eko",
+            "electric": "Električni",
+            "performance": "Performanse",
+            "high_demand": "Velike potražnje",
+            "heat_pump": "Toplinska pumpa",
+            "gas": "Plin"
+        },
+        "configurator": {
+            "configure": "Konfiguriranje",
+            "configured": "Konfiguriran"
+        },
+        "cover": {
+            "open": "Otvoreno",
+            "opening": "Otvaranje",
+            "closed": "Zatvoreno",
+            "closing": "Zatvaranje",
+            "stopped": "zaustavljen"
+        },
+        "device_tracker": {
+            "home": "Doma",
+            "not_home": "Odsutan"
+        },
+        "fan": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "group": {
+            "off": "Uključeno",
+            "on": "Uključeno",
+            "home": "Doma",
+            "not_home": "Odsutan",
+            "open": "Otvoreno",
+            "opening": "Otvaranje",
+            "closed": "Zatvoreno",
+            "closing": "Zatvaranje",
+            "stopped": "Zautavljeno",
+            "locked": "Zaključano",
+            "unlocked": "Otključano",
+            "ok": "U redu",
+            "problem": "Problem"
+        },
+        "input_boolean": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "light": {
+            "off": "Isključeno",
+            "on": "Uključeno"
+        },
+        "lock": {
+            "locked": "Zaključan",
+            "unlocked": "Otključan"
+        },
+        "media_player": {
+            "off": "Isključen",
+            "on": "Uključen",
+            "playing": "Prikazivanje",
+            "paused": "Pauzirano",
+            "idle": "Besposlen",
+            "standby": "U stanju čekanja"
+        },
+        "plant": {
+            "ok": "u redu",
+            "problem": "Problem"
+        },
+        "remote": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "scene": {
+            "scening": "Scene"
+        },
+        "script": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "sensor": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "sun": {
+            "above_horizon": "Iznad horizonta",
+            "below_horizon": "Ispod horizonta"
+        },
+        "switch": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Inicijalizacija",
+                "dead": "Mrtav",
+                "sleeping": "Spavanje",
+                "ready": "Spreman"
+            },
+            "query_stage": {
+                "initializing": "Inicijalizacija ({query_stage})",
+                "dead": "Mrtav ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Nepoznato",
+            "unavailable": "Nedostupno"
+        },
+        "alarm_control_panel": {
+            "armed": "Aktivirano",
+            "disarmed": "Deaktiviraj",
+            "armed_home": "Aktivirano",
+            "armed_away": "Aktivirano",
+            "armed_night": "Aktivirano",
+            "pending": "U tijeku",
+            "arming": "Aktiviranje",
+            "disarming": "Deaktiviraj",
+            "triggered": "Okinut",
+            "armed_custom_bypass": "Aktiviran"
+        },
+        "device_tracker": {
+            "home": "Doma",
+            "not_home": "Odsutan"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Očisti završeno",
+                "add_item": "Dodaj stavku",
+                "microphone_tip": "Dodirnite mikrofon u gornjem desnom kutu i recite “Add candy to my shopping list”"
+            },
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Odjava",
+            "developer_tools": "Razvojni alati"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Upravljačka ploča za alarm",
+        "automation": "Automatizacija",
+        "binary_sensor": "Binarni senzor",
+        "calendar": "Kalendar",
+        "camera": "Kamera",
+        "climate": "Klima",
+        "configurator": "Konfigurator",
+        "conversation": "Razgovor",
+        "cover": "Poklopac",
+        "device_tracker": "Praćenje uređaja",
+        "fan": "Ventilator",
+        "history_graph": "Grafikon povijesti",
+        "group": "Grupa",
+        "image_processing": "Obrada slike",
+        "input_boolean": "Input boolean",
+        "input_datetime": "Unos datuma i vremena",
+        "input_select": "Izbor unosa",
+        "input_number": "Unesite broj",
+        "input_text": "Unesite tekst",
+        "light": "Svjetlo",
+        "lock": "Zaključavanje",
+        "mailbox": "Poštanski sandučić",
+        "media_player": "Media player",
+        "notify": "Obavijestiti",
+        "plant": "Biljka",
+        "proximity": "Blizina",
+        "remote": "Daljinski",
+        "scene": "Scena",
+        "script": "Skripta",
+        "sensor": "Senzor",
+        "sun": "Sunce",
+        "switch": "Prekidač",
+        "updater": "Ažuriranje",
+        "weblink": "WebLink",
+        "zwave": "Z-Wave"
+    }
+}

@@ -1,1 +1,52 @@
-{"panel":{"config":"Конфигурација","states":"Преглед","map":"Мапа","logbook":"Дневник","history":"Историја","mailbox":"Поштанско сандуче","shopping_list":"Листа за куповину","dev-mqtt":"MQTT"},"state":{"sun":{"above_horizon":"Iznad horizonta","below_horizon":"Ispod horizonta"},"switch":{"off":"Isključen","on":"Uključen"},"zwave":{"default":{"ready":"Spreman"},"query_stage":{"initializing":"Učitavanje"}}},"state_badge":{"alarm_control_panel":{"arming":"Aktiviranje","disarming":"Deaktiviraj","armed_custom_bypass":"Aktiviran"}},"ui":{"sidebar":{"log_out":"Одјавити се"}},"domain":{"zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Конфигурација",
+        "states": "Преглед",
+        "map": "Мапа",
+        "logbook": "Дневник",
+        "history": "Историја",
+        "mailbox": "Поштанско сандуче",
+        "shopping_list": "Листа за куповину",
+        "dev-mqtt": "MQTT"
+    },
+    "state": {
+        "sun": {
+            "above_horizon": "Iznad horizonta",
+            "below_horizon": "Ispod horizonta"
+        },
+        "switch": {
+            "off": "Isključen",
+            "on": "Uključen"
+        },
+        "zwave": {
+            "default": {
+                "ready": "Spreman"
+            },
+            "query_stage": {
+                "initializing": "Učitavanje ({query_stage})"
+            }
+        }
+    },
+    "state_badge": {
+        "alarm_control_panel": {
+            "arming": "Aktiviranje",
+            "disarming": "Deaktiviraj",
+            "armed_custom_bypass": "Aktiviran"
+        }
+    },
+    "ui": {
+        "sidebar": {
+            "log_out": "Одјавити се"
+        },
+        "panel": {
+            "config": {
+                "zwave": {
+                    "caption": "Z-Wave"
+                }
+            }
+        }
+    },
+    "domain": {
+        "zwave": "Z-Wave"
+    }
+}

@@ -6,5 +6,12 @@ set -e
 
 cd "$(dirname "$0")/.."
 
+# Install node modules
+yarn install
+
 script/build_frontend
-python3 setup.py sdist upload
+
+rm -rf dist
+python3 setup.py sdist
+python3 -m twine upload dist/* 
+

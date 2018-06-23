@@ -1,1 +1,706 @@
-{"panel":{"config":"Настройки","states":"Обзор","map":"Карта","logbook":"Журнал","history":"История","mailbox":"Почта","shopping_list":"Список покупок","dev-services":"Службы","dev-states":"Состояния","dev-events":"События","dev-templates":"Шаблоны","dev-mqtt":"MQTT","dev-info":"Информация"},"state":{"default":{"off":"Выкл","on":"Вкл","unknown":"Неизвестно","unavailable":"Недоступно"},"alarm_control_panel":{"armed":"Под охраной","disarmed":"Снято с охраны","armed_home":"Охрана (дома)","armed_away":"Охрана (вне дома)","armed_night":"Охрана (ночь)","pending":"Переход на охрану","arming":"Постановка на охрану","disarming":"Снятие с охраны","triggered":"Срабатывание","armed_custom_bypass":"Охрана с исключениями"},"automation":{"off":"Выключено","on":"Включено"},"binary_sensor":{"default":{"off":"Выключено","on":"Включено"},"moisture":{"off":"Сухо","on":"Влажно"},"gas":{"off":"Не обнаружен","on":"Обнаружен"},"motion":{"off":"Нет движения ","on":"Движение"},"occupancy":{"off":"Не обнаружено","on":"Обнаружено"},"smoke":{"off":"Нет дыма","on":"Дым"},"sound":{"off":"Не обнаружено","on":"Обнаружено"},"vibration":{"off":"Не обнаружено","on":"Обнаружена"},"opening":{"off":"Закрыто","on":"Открыто"},"safety":{"off":"Безопасно","on":"Небезопасно"},"presence":{"off":"Вне дома","on":"Дома"},"battery":{"off":"Нормальный","on":"Низкий"},"problem":{"off":"ОК","on":"Проблема"},"connectivity":{"off":"Отключен","on":"Подключен"},"cold":{"off":"Норма","on":"Охлаждение"},"door":{"off":"Закрыта","on":"Открыта"},"garage_door":{"off":"Закрыта","on":"Открыта"},"heat":{"off":"Норма","on":"Нагрев"},"window":{"off":"Закрыто","on":"Открыто"}},"calendar":{"off":"Выключено","on":"Включено"},"camera":{"recording":"Запись","streaming":"Трансляция","idle":"Бездействие"},"climate":{"off":"Выключено","on":"Включено","heat":"Обогрев","cool":"Охлаждение","idle":"Бездействие","auto":"Авто","dry":"Осушение","fan_only":"Вентиляция","eco":"Эко","electric":"Электрический","performance":"Производительность","high_demand":"Большая нагрузка","heat_pump":"Тепловой насос","gas":"Газовый"},"configurator":{"configure":"Настроить","configured":"Настроено"},"cover":{"open":"Открыта","opening":"Открывается","closed":"Закрыта","closing":"Закрывается","stopped":"Остановлена"},"device_tracker":{"home":"Дома","not_home":"Нет дома"},"fan":{"off":"Выключен","on":"Включен"},"group":{"off":"Выключено","on":"Включено","home":"Дома","not_home":"Нет дома","open":"Открыто","opening":"Открывается","closed":"Закрыто","closing":"Закрывается","stopped":"Остановлена","locked":"Заблокирована","unlocked":"Разблокирована","ok":"OK","problem":"Проблема"},"input_boolean":{"off":"Выключен","on":"Включен"},"light":{"off":"Выключен","on":"Включен"},"lock":{"locked":"Закрыт","unlocked":"Открыт"},"media_player":{"off":"Выключен","on":"Включен","playing":"Воспроизведение","paused":"Пауза","idle":"Ожидание","standby":"Ожидание"},"plant":{"ok":"ОК","problem":"Проблема"},"remote":{"off":"Выключено","on":"Включено"},"scene":{"scening":"Переход к сцене"},"script":{"off":"Выключен","on":"Включен"},"sensor":{"off":"Выключен","on":"Включен"},"sun":{"above_horizon":"Над горизонтом","below_horizon":"За горизонтом"},"switch":{"off":"Выкл","on":"Вкл"},"zwave":{"default":{"initializing":"Инициализация","dead":"Неисправно","sleeping":"Режим сна","ready":"Готов"},"query_stage":{"initializing":"Инициализация ({query_stage})","dead":"Неисправен ({query_stage})"}}},"state_badge":{"default":{"unknown":"Неизвестно","unavailable":"Недоступно"},"alarm_control_panel":{"armed":"Охрана","disarmed":"Снято с охраны","armed_home":"Охрана","armed_away":"Охрана","armed_night":"Охрана","pending":"Ожидание","arming":"Постановка на охрану","disarming":"Снятие с охраны","triggered":"Тревога","armed_custom_bypass":"Под охраной"},"device_tracker":{"home":"Дома","not_home":"Нет дома"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Очистить завершенные","add_item":"Добавить элемент","microphone_tip":"Нажмите на микрофон в правом верхнем углу и скажите “Add candy to my shopping list”"},"history":{"showing_entries":"Отображение записей за","period":"Период"},"logbook":{"showing_entries":"Отображение записей за"},"mailbox":{"empty":"У вас нет сообщений","playback_title":"Воспроизвести сообщение","delete_prompt":"Удалить это сообщение?","delete_button":"Удалить"}},"sidebar":{"log_out":"Выход","developer_tools":"Инструменты разработчика"},"common":{"loading":"Загрузка","cancel":"Отменить"},"duration":{"day":"{count} {count, plural,\none {д.}\nother {д.}\n}","week":"{count} {count, plural,\none {нед.}\nother {нед.}\n}","second":"{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}"},"login-form":{"password":"Пароль","remember":"Запомнить","log_in":"Вход"}},"domain":{"alarm_control_panel":"Панель сигнализации","automation":"Автоматизация","binary_sensor":"Бинарный датчик","calendar":"Календарь","camera":"Камера","climate":"Климат","configurator":"Конфигуратор","conversation":"Диалог","cover":"Шторы","device_tracker":"Трекер","fan":"Вентилятор","history_graph":"График","group":"Группа","image_processing":"Обработка изображения","input_boolean":"Ввод логический","input_datetime":"Ввод даты и времени","input_select":"Список","input_number":"Ввод числа","input_text":"Ввод текста","light":"Свет","lock":"Замок","mailbox":"Почтовый ящик","media_player":"Медиа плеер","notify":"Уведомления","plant":"Растение","proximity":"Приближение","remote":"Пульт ДУ","scene":"Сцена","script":"Скрипт","sensor":"Датчик","sun":"Солнце","switch":"Выключатель","updater":"Обновление","weblink":"Интернет-ссылка","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Настройки",
+        "states": "Обзор",
+        "map": "Карта",
+        "logbook": "Журнал",
+        "history": "История",
+        "mailbox": "Почта",
+        "shopping_list": "Список покупок",
+        "dev-services": "Службы",
+        "dev-states": "Состояния",
+        "dev-events": "События",
+        "dev-templates": "Шаблоны",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Информация",
+        "calendar": "Календарь"
+    },
+    "state": {
+        "default": {
+            "off": "Выкл",
+            "on": "Вкл",
+            "unknown": "Неизвестно",
+            "unavailable": "Недоступно"
+        },
+        "alarm_control_panel": {
+            "armed": "Под охраной",
+            "disarmed": "Снято с охраны",
+            "armed_home": "Охрана (дома)",
+            "armed_away": "Охрана (не дома)",
+            "armed_night": "Охрана (ночь)",
+            "pending": "Переход на охрану",
+            "arming": "Постановка на охрану",
+            "disarming": "Снятие с охраны",
+            "triggered": "Срабатывание",
+            "armed_custom_bypass": "Охрана с исключениями"
+        },
+        "automation": {
+            "off": "Выключено",
+            "on": "Включено"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Выключено",
+                "on": "Включено"
+            },
+            "moisture": {
+                "off": "Сухо",
+                "on": "Влажно"
+            },
+            "gas": {
+                "off": "Не обнаружен",
+                "on": "Обнаружен"
+            },
+            "motion": {
+                "off": "Нет движения ",
+                "on": "Движение"
+            },
+            "occupancy": {
+                "off": "Не обнаружено",
+                "on": "Обнаружено"
+            },
+            "smoke": {
+                "off": "Нет дыма",
+                "on": "Дым"
+            },
+            "sound": {
+                "off": "Не обнаружено",
+                "on": "Обнаружено"
+            },
+            "vibration": {
+                "off": "Не обнаружено",
+                "on": "Обнаружена"
+            },
+            "opening": {
+                "off": "Закрыто",
+                "on": "Открыто"
+            },
+            "safety": {
+                "off": "Безопасно",
+                "on": "Небезопасно"
+            },
+            "presence": {
+                "off": "Не дома",
+                "on": "Дома"
+            },
+            "battery": {
+                "off": "Нормальный",
+                "on": "Низкий"
+            },
+            "problem": {
+                "off": "ОК",
+                "on": "Проблема"
+            },
+            "connectivity": {
+                "off": "Отключен",
+                "on": "Подключен"
+            },
+            "cold": {
+                "off": "Норма",
+                "on": "Охлаждение"
+            },
+            "door": {
+                "off": "Закрыта",
+                "on": "Открыта"
+            },
+            "garage_door": {
+                "off": "Закрыта",
+                "on": "Открыта"
+            },
+            "heat": {
+                "off": "Норма",
+                "on": "Нагрев"
+            },
+            "window": {
+                "off": "Закрыто",
+                "on": "Открыто"
+            },
+            "lock": {
+                "off": "Закрыто",
+                "on": "Открыто"
+            }
+        },
+        "calendar": {
+            "off": "Выключено",
+            "on": "Включено"
+        },
+        "camera": {
+            "recording": "Запись",
+            "streaming": "Трансляция",
+            "idle": "Бездействие"
+        },
+        "climate": {
+            "off": "Выключено",
+            "on": "Включено",
+            "heat": "Обогрев",
+            "cool": "Охлаждение",
+            "idle": "Бездействие",
+            "auto": "Авто",
+            "dry": "Осушение",
+            "fan_only": "Вентиляция",
+            "eco": "Эко",
+            "electric": "Электрический",
+            "performance": "Производительность",
+            "high_demand": "Большая нагрузка",
+            "heat_pump": "Тепловой насос",
+            "gas": "Газовый"
+        },
+        "configurator": {
+            "configure": "Настроить",
+            "configured": "Настроено"
+        },
+        "cover": {
+            "open": "Открыта",
+            "opening": "Открывается",
+            "closed": "Закрыта",
+            "closing": "Закрывается",
+            "stopped": "Остановлена"
+        },
+        "device_tracker": {
+            "home": "Дома",
+            "not_home": "Отсутствует"
+        },
+        "fan": {
+            "off": "Выключен",
+            "on": "Включен"
+        },
+        "group": {
+            "off": "Выключено",
+            "on": "Включено",
+            "home": "Дома",
+            "not_home": "Отсутствует",
+            "open": "Открыто",
+            "opening": "Открывается",
+            "closed": "Закрыто",
+            "closing": "Закрывается",
+            "stopped": "Остановлена",
+            "locked": "Заблокирована",
+            "unlocked": "Разблокирована",
+            "ok": "OK",
+            "problem": "Проблема"
+        },
+        "input_boolean": {
+            "off": "Выключен",
+            "on": "Включен"
+        },
+        "light": {
+            "off": "Выключен",
+            "on": "Включен"
+        },
+        "lock": {
+            "locked": "Закрыт",
+            "unlocked": "Открыт"
+        },
+        "media_player": {
+            "off": "Выключен",
+            "on": "Включен",
+            "playing": "Воспроизведение",
+            "paused": "Пауза",
+            "idle": "Ожидание",
+            "standby": "Ожидание"
+        },
+        "plant": {
+            "ok": "ОК",
+            "problem": "Проблема"
+        },
+        "remote": {
+            "off": "Выключено",
+            "on": "Включено"
+        },
+        "scene": {
+            "scening": "Переход к сцене"
+        },
+        "script": {
+            "off": "Выключен",
+            "on": "Включен"
+        },
+        "sensor": {
+            "off": "Выключен",
+            "on": "Включен"
+        },
+        "sun": {
+            "above_horizon": "Над горизонтом",
+            "below_horizon": "За горизонтом"
+        },
+        "switch": {
+            "off": "Выкл",
+            "on": "Вкл"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Инициализация",
+                "dead": "Неисправно",
+                "sleeping": "Режим сна",
+                "ready": "Готов"
+            },
+            "query_stage": {
+                "initializing": "Инициализация ({query_stage})",
+                "dead": "Неисправен ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "Ясно, ночь",
+            "cloudy": "Облачно",
+            "fog": "Туман",
+            "hail": "Град",
+            "lightning": "Молния",
+            "lightning_rainy": "Молния, дождь",
+            "partlycloudy": "Переменная облачность",
+            "pouring": "Ливень",
+            "rainy": "Дождь",
+            "snowy": "Снег",
+            "snowy_rainy": "Снег с дождем",
+            "sunny": "Ясно",
+            "windy": "Ветрено",
+            "windy_variant": "Ветрено"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Неизв.",
+            "unavailable": "Недоступно"
+        },
+        "alarm_control_panel": {
+            "armed": "Охрана",
+            "disarmed": "Снято с охраны",
+            "armed_home": "Охрана",
+            "armed_away": "Охрана",
+            "armed_night": "Охрана",
+            "pending": "Ожидание",
+            "arming": "Постановка на охрану",
+            "disarming": "Снятие с охраны",
+            "triggered": "Тревога",
+            "armed_custom_bypass": "Под охраной"
+        },
+        "device_tracker": {
+            "home": "Дома",
+            "not_home": "Не дома"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Очистить завершенные",
+                "add_item": "Добавить элемент",
+                "microphone_tip": "Нажмите на микрофон в правом верхнем углу и скажите “Add candy to my shopping list”"
+            },
+            "history": {
+                "showing_entries": "Отображение записей за",
+                "period": "Период"
+            },
+            "logbook": {
+                "showing_entries": "Отображение записей за"
+            },
+            "mailbox": {
+                "empty": "У вас нет сообщений",
+                "playback_title": "Воспроизвести сообщение",
+                "delete_prompt": "Удалить это сообщение?",
+                "delete_button": "Удалить"
+            },
+            "config": {
+                "header": "Настройка Home Assistant",
+                "introduction": "Здесь можно настроить Ваши компоненты и Home Assistant. Пока что не все можно настроить из интерфейса, но мы работаем над этим.",
+                "core": {
+                    "caption": "Общие",
+                    "description": "Проверяйте Ваш файл конфигурации и управляйте сервером",
+                    "section": {
+                        "core": {
+                            "header": "Конфигурация и управление сервером",
+                            "introduction": "Изменение конфигурации может быть утомительным процессом. Мы знаем. Этот раздел попытается сделать вашу жизнь немного легче.",
+                            "validation": {
+                                "heading": "Проверка конфигурации",
+                                "introduction": "Проверьте свою конфигурацию, если вы внесли в нее некоторые изменения и хотите убедиться, что она действительна",
+                                "check_config": "Проверить конфигурацию",
+                                "valid": "Конфигурация выполнена верно!",
+                                "invalid": "Ошибка в конфигурации"
+                            },
+                            "reloading": {
+                                "heading": "Перезагрузка конфигурации",
+                                "introduction": "Некоторые компоненты Home Assistant можно перезагрузить без необходимости перезапуска всей системы. Перезагрузка выгружает текущую конфигурацию и загружает новую.",
+                                "core": "Перезагрузить ядро",
+                                "group": "Перезагрузить группы",
+                                "automation": "Перезагрузить автоматизации",
+                                "script": "Перезагрузить скрипты"
+                            },
+                            "server_management": {
+                                "heading": "Управление сервером",
+                                "introduction": "Управляйте Вашим сервером Home Assistant... из Home Assistant",
+                                "restart": "Перезапустить",
+                                "stop": "Остановить"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Настройка push-уведомлений",
+                            "introduction": "Включите этот параметр, чтобы получать push-уведомления на этом устройстве",
+                            "push_notifications": "Push-уведомления"
+                        },
+                        "translation": {
+                            "header": "Выбор языка",
+                            "introduction": "Выберите язык интерфейса Home Assistant на этом устройстве",
+                            "language": "Язык"
+                        },
+                        "themes": {
+                            "header": "Установка темы",
+                            "introduction": "Выберите «Backend-selected» чтобы использовать тему, которую сервер системы выбирает автоматически, или выберите тему для этого устройства",
+                            "theme": "Тема"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Настройка",
+                    "description": "Настраивайте Ваши объекты"
+                },
+                "automation": {
+                    "caption": "Автоматизация",
+                    "description": "Создавайте и редактируйте правила автоматизации",
+                    "picker": {
+                        "header": "Редактор автоматизации",
+                        "introduction": "Редактор автоматизаций позволяет создавать и редактировать автоматизации. Пожалуйста, прочитайте [инструкции](https:\/\/home-assistant.io\/docs\/automation\/editor\/), чтобы убедиться, что вы правильно настроили Home Assistant.",
+                        "pick_automation": "Выберите автоматизацию для редактирования",
+                        "no_automations": "Мы не нашли редактируемые автоматизации",
+                        "add_automation": "Добавить автоматизацию"
+                    },
+                    "editor": {
+                        "introduction": "Используйте автоматизацию, чтобы оживить ваш дом",
+                        "default_name": "Новая автоматизация",
+                        "save": "Сохранить",
+                        "unsaved_confirm": "У вас есть несохраненные изменения. Вы уверены, что хотите выйти?",
+                        "alias": "Название",
+                        "triggers": {
+                            "header": "Триггеры",
+                            "introduction": "Триггеры-это то, что начинает процесс обработки правила автоматизации. Можно указать несколько триггеров на одно и то же правило. Как только триггер срабатывает, Home Assistant будет проверять условия, если таковые имеются, и вызвать действие.\n\n[Узнать больше о триггерах.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Добавить триггер",
+                            "duplicate": "Дублировать",
+                            "delete": "Удалить",
+                            "delete_confirm": "Вы уверены, что хотите удалить?",
+                            "unsupported_platform": "Неподдерживаемая платформа: {platform}",
+                            "type_select": "Тип триггера",
+                            "type": {
+                                "event": {
+                                    "label": "Событие",
+                                    "event_type": "Тип события",
+                                    "event_data": "Данные события"
+                                },
+                                "state": {
+                                    "label": "Состояние",
+                                    "from": "С",
+                                    "to": "На"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Событие:",
+                                    "start": "Запуск",
+                                    "shutdown": "Выключение"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Заголовок",
+                                    "payload": "Значение (опционально)"
+                                },
+                                "numeric_state": {
+                                    "label": "Числовое состояние",
+                                    "above": "Выше",
+                                    "below": "Ниже",
+                                    "value_template": "Шаблон значения (опционально)"
+                                },
+                                "sun": {
+                                    "label": "Солнце",
+                                    "event": "Событие:",
+                                    "sunrise": "Восход",
+                                    "sunset": "Закат",
+                                    "offset": "Смещение (опционально)"
+                                },
+                                "template": {
+                                    "label": "Шаблон",
+                                    "value_template": "Значение шаблона"
+                                },
+                                "time": {
+                                    "label": "Время",
+                                    "at": "В"
+                                },
+                                "zone": {
+                                    "label": "Зона",
+                                    "entity": "Объект с местоположением",
+                                    "zone": "Зона",
+                                    "event": "Событие:",
+                                    "enter": "Войти",
+                                    "leave": "Покинуть"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Условия",
+                            "introduction": "Условия являются необязательной частью правила автоматизации и могут использоваться для предотвращения действия при срабатывании. Условия очень похожи на триггеры, но в то же время отличаются. Триггер будет смотреть события, происходящие в системе, в то время как условие только смотрит на то, как система выглядит прямо сейчас. Триггер может заметить, что переключатель был включен. Условие может видеть только, включен или выключен переключатель в данное время. \n\n [Подробнее об условиях.](Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Добавить условие",
+                            "duplicate": "Дублировать",
+                            "delete": "Удалить",
+                            "delete_confirm": "Вы уверены, что хотите удалить?",
+                            "unsupported_condition": "Неподдерживаемое условие: {condition}",
+                            "type_select": "Тип условия",
+                            "type": {
+                                "state": {
+                                    "label": "Состояние",
+                                    "state": "Состояние"
+                                },
+                                "numeric_state": {
+                                    "label": "Числовое состояние",
+                                    "above": "Выше",
+                                    "below": "Ниже",
+                                    "value_template": "Значение шаблона (опционально)"
+                                },
+                                "sun": {
+                                    "label": "Солнце",
+                                    "before": "До:",
+                                    "after": "После:",
+                                    "before_offset": "Смещение до (опционально)",
+                                    "after_offset": "Смещение после (опционально)",
+                                    "sunrise": "Восход",
+                                    "sunset": "Закат"
+                                },
+                                "template": {
+                                    "label": "Шаблон",
+                                    "value_template": "Значение шаблона"
+                                },
+                                "time": {
+                                    "label": "Время",
+                                    "after": "После",
+                                    "before": "До"
+                                },
+                                "zone": {
+                                    "label": "Зона",
+                                    "entity": "Объект с местоположением",
+                                    "zone": "Зона"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Действия",
+                            "introduction": "Действия - это то, что сделает Home Assistant, когда правило автоматизации сработает.\n\n[Узнать больше о действиях.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Добавить действие",
+                            "duplicate": "Дублировать",
+                            "delete": "Удалить",
+                            "delete_confirm": "Вы уверены, что хотите удалить?",
+                            "unsupported_action": "Неподдерживаемое действие: {action}",
+                            "type_select": "Тип действия",
+                            "type": {
+                                "service": {
+                                    "label": "Вызов службы",
+                                    "service_data": "Данные службы"
+                                },
+                                "delay": {
+                                    "label": "Задержка",
+                                    "delay": "Задержка"
+                                },
+                                "wait_template": {
+                                    "label": "Ожидать",
+                                    "wait_template": "Шаблон ожидания",
+                                    "timeout": "Тайм-аут (опционально)"
+                                },
+                                "condition": {
+                                    "label": "Условие"
+                                },
+                                "event": {
+                                    "label": "Событие",
+                                    "event": "Событие",
+                                    "service_data": "Данные службы"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Скрипт",
+                    "description": "Создавайте и редактируйте скрипты"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Управляйте Вашей сетью Z-Wave"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Выход",
+            "developer_tools": "Инструменты разработчика"
+        },
+        "common": {
+            "loading": "Загрузка",
+            "cancel": "Отменить"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {д.}\nother {д.}\n}",
+            "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}",
+            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+            "minute": "{count} {count, plural,\none {мин.}\nother {мин.}\n}",
+            "hour": "{count} {count, plural,\none {ч.}\nother {ч.}\n}"
+        },
+        "login-form": {
+            "password": "Пароль",
+            "remember": "Запомнить",
+            "log_in": "Вход"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Изображение не доступно"
+            },
+            "persistent_notification": {
+                "dismiss": "Отклонить"
+            },
+            "scene": {
+                "activate": "Активировать"
+            },
+            "script": {
+                "execute": "Выполнить"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Давление",
+                    "humidity": "Влажность",
+                    "temperature": "Температура",
+                    "visibility": "Видимость",
+                    "wind_speed": "Ветер"
+                },
+                "cardinal_direction": {
+                    "e": "В",
+                    "ene": "ВСВ",
+                    "ese": "ВЮВ",
+                    "n": "С",
+                    "ne": "СВ",
+                    "nne": "ССВ",
+                    "nw": "СЗ",
+                    "nnw": "ССЗ",
+                    "s": "Ю",
+                    "se": "ЮВ",
+                    "sse": "ЮЮВ",
+                    "ssw": "ЮЮЗ",
+                    "sw": "ЮЗ",
+                    "w": "З",
+                    "wnw": "ЗСЗ",
+                    "wsw": "ЗЮЗ"
+                },
+                "forecast": "Прогноз"
+            },
+            "alarm_control_panel": {
+                "code": "Код",
+                "clear_code": "Очистить",
+                "disarm": "Без охраны",
+                "arm_home": "Охрана (дома)",
+                "arm_away": "Охрана (не дома)"
+            },
+            "automation": {
+                "last_triggered": "Последний запуск",
+                "trigger": "Запуск"
+            },
+            "cover": {
+                "position": "Положение",
+                "tilt_position": "Положение наклона"
+            },
+            "fan": {
+                "speed": "Скорость",
+                "oscillate": "Колебания",
+                "direction": "Направление"
+            },
+            "light": {
+                "brightness": "Яркость",
+                "color_temperature": "Цветовая температура",
+                "white_value": "Значение для белого цвета",
+                "effect": "Эффект"
+            },
+            "media_player": {
+                "text_to_speak": "Воспроизвести текст",
+                "source": "Источник",
+                "sound_mode": "Режим звука"
+            },
+            "climate": {
+                "currently": "Сейчас",
+                "on_off": "Вкл \/ выкл",
+                "target_temperature": "Заданная температура",
+                "target_humidity": "Заданная влажность",
+                "operation": "Операция",
+                "fan_mode": "Режим вентилятора",
+                "away_mode": "Режим ожидания",
+                "aux_heat": "Дополнительный нагрев"
+            },
+            "lock": {
+                "code": "Код",
+                "lock": "Закрыть",
+                "unlock": "Открыть"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Объект"
+                }
+            },
+            "service-picker": {
+                "service": "Служба"
+            },
+            "relative_time": {
+                "past": "{time} назад",
+                "future": "В {time}",
+                "never": "Никогда"
+            },
+            "history_charts": {
+                "loading_history": "Загрузка истории...",
+                "no_history_found": "История не найдена."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} включение.",
+            "entity_turned_off": "{entity} выключение.",
+            "service_called": "Вызов службы {service}.",
+            "service_call_failed": "Не удалось вызвать службу {service}.",
+            "connection_lost": "Соединение потеряно. Переподключение ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Сохранить",
+                "name": "Название"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Панель сигнализации",
+        "automation": "Автоматизация",
+        "binary_sensor": "Бинарный датчик",
+        "calendar": "Календарь",
+        "camera": "Камера",
+        "climate": "Климат",
+        "configurator": "Конфигуратор",
+        "conversation": "Диалог",
+        "cover": "Шторы",
+        "device_tracker": "Отслеживание устройств",
+        "fan": "Вентилятор",
+        "history_graph": "График",
+        "group": "Группа",
+        "image_processing": "Обработка изображения",
+        "input_boolean": "Переключатель",
+        "input_datetime": "Дата и время",
+        "input_select": "Список",
+        "input_number": "Число",
+        "input_text": "Текст",
+        "light": "Освещение",
+        "lock": "Замок",
+        "mailbox": "Почтовый ящик",
+        "media_player": "Медиа плеер",
+        "notify": "Уведомления",
+        "plant": "Растение",
+        "proximity": "Расстояние",
+        "remote": "Пульт ДУ",
+        "scene": "Сцена",
+        "script": "Скрипт",
+        "sensor": "Датчик",
+        "sun": "Солнце",
+        "switch": "Выключатель",
+        "updater": "Обновление",
+        "weblink": "Интернет-ссылка",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Влажность",
+            "visibility": "Видимость",
+            "wind_speed": "Скорость ветра"
+        }
+    }
+}

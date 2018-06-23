@@ -1,1 +1,707 @@
-{"panel":{"config":"설정","states":"둘러보기","map":"지도","logbook":"로그북","history":"상태변화","mailbox":"메일함","shopping_list":"장보기목록","dev-services":"서비스","dev-states":"상태","dev-events":"이벤트","dev-templates":"서식","dev-mqtt":"MQTT","dev-info":"정보"},"state":{"default":{"off":"꺼짐","on":"켜짐","unknown":"알수없음","unavailable":"사용불가"},"alarm_control_panel":{"armed":"경비중","disarmed":"해제됨","armed_home":"경비중(재실)","armed_away":"경비중(외출)","armed_night":"경비중(야간)","pending":"보류중","arming":"경비중","disarming":"해제중","triggered":"작동됨","armed_custom_bypass":"경비중(특정지점)"},"automation":{"off":"꺼짐","on":"켜짐"},"binary_sensor":{"default":{"off":"꺼짐","on":"켜짐"},"moisture":{"off":"건조함","on":"습함"},"gas":{"off":"이상없음","on":"감지됨"},"motion":{"off":"이상없음","on":"감지됨"},"occupancy":{"off":"이상없음","on":"감지됨"},"smoke":{"off":"이상없음","on":"감지됨"},"sound":{"off":"이상없음","on":"감지됨"},"vibration":{"off":"이상없음","on":"감지됨"},"opening":{"off":"닫힘","on":"열림"},"safety":{"off":"안전","on":"위험"},"presence":{"off":"외출","on":"재실중"},"battery":{"off":"보통","on":"낮음"},"problem":{"off":"문제없음","on":"문제있음"},"connectivity":{"off":"연결해제됨","on":"연결됨"},"cold":{"off":"상온","on":"저온"},"door":{"off":"닫힘","on":"열림"},"garage_door":{"off":"닫힘","on":"열림"},"heat":{"off":"상온","on":"고온"},"window":{"off":"닫힘","on":"열림"}},"calendar":{"off":"꺼짐","on":"켜짐"},"camera":{"recording":"녹화중","streaming":"스트리밍","idle":"대기중"},"climate":{"off":"꺼짐","on":"켜짐","heat":"난방","cool":"냉방","idle":"대기중","auto":"자동","dry":"제습","fan_only":"송풍","eco":"절약","electric":"전기","performance":"고효율","high_demand":"고성능","heat_pump":"순환펌프","gas":"가스"},"configurator":{"configure":"설정","configured":"설정됨"},"cover":{"open":"열림","opening":"여는중","closed":"닫힘","closing":"닫는중","stopped":"정지됨"},"device_tracker":{"home":"재실","not_home":"외출"},"fan":{"off":"꺼짐","on":"켜짐"},"group":{"off":"꺼짐","on":"켜짐","home":"재실","not_home":"외출","open":"열림","opening":"여는중","closed":"닫힘","closing":"닫는중","stopped":"정지됨","locked":"잠김","unlocked":"해제","ok":"좋음","problem":"문제있음"},"input_boolean":{"off":"꺼짐","on":"켜짐"},"light":{"off":"꺼짐","on":"켜짐"},"lock":{"locked":"잠김","unlocked":"해제"},"media_player":{"off":"꺼짐","on":"켜짐","playing":"재생중","paused":"일시중지","idle":"대기중","standby":"준비중"},"plant":{"ok":"좋음","problem":"문제있음"},"remote":{"off":"꺼짐","on":"켜짐"},"scene":{"scening":"씬구성중"},"script":{"off":"꺼짐","on":"켜짐"},"sensor":{"off":"꺼짐","on":"켜짐"},"sun":{"above_horizon":"주간","below_horizon":"야간"},"switch":{"off":"꺼짐","on":"켜짐"},"zwave":{"default":{"initializing":"초기화중","dead":"응답없음","sleeping":"절전모드","ready":"준비"},"query_stage":{"initializing":"초기화중 ({query_stage})","dead":"응답없음 ({query_stage})"}}},"state_badge":{"default":{"unknown":"알수없음","unavailable":"사용불가"},"alarm_control_panel":{"armed":"경비중","disarmed":"해제","armed_home":"경비중","armed_away":"경비중","armed_night":"경비중","pending":"지연","arming":"경비중","disarming":"해제","triggered":"작동됨","armed_custom_bypass":"경비중"},"device_tracker":{"home":"재실","not_home":"외출"}},"ui":{"panel":{"shopping-list":{"clear_completed":"완료항목삭제","add_item":"항목추가","microphone_tip":"우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말하세요"},"history":{"showing_entries":"다음 날짜의 항목을 표시","period":"기간"},"logbook":{"showing_entries":"다음 날짜의 항목을 표시"},"mailbox":{"empty":"메시지가 존재하지 않습니다","playback_title":"메시지 재생","delete_prompt":"이 메시지를 삭제 하시겠습니까?","delete_button":"삭제"}},"sidebar":{"log_out":"로그아웃","developer_tools":"개발자도구"},"common":{"loading":"읽는중","cancel":"취소"},"duration":{"day":"{count} {count, plural,\none {일}\nother {일}\n}","week":"{count} {count, plural,\none {주}\nother {주}\n}","second":"{count} {count, plural,\none {초}\nother {초}\n}"},"login-form":{"password":"비밀번호","remember":"자동로그인","log_in":"로그인"}},"domain":{"alarm_control_panel":"알람제어판","automation":"자동화","binary_sensor":"이진센서","calendar":"일정","camera":"카메라","climate":"공조장치","configurator":"구성","conversation":"대화","cover":"커버","device_tracker":"추적장치","fan":"송풍기","history_graph":"기록그래프","group":"그룹","image_processing":"이미지처리","input_boolean":"논리입력","input_datetime":"날짜\/시간입력","input_select":"선택입력","input_number":"숫자입력","input_text":"문자입력","light":"전등","lock":"잠김","mailbox":"메일함","media_player":"미디어재생기","notify":"알림","plant":"식물","proximity":"근접","remote":"원격","scene":"씬","script":"스크립트","sensor":"센서","sun":"태양","switch":"스위치","updater":"업데이터","weblink":"웹링크","zwave":"지웨이브"}}
+{
+    "panel": {
+        "config": "설정",
+        "states": "둘러보기",
+        "map": "지도",
+        "logbook": "로그북",
+        "history": "히스토리",
+        "mailbox": "메일함",
+        "shopping_list": "장보기목록",
+        "dev-services": "서비스",
+        "dev-states": "상태",
+        "dev-events": "이벤트",
+        "dev-templates": "템플릿",
+        "dev-mqtt": "MQTT",
+        "dev-info": "정보",
+        "calendar": "캘린더"
+    },
+    "state": {
+        "default": {
+            "off": "꺼짐",
+            "on": "켜짐",
+            "unknown": "알수없음",
+            "unavailable": "사용불가"
+        },
+        "alarm_control_panel": {
+            "armed": "경비중",
+            "disarmed": "해제됨",
+            "armed_home": "경비중(재실)",
+            "armed_away": "경비중(외출)",
+            "armed_night": "경비중(야간)",
+            "pending": "보류중",
+            "arming": "경비중",
+            "disarming": "해제중",
+            "triggered": "작동됨",
+            "armed_custom_bypass": "경비중(특정지점)"
+        },
+        "automation": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "꺼짐",
+                "on": "켜짐"
+            },
+            "moisture": {
+                "off": "건조함",
+                "on": "습함"
+            },
+            "gas": {
+                "off": "이상없음",
+                "on": "감지됨"
+            },
+            "motion": {
+                "off": "이상없음",
+                "on": "감지됨"
+            },
+            "occupancy": {
+                "off": "이상없음",
+                "on": "감지됨"
+            },
+            "smoke": {
+                "off": "이상없음",
+                "on": "감지됨"
+            },
+            "sound": {
+                "off": "이상없음",
+                "on": "감지됨"
+            },
+            "vibration": {
+                "off": "이상없음",
+                "on": "감지됨"
+            },
+            "opening": {
+                "off": "닫힘",
+                "on": "열림"
+            },
+            "safety": {
+                "off": "안전",
+                "on": "위험"
+            },
+            "presence": {
+                "off": "외출",
+                "on": "재실중"
+            },
+            "battery": {
+                "off": "보통",
+                "on": "낮음"
+            },
+            "problem": {
+                "off": "문제없음",
+                "on": "문제있음"
+            },
+            "connectivity": {
+                "off": "연결해제됨",
+                "on": "연결됨"
+            },
+            "cold": {
+                "off": "상온",
+                "on": "저온"
+            },
+            "door": {
+                "off": "닫힘",
+                "on": "열림"
+            },
+            "garage_door": {
+                "off": "닫힘",
+                "on": "열림"
+            },
+            "heat": {
+                "off": "상온",
+                "on": "고온"
+            },
+            "window": {
+                "off": "닫힘",
+                "on": "열림"
+            },
+            "lock": {
+                "off": "잠김",
+                "on": "열림"
+            }
+        },
+        "calendar": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "camera": {
+            "recording": "녹화중",
+            "streaming": "스트리밍",
+            "idle": "대기중"
+        },
+        "climate": {
+            "off": "꺼짐",
+            "on": "켜짐",
+            "heat": "난방",
+            "cool": "냉방",
+            "idle": "대기중",
+            "auto": "자동",
+            "dry": "제습",
+            "fan_only": "송풍",
+            "eco": "절약",
+            "electric": "전기",
+            "performance": "고효율",
+            "high_demand": "고성능",
+            "heat_pump": "순환펌프",
+            "gas": "가스"
+        },
+        "configurator": {
+            "configure": "설정",
+            "configured": "설정됨"
+        },
+        "cover": {
+            "open": "열림",
+            "opening": "여는중",
+            "closed": "닫힘",
+            "closing": "닫는중",
+            "stopped": "멈춤"
+        },
+        "device_tracker": {
+            "home": "재실",
+            "not_home": "외출"
+        },
+        "fan": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "group": {
+            "off": "꺼짐",
+            "on": "켜짐",
+            "home": "재실",
+            "not_home": "외출",
+            "open": "열림",
+            "opening": "여는중",
+            "closed": "닫힘",
+            "closing": "닫는중",
+            "stopped": "멈춤",
+            "locked": "잠김",
+            "unlocked": "해제",
+            "ok": "좋음",
+            "problem": "문제있음"
+        },
+        "input_boolean": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "light": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "lock": {
+            "locked": "잠김",
+            "unlocked": "해제"
+        },
+        "media_player": {
+            "off": "꺼짐",
+            "on": "켜짐",
+            "playing": "재생중",
+            "paused": "일시중지",
+            "idle": "대기중",
+            "standby": "준비중"
+        },
+        "plant": {
+            "ok": "좋음",
+            "problem": "문제있음"
+        },
+        "remote": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "scene": {
+            "scening": "씬구성중"
+        },
+        "script": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "sensor": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "sun": {
+            "above_horizon": "주간",
+            "below_horizon": "야간"
+        },
+        "switch": {
+            "off": "꺼짐",
+            "on": "켜짐"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "초기화중",
+                "dead": "응답없음",
+                "sleeping": "절전모드",
+                "ready": "준비"
+            },
+            "query_stage": {
+                "initializing": "초기화중 ({query_stage})",
+                "dead": "응답없음 ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "맑은 밤",
+            "cloudy": "흐림",
+            "fog": "안개",
+            "hail": "우박",
+            "lightning": "번개",
+            "lightning_rainy": "뇌우",
+            "partlycloudy": "대체로 흐림",
+            "pouring": "호우",
+            "rainy": "비",
+            "snowy": "눈",
+            "snowy_rainy": "진눈개비",
+            "sunny": "맑음",
+            "windy": "바람",
+            "windy_variant": "잦은바람"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "알수없음",
+            "unavailable": "사용불가"
+        },
+        "alarm_control_panel": {
+            "armed": "경비중",
+            "disarmed": "해제",
+            "armed_home": "경비중",
+            "armed_away": "경비중",
+            "armed_night": "경비중",
+            "pending": "지연",
+            "arming": "경비중",
+            "disarming": "해제",
+            "triggered": "작동됨",
+            "armed_custom_bypass": "경비중"
+        },
+        "device_tracker": {
+            "home": "재실",
+            "not_home": "외출"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "완료항목삭제",
+                "add_item": "항목추가",
+                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말해보세요"
+            },
+            "history": {
+                "showing_entries": "다음 날짜의 항목을 표시",
+                "period": "기간"
+            },
+            "logbook": {
+                "showing_entries": "다음 날짜의 항목을 표시"
+            },
+            "mailbox": {
+                "empty": "메시지가 존재하지 않습니다",
+                "playback_title": "메시지 재생",
+                "delete_prompt": "이 메시지를 삭제 하시겠습니까?",
+                "delete_button": "삭제"
+            },
+            "config": {
+                "header": "Home Assistant 설정",
+                "introduction": "여기에서 구성요소와  Home Assistant를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 곧 구현되도록 작업 중입니다",
+                "core": {
+                    "caption": "일반",
+                    "description": "설정 파일의 유효성을 검사하고 서버를 제어합니다",
+                    "section": {
+                        "core": {
+                            "header": "설정 및 서버 제어",
+                            "introduction": "설정을 변경하는 것은 귀찮은 작업입니다. 이 곳은 설정 변경을 좀 더 쉽게 도와줍니다",
+                            "validation": {
+                                "heading": "설정 유효성 검사",
+                                "introduction": "최근에 설정 내용을 일부 변경하고 모두 정상 작동이 되는지 확인하려는 경우 설정 내용의 유효성을 검사합니다",
+                                "check_config": "설정 확인",
+                                "valid": "설정 내용이 유효합니다!",
+                                "invalid": "설정 내용이 잘못되었습니다"
+                            },
+                            "reloading": {
+                                "heading": "설정 새로고침",
+                                "introduction": "Home Assistant의 일부 설정은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성을 내리고 새로운 설정 내용을 읽어들입니다",
+                                "core": "코어 새로고침",
+                                "group": "그룹 새로고침",
+                                "automation": "자동화 새로고침",
+                                "script": "스크립트 새로고침"
+                            },
+                            "server_management": {
+                                "heading": "서버 관리",
+                                "introduction": "Home Assistant 서버를 제어합니다",
+                                "restart": "재시작",
+                                "stop": "중지"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "푸시 알림 설정",
+                            "introduction": "이 장치에서 푸시 알림을 받으려면 이 항목을 활성화 합니다",
+                            "push_notifications": "푸시 알림"
+                        },
+                        "translation": {
+                            "header": "언어 선택",
+                            "introduction": "이 장치의 Home Assistant 인터페이스 언어를 선택합니다",
+                            "language": "언어"
+                        },
+                        "themes": {
+                            "header": "테마 설정",
+                            "introduction": "백엔드에서 선택한 테마를 사용하거나 이 장치의 테마를 선택하려면 '백엔드-선택'을 선택합니다",
+                            "theme": "테마"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "사용자화",
+                    "description": "구성요소를 사용자화 합니다"
+                },
+                "automation": {
+                    "caption": "자동화",
+                    "description": "자동화를 만들고 편집합니다",
+                    "picker": {
+                        "header": "자동화 편집기",
+                        "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집 할 수 있습니다. [안내](https:\/\/home-assistant.io\/docs\/automation\/editor\/) 를 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
+                        "pick_automation": "편집할 자동화 선택",
+                        "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
+                        "add_automation": "자동화 추가하기"
+                    },
+                    "editor": {
+                        "introduction": "자동화를 사용하여 집에 생기를 불어넣으세요",
+                        "default_name": "새로운 자동화",
+                        "save": "저장하기",
+                        "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 정말 이 페이지를 떠나시겠습니까?",
+                        "alias": "이름",
+                        "triggers": {
+                            "header": "트리거",
+                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다. \n\n [트리거에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "트리거 추가",
+                            "duplicate": "복제",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "unsupported_platform": "미지원 플랫폼: {platform}",
+                            "type_select": "트리거 유형",
+                            "type": {
+                                "event": {
+                                    "label": "이벤트",
+                                    "event_type": "이벤트 유형",
+                                    "event_data": "이벤트 데이터"
+                                },
+                                "state": {
+                                    "label": "상태",
+                                    "from": "이전",
+                                    "to": "이후"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "이벤트:",
+                                    "start": "시작",
+                                    "shutdown": "종료"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "토픽",
+                                    "payload": "페이로드 (선택 사항)"
+                                },
+                                "numeric_state": {
+                                    "label": "수치 상태",
+                                    "above": "이상",
+                                    "below": "이하",
+                                    "value_template": "값 템플릿 (선택 사항)"
+                                },
+                                "sun": {
+                                    "label": "태양",
+                                    "event": "이벤트:",
+                                    "sunrise": "해돋이",
+                                    "sunset": "해넘이",
+                                    "offset": "오프셋 (선택 사항)"
+                                },
+                                "template": {
+                                    "label": "템플릿",
+                                    "value_template": "값 템플릿"
+                                },
+                                "time": {
+                                    "label": "시간",
+                                    "at": "시각"
+                                },
+                                "zone": {
+                                    "label": "구역",
+                                    "entity": "위치기반 구성요소",
+                                    "zone": "구역",
+                                    "event": "이벤트:",
+                                    "enter": "입장",
+                                    "leave": "퇴장"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "조건",
+                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다. \n\n [조건에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "조건 추가",
+                            "duplicate": "복제",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "unsupported_condition": "미지원 조건: {condition}",
+                            "type_select": "조건 유형",
+                            "type": {
+                                "state": {
+                                    "label": "상태",
+                                    "state": "상태"
+                                },
+                                "numeric_state": {
+                                    "label": "수치 상태",
+                                    "above": "이상",
+                                    "below": "이하",
+                                    "value_template": "값 템플릿 (선택 사항)"
+                                },
+                                "sun": {
+                                    "label": "태양",
+                                    "before": "이전:",
+                                    "after": "이후:",
+                                    "before_offset": "이전 오프셋 (선택 사항)",
+                                    "after_offset": "이후 오프셋 (선택 사항)",
+                                    "sunrise": "해돋이",
+                                    "sunset": "해넘이"
+                                },
+                                "template": {
+                                    "label": "템플릿",
+                                    "value_template": "값 템플릿"
+                                },
+                                "time": {
+                                    "label": "시간",
+                                    "after": "이후",
+                                    "before": "이전"
+                                },
+                                "zone": {
+                                    "label": "구역",
+                                    "entity": "위치기반 구성요소",
+                                    "zone": "구역"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "동작",
+                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant가 수행할 작업입니다.\n\n [동작에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "동작 추가",
+                            "duplicate": "복제",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "unsupported_action": "미지원 동작: {action}",
+                            "type_select": "동작 유형",
+                            "type": {
+                                "service": {
+                                    "label": "서비스 호출",
+                                    "service_data": "서비스 데이터"
+                                },
+                                "delay": {
+                                    "label": "지연",
+                                    "delay": "지연 시간"
+                                },
+                                "wait_template": {
+                                    "label": "대기",
+                                    "wait_template": "대기 템플릿",
+                                    "timeout": "제한 시간 (선택 사항)"
+                                },
+                                "condition": {
+                                    "label": "조건"
+                                },
+                                "event": {
+                                    "label": "이벤트 발생",
+                                    "event": "이벤트:",
+                                    "service_data": "서비스 데이터"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "스크립트",
+                    "description": "스크립트를 만들고 편집합니다"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Z-Wave 네트워크를 관리합니다"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "로그아웃",
+            "developer_tools": "개발자도구"
+        },
+        "common": {
+            "loading": "읽는중",
+            "cancel": "취소"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+            "week": "{count} {count, plural,\none {주}\nother {주}\n}",
+            "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+            "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+            "hour": "{count} {count, plural,\none {시}\nother {시}\n}"
+        },
+        "login-form": {
+            "password": "비밀번호",
+            "remember": "자동로그인",
+            "log_in": "로그인"
+        },
+        "card": {
+            "camera": {
+                "not_available": "이미지 사용 불가"
+            },
+            "persistent_notification": {
+                "dismiss": "해제"
+            },
+            "scene": {
+                "activate": "활성화"
+            },
+            "script": {
+                "execute": "실행"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "기압",
+                    "humidity": "습도",
+                    "temperature": "기온",
+                    "visibility": "시정",
+                    "wind_speed": "풍속"
+                },
+                "cardinal_direction": {
+                    "e": "동",
+                    "ene": "동북동",
+                    "ese": "동남동",
+                    "n": "북",
+                    "ne": "북동",
+                    "nne": "북북동",
+                    "nw": "북서",
+                    "nnw": "북북서",
+                    "s": "남",
+                    "se": "남동",
+                    "sse": "남남동",
+                    "ssw": "남남서",
+                    "sw": "남서",
+                    "w": "서",
+                    "wnw": "서북서",
+                    "wsw": "서남서"
+                },
+                "forecast": "일기 예보"
+            },
+            "alarm_control_panel": {
+                "code": "비밀번호",
+                "clear_code": "지움",
+                "disarm": "경비 해제",
+                "arm_home": "재실 경비",
+                "arm_away": "외출 경비"
+            },
+            "automation": {
+                "last_triggered": "최근 트리거 됨",
+                "trigger": "트리거"
+            },
+            "cover": {
+                "position": "위치",
+                "tilt_position": "기울기"
+            },
+            "fan": {
+                "speed": "속도",
+                "oscillate": "회전",
+                "direction": "방향"
+            },
+            "light": {
+                "brightness": "밝기",
+                "color_temperature": "색온도",
+                "white_value": "흰색 값",
+                "effect": "효과"
+            },
+            "media_player": {
+                "text_to_speak": "음성합성 내용 입력 (TTS)",
+                "source": "입력 소스",
+                "sound_mode": "사운드 모드"
+            },
+            "climate": {
+                "currently": "현재 온도",
+                "on_off": "켜기 \/ 끄기",
+                "target_temperature": "희망 온도",
+                "target_humidity": "희망 습도",
+                "operation": "운전 모드",
+                "fan_mode": "송풍 모드",
+                "swing_mode": "회전 모드",
+                "away_mode": "외출 모드",
+                "aux_heat": "보조 히터"
+            },
+            "lock": {
+                "code": "비밀번호",
+                "lock": "잠금",
+                "unlock": "잠금 해제"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "구성요소"
+                }
+            },
+            "service-picker": {
+                "service": "서비스"
+            },
+            "relative_time": {
+                "past": "{time} 전",
+                "future": "{time} 후",
+                "never": "해당없음"
+            },
+            "history_charts": {
+                "loading_history": "히스토리 읽는 중...",
+                "no_history_found": "히스토리 내용이 없습니다."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": " {entity}이(가) 켜졌습니다.",
+            "entity_turned_off": " {entity}이(가) 꺼졌습니다.",
+            "service_called": "{service} 서비스가 호출되었습니다.",
+            "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
+            "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "저장",
+                "name": "이름"
+            }
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "알람제어판",
+        "automation": "자동화",
+        "binary_sensor": "이진센서",
+        "calendar": "일정",
+        "camera": "카메라",
+        "climate": "공조장치",
+        "configurator": "구성",
+        "conversation": "대화",
+        "cover": "여닫이",
+        "device_tracker": "추적장치",
+        "fan": "송풍기",
+        "history_graph": "기록그래프",
+        "group": "그룹",
+        "image_processing": "이미지처리",
+        "input_boolean": "논리입력",
+        "input_datetime": "날짜\/시간입력",
+        "input_select": "선택입력",
+        "input_number": "숫자입력",
+        "input_text": "문자입력",
+        "light": "전등",
+        "lock": "잠김",
+        "mailbox": "메일함",
+        "media_player": "미디어재생기",
+        "notify": "알림",
+        "plant": "식물",
+        "proximity": "근접",
+        "remote": "원격",
+        "scene": "씬",
+        "script": "스크립트",
+        "sensor": "센서",
+        "sun": "태양",
+        "switch": "스위치",
+        "updater": "업데이터",
+        "weblink": "웹링크",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "습도",
+            "visibility": "시정",
+            "wind_speed": "풍속"
+        }
+    }
+}

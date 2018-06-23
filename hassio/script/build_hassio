@@ -1,0 +1,28 @@
+#!/bin/sh
+# Builds the Hass.io app for production
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+OUTPUT_DIR=build
+OUTPUT_DIR_ES5=build-es5
+
+rm -rf $OUTPUT_DIR $OUTPUT_DIR_ES5
+node script/gen-icons.js
+
+# LEGACY BUILD
+NODE_ENV=production ../node_modules/.bin/webpack -p --config webpack.legacy.config.js
+node script/gen-index-html.js
+
+# Temporarily re-create old HTML import
+echo "<script>" > $OUTPUT_DIR_ES5/hassio-app.html
+cat $OUTPUT_DIR_ES5/app.js >> $OUTPUT_DIR_ES5/hassio-app.html
+cat $OUTPUT_DIR_ES5/chunk.*.js >> $OUTPUT_DIR_ES5/hassio-app.html
+echo "</script>" >> $OUTPUT_DIR_ES5/hassio-app.html
+rm $OUTPUT_DIR_ES5/app.js*
+rm $OUTPUT_DIR_ES5/chunk.*
+
+# NEW BUILD
+NODE_ENV=production ../node_modules/.bin/webpack -p --config webpack.config.js

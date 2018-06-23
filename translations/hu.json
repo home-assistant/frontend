@@ -1,1 +1,688 @@
-{"panel":{"config":"Konfiguráció","states":"Áttekintés","map":"Térkép","logbook":"Napló","history":"Előzmények","mailbox":"Postafiók","shopping_list":"Bevásárló lista","dev-services":"Szolgáltatások","dev-states":"Állapotok","dev-events":"Események","dev-templates":"Sablonok","dev-mqtt":"MQTT","dev-info":"Infó"},"state":{"default":{"off":"Ki","on":"Be","unknown":"Ismeretlen","unavailable":"Nem elérhető"},"alarm_control_panel":{"armed":"Élesítve","disarmed":"Hatástalanítva","armed_home":"Élesítve otthon","armed_away":"Élesítve távol","armed_night":"Élesítve éjszaka","pending":"Függőben","arming":"Élesítés","disarming":"Hatástalanítás","triggered":"Riasztás","armed_custom_bypass":"Élesítve áthidalással"},"automation":{"off":"Ki","on":"Be"},"binary_sensor":{"default":{"off":"Ki","on":"Be"},"moisture":{"off":"Száraz","on":"Nedves"},"gas":{"off":"Nincs riasztás","on":"Észlelve"},"motion":{"off":"Nincs riasztás","on":"Észlelve"},"occupancy":{"off":"Nincs riasztás","on":"Észlelve"},"smoke":{"off":"Nincs riasztás","on":"Észlelve"},"sound":{"off":"Nincs riasztás","on":"Észlelve"},"vibration":{"off":"Nincs riasztás","on":"Észlelve"},"opening":{"off":"Zárva","on":"Nyitva"},"safety":{"off":"Biztonságos","on":"Nem biztonságos"},"presence":{"off":"Távol","on":"Otthon"},"battery":{"off":"Normál","on":"Alacsony"},"problem":{"off":"OK","on":"Probléma"},"connectivity":{"off":"Lekapcsolódva","on":"Kapcsolódva"},"cold":{"off":"Normál","on":"Hideg"},"door":{"off":"Zárva","on":"Nyitva"},"garage_door":{"off":"Zárva","on":"Nyitva"},"heat":{"off":"Normál","on":"Meleg"},"window":{"off":"Zárva","on":"Nyitva"}},"calendar":{"off":"Ki","on":"Be"},"camera":{"recording":"Felvétel","streaming":"Streamelés","idle":"Tétlen"},"climate":{"off":"Ki","on":"Be","heat":"Fűtés","cool":"Hűtés","idle":"Tétlen","auto":"Automatikus","dry":"Száraz","fan_only":"Csak ventilátor","eco":"Takarékos","electric":"Elektromos","performance":"Teljesítmény","high_demand":"Magas igénybevétel","heat_pump":"Hőszivattyú","gas":"Gáz"},"configurator":{"configure":"Beállítás","configured":"Beállítva"},"cover":{"open":"Nyitva","opening":"Nyitás","closed":"Zárva","closing":"Zárás","stopped":"Megállítva"},"device_tracker":{"home":"Otthon","not_home":"Távol"},"fan":{"off":"Ki","on":"Be"},"group":{"off":"Ki","on":"Be","home":"Otthon","not_home":"Távol","open":"Nyitva","opening":"Nyitás","closed":"Zárva","closing":"Zárás","stopped":"Megállítva","locked":"Bezárva","unlocked":"Kinyitva","ok":"OK","problem":"Probléma"},"input_boolean":{"off":"Ki","on":"Be"},"light":{"off":"Ki","on":"Be"},"lock":{"locked":"Bezárva","unlocked":"Kinyitva"},"media_player":{"off":"Ki","on":"Be","playing":"Lejátszás","paused":"Szünetel","idle":"Tétlen","standby":"Készenlét"},"plant":{"ok":"OK","problem":"Probléma"},"remote":{"off":"Ki","on":"Be"},"scene":{"scening":"Jelenet beállítása"},"script":{"off":"Ki","on":"Be"},"sensor":{"off":"Ki","on":"Be"},"sun":{"above_horizon":"Látóhatár felett","below_horizon":"Látóhatár alatt"},"switch":{"off":"Ki","on":"Be"},"zwave":{"default":{"initializing":"Inicializálás","dead":"Halott","sleeping":"Alvás","ready":"Kész"},"query_stage":{"initializing":"Inicializálás ({query_stage})","dead":"Halott ({query_stage})"}}},"state_badge":{"default":{"unknown":"Ism","unavailable":"N.elér"},"alarm_control_panel":{"armed":"Éles","disarmed":"Hatást","armed_home":"Éles","armed_away":"Éles","armed_night":"Éles","pending":"Függő","arming":"Élesít","disarming":"Hatást","triggered":"Riaszt","armed_custom_bypass":"Éles"},"device_tracker":{"home":"0tthon","not_home":"Távol"}},"ui":{"panel":{"shopping-list":{"clear_completed":"Törlés sikeres","add_item":"Tétel hozzáadása","microphone_tip":"Koppints a jobb felső sarokban található mikrofonra, és mondd ki: \"Add candy to my shopping list\""},"history":{"showing_entries":"Bejegyzések megjelenítése","period":"Időtartam"},"logbook":{"showing_entries":"Bejegyzések megjelenítése"},"mailbox":{"empty":"Nincsenek üzeneteid","playback_title":"Üzenet lejátszása","delete_prompt":"Törlöd az üzenetet?","delete_button":"Törlés"}},"sidebar":{"log_out":"Kijelentkezés","developer_tools":"Fejlesztői eszközök"},"common":{"loading":"Betöltés","cancel":"Mégse"},"duration":{"day":"{count} {count, plural,\none {nap}\nother {nap}\n}","week":"{count} {count, plural,\none {hét}\nother {hét}\n}","second":"{count} {count, plural,\none {mp}\nother {mp}\n}"},"login-form":{"password":"Jelszó","remember":"Megjegyez","log_in":"Bejelentkezés"}},"domain":{"alarm_control_panel":"Riasztó központ","automation":"Automatizálás","binary_sensor":"Bináris érzékelő","calendar":"Naptár","camera":"Kamera","climate":"Hűtés\/fűtés","configurator":"Konfigurátor","conversation":"Beszélgetés","cover":"Borító","device_tracker":"Készülék nyomkövető","fan":"Ventilátor","history_graph":"Előzmény grafikon","group":"Csoport","image_processing":"Képfeldolgozás","input_boolean":"Logikai bemenet","input_datetime":"Időpont bemenet","input_select":"Választási bemenet","input_number":"Szám bemenet","input_text":"Szöveg bemenet","light":"Világítás","lock":"Zár","mailbox":"Postafiók","media_player":"Médialejátszó","notify":"Értesít","plant":"Növény","proximity":"Közelség","remote":"Távoli","scene":"Jelenet","script":"Szkript","sensor":"Érzékelő","sun":"Nap","switch":"Kapcsoló","updater":"Frissítések","weblink":"Hivatkozás","zwave":"Z-Wave"}}
+{
+    "panel": {
+        "config": "Konfiguráció",
+        "states": "Áttekintés",
+        "map": "Térkép",
+        "logbook": "Napló",
+        "history": "Előzmények",
+        "mailbox": "Postafiók",
+        "shopping_list": "Bevásárló lista",
+        "dev-services": "Szolgáltatások",
+        "dev-states": "Állapotok",
+        "dev-events": "Események",
+        "dev-templates": "Sablonok",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Infó"
+    },
+    "state": {
+        "default": {
+            "off": "Ki",
+            "on": "Be",
+            "unknown": "Ismeretlen",
+            "unavailable": "Nem elérhető"
+        },
+        "alarm_control_panel": {
+            "armed": "Élesítve",
+            "disarmed": "Hatástalanítva",
+            "armed_home": "Élesítve otthon",
+            "armed_away": "Élesítve távol",
+            "armed_night": "Élesítve éjszaka",
+            "pending": "Függőben",
+            "arming": "Élesítés",
+            "disarming": "Hatástalanítás",
+            "triggered": "Riasztás",
+            "armed_custom_bypass": "Élesítve áthidalással"
+        },
+        "automation": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "Ki",
+                "on": "Be"
+            },
+            "moisture": {
+                "off": "Száraz",
+                "on": "Nedves"
+            },
+            "gas": {
+                "off": "Normál",
+                "on": "Észlelve"
+            },
+            "motion": {
+                "off": "Normál",
+                "on": "Észlelve"
+            },
+            "occupancy": {
+                "off": "Normál",
+                "on": "Észlelve"
+            },
+            "smoke": {
+                "off": "Normál",
+                "on": "Észlelve"
+            },
+            "sound": {
+                "off": "Normál",
+                "on": "Észlelve"
+            },
+            "vibration": {
+                "off": "Normál",
+                "on": "Észlelve"
+            },
+            "opening": {
+                "off": "Zárva",
+                "on": "Nyitva"
+            },
+            "safety": {
+                "off": "Biztonságos",
+                "on": "Nem biztonságos"
+            },
+            "presence": {
+                "off": "Távol",
+                "on": "Otthon"
+            },
+            "battery": {
+                "off": "Normál",
+                "on": "Alacsony"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Probléma"
+            },
+            "connectivity": {
+                "off": "Lekapcsolódva",
+                "on": "Kapcsolódva"
+            },
+            "cold": {
+                "off": "Normál",
+                "on": "Hideg"
+            },
+            "door": {
+                "off": "Zárva",
+                "on": "Nyitva"
+            },
+            "garage_door": {
+                "off": "Zárva",
+                "on": "Nyitva"
+            },
+            "heat": {
+                "off": "Normál",
+                "on": "Meleg"
+            },
+            "window": {
+                "off": "Zárva",
+                "on": "Nyitva"
+            },
+            "lock": {
+                "off": "Bezárva",
+                "on": "Kinyitva"
+            }
+        },
+        "calendar": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "camera": {
+            "recording": "Felvétel",
+            "streaming": "Streamelés",
+            "idle": "Tétlen"
+        },
+        "climate": {
+            "off": "Ki",
+            "on": "Be",
+            "heat": "Fűtés",
+            "cool": "Hűtés",
+            "idle": "Tétlen",
+            "auto": "Automatikus",
+            "dry": "Száraz",
+            "fan_only": "Csak ventilátor",
+            "eco": "Takarékos",
+            "electric": "Elektromos",
+            "performance": "Teljesítmény",
+            "high_demand": "Magas igénybevétel",
+            "heat_pump": "Hőszivattyú",
+            "gas": "Gáz"
+        },
+        "configurator": {
+            "configure": "Beállítás",
+            "configured": "Beállítva"
+        },
+        "cover": {
+            "open": "Nyitva",
+            "opening": "Nyitás",
+            "closed": "Zárva",
+            "closing": "Zárás",
+            "stopped": "Megállítva"
+        },
+        "device_tracker": {
+            "home": "Otthon",
+            "not_home": "Távol"
+        },
+        "fan": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "group": {
+            "off": "Ki",
+            "on": "Be",
+            "home": "Otthon",
+            "not_home": "Távol",
+            "open": "Nyitva",
+            "opening": "Nyitás",
+            "closed": "Zárva",
+            "closing": "Zárás",
+            "stopped": "Megállítva",
+            "locked": "Bezárva",
+            "unlocked": "Kinyitva",
+            "ok": "OK",
+            "problem": "Probléma"
+        },
+        "input_boolean": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "light": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "lock": {
+            "locked": "Bezárva",
+            "unlocked": "Kinyitva"
+        },
+        "media_player": {
+            "off": "Ki",
+            "on": "Be",
+            "playing": "Lejátszás",
+            "paused": "Szünetel",
+            "idle": "Tétlen",
+            "standby": "Készenlét"
+        },
+        "plant": {
+            "ok": "OK",
+            "problem": "Probléma"
+        },
+        "remote": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "scene": {
+            "scening": "Jelenet beállítása"
+        },
+        "script": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "sensor": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "sun": {
+            "above_horizon": "Látóhatár felett",
+            "below_horizon": "Látóhatár alatt"
+        },
+        "switch": {
+            "off": "Ki",
+            "on": "Be"
+        },
+        "zwave": {
+            "default": {
+                "initializing": "Inicializálás",
+                "dead": "Halott",
+                "sleeping": "Alvás",
+                "ready": "Kész"
+            },
+            "query_stage": {
+                "initializing": "Inicializálás ({query_stage})",
+                "dead": "Halott ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear_night": "Tiszta, éjszaka",
+            "cloudy": "Felhős",
+            "fog": "Köd",
+            "hail": "Jégeső",
+            "lightning": "Vihar",
+            "lightning_rainy": "Viharos, esős",
+            "partlycloudy": "Részben felhős",
+            "pouring": "Szakad",
+            "rainy": "Esős",
+            "snowy": "Havazás",
+            "snowy_rainy": "Havas, esős",
+            "sunny": "Napos",
+            "windy": "Szeles",
+            "windy_variant": "Szeles"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Ism",
+            "unavailable": "N.elér"
+        },
+        "alarm_control_panel": {
+            "armed": "Éles",
+            "disarmed": "Hatást",
+            "armed_home": "Éles",
+            "armed_away": "Éles",
+            "armed_night": "Éles",
+            "pending": "Függő",
+            "arming": "Élesít",
+            "disarming": "Hatást",
+            "triggered": "Riaszt",
+            "armed_custom_bypass": "Éles"
+        },
+        "device_tracker": {
+            "home": "0tthon",
+            "not_home": "Távol"
+        }
+    },
+    "ui": {
+        "panel": {
+            "shopping-list": {
+                "clear_completed": "Törlés sikeres",
+                "add_item": "Tétel hozzáadása",
+                "microphone_tip": "Koppints a jobb felső sarokban található mikrofonra, és mondd ki: \"Add candy to my shopping list\""
+            },
+            "history": {
+                "showing_entries": "Bejegyzések megjelenítése",
+                "period": "Időtartam"
+            },
+            "logbook": {
+                "showing_entries": "Bejegyzések megjelenítése"
+            },
+            "mailbox": {
+                "empty": "Nincsenek üzeneteid",
+                "playback_title": "Üzenet lejátszása",
+                "delete_prompt": "Törlöd az üzenetet?",
+                "delete_button": "Törlés"
+            },
+            "config": {
+                "header": "Home Assistant beállítása",
+                "introduction": "Itt a komponenseket és a Home Assistant szervert lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
+                "core": {
+                    "caption": "Általános",
+                    "description": "Konfigurációs fájl érvényesítése és a szerver vezérlése",
+                    "section": {
+                        "core": {
+                            "header": "Konfiguráció és szerver vezérlés",
+                            "introduction": "Tudjuk, hogy a konfiguráció módosítása fárasztó folyamat lehet. Ez a rész megpróbálja egy kicsit könnyebbé tenni az életed.",
+                            "validation": {
+                                "heading": "Konfiguráció érvényesítés",
+                                "introduction": "Érvényesítsd a konfigurációt, ha nemrégiben módosítottad azt, és meg szeretnél bizonyosodni róla, hogy minden érvényes",
+                                "check_config": "Ellenőrzés",
+                                "valid": "Érvényes konfiguráció!",
+                                "invalid": "Érvénytelen konfiguráció"
+                            },
+                            "reloading": {
+                                "heading": "Konfiguráció újratöltése",
+                                "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Az újratöltés az aktuális konfiguráció helyére betölti az újat.",
+                                "core": "Mag újratöltése",
+                                "group": "Csoportok újratöltése",
+                                "automation": "Automatizálások újratöltése",
+                                "script": "Szkriptek újratöltése"
+                            },
+                            "server_management": {
+                                "heading": "Szerverkezelés",
+                                "introduction": "Home Assistant szerver vezérlése... a Home Assistant-ból.",
+                                "restart": "Újraindítás",
+                                "stop": "Leállítás"
+                            }
+                        },
+                        "push_notifications": {
+                            "header": "Push-értesítések beállítása",
+                            "introduction": "Engedélyezd ezt a beállítást a push-értesítések fogadásához ezen az eszközön",
+                            "push_notifications": "Push-értesítések"
+                        },
+                        "translation": {
+                            "header": "Nyelv kiválasztása",
+                            "introduction": "Válassz egy nyelvet a Home Assistant felületéhez ezen az eszközön",
+                            "language": "Nyelv"
+                        },
+                        "themes": {
+                            "header": "Téma beállítása",
+                            "introduction": "Válaszd ki a 'Backend-selected' opciót, ha a backend-re bízod a témaválasztást, vagy válassz egy témát ehhez az eszközhöz",
+                            "theme": "Téma"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Testreszabás",
+                    "description": "Entitások testreszabása"
+                },
+                "automation": {
+                    "caption": "Automatizálás",
+                    "description": "Automatizálások létrehozása és szerkesztése",
+                    "picker": {
+                        "header": "Automatizálás szerkesztő",
+                        "introduction": "Az automatizálás szerkesztővel automatizálási szabályokat tudsz létrehozni és szerkeszteni. Kérlek olvasd el az [útmutatót](https:\/\/home-assistant.io\/docs\/automation\/editor\/), hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
+                        "pick_automation": "Válassz ki egy automatizálást szerkesztésre",
+                        "no_automations": "Nem találtunk szerkeszthető automatizálást",
+                        "add_automation": "Automatizálás hozzáadása"
+                    },
+                    "editor": {
+                        "introduction": "Használj automatizálásokat otthonod életre keltéséhez",
+                        "default_name": "Új Automatizálás",
+                        "save": "Mentés",
+                        "unsaved_confirm": "Vannak nem mentett módosítások. Biztos, hogy elhagyod az oldalt?",
+                        "alias": "Név",
+                        "triggers": {
+                            "header": "Triggerek",
+                            "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindul, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet.\n\n[Tudj meg többet a triggerekről.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "Trigger hozzáadása",
+                            "duplicate": "Megkettőzés",
+                            "delete": "Törlés",
+                            "delete_confirm": "Biztos, hogy törölni szeretnéd?",
+                            "unsupported_platform": "Nem támogatott platform: {platform}",
+                            "type_select": "Trigger típusa",
+                            "type": {
+                                "event": {
+                                    "label": "Esemény",
+                                    "event_type": "Esemény típusa",
+                                    "event_data": "Esemény adatai"
+                                },
+                                "state": {
+                                    "label": "Állapot",
+                                    "from": "Eredeti állapot",
+                                    "to": "Módosult állapot"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Esemény:",
+                                    "start": "Indulás",
+                                    "shutdown": "Leállás"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Téma",
+                                    "payload": "Payload (opcionális)"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerikus állapot",
+                                    "above": "Felett",
+                                    "below": "Alatt",
+                                    "value_template": "Érték sablon (opcionális)"
+                                },
+                                "sun": {
+                                    "label": "Nap",
+                                    "event": "Esemény:",
+                                    "sunrise": "Napkelte",
+                                    "sunset": "Napnyugta",
+                                    "offset": "Eltolás (opcionális)"
+                                },
+                                "template": {
+                                    "label": "Sablon",
+                                    "value_template": "Érték sablon"
+                                },
+                                "time": {
+                                    "label": "Idő",
+                                    "at": "Mikor"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entitás helyszínnel",
+                                    "zone": "Zóna",
+                                    "event": "Esemény:",
+                                    "enter": "Érkezés",
+                                    "leave": "Távozás"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Feltételek",
+                            "introduction": "A feltételek opcionális részei az automatizálási szabályoknak és arra lehet őket használni, hogy meggátoljuk egy művelet végrehajtását, ha triggerelődik. A feltételek hasonlítanak a triggerekre, mégis teljesen máshogy működnek. A triggerek a rendszerben történő események bekövetkezését figyelik, míg a feltételek csak azt látják, hogy milyen a rendszer pillanatnyi állapota. Egy trigger például észre tudja venni, ha egy kapcsoló fel lett kapcsolva. Egy feltétel csak azt látja, hogy a kapcsoló éppen fel vagy le van kapcsolva.\n\n[Tudj meg többet a feltételekről.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "Feltétel hozzáadása",
+                            "duplicate": "Megkettőzés",
+                            "delete": "Törlés",
+                            "delete_confirm": "Biztos, hogy törölni szeretnéd?",
+                            "unsupported_condition": "Nem támogatott feltétel: {condition}",
+                            "type_select": "Feltétel típusa",
+                            "type": {
+                                "state": {
+                                    "label": "Állapot",
+                                    "state": "Állapot"
+                                },
+                                "numeric_state": {
+                                    "label": "Numerikus állapot",
+                                    "above": "Felett",
+                                    "below": "Alatt",
+                                    "value_template": "Érték sablon (opcionális)"
+                                },
+                                "sun": {
+                                    "label": "Nap",
+                                    "before": "Előtt:",
+                                    "after": "Után:",
+                                    "before_offset": "Eltolás előtte (opcionális)",
+                                    "after_offset": "Eltolás utána (opcionális)",
+                                    "sunrise": "Napkelte",
+                                    "sunset": "Napnyugta"
+                                },
+                                "template": {
+                                    "label": "Sablon",
+                                    "value_template": "Érték sablon"
+                                },
+                                "time": {
+                                    "label": "Idő",
+                                    "after": "Után",
+                                    "before": "Előtt"
+                                },
+                                "zone": {
+                                    "label": "Zóna",
+                                    "entity": "Entitás helyszínnel",
+                                    "zone": "Zóna"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Műveletek",
+                            "introduction": "A műveleteket hajtja végre a Home Assistant, ha egy automatizálás triggerelődik.\n\n[Tudj meg többet a műveletekről.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Művelet hozzáadása",
+                            "duplicate": "Megkettőzés",
+                            "delete": "Törlés",
+                            "delete_confirm": "Biztos, hogy törölni szeretnéd?",
+                            "unsupported_action": "Nem támogatott művelet: {action}",
+                            "type_select": "Művelet típusa",
+                            "type": {
+                                "service": {
+                                    "label": "Szolgáltatás meghívása",
+                                    "service_data": "Szolgáltatás adatai"
+                                },
+                                "delay": {
+                                    "label": "Késleltetés",
+                                    "delay": "Késleltetés"
+                                },
+                                "wait_template": {
+                                    "label": "Várakozás",
+                                    "wait_template": "Várakozási sablon",
+                                    "timeout": "Időtúllépés (opcionális)"
+                                },
+                                "condition": {
+                                    "label": "Feltétel"
+                                },
+                                "event": {
+                                    "label": "Esemény meghívása",
+                                    "event": "Esemény:",
+                                    "service_data": "Szolgáltatás adatai"
+                                }
+                            }
+                        }
+                    }
+                },
+                "script": {
+                    "caption": "Szkript",
+                    "description": "Szkriptek létrehozása és szerkesztése"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Z-Wave hálózat kezelése"
+                }
+            }
+        },
+        "sidebar": {
+            "log_out": "Kijelentkezés",
+            "developer_tools": "Fejlesztői eszközök"
+        },
+        "common": {
+            "loading": "Betöltés",
+            "cancel": "Mégse"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {nap}\nother {nap}\n}",
+            "week": "{count} {count, plural,\none {hét}\nother {hét}\n}",
+            "second": "{count} {count, plural,\none {mp}\nother {mp}\n}",
+            "minute": "{count} {count, plural,\none {perc}\nother {perc}\n}",
+            "hour": "{count} {count, plural,\none {óra}\nother {óra}\n}"
+        },
+        "login-form": {
+            "password": "Jelszó",
+            "remember": "Megjegyez",
+            "log_in": "Bejelentkezés"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Kép nem áll rendelkezésre"
+            },
+            "persistent_notification": {
+                "dismiss": "Elvetés"
+            },
+            "scene": {
+                "activate": "Aktiválás"
+            },
+            "script": {
+                "execute": "Futtatás"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Légnyomás",
+                    "humidity": "Páratartalom",
+                    "temperature": "Hőmérséklet",
+                    "visibility": "Látótávolság",
+                    "wind_speed": "Szélsebesség"
+                },
+                "cardinal_direction": {
+                    "e": "K",
+                    "ene": "K-ÉK",
+                    "ese": "K-DK",
+                    "n": "É",
+                    "ne": "ÉK",
+                    "nne": "É-ÉK",
+                    "nw": "ÉNy",
+                    "nnw": "É-ÉNy",
+                    "s": "D",
+                    "se": "DK",
+                    "sse": "D-DK",
+                    "ssw": "D-DNy",
+                    "sw": "DNy",
+                    "w": "Ny",
+                    "wnw": "Ny-ÉNy",
+                    "wsw": "Ny-DNy"
+                },
+                "forecast": "Előrejelzés"
+            },
+            "alarm_control_panel": {
+                "code": "Kód",
+                "clear_code": "Törlés",
+                "disarm": "Hatástalanít",
+                "arm_home": "Élesít (otthon)",
+                "arm_away": "Élesít (távozó)"
+            },
+            "automation": {
+                "last_triggered": "Utoljára aktiválva",
+                "trigger": "Aktivál"
+            },
+            "cover": {
+                "position": "Pozíció",
+                "tilt_position": "Döntési pozíció"
+            },
+            "fan": {
+                "speed": "Sebesség",
+                "direction": "Irány"
+            },
+            "light": {
+                "brightness": "Fényerő",
+                "color_temperature": "Színhőmérséklet",
+                "effect": "Hatás"
+            },
+            "climate": {
+                "currently": "Jelenleg"
+            },
+            "lock": {
+                "code": "Kód",
+                "lock": "Bezár",
+                "unlock": "Kinyit"
+            },
+            "media_player": {
+                "source": "Forrás"
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Entitás"
+                }
+            },
+            "service-picker": {
+                "service": "Szolgáltatás"
+            },
+            "relative_time": {
+                "past": "{time} ezelőtt",
+                "future": "{time} múlva",
+                "never": "Soha"
+            },
+            "history_charts": {
+                "loading_history": "Állapot előzmények betöltése...",
+                "no_history_found": "Nem található előzmény."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} bekapcsolva.",
+            "entity_turned_off": "{entity} kikapcsolva.",
+            "service_called": "Szolgáltatás {service} meghívva.",
+            "service_call_failed": "Nem sikerült meghívni a szolgáltatást {service}.",
+            "connection_lost": "A kapcsolat megszakadt. Újracsatlakozás…"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Riasztó központ",
+        "automation": "Automatizálás",
+        "binary_sensor": "Bináris érzékelő",
+        "calendar": "Naptár",
+        "camera": "Kamera",
+        "climate": "Hűtés\/fűtés",
+        "configurator": "Konfigurátor",
+        "conversation": "Beszélgetés",
+        "cover": "Borító",
+        "device_tracker": "Készülék nyomkövető",
+        "fan": "Ventilátor",
+        "history_graph": "Előzmény grafikon",
+        "group": "Csoport",
+        "image_processing": "Képfeldolgozás",
+        "input_boolean": "Logikai bemenet",
+        "input_datetime": "Időpont bemenet",
+        "input_select": "Választási bemenet",
+        "input_number": "Szám bemenet",
+        "input_text": "Szöveg bemenet",
+        "light": "Világítás",
+        "lock": "Zár",
+        "mailbox": "Postafiók",
+        "media_player": "Médialejátszó",
+        "notify": "Értesít",
+        "plant": "Növény",
+        "proximity": "Közelség",
+        "remote": "Távoli",
+        "scene": "Jelenet",
+        "script": "Szkript",
+        "sensor": "Érzékelő",
+        "sun": "Nap",
+        "switch": "Kapcsoló",
+        "updater": "Frissítések",
+        "weblink": "Hivatkozás",
+        "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Páratartalom",
+            "visibility": "Láthatóság",
+            "wind_speed": "Szélsebesség"
+        }
+    }
+}
