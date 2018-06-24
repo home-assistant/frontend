@@ -17,7 +17,7 @@ class HuiIframeCard extends PolymerElement {
         }
       </style>
       <ha-card>
-        <iframe id="ifr" height="[[config.height]]" src="[[config.url]]" frameborder="0"></iframe>
+        <iframe height="[[config.height]]" src="[[config.url]]" frameborder="0"></iframe>
       </ha-card>
     `;
   }
