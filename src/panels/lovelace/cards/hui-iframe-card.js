@@ -15,8 +15,21 @@ class HuiIframeCard extends PolymerElement {
           width: 100%;
           border-radius: 2px;
         }
+      .header {
+        @apply --paper-font-headline;
+        /* overwriting line-height +8 because entity-toggle can be 40px height,
+           compensating this with reduced padding */
+        line-height: 40px;
+        color: var(--primary-text-color);
+        padding: -1px 0 12px;
+        margin-left: 15px;
+      }
+      .header .name {
+        @apply --paper-font-common-nowrap;
+      }
       </style>
       <ha-card>
+        <div class='header'><div class="name">[[config.title]]</div></div>
         <iframe height="[[config.height]]" src="[[config.url]]" frameborder="0"></iframe>
       </ha-card>
     `;
