@@ -173,7 +173,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         service = isOn ? 'unlock' : 'lock';
         break;
       case 'cover':
-        service = isOn ? 'close' : 'open';
+        service = isOn ? 'close_cover' : 'open_cover';
         break;
       case 'scene':
         service = 'turn_on';

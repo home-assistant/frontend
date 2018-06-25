@@ -131,7 +131,7 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
           service = isOn ? 'unlock' : 'lock';
           break;
         case 'cover':
-          service = isOn ? 'close' : 'open';
+          service = isOn ? 'close_cover' : 'open_cover';
           break;
         default:
           service = isOn ? 'turn_off' : 'turn_on';
