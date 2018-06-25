@@ -21,7 +21,7 @@ class HuiEntitiesToggle extends PolymerElement {
         margin: -4px -5px;
       }
     </style>
-    <template is="dom-if" if="[[_toggleEntities]]">
+    <template is="dom-if" if="[[_showToggle(_toggleEntities)]]">
       <paper-toggle-button checked="[[_computeIsChecked(hass, _toggleEntities)]]" on-change="_callService"></paper-toggle-button>
     </template>
 `;
@@ -42,6 +42,10 @@ class HuiEntitiesToggle extends PolymerElement {
     return entities.filter((entity) => {
       return entity in hass.states ? canToggleState(hass, hass.states[entity]) : false;
     })
+  }
+
+  _showToggle(entities) {
+    return entities.length !== 0;
   }
 
   _computeIsChecked(hass, entities) {
