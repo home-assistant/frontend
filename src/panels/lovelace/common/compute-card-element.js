@@ -10,6 +10,7 @@ import '../cards/hui-picture-glance-card';
 import '../cards/hui-plant-status-card.js';
 import '../cards/hui-weather-forecast-card';
 import '../cards/hui-error-card.js';
+import '../cards/hui-iframe-card.js';
 
 const CARD_TYPES = [
   'camera-preview',
@@ -18,6 +19,7 @@ const CARD_TYPES = [
   'entity-picture',
   'glance',
   'history-graph',
+  'iframe',
   'markdown',
   'media-control',
   'picture-glance',
