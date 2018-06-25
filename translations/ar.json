@@ -12,7 +12,8 @@
         "dev-events": "أحداث",
         "dev-templates": "نماذج",
         "dev-mqtt": "MQTT",
-        "dev-info": "معلومات"
+        "dev-info": "معلومات",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -236,6 +237,10 @@
                 "initializing": "قيد الانشاء ({query_stage})",
                 "dead": "مفصول ({query_stage})"
             }
+        },
+        "weather": {
+            "cloudy": "Bewolkt",
+            "fog": "Mist"
         }
     },
     "state_badge": {
@@ -525,6 +530,28 @@
             },
             "persistent_notification": {
                 "dismiss": "رفض"
+            },
+            "fan": {
+                "speed": "Snelheid",
+                "direction": "Richting"
+            },
+            "light": {
+                "brightness": "Helderheid",
+                "color_temperature": "Kleurtemperatuur",
+                "white_value": "Witwaarde"
+            },
+            "climate": {
+                "currently": "Momenteel",
+                "on_off": "Aan \/ uit",
+                "target_temperature": "Doeltemperatuur",
+                "target_humidity": "Doelluchtvochtigheid"
+            },
+            "lock": {
+                "lock": "Vergrendelen",
+                "unlock": "Ontgrendelen"
+            },
+            "media_player": {
+                "sound_mode": "Geluidsmodus"
             }
         },
         "components": {
@@ -535,6 +562,14 @@
             },
             "service-picker": {
                 "service": "خدمة"
+            },
+            "relative_time": {
+                "never": "Nooit"
+            }
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Opslaan"
             }
         }
     },

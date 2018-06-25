@@ -12,7 +12,8 @@
         "dev-events": "Események",
         "dev-templates": "Sablonok",
         "dev-mqtt": "MQTT",
-        "dev-info": "Infó"
+        "dev-info": "Infó",
+        "calendar": "Naptár"
     },
     "state": {
         "default": {
@@ -603,7 +604,11 @@
                 "effect": "Hatás"
             },
             "climate": {
-                "currently": "Jelenleg"
+                "currently": "Jelenleg",
+                "on_off": "Be \/ ki",
+                "target_temperature": "Kívánt hőmérséklet",
+                "target_humidity": "Kívánt páratartalom",
+                "operation": "Művelet"
             },
             "lock": {
                 "code": "Kód",
@@ -636,9 +641,15 @@
         "notification_toast": {
             "entity_turned_on": "{entity} bekapcsolva.",
             "entity_turned_off": "{entity} kikapcsolva.",
-            "service_called": "Szolgáltatás {service} meghívva.",
-            "service_call_failed": "Nem sikerült meghívni a szolgáltatást {service}.",
+            "service_called": "{service} szolgáltatás meghívva.",
+            "service_call_failed": "Nem sikerült meghívni a(z) {service} szolgáltatást.",
             "connection_lost": "A kapcsolat megszakadt. Újracsatlakozás…"
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Mentés",
+                "name": "Név"
+            }
         }
     },
     "domain": {
