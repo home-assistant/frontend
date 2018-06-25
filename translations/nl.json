@@ -374,7 +374,7 @@
                             "delete": "Verwijderen",
                             "delete_confirm": "Zeker dat u wilt verwijderen?",
                             "unsupported_platform": "Niet-ondersteund platform: {platform}",
-                            "type_select": "Trigger type",
+                            "type_select": "Trigger-type",
                             "type": {
                                 "event": {
                                     "label": "Gebeurtenis",
@@ -594,13 +594,19 @@
             },
             "fan": {
                 "speed": "Snelheid",
+                "oscillate": "Oscilleren",
                 "direction": "Richting"
             },
             "light": {
                 "brightness": "Helderheid",
                 "color_temperature": "Kleurtemperatuur",
-                "white_value": "Wit waarde",
+                "white_value": "Witwaarde",
                 "effect": "Effect"
+            },
+            "media_player": {
+                "text_to_speak": "Tekst naar spraak",
+                "source": "Bron",
+                "sound_mode": "Geluidsmodus"
             },
             "climate": {
                 "currently": "Momenteel",
@@ -608,16 +614,12 @@
                 "target_temperature": "Gewenste temperatuur",
                 "target_humidity": "Gewenste luchtvochtigheid",
                 "operation": "Werking",
-                "fan_mode": "Ventilator modus",
+                "fan_mode": "Ventilatormodus",
                 "away_mode": "Afwezigheidsmodus"
             },
             "lock": {
                 "lock": "Vergrendelen",
                 "unlock": "Ontgrendelen"
-            },
-            "media_player": {
-                "source": "Bron",
-                "sound_mode": "Geluidsmodus"
             }
         },
         "components": {

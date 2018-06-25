@@ -30,7 +30,7 @@
             "armed_night": "夜間警戒",
             "pending": "等待中",
             "arming": "警戒中",
-            "disarming": "已解除",
+            "disarming": "解除中",
             "triggered": "已觸發",
             "armed_custom_bypass": "警戒模式狀態"
         },
@@ -219,7 +219,7 @@
             "on": "開啓"
         },
         "sun": {
-            "above_horizon": "日出",
+            "above_horizon": "白天",
             "below_horizon": "日落西山"
         },
         "switch": {
@@ -293,15 +293,15 @@
             },
             "mailbox": {
                 "empty": "目前沒有任何訊息",
-                "playback_title": "返回",
-                "delete_prompt": "刪除",
+                "playback_title": "訊息播放",
+                "delete_prompt": "刪除此訊息？",
                 "delete_button": "刪除"
             },
             "config": {
                 "header": "設定 Home Assistant",
-                "introduction": "此處為 Home Assistant 和相關配置區域",
+                "introduction": "此處為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
                 "core": {
-                    "caption": "一般性設定",
+                    "caption": "一般設定",
                     "description": "驗證設定內容及服務器控制",
                     "section": {
                         "core": {
@@ -315,11 +315,11 @@
                                 "invalid": "設定檔內容檢查錯誤"
                             },
                             "reloading": {
-                                "heading": "重新加載設定檔(configuration)",
-                                "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。\n點擊對應的重載按鈕即可更新為最新設定。",
-                                "core": "重新載入服務核心設定(core)",
-                                "group": "重新載入群組(group)",
-                                "automation": "重新載入自動化(automation)",
+                                "heading": "重新載入設定檔（configuration）",
+                                "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。\n點選重新載入按鈕，即可重新載入最新設定。",
+                                "core": "重新載入核心設定（core）",
+                                "group": "重新載入群組（group）",
+                                "automation": "重新載入自動化（automation）",
                                 "script": "重新載入腳本（script）"
                             },
                             "server_management": {
@@ -356,7 +356,7 @@
                     "picker": {
                         "header": "自動化編輯器",
                         "introduction": "自動化編輯器可以讓你編輯想要的自動化內容\n請閱讀設定文件以確保自動化設定格式正確\n常見的錯誤為前後多餘的空格與上下欄位的對齊\n否則無法正常啟用。\n\n想知道更多關於自動化編輯器的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/automation\/editor\/",
-                        "pick_automation": "選擇一個自動化來進行編輯",
+                        "pick_automation": "選擇欲編輯的自動化",
                         "no_automations": "沒有任何可編輯的自動化",
                         "add_automation": "新增一個自動化"
                     },
@@ -379,7 +379,7 @@
                                 "event": {
                                     "label": "事件",
                                     "event_type": "事件類別",
-                                    "event_data": "資料"
+                                    "event_data": "事件資料"
                                 },
                                 "state": {
                                     "label": "狀態",
@@ -394,7 +394,7 @@
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "topic": "MQTT主題",
+                                    "topic": "MQTT 主題",
                                     "payload": "MQTT資料（選項）"
                                 },
                                 "numeric_state": {
@@ -430,7 +430,7 @@
                         },
                         "conditions": {
                             "header": "觸發判斷",
-                            "introduction": "你可以使用觸發判斷來使得自動化運作更為準確。但必須先透過觸發條件開啟自動化運作後，才能使用觸發判斷來決定是否繼續執行下去。\n\n想知道更多關於觸發判斷的資料，請參考\nhttps:\/\/home-assistant.io\/docs\/scripts\/conditions\/",
+                            "introduction": "「觸發判斷」為自動化規則中，選項使用的部分。可以用以避免誤觸發某些動作。「觸發判斷」看起來跟觸發很類似，但實際上不盡相同。觸發主要監看系統中、事件的變化產生，而觸發判斷僅監看系統目前的狀況。例如：觸發可以觀察到開關被開啟，而觸發判斷僅關注目前開關是開啟或關閉的狀態。\n\n想了解更多關於「觸發判斷」的資料，請參考。\nhttps:\/\/home-assistant.io\/docs\/scripts\/conditions\/",
                             "add": "新增一個判斷式",
                             "duplicate": "複製",
                             "delete": "刪除",
@@ -475,7 +475,7 @@
                         },
                         "actions": {
                             "header": "觸發後動作",
-                            "introduction": "當自動化通過觸發條件與觸發判斷後便會執行觸發動作\n\n想了解更多可參考文件\nhttps:\/\/home-assistant.io\/docs\/automation\/action\/",
+                            "introduction": "「動作」為自動化觸發後，Home Assistant 所會執行的。\n\n想了解更多關於「動作」的資料，請參考文件。\nhttps:\/\/home-assistant.io\/docs\/automation\/action\/",
                             "add": "新增一個動作",
                             "duplicate": "複製",
                             "delete": "刪除",
@@ -485,7 +485,7 @@
                             "type": {
                                 "service": {
                                     "label": "執行服務",
-                                    "service_data": "資料"
+                                    "service_data": "服務資料"
                                 },
                                 "delay": {
                                     "label": "延遲",
@@ -647,8 +647,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "{entity} 已開啟。",
-            "entity_turned_off": "{entity} 已關閉。",
+            "entity_turned_on": "{entity}已開啟。",
+            "entity_turned_off": "{entity}已關閉。",
             "service_called": "服務 {service} 已執行。",
             "service_call_failed": "服務 {service} 執行失敗。",
             "connection_lost": "連線中斷。重新連線中..."
@@ -664,13 +664,13 @@
         "alarm_control_panel": "警戒模式控制面板",
         "automation": "自動化",
         "binary_sensor": "二進位傳感器",
-        "calendar": "日曆",
+        "calendar": "行事曆",
         "camera": "攝影機",
-        "climate": "氣象監控",
+        "climate": "溫控",
         "configurator": "設定檔編輯器",
         "conversation": "語音互動",
-        "cover": "Cover開關按鈕",
-        "device_tracker": "追蹤裝置ID",
+        "cover": "捲簾\/門",
+        "device_tracker": "裝置追蹤器",
         "fan": "風扇",
         "history_graph": "歷史圖",
         "group": "群組",
@@ -680,20 +680,20 @@
         "input_select": "選擇框",
         "input_number": "數字框",
         "input_text": "輸入框",
-        "light": "燈",
+        "light": "燈光",
         "lock": "鎖",
         "mailbox": "郵箱",
         "media_player": "媒體播放器",
         "notify": "通知",
         "plant": "植物",
         "proximity": "距離",
-        "remote": "遠端",
+        "remote": "遙控",
         "scene": "場景",
         "script": "腳本",
         "sensor": "傳感器",
         "sun": "太陽",
         "switch": "開關",
-        "updater": "更新",
+        "updater": "更新器",
         "weblink": "網站鏈接",
         "zwave": "Z-Wave"
     },
