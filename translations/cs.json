@@ -12,7 +12,8 @@
         "dev-events": "Události",
         "dev-templates": "Šablony",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informace"
+        "dev-info": "Informace",
+        "calendar": "Kalendář"
     },
     "state": {
         "default": {
@@ -651,6 +652,12 @@
             "service_called": "Služba {service} volána.",
             "service_call_failed": "Službu {service} nepodařilo zavolat.",
             "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Uložit",
+                "name": "Název"
+            }
         }
     },
     "domain": {

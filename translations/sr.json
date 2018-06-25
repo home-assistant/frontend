@@ -7,7 +7,8 @@
         "history": "Историја",
         "mailbox": "Поштанско сандуче",
         "shopping_list": "Листа за куповину",
-        "dev-mqtt": "MQTT"
+        "dev-mqtt": "MQTT",
+        "calendar": "Kalendar"
     },
     "state": {
         "sun": {
@@ -43,6 +44,22 @@
                 "zwave": {
                     "caption": "Z-Wave"
                 }
+            }
+        },
+        "card": {
+            "lock": {
+                "lock": "Zaključaj",
+                "unlock": "Otključaj"
+            },
+            "media_player": {
+                "source": "Izvor",
+                "sound_mode": "Režim zvuka"
+            }
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Sačuvaj",
+                "name": "Naziv"
             }
         }
     },

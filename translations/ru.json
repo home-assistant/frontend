@@ -637,7 +637,7 @@
             },
             "relative_time": {
                 "past": "{time} назад",
-                "future": "В {time}",
+                "future": "через {time}",
                 "never": "Никогда"
             },
             "history_charts": {

@@ -12,7 +12,8 @@
         "dev-events": "Eventi",
         "dev-templates": "Modelli",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informazioni"
+        "dev-info": "Informazioni",
+        "calendar": "Calendario"
     },
     "state": {
         "default": {
@@ -605,14 +606,16 @@
                 "effect": "Effetto"
             },
             "media_player": {
-                "text_to_speak": "Parole testo"
+                "text_to_speak": "Parole testo",
+                "source": "Fonte",
+                "sound_mode": "Modalità Audio"
             },
             "climate": {
                 "currently": "Attuale",
                 "on_off": "On \/ Off",
                 "target_temperature": "Temperatura",
                 "target_humidity": "Umidità",
-                "operation": "operazione",
+                "operation": "Operazione",
                 "fan_mode": "Ventilazione",
                 "swing_mode": "Modo oscillazione",
                 "away_mode": "Modalità Assente",
@@ -649,6 +652,12 @@
             "service_called": "Servizio {service} chiamato.",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
             "connection_lost": "Connessione persa. Riconnessione..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Salve",
+                "name": "Nome"
+            }
         }
     },
     "domain": {
