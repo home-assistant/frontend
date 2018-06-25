@@ -13,7 +13,8 @@ export default function loadCustomPanel(panelConfig) {
       toLoad.push(import(/* webpackChunkName: "legacy-support" */ '../legacy-support.js'));
     }
 
-    return Promise.all(toLoad).then(([{ importHrefPromise }]) => importHrefPromise(panelConfig.html_url));
+    return Promise.all(toLoad).then(([{ importHrefPromise }]) =>
+      importHrefPromise(panelConfig.html_url));
   } else if (panelConfig.js_url) {
     if (!(panelConfig.js_url in JS_CACHE)) {
       JS_CACHE[panelConfig.js_url] = loadJS(panelConfig.js_url);
