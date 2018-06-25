@@ -11,6 +11,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
 import '../../layouts/ha-app-layout.js';
+import '../../components/ha-start-voice-button.js';
 import { loadModule, loadJS } from '../../common/dom/load_resource.js';
 import './hui-view.js';
 
@@ -48,6 +49,7 @@ class HUIRoot extends EventsMixin(PolymerElement) {
             <paper-icon-button icon='hass:help-circle-outline'></paper-icon-button>
           </a>
           <paper-icon-button icon='hass:refresh' on-click='_handleRefresh'></paper-icon-button>
+          <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
         </app-toolbar>
 
         <div sticky hidden$="[[_computeTabsHidden(config.views)]]">
