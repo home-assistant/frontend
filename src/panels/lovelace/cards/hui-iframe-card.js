@@ -53,7 +53,7 @@ class HuiIframeCard extends PolymerElement {
   }
 
   getCardSize() {
-    return 1 + (this.config.height ? parseInt(this.config.height) : 300) / 40;
+    return 1 + ((this.config.height ? parseInt(this.config.height) : 300) / 40);
   }
 }
 customElements.define('hui-iframe-card', HuiIframeCard);
