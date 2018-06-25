@@ -4,7 +4,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 class HuiIframeCard extends PolymerElement {
   static get properties() {
     return {
-      config: Object
+      config: {
+        type: Object,
+        observer: '_configChanged'
+      }
     };
   }
 
@@ -26,9 +29,17 @@ class HuiIframeCard extends PolymerElement {
         .header .name {
           @apply --paper-font-common-nowrap;
         }
-        iframe {
+        .wrapper {
           width: 100%;
+          position: relative;
+        }
+        iframe {
           border: none;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
         }
       </style>
       <ha-card>
@@ -37,7 +48,9 @@ class HuiIframeCard extends PolymerElement {
             <div class="name">[[_computeTitle(config)]]</div>
           </div>
         </template>
-        <iframe height="[[_computeIframeHeight(config.height)]]" src="[[config.url]]"></iframe>
+        <div class="wrapper">
+          <iframe src="[[config.url]]"></iframe>
+        </div>
       </ha-card>
     `;
   }
@@ -47,12 +60,12 @@ class HuiIframeCard extends PolymerElement {
     return config.title || '';
   }
 
-  _computeIframeHeight(height) {
-    return height || '300px';
+  _configChanged(config) {
+    this.shadowRoot.querySelector('.wrapper').style.paddingTop = config.aspect_ratio || '50%';
   }
 
   getCardSize() {
-    return 1 + ((this.config.height ? parseInt(this.config.height) : 300) / 40);
+    return 1 + (this.offsetHeight / 50);
   }
 }
 customElements.define('hui-iframe-card', HuiIframeCard);
