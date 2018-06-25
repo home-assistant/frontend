@@ -14,7 +14,6 @@ class HuiIframeCard extends PolymerElement {
         ha-card {
           line-height: 0;
           overflow: hidden;
-          position: relative;
         }
         .header {
           @apply --paper-font-headline;
