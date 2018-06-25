@@ -39,7 +39,6 @@ class HuiEntitiesToggle extends PolymerElement {
   }
 
   _computeToggleEntities(hass, entities) {
-    if (!hass || !entities) return [];
     return entities.filter((entity) => {
       return entity in hass.states ? canToggleState(hass, hass.states[entity]) : false;
     })
@@ -58,16 +57,14 @@ class HuiEntitiesToggle extends PolymerElement {
     this.entities.forEach((entity) => {
       if ((STATES_ON.includes(this.hass.states[entity].state)) !== turnOn) {
         const stateDomain = computeDomain(entity);
-        let serviceDomain;
+        let serviceDomain = stateDomain;
         let service;
 
         switch (stateDomain) {
           case 'lock':
-            serviceDomain = 'lock';
             service = turnOn ? 'unlock' : 'lock';
             break;
           case 'cover':
-            serviceDomain = 'cover';
             service = turnOn ? 'open_cover' : 'close_cover';
             break;
           case 'group':
@@ -75,7 +72,6 @@ class HuiEntitiesToggle extends PolymerElement {
             service = turnOn ? 'turn_on' : 'turn_off';
             break;
           default:
-            serviceDomain = stateDomain;
             service = turnOn ? 'turn_on' : 'turn_off';
         }
 
