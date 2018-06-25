@@ -83,7 +83,6 @@ class HUIView extends PolymerElement {
 
     for (let i = 0; i < cards.length; i++) {
       const element = createCardElement(cards[i]);
-      element.config = cards[i];
       element.hass = this.hass;
       elements.push(element);
     }

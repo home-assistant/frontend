@@ -1,3 +1,5 @@
+import computeDomain from '../../../common/entity/compute_domain.js';
+
 import '../cards/hui-camera-preview-card.js';
 import '../cards/hui-entities-card.js';
 import '../cards/hui-entity-filter-card.js';
@@ -25,9 +27,24 @@ const CARD_TYPES = [
   'weather-forecast'
 ];
 
+const DOMAIN_DEFAULT_CARD = {
+  camera: 'camera-preview',
+  history_graph: 'history-graph',
+  media_player: 'media-control',
+  plant: 'plant-status',
+  weather: 'weather-forecast'
+};
+
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
 export default function createCardElement(config) {
+  if (typeof config === 'string' && Object.keys(DOMAIN_DEFAULT_CARD).includes(computeDomain(config))) {
+    const type = `hui-${DOMAIN_DEFAULT_CARD[computeDomain(config)]}-card`;
+    const element = document.createElement(type);
+    element.config = { type, entity: config };
+    return element;
+  }
+
   let error;
   let tag;
   if (config && config.type) {
@@ -48,10 +65,14 @@ export default function createCardElement(config) {
     error = 'No card type configured.';
   }
 
+  let element;
+
   if (error) {
-    const element = document.createElement('hui-error-card');
+    element = document.createElement('hui-error-card');
     element.error = error;
-    return element;
+  } else {
+    element = document.createElement(tag);
   }
-  return document.createElement(tag);
+  element.config = config;
+  return element;
 }
