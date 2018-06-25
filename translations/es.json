@@ -12,7 +12,8 @@
         "dev-events": "Eventos",
         "dev-templates": "Plantillas",
         "dev-mqtt": "MQTT",
-        "dev-info": "Información"
+        "dev-info": "Información",
+        "calendar": "Calendario"
     },
     "state": {
         "default": {
@@ -575,6 +576,18 @@
                     "wsw": "OSO"
                 },
                 "forecast": "Pronóstico"
+            },
+            "climate": {
+                "away_mode": "Fuera de casa",
+                "aux_heat": "Calor auxiliar"
+            },
+            "lock": {
+                "lock": "Bloquear",
+                "unlock": "Desbloquear"
+            },
+            "media_player": {
+                "source": "Fuente",
+                "sound_mode": "Modo de sonido"
             }
         },
         "components": {
@@ -585,6 +598,12 @@
             },
             "service-picker": {
                 "service": "Servicio"
+            }
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Guardar",
+                "name": "Nombre"
             }
         }
     },
