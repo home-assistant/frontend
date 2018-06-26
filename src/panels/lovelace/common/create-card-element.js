@@ -1,5 +1,3 @@
-import computeDomain from '../../../common/entity/compute_domain.js';
-
 import '../cards/hui-camera-preview-card.js';
 import '../cards/hui-entities-card.js';
 import '../cards/hui-entity-filter-card.js';
@@ -27,27 +25,13 @@ const CARD_TYPES = [
   'weather-forecast'
 ];
 
-const DOMAIN_DEFAULT_CARD = {
-  camera: 'camera-preview',
-  history_graph: 'history-graph',
-  media_player: 'media-control',
-  plant: 'plant-status',
-  weather: 'weather-forecast'
-};
-
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
-export default function createCardElement(config) {
-  if (typeof config === 'string' && Object.keys(DOMAIN_DEFAULT_CARD).includes(computeDomain(config))) {
-    const type = `hui-${DOMAIN_DEFAULT_CARD[computeDomain(config)]}-card`;
-    const element = document.createElement(type);
-    element.config = { type, entity: config };
-    return element;
-  }
-
-  let error;
+export default function createCardElement(config, elementNotDefinedCallback = null, invalidConfig = null) {
+  let error = invalidConfig;
   let tag;
-  if (config && config.type) {
+
+  if (!error && config && typeof config === 'object' && config.type) {
     if (CARD_TYPES.includes(config.type)) {
       tag = `hui-${config.type}-card`;
     } else if (config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
@@ -57,6 +41,7 @@ export default function createCardElement(config) {
     if (tag) {
       if (!customElements.get(tag)) {
         error = 'Custom element doesn\'t exist.';
+        if (elementNotDefinedCallback) elementNotDefinedCallback(tag);
       }
     } else {
       error = 'Unknown card type encountered.';
@@ -65,14 +50,9 @@ export default function createCardElement(config) {
     error = 'No card type configured.';
   }
 
-  let element;
-
-  if (error) {
-    element = document.createElement('hui-error-card');
-    element.error = error;
-  } else {
-    element = document.createElement(tag);
-  }
+  if (error) tag = 'hui-error-card';
+  const element = document.createElement(tag);
+  if (error) element.error = error;
   element.config = config;
   return element;
 }

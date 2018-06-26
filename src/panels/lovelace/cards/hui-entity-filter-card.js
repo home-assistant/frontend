@@ -19,6 +19,12 @@ class HuiEntitiesCard extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this._whenDefined = {};
+    this.elementNotDefinedCallback = this.elementNotDefinedCallback.bind(this);
+  }
+
   getCardSize() {
     return this.lastChild ? this.lastChild.getCardSize() : 1;
   }
@@ -72,25 +78,21 @@ class HuiEntitiesCard extends PolymerElement {
 
 
     if (error) {
-      element = document.createElement('hui-error-card');
-      element.error = error;
-      element.config = config;
+      element = createCardElement(config, this.elementNotDefinedCallback, error);
     } else {
-      element = createCardElement(config.card);
+      element = createCardElement(config.card, this.elementNotDefinedCallback, null);
       element.config = this._computeCardConfig(config);
       element.hass = this.hass;
-      this._cardReady = true;
     }
     this.appendChild(element);
   }
 
   _hassChanged(hass) {
-    if (!this._cardReady) return;
     const element = this.lastChild;
-    if (element) {
-      element.hass = hass;
-      element.config = this._computeCardConfig(this.config);
-    }
+    if (!element || element.tagName === 'HUI-ERROR-CARD') return;
+
+    element.hass = hass;
+    element.config = this._computeCardConfig(this.config);
   }
 
   _computeCardConfig(config) {
@@ -99,6 +101,13 @@ class HuiEntitiesCard extends PolymerElement {
       config.card,
       { entities: this._getEntities(this.hass, config.filter) }
     );
+  }
+
+  elementNotDefinedCallback(tag) {
+    if (!(tag in this._whenDefined)) {
+      this._whenDefined[tag] = customElements.whenDefined(tag)
+        .then(() => this._configChanged(this.config));
+    }
   }
 }
 customElements.define('hui-entity-filter-card', HuiEntitiesCard);

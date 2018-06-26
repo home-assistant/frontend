@@ -76,13 +76,15 @@ class HUIView extends PolymerElement {
   constructor() {
     super();
     this._elements = [];
+    this._whenDefined = {};
+    this.elementNotDefinedCallback = this.elementNotDefinedCallback.bind(this);
   }
 
   _getElements(cards) {
     const elements = [];
 
     for (let i = 0; i < cards.length; i++) {
-      const element = createCardElement(cards[i]);
+      const element = createCardElement(cards[i], this.elementNotDefinedCallback, null);
       element.hass = this.hass;
       elements.push(element);
     }
@@ -155,6 +157,13 @@ class HUIView extends PolymerElement {
   _hassChanged(hass) {
     for (let i = 0; i < this._elements.length; i++) {
       this._elements[i].hass = hass;
+    }
+  }
+
+  elementNotDefinedCallback(tag) {
+    if (!(tag in this._whenDefined)) {
+      this._whenDefined[tag] = customElements.whenDefined(tag)
+        .then(() => this._configChanged());
     }
   }
 }
