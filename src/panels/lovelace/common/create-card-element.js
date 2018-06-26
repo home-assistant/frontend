@@ -29,8 +29,8 @@ const CARD_TYPES = [
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
-export default function createCardElement(config,
-    elementNotDefinedCallback = null, invalidConfig = null) {
+export default function
+    createCardElement(config, elementNotDefinedCallback = null, invalidConfig = null) {
   let error = invalidConfig;
   let tag;
 
