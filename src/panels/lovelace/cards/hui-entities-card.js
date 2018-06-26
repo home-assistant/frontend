@@ -7,7 +7,7 @@ import computeDomain from '../../../common/entity/compute_domain.js';
 import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 
 import '../../../components/ha-card.js';
-import '../components/hui-entities-toggle.js'
+import '../components/hui-entities-toggle.js';
 
 // just importing this now as shortcut to import correct state-card-*
 import '../../../state-summary/state-card-content.js';
