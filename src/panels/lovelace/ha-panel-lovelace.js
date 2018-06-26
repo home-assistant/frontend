@@ -24,7 +24,6 @@ class Lovelace extends PolymerElement {
           route="[[route]]"
           config='[[_config]]'
           columns='[[_columns]]'
-          route: Object,
           on-config-refresh='_fetchConfig'
         ></hui-root>
       </template>
