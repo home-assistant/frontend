@@ -21,7 +21,7 @@ class HuiEntitiesToggle extends PolymerElement {
         margin: -4px -5px;
       }
     </style>
-    <template is="dom-if" if="[[_showToggle(_toggleEntities)]]">
+    <template is="dom-if" if="[[_toggleEntities.length]]">
       <paper-toggle-button checked="[[_computeIsChecked(hass, _toggleEntities)]]" on-change="_callService"></paper-toggle-button>
     </template>
 `;
@@ -43,47 +43,40 @@ class HuiEntitiesToggle extends PolymerElement {
       canToggleState(hass, hass.states[entity]) : false));
   }
 
-  _showToggle(entities) {
-    return entities.length !== 0;
-  }
-
   _computeIsChecked(hass, entities) {
-    for (let i = 0; i < entities.length; i++) {
-      if (STATES_ON.includes(hass.states[entities[i]].state)) return true;
-    }
-    return false;
+    return entities.some(ent_id => STATES_ON.includes(hass.states[ent_id].state));
   }
 
   _callService(ev) {
     const turnOn = ev.target.checked;
+    const toCall = {};
 
-    this.entities.forEach((entity) => {
-      if ((STATES_ON.includes(this.hass.states[entity].state)) !== turnOn) {
-        const stateDomain = computeDomain(entity);
-        let serviceDomain = stateDomain;
-        let service;
+    this.entities.forEach((ent_id) => {
+      if ((STATES_ON.includes(this.hass.states[ent_id].state)) !== turnOn) {
+        const stateDomain = computeDomain(ent_id);
+        const serviceDomain = stateDomain === 'lock' || stateDomain === 'cover' ?
+          stateDomain : 'homeassistant';
 
-        switch (stateDomain) {
-          case 'lock':
-            service = turnOn ? 'unlock' : 'lock';
-            break;
-          case 'cover':
-            service = turnOn ? 'open_cover' : 'close_cover';
-            break;
-          case 'group':
-            serviceDomain = 'homeassistant';
-            service = turnOn ? 'turn_on' : 'turn_off';
-            break;
-          default:
-            service = turnOn ? 'turn_on' : 'turn_off';
-        }
-
-        this.hass.callService(
-          serviceDomain,
-          service,
-          { entity_id: entity }
-        );
+        if (!(serviceDomain in toCall)) toCall[serviceDomain] = [];
+        toCall[serviceDomain].push(ent_id);
       }
+    });
+
+    Object.keys(toCall).forEach((domain) => {
+      let service;
+      switch (domain) {
+        case 'lock':
+          service = turnOn ? 'unlock' : 'lock';
+          break;
+        case 'cover':
+          service = turnOn ? 'open_cover' : 'close_cover';
+          break;
+        default:
+          service = turnOn ? 'turn_on' : 'turn_off';
+      }
+
+      const entities = toCall[domain];
+      this.hass.callService(domain, service, { entity_id: entities });
     });
   }
 }

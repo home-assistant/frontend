@@ -51,7 +51,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     <ha-card>
       <div class='header'>
         <div class="name">[[_computeTitle(config)]]</div>
-        <hui-entities-toggle hass="[[hass]]" entities="[[config.entities]]"></hui-entities-toggle>
+        <template is="dom-if" if="[[_showHeaderToggle(config.show_header_toggle)]]">
+          <hui-entities-toggle hass="[[hass]]" entities="[[config.entities]]"></hui-entities-toggle>
+        </template>
       </div>
       <div id="states"></div>
     </ha-card>
@@ -83,6 +85,10 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
   _computeTitle(config) {
     return config.title;
+  }
+
+  _showHeaderToggle(show) {
+    return show !== false;
   }
 
   _configChanged(config) {
