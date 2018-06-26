@@ -21,8 +21,10 @@ class Lovelace extends PolymerElement {
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
           hass='[[hass]]'
+          route="[[route]]"
           config='[[_config]]'
           columns='[[_columns]]'
+          route: Object,
           on-config-refresh='_fetchConfig'
         ></hui-root>
       </template>
@@ -56,6 +58,8 @@ class Lovelace extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      route: Object,
 
       _columns: {
         type: Number,
