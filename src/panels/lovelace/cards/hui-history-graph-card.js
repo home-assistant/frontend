@@ -1,21 +1,29 @@
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeDomain from '../../../common/entity/compute_domain.js';
-
-import '../../../cards/ha-history_graph-card.js';
 import './hui-error-card.js';
+import '../../../components/state-history-charts.js';
+import '../../../data/ha-state-history-data.js';
 
 class HuiHistoryGraphCard extends PolymerElement {
   static get properties() {
     return {
-      hass: {
-        type: Object,
-        observer: '_hassChanged',
-      },
+      hass: Object,
       config: {
         type: Object,
         observer: '_configChanged',
-      }
+      },
+      _error: String,
+      stateHistory: Object,
+      stateHistoryLoading: Boolean,
+      cacheConfig: {
+        type: Object,
+        value: {
+          refresh: 0,
+          cacheKey: null,
+          hoursToShow: 24,
+        },
+      },
     };
   }
 
@@ -23,55 +31,65 @@ class HuiHistoryGraphCard extends PolymerElement {
     return 4;
   }
 
-  _configChanged(config) {
-    this._entityId = null;
-    if (this.lastChild) {
-      this.removeChild(this.lastChild);
-    }
-    const entityId = config && config.entity;
-    if (entityId && !(entityId in this.hass.states)) {
-      return;
-    }
+  static get template() {
+    return html`
+      <style>
+        ha-card {
+          padding: 16px;
+        }
+        .header {
+          @apply --paper-font-headline;
+          /* overwriting line-height +8 because entity-toggle can be 40px height,
+            compensating this with reduced padding */
+          line-height: 40px;
+          color: var(--primary-text-color);
+          padding: 4px 0 12px;
+        }
+        .header .name {
+          @apply --paper-font-common-nowrap;
+        }
+      </style>
 
-    let error = null;
-    let cardConfig;
-    let tag;
+      <template is="dom-if" if="[[!_error]]">
+        <ha-card>
+          <div class='header'>
+            <div class="name">[[config.title]]</div>
+          </div>
+          <ha-state-history-data
+            hass="[[hass]]"
+            filter-type="recent-entity"
+            entity-id="[[config.entities]]"
+            data="{{stateHistory}}"
+            is-loading="{{stateHistoryLoading}}"
+            cache-config="[[cacheConfig]]"
+          ></ha-state-history-data>
+          <state-history-charts
+            hass="[[hass]]"
+            history-data="[[stateHistory]]"
+            is-loading-data="[[stateHistoryLoading]]"
+            up-to-now
+            no-single
+          ></state-history-charts>
+        </ha-card>
+      </template>
 
-    if (entityId) {
-      if (computeDomain(entityId) === 'history_graph') {
-        this._entityId = entityId;
-        tag = 'ha-history_graph-card';
-        cardConfig = config;
-      } else {
-        error = 'Entity domain must be "history_graph"';
-      }
-    } else {
-      error = 'Entity not defined in card config';
-    }
-
-    if (error) {
-      tag = 'hui-error-card';
-      cardConfig = { error };
-    }
-    const element = document.createElement(tag);
-
-    if (!error) {
-      element.stateObj = this.hass.states[entityId];
-      element.hass = this.hass;
-    }
-
-    element.config = cardConfig;
-    this.appendChild(element);
+      <template is="dom-if" if="[[_error]]">
+        <hui-error-card error="[[_error]]" config="[[config]]"></hui-error-card>
+      </template>
+    `;
   }
 
-  _hassChanged(hass) {
-    if (this.lastChild && this._entityId && this._entityId in hass.states) {
-      const element = this.lastChild;
-      const stateObj = hass.states[this._entityId];
-      element.stateObj = stateObj;
-      element.hass = hass;
+  _configChanged(config) {
+    if (config.entities && Array.isArray(config.entities)) {
+      this._error = null;
+
+      this.cacheConfig = {
+        refresh: config.refresh || 0,
+        cacheKey: config.entities,
+        hoursToShow: config.hours || 24
+      };
     } else {
-      this._configChanged(this.config);
+      this._error = 'No entities configured.';
     }
   }
 }
