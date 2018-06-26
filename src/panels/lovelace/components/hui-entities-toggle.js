@@ -44,21 +44,21 @@ class HuiEntitiesToggle extends PolymerElement {
   }
 
   _computeIsChecked(hass, entities) {
-    return entities.some(ent_id => STATES_ON.includes(hass.states[ent_id].state));
+    return entities.some(entity => STATES_ON.includes(hass.states[entity].state));
   }
 
   _callService(ev) {
     const turnOn = ev.target.checked;
     const toCall = {};
 
-    this.entities.forEach((ent_id) => {
-      if ((STATES_ON.includes(this.hass.states[ent_id].state)) !== turnOn) {
-        const stateDomain = computeDomain(ent_id);
+    this.entities.forEach((entity) => {
+      if ((STATES_ON.includes(this.hass.states[entity].state)) !== turnOn) {
+        const stateDomain = computeDomain(entity);
         const serviceDomain = stateDomain === 'lock' || stateDomain === 'cover' ?
           stateDomain : 'homeassistant';
 
         if (!(serviceDomain in toCall)) toCall[serviceDomain] = [];
-        toCall[serviceDomain].push(ent_id);
+        toCall[serviceDomain].push(entity);
       }
     });
 
