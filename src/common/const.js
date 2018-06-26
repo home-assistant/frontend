@@ -63,16 +63,16 @@ export const DOMAINS_MORE_INFO_NO_HISTORY = [
 /** States that we consider "on". */
 export const STATES_ON = [
   'home',
-  'locked',
   'on',
   'open',
+  'unlocked'
 ];
 
 /** States that we consider "off". */
 export const STATES_OFF = [
   'closed',
-  'off',
-  'unlocked',
+  'locked',
+  'off'
 ];
 
 /** Temperature units. */
