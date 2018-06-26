@@ -3,6 +3,7 @@ import '../cards/hui-entities-card.js';
 import '../cards/hui-entity-filter-card.js';
 import '../cards/hui-glance-card';
 import '../cards/hui-history-graph-card.js';
+import '../cards/hui-iframe-card.js';
 import '../cards/hui-markdown-card.js';
 import '../cards/hui-media-control-card.js';
 import '../cards/hui-entity-picture-card.js';
