@@ -5,6 +5,7 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import '../../../components/ha-card.js';
 
 import { STATES_ON } from '../../../common/const.js';
+import canToggleState from '../../../common/entity/can_toggle_state.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
@@ -12,8 +13,6 @@ import stateIcon from '../../../common/entity/state_icon.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
-
-const DOMAINS_FORCE_DIALOG = ['binary_sensor', 'device_tracker', 'sensor'];
 
 /*
  * @appliesMixin EventsMixin
@@ -129,9 +128,8 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       if (config.force_dialog) {
         dialog = config.entities;
       } else {
-        dialog = config.entities
-          .filter(entity => DOMAINS_FORCE_DIALOG.includes(computeDomain(entity)));
-        service = config.entities.filter(entity => !dialog.includes(entity));
+        service = config.entities.filter(entity => canToggleState(this.hass, this.hass.states[entity]));
+        dialog = config.entities.filter(entity => !service.includes(entity));
       }
     } else {
       _error = 'Error in card configuration.';
@@ -166,20 +164,21 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _callService(ev) {
     const entityId = ev.model.item;
     const domain = computeDomain(entityId);
-    const isOn = STATES_ON.includes(this.hass.states[entityId].state);
+    const turnOn = !STATES_ON.includes(this.hass.states[entityId].state);
     let service;
     switch (domain) {
       case 'lock':
-        service = isOn ? 'unlock' : 'lock';
+        service = turnOn ? 'unlock' : 'lock';
         break;
       case 'cover':
-        service = isOn ? 'close' : 'open';
+        service = turnOn ? 'open_cover' : 'close_cover';
         break;
-      case 'scene':
-        service = 'turn_on';
+      case 'group':
+        domain = 'homeassistant';
+        service = turnOn ? 'turn_on' : 'turn_off';
         break;
       default:
-        service = isOn ? 'turn_off' : 'turn_on';
+        service = turnOn ? 'turn_on' : 'turn_off';
     }
     this.hass.callService(domain, service, { entity_id: entityId });
   }
