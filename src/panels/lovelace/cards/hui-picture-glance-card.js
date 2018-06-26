@@ -128,7 +128,8 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       if (config.force_dialog) {
         dialog = config.entities;
       } else {
-        service = config.entities.filter(entity => canToggleState(this.hass, this.hass.states[entity]));
+        service = config.entities.filter(entity =>
+          canToggleState(this.hass, this.hass.states[entity]));
         dialog = config.entities.filter(entity => !service.includes(entity));
       }
     } else {
@@ -163,7 +164,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _callService(ev) {
     const entityId = ev.model.item;
-    const domain = computeDomain(entityId);
+    let domain = computeDomain(entityId);
     const turnOn = !STATES_ON.includes(this.hass.states[entityId].state);
     let service;
     switch (domain) {
