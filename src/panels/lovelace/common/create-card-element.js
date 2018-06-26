@@ -1,5 +1,6 @@
 import '../cards/hui-camera-preview-card.js';
 import '../cards/hui-entities-card.js';
+import '../cards/hui-entities-gone-wild.js';
 import '../cards/hui-entity-filter-card.js';
 import '../cards/hui-glance-card';
 import '../cards/hui-history-graph-card.js';
@@ -15,6 +16,7 @@ import '../cards/hui-error-card.js';
 const CARD_TYPES = [
   'camera-preview',
   'entities',
+  'entities-gone-wild',
   'entity-filter',
   'entity-picture',
   'glance',
