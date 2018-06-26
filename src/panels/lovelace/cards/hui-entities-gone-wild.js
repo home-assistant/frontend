@@ -6,7 +6,6 @@ import '../../../components/ha-card.js';
 
 import { STATES_ON } from '../../../common/const.js';
 import canToggleState from '../../../common/entity/can_toggle_state.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import stateIcon from '../../../common/entity/state_icon.js';
