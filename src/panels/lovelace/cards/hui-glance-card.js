@@ -49,6 +49,8 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           width: 20%;
         }
         .entity div {
+          width: 100%;
+          text-align: center;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
