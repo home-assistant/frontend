@@ -83,7 +83,7 @@ class HuiHistoryGraphCard extends PolymerElement {
     if (config.entities && Array.isArray(config.entities)) {
       this._error = null;
 
-      this.cacheConfig =  {
+      this.cacheConfig = {
         refresh: config.refresh || 0,
         cacheKey: config.entities,
         hoursToShow: config.hours || 24
