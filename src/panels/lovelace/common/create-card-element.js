@@ -18,6 +18,7 @@ const CARD_TYPES = [
   'entity-picture',
   'glance',
   'history-graph',
+  'iframe',
   'markdown',
   'media-control',
   'picture-glance',
