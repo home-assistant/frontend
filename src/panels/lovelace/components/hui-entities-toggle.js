@@ -39,8 +39,8 @@ class HuiEntitiesToggle extends PolymerElement {
   }
 
   _computeToggleEntities(hass, entities) {
-    return entities.filter(entity => entity in hass.states ?
-      canToggleState(hass, hass.states[entity]) : false);
+    return entities.filter(entity => (entity in hass.states ?
+      canToggleState(hass, hass.states[entity]) : false));
   }
 
   _showToggle(entities) {
