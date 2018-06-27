@@ -21,6 +21,7 @@ class Lovelace extends PolymerElement {
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
           hass='[[hass]]'
+          route="[[route]]"
           config='[[_config]]'
           columns='[[_columns]]'
           on-config-refresh='_fetchConfig'
@@ -56,6 +57,8 @@ class Lovelace extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      route: Object,
 
       _columns: {
         type: Number,
