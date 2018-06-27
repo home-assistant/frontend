@@ -1,5 +1,6 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-button/paper-button.js';
 
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
@@ -38,6 +39,11 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         cursor: pointer;
         padding: 4px;
       }
+      paper-button {
+        color: var(--primary-color);
+        font-weight: 500;
+        height: 37px;
+      }
     </style>
 
     <ha-card header="[[config.title]]">
@@ -66,6 +72,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
   _configChanged(config) {
     const root = this.$.root;
     this._requiresStateObj = [];
+    this._requiresTextState = [];
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -86,12 +93,26 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
           el.addEventListener('click', () => this._handleClick(entityId, element.action === 'toggle'));
           el.classList.add('clickable');
           el.title = this._computeTooltip(stateObj);
-          if (element.style) {
-            Object.keys(element.style).forEach((prop) => {
-              el.style.setProperty(prop, element.style[prop]);
-            });
-          }
           this._requiresStateObj.push({ el, entityId });
+        } else if (element.type === 'state-text') {
+          const entityId = element.entity;
+          const stateObj = this.hass.states[entityId];
+          el = document.createElement('div');
+          el.addEventListener('click', () => this._handleClick(entityId, false));
+          el.classList.add('clickable');
+          el.innerText = this._computeTextState(stateObj);
+          el.title = this._computeTooltip(stateObj);
+          this._requiresTextState.push({ el, entityId });
+        } else if (element.type === 'service-button') {
+          el = document.createElement('paper-button');
+          el.raised = true;
+          el.addEventListener('click', () => this._callService(element.service));
+          el.innerText = element.text;
+        }
+        if (element.style) {
+          Object.keys(element.style).forEach((prop) => {
+            el.style.setProperty(prop, element.style[prop]);
+          });
         }
         el.classList.add('entity');
         root.appendChild(el);
@@ -106,10 +127,21 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
       el.stateObj = stateObj;
       el.title = this._computeTooltip(stateObj);
     });
+
+    this._requiresTextState.forEach((element) => {
+      const { el, entityId } = element;
+      const stateObj = hass.states[entityId];
+      el.innerText = this._computeTextState(stateObj);
+      el.title = this._computeTooltip(stateObj);
+    });
   }
 
   _computeTooltip(stateObj) {
     return `${computeStateName(stateObj)}: ${computeStateDisplay(this.localize, stateObj)}`;
+  }
+
+  _computeTextState(stateObj) {
+    return computeStateDisplay(this.localize, stateObj);
   }
 
   _handleClick(entityId, toggle) {
@@ -134,6 +166,13 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
     } else {
       this.fire('hass-more-info', { entityId });
     }
+  }
+
+  _callService(data) {
+    const domain = data.domain || '';
+    const service = data.service || '';
+    const serviceData = data.data || {} ;
+    this.hass.callService(domain, service, serviceData);
   }
 }
 
