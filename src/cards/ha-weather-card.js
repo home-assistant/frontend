@@ -104,7 +104,7 @@ class HaWeatherCard extends
               <template is="dom-if" if="[[_showValue(stateObj.attributes.pressure)]]">
                 <div>
                   [[localize('ui.card.weather.attributes.air_pressure')]]:
-                  [[stateObj.attributes.pressure]] hPa
+                  [[stateObj.attributes.pressure]] [[getUnit('air_pressure')]]
                 </div>
               </template>
               <template is="dom-if" if="[[_showValue(stateObj.attributes.humidity)]]">
@@ -203,10 +203,17 @@ class HaWeatherCard extends
   }
 
   getUnit(measure) {
-    if (measure === 'precipitation') {
-      return this.getUnit('length') === 'km' ? 'mm' : 'in';
+    const lengthUnit = this.hass.config.core.unit_system.length;
+    switch (measure) {
+      case 'air_pressure':
+        return lengthUnit === 'km' ? 'hPa' : 'inHg';
+      case 'length':
+        return lengthUnit;
+      case 'precipitation':
+        return lengthUnit === 'km' ? 'mm' : 'in';
+      default:
+        return this.hass.config.core.unit_system[measure] || '';
     }
-    return this.hass.config.core.unit_system[measure] || '';
   }
 
   computeState(state, localize) {
