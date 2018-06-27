@@ -30,11 +30,14 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
       #root img {
         width: 100%;
       }
-      .entity {
-        line-height: 1em;
+      .element {
         white-space: nowrap;
         position: absolute;
         transform: translate(-50%, -50%);
+      }
+      div.element {
+        padding: 4px;
+        line-height: 1em;
       }
       .clickable {
         cursor: pointer;
@@ -108,7 +111,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
             el.style.setProperty(prop, element.style[prop]);
           });
         }
-        el.classList.add('entity');
+        el.classList.add('element');
         root.appendChild(el);
       });
     }
