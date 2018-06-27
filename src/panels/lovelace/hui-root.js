@@ -149,8 +149,8 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     if (index !== this._curView) {
       const id = this.config.views[index].id || index;
       this.navigate(`/lovelace/${id}`);
+      this._selectView(index);
     }
-    this._selectView(index);
   }
 
   _selectView(viewIndex) {
