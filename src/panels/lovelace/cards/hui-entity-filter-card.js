@@ -1,7 +1,8 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
-import createCardElement from '../common/create-card-element';
+import createCardElement from '../common/create-card-element.js';
+import createErrorCardConfig from '../common/create-error-card-config.js';
 
 class HuiEntitiesCard extends PolymerElement {
   static get properties() {
@@ -15,12 +16,6 @@ class HuiEntitiesCard extends PolymerElement {
         observer: '_configChanged'
       }
     };
-  }
-
-  constructor() {
-    super();
-    this._whenDefined = {};
-    this.elementNotDefinedCallback = this.elementNotDefinedCallback.bind(this);
   }
 
   getCardSize() {
@@ -63,23 +58,29 @@ class HuiEntitiesCard extends PolymerElement {
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
+
     let error;
-    let element;
 
     if (!config.filter || !Array.isArray(config.filter)) {
       error = 'Incorrect filter config.';
     } else if (!config.card) {
-      config.card = { type: 'entities' };
+      config = Object.assign({}, config, {
+        card: { type: 'entities' }
+      });
     } else if (!config.card.type) {
-      config.card.type = 'entities';
+      config = Object.assign({}, config, {
+        card: Object.assign({}, config.card, { type: 'entities' })
+      });
     }
 
+    let element;
 
     if (error) {
-      element = createCardElement(config, this.elementNotDefinedCallback, error);
+      element = createCardElement(createErrorCardConfig(error, config.card));
     } else {
-      element = createCardElement(config.card, this.elementNotDefinedCallback, null);
-      element.config = this._computeCardConfig(config);
+      element = createCardElement(config.card);
+      element._filterRawConfig = config.card;
+      this._updateCardConfig(element);
       element.hass = this.hass;
     }
     this.appendChild(element);
@@ -87,25 +88,17 @@ class HuiEntitiesCard extends PolymerElement {
 
   _hassChanged(hass) {
     const element = this.lastChild;
-    if (!element || element.tagName === 'HUI-ERROR-CARD') return;
-
+    this._updateCardConfig(element);
     element.hass = hass;
-    element.config = this._computeCardConfig(this.config);
   }
 
-  _computeCardConfig(config) {
-    return Object.assign(
+  _updateCardConfig(element) {
+    if (!element || element.tagName === 'HUI-ERROR-CARD') return;
+    element.config = Object.assign(
       {},
-      config.card,
-      { entities: this._getEntities(this.hass, config.filter) }
+      element._filterRawConfig,
+      { entities: this._getEntities(this.hass, this.config.filter) }
     );
-  }
-
-  elementNotDefinedCallback(tag) {
-    if (!(tag in this._whenDefined)) {
-      this._whenDefined[tag] = customElements.whenDefined(tag)
-        .then(() => this._configChanged(this.config));
-    }
   }
 }
 customElements.define('hui-entity-filter-card', HuiEntitiesCard);

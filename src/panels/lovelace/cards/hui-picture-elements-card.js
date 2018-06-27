@@ -27,13 +27,12 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
       #root {
         position: relative;
         overflow: hidden;
-        line-height: 0;
       }
       #root img {
+        display: block;
         width: 100%;
       }
       .element {
-        line-height: initial;
         white-space: nowrap;
         position: absolute;
         transform: translate(-50%, -50%);
