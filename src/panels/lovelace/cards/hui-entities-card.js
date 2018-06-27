@@ -7,6 +7,7 @@ import computeDomain from '../../../common/entity/compute_domain.js';
 import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 
 import '../../../components/ha-card.js';
+import '../components/hui-entities-toggle.js';
 
 // just importing this now as shortcut to import correct state-card-*
 import '../../../state-summary/state-card-content.js';
@@ -36,6 +37,8 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
         line-height: 40px;
         color: var(--primary-text-color);
         padding: 4px 0 12px;
+        display: flex;
+        justify-content: space-between;
       }
       .header .name {
         @apply --paper-font-common-nowrap;
@@ -48,6 +51,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     <ha-card>
       <div class='header'>
         <div class="name">[[_computeTitle(config)]]</div>
+        <template is="dom-if" if="[[_showHeaderToggle(config.show_header_toggle)]]">
+          <hui-entities-toggle hass="[[hass]]" entities="[[config.entities]]"></hui-entities-toggle>
+        </template>
       </div>
       <div id="states"></div>
     </ha-card>
@@ -79,6 +85,10 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
   _computeTitle(config) {
     return config.title;
+  }
+
+  _showHeaderToggle(show) {
+    return show !== false;
   }
 
   _configChanged(config) {
