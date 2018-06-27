@@ -21,13 +21,19 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
   static get template() {
     return html`
     <style>
+      ha-card {
+        overflow: hidden;
+      }
       #root {
         position: relative;
+        overflow: hidden;
+        line-height: 0;
       }
       #root img {
         width: 100%;
       }
       .element {
+        line-height: initial;
         white-space: nowrap;
         position: absolute;
         transform: translate(-50%, -50%);
