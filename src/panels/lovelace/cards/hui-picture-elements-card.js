@@ -32,7 +32,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         position: absolute;
         transform: translate(-50%, -50%);
       }
-      div.element {
+      .state-text {
         padding: 8px;
       }
       .clickable {
@@ -92,7 +92,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
           const entityId = element.entity;
           el = document.createElement('div');
           el.addEventListener('click', () => this._handleClick(entityId, false));
-          el.classList.add('clickable');
+          el.classList.add('clickable', 'state-text');
           this._requiresTextState.push({ el, entityId });
         } else if (element.type === 'service-button') {
           el = document.createElement('ha-call-service-button');
@@ -102,12 +102,12 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
           el.serviceData = (element.service && element.service.data) || {};
           el.innerText = element.text;
         }
+        el.classList.add('element');
         if (element.style) {
           Object.keys(element.style).forEach((prop) => {
             el.style.setProperty(prop, element.style[prop]);
           });
         }
-        el.classList.add('element');
         root.appendChild(el);
       });
     }
