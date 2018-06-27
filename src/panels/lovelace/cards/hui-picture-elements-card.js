@@ -1,6 +1,7 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
@@ -21,22 +22,30 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
     return html`
     <style>
       ha-card {
-        line-height: 0;
+        overflow: hidden;
       }
       #root {
         position: relative;
+        overflow: hidden;
+        line-height: 0;
       }
       #root img {
         width: 100%;
       }
-      #root .entity {
+      .element {
+        line-height: initial;
         white-space: nowrap;
         position: absolute;
         transform: translate(-50%, -50%);
       }
-      #root .clickable {
+      .state-text {
+        padding: 8px;
+      }
+      .clickable {
         cursor: pointer;
-        padding: 4px;
+      }
+      ha-call-service-button {
+        color: var(--primary-color);
       }
     </style>
 
@@ -66,6 +75,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
   _configChanged(config) {
     const root = this.$.root;
     this._requiresStateObj = [];
+    this._requiresTextState = [];
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -80,20 +90,30 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         let el;
         if (element.type === 'state-badge') {
           const entityId = element.entity;
-          const stateObj = this.hass.states[entityId];
           el = document.createElement('state-badge');
-          el.stateObj = stateObj;
           el.addEventListener('click', () => this._handleClick(entityId, element.action === 'toggle'));
           el.classList.add('clickable');
-          el.title = this._computeTooltip(stateObj);
-          if (element.style) {
-            Object.keys(element.style).forEach((prop) => {
-              el.style.setProperty(prop, element.style[prop]);
-            });
-          }
           this._requiresStateObj.push({ el, entityId });
+        } else if (element.type === 'state-text') {
+          const entityId = element.entity;
+          el = document.createElement('div');
+          el.addEventListener('click', () => this._handleClick(entityId, false));
+          el.classList.add('clickable', 'state-text');
+          this._requiresTextState.push({ el, entityId });
+        } else if (element.type === 'service-button') {
+          el = document.createElement('ha-call-service-button');
+          el.hass = this.hass;
+          el.domain = (element.service && element.domain) || 'homeassistant';
+          el.service = (element.service && element.service.service) || '';
+          el.serviceData = (element.service && element.service.data) || {};
+          el.innerText = element.text;
         }
-        el.classList.add('entity');
+        el.classList.add('element');
+        if (element.style) {
+          Object.keys(element.style).forEach((prop) => {
+            el.style.setProperty(prop, element.style[prop]);
+          });
+        }
         root.appendChild(el);
       });
     }
@@ -104,6 +124,13 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
       const { el, entityId } = element;
       const stateObj = hass.states[entityId];
       el.stateObj = stateObj;
+      el.title = this._computeTooltip(stateObj);
+    });
+
+    this._requiresTextState.forEach((element) => {
+      const { el, entityId } = element;
+      const stateObj = hass.states[entityId];
+      el.innerText = computeStateDisplay(this.localize, stateObj);
       el.title = this._computeTooltip(stateObj);
     });
   }
