@@ -13,7 +13,7 @@ class HassioAddonLogs extends PolymerElement {
       paper-card {
         display: block;
       }
-      pre-log {
+      .pre-log {
         overflow-y: auto;
       }
     </style>
