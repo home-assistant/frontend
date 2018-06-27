@@ -111,7 +111,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
     super.connectedCallback();
     window.removeInitMsg();
     if (document.location.pathname === '/') {
-      this.navigate('/states', true);
+      this.navigate(`/${localStorage.defaultPage || 'states'}`, true);
     }
   }
 
