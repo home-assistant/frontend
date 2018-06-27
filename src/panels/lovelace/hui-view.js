@@ -2,6 +2,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
+import debounce from '../../common/util/debounce.js';
+
 import createCardElement from './common/create-card-element';
 
 class HUIView extends PolymerElement {
@@ -51,7 +53,7 @@ class HUIView extends PolymerElement {
         }
       }
       </style>
-      <div id='columns'></div>
+      <div id='columns' on-rebuild-view='_debouncedConfigChanged'></div>
     `;
   }
   static get properties() {
@@ -76,20 +78,7 @@ class HUIView extends PolymerElement {
   constructor() {
     super();
     this._elements = [];
-    this._whenDefined = {};
-    this.elementNotDefinedCallback = this.elementNotDefinedCallback.bind(this);
-  }
-
-  _getElements(cards) {
-    const elements = [];
-
-    for (let i = 0; i < cards.length; i++) {
-      const element = createCardElement(cards[i], this.elementNotDefinedCallback, null);
-      element.hass = this.hass;
-      elements.push(element);
-    }
-
-    return elements;
+    this._debouncedConfigChanged = debounce(this._configChanged, 100);
   }
 
   _configChanged() {
@@ -105,7 +94,11 @@ class HUIView extends PolymerElement {
       return;
     }
 
-    const elements = this._getElements(config.cards);
+    const elements = config.cards.map((cardConfig) => {
+      const element = createCardElement(cardConfig);
+      element.hass = this.hass;
+      return element;
+    });
 
     let columns = [];
     const columnEntityCount = [];
@@ -157,13 +150,6 @@ class HUIView extends PolymerElement {
   _hassChanged(hass) {
     for (let i = 0; i < this._elements.length; i++) {
       this._elements[i].hass = hass;
-    }
-  }
-
-  elementNotDefinedCallback(tag) {
-    if (!(tag in this._whenDefined)) {
-      this._whenDefined[tag] = customElements.whenDefined(tag)
-        .then(() => this._configChanged());
     }
   }
 }
