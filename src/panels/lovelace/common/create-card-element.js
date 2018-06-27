@@ -7,6 +7,7 @@ import '../cards/hui-iframe-card.js';
 import '../cards/hui-markdown-card.js';
 import '../cards/hui-media-control-card.js';
 import '../cards/hui-entity-picture-card.js';
+import '../cards/hui-picture-elements-card';
 import '../cards/hui-picture-glance-card';
 import '../cards/hui-plant-status-card.js';
 import '../cards/hui-weather-forecast-card';
@@ -22,6 +23,7 @@ const CARD_TYPES = [
   'iframe',
   'markdown',
   'media-control',
+  'picture-elements',
   'picture-glance',
   'plant-status',
   'weather-forecast'
