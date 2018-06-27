@@ -8,7 +8,12 @@ class HuiColumnCard extends HTMLElement {
   }
 
   getCardSize() {
-    return 7;
+    let totalSize = 0;
+    this._elements.forEach(element => {
+      totalSize += typeof element.getCardSize === 'function' ?
+        element.getCardSize() : 1;
+    });
+    return totalSize;
   }
 
   set config(config) {

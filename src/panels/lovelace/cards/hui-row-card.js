@@ -8,7 +8,14 @@ class HuiRowCard extends HTMLElement {
   }
 
   getCardSize() {
-    return 7;
+    let size = 1;
+    this._elements.forEach(element => {
+      if (typeof element.getCardSize === 'function') {
+        const elSize = element.getCardSize();
+        if (elSize > size) size = elSize;
+      }
+    });
+    return size;
   }
 
   set config(config) {
