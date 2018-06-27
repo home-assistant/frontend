@@ -1,7 +1,7 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-button/paper-button.js';
 
+import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
@@ -30,19 +30,17 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
       #root img {
         width: 100%;
       }
-      #root .entity {
+      .entity {
+        line-height: 1em;
         white-space: nowrap;
         position: absolute;
         transform: translate(-50%, -50%);
       }
-      #root .clickable {
+      .clickable {
         cursor: pointer;
-        padding: 4px;
       }
-      paper-button {
+      ha-call-service-button {
         color: var(--primary-color);
-        font-weight: 500;
-        height: 37px;
       }
     </style>
 
@@ -87,26 +85,22 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         let el;
         if (element.type === 'state-badge') {
           const entityId = element.entity;
-          const stateObj = this.hass.states[entityId];
           el = document.createElement('state-badge');
-          el.stateObj = stateObj;
           el.addEventListener('click', () => this._handleClick(entityId, element.action === 'toggle'));
           el.classList.add('clickable');
-          el.title = this._computeTooltip(stateObj);
           this._requiresStateObj.push({ el, entityId });
         } else if (element.type === 'state-text') {
           const entityId = element.entity;
-          const stateObj = this.hass.states[entityId];
           el = document.createElement('div');
           el.addEventListener('click', () => this._handleClick(entityId, false));
           el.classList.add('clickable');
-          el.innerText = this._computeTextState(stateObj);
-          el.title = this._computeTooltip(stateObj);
           this._requiresTextState.push({ el, entityId });
         } else if (element.type === 'service-button') {
-          el = document.createElement('paper-button');
-          el.raised = true;
-          el.addEventListener('click', () => this._callService(element.service));
+          el = document.createElement('ha-call-service-button');
+          el.hass = this.hass;
+          el.domain = element.service && element.domain || 'homeassistant';
+          el.service = element.service && element.service.service || '';
+          el.serviceData = element.service && element.service.data || {};
           el.innerText = element.text;
         }
         if (element.style) {
@@ -131,17 +125,13 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
     this._requiresTextState.forEach((element) => {
       const { el, entityId } = element;
       const stateObj = hass.states[entityId];
-      el.innerText = this._computeTextState(stateObj);
+      el.innerText = computeStateDisplay(this.localize, stateObj);
       el.title = this._computeTooltip(stateObj);
     });
   }
 
   _computeTooltip(stateObj) {
     return `${computeStateName(stateObj)}: ${computeStateDisplay(this.localize, stateObj)}`;
-  }
-
-  _computeTextState(stateObj) {
-    return computeStateDisplay(this.localize, stateObj);
   }
 
   _handleClick(entityId, toggle) {
@@ -166,13 +156,6 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
     } else {
       this.fire('hass-more-info', { entityId });
     }
-  }
-
-  _callService(data) {
-    const domain = data.domain || '';
-    const service = data.service || '';
-    const serviceData = data.data || {} ;
-    this.hass.callService(domain, service, serviceData);
   }
 }
 
