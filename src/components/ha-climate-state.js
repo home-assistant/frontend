@@ -85,7 +85,7 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
   }
 
   _localizeState(state) {
-    return this.localize(`state.climate.${state}`);
+    return this.localize(`state.climate.${state}`) || state;
   }
 }
 customElements.define('ha-climate-state', HaClimateState);
