@@ -25,15 +25,29 @@ class HuiColumnCard extends HTMLElement {
     }
 
     if (config && config.cards && Array.isArray(config.cards)) {
+      const style = document.createElement('style');
+      style.innerHTML = `
+        .container > * {
+          margin: 4px 0 8px 0;
+        }
+        .container > *:first-child {
+          margin-top: 0;
+        }
+        .container > *:last-child {
+          margin-bottom: 0;
+        }
+      `;
+      root.appendChild(style);
+      const container = document.createElement('div');
+      container.classList.add('container');
+      root.appendChild(container);
+
       const elements = [];
       config.cards.forEach((card) => {
         const element = createCardElement(card);
-        element.style.setProperty('margin', '4px');
         elements.push(element);
-        root.appendChild(element);
+        container.appendChild(element);
       });
-      elements[0].style.marginTop = '0';
-      elements[(elements.length - 1)].style.marginBottom = '0';
       this._elements = elements;
     } else {
       const error = 'Card config incorrect.';

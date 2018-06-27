@@ -32,8 +32,15 @@ class HuiRowCard extends HTMLElement {
         .container {
           display: flex;
         }
-        div:last-child {
-          margin: 16px;
+        .container > * {
+          flex: 1 1 0;
+          margin: 0 4px;
+        }
+        .container > *:first-child {
+          margin-left: 0;
+        }
+        .container > *:last-child {
+          margin-right: 0;
         }
       `;
       root.appendChild(style);
