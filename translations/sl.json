@@ -12,7 +12,8 @@
         "dev-events": "Dogodki",
         "dev-templates": "Predloge",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Koledar"
     },
     "state": {
         "default": {
@@ -651,6 +652,12 @@
             "service_called": "Storitev {service} klicana.",
             "service_call_failed": "Storitve ni bilo mogoče poklicati {service}.",
             "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Shrani",
+                "name": "Ime"
+            }
         }
     },
     "domain": {
