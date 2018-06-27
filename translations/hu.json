@@ -596,27 +596,34 @@
             },
             "fan": {
                 "speed": "Sebesség",
+                "oscillate": "Oszcilláció",
                 "direction": "Irány"
             },
             "light": {
                 "brightness": "Fényerő",
                 "color_temperature": "Színhőmérséklet",
+                "white_value": "Fehér érték",
                 "effect": "Hatás"
+            },
+            "media_player": {
+                "text_to_speak": "Beszéd szövege",
+                "source": "Forrás",
+                "sound_mode": "Hangzás"
             },
             "climate": {
                 "currently": "Jelenleg",
                 "on_off": "Be \/ ki",
                 "target_temperature": "Kívánt hőmérséklet",
                 "target_humidity": "Kívánt páratartalom",
-                "operation": "Művelet"
+                "operation": "Művelet",
+                "fan_mode": "Sebesség",
+                "swing_mode": "Forgási mód",
+                "away_mode": "Távoli mód"
             },
             "lock": {
                 "code": "Kód",
                 "lock": "Bezár",
                 "unlock": "Kinyit"
-            },
-            "media_player": {
-                "source": "Forrás"
             }
         },
         "components": {
