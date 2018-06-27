@@ -47,15 +47,6 @@ class HuiEntitiesGoneWildCard extends LocalizeMixin(EventsMixin(PolymerElement))
         cursor: pointer;
         padding: 4px;
       }
-
-
-      iron-icon,
-      paper-icon-button {
-        color: var(--icon-color, var(--state-icon-color, #44739e));
-      }
-      iron-icon.state-on {
-        color: var(--icon-color-on, var(--state-icon-active-color, #FDD835));
-      }
     </style>
 
     <ha-card>
@@ -80,45 +71,50 @@ class HuiEntitiesGoneWildCard extends LocalizeMixin(EventsMixin(PolymerElement))
     };
   }
 
+  getCardSize() {
+    return 4;
+  }
+
   _configChanged(config) {
     const root = this.$.root;
-    this._requiresHass = [];
     this._requiresStateObj = [];
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
     }
 
-    if (config && config.image && config.entities) {
+    if (config && config.image && config.elements) {
       const img = document.createElement('img');
       img.src = config.image;
       root.appendChild(img);
 
-      config.entities.forEach((entity) => {
-        let element;
-        if (entity.type === 'state-badge') {
-          const entityId = entity.entity_id;
-          element = document.createElement('state-badge');
-          element.stateObj = this.hass.states[entityId];
-          element.title = this._computeTooltip(entityId, this.hass);
-          if (entity.style) {
-            Object.keys(entity.style).forEach((prop) => {
-              element.style.setProperty(prop, entity.style[prop]);
+      config.elements.forEach((element) => {
+        let el;
+        if (element.type === 'state-badge') {
+          const entityId = element.entity;
+          el = document.createElement('state-badge');
+          el.stateObj = this.hass.states[entityId];
+          el.addEventListener('click', () => this._openDialog(entityId));
+          el.classList.add('clickable');
+          el.title = this._computeTooltip(entityId, this.hass);
+          if (element.style) {
+            Object.keys(element.style).forEach((prop) => {
+              el.style.setProperty(prop, element.style[prop]);
             });
           }
-          this._requiresStateObj.push({ element, entityId });
+          this._requiresStateObj.push({ el, entityId });
         }
-        element.classList.add('entity');
-        root.appendChild(element);
+        el.classList.add('entity');
+        root.appendChild(el);
       });
     }
   }
 
   _hassChanged(hass) {
-    this._requiresStateObj.forEach(entity => {
-      const { element, entityId } = entity;
-      element.stateObj = hass.states[entityId];
-      element.title = this._computeTooltip(entityId, hass);
+    this._requiresStateObj.forEach((element) => {
+      const { el, entityId } = element;
+      el.stateObj = hass.states[entityId];
+      el.title = this._computeTooltip(entityId, hass);
     });
   }
 
@@ -126,17 +122,8 @@ class HuiEntitiesGoneWildCard extends LocalizeMixin(EventsMixin(PolymerElement))
     return `${computeStateName(hass.states[entityId])}: ${computeStateDisplay(this.localize, hass.states[entityId])}`;
   }
 
-  getCardSize() {
-    return 5;
-  }
-
-  _openDialog(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
-  }
-
-  _callService(ev) {
-    const item = ev.model.item;
-    this.hass.callService(item.domain, item.service, item.service_data);
+  _openDialog(entityId) {
+    this.fire('hass-more-info', { entityId });
   }
 }
 
