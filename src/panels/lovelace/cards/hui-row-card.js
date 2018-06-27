@@ -4,12 +4,13 @@ import createErrorConfig from '../common/create-error-card-config.js';
 class HuiRowCard extends HTMLElement {
   constructor() {
     super();
+    this.attachShadow({ mode: 'open' });
     this._elements = [];
   }
 
   getCardSize() {
     let size = 1;
-    this._elements.forEach(element => {
+    this._elements.forEach((element) => {
       if (typeof element.getCardSize === 'function') {
         const elSize = element.getCardSize();
         if (elSize > size) size = elSize;
@@ -20,7 +21,7 @@ class HuiRowCard extends HTMLElement {
 
   set config(config) {
     this._elements = [];
-    const root = this;
+    const root = this.shadowRoot;
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);

@@ -4,12 +4,13 @@ import createErrorConfig from '../common/create-error-card-config.js';
 class HuiColumnCard extends HTMLElement {
   constructor() {
     super();
+    this.attachShadow({ mode: 'open' });
     this._elements = [];
   }
 
   getCardSize() {
     let totalSize = 0;
-    this._elements.forEach(element => {
+    this._elements.forEach((element) => {
       totalSize += typeof element.getCardSize === 'function' ?
         element.getCardSize() : 1;
     });
@@ -18,7 +19,7 @@ class HuiColumnCard extends HTMLElement {
 
   set config(config) {
     this._elements = [];
-    const root = this;
+    const root = this.shadowRoot;
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -27,6 +28,10 @@ class HuiColumnCard extends HTMLElement {
     if (config && config.cards && Array.isArray(config.cards)) {
       const style = document.createElement('style');
       style.innerHTML = `
+        .container {
+          display: flex;
+          flex-direction: column;
+        }
         .container > * {
           margin: 4px 0 8px 0;
         }
