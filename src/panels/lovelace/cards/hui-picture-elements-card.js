@@ -21,9 +21,6 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
   static get template() {
     return html`
     <style>
-      ha-card {
-        line-height: 0;
-      }
       #root {
         position: relative;
       }
@@ -36,8 +33,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         transform: translate(-50%, -50%);
       }
       div.element {
-        padding: 4px;
-        line-height: 1em;
+        padding: 8px;
       }
       .clickable {
         cursor: pointer;
