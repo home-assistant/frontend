@@ -98,9 +98,9 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         } else if (element.type === 'service-button') {
           el = document.createElement('ha-call-service-button');
           el.hass = this.hass;
-          el.domain = element.service && element.domain || 'homeassistant';
-          el.service = element.service && element.service.service || '';
-          el.serviceData = element.service && element.service.data || {};
+          el.domain = (element.service && element.domain) || 'homeassistant';
+          el.service = (element.service && element.service.service) || '';
+          el.serviceData = (element.service && element.service.data) || {};
           el.innerText = element.text;
         }
         if (element.style) {
