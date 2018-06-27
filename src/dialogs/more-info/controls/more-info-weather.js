@@ -156,7 +156,7 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
   }
 
   getUnit(measure) {
-    const lengthUnit = this.hass.config.core.unit_system.length;
+    const lengthUnit = this.hass.config.core.unit_system.length || '';
     switch (measure) {
       case 'air_pressure':
         return lengthUnit === 'km' ? 'hPa' : 'inHg';
