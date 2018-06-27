@@ -203,12 +203,17 @@ class HaWeatherCard extends
   }
 
   getUnit(measure) {
-    if (measure === 'precipitation') {
-      return this.getUnit('length') === 'km' ? 'mm' : 'in';
-    } else if (measure === 'air_pressure') {
-      return this.getUnit('length') === 'km' ? 'hPa' : 'inHg';
+    const lengthUnit = this.hass.config.core.unit_system['length'];
+    switch (measure) {
+      case 'air_pressure':
+        return lengthUnit === 'km' ? 'hPa' : 'inHg';
+      case 'length':
+        return lengthUnit;
+      case 'precipitation':
+        return lengthUnit === 'km' ? 'mm' : 'in';
+      default:
+        return this.hass.config.core.unit_system[measure] || '';
     }
-    return this.hass.config.core.unit_system[measure] || '';
   }
 
   computeState(state, localize) {
