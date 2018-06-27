@@ -124,17 +124,17 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
     if (domain === 'weblink') {
       window.open(this.hass.states[entityId].state);
     } else {
-      const isOn = STATES_ON.includes(this.hass.states[entityId].state);
+      const turnOn = !STATES_ON.includes(this.hass.states[entityId].state);
       let service;
       switch (domain) {
         case 'lock':
-          service = isOn ? 'unlock' : 'lock';
+          service = turnOn ? 'unlock' : 'lock';
           break;
         case 'cover':
-          service = isOn ? 'close' : 'open';
+          service = turnOn ? 'open_cover' : 'close_cover';
           break;
         default:
-          service = isOn ? 'turn_off' : 'turn_on';
+          service = turnOn ? 'turn_on' : 'turn_off';
       }
       this.hass.callService(domain, service, { entity_id: entityId });
     }
