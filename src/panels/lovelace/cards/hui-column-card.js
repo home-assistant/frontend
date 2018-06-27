@@ -21,7 +21,7 @@ class HuiColumnCard extends HTMLElement {
 
     if (config && config.cards && Array.isArray(config.cards)) {
       const elements = [];
-      config.cards.forEach(card => {
+      config.cards.forEach((card) => {
         const element = createCardElement(card);
         element.style.setProperty('margin', '4px');
         elements.push(element);
@@ -30,7 +30,6 @@ class HuiColumnCard extends HTMLElement {
       elements[0].style.marginTop = '0';
       elements[(elements.length - 1)].style.marginBottom = '0';
       this._elements = elements;
-
     } else {
       const error = 'Card config incorrect.';
       const element = createCardElement(createErrorConfig(error, config));
@@ -39,7 +38,7 @@ class HuiColumnCard extends HTMLElement {
   }
 
   set hass(hass) {
-    this._elements.forEach(element => {
+    this._elements.forEach((element) => {
       element.hass = hass;
     });
   }

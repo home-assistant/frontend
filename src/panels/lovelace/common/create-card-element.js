@@ -1,7 +1,7 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
 import '../cards/hui-camera-preview-card.js';
-import '../cards/hui-camera-preview-card.js';
+import '../cards/hui-column-card.js';
 import '../cards/hui-entities-card.js';
 import '../cards/hui-entity-filter-card.js';
 import '../cards/hui-glance-card';
