@@ -56,7 +56,7 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
       <div class="flex">
         <iron-icon icon="hass:gauge"></iron-icon>
         <div class="main">[[localize('ui.card.weather.attributes.air_pressure')]]</div>
-        <div>[[stateObj.attributes.pressure]] hPa</div>
+        <div>[[stateObj.attributes.pressure]] [[getUnit('air_pressure')]]</div>
       </div>
     </template>
     <template is="dom-if" if="[[stateObj.attributes.humidity]]">
@@ -155,8 +155,13 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
     );
   }
 
-  getUnit(unit) {
-    return this.hass.config.core.unit_system[unit] || '';
+  getUnit(measure) {
+    if (measure === 'precipitation') {
+      return this.getUnit('length') === 'km' ? 'mm' : 'in';
+    } else if (measure === 'air_pressure') {
+      return this.getUnit('length') === 'km' ? 'hPa' : 'inHg';
+    }
+    return this.hass.config.core.unit_system[measure] || '';
   }
 
   windBearingToText(degree) {
