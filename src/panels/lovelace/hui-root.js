@@ -1,6 +1,7 @@
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/app-route/app-route.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-tabs/paper-tabs.js';
@@ -10,6 +11,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
+import NavigateMixin from '../../mixins/navigate-mixin.js';
+
 import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import { loadModule, loadJS } from '../../common/dom/load_resource.js';
@@ -18,7 +21,7 @@ import './hui-view.js';
 // JS should only be imported once. Modules and HTML are safe.
 const JS_CACHE = {};
 
-class HUIRoot extends EventsMixin(PolymerElement) {
+class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include='ha-style'>
@@ -40,6 +43,7 @@ class HUIRoot extends EventsMixin(PolymerElement) {
         color: var(--text-primary-color, white);
       }
     </style>
+    <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <ha-app-layout id="layout">
       <app-header slot="header" fixed>
         <app-toolbar>
@@ -93,13 +97,35 @@ class HUIRoot extends EventsMixin(PolymerElement) {
       _curView: {
         type: Number,
         value: 0,
-      }
+      },
+
+      route: {
+        type: Object,
+        observer: '_routeChanged'
+      },
+      routeData: Object
     };
   }
 
-  ready() {
-    super.ready();
-    this._selectView(0);
+  _routeChanged(route) {
+    const views = this.config && this.config.views;
+    if (route.path === '' && route.prefix === '/lovelace' && views) {
+      this.navigate(`/lovelace/${views[0].id || 0}`, true);
+    } else if (this.routeData.view) {
+      const view = this.routeData.view;
+      let index = 0;
+      for (let i = 0; i < views.length; i++) {
+        if (views[i].id === view || i === parseInt(view)) {
+          index = i;
+          break;
+        }
+      }
+      if (index !== this._curView) this._selectView(index);
+    }
+  }
+
+  _computeViewId(id, index) {
+    return id || index;
   }
 
   _computeTitle(config) {
@@ -119,7 +145,12 @@ class HUIRoot extends EventsMixin(PolymerElement) {
   }
 
   _handleViewSelected(ev) {
-    this._selectView(ev.detail.selected);
+    const index = ev.detail.selected;
+    if (index !== this._curView) {
+      const id = this.config.views[index].id || index;
+      this.navigate(`/lovelace/${id}`);
+      this._selectView(index);
+    }
   }
 
   _selectView(viewIndex) {
