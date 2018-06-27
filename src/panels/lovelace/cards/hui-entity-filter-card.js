@@ -1,7 +1,5 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import './hui-error-card';
-
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import createCardElement from '../common/create-card-element';
 
