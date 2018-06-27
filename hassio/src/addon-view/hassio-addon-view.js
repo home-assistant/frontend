@@ -36,9 +36,6 @@ class HassioAddonView extends PolymerElement {
         margin-bottom: 24px;
         width: 600px;
       }
-      hassio-addon-logs {
-        min-width: 600px;
-      }
       @media only screen and (max-width: 600px) {
         hassio-addon-info,
         hassio-addon-network,

@@ -13,10 +13,13 @@ class HassioAddonLogs extends PolymerElement {
       paper-card {
         display: block;
       }
+      .pre-log {
+        overflow-y: auto;
+      }
     </style>
     <paper-card heading="Log">
       <div class="card-content">
-        <pre>[[log]]</pre>
+        <pre class="pre-log">[[log]]</pre>
       </div>
       <div class="card-actions">
         <paper-button on-click="refresh">Refresh</paper-button>
