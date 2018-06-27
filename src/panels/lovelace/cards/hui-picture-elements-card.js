@@ -115,7 +115,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
   _handleClick(entityId, toggle) {
     if (toggle) {
       const turnOn = !STATES_ON.includes(this.hass.states[entityId].state);
-      const stateDomain = computeDomain(entityId)
+      const stateDomain = computeDomain(entityId);
       const serviceDomain = stateDomain === 'lock' || stateDomain === 'cover' ?
         stateDomain : 'homeassistant';
 
@@ -130,8 +130,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         default:
           service = turnOn ? 'turn_on' : 'turn_off';
       }
-      this.hass.callService(serviceDomain, service, { entity_id: entityId })
-
+      this.hass.callService(serviceDomain, service, { entity_id: entityId });
     } else {
       this.fire('hass-more-info', { entityId });
     }
