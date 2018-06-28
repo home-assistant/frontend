@@ -13,6 +13,8 @@ import createErrorCardConfig from '../common/create-error-card-config.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
+const OFFLINE = 'Offline';
+
 /*
  * @appliesMixin LocalizeMixin
  */
@@ -94,7 +96,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     const entityId = config && config.entity;
     if (!entityId) {
       return;
-    } else if (!(entityId in hass.states) && this._oldState === 'Offline') {
+    } else if (!(entityId in hass.states) && this._oldState === OFFLINE) {
       return;
     } else if (!(entityId in hass.states) || hass.states[entityId].state !== this._oldState) {
       this._updateState(hass, entityId, config);
@@ -102,15 +104,15 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
   }
 
   _updateState(hass, entityId, config) {
-    const state = entityId in hass.states ? hass.states[entityId].state : 'Offline';
+    const state = entityId in hass.states ? hass.states[entityId].state : OFFLINE;
     const stateImg = config.state_image && (config.state_image[state] || config.state_image.default);
 
     this.$.image.src = stateImg || config.image;
-    this.$.image.style.filter = stateImg || (!STATES_OFF.includes(state) && state !== 'Offline') ?
+    this.$.image.style.filter = stateImg || (!STATES_OFF.includes(state) && state !== OFFLINE) ?
       '' : 'grayscale(100%)';
-    this.$.title.innerText = state === 'Offline' ?
+    this.$.title.innerText = state === OFFLINE ?
       entityId : computeStateName(hass.states[entityId]);
-    this.$.state.innerText = state === 'Offline' ? state : this._computeState(hass.states[entityId]);
+    this.$.state.innerText = state === OFFLINE ? OFFLINE : this._computeState(hass.states[entityId]);
     this._oldState = state;
   }
 
