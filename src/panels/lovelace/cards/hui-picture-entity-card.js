@@ -46,7 +46,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
           display: flex;
           justify-content: space-between;
         }
-        #name {
+        #title {
           font-weight: 500;
         }
       </style>
@@ -110,8 +110,8 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     this.$.image.src = stateImg || config.image;
     this.$.image.style.filter = stateImg || (!STATES_OFF.includes(state) && state !== OFFLINE) ?
       '' : 'grayscale(100%)';
-    this.$.title.innerText = state === OFFLINE ?
-      entityId : computeStateName(hass.states[entityId]);
+    this.$.title.innerText = config.title || (state === OFFLINE ?
+      entityId : computeStateName(hass.states[entityId]));
     this.$.state.innerText = state === OFFLINE ? OFFLINE : this._computeState(hass.states[entityId]);
     this._oldState = state;
   }
