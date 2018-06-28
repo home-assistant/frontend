@@ -21,17 +21,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         ha-card {
           padding: 16px;
         }
-        .header {
-          @apply --paper-font-headline;
-          /* overwriting line-height +8 because entity-toggle can be 40px height,
-            compensating this with reduced padding */
-          line-height: 40px;
-          color: var(--primary-text-color);
-          padding: 4px 0 12px;
-        }
-        .header .name {
-          @apply --paper-font-common-nowrap;
-        }
         .entities {
           padding: 4px 0;
           display: flex;
@@ -62,10 +51,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
       </style>
 
-      <ha-card>
-        <div class="header">
-          <div class="name">[[_computeTitle(config)]]</div>
-        </div>
+      <ha-card header="[[config.title]]">
         <div class="entities">
           <template is="dom-repeat" items="[[_entities]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
@@ -98,10 +84,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   getCardSize() {
     return 3;
-  }
-
-  _computeTitle(config) {
-    return config.title;
   }
 
   _computeEntities(config) {
