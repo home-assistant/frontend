@@ -10,6 +10,8 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import scrollToTarget from '../../common/dom/scroll-to-target.js';
+
 import EventsMixin from '../../mixins/events-mixin.js';
 import NavigateMixin from '../../mixins/navigate-mixin.js';
 
@@ -59,7 +61,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         <div sticky hidden$="[[_computeTabsHidden(config.views)]]">
           <paper-tabs scrollable selected="[[_curView]]" on-iron-activate="_handleViewSelected">
             <template is="dom-repeat" items="[[config.views]]">
-              <paper-tab on-click="_scrollToTop">
+              <paper-tab>
                 <template is="dom-if" if="[[item.tab_icon]]">
                   <iron-icon title$="[[item.name]]" icon="[[item.tab_icon]]"></iron-icon>
                 </template>
@@ -150,6 +152,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       const id = this.config.views[index].id || index;
       this.navigate(`/lovelace/${id}`);
     }
+    scrollToTarget(this, this.$.layout.header.scrollTarget);
   }
 
   _selectView(viewIndex) {
@@ -207,45 +210,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           console.warn('Unknown resource type specified: ${resource.type}');
       }
     });
-  }
-
-  /**
-   * Scroll to a specific y coordinate.
-   *
-   * Copied from paper-scroll-header-panel.
-   *
-   * @method scroll
-   * @param {number} top The coordinate to scroll to, along the y-axis.
-   * @param {boolean} smooth true if the scroll position should be smoothly adjusted.
-   */
-  _scrollToTop() {
-    // the scroll event will trigger _updateScrollState directly,
-    // However, _updateScrollState relies on the previous `scrollTop` to update the states.
-    // Calling _updateScrollState will ensure that the states are synced correctly.
-    var top = 0;
-    var scroller = this.$.layout.header.scrollTarget;
-    var easingFn = function easeOutQuad(t, b, c, d) {
-      /* eslint-disable no-param-reassign, space-infix-ops, no-mixed-operators */
-      t /= d;
-      return -c * t*(t-2) + b;
-      /* eslint-enable no-param-reassign, space-infix-ops, no-mixed-operators */
-    };
-    var animationId = Math.random();
-    var duration = 200;
-    var startTime = Date.now();
-    var currentScrollTop = scroller.scrollTop;
-    var deltaScrollTop = top - currentScrollTop;
-    this._currentAnimationId = animationId;
-    (function updateFrame() {
-      var now = Date.now();
-      var elapsedTime = now - startTime;
-      if (elapsedTime > duration) {
-        scroller.scrollTop = top;
-      } else if (this._currentAnimationId === animationId) {
-        scroller.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
-        requestAnimationFrame(updateFrame.bind(this));
-      }
-    }).call(this);
   }
 }
 
