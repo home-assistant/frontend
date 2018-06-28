@@ -1,7 +1,10 @@
 // Coerce plain entity_id strings into {entity: 'entity_id'} objects
 export default function coerceEntitiesToObjects(entities) {
+  let singleEntity = false;
+
   if (!Array.isArray(entities)) {
-    return entities;
+    entities = [entities];
+    singleEntity = true;
   }
 
   const result = [];
@@ -13,5 +16,5 @@ export default function coerceEntitiesToObjects(entities) {
     }
   });
 
-  return result;
+  return singleEntity ? result[0] : result;
 }
