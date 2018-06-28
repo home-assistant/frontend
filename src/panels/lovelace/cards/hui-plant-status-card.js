@@ -1,20 +1,21 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import computeDomain from '../../../common/entity/compute_domain.js';
-
 import '../../../cards/ha-plant-card.js';
-import './hui-error-card.js';
+
+import createCardElement from '../common/create-card-element.js';
+import createErrorCardConfig from '../common/create-error-card-config.js';
+import validateEntityConfig from '../common/validate-entity-config.js';
 
 class HuiPlantStatusCard extends PolymerElement {
   static get properties() {
     return {
       hass: {
         type: Object,
-        observer: '_hassChanged',
+        observer: '_hassChanged'
       },
       config: {
         type: Object,
-        observer: '_configChanged',
+        observer: '_configChanged'
       }
     };
   }
@@ -25,50 +26,35 @@ class HuiPlantStatusCard extends PolymerElement {
 
   _configChanged(config) {
     this._entityId = null;
+
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
-    const entityId = config && config.entity;
-    if (entityId && !(entityId in this.hass.states)) {
+
+    if (!validateEntityConfig(config, 'plant')) {
+      const error = 'Error in card configuration.';
+      const element = createCardElement(createErrorCardConfig(error, config));
+      this.appendChild(element);
       return;
     }
 
-    let error = null;
-    let cardConfig;
-    let tag;
-
-    if (entityId) {
-      if (computeDomain(entityId) === 'plant') {
-        this._entityId = entityId;
-        tag = 'ha-plant-card';
-        cardConfig = config;
-      } else {
-        error = 'Entity domain must be "plant"';
-      }
-    } else {
-      error = 'Entity not defined in card config';
+    const entityId = config.entity;
+    if (!(entityId in this.hass.states)) {
+      return;
     }
 
-    if (error) {
-      tag = 'hui-error-card';
-      cardConfig = { error };
-    }
-    const element = document.createElement(tag);
-
-    if (!error) {
-      element.stateObj = this.hass.states[entityId];
-      element.hass = this.hass;
-    }
-
-    element.config = cardConfig;
+    const element =  document.createElement('ha-plant-card');
+    element.stateObj = this.hass.states[entityId];
+    element.hass = this.hass;
     this.appendChild(element);
+    this._entityId = entityId;
   }
 
   _hassChanged(hass) {
-    if (this.lastChild && this._entityId && this._entityId in hass.states) {
+    const entityId = this._entityId;
+    if (entityId && entityId in hass.states) {
       const element = this.lastChild;
-      const stateObj = hass.states[this._entityId];
-      element.stateObj = stateObj;
+      element.stateObj = hass.states[entityId];
       element.hass = hass;
     } else {
       this._configChanged(this.config);

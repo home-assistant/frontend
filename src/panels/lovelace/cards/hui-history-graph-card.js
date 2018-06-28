@@ -13,7 +13,8 @@ class HuiHistoryGraphCard extends PolymerElement {
         type: Object,
         observer: '_configChanged',
       },
-      _error: String,
+      _error: Object,
+
       stateHistory: Object,
       stateHistoryLoading: Boolean,
       cacheConfig: {
@@ -37,24 +38,10 @@ class HuiHistoryGraphCard extends PolymerElement {
         ha-card {
           padding: 16px;
         }
-        .header {
-          @apply --paper-font-headline;
-          /* overwriting line-height +8 because entity-toggle can be 40px height,
-            compensating this with reduced padding */
-          line-height: 40px;
-          color: var(--primary-text-color);
-          padding: 4px 0 12px;
-        }
-        .header .name {
-          @apply --paper-font-common-nowrap;
-        }
       </style>
 
       <template is="dom-if" if="[[!_error]]">
-        <ha-card>
-          <div class='header'>
-            <div class="name">[[config.title]]</div>
-          </div>
+        <ha-card header=[[config.title]]>
           <ha-state-history-data
             hass="[[hass]]"
             filter-type="recent-entity"
@@ -74,7 +61,7 @@ class HuiHistoryGraphCard extends PolymerElement {
       </template>
 
       <template is="dom-if" if="[[_error]]">
-        <hui-error-card error="[[_error]]" config="[[config]]"></hui-error-card>
+        <hui-error-card config="[[_error]]"></hui-error-card>
       </template>
     `;
   }
@@ -84,12 +71,15 @@ class HuiHistoryGraphCard extends PolymerElement {
       this._error = null;
 
       this.cacheConfig = {
-        refresh: config.refresh || 0,
         cacheKey: config.entities,
-        hoursToShow: config.hours || 24
+        hoursToShow: config.hours || 24,
+        refresh: config.refresh || 0
       };
     } else {
-      this._error = 'No entities configured.';
+      this._error = {
+        error: 'No entities configured.',
+        origConfig: config
+      };
     }
   }
 }
