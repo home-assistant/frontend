@@ -31,20 +31,20 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
         text-transform: uppercase;
       }
     </style>
-    <app-header-layout has-scrolling-region="">
-      <app-header fixed="" slot="header">
+    <app-header-layout id="layout" has-scrolling-region>
+      <app-header fixed slot="header">
         <app-toolbar>
           <ha-menu-button hassio narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-          <div main-title="">Hass.io</div>
+          <div main-title>Hass.io</div>
           <template is="dom-if" if="[[showRefreshButton(page)]]">
             <paper-icon-button icon="hassio:refresh" on-click="refreshClicked"></paper-icon-button>
           </template>
         </app-toolbar>
         <paper-tabs scrollable="" selected="[[page]]" attr-for-selected="page-name" on-iron-activate="handlePageSelected">
-          <paper-tab page-name="dashboard">Dashboard</paper-tab>
-          <paper-tab page-name="snapshots">Snapshots</paper-tab>
-          <paper-tab page-name="store">Add-on store</paper-tab>
-          <paper-tab page-name="system">System</paper-tab>
+          <paper-tab on-click="_scrollToTop" page-name="dashboard">Dashboard</paper-tab>
+          <paper-tab on-click="_scrollToTop" page-name="snapshots">Snapshots</paper-tab>
+          <paper-tab on-click="_scrollToTop" page-name="store">Add-on store</paper-tab>
+          <paper-tab on-click="_scrollToTop" page-name="system">System</paper-tab>
         </paper-tabs>
       </app-header>
       <template is="dom-if" if="[[equals(page, &quot;dashboard&quot;)]]">
@@ -123,6 +123,45 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
       markdownContent: ev.detail.content,
     });
     this.shadowRoot.querySelector('hassio-markdown-dialog').openDialog();
+  }
+
+  /**
+   * Scroll to a specific y coordinate.
+   *
+   * Copied from paper-scroll-header-panel.
+   *
+   * @method scroll
+   * @param {number} top The coordinate to scroll to, along the y-axis.
+   * @param {boolean} smooth true if the scroll position should be smoothly adjusted.
+   */
+  _scrollToTop() {
+    // the scroll event will trigger _updateScrollState directly,
+    // However, _updateScrollState relies on the previous `scrollTop` to update the states.
+    // Calling _updateScrollState will ensure that the states are synced correctly.
+    var top = 0;
+    var scroller = this.$.layout.header.scrollTarget;
+    var easingFn = function easeOutQuad(t, b, c, d) {
+      /* eslint-disable no-param-reassign, space-infix-ops, no-mixed-operators */
+      t /= d;
+      return -c * t*(t-2) + b;
+      /* eslint-enable no-param-reassign, space-infix-ops, no-mixed-operators */
+    };
+    var animationId = Math.random();
+    var duration = 200;
+    var startTime = Date.now();
+    var currentScrollTop = scroller.scrollTop;
+    var deltaScrollTop = top - currentScrollTop;
+    this._currentAnimationId = animationId;
+    (function updateFrame() {
+      var now = Date.now();
+      var elapsedTime = now - startTime;
+      if (elapsedTime > duration) {
+        scroller.scrollTop = top;
+      } else if (this._currentAnimationId === animationId) {
+        scroller.scrollTop = easingFn(elapsedTime, currentScrollTop, deltaScrollTop, duration);
+        requestAnimationFrame(updateFrame.bind(this));
+      }
+    }).call(this);
   }
 }
 
