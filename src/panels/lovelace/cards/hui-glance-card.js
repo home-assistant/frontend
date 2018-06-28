@@ -6,7 +6,9 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 import createErrorCardConfig from '../common/create-error-card-config.js';
 
 import './hui-error-card.js';
-import coerceEntitiesToObjects from "../common/coerce-entities-to-objects";
+
+import computeConfigEntities from '../common/compute-config-entities';
+import validateEntitiesConfig from '../common/validate-entities-config';
 
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
@@ -86,11 +88,11 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeEntities(config) {
-    if (config && config.entities && Array.isArray(config.entities)) {
-      const entities = coerceEntitiesToObjects(config.entities);
-      if (entities.every(x => x === Object(x) && 'entity' in x)) {
+    if (config) {
+      config.entities = computeConfigEntities(config);
+      if (validateEntitiesConfig(config)) {
         this._error = null;
-        return entities;
+        return config.entities;
       }
     }
 
