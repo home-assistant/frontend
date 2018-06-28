@@ -15,6 +15,9 @@ import './hassio-markdown-dialog.js';
 import './snapshots/hassio-snapshot.js';
 import './snapshots/hassio-snapshots.js';
 import './system/hassio-system.js';
+
+import scrollToTarget from '../../src/common/dom/scroll-to-target.js';
+
 import NavigateMixin from '../../src/mixins/navigate-mixin.js';
 
 class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
@@ -31,11 +34,11 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
         text-transform: uppercase;
       }
     </style>
-    <app-header-layout has-scrolling-region="">
-      <app-header fixed="" slot="header">
+    <app-header-layout id="layout" has-scrolling-region>
+      <app-header fixed slot="header">
         <app-toolbar>
           <ha-menu-button hassio narrow="[[narrow]]" show-menu="[[showMenu]]"></ha-menu-button>
-          <div main-title="">Hass.io</div>
+          <div main-title>Hass.io</div>
           <template is="dom-if" if="[[showRefreshButton(page)]]">
             <paper-icon-button icon="hassio:refresh" on-click="refreshClicked"></paper-icon-button>
           </template>
@@ -99,6 +102,7 @@ class HassioPagesWithTabs extends NavigateMixin(PolymerElement) {
     if (newPage !== this.page) {
       this.navigate(`/hassio/${newPage}`);
     }
+    scrollToTarget(this, this.$.layout.header.scrollTarget);
   }
 
   equals(a, b) {

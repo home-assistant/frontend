@@ -13,6 +13,9 @@ class HassioAddonLogs extends PolymerElement {
       paper-card {
         display: block;
       }
+      pre {
+        overflow-x: auto;
+      }
     </style>
     <paper-card heading="Log">
       <div class="card-content">
