@@ -1,8 +1,10 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
 import '../cards/hui-camera-preview-card.js';
+import '../cards/hui-column-card.js';
 import '../cards/hui-entities-card.js';
 import '../cards/hui-entity-filter-card.js';
+import '../cards/hui-error-card.js';
 import '../cards/hui-glance-card';
 import '../cards/hui-history-graph-card.js';
 import '../cards/hui-iframe-card.js';
@@ -12,13 +14,14 @@ import '../cards/hui-entity-picture-card.js';
 import '../cards/hui-picture-elements-card';
 import '../cards/hui-picture-glance-card';
 import '../cards/hui-plant-status-card.js';
+import '../cards/hui-row-card.js';
 import '../cards/hui-weather-forecast-card';
-import '../cards/hui-error-card.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CARD_TYPES = [
   'camera-preview',
+  'column',
   'entities',
   'entity-filter',
   'entity-picture',
@@ -31,6 +34,7 @@ const CARD_TYPES = [
   'picture-elements',
   'picture-glance',
   'plant-status',
+  'row',
   'weather-forecast'
 ];
 
