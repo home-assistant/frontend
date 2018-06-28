@@ -5,6 +5,8 @@ import './hui-error-card.js';
 import '../../../components/state-history-charts.js';
 import '../../../data/ha-state-history-data.js';
 
+import createErrorCardConfig from '../common/create-error-card-config.js';
+
 class HuiHistoryGraphCard extends PolymerElement {
   static get properties() {
     return {
@@ -76,10 +78,8 @@ class HuiHistoryGraphCard extends PolymerElement {
         refresh: config.refresh_interval || 0
       };
     } else {
-      this._error = {
-        error: 'No entities configured.',
-        origConfig: config
-      };
+      const error = 'Error in card configuration.';
+      this._error = createErrorCardConfig(error, config);
     }
   }
 }
