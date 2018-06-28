@@ -31,7 +31,7 @@ class HuiCameraPreviewCard extends PolymerElement {
       this.removeChild(this.lastChild);
     }
 
-    if (!validateEntityConfig(config, 'weather')) {
+    if (!validateEntityConfig(config, 'camera')) {
       const error = 'Error in card configuration.';
       const element = createCardElement(createErrorCardConfig(error, config));
       this.appendChild(element);
@@ -43,7 +43,7 @@ class HuiCameraPreviewCard extends PolymerElement {
       return;
     }
 
-    const element = document.createElement('ha-weather-card');
+    const element = document.createElement('ha-camera-card');
     element.stateObj = this.hass.states[entityId];
     element.hass = this.hass;
     this.appendChild(element);
