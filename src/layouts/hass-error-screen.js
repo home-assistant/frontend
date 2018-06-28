@@ -29,6 +29,7 @@ class HassErrorScreen extends PolymerElement {
       <div class="layout vertical center-center">
         <h3>[[error]]</h3>
         <paper-button on-click="backTapped">go back</paper-button>
+        <slot></slot>
       </div>
     </div>
 `;
