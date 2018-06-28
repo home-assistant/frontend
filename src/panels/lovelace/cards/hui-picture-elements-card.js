@@ -105,7 +105,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
           el.domain = (element.service && element.domain) || 'homeassistant';
           el.service = (element.service && element.service.service) || '';
           el.serviceData = (element.service && element.service.data) || {};
-          el.innerText = element.text;
+          el.innerText = element.title;
         }
         el.classList.add('element');
         if (element.style) {
