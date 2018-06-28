@@ -21,7 +21,7 @@ class HuiWeatherForecastCard extends PolymerElement {
   }
 
   getCardSize() {
-    return 3;
+    return 4;
   }
 
   _configChanged(config) {
