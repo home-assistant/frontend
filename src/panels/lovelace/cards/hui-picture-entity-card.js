@@ -1,39 +1,36 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import './hui-error-card.js';
 import '../../../components/ha-card.js';
 
-import { STATES_ON } from '../../../common/const.js';
+import { STATES_OFF } from '../../../common/const.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import computeStateDomain from '../../../common/entity/compute_state_name.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import createErrorCardConfig from '../common/create-error-card-config.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
-
-const DOMAINS_NO_STATE = ['scene', 'script', 'weblink'];
 
 /*
  * @appliesMixin LocalizeMixin
  */
-class HuiPictureCard extends LocalizeMixin(PolymerElement) {
+class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
         ha-card {
           position: relative;
           cursor: pointer;
-          min-height: 48px;
-          line-height: 0;
+          overflow: hidden;
         }
         img {
+          display: block;
           width: 100%;
           height: auto;
-          border-radius: 2px;
         }
-        img.state-off {
-          filter: grayscale(100%);
-        }
-        .text {
+        .box {
           @apply --paper-font-common-nowrap;
           position: absolute;
           left: 0;
@@ -44,29 +41,22 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
           font-size: 16px;
           line-height: 16px;
           color: white;
-          border-bottom-left-radius: 2px;
-          border-bottom-right-radius: 2px;
           display: flex;
           justify-content: space-between;
         }
-        .text .title {
+        #name {
           font-weight: 500;
-        }
-        .error {
-          background-color: red;
-          color: white;
-          text-align: center;
         }
       </style>
 
       <ha-card on-click="_cardClicked">
-        <img class$="[[_computeClass(config.entity, hass.states)]]" src="[[config.image]]">
-        <div class="text">
-          <div class="title">[[_computeTitle(config.entity, hass.states)]]</div>
-          <div>[[_computeState(config.entity, hass.states)]]</div>
+        <img id="image" src="">
+        <div class="box">
+          <div id="title"></div>
+          <div id="state"></div>
         </div>
         <template is="dom-if" if="[[_error]]">
-          <div class="error">[[_error]]</div>
+          <hui-error-card config="[[_error]]"></hui-error-card>
         </template>
       </ha-card>
     `;
@@ -74,12 +64,15 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
-      hass: Object,
+      hass: {
+        type: Object,
+        observer: '_hassChanged'
+      },
       config: {
         type: Object,
         observer: '_configChanged'
       },
-      _error: String
+      _error: Object
     };
   }
 
@@ -88,24 +81,41 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
   }
 
   _configChanged(config) {
-    if (config && config.entity && config.image) {
-      this._error = null;
-    } else {
-      this._error = 'Error in card configuration.';
+    if (!config || !config.entity || (!config.image && !config.state_image)) {
+      const error = 'Error in card configuration.';
+      this._error = createErrorCardConfig(error, config);
+      return;
+    }
+    this._error = null;
+  }
+
+  _hassChanged(hass) {
+    const config = this.config;
+    const entityId = config && config.entity;
+    if (!entityId) {
+      return;
+    } else if (!(entityId in hass.states) && this._oldState === 'Offline') {
+      return;
+    } else if (!(entityId in hass.states) || hass.states[entityId].state !== this._oldState) {
+      this._updateState(hass, entityId, config);
     }
   }
 
-  _computeClass(entityId, states) {
-    return DOMAINS_NO_STATE.includes(computeDomain(entityId)) ||
-      STATES_ON.includes(states[entityId].state) ? '' : 'state-off';
+  _updateState(hass, entityId, config) {
+    const state = entityId in hass.states ? hass.states[entityId].state : 'Offline';
+    const stateImg = config.state_image && (config.state_image[state] || config.state_image.default);
+
+    this.$.image.src = stateImg || config.image;
+    this.$.image.style.filter = stateImg || (!STATES_OFF.includes(state) && state !== 'Offline') ?
+      '' : 'grayscale(100%)';
+    this.$.title.innerText = state === 'Offline' ?
+      entityId : computeStateName(hass.states[entityId]);
+    this.$.state.innerText = state === 'Offline' ? state : this._computeState(hass.states[entityId]);
+    this._oldState = state;
   }
 
-  _computeTitle(entityId, states) {
-    return entityId && entityId in states && computeStateName(states[entityId]);
-  }
-
-  _computeState(entityId, states) {
-    const domain = computeDomain(entityId);
+  _computeState(stateObj) {
+    const domain = computeStateDomain(stateObj);
     switch (domain) {
       case 'scene':
         return this.localize('ui.card.scene.activate');
@@ -114,17 +124,21 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
       case 'weblink':
         return 'Open';
       default:
-        return computeStateDisplay(this.localize, states[entityId]);
+        return computeStateDisplay(this.localize, stateObj);
     }
   }
 
   _cardClicked() {
-    const entityId = this.config.entity;
+    const entityId = this.config && this.config.entity;
+    if (!(entityId in this.hass.states)) {
+      return;
+    }
+
     const domain = computeDomain(entityId);
     if (domain === 'weblink') {
       window.open(this.hass.states[entityId].state);
     } else {
-      const turnOn = !STATES_ON.includes(this.hass.states[entityId].state);
+      const turnOn = STATES_OFF.includes(this.hass.states[entityId].state);
       let service;
       switch (domain) {
         case 'lock':
@@ -141,4 +155,4 @@ class HuiPictureCard extends LocalizeMixin(PolymerElement) {
   }
 }
 
-customElements.define('hui-entity-picture-card', HuiPictureCard);
+customElements.define('hui-picture-entity-card', HuiPictureEntityCard);
