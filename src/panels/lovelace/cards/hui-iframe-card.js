@@ -18,18 +18,7 @@ class HuiIframeCard extends PolymerElement {
           line-height: 0;
           overflow: hidden;
         }
-        .header {
-          @apply --paper-font-headline;
-          /* overwriting line-height +8 because entity-toggle can be 40px height,
-            compensating this with reduced padding */
-          line-height: 40px;
-          color: var(--primary-text-color);
-          padding: 20px 16px 12px 16px;
-        }
-        .header .name {
-          @apply --paper-font-common-nowrap;
-        }
-        .wrapper {
+        #root {
           width: 100%;
           position: relative;
         }
@@ -42,26 +31,16 @@ class HuiIframeCard extends PolymerElement {
           height: 100%;
         }
       </style>
-      <ha-card>
-        <template is="dom-if" if="[[_computeTitle(config)]]">
-          <div class="header">
-            <div class="name">[[_computeTitle(config)]]</div>
-          </div>
-        </template>
-        <div class="wrapper">
+      <ha-card header="[[config.title]]">
+        <div id="root">
           <iframe src="[[config.url]]"></iframe>
         </div>
       </ha-card>
     `;
   }
 
-  _computeTitle(config) {
-    if (!config.url) return 'Error: URL not configured';
-    return config.title || '';
-  }
-
   _configChanged(config) {
-    this.shadowRoot.querySelector('.wrapper').style.paddingTop = config.aspect_ratio || '50%';
+    this.$.root.style.paddingTop = config.aspect_ratio || '50%';
   }
 
   getCardSize() {
