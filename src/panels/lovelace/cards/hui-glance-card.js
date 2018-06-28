@@ -84,10 +84,10 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeEntities(config) {
-    if (!config || !config.entities || !Array.isArray(config.entities)) {
-      const error = 'Error in card configuration.';
-      this._error = createErrorCardConfig(error, config);
-      return [];
+    if (config && config.entities && Array.isArray(config.entities) &&
+        config.entities.every(x => Object.prototype.hasOwnProperty.call(x, 'entity_id'))) {
+      this._error = null;
+      return config.entities;
     }
 
     this._error = null;
@@ -95,23 +95,23 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _showEntity(item, states) {
-    return item in states;
+    return item.entity_id in states;
   }
 
   _computeName(item, states) {
-    return computeStateName(states[item]);
+    return item.title || computeStateName(states[item.entity_id]);
   }
 
   _computeStateObj(item, states) {
-    return states[item];
+    return states[item.entity_id];
   }
 
   _computeState(item, states) {
-    return computeStateDisplay(this.localize, states[item]);
+    return computeStateDisplay(this.localize, states[item.entity_id]);
   }
 
   _openDialog(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.item });
+    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
   }
 }
 
