@@ -7,7 +7,7 @@ import '../../../components/ha-card.js';
 import { STATES_OFF } from '../../../common/const.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
-import computeStateDomain from '../../../common/entity/compute_state_name.js';
+import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import createErrorCardConfig from '../common/create-error-card-config.js';
 
@@ -96,23 +96,27 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     const entityId = config && config.entity;
     if (!entityId) {
       return;
-    } else if (!(entityId in hass.states) && this._oldState === OFFLINE) {
+    }
+    if (!(entityId in hass.states) && this._oldState === OFFLINE) {
       return;
-    } else if (!(entityId in hass.states) || hass.states[entityId].state !== this._oldState) {
+    }
+    if (!(entityId in hass.states) || hass.states[entityId].state !== this._oldState) {
       this._updateState(hass, entityId, config);
     }
   }
 
   _updateState(hass, entityId, config) {
     const state = entityId in hass.states ? hass.states[entityId].state : OFFLINE;
-    const stateImg = config.state_image && (config.state_image[state] || config.state_image.default);
+    const stateImg = config.state_image &&
+      (config.state_image[state] || config.state_image.default);
 
     this.$.image.src = stateImg || config.image;
     this.$.image.style.filter = stateImg || (!STATES_OFF.includes(state) && state !== OFFLINE) ?
       '' : 'grayscale(100%)';
     this.$.title.innerText = config.title || (state === OFFLINE ?
       entityId : computeStateName(hass.states[entityId]));
-    this.$.state.innerText = state === OFFLINE ? OFFLINE : this._computeState(hass.states[entityId]);
+    this.$.state.innerText = state === OFFLINE ?
+      OFFLINE : this._computeState(hass.states[entityId]);
     this._oldState = state;
   }
 
@@ -136,13 +140,13 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
       return;
     }
 
-    const domain = computeDomain(entityId);
-    if (domain === 'weblink') {
+    const stateDomain = computeDomain(entityId);
+    if (stateDomain === 'weblink') {
       window.open(this.hass.states[entityId].state);
     } else {
       const turnOn = STATES_OFF.includes(this.hass.states[entityId].state);
       let service;
-      switch (domain) {
+      switch (stateDomain) {
         case 'lock':
           service = turnOn ? 'unlock' : 'lock';
           break;
@@ -152,7 +156,8 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
         default:
           service = turnOn ? 'turn_on' : 'turn_off';
       }
-      this.hass.callService(domain, service, { entity_id: entityId });
+      const serviceDomain = stateDomain === 'group' ? 'homeassistant' : stateDomain;
+      this.hass.callService(serviceDomain, service, { entity_id: entityId });
     }
   }
 }
