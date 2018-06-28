@@ -6,6 +6,8 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 import createErrorCardConfig from '../common/create-error-card-config.js';
 
 import './hui-error-card.js';
+import coerceEntitiesToObjects from "../common/coerce-entities-to-objects";
+
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
@@ -84,10 +86,12 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeEntities(config) {
-    if (config && config.entities && Array.isArray(config.entities) &&
-        config.entities.every(x => Object.prototype.hasOwnProperty.call(x, 'entity_id'))) {
-      this._error = null;
-      return config.entities;
+    if (config && config.entities && Array.isArray(config.entities)) {
+      let entities = coerceEntitiesToObjects(config.entities);
+      if (entities.every(x => x === Object(x) && 'entity' in x)) {
+        this._error = null;
+        return entities;
+      }
     }
 
     this._error = null;
@@ -95,23 +99,23 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _showEntity(item, states) {
-    return item.entity_id in states;
+    return item.entity in states;
   }
 
   _computeName(item, states) {
-    return item.title || computeStateName(states[item.entity_id]);
+    return item.title || computeStateName(states[item.entity]);
   }
 
   _computeStateObj(item, states) {
-    return states[item.entity_id];
+    return states[item.entity];
   }
 
   _computeState(item, states) {
-    return computeStateDisplay(this.localize, states[item.entity_id]);
+    return computeStateDisplay(this.localize, states[item.entity]);
   }
 
   _openDialog(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
+    this.fire('hass-more-info', { entityId: ev.model.item.entity });
   }
 }
 
