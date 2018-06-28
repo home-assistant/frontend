@@ -29,8 +29,7 @@ const init = window.createHassConnection = function (password, accessToken) {
 };
 
 function redirectLogin() {
-  const urlBase = __DEV__ ? '/home-assistant-polymer/src' : `/frontend_${__BUILD__}`;
-  document.location = `${urlBase}/authorize.html?response_type=code&client_id=${window.clientId}&redirect_uri=/`;
+  document.location = `${__PUBLIC_PATH__}authorize.html?response_type=code&client_id=${window.clientId}&redirect_uri=/`;
 }
 
 window.refreshToken = () =>
