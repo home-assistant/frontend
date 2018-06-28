@@ -43,7 +43,7 @@ class HuiWeatherForecastCard extends PolymerElement {
       return;
     }
 
-    const element =  document.createElement('ha-weather-card');
+    const element = document.createElement('ha-weather-card');
     element.stateObj = this.hass.states[entityId];
     element.hass = this.hass;
     this.appendChild(element);

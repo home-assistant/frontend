@@ -43,7 +43,7 @@ class HuiPlantStatusCard extends PolymerElement {
       return;
     }
 
-    const element =  document.createElement('ha-plant-card');
+    const element = document.createElement('ha-plant-card');
     element.stateObj = this.hass.states[entityId];
     element.hass = this.hass;
     this.appendChild(element);

@@ -43,7 +43,7 @@ class HuiMediaControlCard extends PolymerElement {
       return;
     }
 
-    const element =  document.createElement('ha-media_player-card');
+    const element = document.createElement('ha-media_player-card');
     element.stateObj = this.hass.states[entityId];
     element.hass = this.hass;
     this.appendChild(element);
