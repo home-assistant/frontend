@@ -16,7 +16,7 @@ import './snapshots/hassio-snapshot.js';
 import './snapshots/hassio-snapshots.js';
 import './system/hassio-system.js';
 
-import scrollToTarget from '../../src/common/scroll-to-target.js';
+import scrollToTarget from '../../src/common/dom/scroll-to-target.js';
 
 import NavigateMixin from '../../src/mixins/navigate-mixin.js';
 

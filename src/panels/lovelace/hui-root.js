@@ -10,7 +10,7 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import scrollToTarget from '../../common/scroll-to-target.js';
+import scrollToTarget from '../../common/dom/scroll-to-target.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
 import NavigateMixin from '../../mixins/navigate-mixin.js';
