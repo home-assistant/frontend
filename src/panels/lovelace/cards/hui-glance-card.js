@@ -87,7 +87,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _computeEntities(config) {
     if (config && config.entities && Array.isArray(config.entities)) {
-      let entities = coerceEntitiesToObjects(config.entities);
+      const entities = coerceEntitiesToObjects(config.entities);
       if (entities.every(x => x === Object(x) && 'entity' in x)) {
         this._error = null;
         return entities;
