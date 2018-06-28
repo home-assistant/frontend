@@ -1,3 +1,4 @@
+// check for valid value of config.entity with optinal entity dommain check
 import computeDomain from '../../../common/entity/compute_domain.js';
 
 export default function validateEntityConfig(config, domain = null) {
