@@ -86,7 +86,9 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeEntities(config) {
-    const entities = computeConfigEntities(config);
+    if (config) {
+      config.entities = computeConfigEntities(config);
+    }
 
     if (!validateEntitiesConfig(config)) {
       const error = 'Error in card configuration.';
@@ -95,7 +97,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
 
     this._error = null;
-    return entities;
+    return config.entities;
   }
 
   _showEntity(item, states) {
