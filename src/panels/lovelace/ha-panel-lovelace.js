@@ -1,6 +1,7 @@
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-tabs/paper-tabs.js';
@@ -16,6 +17,12 @@ import './hui-root.js';
 class Lovelace extends PolymerElement {
   static get template() {
     return html`
+      <style>
+        paper-button {
+          color: var(--primary-color);
+          font-weight: 500;
+        }
+      </style>
       <template is='dom-if' if='[[_equal(_state, "loaded")]]' restamp>
         <hui-root
           narrow="[[narrow]]"
@@ -39,7 +46,9 @@ class Lovelace extends PolymerElement {
           error='[[_errorMsg]]'
           narrow="[[narrow]]"
           show-menu="[[showMenu]]"
-        ></hass-error-screen>
+        >
+          <paper-button on-click="_fetchConfig">Reload ui-lovelace.yaml</paper-button>
+        </hass-error-screen>
       </template>
     `;
   }
