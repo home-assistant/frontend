@@ -29,21 +29,14 @@ class HuiWeatherForecastCard extends PolymerElement {
       this.removeChild(this.lastChild);
     }
 
-    const entityId = config.entity;
-    if (!(entityId in this.hass.states)) {
-      return;
-    }
-
     const element = document.createElement('ha-weather-card');
-    element.stateObj = this.hass.states[entityId];
-    element.hass = this.hass;
     this.appendChild(element);
-    this._entityId = entityId;
+    this._entityId = config.entity;
   }
 
   _hassChanged(hass) {
     const entityId = this._entityId;
-    if (entityId && entityId in hass.states) {
+    if (entityId in hass.states) {
       const element = this.lastChild;
       element.stateObj = hass.states[entityId];
       element.hass = hass;

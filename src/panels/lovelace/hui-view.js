@@ -56,6 +56,7 @@ class HUIView extends PolymerElement {
       <div id='columns' on-rebuild-view='_debouncedConfigChanged'></div>
     `;
   }
+
   static get properties() {
     return {
       hass: {
@@ -65,14 +66,19 @@ class HUIView extends PolymerElement {
 
       columns: {
         type: Number,
-        observer: '_configChanged',
       },
 
       config: {
         type: Object,
-        observer: '_configChanged',
       },
     };
+  }
+
+  static get observers() {
+    return [
+      // Put all properties in 1 observer so we only call configChanged once
+      '_configChanged(columns, config)'
+    ]
   }
 
   constructor() {
