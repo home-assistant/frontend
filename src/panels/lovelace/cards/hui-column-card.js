@@ -3,7 +3,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeCardSize from '../common/compute-card-size.js';
 import createCardElement from '../common/create-card-element.js';
-import createErrorConfig from '../common/create-error-card-config.js';
 
 class HuiColumnCard extends PolymerElement {
   static get template() {
@@ -29,16 +28,17 @@ class HuiColumnCard extends PolymerElement {
         type: Object,
         observer: '_hassChanged'
       },
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      }
     };
   }
 
   constructor() {
     super();
     this._elements = [];
+  }
+
+  ready() {
+    super.ready();
+    if (this._config) this._buildConfig();
   }
 
   getCardSize() {
@@ -49,19 +49,23 @@ class HuiColumnCard extends PolymerElement {
     return totalSize;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
+    if (!config || !config.cards || !Array.isArray(config.cards)) {
+      throw new Error('Card config incorrect');
+    }
+
+    this._config = config;
+    if (this.$) this._buildConfig();
+  }
+
+  _buildConfig() {
+    const config = this._config;
+
     this._elements = [];
     const root = this.$.root;
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
-    }
-
-    if (!config || !config.cards || !Array.isArray(config.cards)) {
-      const error = 'Card config incorrect.';
-      const element = createCardElement(createErrorConfig(error, config));
-      root.appendChild(element);
-      return;
     }
 
     const elements = [];

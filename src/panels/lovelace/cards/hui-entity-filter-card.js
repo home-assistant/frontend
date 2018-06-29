@@ -2,7 +2,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import createCardElement from '../common/create-card-element.js';
-import createErrorCardConfig from '../common/create-error-card-config.js';
 
 class HuiEntitiesCard extends PolymerElement {
   static get properties() {
@@ -11,10 +10,6 @@ class HuiEntitiesCard extends PolymerElement {
         type: Object,
         observer: '_hassChanged'
       },
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      }
     };
   }
 
@@ -54,35 +49,25 @@ class HuiEntitiesCard extends PolymerElement {
     return stateObj.entity_id.search(regEx) === 0;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
+    if (!config.filter || !Array.isArray(config.filter)) {
+      throw new Error('Incorrect filter config.');
+    }
+
+    this._config = config;
+
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
 
-    let error;
+    const card = 'card' in config ? Object.assign({}, config.card) : {};
+    if (!card.type) card.type = 'entities';
+    card.entities = [];
 
-    if (!config.filter || !Array.isArray(config.filter)) {
-      error = 'Incorrect filter config.';
-    } else if (!config.card) {
-      config = Object.assign({}, config, {
-        card: { type: 'entities' }
-      });
-    } else if (!config.card.type) {
-      config = Object.assign({}, config, {
-        card: Object.assign({}, config.card, { type: 'entities' })
-      });
-    }
-
-    let element;
-
-    if (error) {
-      element = createCardElement(createErrorCardConfig(error, config.card));
-    } else {
-      element = createCardElement(config.card);
-      element._filterRawConfig = config.card;
-      this._updateCardConfig(element);
-      element.hass = this.hass;
-    }
+    const element = createCardElement(card);
+    element._filterRawConfig = card;
+    this._updateCardConfig(element);
+    element.hass = this.hass;
     this.appendChild(element);
   }
 
@@ -93,12 +78,12 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _updateCardConfig(element) {
-    if (!element || element.tagName === 'HUI-ERROR-CARD') return;
-    element.config = Object.assign(
+    if (!element || element.tagName === 'HUI-ERROR-CARD' || !this.hass) return;
+    element.setConfig(Object.assign(
       {},
       element._filterRawConfig,
-      { entities: this._getEntities(this.hass, this.config.filter) }
-    );
+      { entities: this._getEntities(this.hass, this._config.filter) }
+    ));
   }
 }
 customElements.define('hui-entity-filter-card', HuiEntitiesCard);

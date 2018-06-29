@@ -50,9 +50,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
     <ha-card>
       <div class='header'>
-        <div class="name">[[_computeTitle(config)]]</div>
-        <template is="dom-if" if="[[_showHeaderToggle(config.show_header_toggle)]]">
-          <hui-entities-toggle hass="[[hass]]" entities="[[config.entities]]"></hui-entities-toggle>
+        <div class="name">[[_computeTitle(_config)]]</div>
+        <template is="dom-if" if="[[_showHeaderToggle(_config.show_header_toggle)]]">
+          <hui-entities-toggle hass="[[hass]]" entities="[[_config.entities]]"></hui-entities-toggle>
         </template>
       </div>
       <div id="states"></div>
@@ -66,10 +66,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
         type: Object,
         observer: '_hassChanged',
       },
-      config: {
-        type: Object,
-        observer: '_configChanged',
-      }
+      _config: Object,
     };
   }
 
@@ -78,9 +75,14 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     this._elements = [];
   }
 
+  ready() {
+    super.ready();
+    if (this._config) this._buildConfig();
+  }
+
   getCardSize() {
     // +1 for the header
-    return 1 + (this.config ? this.config.entities.length : 0);
+    return 1 + (this._config ? this._config.entities.length : 0);
   }
 
   _computeTitle(config) {
@@ -91,7 +93,13 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     return show !== false;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
+    this._config = config;
+    if (this.$) this._buildConfig();
+  }
+
+  _buildConfig() {
+    const config = this._config;
     const root = this.$.states;
 
     while (root.lastChild) {
