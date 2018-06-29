@@ -36,6 +36,13 @@ class HuiRowCard extends PolymerElement {
     this._elements = [];
   }
 
+  ready() {
+    super.ready();
+    if (this._config) {
+      this._buildConfig();
+    }
+  }
+
   getCardSize() {
     let size = 1;
     this._elements.forEach((element) => {
@@ -49,7 +56,11 @@ class HuiRowCard extends PolymerElement {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
       throw new Error('Card config incorrect.');
     }
+    if (this.$) this._buildConfig();
+  }
 
+  _buildConfig() {
+    const config = this._config;
     this._elements = [];
     const root = this.$.root;
 

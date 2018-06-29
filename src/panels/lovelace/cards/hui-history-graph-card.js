@@ -21,7 +21,7 @@ class HuiHistoryGraphCard extends PolymerElement {
           entity-id="[[_config.entities]]"
           data="{{stateHistory}}"
           is-loading="{{stateHistoryLoading}}"
-          cache-config="[[cacheConfig]]"
+          cache-config="[[_computeCacheConfig(_config)]]"
         ></ha-state-history-data>
         <state-history-charts
           hass="[[hass]]"
@@ -40,14 +40,6 @@ class HuiHistoryGraphCard extends PolymerElement {
       _config: Object,
       stateHistory: Object,
       stateHistoryLoading: Boolean,
-      cacheConfig: {
-        type: Object,
-        value: {
-          refresh: 0,
-          cacheKey: null,
-          hoursToShow: 24,
-        },
-      },
     };
   }
 
@@ -60,13 +52,15 @@ class HuiHistoryGraphCard extends PolymerElement {
       throw new Error('Error in card configuration.');
     }
 
-    this.cacheConfig = {
+    this._config = config;
+  }
+
+  _computeCacheConfig(config) {
+    return {
       cacheKey: config.entities,
       hoursToShow: config.hours_to_show || 24,
       refresh: config.refresh_interval || 0
     };
-
-    this._config = config;
   }
 }
 

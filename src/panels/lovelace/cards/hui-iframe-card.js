@@ -36,9 +36,22 @@ class HuiIframeCard extends PolymerElement {
     };
   }
 
+  ready() {
+    super.ready();
+    if (this._config) {
+      this._buildConfig();
+    }
+  }
+
   setConfig(config) {
-    this.$.root.style.paddingTop = config.aspect_ratio || '50%';
     this._config = config;
+    if (this.$) this._buildConfig();
+  }
+
+  _buildConfig() {
+    const config = this._config;
+
+    this.$.root.style.paddingTop = config.aspect_ratio || '50%';
   }
 
   getCardSize() {

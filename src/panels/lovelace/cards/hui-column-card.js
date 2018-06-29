@@ -37,6 +37,13 @@ class HuiColumnCard extends PolymerElement {
     this._elements = [];
   }
 
+  ready() {
+    super.ready();
+    if (this._config) {
+      this._buildConfig();
+    }
+  }
+
   getCardSize() {
     let totalSize = 0;
     this._elements.forEach((element) => {
@@ -49,6 +56,13 @@ class HuiColumnCard extends PolymerElement {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
       throw new Error('Card config incorrect');
     }
+
+    this._config = config;
+    if (this.$) this._buildConfig();
+  }
+
+  _buildConfig() {
+    const config = this._config;
 
     this._elements = [];
     const root = this.$.root;

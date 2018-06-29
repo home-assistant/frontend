@@ -1,7 +1,6 @@
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 import stateCardType from '../../../common/entity/state_card_type.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
@@ -76,6 +75,13 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     this._elements = [];
   }
 
+  ready() {
+    super.ready();
+    if (this._config) {
+      this._buildConfig();
+    }
+  }
+
   getCardSize() {
     // +1 for the header
     return 1 + (this._config ? this._config.entities.length : 0);
@@ -89,10 +95,13 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     return show !== false;
   }
 
-  async setConfig(config) {
-    await new Promise(resolve => afterNextRender(this, resolve));
-
+  setConfig(config) {
     this._config = config;
+    if (this.$) this._buildConfig();
+  }
+
+  _buildConfig() {
+    const config = this._config;
     const root = this.$.states;
 
     while (root.lastChild) {
