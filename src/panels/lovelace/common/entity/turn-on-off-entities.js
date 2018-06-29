@@ -2,7 +2,6 @@ import { STATES_OFF } from '../../../../common/const.js';
 import computeDomain from '../../../../common/entity/compute_domain.js';
 
 export default function turnOnOffEntities(hass, entityIds, turnOn = true) {
-
   const domainsToCall = {};
   entityIds.forEach((entityId) => {
     if ((STATES_OFF.includes(hass.states[entityId].state)) === turnOn) {

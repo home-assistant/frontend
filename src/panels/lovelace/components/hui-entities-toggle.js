@@ -3,7 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
 import canToggleState from '../../../common/entity/can_toggle_state.js';
-import turnOnOffEntities from '../common/entity/turn-on-off-entities.js'
+import turnOnOffEntities from '../common/entity/turn-on-off-entities.js';
 import { STATES_OFF } from '../../../common/const.js';
 
 class HuiEntitiesToggle extends PolymerElement {
@@ -49,7 +49,7 @@ class HuiEntitiesToggle extends PolymerElement {
 
   _callService(ev) {
     const turnOn = ev.target.checked;
-    turnOnOffEntities(hass, this._toggleEntities, turnOn);
+    turnOnOffEntities(this.hass, this._toggleEntities, turnOn);
   }
 }
 
