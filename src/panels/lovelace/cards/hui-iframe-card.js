@@ -2,15 +2,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 class HuiIframeCard extends PolymerElement {
-  static get properties() {
-    return {
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      }
-    };
-  }
-
   static get template() {
     return html`
       <style>
@@ -31,16 +22,23 @@ class HuiIframeCard extends PolymerElement {
           height: 100%;
         }
       </style>
-      <ha-card header="[[config.title]]">
+      <ha-card header="[[_config.title]]">
         <div id="root">
-          <iframe src="[[config.url]]"></iframe>
+          <iframe src="[[_config.url]]"></iframe>
         </div>
       </ha-card>
     `;
   }
 
-  _configChanged(config) {
+  static get properties() {
+    return {
+      _config: Object,
+    };
+  }
+
+  setConfig(config) {
     this.$.root.style.paddingTop = config.aspect_ratio || '50%';
+    this._config = config;
   }
 
   getCardSize() {

@@ -29,10 +29,6 @@ class HuiColumnCard extends PolymerElement {
         type: Object,
         observer: '_hassChanged'
       },
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      }
     };
   }
 
@@ -49,19 +45,16 @@ class HuiColumnCard extends PolymerElement {
     return totalSize;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
+    if (!config || !config.cards || !Array.isArray(config.cards)) {
+      throw new Error('Card config incorrect');
+    }
+
     this._elements = [];
     const root = this.$.root;
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
-    }
-
-    if (!config || !config.cards || !Array.isArray(config.cards)) {
-      const error = 'Card config incorrect.';
-      const element = createCardElement(createErrorConfig(error, config));
-      root.appendChild(element);
-      return;
     }
 
     const elements = [];

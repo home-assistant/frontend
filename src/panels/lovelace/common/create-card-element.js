@@ -42,7 +42,12 @@ const CUSTOM_TYPE_PREFIX = 'custom:';
 
 function _createElement(tag, config) {
   const element = document.createElement(tag);
-  element.config = config;
+  try {
+    element.setConfig(config);
+  } catch (err) {
+    console.error(err);
+    return _createErrorElement(err.message, config);
+  }
   return element;
 }
 
