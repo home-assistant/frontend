@@ -11,10 +11,6 @@ class HuiWeatherForecastCard extends PolymerElement {
         type: Object,
         observer: '_hassChanged'
       },
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      }
     };
   }
 
