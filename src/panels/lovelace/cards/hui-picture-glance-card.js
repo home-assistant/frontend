@@ -2,14 +2,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 
-import './hui-error-card.js';
 import '../../../components/ha-card.js';
 
 import { STATES_OFF } from '../../../common/const.js';
 import canToggleState from '../../../common/entity/can_toggle_state.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
-import createErrorCardConfig from '../common/create-error-card-config.js';
 import stateIcon from '../../../common/entity/state_icon.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
@@ -63,9 +61,9 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <ha-card>
-        <img src="[[config.image]]">
+        <img src="[[_config.image]]">
         <div class="box">
-          <div class="title">[[config.title]]</div>
+          <div class="title">[[_config.title]]</div>
           <div>
             <template is="dom-repeat" items="[[_entitiesDialog]]">
               <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
@@ -91,9 +89,6 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </template>
           </div>
         </div>
-        <template is="dom-if" if="[[_error]]">
-          <hui-error-card config="[[_error]]"></hui-error-card>
-        </template>
       </ha-card>
     `;
   }
@@ -101,13 +96,9 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get properties() {
     return {
       hass: Object,
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      },
+      _config: Object,
       _entitiesDialog: Array,
       _entitiesService: Array,
-      _error: Object
     };
   }
 
@@ -115,26 +106,24 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return 3;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
+    if (!config || !config.entities || !Array.isArray(config.entities) || !config.image) {
+      throw new Error('Invalid card configuration');
+    }
+
+    this._config = config;
     let dialog = [];
     let service = [];
-    let _error = null;
-    if (config && config.entities && Array.isArray(config.entities) && config.image) {
-      if (config.force_dialog) {
-        dialog = config.entities;
-      } else {
-        service = config.entities.filter(entity =>
-          canToggleState(this.hass, this.hass.states[entity]));
-        dialog = config.entities.filter(entity => !service.includes(entity));
-      }
+    if (config.force_dialog) {
+      dialog = config.entities;
     } else {
-      const error = 'Error in card configuration.';
-      _error = createErrorCardConfig(error, config);
+      service = config.entities.filter(entity =>
+        canToggleState(this.hass, this.hass.states[entity]));
+      dialog = config.entities.filter(entity => !service.includes(entity));
     }
     this.setProperties({
       _entitiesDialog: dialog,
       _entitiesService: service,
-      _error
     });
   }
 

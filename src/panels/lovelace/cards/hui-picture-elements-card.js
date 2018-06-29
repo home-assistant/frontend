@@ -47,7 +47,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
       }
     </style>
 
-    <ha-card header="[[config.title]]">
+    <ha-card header="[[_config.title]]">
       <div id="root"></div>
     </ha-card>
 `;
@@ -59,18 +59,36 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         type: Object,
         observer: '_hassChanged'
       },
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      }
+      _config: Object,
     };
+  }
+
+  constructor() {
+    super();
+    this._requiresStateObj = [];
+    this._requiresTextState = [];
+  }
+
+  ready() {
+    super.ready();
+    if (this._config) this._buildConfig();
   }
 
   getCardSize() {
     return 4;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
+    if (!config || !config.image || !Array.isArray(config.elements)) {
+      throw new Error('Invalid card configuration');
+    }
+
+    this._config = config;
+    if (this.$) this._buildConfig();
+  }
+
+  _buildConfig() {
+    const config = this._config;
     const root = this.$.root;
     this._requiresStateObj = [];
     this._requiresTextState = [];
@@ -79,41 +97,43 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
       root.removeChild(root.lastChild);
     }
 
-    if (config && config.image && config.elements) {
-      const img = document.createElement('img');
-      img.src = config.image;
-      root.appendChild(img);
+    const img = document.createElement('img');
+    img.src = config.image;
+    root.appendChild(img);
 
-      config.elements.forEach((element) => {
-        let el;
-        if (element.type === 'state-badge') {
-          const entityId = element.entity;
-          el = document.createElement('state-badge');
-          el.addEventListener('click', () => this._handleClick(entityId, element.tap_action === 'toggle'));
-          el.classList.add('clickable');
-          this._requiresStateObj.push({ el, entityId });
-        } else if (element.type === 'state-text') {
-          const entityId = element.entity;
-          el = document.createElement('div');
-          el.addEventListener('click', () => this._handleClick(entityId, false));
-          el.classList.add('clickable', 'state-text');
-          this._requiresTextState.push({ el, entityId });
-        } else if (element.type === 'service-button') {
-          el = document.createElement('ha-call-service-button');
-          el.hass = this.hass;
-          el.domain = (element.service && element.domain) || 'homeassistant';
-          el.service = (element.service && element.service.service) || '';
-          el.serviceData = (element.service && element.service.data) || {};
-          el.innerText = element.title;
-        }
-        el.classList.add('element');
-        if (element.style) {
-          Object.keys(element.style).forEach((prop) => {
-            el.style.setProperty(prop, element.style[prop]);
-          });
-        }
-        root.appendChild(el);
-      });
+    config.elements.forEach((element) => {
+      let el;
+      if (element.type === 'state-badge') {
+        const entityId = element.entity;
+        el = document.createElement('state-badge');
+        el.addEventListener('click', () => this._handleClick(entityId, element.tap_action === 'toggle'));
+        el.classList.add('clickable');
+        this._requiresStateObj.push({ el, entityId });
+      } else if (element.type === 'state-text') {
+        const entityId = element.entity;
+        el = document.createElement('div');
+        el.addEventListener('click', () => this._handleClick(entityId, false));
+        el.classList.add('clickable', 'state-text');
+        this._requiresTextState.push({ el, entityId });
+      } else if (element.type === 'service-button') {
+        el = document.createElement('ha-call-service-button');
+        el.hass = this.hass;
+        el.domain = (element.service && element.domain) || 'homeassistant';
+        el.service = (element.service && element.service.service) || '';
+        el.serviceData = (element.service && element.service.data) || {};
+        el.innerText = element.title;
+      }
+      el.classList.add('element');
+      if (element.style) {
+        Object.keys(element.style).forEach((prop) => {
+          el.style.setProperty(prop, element.style[prop]);
+        });
+      }
+      root.appendChild(el);
+    });
+
+    if (this.hass) {
+      this._hassChanged(this.hass);
     }
   }
 
