@@ -38,9 +38,7 @@ class HuiIframeCard extends PolymerElement {
 
   ready() {
     super.ready();
-    if (this._config) {
-      this._buildConfig();
-    }
+    if (this._config) this._buildConfig();
   }
 
   setConfig(config) {

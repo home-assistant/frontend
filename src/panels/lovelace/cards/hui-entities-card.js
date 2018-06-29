@@ -77,9 +77,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    if (this._config) {
-      this._buildConfig();
-    }
+    if (this._config) this._buildConfig();
   }
 
   getCardSize() {
