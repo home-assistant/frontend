@@ -3,7 +3,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import createErrorCardConfig from '../common/create-error-card-config.js';
 
+import './hui-error-card.js';
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
@@ -44,11 +46,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        .error {
-          background-color: red;
-          color: white;
-          text-align: center;
-        }
       </style>
 
       <ha-card header="[[config.title]]">
@@ -64,7 +61,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           </template>
         </div>
         <template is="dom-if" if="[[_error]]">
-          <div class="error">[[_error]]</div>
+          <hui-error-card config="[[_error]]"></hui-error-card>
         </template>
       </ha-card>
     `;
@@ -78,7 +75,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         type: Array,
         computed: '_computeEntities(config)'
       },
-      _error: String
+      _error: Object
     };
   }
 
@@ -87,12 +84,14 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeEntities(config) {
-    if (config && config.entities && Array.isArray(config.entities)) {
-      this._error = null;
-      return config.entities;
+    if (!config || !config.entities || !Array.isArray(config.entities)) {
+      const error = 'Error in card configuration.';
+      this._error = createErrorCardConfig(error, config);
+      return [];
     }
-    this._error = 'Error in card configuration.';
-    return [];
+
+    this._error = null;
+    return config.entities;
   }
 
   _showEntity(item, states) {

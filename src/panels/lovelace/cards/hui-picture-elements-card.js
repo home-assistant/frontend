@@ -5,10 +5,9 @@ import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
-import { STATES_ON } from '../../../common/const.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import toggleEntity from '../common/entity/toggle-entity.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
@@ -140,23 +139,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
 
   _handleClick(entityId, toggle) {
     if (toggle) {
-      const turnOn = !STATES_ON.includes(this.hass.states[entityId].state);
-      const stateDomain = computeDomain(entityId);
-      const serviceDomain = stateDomain === 'lock' || stateDomain === 'cover' ?
-        stateDomain : 'homeassistant';
-
-      let service;
-      switch (stateDomain) {
-        case 'lock':
-          service = turnOn ? 'unlock' : 'lock';
-          break;
-        case 'cover':
-          service = turnOn ? 'open_cover' : 'close_cover';
-          break;
-        default:
-          service = turnOn ? 'turn_on' : 'turn_off';
-      }
-      this.hass.callService(serviceDomain, service, { entity_id: entityId });
+      toggleEntity(this.hass, entityId);
     } else {
       this.fire('hass-more-info', { entityId });
     }
