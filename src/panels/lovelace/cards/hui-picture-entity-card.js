@@ -141,8 +141,8 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
       return;
     }
 
-    const stateDomain = computeDomain(entityId);
-    if (stateDomain === 'weblink') {
+    const domain = computeDomain(entityId);
+    if (domain === 'weblink') {
       window.open(this.hass.states[entityId].state);
     } else {
       toggleEntity(this.hass, entityId);
