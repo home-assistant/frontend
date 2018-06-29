@@ -79,11 +79,11 @@ class HuiEntitiesCard extends PolymerElement {
 
   _updateCardConfig(element) {
     if (!element || element.tagName === 'HUI-ERROR-CARD' || !this.hass) return;
-    element.config = Object.assign(
+    element.setConfig(Object.assign(
       {},
       element._filterRawConfig,
       { entities: this._getEntities(this.hass, this._config.filter) }
-    );
+    ));
   }
 }
 customElements.define('hui-entity-filter-card', HuiEntitiesCard);
