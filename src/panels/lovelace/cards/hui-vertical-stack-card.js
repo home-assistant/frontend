@@ -4,18 +4,18 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import computeCardSize from '../common/compute-card-size.js';
 import createCardElement from '../common/create-card-element.js';
 
-class HuiRowCard extends PolymerElement {
+class HuiVerticalStackCard extends PolymerElement {
   static get template() {
     return html`
       <style>
         #root {
           display: flex;
-          margin-left: -4px;
-          margin-right: -4px;
+          flex-direction: column;
+          margin-top: -4px;
+          margin-bottom: -8px;
         }
         #root > * {
-          flex: 1 1 0;
-          margin: 0 4px;
+          margin: 4px 0 8px 0;
         }
       </style>
       <div id="root"></div>
@@ -42,24 +42,25 @@ class HuiRowCard extends PolymerElement {
   }
 
   getCardSize() {
-    let size = 1;
+    let totalSize = 0;
     this._elements.forEach((element) => {
-      const elSize = computeCardSize(element);
-      if (elSize > size) size = elSize;
+      totalSize += computeCardSize(element);
     });
-    return size;
+    return totalSize;
   }
 
   setConfig(config) {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
-      throw new Error('Card config incorrect.');
+      throw new Error('Card config incorrect');
     }
+
     this._config = config;
     if (this.$) this._buildConfig();
   }
 
   _buildConfig() {
     const config = this._config;
+
     this._elements = [];
     const root = this.$.root;
 
@@ -84,4 +85,4 @@ class HuiRowCard extends PolymerElement {
   }
 }
 
-customElements.define('hui-row-card', HuiRowCard);
+customElements.define('hui-vertical-stack-card', HuiVerticalStackCard);
