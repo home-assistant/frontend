@@ -60,14 +60,6 @@ export const DOMAINS_MORE_INFO_NO_HISTORY = [
   'scene',
 ];
 
-/** States that we consider "on". */
-export const STATES_ON = [
-  'home',
-  'on',
-  'open',
-  'unlocked'
-];
-
 /** States that we consider "off". */
 export const STATES_OFF = [
   'closed',
