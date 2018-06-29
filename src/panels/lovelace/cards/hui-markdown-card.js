@@ -34,15 +34,15 @@ class HuiMarkdownCard extends PolymerElement {
           max-width: 100%;
         }
       </style>
-      <ha-card header="[[config.title]]">
-        <ha-markdown content='[[config.content]]'></ha-markdown>
+      <ha-card header="[[_config.title]]">
+        <ha-markdown content='[[_config.content]]'></ha-markdown>
       </ha-card>
     `;
   }
 
   static get properties() {
     return {
-      config: Object,
+      _config: Object,
       noTitle: {
         type: Boolean,
         reflectToAttribute: true,
@@ -51,8 +51,12 @@ class HuiMarkdownCard extends PolymerElement {
     };
   }
 
+  setConfig(config) {
+    this._config = config;
+  }
+
   getCardSize() {
-    return this.config.content.split('\n').length;
+    return this._config.content.split('\n').length;
   }
 
   _computeNoTitle(title) {
