@@ -62,11 +62,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           <paper-tabs scrollable selected="[[_curView]]" on-iron-activate="_handleViewSelected">
             <template is="dom-repeat" items="[[config.views]]">
               <paper-tab>
-                <template is="dom-if" if="[[item.tab_icon]]">
-                  <iron-icon title$="[[item.name]]" icon="[[item.tab_icon]]"></iron-icon>
+                <template is="dom-if" if="[[item.icon]]">
+                  <iron-icon title$="[[item.title]]" icon="[[item.icon]]"></iron-icon>
                 </template>
-                <template is="dom-if" if="[[!item.tab_icon]]">
-                  [[_computeTabTitle(item)]]
+                <template is="dom-if" if="[[!item.icon]]">
+                  [[_computeTabTitle(item.title)]]
                 </template>
               </paper-tab>
             </template>
@@ -131,15 +131,15 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeTitle(config) {
-    return config.name || 'Home Assistant';
+    return config.title || 'Home Assistant';
   }
 
   _computeTabsHidden(views) {
     return views.length < 2;
   }
 
-  _computeTabTitle(view) {
-    return view.tab_title || view.name || 'Unnamed View';
+  _computeTabTitle(title) {
+    return title || 'Unnamed view';
   }
 
   _handleRefresh() {

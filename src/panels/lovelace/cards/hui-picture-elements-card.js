@@ -89,7 +89,7 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
         if (element.type === 'state-badge') {
           const entityId = element.entity;
           el = document.createElement('state-badge');
-          el.addEventListener('click', () => this._handleClick(entityId, element.action === 'toggle'));
+          el.addEventListener('click', () => this._handleClick(entityId, element.tap_action === 'toggle'));
           el.classList.add('clickable');
           this._requiresStateObj.push({ el, entityId });
         } else if (element.type === 'state-text') {
