@@ -117,8 +117,8 @@ class HaPanelDevInfo extends PolymerElement {
         </app-toolbar>
       </app-header>
 
-      <div class='content'>
-        <div class='about'>
+      <diva class='content'>
+        <diva class='about'>
           <p class='version'>
             <a href='https://www.home-assistant.io'><img src="/static/icons/favicon-192x192.png" height="192" /></a><br />
             Home Assistant<br />
@@ -157,8 +157,11 @@ class HaPanelDevInfo extends PolymerElement {
               </div>
             </template>
           </p>
-          <p><a href='/lovelace'>Try out the new Lovelace UI (experimental)</a></p>
-        </div>
+          <p>
+            <a href='/lovelace'>Try out the new Lovelace UI (experimental)</a>
+            <div id="love" style="cursor:pointer;" on-click="_toggleDefaultPage">[[_defaultPageText()]]</div
+          </p>
+        </diva>
 
         <div class="system-log-intro">
           <paper-card>
@@ -202,7 +205,7 @@ class HaPanelDevInfo extends PolymerElement {
           <paper-icon-button icon='hass:refresh' on-click='refreshErrorLog'></paper-icon-button>
         </p>
         <div class='error-log'>[[errorLog]]</div>
-      </div>
+      </diva>
     </app-header-layout>
 
     <paper-dialog with-backdrop id="showlog">
@@ -333,6 +336,23 @@ class HaPanelDevInfo extends PolymerElement {
         this.items = items;
         this.updating = false;
       });
+  }
+
+  _defaultPageText() {
+    return localStorage.defaultPage === 'lovelace' ?
+      '>> Remove lovelace as default page page on this device <<' :
+      '>> Set lovelace as default page page on this device <<';
+  }
+
+  _toggleDefaultPage() {
+    const curIsLove = localStorage.defaultPage === 'lovelace';
+    if (curIsLove) {
+      delete localStorage.defaultPage;
+      this.$.love.innerText = '>> Set lovelace as default page on this device <<';
+    } else {
+      localStorage.defaultPage = 'lovelace';
+      this.$.love.innerText = '>> Remove lovelace as default page on this device <<';
+    }
   }
 }
 

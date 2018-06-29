@@ -51,13 +51,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
-          <template is="dom-if" if="[[!_lovelaceIsHome()]]">
-            <paper-icon-button
-              on-click="_setLovelaceAsHome"
-              icon="mdi:home-heart"
-              title="Set Lovelace as default page"
-            ></paper-icon-button>
-          </template>
           <a href='https://developers.home-assistant.io/docs/en/lovelace_index.html' tabindex='-1' target='_blank'>
             <paper-icon-button icon='hass:help-circle-outline'></paper-icon-button>
           </a>
@@ -131,14 +124,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       }
       if (index !== this._curView) this._selectView(index);
     }
-  }
-
-  _lovelaceIsHome() {
-    return localStorage.defaultPage === 'lovelace';
-  }
-
-  _setLovelaceAsHome() {
-    localStorage.defaultPage = 'lovelace';
   }
 
   _computeViewId(id, index) {
