@@ -107,7 +107,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       },
       _entitiesDialog: Array,
       _entitiesService: Array,
-      _error: String
+      _error: Object
     };
   }
 
@@ -118,7 +118,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _configChanged(config) {
     let dialog = [];
     let service = [];
-    let _error = Object;
+    let _error = null;
     if (config && config.entities && Array.isArray(config.entities) && config.image) {
       if (config.force_dialog) {
         dialog = config.entities;
