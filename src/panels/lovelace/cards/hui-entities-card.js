@@ -1,6 +1,7 @@
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 import stateCardType from '../../../common/entity/state_card_type.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
@@ -50,7 +51,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
     <ha-card>
       <div class='header'>
-        <div class="name">[[_computeTitle(config)]]</div>
+        <div class="name">[[_computeTitle(_config)]]</div>
         <template is="dom-if" if="[[_showHeaderToggle(_config.show_header_toggle)]]">
           <hui-entities-toggle hass="[[hass]]" entities="[[_config.entities]]"></hui-entities-toggle>
         </template>
@@ -88,7 +89,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     return show !== false;
   }
 
-  setConfig(config) {
+  async setConfig(config) {
+    await new Promise(resolve => afterNextRender(this, resolve));
+
     this._config = config;
     const root = this.$.states;
 

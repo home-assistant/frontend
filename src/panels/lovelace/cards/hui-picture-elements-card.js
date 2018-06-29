@@ -1,5 +1,6 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 
 import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/state-badge.js';
@@ -63,16 +64,24 @@ class HuiPictureElementsCard extends LocalizeMixin(EventsMixin(PolymerElement)) 
     };
   }
 
+  constructor() {
+    super();
+    this._requiresStateObj = [];
+    this._requiresTextState = [];
+  }
+
   getCardSize() {
     return 4;
   }
 
-  setConfig(config) {
+  async setConfig(config) {
     if (!config || !config.image || !Array.isArray(config.elements)) {
       throw new Error('Invalid card configuration');
     }
-    this._config = config;
 
+    await new Promise(resolve => afterNextRender(this, resolve));
+
+    this._config = config;
     const root = this.$.root;
     this._requiresStateObj = [];
     this._requiresTextState = [];

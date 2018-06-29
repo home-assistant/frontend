@@ -45,7 +45,7 @@ function _createElement(tag, config) {
   try {
     element.setConfig(config);
   } catch (err) {
-    console.error(err);
+    console.error(tag, err);
     return _createErrorElement(err.message, config);
   }
   return element;

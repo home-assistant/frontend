@@ -67,7 +67,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       _config: Object,
-      _error: Object
     };
   }
 

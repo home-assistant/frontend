@@ -60,18 +60,12 @@ class HuiEntitiesCard extends PolymerElement {
       this.removeChild(this.lastChild);
     }
 
-    if (!config.card) {
-      config = Object.assign({}, config, {
-        card: { type: 'entities' }
-      });
-    } else if (!config.card.type) {
-      config = Object.assign({}, config, {
-        card: Object.assign({}, config.card, { type: 'entities' })
-      });
-    }
+    let card = 'card' in config ? Object.assign({}, config.card) : {};
+    if (!card.type) card.type = 'entities';
+    card.entities = [];
 
-    const element = createCardElement(config.card);
-    element._filterRawConfig = config.card;
+    const element = createCardElement(card);
+    element._filterRawConfig = card;
     this._updateCardConfig(element);
     element.hass = this.hass;
     this.appendChild(element);
@@ -84,7 +78,7 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _updateCardConfig(element) {
-    if (!element || element.tagName === 'HUI-ERROR-CARD') return;
+    if (!element || element.tagName === 'HUI-ERROR-CARD' || !this.hass) return;
     element.config = Object.assign(
       {},
       element._filterRawConfig,
