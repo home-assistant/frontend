@@ -49,12 +49,14 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     </style>
 
     <ha-card>
-      <div class='header'>
-        <div class="name">[[_computeTitle(_config)]]</div>
-        <template is="dom-if" if="[[_showHeaderToggle(_config.show_header_toggle)]]">
-          <hui-entities-toggle hass="[[hass]]" entities="[[_config.entities]]"></hui-entities-toggle>
-        </template>
-      </div>
+      <template is='dom-if' if='[[_showHeader(_config)]]'>
+        <div class='header'>
+          <div class="name">[[_config.title]]</div>
+          <template is="dom-if" if="[[_showHeaderToggle(_config.show_header_toggle)]]">
+            <hui-entities-toggle hass="[[hass]]" entities="[[_config.entities]]"></hui-entities-toggle>
+          </template>
+        </div>
+      </template>
       <div id="states"></div>
     </ha-card>
 `;
@@ -85,12 +87,14 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     return 1 + (this._config ? this._config.entities.length : 0);
   }
 
-  _computeTitle(config) {
-    return config.title;
+  _showHeaderToggle(show) {
+    // If show is undefined, we treat it as true
+    return show !== false;
   }
 
-  _showHeaderToggle(show) {
-    return show !== false;
+  _showHeader(config) {
+    // Show header if either title or toggle configured to show in it
+    return config.title || config.show_header_toggle;
   }
 
   setConfig(config) {
