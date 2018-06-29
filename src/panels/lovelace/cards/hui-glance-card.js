@@ -3,13 +3,11 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
-import createErrorCardConfig from '../common/create-error-card-config.js';
-
-import './hui-error-card.js';
-
 import computeConfigEntities from '../common/compute-config-entities';
+import createErrorCardConfig from '../common/create-error-card-config.js';
 import validateEntitiesConfig from '../common/validate-entities-config';
 
+import './hui-error-card.js';
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
@@ -88,16 +86,16 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeEntities(config) {
-    if (config) {
-      config.entities = computeConfigEntities(config);
-      if (validateEntitiesConfig(config)) {
-        this._error = null;
-        return config.entities;
-      }
+    const entities = computeConfigEntities(config);
+
+    if (!validateEntitiesConfig(config)) {
+      const error = 'Error in card configuration.';
+      this._error = createErrorCardConfig(error, config);
+      return [];
     }
 
     this._error = null;
-    return config.entities;
+    return entities;
   }
 
   _showEntity(item, states) {
