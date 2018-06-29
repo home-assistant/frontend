@@ -10,8 +10,8 @@ import '../cards/hui-history-graph-card.js';
 import '../cards/hui-iframe-card.js';
 import '../cards/hui-markdown-card.js';
 import '../cards/hui-media-control-card.js';
-import '../cards/hui-entity-picture-card.js';
 import '../cards/hui-picture-elements-card';
+import '../cards/hui-picture-entity-card';
 import '../cards/hui-picture-glance-card';
 import '../cards/hui-plant-status-card.js';
 import '../cards/hui-row-card.js';
@@ -24,7 +24,6 @@ const CARD_TYPES = [
   'column',
   'entities',
   'entity-filter',
-  'entity-picture',
   'error',
   'glance',
   'history-graph',
@@ -32,6 +31,7 @@ const CARD_TYPES = [
   'markdown',
   'media-control',
   'picture-elements',
+  'picture-entity',
   'picture-glance',
   'plant-status',
   'row',

@@ -2,6 +2,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './hui-error-card.js';
+import '../../../components/ha-card.js';
 import '../../../components/state-history-charts.js';
 import '../../../data/ha-state-history-data.js';
 

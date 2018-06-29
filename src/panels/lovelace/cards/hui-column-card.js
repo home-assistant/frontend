@@ -12,7 +12,7 @@ class HuiColumnCard extends PolymerElement {
         #root {
           display: flex;
           flex-direction: column;
-          margin-top: -4px
+          margin-top: -4px;
           margin-bottom: -8px;
         }
         #root > * {
