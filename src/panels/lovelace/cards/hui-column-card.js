@@ -3,7 +3,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeCardSize from '../common/compute-card-size.js';
 import createCardElement from '../common/create-card-element.js';
-import createErrorConfig from '../common/create-error-card-config.js';
 
 class HuiColumnCard extends PolymerElement {
   static get template() {

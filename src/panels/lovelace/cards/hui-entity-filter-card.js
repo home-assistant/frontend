@@ -60,7 +60,7 @@ class HuiEntitiesCard extends PolymerElement {
       this.removeChild(this.lastChild);
     }
 
-    let card = 'card' in config ? Object.assign({}, config.card) : {};
+    const card = 'card' in config ? Object.assign({}, config.card) : {};
     if (!card.type) card.type = 'entities';
     card.entities = [];
 

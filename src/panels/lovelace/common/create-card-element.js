@@ -45,7 +45,9 @@ function _createElement(tag, config) {
   try {
     element.setConfig(config);
   } catch (err) {
+    // eslint-disable-next-line
     console.error(tag, err);
+    // eslint-disable-next-line
     return _createErrorElement(err.message, config);
   }
   return element;

@@ -2,7 +2,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../cards/ha-camera-card.js';
 
-import createCardElement from '../common/create-card-element.js';
 import validateEntityConfig from '../common/validate-entity-config.js';
 
 class HuiCameraPreviewCard extends PolymerElement {
