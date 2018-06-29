@@ -1,4 +1,3 @@
-import createCardElement from '../common/create-card-element.js';
 import createErrorCardConfig from '../common/create-error-card-config.js';
 import validateEntityConfig from '../common/validate-entity-config.js';
 

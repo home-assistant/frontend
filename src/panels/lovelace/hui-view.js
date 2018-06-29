@@ -78,7 +78,7 @@ class HUIView extends PolymerElement {
     return [
       // Put all properties in 1 observer so we only call configChanged once
       '_configChanged(columns, config)'
-    ]
+    ];
   }
 
   constructor() {
