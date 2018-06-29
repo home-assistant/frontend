@@ -10,6 +10,7 @@ import computeStateDisplay from '../../../common/entity/compute_state_display.js
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import createErrorCardConfig from '../common/create-error-card-config.js';
+import toggleEntity from '../common/entity/toggle-entity.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
@@ -144,20 +145,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     if (stateDomain === 'weblink') {
       window.open(this.hass.states[entityId].state);
     } else {
-      const turnOn = STATES_OFF.includes(this.hass.states[entityId].state);
-      let service;
-      switch (stateDomain) {
-        case 'lock':
-          service = turnOn ? 'unlock' : 'lock';
-          break;
-        case 'cover':
-          service = turnOn ? 'open_cover' : 'close_cover';
-          break;
-        default:
-          service = turnOn ? 'turn_on' : 'turn_off';
-      }
-      const serviceDomain = stateDomain === 'group' ? 'homeassistant' : stateDomain;
-      this.hass.callService(serviceDomain, service, { entity_id: entityId });
+      toggleEntity(this.hass, entityId);
     }
   }
 }
