@@ -5,7 +5,7 @@ import validEntityId from '../../../common/entity/valid_entity_id';
 export default function validateEntityConfig(config, domain = null) {
   const entityId = config && config.entity;
 
-  if (!entityId || typeof entityId !== 'string' || validEntityId(entityId)) {
+  if (!entityId || typeof entityId !== 'string' || !validEntityId(entityId)) {
     return false;
   }
 
