@@ -2,14 +2,16 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 
+import './hui-error-card.js';
 import '../../../components/ha-card.js';
 
-import { STATES_ON } from '../../../common/const.js';
+import { STATES_OFF } from '../../../common/const.js';
 import canToggleState from '../../../common/entity/can_toggle_state.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import createErrorCardConfig from '../common/create-error-card-config.js';
 import stateIcon from '../../../common/entity/state_icon.js';
+import toggleEntity from '../common/entity/toggle-entity.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
@@ -25,12 +27,12 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         ha-card {
           position: relative;
           min-height: 48px;
-          line-height: 0;
+          overflow: hidden;
         }
         img {
+          display: block;
           width: 100%;
           height: auto;
-          border-radius: 2px;
         }
         .box {
           @apply --paper-font-common-nowrap;
@@ -43,8 +45,6 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           font-size: 16px;
           line-height: 40px;
           color: white;
-          border-bottom-left-radius: 2px;
-          border-bottom-right-radius: 2px;
           display: flex;
           justify-content: space-between;
         }
@@ -59,11 +59,6 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
         iron-icon {
           padding: 8px;
-        }
-        .error {
-          background-color: red;
-          color: white;
-          text-align: center;
         }
       </style>
 
@@ -97,7 +92,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           </div>
         </div>
         <template is="dom-if" if="[[_error]]">
-          <div class="error">[[_error]]</div>
+          <hui-error-card config="[[_error]]"></hui-error-card>
         </template>
       </ha-card>
     `;
@@ -112,7 +107,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       },
       _entitiesDialog: Array,
       _entitiesService: Array,
-      _error: String
+      _error: Object
     };
   }
 
@@ -133,7 +128,8 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         dialog = config.entities.filter(entity => !service.includes(entity));
       }
     } else {
-      _error = 'Error in card configuration.';
+      const error = 'Error in card configuration.';
+      _error = createErrorCardConfig(error, config);
     }
     this.setProperties({
       _entitiesDialog: dialog,
@@ -151,7 +147,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeClass(entityId, states) {
-    return STATES_ON.includes(states[entityId].state) ? 'state-on' : '';
+    return STATES_OFF.includes(states[entityId].state) ? '' : 'state-on';
   }
 
   _computeTooltip(entityId, states) {
@@ -164,24 +160,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _callService(ev) {
     const entityId = ev.model.item;
-    let domain = computeDomain(entityId);
-    const turnOn = !STATES_ON.includes(this.hass.states[entityId].state);
-    let service;
-    switch (domain) {
-      case 'lock':
-        service = turnOn ? 'unlock' : 'lock';
-        break;
-      case 'cover':
-        service = turnOn ? 'open_cover' : 'close_cover';
-        break;
-      case 'group':
-        domain = 'homeassistant';
-        service = turnOn ? 'turn_on' : 'turn_off';
-        break;
-      default:
-        service = turnOn ? 'turn_on' : 'turn_off';
-    }
-    this.hass.callService(domain, service, { entity_id: entityId });
+    toggleEntity(this.hass, entityId);
   }
 }
 
