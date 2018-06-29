@@ -13,11 +13,11 @@ export default function validateEntitiesConfig(config, additionalKeys = []) {
     return false;
   }
 
-  return entities.every(entity => {
+  return entities.every((entity) => {
     if (typeof entity === 'string') {
       return validEntityId(entity) && !additionalKeys.length;
     }
     return entity && typeof entity === 'object' && !Array.isArray(entity) &&
-      'entity' in entity && validEntityId(entity.entity) && additionalKeys.every(key => key in entity)
+      'entity' in entity && validEntityId(entity.entity) && additionalKeys.every(key => key in entity);
   });
 }

@@ -1,7 +1,6 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import './hui-error-card.js';
 import '../../../components/ha-card.js';
 
 import { STATES_OFF } from '../../../common/const.js';
@@ -9,7 +8,6 @@ import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
-import createErrorCardConfig from '../common/create-error-card-config.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
@@ -58,9 +56,6 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
           <div id="title"></div>
           <div id="state"></div>
         </div>
-        <template is="dom-if" if="[[_error]]">
-          <hui-error-card config="[[_error]]"></hui-error-card>
-        </template>
       </ha-card>
     `;
   }
@@ -71,11 +66,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
         type: Object,
         observer: '_hassChanged'
       },
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      },
-      _error: Object
+      _config: Object,
     };
   }
 
@@ -83,17 +74,15 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     return 3;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
     if (!config || !config.entity || (!config.image && !config.state_image)) {
-      const error = 'Error in card configuration.';
-      this._error = createErrorCardConfig(error, config);
-      return;
+      throw new Error('Error in card configuration.');
     }
-    this._error = null;
+    this._config = config;
   }
 
   _hassChanged(hass) {
-    const config = this.config;
+    const config = this._config;
     const entityId = config && config.entity;
     if (!entityId) {
       return;
@@ -136,7 +125,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
   }
 
   _cardClicked() {
-    const entityId = this.config && this.config.entity;
+    const entityId = this._config && this._config.entity;
     if (!(entityId in this.hass.states)) {
       return;
     }

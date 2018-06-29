@@ -4,10 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import computeConfigEntities from '../common/compute-config-entities';
-import createErrorCardConfig from '../common/create-error-card-config.js';
-import validateEntitiesConfig from '../common/validate-entities-config';
 
-import './hui-error-card.js';
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
@@ -50,9 +47,9 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
       </style>
 
-      <ha-card header="[[config.title]]">
+      <ha-card header="[[_config.title]]">
         <div class="entities">
-          <template is="dom-repeat" items="[[_entities]]">
+          <template is="dom-repeat" items="[[_computeEntities(_config)]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
               <div class="entity" on-click="_openDialog">
                 <div>[[_computeName(item, hass.states)]]</div>
@@ -62,9 +59,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
             </template>
           </template>
         </div>
-        <template is="dom-if" if="[[_error]]">
-          <hui-error-card config="[[_error]]"></hui-error-card>
-        </template>
       </ha-card>
     `;
   }
@@ -72,12 +66,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get properties() {
     return {
       hass: Object,
-      config: Object,
-      _entities: {
-        type: Array,
-        computed: '_computeEntities(config)'
-      },
-      _error: Object
+      _config: Object,
     };
   }
 
@@ -86,14 +75,15 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeEntities(config) {
-    if (!validateEntitiesConfig(config)) {
-      const error = 'Error in card configuration.';
-      this._error = createErrorCardConfig(error, config);
-      return [];
+    return computeConfigEntities(config);
+  }
+
+  setConfig(config) {
+    if (!config || !config.entities || !Array.isArray(config.entities)) {
+      throw new Error('Error in card configuration.');
     }
 
-    this._error = null;
-    return computeConfigEntities(config);
+    this._config = config;
   }
 
   _showEntity(item, states) {

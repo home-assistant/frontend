@@ -2,8 +2,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../cards/ha-weather-card.js';
 
-import createCardElement from '../common/create-card-element.js';
-import createErrorCardConfig from '../common/create-error-card-config.js';
 import validateEntityConfig from '../common/validate-entity-config.js';
 
 class HuiWeatherForecastCard extends PolymerElement {
@@ -13,10 +11,6 @@ class HuiWeatherForecastCard extends PolymerElement {
         type: Object,
         observer: '_hassChanged'
       },
-      config: {
-        type: Object,
-        observer: '_configChanged'
-      }
     };
   }
 
@@ -24,18 +18,15 @@ class HuiWeatherForecastCard extends PolymerElement {
     return 4;
   }
 
-  _configChanged(config) {
+  setConfig(config) {
+    if (!validateEntityConfig(config, 'weather')) {
+      throw new Error('Error in card configuration.');
+    }
+
     this._entityId = null;
 
     if (this.lastChild) {
       this.removeChild(this.lastChild);
-    }
-
-    if (!validateEntityConfig(config, 'weather')) {
-      const error = 'Error in card configuration.';
-      const element = createCardElement(createErrorCardConfig(error, config));
-      this.appendChild(element);
-      return;
     }
 
     const entityId = config.entity;
@@ -56,8 +47,6 @@ class HuiWeatherForecastCard extends PolymerElement {
       const element = this.lastChild;
       element.stateObj = hass.states[entityId];
       element.hass = hass;
-    } else {
-      this._configChanged(this.config);
     }
   }
 }
