@@ -12,9 +12,12 @@ class HuiHistoryGraphCard extends PolymerElement {
         ha-card {
           padding: 16px;
         }
+        ha-card[header] {
+          padding-top: 0;
+        }
       </style>
 
-      <ha-card header=[[_config.title]]>
+      <ha-card header$='[[_config.title]]'>
         <ha-state-history-data
           hass="[[hass]]"
           filter-type="recent-entity"

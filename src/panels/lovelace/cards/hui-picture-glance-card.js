@@ -97,8 +97,15 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       _config: Object,
-      _entitiesDialog: Array,
-      _entitiesService: Array,
+      _entitiesDialog: {
+        type: Array,
+        computed: '_computeEntitiesDialog(hass, _config, _entitiesService)',
+      },
+      _entitiesService: {
+        type: Array,
+        value: [],
+        computed: '_computeEntitiesService(hass, _config)',
+      },
     };
   }
 
@@ -112,19 +119,23 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
 
     this._config = config;
-    let dialog = [];
-    let service = [];
+  }
+
+  _computeEntitiesDialog(hass, config, entitiesService) {
     if (config.force_dialog) {
-      dialog = config.entities;
-    } else {
-      service = config.entities.filter(entity =>
-        canToggleState(this.hass, this.hass.states[entity]));
-      dialog = config.entities.filter(entity => !service.includes(entity));
+      return config.entities;
     }
-    this.setProperties({
-      _entitiesDialog: dialog,
-      _entitiesService: service,
-    });
+
+    return config.entities.filter(entity => !entitiesService.includes(entity));
+  }
+
+  _computeEntitiesService(hass, config) {
+    if (config.force_dialog) {
+      return [];
+    }
+
+    return config.entities.filter(entity =>
+      canToggleState(this.hass, this.hass.states[entity]));
   }
 
   _showEntity(entityId, states) {

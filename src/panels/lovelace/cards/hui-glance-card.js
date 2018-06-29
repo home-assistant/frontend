@@ -22,6 +22,9 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         ha-card {
           padding: 16px;
         }
+        ha-card[header] {
+          padding-top: 0;
+        }
         .entities {
           padding: 4px 0;
           display: flex;
@@ -47,7 +50,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
       </style>
 
-      <ha-card header="[[_config.title]]">
+      <ha-card header$="[[_config.title]]">
         <div class="entities">
           <template is="dom-repeat" items="[[_computeEntities(_config)]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
