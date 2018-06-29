@@ -21,10 +21,10 @@ class HuiMarkdownCard extends PolymerElement {
         :host([no-title]) ha-markdown {
           padding-top: 16px;
         }
-        ha-markdown p:first-child {
+        ha-markdown > *:first-child {
           margin-top: 0;
         }
-        ha-markdown p:last-child {
+        ha-markdown > *:last-child {
           margin-bottom: 0;
         }
         ha-markdown a {
@@ -46,7 +46,7 @@ class HuiMarkdownCard extends PolymerElement {
       noTitle: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: '_computeNoTitle(config.title)',
+        computed: '_computeNoTitle(_config.title)',
       },
     };
   }

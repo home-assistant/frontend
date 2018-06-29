@@ -54,6 +54,7 @@ class HuiRowCard extends PolymerElement {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
       throw new Error('Card config incorrect.');
     }
+    this._config = config;
     if (this.$) this._buildConfig();
   }
 
