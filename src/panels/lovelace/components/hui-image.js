@@ -20,8 +20,19 @@ class HuiImage extends PolymerElement {
           transition: filter .2s linear;
           width: 100%;
         }
+        
+        .error {
+          width: 100%;
+          height: auto;
+          text-align: center;
+        }
+        
       </style>
-      <img src="[[imageSrc]]" id="image" class$="[[_getStateClass(state)]]"/>
+      
+      <img src="[[imageSrc]]" on-error="onImageError" on-load="onImageLoad" id="image" class$="[[_getStateClass(state)]]"/>
+      <template is="dom-if" if="[[_error]]">
+        <div class="error">[[_error]]</div>
+      </template>
 `;
   }
 
@@ -35,12 +46,24 @@ class HuiImage extends PolymerElement {
       image: String,
       stateImage: Object,
       cameraImage: String,
-      imageSrc: String
+      imageSrc: String,
+      _error: {
+        type: String,
+        value: null
+      }
     };
   }
 
   static get observers() {
     return ['_configChanged(image, state_image, camera_image)'];
+  }
+
+  onImageError() {
+    this._error = 'Failed to load image';
+  }
+
+  onImageLoad() {
+    this._error = null;
   }
 
   connectedCallback() {
@@ -84,6 +107,12 @@ class HuiImage extends PolymerElement {
       if (resp.success) {
         this.setProperties({
           imageSrc: `data:${resp.result.content_type};base64, ${resp.result.content}`,
+          _error: null
+        });
+      } else {
+        this.setProperties({
+          imageSrc: '',
+          _error: 'Camera unavailable'
         });
       }
     });

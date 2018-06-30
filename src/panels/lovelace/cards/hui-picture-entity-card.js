@@ -22,9 +22,10 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     return html`
       <style>
         ha-card {
-          position: relative;
           cursor: pointer;
+          min-height: 75px;
           overflow: hidden;
+          position: relative;
         }
         .box {
           @apply --paper-font-common-nowrap;
@@ -47,9 +48,9 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
 
       <ha-card on-click="_cardClicked">
         <hui-image hass="[[hass]]" 
-                   image="[[config.image]]" 
-                   state-image="[[config.state_image]]" 
-                   camera-image="[[config.camera_image]]" 
+                   image="[[_config.image]]" 
+                   state-image="[[_config.state_image]]" 
+                   camera-image="[[_config.camera_image]]" 
                    state="[[_oldState]]"></hui-image>
         <div class="box">
           <div id="title"></div>

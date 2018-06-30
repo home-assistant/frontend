@@ -57,7 +57,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <ha-card>
-        <hui-image hass="[[hass]]" image="[[config.image]]" camera-image="[[config.camera_image]]"></hui-image>
+        <hui-image hass="[[hass]]" image="[[_config.image]]" camera-image="[[_config.camera_image]]"></hui-image>
         <div class="box">
           <div class="title">[[_config.title]]</div>
           <div>
