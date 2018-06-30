@@ -3,10 +3,14 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
 import { STATES_OFF } from '../../../common/const.js';
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 const UPDATE_INTERVAL = 10000;
 
-class HuiImage extends PolymerElement {
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HuiImage extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -29,9 +33,11 @@ class HuiImage extends PolymerElement {
         
       </style>
       
-      <img src="[[imageSrc]]" on-error="onImageError" on-load="onImageLoad" id="image" class$="[[_getStateClass(state)]]"/>
+      <template is="dom-if" if="[[imageSrc]]">
+        <img src="[[imageSrc]]" on-error="_onImageError" on-load="_onImageLoad" id="image" class$="[[_getStateClass(state)]]"/>
+      </template>
       <template is="dom-if" if="[[_error]]">
-        <div class="error">[[_error]]</div>
+        <div class="error">[[localize('ui.card.camera.not_available')]]</div>
       </template>
 `;
   }
@@ -48,22 +54,14 @@ class HuiImage extends PolymerElement {
       cameraImage: String,
       imageSrc: String,
       _error: {
-        type: String,
-        value: null
+        type: Boolean,
+        value: false
       }
     };
   }
 
   static get observers() {
     return ['_configChanged(image, state_image, camera_image)'];
-  }
-
-  onImageError() {
-    this._error = 'Failed to load image';
-  }
-
-  onImageLoad() {
-    this._error = null;
   }
 
   connectedCallback() {
@@ -88,6 +86,17 @@ class HuiImage extends PolymerElement {
     return !this.stateImage && !this.cameraImage && STATES_OFF.includes(state) ? 'state-off' : '';
   }
 
+  _onImageError() {
+    this.setProperties({
+      imageSrc: null,
+      _error: true
+    });
+  }
+
+  _onImageLoad() {
+    this._error = false;
+  }
+
   _stateChanged(state) {
     if (this.cameraImage || !this.stateImage) {
       return;
@@ -107,12 +116,12 @@ class HuiImage extends PolymerElement {
       if (resp.success) {
         this.setProperties({
           imageSrc: `data:${resp.result.content_type};base64, ${resp.result.content}`,
-          _error: null
+          _error: false
         });
       } else {
         this.setProperties({
-          imageSrc: '',
-          _error: 'Camera unavailable'
+          imageSrc: null,
+          _error: true
         });
       }
     });
