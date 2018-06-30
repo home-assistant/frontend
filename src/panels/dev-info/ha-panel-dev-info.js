@@ -339,14 +339,12 @@ class HaPanelDevInfo extends PolymerElement {
   }
 
   _defaultPageText() {
-    return localStorage.defaultPage === 'lovelace' ?
-      '>> Remove lovelace as default page page on this device <<' :
-      '>> Set lovelace as default page page on this device <<';
+    return `>> ${localStorage.defaultPage === 'lovelace' ?
+      'Remove' : 'Set'} lovelace as default page on this device <<`;
   }
 
   _toggleDefaultPage() {
-    const curIsLove = localStorage.defaultPage === 'lovelace';
-    if (curIsLove) {
+    if (localStorage.defaultPage === 'lovelace') {
       delete localStorage.defaultPage;
     } else {
       localStorage.defaultPage = 'lovelace';
