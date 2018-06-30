@@ -6,6 +6,7 @@ import '../../../components/entity/ha-state-label-badge.js';
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
+import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
@@ -112,11 +113,12 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
       switch (element.type) {
         case 'service-button':
           el = document.createElement('ha-call-service-button');
-          el.hass = this.hass;
-          el.domain = element.service.domain;
-          el.service = element.service.service;
-          el.serviceData = element.service.data;
+          const serviceDomain = computeDomain(element.service);
+          el.domain = serviceDomain;
+          el.service = element.service.substr(serviceDomain.length + 1);
+          el.serviceData = element.service_data;
           el.innerText = element.title;
+          el.hass = this.hass;
           break;
         case 'state-badge':
           el = document.createElement('ha-state-label-badge');
