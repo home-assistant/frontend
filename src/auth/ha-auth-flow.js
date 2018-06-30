@@ -125,6 +125,10 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
       if (newStep.step_id !== this._step.step_id) {
         props._stepData = {};
       }
+      if (JSON.stringify(newStep.data_schema) !==
+          JSON.stringify(this._step.data_schema)) {
+        props._stepData = {};
+      }
       this.setProperties(props);
     }).catch((err) => {
       // eslint-disable-next-line
