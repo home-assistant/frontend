@@ -60,11 +60,12 @@ class StateCardInputSelect extends PolymerElement {
         type: String,
         observer: 'selectedOptionChanged',
       },
+      entityConfig: Object
     };
   }
 
   _computeStateName(stateObj) {
-    return computeStateName(stateObj);
+    return (this.entityConfig && this.entityConfig.title) || computeStateName(stateObj);
   }
 
   computeSelected(stateObj) {

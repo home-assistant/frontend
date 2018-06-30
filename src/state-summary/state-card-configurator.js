@@ -38,7 +38,7 @@ class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
 
   static get stateInfoTemplate() {
     return html`
-    <state-info hass="[[hass]]" state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+    <state-info hass="[[hass]]" state-obj="[[stateObj]]" in-dialog="[[inDialog]]" entity-config="[[entityConfig]]"></state-info>
 `;
   }
 
@@ -50,6 +50,7 @@ class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
+      entityConfig: Object
     };
   }
 

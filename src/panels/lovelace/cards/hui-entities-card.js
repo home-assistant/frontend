@@ -5,6 +5,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import stateCardType from '../../../common/entity/state_card_type.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
 import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
+import computeConfigEntities from '../common/compute-config-entities';
+import validateEntitiesConfig from '../common/validate-entities-config';
 
 import '../../../components/ha-card.js';
 import '../components/hui-entities-toggle.js';
@@ -98,6 +100,10 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
   }
 
   setConfig(config) {
+    if (!validateEntitiesConfig(config)) {
+      throw Error('Error in card config.');
+    }
+
     this._config = config;
     if (this.$) this._buildConfig();
   }
@@ -105,6 +111,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
   _buildConfig() {
     const config = this._config;
     const root = this.$.states;
+    const entities = computeConfigEntities(config);
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -112,8 +119,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
     this._elements = [];
 
-    for (let i = 0; i < config.entities.length; i++) {
-      const entityId = config.entities[i];
+    for (let i = 0; i < entities.length; i++) {
+      const entity = entities[i];
+      const entityId = entity.entity;
       if (!(entityId in this.hass.states)) continue;
       const stateObj = this.hass.states[entityId];
       const tag = stateObj ? `state-card-${stateCardType(this.hass, stateObj)}` : 'state-card-display';
@@ -124,6 +132,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       }
       element.stateObj = stateObj;
       element.hass = this.hass;
+      element.entityConfig = entity;
       this._elements.push({ entityId, element });
       const container = document.createElement('div');
       container.appendChild(element);
