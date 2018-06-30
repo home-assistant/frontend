@@ -130,16 +130,16 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
           this._stateIcons.push({ el, entityId });
           break;
         case 'state-label':
-        el = document.createElement('div');
-        el.addEventListener('click', () => this._handleClick(entityId, false));
+          el = document.createElement('div');
+          el.addEventListener('click', () => this._handleClick(entityId, false));
           el.classList.add('clickable', 'state-label');
           this._stateLabels.push({ el, entityId });
       }
 
       el.classList.add('element');
-        Object.keys(element.style).forEach((prop) => {
-          el.style.setProperty(prop, element.style[prop]);
-        });
+      Object.keys(element.style).forEach((prop) => {
+        el.style.setProperty(prop, element.style[prop]);
+      });
       root.appendChild(el);
     });
 
