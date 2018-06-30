@@ -113,9 +113,8 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
       switch (element.type) {
         case 'service-button':
           el = document.createElement('ha-call-service-button');
-          const serviceDomain = computeDomain(element.service);
-          el.domain = serviceDomain;
-          el.service = element.service.substr(serviceDomain.length + 1);
+          el.domain = computeDomain(element.service);
+          el.service = element.service.substr(el.domain.length + 1);
           el.serviceData = element.service_data || {};
           el.innerText = element.title;
           el.hass = this.hass;
