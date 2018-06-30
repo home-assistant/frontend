@@ -116,7 +116,7 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
           const serviceDomain = computeDomain(element.service);
           el.domain = serviceDomain;
           el.service = element.service.substr(serviceDomain.length + 1);
-          el.serviceData = element.service_data;
+          el.serviceData = element.service_data || {};
           el.innerText = element.title;
           el.hass = this.hass;
           break;
