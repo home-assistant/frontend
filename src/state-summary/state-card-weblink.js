@@ -41,7 +41,7 @@ class StateCardWeblink extends PolymerElement {
         type: Boolean,
         value: false,
       },
-      config: Object
+      overrideName: String
     };
   }
 
@@ -51,7 +51,7 @@ class StateCardWeblink extends PolymerElement {
   }
 
   _computeStateName(stateObj) {
-    return (this.config && this.config.title) || computeStateName(stateObj);
+    return this.overrideName || computeStateName(stateObj);
   }
 
   onTap(ev) {

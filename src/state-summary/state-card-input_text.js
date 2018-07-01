@@ -25,7 +25,12 @@ class StateCardInputText extends PolymerElement {
 
   static get stateInfoTemplate() {
     return html`
-    <state-info hass="[[hass]]" state-obj="[[stateObj]]" in-dialog="[[inDialog]]" config="[[config]]"></state-info>
+    <state-info 
+      hass="[[hass]]" 
+      state-obj="[[stateObj]]" 
+      in-dialog="[[inDialog]]" 
+      override-name="[[overrideName]]">
+    </state-info>
 `;
   }
 
@@ -46,7 +51,7 @@ class StateCardInputText extends PolymerElement {
 
       pattern: String,
       value: String,
-      config: Object
+      overrideName: String
     };
   }
 
