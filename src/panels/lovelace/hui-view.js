@@ -132,6 +132,11 @@ class HUIView extends PolymerElement {
     }
 
     elements.forEach((el) => {
+      // Trigger custom elements to build up DOM. This is needed for some elements
+      // that use the DOM to decide their height. We don't have to clean this up
+      // because a DOM element can only be in 1 position, so it will be removed from
+      // 'this' and added to the correct column afterwards.
+      this.appendChild(el);
       const cardSize = typeof el.getCardSize === 'function' ? el.getCardSize() : 1;
       columns[getColumnIndex(cardSize)].push(el);
     });
