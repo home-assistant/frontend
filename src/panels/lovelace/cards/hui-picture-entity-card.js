@@ -12,7 +12,7 @@ import toggleEntity from '../common/entity/toggle-entity.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
-const OFFLINE = 'Offline';
+const UNAVAILABLE = 'Unavailable';
 
 /*
  * @appliesMixin LocalizeMixin
@@ -89,7 +89,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     if (!entityId) {
       return;
     }
-    if (!(entityId in hass.states) && this._oldState === OFFLINE) {
+    if (!(entityId in hass.states) && this._oldState === UNAVAILABLE) {
       return;
     }
     if (!(entityId in hass.states) || hass.states[entityId].state !== this._oldState) {
@@ -98,12 +98,12 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
   }
 
   _updateState(hass, entityId, config) {
-    const state = entityId in hass.states ? hass.states[entityId].state : OFFLINE;
+    const state = entityId in hass.states ? hass.states[entityId].state : UNAVAILABLE;
 
-    this.$.title.innerText = config.title || (state === OFFLINE ?
+    this.$.title.innerText = config.title || (state === UNAVAILABLE ?
       entityId : computeStateName(hass.states[entityId]));
-    this.$.state.innerText = state === OFFLINE ?
-      OFFLINE : this._computeState(hass.states[entityId]);
+    this.$.state.innerText = state === UNAVAILABLE ?
+      UNAVAILABLE : this._computeState(hass.states[entityId]);
     this._oldState = state;
   }
 
