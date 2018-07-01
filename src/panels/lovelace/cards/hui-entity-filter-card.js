@@ -77,16 +77,14 @@ class HuiEntitiesCard extends PolymerElement {
     element.hass = hass;
   }
 
-  _computeVisibility(entitiesLength) {
-    if (this._config.hide_if_empty) {
-      this.style.display = entitiesLength ? 'block' : 'none';
-    }
-  }
-
   _updateCardConfig(element) {
     if (!element || element.tagName === 'HUI-ERROR-CARD' || !this.hass) return;
     const entitiesList = this._getEntities(this.hass, this._config.filter);
-    this._computeVisibility(entitiesList.length);
+    if (entitiesList.length === 0) {
+      this.style.display = (this._config.show_empty === false) ? 'none' : 'block';
+    } else {
+      this.style.display = 'block';
+    }
     element.setConfig(Object.assign(
       {},
       element._filterRawConfig,
