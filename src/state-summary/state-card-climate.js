@@ -30,7 +30,12 @@ class StateCardClimate extends PolymerElement {
 
   static get stateInfoTemplate() {
     return html`
-    <state-info hass="[[hass]]" state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+    <state-info 
+      hass="[[hass]]" 
+      state-obj="[[stateObj]]" 
+      in-dialog="[[inDialog]]" 
+      override-name="[[overrideName]]">
+    </state-info>
 `;
   }
 
@@ -42,6 +47,7 @@ class StateCardClimate extends PolymerElement {
         type: Boolean,
         value: false,
       },
+      overrideName: String
     };
   }
 }
