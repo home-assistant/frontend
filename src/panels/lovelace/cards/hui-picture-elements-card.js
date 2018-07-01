@@ -48,6 +48,7 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
       }
       ha-call-service-button {
         color: var(--primary-color);
+        white-space: nowrap;
       }
     </style>
 
