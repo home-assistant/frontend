@@ -22,7 +22,6 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
         img {
           display: block;
           height: auto;
-          transition: filter .2s linear;
           width: 100%;
         }
         
@@ -107,16 +106,19 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       return;
     }
 
+    const offline = !isValidObject(state, ['state']);
+
     if (!this.stateImage) {
-      this._imageClass = (!isValidObject(state, ['state']) || STATES_OFF.includes(state.state)) ? 'state-off' : '';
+      this._imageClass = offline || STATES_OFF.includes(state.state) ? 'state-off' : '';
       return;
     }
 
-    const stateImg = isValidObject(state, ['state']) ? this.stateImage[state.state] : this.stateImage.offline;
+    const stateImg = !offline ?
+      (this.stateImage[state.state] || this.stateImage.default) : this.stateImage.offline;
 
     this.setProperties({
-      _imageSrc: stateImg || this.stateImage.default || this.image,
-      _imageClass: ''
+      _imageClass: !stateImg && (offline || STATES_OFF.includes(state.state)) ? 'state-off' : '',
+      _imageSrc: stateImg || this.image
     });
   }
 
