@@ -24,6 +24,3 @@ dist
 # Secrets
 .lokalise_token
 yarn-error.log
-
-# JetBrains
-*.iml

@@ -83,12 +83,12 @@ class StateInfo extends PolymerElement {
       hass: Object,
       stateObj: Object,
       inDialog: Boolean,
-      entityConfig: Object
+      config: Object
     };
   }
 
   computeStateName(stateObj) {
-    return (this.entityConfig && this.entityConfig.title) || computeStateName(stateObj);
+    return (this.config && this.config.title) || computeStateName(stateObj);
   }
 }
 
