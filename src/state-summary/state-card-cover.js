@@ -29,7 +29,12 @@ class StateCardCover extends PolymerElement {
 
   static get stateInfoTemplate() {
     return html`
-    <state-info hass="[[hass]]" state-obj="[[stateObj]]" in-dialog="[[inDialog]]"></state-info>
+    <state-info 
+      hass="[[hass]]" 
+      state-obj="[[stateObj]]" 
+      in-dialog="[[inDialog]]" 
+      override-name="[[overrideName]]">
+    </state-info>
 `;
   }
 
@@ -45,6 +50,7 @@ class StateCardCover extends PolymerElement {
         type: Object,
         computed: 'computeEntityObj(hass, stateObj)',
       },
+      overrideName: String
     };
   }
 

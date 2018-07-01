@@ -60,11 +60,12 @@ class StateCardInputSelect extends PolymerElement {
         type: String,
         observer: 'selectedOptionChanged',
       },
+      overrideName: String
     };
   }
 
   _computeStateName(stateObj) {
-    return computeStateName(stateObj);
+    return this.overrideName || computeStateName(stateObj);
   }
 
   computeSelected(stateObj) {
