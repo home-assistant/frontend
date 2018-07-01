@@ -27,7 +27,7 @@ export default class LegacyWrapperCard extends HTMLElement {
 
     if (entityId in hass.states) {
       this._ensureElement(this._tag);
-      this.lastChild.hass = hass
+      this.lastChild.hass = hass;
       this.lastChild.stateObj = hass.states[entityId];
     } else {
       this._ensureElement('HUI-ERROR-CARD');
