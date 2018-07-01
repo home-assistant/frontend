@@ -2,8 +2,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-card.js';
+import '../components/hui-image.js';
 
-import { STATES_OFF } from '../../../common/const.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
@@ -22,14 +22,10 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     return html`
       <style>
         ha-card {
-          position: relative;
           cursor: pointer;
+          min-height: 75px;
           overflow: hidden;
-        }
-        img {
-          display: block;
-          width: 100%;
-          height: auto;
+          position: relative;
         }
         .box {
           @apply --paper-font-common-nowrap;
@@ -51,7 +47,13 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
       </style>
 
       <ha-card on-click="_cardClicked">
-        <img id="image" src="">
+        <hui-image 
+          hass="[[hass]]" 
+          image="[[_config.image]]" 
+          state-image="[[_config.state_image]]" 
+          camera-image="[[_config.camera_image]]" 
+          state="[[_getStateObj(_oldState)]]"
+        ></hui-image>
         <div class="box">
           <div id="title"></div>
           <div id="state"></div>
@@ -97,12 +99,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
 
   _updateState(hass, entityId, config) {
     const state = entityId in hass.states ? hass.states[entityId].state : OFFLINE;
-    const stateImg = config.state_image &&
-      (config.state_image[state] || config.state_image.default);
 
-    this.$.image.src = stateImg || config.image;
-    this.$.image.style.filter = stateImg || (!STATES_OFF.includes(state) && state !== OFFLINE) ?
-      '' : 'grayscale(100%)';
     this.$.title.innerText = config.title || (state === OFFLINE ?
       entityId : computeStateName(hass.states[entityId]));
     this.$.state.innerText = state === OFFLINE ?
@@ -136,6 +133,10 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     } else {
       toggleEntity(this.hass, entityId);
     }
+  }
+
+  _getStateObj() {
+    return this.hass && this.hass.states[this._config.entity];
   }
 }
 
