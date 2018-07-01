@@ -3,6 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 
 import '../../../components/ha-card.js';
+import '../components/hui-image.js';
 
 import { STATES_OFF } from '../../../common/const.js';
 import canToggleState from '../../../common/entity/can_toggle_state.js';
@@ -26,11 +27,6 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           position: relative;
           min-height: 48px;
           overflow: hidden;
-        }
-        img {
-          display: block;
-          width: 100%;
-          height: auto;
         }
         .box {
           @apply --paper-font-common-nowrap;
@@ -61,7 +57,11 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <ha-card>
-        <img src="[[_config.image]]">
+        <hui-image 
+          hass="[[hass]]" 
+          image="[[_config.image]]" 
+          camera-image="[[_config.camera_image]]"
+        ></hui-image>
         <div class="box">
           <div class="title">[[_config.title]]</div>
           <div>
@@ -114,7 +114,8 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   setConfig(config) {
-    if (!config || !config.entities || !Array.isArray(config.entities) || !config.image) {
+    if (!config || !config.entities || !Array.isArray(config.entities) ||
+      !(config.image || config.camera_image)) {
       throw new Error('Invalid card configuration');
     }
 
