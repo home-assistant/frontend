@@ -14,6 +14,8 @@ import toggleEntity from '../common/entity/toggle-entity.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
+const VALID_TYPES = new Set(['service-button', 'state-badge', 'state-icon', 'state-label']);
+
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -85,6 +87,10 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
     if (!config || !config.image || !Array.isArray(config.elements)) {
       throw new Error('Invalid card configuration');
     }
+    const invalidTypes = config.elements.map(el => el.type).filter(el => !VALID_TYPES.has(el));
+    if (invalidTypes.length) {
+      throw new Error(`Incorrect element types: ${invalidTypes.join(', ')}`);
+    }
 
     this._config = config;
     if (this.$) this._buildConfig();
@@ -105,7 +111,6 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
     const img = document.createElement('img');
     img.src = config.image;
     root.appendChild(img);
-
 
     config.elements.forEach((element) => {
       const entityId = element.entity;
