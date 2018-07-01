@@ -4,7 +4,7 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
 import { STATES_OFF } from '../../../common/const.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import isObject from '../common/is-object';
+import isValidObject from '../common/is-valid-object';
 
 const UPDATE_INTERVAL = 10000;
 
@@ -52,7 +52,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       hass: Object,
       state: {
         type: Object,
-        value: {},
+        value: null,
         observer: '_stateChanged'
       },
       image: String,
@@ -68,13 +68,13 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 
   static get observers() {
-    return ['_configChanged(image, state_image, camera_image)'];
+    return ['_configChanged(image, stateImage, cameraImage)'];
   }
 
   connectedCallback() {
     super.connectedCallback();
     if (this.cameraImage) {
-      this.timer = setInterval(this._updateCameraImageSrc(), UPDATE_INTERVAL);
+      this.timer = setInterval(() => this._updateCameraImageSrc(), UPDATE_INTERVAL);
     }
   }
 
@@ -84,7 +84,9 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 
   _configChanged(image, stateImage, cameraImage) {
-    if (image && !stateImage && !cameraImage) {
+    if (cameraImage) {
+      this._updateCameraImageSrc();
+    } else if (image && !stateImage) {
       this._imageSrc = image;
     }
   }
@@ -106,11 +108,11 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     }
 
     if (!this.stateImage) {
-      this._imageClass = (!isObject(state, ['state']) || STATES_OFF.includes(state.state)) ? 'state-off' : '';
+      this._imageClass = (!isValidObject(state, ['state']) || STATES_OFF.includes(state.state)) ? 'state-off' : '';
       return;
     }
 
-    const stateImg = isObject(state, ['state']) ? this.stateImage[state.state] : this.stateImage.offline;
+    const stateImg = isValidObject(state, ['state']) ? this.stateImage[state.state] : this.stateImage.offline;
 
     this.setProperties({
       _imageSrc: stateImg || this.stateImage.default || this.image,
