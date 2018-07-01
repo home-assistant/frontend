@@ -4,6 +4,7 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
 import { STATES_OFF } from '../../../common/const.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import isObject from '../common/is-object';
 
 const UPDATE_INTERVAL = 10000;
 
@@ -33,8 +34,12 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
         
       </style>
       
-      <template is="dom-if" if="[[imageSrc]]">
-        <img src="[[imageSrc]]" on-error="_onImageError" on-load="_onImageLoad" id="image" class$="[[_getStateClass(state)]]"/>
+      <template is="dom-if" if="[[_imageSrc]]">
+        <img 
+          src="[[_imageSrc]]" 
+          on-error="_onImageError" 
+          on-load="_onImageLoad" 
+          class$="[[_imageClass]]" />
       </template>
       <template is="dom-if" if="[[_error]]">
         <div class="error">[[localize('ui.card.camera.not_available')]]</div>
@@ -46,17 +51,19 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     return {
       hass: Object,
       state: {
-        type: String,
+        type: Object,
+        value: {},
         observer: '_stateChanged'
       },
       image: String,
       stateImage: Object,
       cameraImage: String,
-      imageSrc: String,
       _error: {
         type: Boolean,
         value: false
-      }
+      },
+      _imageClass: String,
+      _imageSrc: String
     };
   }
 
@@ -78,17 +85,13 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
 
   _configChanged(image, stateImage, cameraImage) {
     if (image && !stateImage && !cameraImage) {
-      this.imageSrc = image;
+      this._imageSrc = image;
     }
-  }
-
-  _getStateClass(state) {
-    return !this.stateImage && !this.cameraImage && STATES_OFF.includes(state) ? 'state-off' : '';
   }
 
   _onImageError() {
     this.setProperties({
-      imageSrc: null,
+      _imageSrc: null,
       _error: true
     });
   }
@@ -98,14 +101,21 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 
   _stateChanged(state) {
-    if (this.cameraImage || !this.stateImage) {
+    if (this.cameraImage) {
       return;
     }
 
-    const stateImg = this.stateImage &&
-      (this.stateImage[state] || this.stateImage.default);
+    if (!this.stateImage) {
+      this._imageClass = (!isObject(state, ['state']) || STATES_OFF.includes(state.state)) ? 'state-off' : '';
+      return;
+    }
 
-    this.imageSrc = stateImg || this.image;
+    const stateImg = isObject(state, ['state']) ? this.stateImage[state.state] : this.stateImage.offline;
+
+    this.setProperties({
+      _imageSrc: stateImg || this.stateImage.default || this.image,
+      _imageClass: ''
+    });
   }
 
   _updateCameraImageSrc() {
@@ -115,12 +125,12 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     }).then((resp) => {
       if (resp.success) {
         this.setProperties({
-          imageSrc: `data:${resp.result.content_type};base64, ${resp.result.content}`,
+          _imageSrc: `data:${resp.result.content_type};base64, ${resp.result.content}`,
           _error: false
         });
       } else {
         this.setProperties({
-          imageSrc: null,
+          _imageSrc: null,
           _error: true
         });
       }

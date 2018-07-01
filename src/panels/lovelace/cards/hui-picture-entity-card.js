@@ -47,11 +47,13 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
       </style>
 
       <ha-card on-click="_cardClicked">
-        <hui-image hass="[[hass]]" 
-                   image="[[_config.image]]" 
-                   state-image="[[_config.state_image]]" 
-                   camera-image="[[_config.camera_image]]" 
-                   state="[[_oldState]]"></hui-image>
+        <hui-image 
+          hass="[[hass]]" 
+          image="[[_config.image]]" 
+          state-image="[[_config.state_image]]" 
+          camera-image="[[_config.camera_image]]" 
+          state="[[_getStateObj(_oldState)]]"
+        ></hui-image>
         <div class="box">
           <div id="title"></div>
           <div id="state"></div>
@@ -131,6 +133,10 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     } else {
       toggleEntity(this.hass, entityId);
     }
+  }
+
+  _getStateObj() {
+    return this.hass && this.hass.states[this._config.entity];
   }
 }
 
