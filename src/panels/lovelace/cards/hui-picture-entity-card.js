@@ -8,7 +8,6 @@ import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
-import canToggleState from '../../../common/entity/can_toggle_state.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
@@ -111,7 +110,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     if (stateObj) {
       name = config.name || computeStateName(stateObj);
       state = stateObj.state;
-      state_label = this._computeState(stateObj);
+      state_label = this._computeStateLabel(stateObj);
     } else {
       name = config.name || entityId;
       state = UNAVAILABLE;
@@ -125,7 +124,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this.$.card.classList.toggle('canInteract', canInteract);
   }
 
-  _computeState(stateObj) {
+  _computeStateLabel(stateObj) {
     const domain = computeStateDomain(stateObj);
     switch (domain) {
       case 'scene':
@@ -158,7 +157,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     const domain = computeDomain(entityId);
     if (domain === 'weblink') {
       window.open(this.hass.states[entityId].state);
-    } else if (canToggleState(this.hass, stateObj)) {
+    } else {
       toggleEntity(this.hass, entityId);
     }
   }
