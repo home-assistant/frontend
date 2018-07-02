@@ -10,24 +10,28 @@ import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
+import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 const UNAVAILABLE = 'Unavailable';
 
 /*
  * @appliesMixin LocalizeMixin
+ * @appliesMixin EventsMixin
  */
-class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
+class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
         ha-card {
-          cursor: pointer;
           min-height: 75px;
           overflow: hidden;
           position: relative;
         }
-        .box {
+        ha-card.canInteract {
+          cursor: pointer;
+        }
+        .info {
           @apply --paper-font-common-nowrap;
           position: absolute;
           left: 0;
@@ -44,17 +48,20 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
         #title {
           font-weight: 500;
         }
+        [hidden] {
+          display: none;
+        }
       </style>
 
-      <ha-card on-click="_cardClicked">
-        <hui-image 
-          hass="[[hass]]" 
-          image="[[_config.image]]" 
-          state-image="[[_config.state_image]]" 
-          camera-image="[[_config.camera_image]]" 
+      <ha-card id='card' on-click="_cardClicked">
+        <hui-image
+          hass="[[hass]]"
+          image="[[_config.image]]"
+          state-image="[[_config.state_image]]"
+          camera-image="[[_config.camera_image]]"
           entity="[[_config.entity]]"
         ></hui-image>
-        <div class="box">
+        <div class="info" hidden$='[[_computeHideInfo(_config)]]'>
           <div id="name"></div>
           <div id="state"></div>
         </div>
@@ -86,29 +93,38 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
 
   _hassChanged(hass) {
     const config = this._config;
-    const entityId = config && config.entity;
-    if (!entityId) {
+    const entityId = config.entity;
+    const stateObj = hass.states[entityId];
+
+    // Nothing changed
+    if ((!stateObj && this._oldState === UNAVAILABLE) ||
+        (stateObj && stateObj.state === this._oldState)) {
       return;
     }
-    if (!(entityId in hass.states) && this._oldState === UNAVAILABLE) {
-      return;
-    }
-    if (!(entityId in hass.states) || hass.states[entityId].state !== this._oldState) {
-      this._updateState(hass, entityId, config);
-    }
-  }
 
-  _updateState(hass, entityId, config) {
-    const state = entityId in hass.states ? hass.states[entityId].state : UNAVAILABLE;
+    let name;
+    let state;
+    let stateLabel;
+    let canInteract = true;
 
-    this.$.name.innerText = config.name || (state === UNAVAILABLE ?
-      entityId : computeStateName(hass.states[entityId]));
-    this.$.state.innerText = state === UNAVAILABLE ?
-      UNAVAILABLE : this._computeState(hass.states[entityId]);
+    if (stateObj) {
+      name = config.name || computeStateName(stateObj);
+      state = stateObj.state;
+      stateLabel = this._computeStateLabel(stateObj);
+    } else {
+      name = config.name || entityId;
+      state = UNAVAILABLE;
+      stateLabel = UNAVAILABLE;
+      canInteract = false;
+    }
+
+    this.$.name.innerText = name;
+    this.$.state.innerText = stateLabel;
     this._oldState = state;
+    this.$.card.classList.toggle('canInteract', canInteract);
   }
 
-  _computeState(stateObj) {
+  _computeStateLabel(stateObj) {
     const domain = computeStateDomain(stateObj);
     switch (domain) {
       case 'scene':
@@ -122,9 +138,19 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     }
   }
 
+  _computeHideInfo(config) {
+    // By default we will show it, so === undefined should be true.
+    return config.show_info === false;
+  }
+
   _cardClicked() {
     const entityId = this._config && this._config.entity;
-    if (!(entityId in this.hass.states)) {
+    const stateObj = this.hass.states[entityId];
+
+    if (!entityId || !stateObj) return;
+
+    if (this._config.tap_action !== 'toggle') {
+      this.fire('hass-more-info', { entityId });
       return;
     }
 
