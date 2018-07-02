@@ -49,12 +49,11 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
 
   static get properties() {
     return {
-      hass: Object,
-      state: {
+      hass: {
         type: Object,
-        value: null,
-        observer: '_stateChanged'
+        observer: '_hassChanged'
       },
+      entity: String,
       image: String,
       stateImage: Object,
       cameraImage: String,
@@ -102,11 +101,12 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     this._error = false;
   }
 
-  _stateChanged(state) {
-    if (this.cameraImage) {
+  _hassChanged(hass) {
+    if (this.cameraImage || !this.entity || !isValidObject(hass, ['states'])) {
       return;
     }
 
+    const state = hass.states[this.entity];
     const unavailable = !isValidObject(state, ['state']);
 
     if (!this.stateImage) {
@@ -114,8 +114,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       return;
     }
 
-    const stateImg = !unavailable ?
-      (this.stateImage[state.state] || this.stateImage.default) : this.stateImage.unavailable;
+    const stateImg = !unavailable ? this.stateImage[state.state] : this.stateImage.unavailable;
 
     this.setProperties({
       _imageClass: !stateImg && (unavailable || STATES_OFF.includes(state.state)) ? 'state-off' : '',

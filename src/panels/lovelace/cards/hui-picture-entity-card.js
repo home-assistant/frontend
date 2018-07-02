@@ -52,7 +52,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
           image="[[_config.image]]" 
           state-image="[[_config.state_image]]" 
           camera-image="[[_config.camera_image]]" 
-          state="[[_getStateObj(_oldState)]]"
+          entity="[[_config.entity]]"
         ></hui-image>
         <div class="box">
           <div id="title"></div>
@@ -77,7 +77,8 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
   }
 
   setConfig(config) {
-    if (!config || !config.entity || (!config.image && !config.state_image)) {
+    if (!config || !config.entity ||
+      (!config.image && !config.state_image && !config.camera_image)) {
       throw new Error('Error in card configuration.');
     }
     this._config = config;
