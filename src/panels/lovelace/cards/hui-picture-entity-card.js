@@ -55,7 +55,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
           entity="[[_config.entity]]"
         ></hui-image>
         <div class="box">
-          <div id="title"></div>
+          <div id="name"></div>
           <div id="state"></div>
         </div>
       </ha-card>
@@ -101,7 +101,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
   _updateState(hass, entityId, config) {
     const state = entityId in hass.states ? hass.states[entityId].state : UNAVAILABLE;
 
-    this.$.title.innerText = config.title || (state === UNAVAILABLE ?
+    this.$.name.innerText = config.name || (state === UNAVAILABLE ?
       entityId : computeStateName(hass.states[entityId]));
     this.$.state.innerText = state === UNAVAILABLE ?
       UNAVAILABLE : this._computeState(hass.states[entityId]);
