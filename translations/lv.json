@@ -7,13 +7,16 @@
         "history": "Vēsture",
         "mailbox": "Pastkaste",
         "shopping_list": "Iepirkumu saraksts",
-        "dev-mqtt": "MQTT"
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info",
+        "calendar": "Kalendārs"
     },
     "state": {
         "default": {
             "off": "Izslēgts",
             "on": "Ieslēgts",
-            "unknown": "Nezināms"
+            "unknown": "Nezināms",
+            "unavailable": "Nepieejams"
         },
         "alarm_control_panel": {
             "pending": "Gaida"
@@ -26,6 +29,10 @@
             "safety": {
                 "off": "Drošs",
                 "on": "Nedrošs"
+            },
+            "presence": {
+                "off": "nav mājās",
+                "on": "mājās"
             }
         },
         "camera": {
@@ -35,6 +42,7 @@
         "climate": {
             "heat": "Sildīt",
             "cool": "Dzesēt",
+            "auto": "Auto",
             "dry": "Sauss",
             "fan_only": "Tikai ventilators",
             "eco": "Eko",
@@ -56,7 +64,9 @@
             "not_home": "Prom"
         },
         "media_player": {
-            "playing": "Atskaņo"
+            "playing": "Atskaņo",
+            "paused": "Apturēts",
+            "idle": "Dīkstāvē"
         },
         "plant": {
             "ok": "Labi",
@@ -65,6 +75,31 @@
         "sun": {
             "above_horizon": "Virs horizonta",
             "below_horizon": "Zem horizonta"
+        },
+        "weather": {
+            "clear_night": "Skaidrs, nakts",
+            "cloudy": "Mākoņains",
+            "fog": "Migla",
+            "lightning": "Zibens",
+            "lightning_rainy": "Zibens, lietus",
+            "partlycloudy": "Daļēji apmācies",
+            "pouring": "Lietusgāze",
+            "rainy": "Lietains",
+            "snowy": "Sniegs",
+            "snowy_rainy": "Sniegs, lietus",
+            "sunny": "Saulains",
+            "windy": "Vējains",
+            "windy_variant": "Vējains"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "Nez",
+            "unavailable": "Nepie"
+        },
+        "device_tracker": {
+            "home": "mājās",
+            "not_home": "ārpus mājām"
         }
     },
     "ui": {
@@ -72,13 +107,24 @@
             "log_out": "Iziet",
             "developer_tools": "Izstrādātāju rīki"
         },
+        "common": {
+            "loading": "Ielāde",
+            "cancel": "Atcelt"
+        },
         "duration": {
-            "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}"
+            "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}",
+            "week": "{count} {count, plural,\n  one {nedēļa}\n  other {nedēļas}\n}",
+            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekundes}\n}",
+            "minute": "{count} {count, plural,\n  one {minūte}\n  other {minūtes}\n}",
+            "hour": "{count} {count, plural,\n  one {stunda}\n  other {stundas}\n}"
         },
         "panel": {
             "history": {
                 "showing_entries": "Rāda ierakstus par",
                 "period": "Periods"
+            },
+            "logbook": {
+                "showing_entries": "Ieraksti par"
             },
             "mailbox": {
                 "empty": "Jums nav ziņu",
@@ -87,21 +133,27 @@
                 "delete_button": "Dzēst"
             },
             "config": {
-                "header": "Configure Home pārvaldība",
+                "header": "Home Assistant konfigurēšana",
+                "introduction": "Šeit iespējams konfigurēt Jūsu komponentus un pašu Home Assistant. Pagaidām ne visu ir iespējams konfigurēt no lietotāja saskarnes, bet mēs strādājam pie tā.",
                 "core": {
+                    "caption": "Vispārīgi",
                     "section": {
                         "core": {
                             "header": "Konfigurācijas un servera pārvaldība",
+                            "introduction": "Izmaiņas konfigurācijā var būt nogurdinošs process. Mēs zinām. Šī sadaļa padarīs Jūsu dzīvi mazliet vieglāku.",
                             "validation": {
                                 "heading": "Konfigurācijas pārbaude",
-                                "introduction": "Veidiet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta",
+                                "introduction": "Veiciet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta",
                                 "check_config": "Pārbaudīt",
                                 "valid": "Konfigurācija korekta!",
                                 "invalid": "Konfigurācija kļūdaina"
                             },
                             "reloading": {
+                                "heading": "Konfigurācijas pārlādēšana",
+                                "introduction": "Atsevišķas Home Assistant daļas var pārlādēt bez nepieciešamības restartēt. Veicot pārlādēšanu iepriekšējā konfigurācija tiks atiestatīta un tiks ielādēta jaunā.",
                                 "core": "Pārlādēt kodolu",
                                 "group": "Pārlādēt grupas",
+                                "automation": "Pārlādēt automatizācijas",
                                 "script": "Pārlādēt skriptus"
                             },
                             "server_management": {
@@ -113,6 +165,7 @@
                         },
                         "push_notifications": {
                             "header": "Konfigurēt pašpiegādes paziņojumus",
+                            "introduction": "Iespējojiet, lai saņemtu pašpiegādes paziņojumus šajā ierīcē",
                             "push_notifications": "Pašpiegādes paziņojumi"
                         },
                         "translation": {
@@ -126,20 +179,129 @@
                         }
                     }
                 },
+                "customize": {
+                    "caption": "Pielāgošana",
+                    "description": "Pielāgojiet jūsu iekārtas"
+                },
+                "automation": {
+                    "caption": "Automatizācija",
+                    "description": "Veidojiet un rediģējiet automatizācijas"
+                },
                 "zwave": {
                     "caption": "Z-Wave"
                 }
             }
         },
-        "common": {
-            "cancel": "Atcelt"
-        },
         "login-form": {
             "password": "Parole",
-            "remember": "Atcerēties"
+            "remember": "Atcerēties",
+            "log_in": "Pieslēgties"
+        },
+        "card": {
+            "camera": {
+                "not_available": "Attēls nav pieejams"
+            },
+            "persistent_notification": {
+                "dismiss": "Aizvērt"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Gaisa spiediens",
+                    "humidity": "Gaisa mitrums",
+                    "temperature": "Temperatūra",
+                    "visibility": "Redzamība",
+                    "wind_speed": "Vēja ātrums"
+                },
+                "cardinal_direction": {
+                    "e": "A",
+                    "ene": "AZA",
+                    "ese": "ADA",
+                    "n": "Z",
+                    "ne": "ZA",
+                    "nne": "ZA",
+                    "nw": "ZR",
+                    "nnw": "ZZR",
+                    "s": "D",
+                    "se": "DA",
+                    "sse": "DDA",
+                    "ssw": "DDR",
+                    "sw": "DR",
+                    "w": "R",
+                    "wnw": "RZR",
+                    "wsw": "RDR"
+                },
+                "forecast": "Prognoze"
+            },
+            "alarm_control_panel": {
+                "code": "Kods"
+            },
+            "automation": {
+                "last_triggered": "Pēdējais izsaukums",
+                "trigger": "Izsaukt"
+            },
+            "cover": {
+                "position": "Pozīcija",
+                "tilt_position": "Slīpuma pozīcija"
+            },
+            "fan": {
+                "speed": "Ātrums",
+                "oscillate": "Svārstīties",
+                "direction": "Virziens"
+            },
+            "light": {
+                "brightness": "Spilgtums",
+                "color_temperature": "Krāsu temperatūra",
+                "white_value": "Baltā vērtība",
+                "effect": "Efekts"
+            },
+            "lock": {
+                "code": "Kods",
+                "lock": "Aizslēgt",
+                "unlock": "Atslēgt"
+            },
+            "media_player": {
+                "source": "Avots"
+            }
+        },
+        "components": {
+            "relative_time": {
+                "past": "{time} atpakaļ",
+                "future": "Pēc {time}",
+                "never": "Nekad"
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} ieslēgts.",
+            "entity_turned_off": "{entity} izslēgts.",
+            "service_called": "Serviss {service} izsaukts.",
+            "service_call_failed": "Neizdevās izsaukt servisu {service}.",
+            "connection_lost": "Savienojums zaudēts. Atkārtota savienošanās ..."
         }
     },
     "domain": {
+        "alarm_control_panel": "Signalizācijas vadības panelis",
+        "automation": "Automatizācija",
+        "binary_sensor": "Binārais sensors",
+        "calendar": "Kalendārs",
+        "camera": "Kamera",
+        "climate": "Klimats",
+        "configurator": "Konfigurētājs",
+        "conversation": "Saruna",
+        "device_tracker": "Ierīču izsekotājs",
+        "fan": "Ventilators",
+        "group": "Grupa",
+        "light": "Gaisma",
+        "lock": "Slēdzene",
+        "mailbox": "Pastkastīte",
+        "media_player": "Multivides atskaņotājs",
+        "notify": "Paziņot",
+        "remote": "Tālvadība",
+        "scene": "Sižets",
+        "script": "Skripts",
+        "sensor": "Sensors",
+        "sun": "Saule",
+        "switch": "Slēdzis",
+        "updater": "Atjauninātājs",
         "zwave": "Z-Wave"
     },
     "attribute": {
