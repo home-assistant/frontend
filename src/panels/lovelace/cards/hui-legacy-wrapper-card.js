@@ -1,5 +1,5 @@
 import createErrorCardConfig from '../common/create-error-card-config.js';
-import validateEntityConfig from '../common/validate-entity-config.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
 
 
 export default class LegacyWrapperCard extends HTMLElement {
@@ -15,8 +15,12 @@ export default class LegacyWrapperCard extends HTMLElement {
   }
 
   setConfig(config) {
-    if (!validateEntityConfig(config, this._domain)) {
-      throw new Error('Error in card configuration.');
+    if (!config.entity) {
+      throw new Error('No entity specified');
+    }
+
+    if (computeDomain(config.entity) !== this._domain) {
+      throw new Error(`Specified entity needs to be of domain ${this._domain}.`);
     }
 
     this._config = config;
