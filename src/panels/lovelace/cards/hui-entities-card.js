@@ -132,8 +132,8 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       }
       element.stateObj = stateObj;
       element.hass = this.hass;
-      if (entity.title) {
-        element.overrideName = entity.title;
+      if (entity.name) {
+        element.overrideName = entity.name;
       }
       this._elements.push({ entityId, element });
       const container = document.createElement('div');
