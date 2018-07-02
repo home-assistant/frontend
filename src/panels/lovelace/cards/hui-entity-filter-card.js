@@ -50,7 +50,7 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config.filter || !Array.isArray(config.filter)) {
+    if (!config.filter.include || !Array.isArray(config.filter.include)) {
       throw new Error('Incorrect filter config.');
     }
 
@@ -79,7 +79,11 @@ class HuiEntitiesCard extends PolymerElement {
 
   _updateCardConfig(element) {
     if (!element || element.tagName === 'HUI-ERROR-CARD' || !this.hass) return;
-    const entitiesList = this._getEntities(this.hass, this._config.filter);
+    let entitiesList = this._getEntities(this.hass, this._config.filter.include);
+    if (this._config.filter.exclude) {
+      const excludeEntities = this._getEntities(this.hass, this._config.filter.exclude);
+      entitiesList = entitiesList.filter(el => !excludeEntities.includes(el));
+    }
     if (entitiesList.length === 0) {
       this.style.display = (this._config.show_empty === false) ? 'none' : 'block';
     } else {
