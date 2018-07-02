@@ -104,22 +104,22 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
     let name;
     let state;
-    let state_label;
+    let stateLabel;
     let canInteract = true;
 
     if (stateObj) {
       name = config.name || computeStateName(stateObj);
       state = stateObj.state;
-      state_label = this._computeStateLabel(stateObj);
+      stateLabel = this._computeStateLabel(stateObj);
     } else {
       name = config.name || entityId;
       state = UNAVAILABLE;
-      state_label = UNAVAILABLE;
+      stateLabel = UNAVAILABLE;
       canInteract = false;
     }
 
     this.$.name.innerText = name;
-    this.$.state.innerText = state_label;
+    this.$.state.innerText = stateLabel;
     this._oldState = state;
     this.$.card.classList.toggle('canInteract', canInteract);
   }
