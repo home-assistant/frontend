@@ -10,6 +10,7 @@ import '../cards/hui-horizontal-stack-card.js';
 import '../cards/hui-iframe-card.js';
 import '../cards/hui-markdown-card.js';
 import '../cards/hui-media-control-card.js';
+import '../cards/hui-picture-card.js';
 import '../cards/hui-picture-elements-card';
 import '../cards/hui-picture-entity-card';
 import '../cards/hui-picture-glance-card';
@@ -30,6 +31,7 @@ const CARD_TYPES = [
   'iframe',
   'markdown',
   'media-control',
+  'picture',
   'picture-elements',
   'picture-entity',
   'picture-glance',
