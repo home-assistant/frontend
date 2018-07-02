@@ -107,16 +107,19 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       return;
     }
 
+    const unavailable = !isValidObject(state, ['state']);
+
     if (!this.stateImage) {
-      this._imageClass = (!isValidObject(state, ['state']) || STATES_OFF.includes(state.state)) ? 'state-off' : '';
+      this._imageClass = unavailable || STATES_OFF.includes(state.state) ? 'state-off' : '';
       return;
     }
 
-    const stateImg = isValidObject(state, ['state']) ? this.stateImage[state.state] : this.stateImage.offline;
+    const stateImg = !unavailable ?
+      (this.stateImage[state.state] || this.stateImage.default) : this.stateImage.unavailable;
 
     this.setProperties({
-      _imageSrc: stateImg || this.stateImage.default || this.image,
-      _imageClass: ''
+      _imageClass: !stateImg && (unavailable || STATES_OFF.includes(state.state)) ? 'state-off' : '',
+      _imageSrc: stateImg || this.image
     });
   }
 
