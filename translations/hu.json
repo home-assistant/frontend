@@ -618,7 +618,8 @@
                 "operation": "Művelet",
                 "fan_mode": "Sebesség",
                 "swing_mode": "Forgási mód",
-                "away_mode": "Távoli mód"
+                "away_mode": "Távoli mód",
+                "aux_heat": "Külső melegítő"
             },
             "lock": {
                 "code": "Kód",

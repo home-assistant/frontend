@@ -471,9 +471,11 @@
             "cancel": "Hủy bỏ"
         },
         "duration": {
-            "day": "{count}{count, plural,\n  one {ngày}\n  other {ngày}\n}",
+            "day": "{count}{count, plural,\n  one { ngày }\n  other { ngày }\n}",
             "week": "{count}{count, plural,\n  one { tuần }\n  other { tuần }\n}",
-            "second": "{count}{count, plural,\n  one {giây }\n  other {giây}\n}"
+            "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
+            "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
+            "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}"
         },
         "login-form": {
             "password": "Mật khẩu",

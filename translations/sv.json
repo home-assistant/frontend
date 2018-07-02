@@ -648,7 +648,7 @@
         },
         "notification_toast": {
             "entity_turned_on": "Slog på {entity}.",
-            "entity_turned_off": "Stängde av {entity} .",
+            "entity_turned_off": "Stängde av {entity}.",
             "service_called": "Tjänsten {service} anropad.",
             "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
             "connection_lost": "Anslutning tappad. Ansluter igen..."
