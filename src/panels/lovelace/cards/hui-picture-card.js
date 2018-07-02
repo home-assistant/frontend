@@ -50,12 +50,12 @@ class HuiPictureCard extends NavigateMixin(PolymerElement) {
   }
 
   _computeClickable(config) {
-    return config.navigate_path || config.service;
+    return config.navigation_path || config.service;
   }
 
   _cardClicked() {
-    if (this._config.navigate_path) {
-      this.navigate(this._config.navigate_path);
+    if (this._config.navigation_path) {
+      this.navigate(this._config.navigation_path);
     }
     if (this._config.service) {
       const [domain, service] = this._config.service.split('.', 2);
