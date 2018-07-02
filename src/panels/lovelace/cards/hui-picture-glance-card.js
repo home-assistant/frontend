@@ -60,7 +60,9 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <hui-image 
           hass="[[hass]]" 
           image="[[_config.image]]" 
+          state-image="[[_config.state_image]]"
           camera-image="[[_config.camera_image]]"
+          entity="[[_config.entity]]"
         ></hui-image>
         <div class="box">
           <div class="title">[[_config.title]]</div>
@@ -115,7 +117,8 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   setConfig(config) {
     if (!config || !config.entities || !Array.isArray(config.entities) ||
-      !(config.image || config.camera_image)) {
+      !(config.image || config.camera_image || config.state_image) ||
+      (config.state_image && !config.entity)) {
       throw new Error('Invalid card configuration');
     }
 
