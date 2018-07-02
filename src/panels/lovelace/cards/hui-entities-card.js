@@ -5,7 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import stateCardType from '../../../common/entity/state_card_type.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
 import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
-import processEntitiesConfig from '../common/process-config-entities.js';
+import processConfigEntities from '../common/process-config-entities.js';
 
 import '../../../components/ha-card.js';
 import '../components/hui-entities-toggle.js';
@@ -100,7 +100,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
   setConfig(config) {
     this._config = config;
-    this._configEntities = processEntitiesConfig(config.entities);
+    this._configEntities = processConfigEntities(config.entities);
     if (this.$) this._buildConfig();
   }
 
