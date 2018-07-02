@@ -22,6 +22,8 @@ import '../../components/ha-start-voice-button.js';
 import { loadModule, loadJS } from '../../common/dom/load_resource.js';
 import './hui-view.js';
 
+import createCardElement from './common/create-card-element.js';
+
 // JS should only be imported once. Modules and HTML are safe.
 const JS_CACHE = {};
 
@@ -198,12 +200,20 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     if (root.lastChild) {
       root.removeChild(root.lastChild);
     }
-    const view = document.createElement('hui-view');
-    view.setProperties({
-      hass: this.hass,
-      config: this.config.views[this._curView],
-      columns: this.columns,
-    });
+
+    const viewConfig = this.config.views[this._curView];
+
+    let view;
+
+    if (viewConfig.panel) {
+      view = createCardElement(viewConfig.cards[0]);
+    } else {
+      view = document.createElement('hui-view');
+      view.config = viewConfig;
+      view.columns = this.columns;
+    }
+
+    view.hass = this.hass;
     root.appendChild(view);
   }
 
