@@ -135,10 +135,6 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
       toggleEntity(this.hass, entityId);
     }
   }
-
-  _getStateObj() {
-    return this.hass && this.hass.states[this._config.entity];
-  }
 }
 
 customElements.define('hui-picture-entity-card', HuiPictureEntityCard);

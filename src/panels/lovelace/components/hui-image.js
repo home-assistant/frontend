@@ -102,7 +102,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 
   _hassChanged(hass) {
-    if (this.cameraImage || !this.entity || !isValidObject(hass, ['states'])) {
+    if (this.cameraImage || !this.entity) {
       return;
     }
 
