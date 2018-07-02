@@ -11,14 +11,16 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 import canToggleState from '../../../common/entity/can_toggle_state.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
+import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 const UNAVAILABLE = 'Unavailable';
 
 /*
  * @appliesMixin LocalizeMixin
+ * @appliesMixin EventsMixin
  */
-class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
+class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -27,7 +29,7 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
           overflow: hidden;
           position: relative;
         }
-        ha-card.canToggle {
+        ha-card.canInteract {
           cursor: pointer;
         }
         .info {
@@ -104,23 +106,23 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     let name;
     let state;
     let state_label;
-    let canToggle = false;
+    let canInteract = true;
 
     if (stateObj) {
       name = config.name || computeStateName(stateObj);
       state = stateObj.state;
       state_label = this._computeState(stateObj);
-      canToggle = computeDomain(entityId) === 'weblink' || canToggleState(hass, stateObj);
     } else {
       name = config.name || entityId;
       state = UNAVAILABLE;
       state_label = UNAVAILABLE;
+      canInteract = false;
     }
 
     this.$.name.innerText = name;
     this.$.state.innerText = state_label;
     this._oldState = state;
-    this.$.card.classList.toggle('canToggle', canToggle);
+    this.$.card.classList.toggle('canInteract', canInteract);
   }
 
   _computeState(stateObj) {
@@ -147,6 +149,11 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     const stateObj = this.hass.states[entityId];
 
     if (!entityId || !stateObj) return;
+
+    if (this._config.tap_action !== 'toggle') {
+      this.fire('hass-more-info', { entityId });
+      return;
+    }
 
     const domain = computeDomain(entityId);
     if (domain === 'weblink') {
