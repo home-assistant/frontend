@@ -78,10 +78,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return 3;
   }
 
-  _computeEntities(config) {
-    return computeConfigEntities(config);
-  }
-
   setConfig(config) {
     this._config = config;
     this._configEntities = processConfigEntities(config.entities);

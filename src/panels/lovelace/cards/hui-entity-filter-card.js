@@ -3,10 +3,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import createCardElement from '../common/create-card-element.js';
 import processConfigEntities from '../common/process-config-entities.js';
 
-function getEntities(hass, filter_state, entities) {
+function getEntities(hass, filterState, entities) {
   return entities.filter((entityConf) => {
     const stateObj = hass.states[entityConf.entity];
-    return stateObj && filter_state.includes(stateObj.state);
+    return stateObj && filterState.includes(stateObj.state);
   });
 }
 

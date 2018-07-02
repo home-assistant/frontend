@@ -105,7 +105,6 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
   }
 
   _buildConfig() {
-    const config = this._config;
     const root = this.$.states;
     const entities = this._configEntities;
 
