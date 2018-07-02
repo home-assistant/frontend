@@ -2,6 +2,7 @@ import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/app-route/app-route.js';
+import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-tabs/paper-tabs.js';
@@ -10,6 +11,7 @@ import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import computeStateName from '../../common/entity/compute_state_name.js';
 import scrollToTarget from '../../common/dom/scroll-to-target.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
@@ -19,8 +21,6 @@ import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import { loadModule, loadJS } from '../../common/dom/load_resource.js';
 import './hui-view.js';
-
-import createCardElement from './common/create-card-element.js';
 
 // JS should only be imported once. Modules and HTML are safe.
 const JS_CACHE = {};
@@ -46,6 +46,15 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       app-toolbar a {
         color: var(--text-primary-color, white);
       }
+      paper-dialog {
+        padding: 16px
+      }
+      paper-dialog span {
+        color: var(--secondary-text-color);
+      }
+      paper-dialog paper-icon-button {
+        color: var(--paper-item-icon-color);
+      }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <ha-app-layout id="layout">
@@ -53,6 +62,13 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
+          <template is="dom-if" if="[[_showNewEntitiesButton(_newEntities)]]">
+            <paper-icon-button
+              on-click="_showNewEntities"
+              title="New entities"
+              icon="hass:new-box"
+            ></paper-icon-button>
+          </template>
           <a href='https://developers.home-assistant.io/docs/en/lovelace_index.html' tabindex='-1' target='_blank'>
             <paper-icon-button icon='hass:help-circle-outline'></paper-icon-button>
           </a>
@@ -78,6 +94,19 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
       <span id='view'></span>
     </app-header-layout>
+
+    <paper-dialog id="dialog">
+      <template is="dom-repeat" items="[[_newEntities]]" sort="_sortAbc">
+        <div>
+          <paper-icon-button
+            on-click="_copyEntityId"
+            icon="hass:content-copy"
+            title="Copy entity id"
+          ></paper-icon-button>
+          [[_computeName(item)]]: <span>[[item]]</span
+        </div>
+      </template>
+    </paper-dialog>
     `;
   }
 
@@ -107,7 +136,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: '_routeChanged'
       },
-      routeData: Object
+      routeData: Object,
+      _newEntities: {
+        type: Array,
+        computed: '_computeNewEntities(hass.states, config)'
+      }
     };
   }
 
@@ -165,20 +198,12 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     if (root.lastChild) {
       root.removeChild(root.lastChild);
     }
-
-    const viewConfig = this.config.views[this._curView];
-
-    let view;
-
-    if (viewConfig.panel) {
-      view = createCardElement(viewConfig.cards[0]);
-    } else {
-      view = document.createElement('hui-view');
-      view.config = viewConfig;
-      view.columns = this.columns;
-    }
-
-    view.hass = this.hass;
+    const view = document.createElement('hui-view');
+    view.setProperties({
+      hass: this.hass,
+      config: this.config.views[this._curView],
+      columns: this.columns,
+    });
     root.appendChild(view);
   }
 
@@ -220,6 +245,56 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           console.warn('Unknown resource type specified: ${resource.type}');
       }
     });
+  }
+
+  _showNewEntitiesButton(list) {
+    return list.length;
+  }
+
+  _computeNewEntities(states, config) {
+    const EXCLUDED_DOMAINS = [
+      'group',
+      'zone'
+    ];
+
+    const lovelaceEntities = this._computeLovelaceEntities(config);
+    return Object.keys(states).filter(entity => !lovelaceEntities.includes(entity) &&
+      !(config.excluded_entities && config.excluded_entities.includes(entity)) &&
+      !EXCLUDED_DOMAINS.includes(entity.split('.', 1)[0]));
+  }
+
+  _computeLovelaceEntities(config) {
+    const entities = new Set();
+
+    function getEntityId(entity) {
+      entities.add(typeof entity === 'string' ? entity : entity.entity);
+    }
+
+    function getEntities(card) {
+      if (card.entity) getEntityId(card.entity);
+      if (card.entities) card.entities.forEach(entity => getEntityId(entity));
+      if (card.card) getEntities(card.card);
+      if (card.cards) card.cards.forEach(c => getEntities(c));
+    }
+
+    config.views.forEach(view => getEntities(view));
+    return Array.from(entities);
+  }
+
+  _sortAbc(a, b) {
+    return a > b ? 1 : -1;
+  }
+
+  _copyEntityId(ev) {
+    alert(ev.model.item);
+  }
+
+  _computeName(item) {
+    return computeStateName(this.hass.states[item]);
+  }
+
+  _showNewEntities() {
+    this.$.dialog.open();
   }
 }
 
