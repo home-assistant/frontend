@@ -8,6 +8,7 @@ import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import canToggleState from '../../../common/entity/can_toggle_state.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
@@ -22,12 +23,14 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     return html`
       <style>
         ha-card {
-          cursor: pointer;
           min-height: 75px;
           overflow: hidden;
           position: relative;
         }
-        .box {
+        ha-card.canToggle {
+          cursor: pointer;
+        }
+        .info {
           @apply --paper-font-common-nowrap;
           position: absolute;
           left: 0;
@@ -44,17 +47,20 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
         #title {
           font-weight: 500;
         }
+        [hidden] {
+          display: none;
+        }
       </style>
 
-      <ha-card on-click="_cardClicked">
-        <hui-image 
-          hass="[[hass]]" 
-          image="[[_config.image]]" 
-          state-image="[[_config.state_image]]" 
-          camera-image="[[_config.camera_image]]" 
+      <ha-card id='card' on-click="_cardClicked">
+        <hui-image
+          hass="[[hass]]"
+          image="[[_config.image]]"
+          state-image="[[_config.state_image]]"
+          camera-image="[[_config.camera_image]]"
           entity="[[_config.entity]]"
         ></hui-image>
-        <div class="box">
+        <div class="info" hidden$='[[_computeHideInfo(_config)]]'>
           <div id="name"></div>
           <div id="state"></div>
         </div>
@@ -86,26 +92,35 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
 
   _hassChanged(hass) {
     const config = this._config;
-    const entityId = config && config.entity;
-    if (!entityId) {
+    const entityId = config.entity;
+    const stateObj = hass.states[entityId];
+
+    // Nothing changed
+    if ((!stateObj && this._oldState === UNAVAILABLE) ||
+        (stateObj && stateObj.state === this._oldState)) {
       return;
     }
-    if (!(entityId in hass.states) && this._oldState === UNAVAILABLE) {
-      return;
-    }
-    if (!(entityId in hass.states) || hass.states[entityId].state !== this._oldState) {
-      this._updateState(hass, entityId, config);
-    }
-  }
 
-  _updateState(hass, entityId, config) {
-    const state = entityId in hass.states ? hass.states[entityId].state : UNAVAILABLE;
+    let name;
+    let state;
+    let state_label;
+    let canToggle = false;
 
-    this.$.name.innerText = config.name || (state === UNAVAILABLE ?
-      entityId : computeStateName(hass.states[entityId]));
-    this.$.state.innerText = state === UNAVAILABLE ?
-      UNAVAILABLE : this._computeState(hass.states[entityId]);
+    if (stateObj) {
+      name = config.name || computeStateName(stateObj);
+      state = stateObj.state;
+      state_label = this._computeState(stateObj);
+      canToggle = computeDomain(entityId) === 'weblink' || canToggleState(hass, stateObj);
+    } else {
+      name = config.name || entityId;
+      state = UNAVAILABLE;
+      state_label = UNAVAILABLE;
+    }
+
+    this.$.name.innerText = name;
+    this.$.state.innerText = state_label;
     this._oldState = state;
+    this.$.card.classList.toggle('canToggle', canToggle);
   }
 
   _computeState(stateObj) {
@@ -122,16 +137,21 @@ class HuiPictureEntityCard extends LocalizeMixin(PolymerElement) {
     }
   }
 
+  _computeHideInfo(config) {
+    // By default we will show it, so === undefined should be true.
+    return config.show_info === false;
+  }
+
   _cardClicked() {
     const entityId = this._config && this._config.entity;
-    if (!(entityId in this.hass.states)) {
-      return;
-    }
+    const stateObj = this.hass.states[entityId];
+
+    if (!entityId || !stateObj) return;
 
     const domain = computeDomain(entityId);
     if (domain === 'weblink') {
       window.open(this.hass.states[entityId].state);
-    } else {
+    } else if (canToggleState(this.hass, stateObj)) {
       toggleEntity(this.hass, entityId);
     }
   }
