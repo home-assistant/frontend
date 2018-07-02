@@ -4,6 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/ha-state-label-badge.js';
 import '../../../components/entity/state-badge.js';
+import '../../../components/ha-icon.js';
 import '../../../components/ha-card.js';
 
 import computeDomain from '../../../common/entity/compute_domain.js';
@@ -13,14 +14,22 @@ import toggleEntity from '../common/entity/toggle-entity.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
-const VALID_TYPES = new Set(['service-button', 'state-badge', 'state-icon', 'state-label']);
+const VALID_TYPES = new Set([
+  'navigation',
+  'service-button',
+  'state-badge',
+  'state-icon',
+  'state-label',
+]);
 
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
+ * @appliesMixin NavigateMixin
  */
-class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
+class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerElement))) {
   static get template() {
     return html`
     <style>
@@ -141,6 +150,13 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
           el.addEventListener('click', () => this._handleClick(entityId, false));
           el.classList.add('clickable', 'state-label');
           this._stateLabels.push({ el, entityId });
+          break;
+        case 'navigation':
+          el = document.createElement('ha-icon');
+          el.icon = element.icon || 'hass:image-filter-center-focus';
+          el.addEventListener('click', () => this.navigate(element.path));
+          el.classList.add('clickable');
+          break;
       }
 
       el.classList.add('element');
@@ -165,15 +181,22 @@ class HuiPictureElementsCard extends EventsMixin(LocalizeMixin(PolymerElement)) 
     this._stateIcons.forEach((element) => {
       const { el, entityId } = element;
       const stateObj = hass.states[entityId];
-      el.stateObj = stateObj;
-      el.title = this._computeTooltip(stateObj);
+      if (stateObj) {
+        el.stateObj = stateObj;
+        el.title = this._computeTooltip(stateObj);
+      }
     });
 
     this._stateLabels.forEach((element) => {
       const { el, entityId } = element;
       const stateObj = hass.states[entityId];
-      el.innerText = computeStateDisplay(this.localize, stateObj);
-      el.title = this._computeTooltip(stateObj);
+      if (stateObj) {
+        el.innerText = computeStateDisplay(this.localize, stateObj);
+        el.title = this._computeTooltip(stateObj);
+      } else {
+        el.innerText = 'N/A';
+        el.title = '';
+      }
     });
   }
 
