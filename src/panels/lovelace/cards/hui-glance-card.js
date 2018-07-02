@@ -3,7 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
-import computeConfigEntities from '../common/compute-config-entities';
+import processConfigEntities from '../common/process-config-entities';
 
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
@@ -52,7 +52,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <ha-card header$="[[_config.title]]">
         <div class="entities">
-          <template is="dom-repeat" items="[[_computeEntities(_config)]]">
+          <template is="dom-repeat" items="[[_configEntities]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
               <div class="entity" on-click="_openDialog">
                 <div>[[_computeName(item, hass.states)]]</div>
@@ -70,6 +70,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       _config: Object,
+      _configEntities: Array,
     };
   }
 
@@ -77,16 +78,9 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return 3;
   }
 
-  _computeEntities(config) {
-    return computeConfigEntities(config);
-  }
-
   setConfig(config) {
-    if (!config || !config.entities || !Array.isArray(config.entities)) {
-      throw new Error('Error in card configuration.');
-    }
-
     this._config = config;
+    this._configEntities = processConfigEntities(config.entities);
   }
 
   _showEntity(item, states) {
