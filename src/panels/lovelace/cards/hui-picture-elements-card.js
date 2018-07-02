@@ -4,6 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/ha-state-label-badge.js';
 import '../../../components/entity/state-badge.js';
+import '../../../components/ha-icon.js';
 import '../../../components/ha-card.js';
 
 import computeDomain from '../../../common/entity/compute_domain.js';
