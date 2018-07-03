@@ -118,7 +118,6 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
 
       showMenu: {
         type: Boolean,
-        observer: 'handleWindowChange',
       },
 
       panelVisible: {
@@ -171,23 +170,27 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
     };
   }
 
+  static get observers() {
+    return ['_updateColumns(narrow, showMenu)'];
+  }
+
   ready() {
-    this.handleWindowChange = this.handleWindowChange.bind(this);
+    this._updateColumns = this._updateColumns.bind(this);
     this.mqls = [300, 600, 900, 1200].map(width => matchMedia(`(min-width: ${width}px)`));
     super.ready();
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.mqls.forEach(mql => mql.addListener(this.handleWindowChange));
+    this.mqls.forEach(mql => mql.addListener(this._updateColumns));
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.mqls.forEach(mql => mql.removeListener(this.handleWindowChange));
+    this.mqls.forEach(mql => mql.removeListener(this._updateColumns));
   }
 
-  handleWindowChange() {
+  _updateColumns() {
     const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
