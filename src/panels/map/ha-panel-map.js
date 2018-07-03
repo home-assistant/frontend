@@ -1,10 +1,10 @@
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import Leaflet from 'leaflet';
 
 import '../../components/ha-menu-button.js';
+import '../../components/ha-icon.js';
 
 import './ha-entity-marker.js';
 
@@ -126,8 +126,9 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         // create icon
         var iconHTML = '';
         if (entity.attributes.icon) {
-          iconHTML = (
-            "<iron-icon icon='" + entity.attributes.icon + "'></iron-icon>");
+          const el = document.createElement('ha-icon');
+          el.setAttribute('icon', entity.attributes.icon);
+          iconHTML = el.outerHTML;
         } else {
           iconHTML = title;
         }
