@@ -3,7 +3,6 @@ import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/app-route/app-route.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-pages/iron-pages.js';
 import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-tabs/paper-tabs.js';
@@ -11,6 +10,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-cards.js';
+import '../components/ha-icon.js';
 import '../components/ha-menu-button.js';
 import '../components/ha-start-voice-button.js';
 
@@ -69,7 +69,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
             </template>
             <template is="dom-if" if="[[defaultView]]">
               <template is="dom-if" if="[[defaultView.attributes.icon]]">
-                <iron-icon title$="[[_computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></iron-icon>
+                <ha-icon title$="[[_computeStateName(defaultView)]]" icon="[[defaultView.attributes.icon]]"></ha-icon>
               </template>
               <template is="dom-if" if="[[!defaultView.attributes.icon]]">
                 [[_computeStateName(defaultView)]]
@@ -79,7 +79,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
           <template is="dom-repeat" items="[[views]]">
             <paper-tab data-entity$="[[item.entity_id]]" on-click="scrollToTop">
               <template is="dom-if" if="[[item.attributes.icon]]">
-                <iron-icon title$="[[_computeStateName(item)]]" icon="[[item.attributes.icon]]"></iron-icon>
+                <ha-icon title$="[[_computeStateName(item)]]" icon="[[item.attributes.icon]]"></ha-icon>
               </template>
               <template is="dom-if" if="[[!item.attributes.icon]]">
                 [[_computeStateName(item)]]
