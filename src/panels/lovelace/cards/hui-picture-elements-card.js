@@ -127,8 +127,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
       switch (element.type) {
         case 'service-button':
           el = document.createElement('ha-call-service-button');
-          el.domain = element.service.split('.', 1)[0];
-          el.service = element.service.split('.', 2)[1];
+          [el.domain, el.service] = element.service.split('.', 2);
           el.serviceData = element.service_data || {};
           el.innerText = element.title;
           el.hass = this.hass;
