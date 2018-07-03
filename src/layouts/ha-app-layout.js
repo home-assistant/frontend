@@ -45,7 +45,11 @@ class HaAppLayout extends customElements.get('app-header-layout') {
       #wrapper.initializing ::slotted([slot=header]) {
         position: relative;
       }
-
+      
+      #wrapper {
+        height: 100%;
+      }
+      
       :host([has-scrolling-region]) {
         height: 100%;
       }
@@ -76,6 +80,14 @@ class HaAppLayout extends customElements.get('app-header-layout') {
            'position: absolute' relative to this element. */
         transform: translate(0);
       }
+      
+      #contentContainer.no-tabs {
+        height: calc(100% - 64px);
+      }
+      
+      #contentContainer.tabs {
+        height: calc(100% - 112px);
+      }
 
       @media print {
         :host([has-scrolling-region]) #wrapper #contentContainer {
@@ -88,12 +100,22 @@ class HaAppLayout extends customElements.get('app-header-layout') {
     <div id="wrapper" class="initializing">
       <slot id="headerSlot" name="header"></slot>
 
-      <div id="contentContainer">
+      <div id="contentContainer" class$="[[_getTabsHidden(tabsHidden)]]">
         <slot></slot>
       </div>
       <slot id="fab" name="fab"></slot>
     </div>
 `;
+  }
+
+  static get properties() {
+    return {
+      tabsHidden: Boolean
+    };
+  }
+
+  _getTabsHidden(tabsHidden) {
+    return tabsHidden ? 'no-tabs' : 'tabs';
   }
 }
 customElements.define('ha-app-layout', HaAppLayout);
