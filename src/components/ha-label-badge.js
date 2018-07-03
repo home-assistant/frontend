@@ -1,6 +1,6 @@
-import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import './ha-icon.js';
 
 class HaLabelBadge extends PolymerElement {
   static get template() {
@@ -83,7 +83,7 @@ class HaLabelBadge extends PolymerElement {
     <div class="badge-container">
       <div class="label-badge" id="badge">
         <div class$="[[computeValueClasses(value)]]">
-          <iron-icon icon="[[icon]]" hidden$="[[computeHideIcon(icon, value, image)]]"></iron-icon>
+          <ha-icon icon="[[icon]]" hidden$="[[computeHideIcon(icon, value, image)]]"></ha-icon>
           <span hidden$="[[computeHideValue(value, image)]]">[[value]]</span>
         </div>
         <div hidden$="[[computeHideLabel(label)]]" class$="[[computeLabelClasses(label)]]">
