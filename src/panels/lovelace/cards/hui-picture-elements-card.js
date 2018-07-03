@@ -153,7 +153,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           el = document.createElement('ha-icon');
           el.icon = element.icon || 'hass:image-filter-center-focus';
           el.addEventListener('click', () => this.navigate(element.navigation_path));
-          el.title = element.path;
+          el.title = element.navigation_path;
           el.classList.add('clickable');
           break;
       }
