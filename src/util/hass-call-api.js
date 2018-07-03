@@ -12,9 +12,10 @@ export default function hassCallApi(host, auth, method, path, parameters) {
     }
 
     req.onload = function () {
-      var body = req.responseText;
+      let body = req.responseText;
+      const contentType = req.getResponseHeader('content-type');
 
-      if (req.getResponseHeader('content-type') === 'application/json') {
+      if (contentType && contentType.indexOf('application/json') !== -1) {
         try {
           body = JSON.parse(req.responseText);
         } catch (err) {
