@@ -1,8 +1,8 @@
-import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import './ha-paper-slider.js';
+import './ha-icon.js';
 
 class HaLabeledSlider extends PolymerElement {
   static get template() {
@@ -18,7 +18,7 @@ class HaLabeledSlider extends PolymerElement {
         opacity: var(--dark-primary-opacity);
       }
 
-      iron-icon {
+      ha-icon {
         float: left;
         margin-top: 4px;
         opacity: var(--dark-secondary-opacity);
@@ -34,7 +34,7 @@ class HaLabeledSlider extends PolymerElement {
       <slot name="extra"></slot>
     </div>
     <div class="slider-container">
-      <iron-icon icon="[[icon]]" hidden$="[[!icon]]"></iron-icon>
+      <ha-icon icon="[[icon]]" hidden$="[[!icon]]"></ha-icon>
       <ha-paper-slider
         min="[[min]]" max="[[max]]" step="[[step]]"
         pin="[[pin]]" disabled="[[disabled]]" disabled="[[disabled]]"

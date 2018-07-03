@@ -1,8 +1,8 @@
-import '@polymer/iron-icon/iron-icon.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-card.js';
+import '../components/ha-icon.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import EventsMixin from '../mixins/events-mixin.js';
@@ -44,7 +44,7 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
       .has-plant-image .content {
         padding-bottom: 16px;
       }
-      iron-icon {
+      ha-icon {
         color: var(--paper-item-icon-color);
         margin-bottom: 8px;
       }
@@ -70,7 +70,7 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
       <div class="content">
         <template is="dom-repeat" items="[[computeAttributes(stateObj.attributes)]]">
           <div class="attributes" on-click="attributeClicked">
-            <div><iron-icon icon="[[computeIcon(item, stateObj.attributes.battery)]]"></iron-icon></div>
+            <div><ha-icon icon="[[computeIcon(item, stateObj.attributes.battery)]]"></ha-icon></div>
             <div class$="[[computeAttributeClass(stateObj.attributes.problem, item)]]">
               [[computeValue(stateObj.attributes, item)]]
             </div>
