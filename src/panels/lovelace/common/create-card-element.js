@@ -1,6 +1,5 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
-import '../cards/hui-camera-preview-card.js';
 import '../cards/hui-entities-card.js';
 import '../cards/hui-entity-filter-card.js';
 import '../cards/hui-error-card.js';
@@ -21,7 +20,6 @@ import '../cards/hui-weather-forecast-card';
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CARD_TYPES = [
-  'camera-preview',
   'entities',
   'entity-filter',
   'error',
