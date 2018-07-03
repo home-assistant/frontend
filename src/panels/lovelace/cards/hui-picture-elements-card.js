@@ -7,7 +7,6 @@ import '../../../components/entity/state-badge.js';
 import '../../../components/ha-icon.js';
 import '../../../components/ha-card.js';
 
-import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
@@ -128,8 +127,8 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
       switch (element.type) {
         case 'service-button':
           el = document.createElement('ha-call-service-button');
-          el.domain = computeDomain(element.service);
-          el.service = element.service.substr(el.domain.length + 1);
+          el.domain = element.service.split('.', 1)[0];
+          el.service = element.service.split('.', 2)[1];
           el.serviceData = element.service_data || {};
           el.innerText = element.title;
           el.hass = this.hass;
@@ -155,6 +154,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           el = document.createElement('ha-icon');
           el.icon = element.icon || 'hass:image-filter-center-focus';
           el.addEventListener('click', () => this.navigate(element.path));
+          el.title = element.path;
           el.classList.add('clickable');
           break;
       }
