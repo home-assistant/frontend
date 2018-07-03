@@ -178,7 +178,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     toggleEntity(this.hass, entityId);
   }
 
-  _handleImageClick(ev) {
+  _handleImageClick() {
     if (!this._config.navigation_path) return;
     this.navigate(this._config.navigation_path);
   }
