@@ -14,12 +14,14 @@ import toggleEntity from '../common/entity/toggle-entity.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
+ * @appliesMixin NavigateMixin
  */
-class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
+class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(PolymerElement))) {
   static get template() {
     return html`
       <style>
@@ -27,6 +29,9 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           position: relative;
           min-height: 48px;
           overflow: hidden;
+        }
+        hui-image.clickable {
+          cursor: pointer;
         }
         .box {
           @apply --paper-font-common-nowrap;
@@ -57,9 +62,11 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <ha-card>
-        <hui-image 
-          hass="[[hass]]" 
-          image="[[_config.image]]" 
+        <hui-image
+          class$='[[_computeImageClass(_config)]]'
+          on-click='_handleImageClick'
+          hass="[[hass]]"
+          image="[[_config.image]]"
           state-image="[[_config.state_image]]"
           camera-image="[[_config.camera_image]]"
           entity="[[_config.entity]]"
@@ -71,7 +78,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
                 <paper-icon-button
                   on-click="_openDialog"
-                  class$="[[_computeClass(item, hass.states)]]"
+                  class$="[[_computeButtonClass(item, hass.states)]]"
                   icon="[[_computeIcon(item, hass.states)]]"
                   title="[[_computeTooltip(item, hass.states)]]"
                 ></paper-icon-button>
@@ -83,7 +90,7 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
                 <paper-icon-button
                   on-click="_callService"
-                  class$="[[_computeClass(item, hass.states)]]"
+                  class$="[[_computeButtonClass(item, hass.states)]]"
                   icon="[[_computeIcon(item, hass.states)]]"
                   title="[[_computeTooltip(item, hass.states)]]"
                 ></paper-icon-button>
@@ -150,12 +157,16 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return stateIcon(states[entityId]);
   }
 
-  _computeClass(entityId, states) {
+  _computeButtonClass(entityId, states) {
     return STATES_OFF.includes(states[entityId].state) ? '' : 'state-on';
   }
 
   _computeTooltip(entityId, states) {
     return `${computeStateName(states[entityId])}: ${computeStateDisplay(this.localize, states[entityId])}`;
+  }
+
+  _computeImageClass(config) {
+    return config.navigation_path ? 'clickable' : '';
   }
 
   _openDialog(ev) {
@@ -165,6 +176,11 @@ class HuiPictureGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _callService(ev) {
     const entityId = ev.model.item;
     toggleEntity(this.hass, entityId);
+  }
+
+  _handleImageClick() {
+    if (!this._config.navigation_path) return;
+    this.navigate(this._config.navigation_path);
   }
 }
 
