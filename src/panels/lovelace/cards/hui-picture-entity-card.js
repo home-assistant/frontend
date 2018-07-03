@@ -6,7 +6,6 @@ import '../components/hui-image.js';
 
 import computeDomain from '../../../common/entity/compute_domain.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
-import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
@@ -58,7 +57,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           hass="[[hass]]"
           image="[[_config.image]]"
           state-image="[[_config.state_image]]"
-          camera-image="[[_config.camera_image]]"
+          camera-image="[[_getCameraImage(_config)]]" 
           entity="[[_config.entity]]"
         ></hui-image>
         <div class="info" hidden$='[[_computeHideInfo(_config)]]'>
@@ -84,10 +83,16 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   setConfig(config) {
-    if (!config || !config.entity ||
-      (!config.image && !config.state_image && !config.camera_image)) {
+    if (!config || !config.entity) {
       throw new Error('Error in card configuration.');
     }
+
+    this._entityDomain = computeDomain(config.entity);
+    if (this._entityDomain !== 'camera' &&
+        (!config.image && !config.state_image && !config.camera_image)) {
+      throw new Error('No image source configured.');
+    }
+
     this._config = config;
   }
 
@@ -125,8 +130,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _computeStateLabel(stateObj) {
-    const domain = computeStateDomain(stateObj);
-    switch (domain) {
+    switch (this._entityDomain) {
       case 'scene':
         return this.localize('ui.card.scene.activate');
       case 'script':
@@ -145,21 +149,23 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _cardClicked() {
     const entityId = this._config && this._config.entity;
-    const stateObj = this.hass.states[entityId];
 
-    if (!entityId || !stateObj) return;
+    if (!entityId || !(entityId in this.hass.states)) return;
 
     if (this._config.tap_action !== 'toggle') {
       this.fire('hass-more-info', { entityId });
       return;
     }
 
-    const domain = computeDomain(entityId);
-    if (domain === 'weblink') {
+    if (this._entityDomain === 'weblink') {
       window.open(this.hass.states[entityId].state);
     } else {
       toggleEntity(this.hass, entityId);
     }
+  }
+
+  _getCameraImage(config) {
+    return this._entityDomain === 'camera' ? config.entity : config.camera_image;
   }
 }
 
