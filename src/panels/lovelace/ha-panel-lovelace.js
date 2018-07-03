@@ -80,19 +80,23 @@ class Lovelace extends PolymerElement {
     };
   }
 
-  ready() {
-    super.ready();
-    this._fetchConfig();
-    this._handleWindowChange = this._handleWindowChange.bind(this);
-    this.mqls = [300, 600, 900, 1200].map((width) => {
-      const mql = matchMedia(`(min-width: ${width}px)`);
-      mql.addListener(this._handleWindowChange);
-      return mql;
-    });
-    this._handleWindowChange();
+  static get observers() {
+    return ['_updateColumns(narrow, showMenu)'];
   }
 
-  _handleWindowChange() {
+  ready() {
+    this._fetchConfig();
+    this._updateColumns = this._updateColumns.bind(this);
+    this.mqls = [300, 600, 900, 1200].map((width) => {
+      const mql = matchMedia(`(min-width: ${width}px)`);
+      mql.addListener(this._updateColumns);
+      return mql;
+    });
+    this._updateColumns();
+    super.ready();
+  }
+
+  _updateColumns() {
     const matchColumns = this.mqls.reduce((cols, mql) => cols + mql.matches, 0);
     // Do -1 column if the menu is docked and open
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
