@@ -21,6 +21,7 @@ class HUIView extends PolymerElement {
         display: flex;
         flex-direction: row;
         justify-content: center;
+        overflow-y: hidden;
       }
 
       .column {

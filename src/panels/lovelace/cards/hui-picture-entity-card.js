@@ -24,6 +24,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       <style>
         ha-card {
           min-height: 75px;
+          max-height: 100%;
           overflow: hidden;
           position: relative;
         }

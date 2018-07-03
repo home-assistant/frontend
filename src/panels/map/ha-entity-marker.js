@@ -3,6 +3,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
+import '../../components/ha-icon';
 
 /*
  * @appliesMixin EventsMixin
@@ -37,6 +38,9 @@ class HaEntityMarker extends EventsMixin(PolymerElement) {
       <template is="dom-if" if="[[entityPicture]]">
         <iron-image sizing="cover" class="fit" src="[[entityPicture]]"></iron-image>
       </template>
+      <template is="dom-if" if="[[entityIcon]]">
+        <ha-icon icon="[[entityIcon]]"></ha-icon>
+      </template>
     </div>
 `;
   }
@@ -58,6 +62,11 @@ class HaEntityMarker extends EventsMixin(PolymerElement) {
       },
 
       entityPicture: {
+        type: String,
+        value: null,
+      },
+
+      entityIcon: {
         type: String,
         value: null,
       }
