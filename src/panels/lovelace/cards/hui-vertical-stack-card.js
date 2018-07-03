@@ -11,11 +11,15 @@ class HuiVerticalStackCard extends PolymerElement {
         #root {
           display: flex;
           flex-direction: column;
-          margin-top: -4px;
-          margin-bottom: -8px;
         }
         #root > * {
           margin: 4px 0 8px 0;
+        }
+        #root > *:first-child {
+          margin-top: 0;
+        }
+        #root > *:last-child {
+          margin-bottom: 0;
         }
       </style>
       <div id="root"></div>
