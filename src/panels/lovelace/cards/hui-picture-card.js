@@ -14,7 +14,6 @@ class HuiPictureCard extends NavigateMixin(PolymerElement) {
       <style>
         ha-card {
           overflow: hidden;
-          max-height: 100%;
         }
         ha-card[clickable] {
           cursor: pointer;

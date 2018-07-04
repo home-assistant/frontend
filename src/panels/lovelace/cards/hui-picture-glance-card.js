@@ -28,7 +28,6 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
         ha-card {
           position: relative;
           min-height: 48px;
-          max-height: 100%;
           overflow: hidden;
         }
         hui-image.clickable {

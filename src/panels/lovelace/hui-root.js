@@ -40,7 +40,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       }
 
       ha-app-layout {
-        height: 100%;
+        min-height: 100%;
       }
       paper-tabs {
         margin-left: 12px;
@@ -50,12 +50,14 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       app-toolbar a {
         color: var(--text-primary-color, white);
       }
-      
       #view {
-        height: 100%;
-        overflow-y: auto;
+        display: block;
+        min-height: calc(100vh - 112px);
+        position: relative;
       }
-      
+      #view.tabs-hidden {
+        min-height: calc(100vh - 64px);
+      }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <ha-app-layout id="layout">
@@ -94,7 +96,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         </div>
       </app-header>
 
-      <div id='view'></div>
+      <span id='view' class$="[[_getViewClass(_tabsHidden)]]"></span>
     </app-header-layout>
     `;
   }
@@ -155,13 +157,16 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeTabsHidden(views) {
-    const tabsHidden = views.length < 2;
-    this.$.layout.tabsHidden = tabsHidden;
-    return tabsHidden;
+    this._tabsHidden = views.length < 2;
+    return this._tabsHidden;
   }
 
   _computeTabTitle(title) {
     return title || 'Unnamed view';
+  }
+
+  _getViewClass(tabsHidden) {
+    return tabsHidden ? 'tabs-hidden' : '';
   }
 
   _handleRefresh() {
