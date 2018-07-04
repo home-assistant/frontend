@@ -49,6 +49,7 @@ class HuiUnusedEntities extends PolymerElement {
   }
 
   _hassChanged(hass) {
+    const root = this.$.root;
     if (!root.lastChild) return;
     root.lastChild.hass = hass;
   }

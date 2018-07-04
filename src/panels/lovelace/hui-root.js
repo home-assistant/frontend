@@ -8,6 +8,7 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import '@polymer/paper-menu-button/paper-menu-button.js';
 import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-tabs/paper-tabs.js';
+import '@polymer/iron-icon/iron-icon.js';
 
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -19,7 +20,6 @@ import NavigateMixin from '../../mixins/navigate-mixin.js';
 
 import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
-import '../../components/ha-icon.js';
 import { loadModule, loadJS } from '../../common/dom/load_resource.js';
 import './hui-unused-entities.js';
 import './hui-view.js';
@@ -73,7 +73,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
             <template is="dom-repeat" items="[[config.views]]">
               <paper-tab>
                 <template is="dom-if" if="[[item.icon]]">
-                  <ha-icon title$="[[item.title]]" icon="[[item.icon]]"></ha-icon>
+                  <iron-icon title$="[[item.title]]" icon="[[item.icon]]"></iron-icon>
                 </template>
                 <template is="dom-if" if="[[!item.icon]]">
                   [[_computeTabTitle(item.title)]]
