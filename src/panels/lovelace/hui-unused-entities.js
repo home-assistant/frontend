@@ -2,40 +2,55 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeUnusedEntities from './common/compute-unused-entities.js';
+import createCardElement from './common/create-card-element.js';
 
 import './cards/hui-entities-card.js';
 
 class HuiUnusedEntities extends PolymerElement {
-  static get properties() {
-    return {
-      hass: Object,
-      config: Object
-    };
-  }
-
   static get template() {
     return html`
       <style>
-        hui-entities-card {
+        #root {
           max-width: 600px;
+          margin: 8px auto;
         }
       </style>
-      <hui-entities-card
-        hass="[[hass]]"
-        config="[[_computeCardConfig(hass.states, config)]]"
-      ></hui-entities-card>
+      <div id="root"></div>
     `;
   }
 
-  _computeCardConfig(states, config) {
-    const entities = computeUnusedEntities(states, config);
+  static get properties() {
     return {
-      title: 'Unused entities',
-      entities
+      hass: {
+        type: Object,
+        observer: '_hassChanged'
+      },
+      config: {
+        type: Object,
+        observer: '_configChanged'
+      },
     };
+  }
+
+  _configChanged(config) {
+    const root = this.$.root;
+    if (root.lastChild) root.removeChild(root.lastChild);
+
+    const entities = computeUnusedEntities(this.hass, config);
+    const cardConfig = {
+      type: 'entities',
+      title: 'Unused entities',
+      entities,
+      show_header_toggle: false
+    };
+    const element = createCardElement(cardConfig);
+    element.hass = this.hass;
+    root.appendChild(element);
+  }
+
+  _hassChanged(hass) {
+    if (!root.lastChild) return;
+    root.lastChild.hass = hass;
   }
 }
 customElements.define('hui-unused-entities', HuiUnusedEntities);
-
-
-computeUnusedEntities(this.hass, this.config);

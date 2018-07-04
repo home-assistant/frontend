@@ -3,9 +3,9 @@ const EXCLUDED_DOMAINS = [
   'zone'
 ];
 
-export default function computeUnusedEntities(states, config) {
+export default function computeUnusedEntities(hass, config) {
   const usedEntities = computeUsedEntities(config);
-  return Object.keys(states).filter(entity => !usedEntities.includes(entity) &&
+  return Object.keys(hass.states).filter(entity => !usedEntities.includes(entity) &&
     !(config.excluded_entities && config.excluded_entities.includes(entity)) &&
     !EXCLUDED_DOMAINS.includes(entity.split('.', 1)[0])).sort();
 }
