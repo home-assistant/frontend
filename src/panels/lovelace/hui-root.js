@@ -3,6 +3,9 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/app-route/app-route.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-listbox/paper-listbox.js';
+import '@polymer/paper-menu-button/paper-menu-button.js';
 import '@polymer/paper-tabs/paper-tab.js';
 import '@polymer/paper-tabs/paper-tabs.js';
 
@@ -18,6 +21,7 @@ import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import '../../components/ha-icon.js';
 import { loadModule, loadJS } from '../../common/dom/load_resource.js';
+import './hui-unused-entities.js';
 import './hui-view.js';
 
 import createCardElement from './common/create-card-element.js';
@@ -53,11 +57,19 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
-          <a href='https://developers.home-assistant.io/docs/en/lovelace_index.html' tabindex='-1' target='_blank'>
-            <paper-icon-button icon='hass:help-circle-outline'></paper-icon-button>
-          </a>
-          <paper-icon-button icon='hass:refresh' on-click='_handleRefresh'></paper-icon-button>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
+          <paper-menu-button
+            no-animations
+            horizontal-align="right"
+            horizontal-offset="-5"
+          >
+            <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
+            <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
+              <paper-item on-click="_handleRefresh">Refresh</paper-item>
+              <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
+              <paper-item on-click="_handleHelp">Help</paper-item>
+            </paper-listbox>
+          </paper-menu-button>
         </app-toolbar>
 
         <div sticky hidden$="[[_computeTabsHidden(config.views)]]">
@@ -148,6 +160,18 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     this.fire('config-refresh');
   }
 
+  _handleUnusedEntities() {
+    this._selectView('unused');
+  }
+
+  _deselect(ev) {
+    ev.target.selected = null;
+  }
+
+  _handleHelp() {
+    window.open('https://developers.home-assistant.io/docs/en/lovelace_index.html', '_blank');
+  }
+
   _handleViewSelected(ev) {
     const index = ev.detail.selected;
     if (index !== this._curView) {
@@ -166,16 +190,20 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       root.removeChild(root.lastChild);
     }
 
-    const viewConfig = this.config.views[this._curView];
-
     let view;
 
-    if (viewConfig.panel) {
-      view = createCardElement(viewConfig.cards[0]);
+    if (viewIndex === 'unused') {
+      view = document.createElement('hui-unused-entities');
+      view.config = this.config;
     } else {
-      view = document.createElement('hui-view');
-      view.config = viewConfig;
-      view.columns = this.columns;
+      const viewConfig = this.config.views[this._curView];
+      if (viewConfig.panel) {
+        view = createCardElement(viewConfig.cards[0]);
+      } else {
+        view = document.createElement('hui-view');
+        view.config = viewConfig;
+        view.columns = this.columns;
+      }
     }
 
     view.hass = this.hass;

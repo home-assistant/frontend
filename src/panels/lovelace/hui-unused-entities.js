@@ -1,0 +1,57 @@
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+
+import computeUnusedEntities from './common/compute-unused-entities.js';
+import createCardElement from './common/create-card-element.js';
+
+import './cards/hui-entities-card.js';
+
+class HuiUnusedEntities extends PolymerElement {
+  static get template() {
+    return html`
+      <style>
+        #root {
+          max-width: 600px;
+          margin: 8px auto;
+        }
+      </style>
+      <div id="root"></div>
+    `;
+  }
+
+  static get properties() {
+    return {
+      hass: {
+        type: Object,
+        observer: '_hassChanged'
+      },
+      config: {
+        type: Object,
+        observer: '_configChanged'
+      },
+    };
+  }
+
+  _configChanged(config) {
+    const root = this.$.root;
+    if (root.lastChild) root.removeChild(root.lastChild);
+
+    const entities = computeUnusedEntities(this.hass, config);
+    const cardConfig = {
+      type: 'entities',
+      title: 'Unused entities',
+      entities,
+      show_header_toggle: false
+    };
+    const element = createCardElement(cardConfig);
+    element.hass = this.hass;
+    root.appendChild(element);
+  }
+
+  _hassChanged(hass) {
+    const root = this.$.root;
+    if (!root.lastChild) return;
+    root.lastChild.hass = hass;
+  }
+}
+customElements.define('hui-unused-entities', HuiUnusedEntities);
