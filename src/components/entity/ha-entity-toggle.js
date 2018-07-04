@@ -122,7 +122,7 @@ class HaEntityToggle extends PolymerElement {
 
     if (stateDomain === 'lock') {
       serviceDomain = 'lock';
-      service = turnOn ? 'unlock' : 'lock';
+      service = turnOn ? 'lock' : 'unlock';
     } else if (stateDomain === 'cover') {
       serviceDomain = 'cover';
       service = turnOn ? 'open_cover' : 'close_cover';
