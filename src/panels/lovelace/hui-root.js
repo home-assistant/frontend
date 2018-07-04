@@ -64,7 +64,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
             horizontal-offset="-5"
           >
             <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
-            <paper-listbox id="menu" slot="dropdown-content">
+            <paper-listbox on-iron-select="_deselect" slot="dropdown-content">
               <paper-item on-click="_handleRefresh">Refresh</paper-item>
               <paper-item on-click="_handleUnusedEntities">Unused entities</paper-item>
               <paper-item on-click="_handleHelp">Help</paper-item>
@@ -158,17 +158,18 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   _handleRefresh() {
     this.fire('config-refresh');
-    this.$.menu.selected = null;
   }
 
   _handleUnusedEntities() {
     this._selectView('unused');
-    this.$.menu.selected = null;
+  }
+
+  _deselect(ev) {
+    ev.target.selected = null;
   }
 
   _handleHelp() {
     window.open('https://developers.home-assistant.io/docs/en/lovelace_index.html', '_blank');
-    this.$.menu.selected = null;
   }
 
   _handleViewSelected(ev) {
