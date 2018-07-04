@@ -3,13 +3,6 @@ const EXCLUDED_DOMAINS = [
   'zone'
 ];
 
-export default function computeUnusedEntities(hass, config) {
-  const usedEntities = computeUsedEntities(config);
-  return Object.keys(hass.states).filter(entity => !usedEntities.includes(entity) &&
-    !(config.excluded_entities && config.excluded_entities.includes(entity)) &&
-    !EXCLUDED_DOMAINS.includes(entity.split('.', 1)[0])).sort();
-}
-
 function computeUsedEntities(config) {
   const entities = new Set();
 
@@ -26,4 +19,11 @@ function computeUsedEntities(config) {
 
   config.views.forEach(view => addEntities(view));
   return Array.from(entities);
+}
+
+export default function computeUnusedEntities(hass, config) {
+  const usedEntities = computeUsedEntities(config);
+  return Object.keys(hass.states).filter(entity => !usedEntities.includes(entity) &&
+    !(config.excluded_entities && config.excluded_entities.includes(entity)) &&
+    !EXCLUDED_DOMAINS.includes(entity.split('.', 1)[0])).sort();
 }
