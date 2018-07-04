@@ -18,12 +18,12 @@ function computeUsedEntities(config) {
   }
 
   config.views.forEach(view => addEntities(view));
-  return Array.from(entities);
+  return entities;
 }
 
 export default function computeUnusedEntities(hass, config) {
   const usedEntities = computeUsedEntities(config);
-  return Object.keys(hass.states).filter(entity => !usedEntities.includes(entity) &&
+  return Object.keys(hass.states).filter(entity => !usedEntities.has(entity) &&
     !(config.excluded_entities && config.excluded_entities.includes(entity)) &&
     !EXCLUDED_DOMAINS.includes(entity.split('.', 1)[0])).sort();
 }

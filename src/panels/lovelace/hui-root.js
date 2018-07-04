@@ -58,7 +58,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
-          <paper-menu-button>
+          <paper-menu-button
+            no-animations
+            horizontal-align="right"
+            horizontal-offset="-5"
+          >
             <paper-icon-button icon="hass:dots-vertical" slot="dropdown-trigger"></paper-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-item on-click="_handleRefresh">Refresh</paper-item>
@@ -174,6 +178,8 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _selectView(viewIndex) {
+    this._curView = viewIndex;
+
     // Recreate a new element to clear the applied themes.
     const root = this.$.view;
     if (root.lastChild) {
@@ -183,11 +189,9 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     let view;
 
     if (viewIndex === 'unused') {
-      this._curView = -1;
       view = document.createElement('hui-unused-entities');
       view.config = this.config;
     } else {
-      this._curView = viewIndex;
       const viewConfig = this.config.views[this._curView];
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
