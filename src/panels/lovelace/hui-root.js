@@ -183,6 +183,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     let view;
 
     if (viewIndex === 'unused') {
+      this._curView = -1;
       view = document.createElement('hui-unused-entities');
       view.config = this.config;
     } else {
