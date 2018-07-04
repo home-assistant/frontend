@@ -176,7 +176,7 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
 
   _changeHostnameClicked() {
     const curHostname = this.data.hostname;
-    const hostname = prompt("Please enter a new hostname:", curHostname);
+    const hostname = prompt('Please enter a new hostname:', curHostname);
     if (hostname && hostname !== curHostname) {
       this.hass.callApi('post', 'hassio/host/options', { hostname });
     }
