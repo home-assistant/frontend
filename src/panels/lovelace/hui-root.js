@@ -51,7 +51,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         color: var(--text-primary-color, white);
       }
       #view {
-        display: block;
         min-height: calc(100vh - 112px);
         position: relative;
       }
@@ -96,7 +95,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         </div>
       </app-header>
 
-      <span id='view'></span>
+      <div id='view'></div>
     </app-header-layout>
     `;
   }
