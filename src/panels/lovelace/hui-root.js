@@ -50,6 +50,13 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       app-toolbar a {
         color: var(--text-primary-color, white);
       }
+      #view {
+        min-height: calc(100vh - 112px);
+        position: relative;
+      }
+      #view.tabs-hidden {
+        min-height: calc(100vh - 64px);
+      }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <ha-app-layout id="layout">
@@ -88,7 +95,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         </div>
       </app-header>
 
-      <span id='view'></span>
+      <div id='view'></div>
     </app-header-layout>
     `;
   }
@@ -219,6 +226,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     this._loadResources(config.resources || []);
     // On config change, recreate the view from scratch.
     this._selectView(this._curView);
+    this.$.view.classList.toggle('tabs-hidden', config.views.length < 2);
   }
 
   _columnsChanged(columns) {
