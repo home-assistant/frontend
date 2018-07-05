@@ -39,7 +39,7 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
         margin-top: 16px;
       }
       paper-button.info {
-        max-width: 50%;
+        max-width: calc(50% - 12px);
       }
     </style>
     <paper-card>
@@ -61,7 +61,14 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
             </tr>
           </template>
         </tbody></table>
-        <paper-button raised="" on-click="_showHardware" class="info">Show hardware</paper-button>
+        <paper-button raised on-click="_showHardware" class="info">
+          Hardware
+        </paper-button>
+        <template is="dom-if" if="[[_featureAvailable(data, 'hostname')]]">
+          <paper-button raised on-click="_changeHostnameClicked" class="info">
+            Change hostname
+          </paper-button>
+        </template>
         <template is="dom-if" if="[[errors]]">
           <div class="errors">Error: [[errors]]</div>
         </template>
@@ -165,6 +172,14 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
       }
     });
     return data;
+  }
+
+  _changeHostnameClicked() {
+    const curHostname = this.data.hostname;
+    const hostname = prompt('Please enter a new hostname:', curHostname);
+    if (hostname && hostname !== curHostname) {
+      this.hass.callApi('post', 'hassio/host/options', { hostname });
+    }
   }
 }
 
