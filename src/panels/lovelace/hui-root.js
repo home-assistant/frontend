@@ -206,11 +206,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       }
     }
 
-    if ('background' in viewConfig) {
-      this.$.view.style.setProperty('background', viewConfig.background);
-    } else {
-      this.$.view.style.background = '';
-    }
+    this.$.view.style.background = viewConfig.background || '';
 
     view.hass = this.hass;
     root.appendChild(view);
