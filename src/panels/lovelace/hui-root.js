@@ -96,7 +96,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         </div>
       </app-header>
 
-      <span id='view' class$="[[_getViewClass(_tabsHidden)]]"></span>
+      <span id='view'></span>
     </app-header-layout>
     `;
   }
@@ -157,16 +157,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeTabsHidden(views) {
-    this._tabsHidden = views.length < 2;
-    return this._tabsHidden;
+    return views.length < 2;
   }
 
   _computeTabTitle(title) {
     return title || 'Unnamed view';
-  }
-
-  _getViewClass(tabsHidden) {
-    return tabsHidden ? 'tabs-hidden' : '';
   }
 
   _handleRefresh() {
@@ -232,6 +227,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     this._loadResources(config.resources || []);
     // On config change, recreate the view from scratch.
     this._selectView(this._curView);
+    this.$.view.classList.toggle('tabs-hidden', config.views.length < 2);
   }
 
   _columnsChanged(columns) {
