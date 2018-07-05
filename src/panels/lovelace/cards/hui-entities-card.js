@@ -2,9 +2,6 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import stateCardType from '../../../common/entity/state_card_type.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
-import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 import processConfigEntities from '../common/process-config-entities.js';
 
 import '../../../components/ha-card.js';
@@ -14,6 +11,8 @@ import '../components/hui-entities-toggle.js';
 import '../../../state-summary/state-card-content.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
+
+import createEntityRowElement from '../common/create-entity-row-element.js';
 
 /*
  * @appliesMixin EventsMixin
@@ -114,22 +113,11 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
     this._elements = [];
 
-    for (let i = 0; i < entities.length; i++) {
-      const entity = entities[i];
+    for (const entity of entities) {
       const entityId = entity.entity;
-      if (!(entityId in this.hass.states)) continue;
-      const stateObj = this.hass.states[entityId];
-      const tag = stateObj ? `state-card-${stateCardType(this.hass, stateObj)}` : 'state-card-display';
-      const element = document.createElement(tag);
-      if (!DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
-        element.classList.add('state-card-dialog');
-        element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
-      }
-      element.stateObj = stateObj;
-      element.hass = this.hass;
-      if (entity.name) {
-        element.overrideName = entity.name;
-      }
+
+      const element = createEntityRowElement(entity, this.hass);
+
       this._elements.push({ entityId, element });
       const container = document.createElement('div');
       container.appendChild(element);
