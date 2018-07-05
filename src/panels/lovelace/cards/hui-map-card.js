@@ -163,7 +163,7 @@ class HuiMapCard extends PolymerElement {
     }
 
     if (this._mapItems) {
-      this._mapItems.forEach(function (marker) { marker.remove(); });
+      this._mapItems.forEach((marker) => marker.remove());
     }
     const mapItems = this._mapItems = [];
 
