@@ -78,9 +78,12 @@ class HuiMapCard extends PolymerElement {
 
   ready() {
     super.ready();
-    if (this._config) {
-      this._buildConfig();
+
+    if (!this._config || this.isPanel) {
+      return;
     }
+
+    this.$.root.style.paddingTop = this._config.aspect_ratio || '100%';
   }
 
   setConfig(config) {
@@ -90,12 +93,6 @@ class HuiMapCard extends PolymerElement {
 
     this._configEntities = processConfigEntities(config.entities);
     this._config = config;
-  }
-
-  _buildConfig() {
-    if (!this.isPanel) {
-      this.$.root.style.paddingTop = this._config.aspect_ratio || '100%';
-    }
   }
 
   getCardSize() {
