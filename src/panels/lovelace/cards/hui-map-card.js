@@ -4,9 +4,11 @@ import Leaflet from 'leaflet';
 
 import '../../map/ha-entity-marker.js';
 
-import processConfigEntities from '../common/process-config-entities';
+import setupLeafletMap from '../../../common/dom/setup-leaflet-map.js';
+import processConfigEntities from '../common/process-config-entities.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import debounce from '../../../common/util/debounce.js';
 
 Leaflet.Icon.Default.imagePath = '/static/images/leaflet';
 
@@ -14,12 +16,7 @@ class HuiMapCard extends PolymerElement {
   static get template() {
     return html`
       <style>
-        ha-card:not(.panel) {
-          line-height: 0;
-          overflow: hidden;
-        }
-        
-        ha-card.panel {
+        :host([is-panel]) ha-card {
           left: 0;
           top: 0;
           width: 100%;
@@ -46,7 +43,7 @@ class HuiMapCard extends PolymerElement {
           position: relative;
         }
         
-        ha-card.panel > #root {
+        :host([is-panel]) #root {
           height: 100%;
         }
       </style>
@@ -62,10 +59,21 @@ class HuiMapCard extends PolymerElement {
 
   static get properties() {
     return {
-      hass: Object,
+      hass: {
+        type: Object,
+        observer: '_drawEntities'
+      },
       _config: Object,
-      isPanel: Boolean
+      isPanel: {
+        type: Boolean,
+        reflectToAttribute: true
+      }
     };
+  }
+
+  constructor() {
+    super();
+    this._debouncedResizeListener = debounce(this._resetMap.bind(this), 100);
   }
 
   ready() {
@@ -73,12 +81,6 @@ class HuiMapCard extends PolymerElement {
     if (this._config) {
       this._buildConfig();
     }
-
-    if (typeof ResizeObserver !== 'function') {
-      return;
-    }
-
-    new ResizeObserver(() => this._resetMap()).observe(this.$.map);
   }
 
   setConfig(config) {
@@ -88,14 +90,9 @@ class HuiMapCard extends PolymerElement {
 
     this._configEntities = processConfigEntities(config.entities);
     this._config = config;
-
-    if (this.$) {
-      this._buildConfig();
-    }
   }
 
   _buildConfig() {
-    this.$.card.classList.toggle('panel', !!this.isPanel);
     if (!this.isPanel) {
       this.$.root.style.paddingTop = this._config.aspect_ratio || '100%';
     }
@@ -109,23 +106,19 @@ class HuiMapCard extends PolymerElement {
 
   connectedCallback() {
     super.connectedCallback();
-    if (!this._map) {
-      this._map = Leaflet.map(this.$.map);
+
+    // Observe changes to map size and invalidate to prevent broken rendering
+    // Uses ResizeObserver in Chrome, otherwise window resize event
+    if (typeof ResizeObserver === 'function') {
+      this._resizeObserver = new ResizeObserver(() => this._debouncedResizeListener());
+      this._resizeObserver.observe(this.$.map);
+    } else {
+      window.addEventListener('resize', this._debouncedResizeListener);
     }
-    const style = document.createElement('link');
-    style.setAttribute('href', '/static/images/leaflet/leaflet.css');
-    style.setAttribute('rel', 'stylesheet');
-    this.$.map.parentNode.appendChild(style);
-    this._map.setView([51.505, -0.09], 13);
-    Leaflet.tileLayer(
-      `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}${Leaflet.Browser.retina ? '@2x.png' : '.png'}`,
-      {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        minZoom: 0,
-        maxZoom: 20,
-      }
-    ).addTo(this._map);
+
+    if (!this._map) {
+      this._map = setupLeafletMap(this.$.map);
+    }
 
     this._drawEntities(this.hass);
 
@@ -133,6 +126,16 @@ class HuiMapCard extends PolymerElement {
       this._resetMap();
       this._fitMap();
     }, 1);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this._resizeObserver) {
+      this._resizeObserver.unobserve(this.$.map);
+    } else {
+      window.removeEventListener('resize', this._debouncedResizeListener);
+    }
   }
 
   _resetMap() {
