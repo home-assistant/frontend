@@ -12,7 +12,8 @@ class HuiUnusedEntities extends PolymerElement {
       <style>
         #root {
           max-width: 600px;
-          margin: 8px auto;
+          margin: 0 auto;
+          padding: 8px 0;
         }
       </style>
       <div id="root"></div>
