@@ -191,9 +191,9 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     }
 
     let view;
+    let background = this.config.background || '';
 
     if (viewIndex === 'unused') {
-      this.$.view.style.background = '';
       view = document.createElement('hui-unused-entities');
       view.config = this.config;
     } else {
@@ -205,8 +205,10 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         view.config = viewConfig;
         view.columns = this.columns;
       }
-      this.$.view.style.background = viewConfig.background || '';
+      viewConfig.background && (background = viewConfig.background);
     }
+
+    this.$.view.style.background = background;
 
     view.hass = this.hass;
     root.appendChild(view);
