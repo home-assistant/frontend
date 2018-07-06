@@ -6,7 +6,6 @@ class HuiIframeCard extends PolymerElement {
     return html`
       <style>
         ha-card {
-          line-height: 0;
           overflow: hidden;
         }
         #root {
