@@ -7,6 +7,7 @@ import './state-card-display.js';
 import './state-card-input_number.js';
 import './state-card-input_select.js';
 import './state-card-input_text.js';
+import './state-card-lock.js';
 import './state-card-media_player.js';
 import './state-card-scene.js';
 import './state-card-script.js';
