@@ -68,6 +68,12 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     }, 1);
   }
 
+  disconnectedCallback() {
+    if (this._map) {
+      this._map.remove();
+    }
+  }
+
   fitMap() {
     var bounds;
 

@@ -39,7 +39,6 @@ class HuiMapCard extends PolymerElement {
         }
         
         #root {
-          width: 100%;
           position: relative;
         }
         
@@ -113,10 +112,7 @@ class HuiMapCard extends PolymerElement {
       window.addEventListener('resize', this._debouncedResizeListener);
     }
 
-    if (!this._map) {
-      this._map = setupLeafletMap(this.$.map);
-    }
-
+    this._map = setupLeafletMap(this.$.map);
     this._drawEntities(this.hass);
 
     setTimeout(() => {
@@ -127,6 +123,10 @@ class HuiMapCard extends PolymerElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+
+    if (this._map) {
+      this._map.remove();
+    }
 
     if (this._resizeObserver) {
       this._resizeObserver.unobserve(this.$.map);
@@ -165,7 +165,6 @@ class HuiMapCard extends PolymerElement {
     }
     const mapItems = this._mapItems = [];
 
-    // for (let entity of this._configEntities) {
     this._configEntities.forEach((entity) => {
       const entityId = entity.entity;
       if (!(entityId in hass.states)) {
@@ -173,47 +172,48 @@ class HuiMapCard extends PolymerElement {
       }
       const stateObj = hass.states[entityId];
       const title = computeStateName(stateObj);
-      const attr = stateObj.attributes;
+      const { latitude, longitude, passive, icon, radius,
+        entity_picture: entityPicture, gps_accuracy: gpsAccuracy } = stateObj.attributes;
 
-      if (!(attr.latitude && attr.longitude)) {
+      if (!(latitude && longitude)) {
         return;
       }
 
-      let icon;
+      let markerIcon;
       let iconHTML;
       let el;
 
       if (computeStateDomain(stateObj) === 'zone') {
         // DRAW ZONE
-        if (attr.passive) return;
+        if (passive) return;
 
         // create icon
-        if (attr.icon) {
+        if (icon) {
           el = document.createElement('ha-icon');
-          el.setAttribute('icon', attr.icon);
+          el.setAttribute('icon', icon);
           iconHTML = el.outerHTML;
         } else {
           iconHTML = title;
         }
 
-        icon = Leaflet.divIcon({
+        markerIcon = Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
           className: '',
         });
 
         // create market with the icon
-        mapItems.push(Leaflet.marker([attr.latitude, attr.longitude], {
-          icon: icon,
+        mapItems.push(Leaflet.marker([latitude, longitude], {
+          icon: markerIcon,
           interactive: false,
           title: title,
         }).addTo(map));
 
         // create circle around it
-        mapItems.push(Leaflet.circle([attr.latitude, attr.longitude], {
+        mapItems.push(Leaflet.circle([latitude, longitude], {
           interactive: false,
           color: '#FF9800',
-          radius: attr.radius,
+          radius: radius,
         }).addTo(map));
 
         return;
@@ -221,34 +221,33 @@ class HuiMapCard extends PolymerElement {
 
       // DRAW ENTITY
       // create icon
-      const entityPicture = attr.entity_picture || '';
       const entityName = title.split(' ').map(part => part[0]).join('').substr(0, 3);
 
       el = document.createElement('ha-entity-marker');
       el.setAttribute('entity-id', entityId);
       el.setAttribute('entity-name', entityName);
-      el.setAttribute('entity-picture', entityPicture);
+      el.setAttribute('entity-picture', entityPicture || '');
 
       /* Leaflet clones this element before adding it to the map. This messes up
          our Polymer object and we can't pass data through. Thus we hack like this. */
-      icon = Leaflet.divIcon({
+      markerIcon = Leaflet.divIcon({
         html: el.outerHTML,
         iconSize: [48, 48],
         className: '',
       });
 
       // create market with the icon
-      mapItems.push(Leaflet.marker([attr.latitude, attr.longitude], {
-        icon: icon,
+      mapItems.push(Leaflet.marker([latitude, longitude], {
+        icon: markerIcon,
         title: computeStateName(stateObj),
       }).addTo(map));
 
       // create circle around if entity has accuracy
-      if (attr.gps_accuracy) {
-        mapItems.push(Leaflet.circle([attr.latitude, attr.longitude], {
+      if (gpsAccuracy) {
+        mapItems.push(Leaflet.circle([latitude, longitude], {
           interactive: false,
           color: '#0288D1',
-          radius: attr.gps_accuracy,
+          radius: gpsAccuracy,
         }).addTo(map));
       }
     });
