@@ -1,5 +1,7 @@
+import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
@@ -35,13 +37,33 @@ class HaForm extends EventsMixin(PolymerElement) {
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;string&quot;)]]" restamp="">
-        <paper-input
-          label="[[computeLabel(schema)]]"
-          value="{{data}}"
-          required="[[schema.required]]"
-          auto-validate="[[schema.required]]"
-          error-message='Required'
-        ></paper-input>
+        <template is="dom-if" if="[[_includes(schema.name, &quot;password&quot;)]]" restamp="">
+          <paper-input
+            type="[[_passwordFieldType(unmaskedPassword)]]"
+            label="[[computeLabel(schema)]]"
+            value="{{data}}"
+            required="[[schema.required]]"
+            auto-validate="[[schema.required]]"
+            error-message='Required'
+          >
+            <paper-icon-button toggles
+              active="{{unmaskedPassword}}"
+              slot="suffix"
+              icon="[[_passwordFieldIcon(unmaskedPassword)]]"
+              id="iconButton"
+              title="Click to toggle between masked and clear password">
+            </paper-icon-button>
+          </paper-input>
+        </template>
+        <template is="dom-if" if="[[!_includes(schema.name, &quot;password&quot;)]]" restamp="">
+          <paper-input
+            label="[[computeLabel(schema)]]"
+            value="{{data}}"
+            required="[[schema.required]]"
+            auto-validate="[[schema.required]]"
+            error-message='Required'
+          ></paper-input>
+        </template>
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;integer&quot;)]]" restamp="">
@@ -71,7 +93,7 @@ class HaForm extends EventsMixin(PolymerElement) {
           required="[[schema.required]]"
           auto-validate="[[schema.required]]"
           error-message='Required'
-      ></paper-input>
+        ></paper-input>
       </template>
 
       <template is="dom-if" if="[[_equals(schema.type, &quot;boolean&quot;)]]" restamp="">
@@ -129,12 +151,24 @@ class HaForm extends EventsMixin(PolymerElement) {
     return a === b;
   }
 
+  _includes(a, b) {
+    return a.indexOf(b) >= 0;
+  }
+
   _getValue(obj, item) {
     return obj[item.name];
   }
 
   _valueChanged(ev) {
     this.set(['data', ev.model.item.name], ev.detail.value);
+  }
+
+  _passwordFieldType(unmaskedPassword) {
+    return unmaskedPassword ? "text" : "password";
+  }
+
+  _passwordFieldIcon(unmaskedPassword) {
+    return unmaskedPassword ? "hass:eye-off" : "hass:eye";
   }
 }
 
