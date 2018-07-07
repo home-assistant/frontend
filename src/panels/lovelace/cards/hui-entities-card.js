@@ -13,6 +13,8 @@ import '../../../state-summary/state-card-content.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 
 import createEntityRowElement from '../common/create-entity-row-element.js';
+import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
 
 /*
  * @appliesMixin EventsMixin
@@ -117,6 +119,10 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       const entityId = entity.entity;
 
       const element = createEntityRowElement(entity, this.hass);
+      if (entityId && !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
+        element.classList.add('state-card-dialog');
+        element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
+      }
 
       this._elements.push({ entityId, element });
       const container = document.createElement('div');

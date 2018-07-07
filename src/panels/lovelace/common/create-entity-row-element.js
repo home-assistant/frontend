@@ -1,8 +1,6 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
 import stateCardType from '../../../common/entity/state_card_type.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
-import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
@@ -19,11 +17,6 @@ function _createElement(tag, config, stateObj, hass) {
     return _createErrorElement(err.message, config);
   }
 
-  const entityId = config.entity;
-  if (entityId && !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
-    element.classList.add('state-card-dialog');
-    element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
-  }
   element.stateObj = stateObj;
   element.hass = hass;
   if (config.name) {
