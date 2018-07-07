@@ -49,7 +49,8 @@ export const DOMAINS_HIDE_MORE_INFO = [
   'input_number',
   'input_select',
   'input_text',
-  'scene'
+  'scene',
+  'weblink'
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */
