@@ -164,11 +164,11 @@ class HaForm extends EventsMixin(PolymerElement) {
   }
 
   _passwordFieldType(unmaskedPassword) {
-    return unmaskedPassword ? "text" : "password";
+    return unmaskedPassword ? 'text' : 'password';
   }
 
   _passwordFieldIcon(unmaskedPassword) {
-    return unmaskedPassword ? "hass:eye-off" : "hass:eye";
+    return unmaskedPassword ? 'hass:eye-off' : 'hass:eye';
   }
 }
 
