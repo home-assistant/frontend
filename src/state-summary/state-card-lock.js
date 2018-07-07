@@ -3,7 +3,6 @@ import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../components/entity/ha-entity-toggle.js';
 import '../components/entity/state-info.js';
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
@@ -23,17 +22,10 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
         height: 37px;
         margin-right: -.57em;
       }
-
-      ha-entity-toggle {
-        margin-left: 16px;
-      }
     </style>
 
     <div class="horizontal justified layout">
       ${this.stateInfoTemplate}
-      <template is="dom-if" if="[[stateObj.attributes.can_cancel]]">
-        <ha-entity-toggle state-obj="[[stateObj]]" hass="[[hass]]"></ha-entity-toggle>
-      </template>
       <paper-button on-click="_callService" data-service="unlock" hidden$="[[!isLocked]]">[[localize('ui.card.lock.unlock')]]</paper-button>
       <paper-button on-click="_callService" data-service="lock" hidden$="[[isLocked]]">[[localize('ui.card.lock.lock')]]</paper-button>
     </div>
