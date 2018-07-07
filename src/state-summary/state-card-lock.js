@@ -67,10 +67,9 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
 
   _callService(ev) {
     ev.stopPropagation();
-    const service = ev.target.getAttribute('data-service');
+    const service = ev.target.dataset.service;
     const data = {
       entity_id: this.stateObj.entity_id,
-      code: this.enteredCode
     };
     this.hass.callService('lock', service, data);
   }
