@@ -7,6 +7,7 @@ import '../cards/hui-glance-card';
 import '../cards/hui-history-graph-card.js';
 import '../cards/hui-horizontal-stack-card.js';
 import '../cards/hui-iframe-card.js';
+import '../cards/hui-map-card.js';
 import '../cards/hui-markdown-card.js';
 import '../cards/hui-media-control-card.js';
 import '../cards/hui-picture-card.js';
@@ -27,6 +28,7 @@ const CARD_TYPES = [
   'history-graph',
   'horizontal-stack',
   'iframe',
+  'map',
   'markdown',
   'media-control',
   'picture',

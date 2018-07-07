@@ -52,6 +52,13 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       }
       #view {
         min-height: calc(100vh - 112px);
+        /** 
+         * Since we only set min-height, if child nodes need percentage 
+         * heights they must use absolute positioning so we need relative 
+         * positioning here.
+         *  
+         * https://www.w3.org/TR/CSS2/visudet.html#the-height-property 
+         */
         position: relative;
       }
       #view.tabs-hidden {
@@ -207,6 +214,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       const viewConfig = this.config.views[this._curView];
       if (viewConfig.panel) {
         view = createCardElement(viewConfig.cards[0]);
+        view.isPanel = true;
       } else {
         view = document.createElement('hui-view');
         view.config = viewConfig;

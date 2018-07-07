@@ -68,6 +68,7 @@ class HuiEntitiesCard extends PolymerElement {
       element._filterRawConfig,
       { entities: entitiesList }
     ));
+    element.isPanel = this.isPanel;
   }
 }
 customElements.define('hui-entity-filter-card', HuiEntitiesCard);
