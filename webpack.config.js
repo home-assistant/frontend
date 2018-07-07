@@ -134,7 +134,7 @@ function createConfig(isProdBuild, latestBuild) {
           /hass-icons.js$/,
           /\.chunk\.js$/,
         ],
-        // Static assets get cached during runtime. But these we want to explicetely cache
+        // Static assets get cached during runtime. But these we want to explicitly cache
         // Need to be done using templatedUrls because prefix is /static
         globDirectory: '.',
         globIgnores: [],
