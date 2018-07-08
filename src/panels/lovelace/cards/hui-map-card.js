@@ -1,5 +1,6 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
 import Leaflet from 'leaflet';
 
 import '../../map/ha-entity-marker.js';
@@ -21,13 +22,17 @@ class HuiMapCard extends PolymerElement {
           top: 0;
           width: 100%;
           /**
-           * In panel mode we want a full height map. Since parent #view 
+           * In panel mode we want a full height map. Since parent #view
            * only sets min-height, we need absolute positioning here
            */
           height: 100%;
           position: absolute;
         }
-        
+
+        ha-card {
+          overflow: hidden;
+        }
+
         #map {
           z-index: 0;
           border: none;
@@ -37,19 +42,30 @@ class HuiMapCard extends PolymerElement {
           width: 100%;
           height: 100%;
         }
-        
+
+        paper-icon-button {
+          position: absolute;
+          top: 75px;
+          left: 7px;
+        }
+
         #root {
           position: relative;
         }
-        
+
         :host([is-panel]) #root {
           height: 100%;
         }
       </style>
-      
+
       <ha-card id="card" header="[[_config.title]]">
         <div id="root">
           <div id="map"></div>
+          <paper-icon-button
+            on-click="_fitMap"
+            icon="hass:image-filter-center-focus"
+            title="Reset focus"
+          ></paper-icon-button>
         </div>
       </ha-card>
 
