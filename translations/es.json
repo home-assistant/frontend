@@ -529,7 +529,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {día}\nother {días}\n}",
             "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}",
-            "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}"
+            "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}",
+            "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
+            "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}"
         },
         "login-form": {
             "password": "Contraseña",
@@ -577,17 +579,50 @@
                 },
                 "forecast": "Pronóstico"
             },
+            "alarm_control_panel": {
+                "code": "Código",
+                "clear_code": "Limpiar",
+                "disarm": "Desarmar",
+                "arm_home": "Armar en casa",
+                "arm_away": "Armar fuera de casa"
+            },
+            "automation": {
+                "last_triggered": "Última activación",
+                "trigger": "Desencadenar"
+            },
+            "cover": {
+                "position": "Posición"
+            },
+            "fan": {
+                "speed": "Velocidad",
+                "oscillate": "Oscilar",
+                "direction": "Dirección"
+            },
+            "light": {
+                "brightness": "Brillo",
+                "color_temperature": "Temperatura del color",
+                "white_value": "Valor de blanco",
+                "effect": "Efecto"
+            },
+            "media_player": {
+                "text_to_speak": "Texto para hablar",
+                "source": "Fuente",
+                "sound_mode": "Modo de sonido"
+            },
             "climate": {
+                "currently": "Actualmente",
+                "on_off": "Encendido \/ Apagado",
+                "target_temperature": "Temperatura fijada",
+                "target_humidity": "Humedad fijada",
+                "operation": "Modo",
+                "fan_mode": "Modo del ventilador",
+                "swing_mode": "Modo de oscilación",
                 "away_mode": "Fuera de casa",
                 "aux_heat": "Calor auxiliar"
             },
             "lock": {
                 "lock": "Bloquear",
                 "unlock": "Desbloquear"
-            },
-            "media_player": {
-                "source": "Fuente",
-                "sound_mode": "Modo de sonido"
             }
         },
         "components": {
@@ -598,7 +633,23 @@
             },
             "service-picker": {
                 "service": "Servicio"
+            },
+            "relative_time": {
+                "past": "{hora} hace",
+                "future": "En {time}",
+                "never": "Nunca"
+            },
+            "history_charts": {
+                "loading_history": "Cargando historial de estado ...",
+                "no_history_found": "No se encontró historial de estado."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Endendido {entidad}",
+            "entity_turned_off": "Apagado {entidad}.",
+            "service_called": "Servicio {service} llamado.",
+            "service_call_failed": "Error al llamar al servicio {service} .",
+            "connection_lost": "Conexión perdida. Reconectando ..."
         },
         "dialogs": {
             "more_info_settings": {
