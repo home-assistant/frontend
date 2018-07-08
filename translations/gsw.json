@@ -8,7 +8,8 @@
         "mailbox": "Postigang",
         "shopping_list": "Ichoufsliste",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kaländer"
     },
     "state": {
         "default": {
@@ -208,12 +209,20 @@
             }
         },
         "weather": {
+            "clear_night": "Klar, Nacht",
             "cloudy": "Bedeckt",
             "fog": "Näbu",
             "hail": "Hägu",
             "lightning": "Blitzä",
+            "lightning_rainy": "Blitzä, Räge",
+            "partlycloudy": "Teilwis bedeckt",
+            "pouring": "Schütte",
+            "rainy": "Rägnärisch",
+            "snowy": "Schneie",
+            "snowy_rainy": "Schneie, rägnerisch",
             "sunny": "sunnig",
-            "windy": "windig"
+            "windy": "windig",
+            "windy_variant": "windig"
         }
     },
     "state_badge": {
@@ -273,7 +282,18 @@
                         "save": "Spichere",
                         "alias": "Name",
                         "triggers": {
+                            "header": "Uslöser",
+                            "add": "Uslöser hinzuäfüäge",
+                            "duplicate": "Kopie",
                             "type": {
+                                "event": {
+                                    "label": "Event"
+                                },
+                                "state": {
+                                    "label": "Zuästand",
+                                    "from": "Vo",
+                                    "to": "Für"
+                                },
                                 "homeassistant": {
                                     "label": "Home Assistant",
                                     "start": "Starte",
@@ -284,6 +304,7 @@
                                     "topic": "Topic"
                                 },
                                 "numeric_state": {
+                                    "label": "Nummerische Zuästand",
                                     "above": "Über",
                                     "below": "Unger"
                                 },
@@ -292,15 +313,22 @@
                                     "sunrise": "Sunneungergang",
                                     "sunset": "Sunneufgang"
                                 },
+                                "template": {
+                                    "label": "Vorlag",
+                                    "value_template": "Wärt-Vorlag"
+                                },
                                 "time": {
                                     "label": "Zyt"
                                 },
                                 "zone": {
-                                    "label": "Zone"
+                                    "label": "Zone",
+                                    "enter": "Inecho",
+                                    "leave": "Verla"
                                 }
                             }
                         },
                         "conditions": {
+                            "header": "Bedingig",
                             "type": {
                                 "sun": {
                                     "before": "Vorhär:",
@@ -317,6 +345,9 @@
                         "actions": {
                             "header": "Aktione",
                             "type": {
+                                "delay": {
+                                    "label": "Vrzögerig"
+                                },
                                 "wait_template": {
                                     "label": "Warte"
                                 },
@@ -358,6 +389,7 @@
                     "air_pressure": "Luftdruck",
                     "humidity": "Feuchtigkeit",
                     "temperature": "Temperatur",
+                    "visibility": "Sichtwithi",
                     "wind_speed": "Windgschwindigkeit"
                 },
                 "cardinal_direction": {
@@ -419,6 +451,15 @@
             "media_player": {
                 "source": "Quelle",
                 "sound_mode": "Sound-Modus"
+            }
+        },
+        "notification_toast": {
+            "connection_lost": "Vrbindig vrlore. Neu verbinde..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Spichere",
+                "name": "Name"
             }
         }
     },
