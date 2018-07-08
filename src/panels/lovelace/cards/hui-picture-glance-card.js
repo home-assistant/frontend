@@ -146,7 +146,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     }
 
     return config.entities.filter(entity =>
-      canToggleState(this.hass, this.hass.states[entity]));
+      (entity in this.hass.states) && canToggleState(this.hass, this.hass.states[entity]));
   }
 
   _showEntity(entityId, states) {
