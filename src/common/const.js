@@ -15,6 +15,7 @@ export const DOMAINS_WITH_CARD = [
   'input_select',
   'input_number',
   'input_text',
+  'lock',
   'media_player',
   'scene',
   'script',
