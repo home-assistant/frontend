@@ -166,7 +166,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   _computeImageClass(config) {
-    return config.navigation_path ? 'clickable' : '';
+    return config.navigation_path || config.camera_image ? 'clickable' : '';
   }
 
   _openDialog(ev) {
@@ -179,8 +179,14 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   _handleImageClick() {
-    if (!this._config.navigation_path) return;
-    this.navigate(this._config.navigation_path);
+    if (this._config.navigation_path) {
+      this.navigate(this._config.navigation_path);
+      return;
+    }
+
+    if (this._config.camera_image) {
+      this.fire('hass-more-info', { entityId: this._config.camera_image });
+    }
   }
 }
 
