@@ -137,7 +137,8 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       return config.entities;
     }
 
-    return config.entities.filter(entity => !entitiesService.includes(entity));
+    return config.entities.filter(entity => !entitiesService.includes(entity) &&
+                                  (entity in hass.states));
   }
 
   _computeEntitiesService(hass, config) {
@@ -146,7 +147,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     }
 
     return config.entities.filter(entity =>
-      canToggleState(this.hass, this.hass.states[entity]));
+      (entity in hass.states) && canToggleState(hass, hass.states[entity]));
   }
 
   _showEntity(entityId, states) {
