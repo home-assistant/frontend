@@ -45,7 +45,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   <app-drawer-layout fullbleed="" force-narrow="[[computeForceNarrow(narrow, dockedSidebar)]]" responsive-width="0">
     <app-drawer id="drawer" slot="drawer" disable-swipe="[[_computeDisableSwipe(hass)]]" swipe-open="[[!_computeDisableSwipe(hass)]]" persistent="[[dockedSidebar]]">
-      <ha-sidebar narrow="[[narrow]]" hass="[[hass]]"></ha-sidebar>
+      <ha-sidebar narrow="[[narrow]]" hass="[[hass]]" default-page="[[_defaultPage]]"></ha-sidebar>
     </app-drawer>
 
     <iron-pages attr-for-selected="id" fallback-selection="panel-resolver" selected="[[hass.panelUrl]]" selected-attribute="panel-visible">
@@ -76,6 +76,7 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
+    this._defaultPage = localStorage.defaultPage || 'states';
     this.addEventListener('hass-open-menu', () => this.handleOpenMenu());
     this.addEventListener('hass-close-menu', () => this.handleCloseMenu());
     this.addEventListener('hass-start-voice', ev => this.handleStartVoice(ev));
