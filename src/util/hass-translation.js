@@ -36,23 +36,23 @@ export function getActiveTranslation() {
     if (translation) {
       return translation;
     }
-  } else if (navigator.languages) {
+  }
+  if (navigator.languages) {
     for (let i = 0; i < navigator.languages.length; i++) {
       translation = languageGetTranslation(navigator.languages[i]);
       if (translation) {
         return translation;
       }
     }
-  } else {
-    translation = languageGetTranslation(navigator.language);
+  }
+  translation = languageGetTranslation(navigator.language);
+  if (translation) {
+    return translation;
+  }
+  if (navigator.language.includes('-')) {
+    translation = languageGetTranslation(navigator.language.split('-')[0]);
     if (translation) {
       return translation;
-    }
-    if (navigator.language.includes('-')) {
-      translation = languageGetTranslation(navigator.language.split('-')[0]);
-      if (translation) {
-        return translation;
-      }
     }
   }
 
