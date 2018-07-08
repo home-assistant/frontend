@@ -270,6 +270,23 @@
                 },
                 "automation": {
                     "editor": {
+                        "conditions": {
+                            "add": "Lisa tingimus",
+                            "unsupported_condition": "Tundmatu tingimus:",
+                            "type_select": "Tingimus",
+                            "type": {
+                                "sun": {
+                                    "before": "Enne",
+                                    "after": "Peale",
+                                    "sunrise": "Päikesetõus",
+                                    "sunset": "Päikeseloojang"
+                                },
+                                "time": {
+                                    "after": "Peale",
+                                    "before": "Enne"
+                                }
+                            }
+                        },
                         "actions": {
                             "add": "Lisa toiming",
                             "unsupported_action": "Toetamata tegevus: {tegevus}",
@@ -278,6 +295,9 @@
                                 "service": {
                                     "label": "Kutsu teenus",
                                     "service_data": "Teenuse andmed"
+                                },
+                                "delay": {
+                                    "label": "Viivitus"
                                 },
                                 "wait_template": {
                                     "label": "Oota",
@@ -360,8 +380,12 @@
                 "sound_mode": "Heli režiim"
             },
             "climate": {
+                "currently": "Hetkel",
                 "on_off": "Sees \/ väljas",
-                "fan_mode": "Ventilaatori režiim"
+                "target_temperature": "Soovitud temperatuur",
+                "target_humidity": "Soovitud niiskusemäär",
+                "fan_mode": "Ventilaatori režiim",
+                "away_mode": "Eemal"
             },
             "lock": {
                 "lock": "Lukusta",
@@ -373,6 +397,10 @@
                 "past": "{aega} tagasi",
                 "future": "{Aeg}",
                 "never": "Iial"
+            },
+            "history_charts": {
+                "loading_history": "Laadin ajalugu...",
+                "no_history_found": "Ajalugu ei leitud"
             }
         },
         "notification_toast": {

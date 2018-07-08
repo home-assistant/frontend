@@ -529,7 +529,7 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
             "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}",
-            "second": "{count} {count, plural,\nen {sekund}\nflera {sekunder}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
             "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
             "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}"
         },

@@ -638,7 +638,7 @@
             },
             "relative_time": {
                 "past": "Fa {time}",
-                "future": "D'aquí a {time}",
+                "future": "D'aquí {time}",
                 "never": "Mai"
             },
             "history_charts": {
