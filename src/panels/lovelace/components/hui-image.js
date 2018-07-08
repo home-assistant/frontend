@@ -108,15 +108,15 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       return;
     }
 
-    const state = hass.states[this.entity];
-    const unavailable = !isValidObject(state, ['state']);
-    const newState = unavailable ? 'unavailable' : state.state;
+    const stateObj = hass.states[this.entity];
+    const unavailable = !isValidObject(stateObj, ['state']);
+    const newState = unavailable ? 'unavailable' : stateObj.state;
 
     if (newState === this._currentState) return;
     this._currentState = newState;
 
     this._updateStateImage();
-    this._updateStateFilter(state, unavailable);
+    this._updateStateFilter(stateObj, unavailable);
   }
 
   _updateStateImage() {
@@ -129,7 +129,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     this._imageFallback = !stateImg;
   }
 
-  _updateStateFilter(state, unavailable) {
+  _updateStateFilter(stateObj, unavailable) {
     let filter;
     if (!this.stateFilter) {
       filter = this.filter;
@@ -137,7 +137,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       filter = this.stateFilter[this._currentState] || this.filter;
     }
 
-    const isOff = unavailable || STATES_OFF.includes(state.state);
+    const isOff = unavailable || STATES_OFF.includes(stateObj.state);
     this.$.image.style.filter = filter || (isOff && this._imageFallback && DEFAULT_FILTER) || '';
   }
 
