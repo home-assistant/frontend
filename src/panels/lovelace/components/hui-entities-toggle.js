@@ -6,6 +6,8 @@ import canToggleState from '../../../common/entity/can_toggle_state.js';
 import turnOnOffEntities from '../common/entity/turn-on-off-entities.js';
 import { STATES_OFF } from '../../../common/const.js';
 
+const EXCLUDED_DOMAINS = ['cover', 'lock'];
+
 class HuiEntitiesToggle extends PolymerElement {
   static get template() {
     return html`
@@ -40,7 +42,7 @@ class HuiEntitiesToggle extends PolymerElement {
 
   _computeToggleEntities(hass, entityIds) {
     return entityIds.filter(entityId => (entityId in hass.states ?
-      canToggleState(hass, hass.states[entityId]) : false));
+      !EXCLUDED_DOMAINS.includes(entityId.split('.', 1)[0]) && canToggleState(hass, hass.states[entityId]) : false));
   }
 
   _computeIsChecked(hass, entityIds) {
