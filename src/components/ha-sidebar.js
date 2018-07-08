@@ -106,7 +106,7 @@ class HaSidebar extends
     </app-toolbar>
 
     <paper-listbox attr-for-selected="data-panel" selected="[[hass.panelUrl]]">
-      <paper-icon-item on-click="menuClicked" data-panel="states">
+      <paper-icon-item on-click="menuClicked" data-panel$="[[defaultPage]]">
         <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
         <span class="item-text">[[localize('panel.states')]]</span>
       </paper-icon-item>
@@ -159,6 +159,7 @@ class HaSidebar extends
         type: Array,
         computed: 'computePanels(hass)',
       },
+      defaultPage: String,
     };
   }
 
