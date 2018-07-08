@@ -24,6 +24,7 @@ import './zwave-node-config.js';
 import './zwave-node-information.js';
 import './zwave-usercodes.js';
 import './zwave-values.js';
+import './zwave-node-protection.js';
 
 import sortByName from '../../../common/entity/states_sort_by_name.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
@@ -187,21 +188,57 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
         <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
           <!--Node info card-->
-          <zwave-node-information id="zwave-node-information" nodes="[[nodes]]" selected-node="[[selectedNode]]"></zwave-node-information>
+          <zwave-node-information
+            id="zwave-node-information"
+            nodes="[[nodes]]"
+            selected-node="[[selectedNode]]"
+          ></zwave-node-information>
 
           <!--Value card-->
-          <zwave-values hass="[[hass]]" nodes="[[nodes]]" selected-node="[[selectedNode]]" values="[[values]]"></zwave-values>
+          <zwave-values
+            hass="[[hass]]"
+            nodes="[[nodes]]"
+            selected-node="[[selectedNode]]"
+            values="[[values]]"
+          ></zwave-values>
 
           <!--Group card-->
-          <zwave-groups hass="[[hass]]" nodes="[[nodes]]" selected-node="[[selectedNode]]" groups="[[groups]]"></zwave-groups>
+          <zwave-groups
+            hass="[[hass]]"
+            nodes="[[nodes]]"
+            selected-node="[[selectedNode]]"
+            groups="[[groups]]"
+          ></zwave-groups>
 
           <!--Config card-->
-          <zwave-node-config hass="[[hass]]" nodes="[[nodes]]" selected-node="[[selectedNode]]" config="[[config]]"></zwave-node-config>
+          <zwave-node-config
+            hass="[[hass]]"
+            nodes="[[nodes]]"
+            selected-node="[[selectedNode]]"
+            config="[[config]]"
+          ></zwave-node-config>
+
         </template>
+
+        <!--Protection card-->
+        <template is="dom-if" if="{{_protectionNode}}">
+          <zwave-node-protection
+            hass="[[hass]]"
+            nodes="[[nodes]]"
+            selected-node="[[selectedNode]]"
+            _protection="[[_protection]]"
+          ></zwave-node-protection>
+        </template> 
 
         <!--User Codes-->
         <template is="dom-if" if="{{hasNodeUserCodes}}">
-          <zwave-usercodes id="zwave-usercodes" hass="[[hass]]" nodes="[[nodes]]" user-codes="[[userCodes]]" selected-node="[[selectedNode]]"></zwave-usercodes>
+          <zwave-usercodes
+            id="zwave-usercodes"
+            hass="[[hass]]"
+            nodes="[[nodes]]"
+            user-codes="[[userCodes]]"
+            selected-node="[[selectedNode]]"
+          ></zwave-usercodes>
       </template>
       </ha-config-section>
 
@@ -294,6 +331,18 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
         type: Number,
         value: 0,
       },
+
+      _protection: {
+        type: Array,
+        value: function () {
+          return [];
+        },
+      },
+
+      _protectionNode: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -362,6 +411,15 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
       this.userCodes = this._objToArray(usercodes);
       this.hasNodeUserCodes = this.userCodes.length > 0;
       this.notifyPath('hasNodeUserCodes');
+    });
+    this.hass.callApi('GET', 'zwave/protection/' + this.nodes[selectedNode].attributes.node_id).then((protections) => {
+      this.protection = this._objToArray(protections);
+      if (this.protection) {
+        if (this.protection[0] === undefined) {
+          return;
+        }
+        this._protectionNode = true;
+      }
     });
   }
 
