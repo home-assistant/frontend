@@ -52,17 +52,20 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       }
       #view {
         min-height: calc(100vh - 112px);
-        /** 
-         * Since we only set min-height, if child nodes need percentage 
-         * heights they must use absolute positioning so we need relative 
+        /**
+         * Since we only set min-height, if child nodes need percentage
+         * heights they must use absolute positioning so we need relative
          * positioning here.
-         *  
-         * https://www.w3.org/TR/CSS2/visudet.html#the-height-property 
+         *
+         * https://www.w3.org/TR/CSS2/visudet.html#the-height-property
          */
         position: relative;
       }
       #view.tabs-hidden {
         min-height: calc(100vh - 64px);
+      }
+      paper-item {
+        cursor: pointer;
       }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
