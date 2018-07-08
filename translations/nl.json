@@ -529,9 +529,7 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
             "week": "{count} {count, plural,\none {week}\nother {weken}\n}",
-            "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
-            "minute": "{count} {count, meervoud,\néén {minuten}\nandere {minuten}\n}",
-            "hour": "{count} {count, meervoud,\néén {uur}\nandere {hours}\n}"
+            "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}"
         },
         "login-form": {
             "password": "Wachtwoord",

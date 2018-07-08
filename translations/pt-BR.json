@@ -12,7 +12,8 @@
         "dev-events": "Eventos",
         "dev-templates": "Modelos",
         "dev-mqtt": "",
-        "dev-info": "Informação"
+        "dev-info": "Informação",
+        "calendar": "Calendario"
     },
     "state": {
         "default": {
@@ -605,7 +606,9 @@
                 "effect": "Efeito"
             },
             "media_player": {
-                "text_to_speak": "Texto para falar"
+                "text_to_speak": "Texto para falar",
+                "source": "Fonte",
+                "sound_mode": "Modo de som"
             },
             "climate": {
                 "currently": "Atualmente",
@@ -649,6 +652,12 @@
             "service_called": "Serviço {service} chamado.",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
             "connection_lost": "Conexão perdida. Reconectando…"
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Salvar",
+                "name": "Nome"
+            }
         }
     },
     "domain": {

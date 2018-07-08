@@ -606,15 +606,15 @@
                 "effect": "Effetto"
             },
             "media_player": {
-                "text_to_speak": "Parole testo",
+                "text_to_speak": "Testo da leggere",
                 "source": "Fonte",
                 "sound_mode": "Modalità Audio"
             },
             "climate": {
                 "currently": "Attuale",
-                "on_off": "On \/ Off",
-                "target_temperature": "Temperatura",
-                "target_humidity": "Umidità",
+                "on_off": "Acceso \/ Spento",
+                "target_temperature": "Temperatura di riferimento",
+                "target_humidity": "Umidità di riferimento",
                 "operation": "Operazione",
                 "fan_mode": "Ventilazione",
                 "swing_mode": "Modo oscillazione",
@@ -637,7 +637,7 @@
                 "service": "Servizio"
             },
             "relative_time": {
-                "past": "{time} fà",
+                "past": "{time} fa",
                 "future": "mancano {time}",
                 "never": "Mai"
             },
