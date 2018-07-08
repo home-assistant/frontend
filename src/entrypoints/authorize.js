@@ -19,11 +19,22 @@ class HaAuthorize extends PolymerElement {
     <div class="layout vertical center fit">
       <img src="/static/icons/favicon-192x192.png" height="192">
 
+      <p>Logging in to <b>[[clientId]]</b>.</p>
+
       <template is="dom-if" if="[[_authProvider]]">
-        <ha-auth-flow client-id="[[clientId]]" client-secret="[[clientSecret]]" redirect-uri="[[redirectUri]]" oauth2-state="[[oauth2State]]" auth-provider="[[_authProvider]]" on-reset="_handleReset">
-      </ha-auth-flow></template>
+        <ha-auth-flow
+          client-id="[[clientId]]"
+          redirect-uri="[[redirectUri]]"
+          oauth2-state="[[oauth2State]]"
+          auth-provider="[[_authProvider]]"
+          on-reset="_handleReset"
+        ></ha-auth-flow>
+      </template>
       <template is="dom-if" if="[[!_authProvider]]">
-        <ha-pick-auth-provider client-id="[[clientId]]" client-secret="[[clientSecret]]" on-pick="_handleAuthProviderPick"></ha-pick-auth-provider>
+        <ha-pick-auth-provider
+          client-id="[[clientId]]"
+          on-pick="_handleAuthProviderPick"
+        ></ha-pick-auth-provider>
       </template>
     </div>
 `;
@@ -36,7 +47,6 @@ class HaAuthorize extends PolymerElement {
         value: null,
       },
       clientId: String,
-      clientSecret: String,
       redirectUri: String,
       oauth2State: String,
     };
@@ -53,7 +63,6 @@ class HaAuthorize extends PolymerElement {
     }
     const props = {};
     if (query.client_id) props.clientId = query.client_id;
-    if (query.client_secret) props.clientSecret = query.client_secret;
     if (query.redirect_uri) props.redirectUri = query.redirect_uri;
     if (query.state) props.oauth2State = query.state;
     this.setProperties(props);

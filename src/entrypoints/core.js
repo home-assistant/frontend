@@ -28,19 +28,23 @@ const init = window.createHassConnection = function (password, accessToken) {
     });
 };
 
+function clientId() {
+    return `${location.protocol}//${location.host}/`;
+}
+
 function redirectLogin() {
-  document.location = `${__PUBLIC_PATH__}authorize.html?response_type=code&client_id=${window.clientId}&redirect_uri=/`;
+  document.location = `${__PUBLIC_PATH__}authorize.html?response_type=code&client_id=${encodeURIComponent(clientId())}&redirect_uri=${encodeURIComponent(location.toString())}`;
 }
 
 window.refreshToken = () =>
-  refreshToken_(window.clientId, window.tokens.refresh_token).then((accessTokenResp) => {
+  refreshToken_(clientId(), window.tokens.refresh_token).then((accessTokenResp) => {
     window.tokens.access_token = accessTokenResp.access_token;
     localStorage.tokens = JSON.stringify(window.tokens);
     return accessTokenResp.access_token;
   }, () => redirectLogin());
 
 function resolveCode(code) {
-  fetchToken(window.clientId, code).then((tokens) => {
+  fetchToken(clientId(), code).then((tokens) => {
     localStorage.tokens = JSON.stringify(tokens);
     // Refresh the page and have tokens in place.
     document.location = location.pathname;
