@@ -45,7 +45,7 @@ class HuiMapCard extends PolymerElement {
 
         paper-icon-button {
           position: absolute;
-          top: 70px;
+          top: 75px;
           left: 7px;
         }
 
