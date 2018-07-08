@@ -7,6 +7,7 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import isValidObject from '../common/is-valid-object';
 
 const UPDATE_INTERVAL = 10000;
+const DEFAULT_FILTER = 'grayscale(100%)';
 
 /*
  * @appliesMixin LocalizeMixin
@@ -15,10 +16,6 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
-        .state-off {
-          filter: grayscale(100%);
-        } 
-        
         img {
           display: block;
           height: auto;
@@ -32,15 +29,17 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
           text-align: center;
         }
         
+        .hidden {
+          display: none;
+        }
+        
       </style>
       
-      <template is="dom-if" if="[[_imageSrc]]">
-        <img 
-          src="[[_imageSrc]]" 
-          on-error="_onImageError" 
-          on-load="_onImageLoad" 
-          class$="[[_imageClass]]" />
-      </template>
+      <img 
+        id="image"
+        src="[[_imageSrc]]" 
+        on-error="_onImageError" 
+        on-load="_onImageLoad" />
       <template is="dom-if" if="[[_error]]">
         <div class="error">[[localize('ui.card.camera.not_available')]]</div>
       </template>
@@ -57,11 +56,12 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       image: String,
       stateImage: Object,
       cameraImage: String,
+      filter: String,
+      stateFilter: Object,
       _error: {
         type: Boolean,
         value: false
       },
-      _imageClass: String,
       _imageSrc: String
     };
   }
@@ -95,10 +95,12 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       _imageSrc: null,
       _error: true
     });
+    this.$.image.classList.add('hidden');
   }
 
   _onImageLoad() {
     this._error = false;
+    this.$.image.classList.remove('hidden');
   }
 
   _hassChanged(hass) {
@@ -108,18 +110,35 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
 
     const state = hass.states[this.entity];
     const unavailable = !isValidObject(state, ['state']);
+    const newState = unavailable ? 'unavailable' : state.state;
 
+    if (newState === this._currentState) return;
+    this._currentState = newState;
+
+    this._updateStateImage();
+    this._updateStateFilter(state, unavailable);
+  }
+
+  _updateStateImage() {
     if (!this.stateImage) {
-      this._imageClass = unavailable || STATES_OFF.includes(state.state) ? 'state-off' : '';
+      this._imageFallback = true;
       return;
     }
+    const stateImg = this.stateImage[this._currentState];
+    this._imageSrc = stateImg || this.image;
+    this._imageFallback = !stateImg;
+  }
 
-    const stateImg = !unavailable ? this.stateImage[state.state] : this.stateImage.unavailable;
+  _updateStateFilter(state, unavailable) {
+    let filter;
+    if (!this.stateFilter) {
+      filter = this.filter;
+    } else {
+      filter = this.stateFilter[this._currentState] || this.filter;
+    }
 
-    this.setProperties({
-      _imageClass: !stateImg && (unavailable || STATES_OFF.includes(state.state)) ? 'state-off' : '',
-      _imageSrc: stateImg || this.image
-    });
+    const isOff = unavailable || STATES_OFF.includes(state.state);
+    this.$.image.style.filter = filter || (isOff && this._imageFallback && DEFAULT_FILTER) || '';
   }
 
   _updateCameraImageSrc() {
