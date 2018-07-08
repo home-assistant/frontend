@@ -25,124 +25,10 @@ function createConfig(isProdBuild, latestBuild) {
     'custom-panel': './src/entrypoints/custom-panel.js',
   };
 
-  const babelOptions = {
-    plugins: [
-      // Only support the syntax, Webpack will handle it.
-      "syntax-dynamic-import",
-      [
-        'transform-react-jsx',
-        {
-          pragma: 'h'
-        }
-      ],
-    ],
-  };
-
-  const copyPluginOpts = [
-    // Leave here until Hass.io no longer references the ES5 build.
-    'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js'
-  ];
-
-  const plugins = [
-    new webpack.DefinePlugin({
-      __DEV__: JSON.stringify(!isProdBuild),
-      __BUILD__: JSON.stringify(latestBuild ? 'latest' : 'es5'),
-      __VERSION__: JSON.stringify(VERSION),
-      __PUBLIC_PATH__: JSON.stringify(publicPath),
-      'process.env.NODE_ENV': JSON.stringify(isProdBuild ? 'production' : 'development'),
-    }),
-    new CopyWebpackPlugin(copyPluginOpts),
-    // Ignore moment.js locales
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    // Color.js is bloated, it contains all color definitions for all material color sets.
-    new webpack.NormalModuleReplacementPlugin(
-      /@polymer\/paper-styles\/color\.js$/,
-      path.resolve(__dirname, 'src/util/empty.js')
-    ),
-    // Ignore roboto pointing at CDN. We use local font-roboto-local.
-    new webpack.NormalModuleReplacementPlugin(
-      /@polymer\/font-roboto\/roboto\.js$/,
-      path.resolve(__dirname, 'src/util/empty.js')
-    ),
-  ];
-
   if (latestBuild) {
-    copyPluginOpts.push({ from: 'public', to: '.' });
-    copyPluginOpts.push({ from: 'build-translations/output', to: `translations` });
-    copyPluginOpts.push({ from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' });
-    copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js')
-    copyPluginOpts.push('node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js.map')
-    copyPluginOpts.push({ from: 'node_modules/react-big-calendar/lib/css/react-big-calendar.css', to: `panels/calendar/` });
-    copyPluginOpts.push({ from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` });
-    copyPluginOpts.push({ from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` });
     entry['hass-icons'] = './src/entrypoints/hass-icons.js';
     entry['service-worker-hass'] = './src/entrypoints/service-worker-hass.js';
-  } else {
-    copyPluginOpts.push('public/__init__.py');
-    babelOptions.presets = [
-      [require('babel-preset-env').default, { modules: false }]
-    ];
   }
-
-  if (isProdBuild) {
-    plugins.push(new UglifyJsPlugin({
-      extractComments: true,
-      sourceMap: true,
-      uglifyOptions: {
-        // Disabling because it broke output
-        mangle: false,
-      }
-    }));
-    plugins.push(new CompressionPlugin({
-      cache: true,
-      exclude: [
-        /\.js\.map$/,
-        /\.LICENSE$/,
-        /\.py$/,
-        /\.txt$/,
-      ]
-    }));
-  }
-
-  plugins.push(new WorkboxPlugin.InjectManifest({
-    swSrc: './src/entrypoints/service-worker-bootstrap.js',
-    swDest: 'service_worker.js',
-    importWorkboxFrom: 'local',
-    include: [
-      /core.js$/,
-      /app.js$/,
-      /custom-panel.js$/,
-      /hass-icons.js$/,
-      /\.chunk\.js$/,
-    ],
-    // Static assets get cached during runtime. But these we want to explicetely cache
-    // Need to be done using templatedUrls because prefix is /static
-    globDirectory: '.',
-    globIgnores: [],
-    modifyUrlPrefix: {
-      'hass_frontend': '/static'
-    },
-    templatedUrls: {
-      [`/static/translations/${translationMetadata['translations']['en']['fingerprints']['en']}`]: [
-        'build-translations/output/en.json'
-      ],
-      '/static/icons/favicon-192x192.png': [
-        'public/icons/favicon-192x192.png'
-      ],
-      '/static/fonts/roboto/Roboto-Light.ttf': [
-        'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf'
-      ],
-      '/static/fonts/roboto/Roboto-Medium.ttf': [
-        'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf'
-      ],
-      '/static/fonts/roboto/Roboto-Regular.ttf': [
-        'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf'
-      ],
-      '/static/fonts/roboto/Roboto-Bold.ttf': [
-        'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf'
-      ],
-    }
-  }));
 
   const chunkFilename = isProdBuild ?
     '[chunkhash].chunk.js' : '[name].chunk.js';
@@ -157,7 +43,23 @@ function createConfig(isProdBuild, latestBuild) {
           test: /\.js$/,
           use: {
             loader: 'babel-loader',
-            options: babelOptions,
+            options: {
+              presets: [
+                !latestBuild && [
+                  require('babel-preset-env').default, { modules: false }
+                ],
+              ].filter(Boolean),
+              plugins: [
+                // Only support the syntax, Webpack will handle it.
+                "syntax-dynamic-import",
+                [
+                  'transform-react-jsx',
+                  {
+                    pragma: 'h'
+                  }
+                ],
+              ],
+            },
           },
         },
         {
@@ -171,7 +73,96 @@ function createConfig(isProdBuild, latestBuild) {
         }
       ]
     },
-    plugins,
+    plugins: [
+      new webpack.DefinePlugin({
+        __DEV__: JSON.stringify(!isProdBuild),
+        __BUILD__: JSON.stringify(latestBuild ? 'latest' : 'es5'),
+        __VERSION__: JSON.stringify(VERSION),
+        __PUBLIC_PATH__: JSON.stringify(publicPath),
+        'process.env.NODE_ENV': JSON.stringify(isProdBuild ? 'production' : 'development'),
+      }),
+      new CopyWebpackPlugin([
+        // Leave here until Hass.io no longer references the ES5 build.
+        'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
+        latestBuild && { from: 'public', to: '.' },
+        latestBuild && { from: 'build-translations/output', to: `translations` },
+        latestBuild && { from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' },
+        latestBuild && 'node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js',
+        latestBuild && 'node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js.map',
+        latestBuild && { from: 'node_modules/react-big-calendar/lib/css/react-big-calendar.css', to: 'panels/calendar/' },
+        latestBuild && { from: 'node_modules/leaflet/dist/leaflet.css', to: `images/leaflet/` },
+        latestBuild && { from: 'node_modules/leaflet/dist/images', to: `images/leaflet/` },
+        !latestBuild && 'public/__init__.py',
+      ].filter(Boolean)),
+      // Ignore moment.js locales
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      // Color.js is bloated, it contains all color definitions for all material color sets.
+      new webpack.NormalModuleReplacementPlugin(
+        /@polymer\/paper-styles\/color\.js$/,
+        path.resolve(__dirname, 'src/util/empty.js')
+      ),
+      // Ignore roboto pointing at CDN. We use local font-roboto-local.
+      new webpack.NormalModuleReplacementPlugin(
+        /@polymer\/font-roboto\/roboto\.js$/,
+        path.resolve(__dirname, 'src/util/empty.js')
+      ),
+      isProdBuild && new UglifyJsPlugin({
+        extractComments: true,
+        sourceMap: true,
+        uglifyOptions: {
+          // Disabling because it broke output
+          mangle: false,
+        }
+      }),
+      isProdBuild && new CompressionPlugin({
+        cache: true,
+        exclude: [
+          /\.js\.map$/,
+          /\.LICENSE$/,
+          /\.py$/,
+          /\.txt$/,
+        ]
+      }),
+      new WorkboxPlugin.InjectManifest({
+        swSrc: './src/entrypoints/service-worker-bootstrap.js',
+        swDest: 'service_worker.js',
+        importWorkboxFrom: 'local',
+        include: [
+          /core.js$/,
+          /app.js$/,
+          /custom-panel.js$/,
+          /hass-icons.js$/,
+          /\.chunk\.js$/,
+        ],
+        // Static assets get cached during runtime. But these we want to explicitly cache
+        // Need to be done using templatedUrls because prefix is /static
+        globDirectory: '.',
+        globIgnores: [],
+        modifyUrlPrefix: {
+          'hass_frontend': '/static'
+        },
+        templatedUrls: {
+          [`/static/translations/${translationMetadata['translations']['en']['fingerprints']['en']}`]: [
+            'build-translations/output/en.json'
+          ],
+          '/static/icons/favicon-192x192.png': [
+            'public/icons/favicon-192x192.png'
+          ],
+          '/static/fonts/roboto/Roboto-Light.ttf': [
+            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf'
+          ],
+          '/static/fonts/roboto/Roboto-Medium.ttf': [
+            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf'
+          ],
+          '/static/fonts/roboto/Roboto-Regular.ttf': [
+            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf'
+          ],
+          '/static/fonts/roboto/Roboto-Bold.ttf': [
+            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf'
+          ],
+        }
+      }),
+    ].filter(Boolean),
     output: {
       filename: '[name].js',
       chunkFilename: chunkFilename,
