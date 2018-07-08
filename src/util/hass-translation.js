@@ -38,12 +38,12 @@ export function getActiveTranslation() {
     }
   }
   if (navigator.languages) {
-    for (let i = 0; i < navigator.languages.length; i++) {
-      translation = languageGetTranslation(navigator.languages[i]);
+    navigator.languages.forEach((locale) => {
+      translation = languageGetTranslation(locale);
       if (translation) {
         return translation;
       }
-    }
+    });
   }
   translation = languageGetTranslation(navigator.language);
   if (translation) {
