@@ -17,6 +17,8 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 import computeDomain from '../../../common/entity/compute_domain';
 
+const DOMAINS_FORCE_MORE_INFO = ['media_player'];
+
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -149,7 +151,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
 
     return config.entities.filter(entity =>
       (entity in hass.states) &&
-      computeDomain(entity) !== 'media_player' &&
+      !DOMAINS_FORCE_MORE_INFO.includes(computeDomain(entity)) &&
       canToggleState(hass, hass.states[entity]));
   }
 
