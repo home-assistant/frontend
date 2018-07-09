@@ -30,6 +30,10 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
           display: none;
         }
         
+        #brokenImage {
+          background: grey url('/static/images/broken_image.gif') center/30px no-repeat;
+        }
+        
       </style>
       
       <img 
@@ -37,9 +41,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
         src="[[_imageSrc]]" 
         on-error="_onImageError" 
         on-load="_onImageLoad" />
-      <template is="dom-if" if="[[_error]]">
-        <div class="error">[[localize('ui.card.camera.not_available')]]</div>
-      </template>
+      <div id="brokenImage"></div>
 `;
   }
 
@@ -55,10 +57,6 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       cameraImage: String,
       filter: String,
       stateFilter: Object,
-      _error: {
-        type: Boolean,
-        value: false
-      },
       _imageSrc: String
     };
   }
@@ -88,16 +86,16 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 
   _onImageError() {
-    this.setProperties({
-      _imageSrc: null,
-      _error: true
-    });
+    this._imageSrc = null;
     this.$.image.classList.add('hidden');
+    this.$.brokenImage.style.setProperty('height', `${this._lastImageHeight || '100'}px`);
+    this.$.brokenImage.classList.remove('hidden');
   }
 
   _onImageLoad() {
-    this._error = false;
     this.$.image.classList.remove('hidden');
+    this.$.brokenImage.classList.add('hidden');
+    this._lastImageHeight = this.$.image.offsetHeight;
   }
 
   _hassChanged(hass) {
@@ -143,17 +141,12 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       entity_id: this.cameraImage,
     }).then((resp) => {
       if (resp.success) {
-        this.setProperties({
-          _imageSrc: `data:${resp.result.content_type};base64, ${resp.result.content}`,
-          _error: false
-        });
+        this._imageSrc = `data:${resp.result.content_type};base64, ${resp.result.content}`;
+        this._onImageLoad();
       } else {
-        this.setProperties({
-          _imageSrc: null,
-          _error: true
-        });
+        this._onImageError();
       }
-    });
+    }, () => this._onImageError());
   }
 }
 
