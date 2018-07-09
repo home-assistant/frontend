@@ -34,6 +34,7 @@ class HuiEntitiesCard extends PolymerElement {
 
     if (this.lastChild) {
       this.removeChild(this.lastChild);
+      this._element = null;
     }
 
     const card = 'card' in config ? Object.assign({}, config.card) : {};
@@ -43,14 +44,12 @@ class HuiEntitiesCard extends PolymerElement {
     const element = createCardElement(card);
     element._filterRawConfig = card;
     this._updateCardConfig(element);
-    element.hass = this.hass;
-    this.appendChild(element);
+
+    this._element = element;
   }
 
   _hassChanged(hass) {
-    const element = this.lastChild;
-    this._updateCardConfig(element);
-    element.hass = hass;
+    this._updateCardConfig(this._element);
   }
 
   _updateCardConfig(element) {
@@ -69,6 +68,10 @@ class HuiEntitiesCard extends PolymerElement {
       { entities: entitiesList }
     ));
     element.isPanel = this.isPanel;
+    element.hass = this.hass;
+
+    // Attach element if it has never been attached.
+    if (!this.lastChild) this.appendChild(element);
   }
 }
 customElements.define('hui-entity-filter-card', HuiEntitiesCard);
