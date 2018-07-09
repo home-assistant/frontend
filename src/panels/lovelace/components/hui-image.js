@@ -4,7 +4,6 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
 import { STATES_OFF } from '../../../common/const.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import isValidObject from '../common/is-valid-object';
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = 'grayscale(100%)';
@@ -109,14 +108,13 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     }
 
     const stateObj = hass.states[this.entity];
-    const unavailable = !isValidObject(stateObj, ['state']);
-    const newState = unavailable ? 'unavailable' : stateObj.state;
+    const newState = !stateObj ? 'unavailable' : stateObj.state;
 
     if (newState === this._currentState) return;
     this._currentState = newState;
 
     this._updateStateImage();
-    this._updateStateFilter(stateObj, unavailable);
+    this._updateStateFilter(stateObj);
   }
 
   _updateStateImage() {
@@ -129,7 +127,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     this._imageFallback = !stateImg;
   }
 
-  _updateStateFilter(stateObj, unavailable) {
+  _updateStateFilter(stateObj) {
     let filter;
     if (!this.stateFilter) {
       filter = this.filter;
@@ -137,7 +135,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       filter = this.stateFilter[this._currentState] || this.filter;
     }
 
-    const isOff = unavailable || STATES_OFF.includes(stateObj.state);
+    const isOff = !stateObj || STATES_OFF.includes(stateObj.state);
     this.$.image.style.filter = filter || (isOff && this._imageFallback && DEFAULT_FILTER) || '';
   }
 
