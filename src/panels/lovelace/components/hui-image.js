@@ -84,6 +84,8 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
 
   _configChanged(image, stateImage, cameraImage) {
     if (cameraImage) {
+      if (image)
+        this._imageSrc = image;
       this._updateCameraImageSrc();
     } else if (image && !stateImage) {
       this._imageSrc = image;
