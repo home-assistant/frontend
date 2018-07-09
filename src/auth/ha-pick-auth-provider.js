@@ -45,17 +45,12 @@ class HaPickAuthProvider extends EventsMixin(PolymerElement) {
       },
       authProviders: Array,
       clientId: String,
-      clientSecret: String,
     };
   }
   connectedCallback() {
     super.connectedCallback();
 
-    fetch('/auth/providers', {
-      headers: {
-        Authorization: `Basic ${btoa(`${this.clientId}:${this.clientSecret}`)}`
-      }
-    }).then((response) => {
+    fetch('/auth/providers').then((response) => {
       if (!response.ok) throw new Error();
       return response.json();
     }).then((authProviders) => {

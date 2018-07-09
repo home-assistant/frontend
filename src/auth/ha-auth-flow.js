@@ -35,7 +35,6 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
     return {
       authProvider: Object,
       clientId: String,
-      clientSecret: String,
       redirectUri: String,
       oauth2State: String,
       _state: {
@@ -54,10 +53,8 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
 
     fetch('/auth/login_flow', {
       method: 'POST',
-      headers: {
-        Authorization: `Basic ${btoa(`${this.clientId}:${this.clientSecret}`)}`
-      },
       body: JSON.stringify({
+        client_id: this.clientId,
         handler: [this.authProvider.type, this.authProvider.id],
         redirect_uri: this.redirectUri,
       })
@@ -89,12 +86,13 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
     }
     this._state = 'loading';
 
+    const postData = Object.assign({}, this._stepData, {
+      client_id: this.clientId,
+    });
+
     fetch(`/auth/login_flow/${this._step.flow_id}`, {
       method: 'POST',
-      headers: {
-        Authorization: `Basic ${btoa(`${this.clientId}:${this.clientSecret}`)}`
-      },
-      body: JSON.stringify(this._stepData)
+      body: JSON.stringify(postData)
     }).then((response) => {
       if (!response.ok) throw new Error();
       return response.json();
