@@ -29,7 +29,7 @@ const init = window.createHassConnection = function (password, accessToken) {
 };
 
 function clientId() {
-    return `${location.protocol}//${location.host}/`;
+  return `${location.protocol}//${location.host}/`;
 }
 
 function redirectLogin() {
