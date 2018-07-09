@@ -23,8 +23,6 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
         }
         
         .error {
-          width: 100%;
-          height: auto;
           text-align: center;
         }
         
