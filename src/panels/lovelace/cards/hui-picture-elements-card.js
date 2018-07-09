@@ -4,6 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/ha-state-label-badge.js';
 import '../../../components/entity/state-badge.js';
+import '../components/hui-image.js';
 import '../../../components/ha-icon.js';
 import '../../../components/ha-card.js';
 
@@ -14,8 +15,10 @@ import toggleEntity from '../common/entity/toggle-entity.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import computeDomain from '../../../common/entity/compute_domain';
 
 const VALID_TYPES = new Set([
+  'image',
   'navigation',
   'service-button',
   'state-badge',
@@ -81,6 +84,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
     this._stateBadges = [];
     this._stateIcons = [];
     this._stateLabels = [];
+    this._images = [];
   }
 
   ready() {
@@ -156,6 +160,23 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           el.title = element.navigation_path;
           el.classList.add('clickable');
           break;
+        case 'image':
+          el = document.createElement('hui-image');
+          el.hass = this.hass;
+          el.entity = element.entity;
+          el.image = element.image;
+          el.stateImage = element.state_image;
+          el.filter = element.filter;
+          el.stateFilter = element.state_filter;
+          if (!element.camera_image && computeDomain(element.entity) === 'camera') {
+            el.cameraImage = element.entity;
+          } else {
+            el.cameraImage = element.camera_image;
+          }
+          el.addEventListener('click', () => this._handleImageClick(element));
+          el.classList.add('clickable');
+          this._images.push(el);
+          break;
       }
 
       el.classList.add('element');
@@ -197,6 +218,10 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
         el.title = '';
       }
     });
+
+    this._images.forEach((el) => {
+      el.hass = hass;
+    });
   }
 
   _computeTooltip(stateObj) {
@@ -209,6 +234,19 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
     } else {
       this.fire('hass-more-info', { entityId });
     }
+  }
+
+  _handleImageClick(element) {
+    if (element.tap_action !== 'call_service') {
+      this._handleClick(element.entity, element.tap_action === 'toggle');
+      return;
+    }
+
+    if (!element.service) return;
+
+    const [domain, service] = element.service.split('.', 2);
+    const serviceData = Object.assign({}, { entity_id: element.entity }, element.service_data);
+    this.hass.callService(domain, service, serviceData);
   }
 }
 
