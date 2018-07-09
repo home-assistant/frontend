@@ -48,7 +48,7 @@ class HuiEntitiesCard extends PolymerElement {
     this._element = element;
   }
 
-  _hassChanged(hass) {
+  _hassChanged() {
     this._updateCardConfig(this._element);
   }
 
