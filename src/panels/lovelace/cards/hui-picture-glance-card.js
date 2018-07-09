@@ -15,6 +15,7 @@ import toggleEntity from '../common/entity/toggle-entity.js';
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import computeDomain from '../../../common/entity/compute_domain';
 
 /*
  * @appliesMixin EventsMixin
@@ -147,7 +148,9 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     }
 
     return config.entities.filter(entity =>
-      (entity in hass.states) && canToggleState(hass, hass.states[entity]));
+      (entity in hass.states) &&
+      computeDomain(entity) !== 'media_player' &&
+      canToggleState(hass, hass.states[entity]));
   }
 
   _showEntity(entityId, states) {
