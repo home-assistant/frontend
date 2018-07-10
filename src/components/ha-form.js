@@ -1,4 +1,3 @@
-import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
