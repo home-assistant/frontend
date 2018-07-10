@@ -86,7 +86,7 @@ function mainLegacy() {
   }
 }
 
-if (window.clientId) {
+if (window.useOAuth === '1') {
   main();
 } else {
   mainLegacy();
