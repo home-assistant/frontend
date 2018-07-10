@@ -21,25 +21,25 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
           transition: filter .2s linear;
           width: 100%;
         }
-        
+
         .error {
           text-align: center;
         }
-        
+
         .hidden {
           display: none;
         }
-        
+
         #brokenImage {
-          background: grey url('/static/images/broken_image.gif') center/30px no-repeat;
+          background: grey url('/static/images/image-broken.svg') center/36px no-repeat;
         }
-        
+
       </style>
-      
-      <img 
+
+      <img
         id="image"
-        src="[[_imageSrc]]" 
-        on-error="_onImageError" 
+        src="[[_imageSrc]]"
+        on-error="_onImageError"
         on-load="_onImageLoad" />
       <div id="brokenImage"></div>
 `;
