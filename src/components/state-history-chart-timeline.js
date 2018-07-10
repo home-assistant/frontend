@@ -34,6 +34,7 @@ class StateHistoryChartTimeline extends PolymerElement {
         type: Object,
         observer: 'dataChanged',
       },
+      names: Object,
       noSingle: Boolean,
       endTime: Date,
       rendered: {
@@ -95,15 +96,15 @@ class StateHistoryChartTimeline extends PolymerElement {
     const labels = [];
     const datasets = [];
     // stateHistory is a list of lists of sorted state objects
+    const names = this.names || {};
     stateHistory.forEach((stateInfo) => {
       let newLastChanged;
       let prevState = null;
       let locState = null;
       let prevLastChanged = startTime;
-      const entityDisplay = stateInfo.name;
+      const entityDisplay = names[stateInfo.entity_id] || stateInfo.name;
+
       const dataRow = [];
-
-
       stateInfo.data.forEach((state) => {
         let newState = state.state;
         const timeStamp = new Date(state.last_changed);
