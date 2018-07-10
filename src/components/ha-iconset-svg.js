@@ -7,9 +7,7 @@ class HaIconset extends IronIconsetClass {
    * Fire 'iron-iconset-added' event at next microtask.
    */
   _fireIronIconsetAdded() {
-    this.async(function () {
-      this.fire('iron-iconset-added', this, { node: window });
-    });
+    this.async(() => this.fire('iron-iconset-added', this, { node: window }));
   }
 
   /**
@@ -23,9 +21,9 @@ class HaIconset extends IronIconsetClass {
     this._meta.value = this;
     if (this.ownerDocument && this.ownerDocument.readyState === 'loading') {
       // Document still loading. It could be that not all icons in the iconset are parsed yet.
-      this.ownerDocument.addEventListener('DOMContentLoaded', function () {
+      this.ownerDocument.addEventListener('DOMContentLoaded', () => {
         this._fireIronIconsetAdded();
-      }.bind(this));
+      });
     } else {
       this._fireIronIconsetAdded();
     }
