@@ -4,18 +4,18 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/buttons/ha-call-service-button.js';
 import '../../../components/entity/ha-state-label-badge.js';
 import '../../../components/entity/state-badge.js';
-import '../components/hui-image.js';
 import '../../../components/ha-icon.js';
 import '../../../components/ha-card.js';
+import '../components/hui-image.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import computeDomain from '../../../common/entity/compute_domain';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
-import computeDomain from '../../../common/entity/compute_domain';
 
 const VALID_TYPES = new Set([
   'image',
@@ -60,6 +60,9 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
       ha-call-service-button {
         color: var(--primary-color);
         white-space: nowrap;
+      }
+      hui-image {
+        overflow-y: hidden;
       }
     </style>
 
@@ -176,7 +179,6 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           el.addEventListener('click', () => this._handleImageClick(element));
           el.classList.add('clickable');
           this._images.push(el);
-          break;
       }
 
       el.classList.add('element');
