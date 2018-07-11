@@ -62,7 +62,7 @@ class HUIView extends PolymerElement {
       }
       </style>
       <div id="badges"></div>
-      <div id="columns" on-rebuild-view="_debouncedConfigChanged"></div>
+      <div id="columns"></div>
     `;
   }
 
@@ -89,7 +89,6 @@ class HUIView extends PolymerElement {
     super();
     this._cards = [];
     this._badges = [];
-    this._debouncedConfigChanged = debounce(this._configChanged, 100);
   }
 
   _createBadges(config) {
