@@ -53,7 +53,7 @@ class HUIView extends PolymerElement {
         }
       }
       </style>
-      <div id='columns' on-rebuild-view='_debouncedConfigChanged'></div>
+      <div id='columns'></div>
     `;
   }
 
@@ -84,7 +84,6 @@ class HUIView extends PolymerElement {
   constructor() {
     super();
     this._elements = [];
-    this._debouncedConfigChanged = debounce(this._configChanged, 100);
   }
 
   _configChanged() {

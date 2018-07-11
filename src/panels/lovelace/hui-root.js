@@ -105,7 +105,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         </div>
       </app-header>
 
-      <div id='view'></div>
+      <div id='view' on-rebuild-view='_debouncedConfigChanged'></div>
     </app-header-layout>
     `;
   }
@@ -138,6 +138,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       },
       routeData: Object
     };
+  }
+
+  constructor() {
+    super();
+    this._debouncedConfigChanged = debounce(this._configChanged, 100);
   }
 
   _routeChanged(route) {
