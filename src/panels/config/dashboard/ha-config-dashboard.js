@@ -9,6 +9,7 @@ import '../../../components/ha-menu-button.js';
 import '../ha-config-section.js';
 import './ha-config-cloud-menu.js';
 import './ha-config-entries-menu.js';
+import './ha-config-users-menu.js';
 import './ha-config-navigation.js';
 
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
@@ -45,6 +46,10 @@ class HaConfigDashboard extends LocalizeMixin(PolymerElement) {
 
           <template is="dom-if" if="[[computeIsLoaded(hass, &quot;config.config_entries&quot;)]]">
             <ha-config-entries-menu hass="[[hass]]"></ha-config-entries-menu>
+          </template>
+
+          <template is="dom-if" if="[[computeIsLoaded(hass, &quot;config.auth_provider_homeassistant&quot;)]]">
+            <ha-config-users-menu hass="[[hass]]"></ha-config-users-menu>
           </template>
 
           <ha-config-navigation hass="[[hass]]"></ha-config-navigation>
