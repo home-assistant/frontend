@@ -241,7 +241,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
 
   _handleClick(elementConfig) {
     const tapAction = elementConfig.tap_action || (elementConfig.type === 'service-icon' ?
-      'service-call' : 'more-info');
+      'call-service' : 'more-info');
 
     switch (tapAction) {
       case 'more-info':
