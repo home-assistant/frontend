@@ -140,7 +140,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           el.icon = element.icon;
           el.title = element.title || '';
           el.addEventListener('click', () =>
-                              callService(this.hass, element.service, element.service_data));
+                              callService(this.hass, element.service, element.service_data || {}));
           el.classList.add('clickable');
           break;
         case 'state-badge':
