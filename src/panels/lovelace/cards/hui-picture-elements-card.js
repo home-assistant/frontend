@@ -21,6 +21,7 @@ const VALID_TYPES = new Set([
   'image',
   'navigation',
   'service-button',
+  'service-icon',
   'state-badge',
   'state-icon',
   'state-label',
@@ -139,6 +140,13 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           el.innerText = element.title;
           el.hass = this.hass;
           break;
+        case 'service-icon':
+          el = document.createElement('ha-icon');
+          el.icon = element.icon;
+          el.title = element.title || '';
+          el.addEventListener('click', () => this._handleClick(element));
+          el.classList.add('clickable');
+          break;
         case 'state-badge':
           el = document.createElement('ha-state-label-badge');
           el.state = this.hass.states[entityId];
@@ -232,16 +240,17 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
   }
 
   _handleClick(elementConfig) {
-    const tapAction = elementConfig.tap_action || 'more_info';
+    const tapAction = elementConfig.tap_action || (elementConfig.type === 'service-icon' ?
+      'call-service' : 'more-info');
 
     switch (tapAction) {
-      case 'more_info':
+      case 'more-info':
         this.fire('hass-more-info', { entityId: elementConfig.entity });
         break;
       case 'toggle':
         toggleEntity(this.hass, elementConfig.entity);
         break;
-      case 'call_service': {
+      case 'call-service': {
         const [domain, service] = elementConfig.service.split('.', 2);
         const serviceData = Object.assign(
           {}, { entity_id: elementConfig.entity },
