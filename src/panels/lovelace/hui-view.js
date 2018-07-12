@@ -22,7 +22,7 @@ class HUIView extends PolymerElement {
       #badges {
         margin: 8px 16px;
         font-size: 85%;
-        text-align: center
+        text-align: center;
       }
 
       #columns {
