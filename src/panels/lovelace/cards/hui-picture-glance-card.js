@@ -16,7 +16,11 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 import computeDomain from '../../../common/entity/compute_domain';
 
-const DOMAINS_TOGGLE = ['input_boolean', 'light', 'switch'];
+const DOMAINS_TOGGLE = new Set([
+  'input_boolean',
+  'light',
+  'switch'
+]);
 
 /*
  * @appliesMixin EventsMixin
@@ -149,7 +153,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     }
 
     return config.entities.filter(entity =>
-      (entity in hass.states) && DOMAINS_TOGGLE.includes(computeDomain(entity)));
+      (entity in hass.states) && DOMAINS_TOGGLE.has(computeDomain(entity)));
   }
 
   _showEntity(entityId, states) {
