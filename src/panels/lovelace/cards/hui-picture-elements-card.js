@@ -9,6 +9,8 @@ import '../../../components/ha-card.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+
+import callService from '../common/call-service.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
@@ -18,6 +20,7 @@ import NavigateMixin from '../../../mixins/navigate-mixin.js';
 const VALID_TYPES = new Set([
   'navigation',
   'service-button',
+  'service-icon',
   'state-badge',
   'state-icon',
   'state-label',
@@ -131,6 +134,14 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           el.serviceData = element.service_data || {};
           el.innerText = element.title;
           el.hass = this.hass;
+          break;
+        case 'service-icon':
+          el = document.createElement('ha-icon');
+          el.icon = element.icon;
+          el.title = element.title || '';
+          el.addEventListener('click', () =>
+                              callService(this.hass, element.service, element.service_data));
+          el.classList.add('clickable');
           break;
         case 'state-badge':
           el = document.createElement('ha-state-label-badge');
