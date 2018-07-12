@@ -5,6 +5,9 @@ import computeStateDisplay from '../../../common/entity/compute_state_display.js
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import processConfigEntities from '../common/process-config-entities';
 
+import toggleEntity from '../common/entity/toggle-entity.js';
+import turnOnOffEntity from '../common/entity/turn-on-off-entity.js';
+
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
 
@@ -54,7 +57,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="entities">
           <template is="dom-repeat" items="[[_configEntities]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
-              <div class="entity" on-click="_openDialog">
+              <div class="entity" on-click="_handleClick">
                 <div>[[_computeName(item, hass.states)]]</div>
                 <state-badge state-obj="[[_computeStateObj(item, hass.states)]]"></state-badge>
                 <div>[[_computeState(item, hass.states)]]</div>
@@ -99,8 +102,18 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return computeStateDisplay(this.localize, states[item.entity]);
   }
 
-  _openDialog(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.item.entity });
+  _handleClick(ev) {
+    const entityId = ev.model.item.entity;
+    switch (ev.model.item.tap_action) {
+      case 'toggle':
+        toggleEntity(this.hass, entityId);
+        break;
+      case 'turn_on':
+        turnOnOffEntity(this.hass, entityId, true);
+        break;
+      default:
+        this.fire('hass-more-info', { entityId });
+    }
   }
 }
 
