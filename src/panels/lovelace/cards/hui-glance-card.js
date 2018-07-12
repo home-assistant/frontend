@@ -58,9 +58,13 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           <template is="dom-repeat" items="[[_configEntities]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
               <div class="entity" on-click="_handleClick">
-                <div>[[_computeName(item, hass.states)]]</div>
+                <template is="dom-if" if="[[_showInfo(_config.show_name)]]">
+                  <div>[[_computeName(item, hass.states)]]</div>
+                </template>
                 <state-badge state-obj="[[_computeStateObj(item, hass.states)]]"></state-badge>
-                <div>[[_computeState(item, hass.states)]]</div>
+                <template is="dom-if" if="[[_showInfo(_config.show_state)]]">
+                  <div>[[_computeState(item, hass.states)]]</div>
+                </template>
               </div>
             </template>
           </template>
@@ -90,6 +94,10 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return item.entity in states;
   }
 
+  _showInfo(info) {
+    return info !== false;
+  }
+
   _computeName(item, states) {
     return item.name || computeStateName(states[item.entity]);
   }
@@ -108,7 +116,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       case 'toggle':
         toggleEntity(this.hass, entityId);
         break;
-      case 'turn_on':
+      case 'turn-on':
         turnOnOffEntity(this.hass, entityId, true);
         break;
       default:
