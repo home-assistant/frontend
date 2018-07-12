@@ -5,8 +5,8 @@ import computeStateDisplay from '../../../common/entity/compute_state_display.js
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import processConfigEntities from '../common/process-config-entities';
 
-import toggleEntity from '../common/entity/toggle-entity.js'
-import turnOnOffEntity from '../common/entity/turn-on-off-entity.js'
+import toggleEntity from '../common/entity/toggle-entity.js';
+import turnOnOffEntity from '../common/entity/turn-on-off-entity.js';
 
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
