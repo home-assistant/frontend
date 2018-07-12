@@ -146,13 +146,13 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           break;
         case 'state-icon':
           el = document.createElement('state-badge');
-          el.addEventListener('click', () => this._handleClick(entityId, element.tap_action === 'toggle'));
+          el.addEventListener('click', () => this._handleClick(element));
           el.classList.add('clickable');
           this._stateIcons.push({ el, entityId });
           break;
         case 'state-label':
           el = document.createElement('div');
-          el.addEventListener('click', () => this._handleClick(entityId, false));
+          el.addEventListener('click', () => this._handleClick(element));
           el.classList.add('clickable', 'state-label');
           this._stateLabels.push({ el, entityId });
           break;
@@ -176,9 +176,10 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
           } else {
             el.cameraImage = element.camera_image;
           }
-          el.addEventListener('click', () => this._handleImageClick(element));
-          el.classList.add('clickable');
           this._images.push(el);
+          if (element.tap_action === 'none') break;
+          el.addEventListener('click', () => this._handleClick(element));
+          el.classList.add('clickable');
       }
 
       el.classList.add('element');
@@ -230,25 +231,25 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
     return `${computeStateName(stateObj)}: ${computeStateDisplay(this.localize, stateObj)}`;
   }
 
-  _handleClick(entityId, toggle) {
-    if (toggle) {
-      toggleEntity(this.hass, entityId);
-    } else {
-      this.fire('hass-more-info', { entityId });
+  _handleClick(elementConfig) {
+    const tapAction = elementConfig.tap_action || 'more_info';
+
+    switch (tapAction) {
+      case 'more_info':
+        this.fire('hass-more-info', { entityId: elementConfig.entity });
+        break;
+      case 'toggle':
+        toggleEntity(this.hass, elementConfig.entity);
+        break;
+      case 'call_service': {
+        const [domain, service] = elementConfig.service.split('.', 2);
+        const serviceData = Object.assign(
+          {}, { entity_id: elementConfig.entity },
+          elementConfig.service_data
+        );
+        this.hass.callService(domain, service, serviceData);
+      }
     }
-  }
-
-  _handleImageClick(element) {
-    if (element.tap_action !== 'call_service') {
-      this._handleClick(element.entity, element.tap_action === 'toggle');
-      return;
-    }
-
-    if (!element.service) return;
-
-    const [domain, service] = element.service.split('.', 2);
-    const serviceData = Object.assign({}, { entity_id: element.entity }, element.service_data);
-    this.hass.callService(domain, service, serviceData);
   }
 }
 
