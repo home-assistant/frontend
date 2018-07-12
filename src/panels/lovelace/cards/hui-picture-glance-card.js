@@ -6,7 +6,6 @@ import '../../../components/ha-card.js';
 import '../components/hui-image.js';
 
 import { STATES_OFF } from '../../../common/const.js';
-import canToggleState from '../../../common/entity/can_toggle_state.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import stateIcon from '../../../common/entity/state_icon.js';
@@ -17,7 +16,7 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 import computeDomain from '../../../common/entity/compute_domain';
 
-const DOMAINS_FORCE_MORE_INFO = ['media_player'];
+const DOMAINS_TOGGLE = ['input_boolean', 'light', 'switch'];
 
 /*
  * @appliesMixin EventsMixin
@@ -89,7 +88,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
             </template>
           </div>
           <div>
-            <template is="dom-repeat" items="[[_entitiesService]]">
+            <template is="dom-repeat" items="[[_entitiesToggle]]">
               <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
                 <paper-icon-button
                   on-click="_callService"
@@ -111,12 +110,12 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       _config: Object,
       _entitiesDialog: {
         type: Array,
-        computed: '_computeEntitiesDialog(hass, _config, _entitiesService)',
+        computed: '_computeEntitiesDialog(hass, _config, _entitiesToggle)',
       },
-      _entitiesService: {
+      _entitiesToggle: {
         type: Array,
         value: [],
-        computed: '_computeEntitiesService(hass, _config)',
+        computed: '_computeEntitiesToggle(hass, _config)',
       },
     };
   }
@@ -144,15 +143,13 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
                                   (entity in hass.states));
   }
 
-  _computeEntitiesService(hass, config) {
+  _computeEntitiesToggle(hass, config) {
     if (config.force_dialog) {
       return [];
     }
 
     return config.entities.filter(entity =>
-      (entity in hass.states) &&
-      !DOMAINS_FORCE_MORE_INFO.includes(computeDomain(entity)) &&
-      canToggleState(hass, hass.states[entity]));
+      (entity in hass.states) && DOMAINS_TOGGLE.includes(computeDomain(entity)));
   }
 
   _showEntity(entityId, states) {
