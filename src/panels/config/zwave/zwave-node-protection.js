@@ -150,7 +150,7 @@ class ZwaveNodeProtection extends PolymerElement {
       selection: this._protectionOptions[selectedProtectionParameter],
       value_id: this._protectionValueID
     };
-    this._nodePath = 'zwave/protection/' + this.nodes[this.selectedNode].attributes.node_id;
+    this._nodePath = `zwave/protection/${this.nodes[this.selectedNode].attributes.node_id}`;
   }
 }
 
