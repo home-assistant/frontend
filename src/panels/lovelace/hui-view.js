@@ -99,20 +99,22 @@ class HUIView extends PolymerElement {
     }
 
     if (!config || !config.badges || !Array.isArray(config.badges)) {
+      root.style.display = 'none';
       this._badges = [];
       return;
     }
 
     const elements = [];
-    config.badges.forEach((entityId) => {
+    for (const entityId of config.badges) {
       if (!(entityId in this.hass.states)) continue;
 
       const element = document.createElement('ha-state-label-badge');
       element.state = this.hass.states[entityId];
       elements.push({ element, entityId });
       root.appendChild(element);
-    });
+    };
     this._badges = elements;
+    root.style.display = elements.length > 0 ? 'block' : 'none';
   }
 
   _createCards(config) {
