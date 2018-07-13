@@ -112,7 +112,7 @@ class HUIView extends PolymerElement {
       element.state = this.hass.states[entityId];
       elements.push({ element, entityId });
       root.appendChild(element);
-    };
+    }
     this._badges = elements;
     root.style.display = elements.length > 0 ? 'block' : 'none';
   }
