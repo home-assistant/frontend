@@ -8,7 +8,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/buttons/ha-call-api-button.js';
 
-class ZwaveProtectionConfig extends PolymerElement {
+class ZwaveNodeProtection extends PolymerElement {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -154,4 +154,4 @@ class ZwaveProtectionConfig extends PolymerElement {
   }
 }
 
-customElements.define('zwave-node-protection', ZwaveProtectionConfig);
+customElements.define('zwave-node-protection', ZwaveNodeProtection);
