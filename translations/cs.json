@@ -527,10 +527,10 @@
             "cancel": "Zrušit"
         },
         "duration": {
-            "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
+            "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dny}\n}",
             "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}",
             "second": "{count} {count, plural,\none {vteřina}\nfew {vteřiny}\nother {vteřin}\n}",
-            "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minut}\n}",
+            "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minuty}\n}",
             "hour": "{count} {count, plural,\none {hodina}\nfew {hodiny}\nother {hodin}\n}"
         },
         "login-form": {
@@ -588,7 +588,7 @@
             },
             "automation": {
                 "last_triggered": "Naposledy spuštěno",
-                "trigger": "Spouštěč"
+                "trigger": "Spustit"
             },
             "cover": {
                 "position": "Pozice",
@@ -611,7 +611,7 @@
                 "sound_mode": "Režim zvuku"
             },
             "climate": {
-                "currently": "Momentálně",
+                "currently": "Aktuálně",
                 "on_off": "Zapnout \/ vypnout",
                 "target_temperature": "Cílová teplota",
                 "target_humidity": "Cílová vlhkost",
