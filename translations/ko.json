@@ -531,7 +531,7 @@
             "week": "{count} {count, plural,\none {주}\nother {주}\n}",
             "second": "{count} {count, plural,\none {초}\nother {초}\n}",
             "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
-            "hour": "{count} {count, plural,\none {시}\nother {시}\n}"
+            "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}"
         },
         "login-form": {
             "password": "비밀번호",
