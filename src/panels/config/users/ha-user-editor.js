@@ -36,26 +36,24 @@ class HaUserEditor extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElemen
 
   <hass-subpage header="View user">
     <paper-card heading="[[_computeName(user)]]">
-      <div class='card-content'>
-        <table>
-          <tr>
-            <td>ID</td>
-            <td>[[user.id]]</td>
-          </tr>
-          <tr>
-            <td>Owner</td>
-            <td>[[user.is_owner]]</td>
-          </tr>
-          <tr>
-            <td>Active</td>
-            <td>[[user.is_active]]</td>
-          </tr>
-          <tr>
-            <td>System generated</td>
-            <td>[[user.system_generated]]</td>
-          </tr>
-        </table>
-      </div>
+      <table class='card-content'>
+        <tr>
+          <td>ID</td>
+          <td>[[user.id]]</td>
+        </tr>
+        <tr>
+          <td>Owner</td>
+          <td>[[user.is_owner]]</td>
+        </tr>
+        <tr>
+          <td>Active</td>
+          <td>[[user.is_active]]</td>
+        </tr>
+        <tr>
+          <td>System generated</td>
+          <td>[[user.system_generated]]</td>
+        </tr>
+      </table>
     </paper-card>
     <paper-card>
       <div class='card-actions'>
@@ -94,7 +92,7 @@ class HaUserEditor extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElemen
       return;
     }
     this.fire('reload-users');
-    this.navigate('/config/users', true);
+    this.navigate('/config/users');
   }
 }
 
