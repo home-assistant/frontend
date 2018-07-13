@@ -672,6 +672,20 @@
           "caption": "Script",
           "description": "Create and edit scripts"
         },
+        "users": {
+          "caption": "Users",
+          "description": "Manage users",
+          "picker": {
+            "title": "Users"
+          },
+          "editor": {
+            "rename_user": "Rename user",
+            "change_password": "Change password",
+            "activate_user": "Activate user",
+            "deactivate_user": "Deactivate user",
+            "delete_user": "Delete user"
+          }
+        },
         "zwave": {
           "caption": "Z-Wave",
           "description": "Manage your Z-Wave network"
