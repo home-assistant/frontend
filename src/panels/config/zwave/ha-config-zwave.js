@@ -226,7 +226,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
             hass="[[hass]]"
             nodes="[[nodes]]"
             selected-node="[[selectedNode]]"
-            _protection="[[_protection]]"
+            protection="[[_protection]]"
           ></zwave-node-protection>
         </template> 
 

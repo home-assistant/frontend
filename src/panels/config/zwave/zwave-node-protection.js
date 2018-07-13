@@ -54,9 +54,7 @@ class ZwaveNodeProtection extends PolymerElement {
     return {
       hass: Object,
 
-      nodes: {
-        type: Array,
-      },
+      nodes: Array,
 
       selectedNode: {
         type: Number,
@@ -121,12 +119,13 @@ class ZwaveNodeProtection extends PolymerElement {
 
   _nodesChanged() {
     if (!this.nodes) return;
-    if (this._protection) {
-      if (this._protection.length === 0) { return; }
-      this.setProperties({ protectionNode: true });
-      this._protectionOptions = this._protection[0].value;
-      this._loadedProtectionValue = this._protection[1].value;
-      this._protectionValueID = this._protection[2].value;
+    if (this.protection) {
+      if (this.protection.length === 0) { return; }
+      this.setProperties({
+        protectionNode: true,
+        _protectionOptions: this.protection[0].value,
+        _loadedProtectionValue: this.protection[1].value,
+        _protectionValueID: this.protection[2].value });
     }
   }
 
@@ -139,9 +138,10 @@ class ZwaveNodeProtection extends PolymerElement {
         value: protections[key],
       });
     });
-    this.setProperties({ _protection: protectionValues });
-    this._selectedProtectionParameter = -1;
-    this._loadedProtectionValue = this._protection[1].value;
+    this.setProperties({
+      _protection: protectionValues,
+      _selectedProtectionParameter: -1,
+      _loadedProtectionValue: this.protection[1].value });
   }
 
   _computeProtectionData(selectedProtectionParameter) {
