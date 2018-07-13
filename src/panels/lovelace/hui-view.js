@@ -190,8 +190,10 @@ class HUIView extends PolymerElement {
   _hassChanged(hass) {
     this._badges.forEach((badge) => {
       const { element, entityId } = badge;
-      element.state = hass.states[entityId];
-      element.hass = hass;
+      element.setProperties({
+        hass,
+        state: hass.states[entityId]
+      });
     });
     this._cards.forEach((element) => {
       element.hass = hass;
