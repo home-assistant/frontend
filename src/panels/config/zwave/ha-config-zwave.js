@@ -334,9 +334,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
       _protection: {
         type: Array,
-        value: function () {
-          return [];
-        },
+        value: () => [],
       },
 
       _protectionNode: {
@@ -412,10 +410,10 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
       this.hasNodeUserCodes = this.userCodes.length > 0;
       this.notifyPath('hasNodeUserCodes');
     });
-    this.hass.callApi('GET', 'zwave/protection/' + this.nodes[selectedNode].attributes.node_id).then((protections) => {
-      this.protection = this._objToArray(protections);
-      if (this.protection) {
-        if (this.protection[0] === undefined) {
+    this.hass.callApi('GET', `zwave/protection/${this.nodes[selectedNode].attributes.node_id}`).then((protections) => {
+      this._protection = this._objToArray(protections);
+      if (this._protection) {
+        if (this._protection.length === 0) {
           return;
         }
         this._protectionNode = true;

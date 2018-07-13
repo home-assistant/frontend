@@ -28,16 +28,14 @@ class ZwaveProtectionConfig extends PolymerElement {
       .device-picker {
         @apply --layout-horizontal;
         @apply --layout-center-center;
-        padding-left: 24px;
-        padding-right: 24px;
-        padding-bottom: 24px;
+        padding: 0 24px 24px 24px;
         }
 
     </style>
       <div class="content">
         <paper-card heading="Node protection">
           <div class="device-picker">
-          <paper-dropdown-menu label="Protection" dynamic-align="" class="flex" placeholder="{{_loadedProtectionValue}}">
+          <paper-dropdown-menu label="Protection" dynamic-align class="flex" placeholder="{{_loadedProtectionValue}}">
             <paper-listbox slot="dropdown-content" selected="{{_selectedProtectionParameter}}">
               <template is="dom-repeat" items="[[_protectionOptions]]" as="state">
                 <paper-item>[[state]]</paper-item>
@@ -54,19 +52,15 @@ class ZwaveProtectionConfig extends PolymerElement {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
       nodes: {
         type: Array,
-        observer: 'nodesChanged'
       },
 
       selectedNode: {
         type: Number,
         value: -1,
-        observer: 'nodesChanged'
       },
 
       protectionNode: {
@@ -82,18 +76,14 @@ class ZwaveProtectionConfig extends PolymerElement {
       _selectedProtectionParameter: {
         type: Number,
         value: -1,
-        observer: 'computeProtectionData',
+        observer: '_computeProtectionData',
       },
 
-      _protectionOptions: {
-        type: Array,
-      },
+      _protectionOptions: Array,
 
       _protection: {
         type: Array,
-        value: function () {
-          return [];
-        }
+        value: () => []
       },
 
       _loadedProtectionValue: {
@@ -106,10 +96,13 @@ class ZwaveProtectionConfig extends PolymerElement {
         value: { },
       },
 
-      _nodePath: {
-        type: String,
-      }
+      _nodePath: String,
     };
+  }
+
+  static get observers() {
+    return ['_nodesChanged(nodes, selectedNode)'
+    ];
   }
 
   ready() {
@@ -120,38 +113,38 @@ class ZwaveProtectionConfig extends PolymerElement {
   apiCalled(ev) {
     if (ev.detail.success) {
       setTimeout(() => {
-        this.refreshProtection(this.selectedNode);
+        this._refreshProtection(this.selectedNode);
       }, 5000);
     }
   }
 
 
-  nodesChanged() {
+  _nodesChanged() {
     if (!this.nodes) return;
     if (this._protection) {
-      if (this._protection[0] === undefined) { return; }
-      this.protectionNode = true;
+      if (this._protection.length === 0) { return; }
+      this.setProperties({ protectionNode: true });
       this._protectionOptions = this._protection[0].value;
       this._loadedProtectionValue = this._protection[1].value;
       this._protectionValueID = this._protection[2].value;
     }
   }
 
-  async refreshProtection(selectedNode) {
+  async _refreshProtection(selectedNode) {
     const protectionValues = [];
-    const protections = await this.hass.callApi('GET', 'zwave/protection/' + this.nodes[selectedNode].attributes.node_id);
-    Object.keys(protections).forEach(function (key) {
+    const protections = await this.hass.callApi('GET', `zwave/protection/${this.nodes[selectedNode].attributes.node_id}`);
+    Object.keys(protections).forEach((key) => {
       protectionValues.push({
-        key: key,
+        key,
         value: protections[key],
       });
     });
-    this._protection = protectionValues;
+    this.setProperties({ _protection: protectionValues });
     this._selectedProtectionParameter = -1;
     this._loadedProtectionValue = this._protection[1].value;
   }
 
-  computeProtectionData(selectedProtectionParameter) {
+  _computeProtectionData(selectedProtectionParameter) {
     if (this.selectedNode === -1 || selectedProtectionParameter === -1) return;
     this._protectionData = {
       selection: this._protectionOptions[selectedProtectionParameter],
