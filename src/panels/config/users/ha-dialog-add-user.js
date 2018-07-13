@@ -134,6 +134,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
         type: 'config/auth/delete',
         user_id: userId,
       });
+      return;
     }
 
     this._dialogDone(userId);
