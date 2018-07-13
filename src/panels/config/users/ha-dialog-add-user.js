@@ -4,15 +4,12 @@ import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../components/ha-form.js';
-import '../../../components/ha-markdown.js';
 import '../../../resources/ha-style.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
- * @appliesMixin EventsMixin
  */
 class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -54,10 +51,10 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
       </div>
       <div class="buttons">
         <template is="dom-if" if="[[_loading]]">
-        <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
+          <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
         </template>
         <template is="dom-if" if="[[!_loading]]">
-        <paper-button on-click="_createUser">Create</paper-button>
+          <paper-button on-click="_createUser">Create</paper-button>
         </template>
       </div>
     </paper-dialog>

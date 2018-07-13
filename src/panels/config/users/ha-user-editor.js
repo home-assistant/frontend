@@ -6,12 +6,15 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../layouts/hass-subpage.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 
 /*
  * @appliesMixin LocalizeMixin
+ * @appliesMixin NavigateMixin
+ * @appliesMixin EventsMixin
  */
-class HaUserEditor extends NavigateMixin(LocalizeMixin(PolymerElement)) {
+class HaUserEditor extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElement))) {
   static get template() {
     return html`
   <style>

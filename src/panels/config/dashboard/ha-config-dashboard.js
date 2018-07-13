@@ -40,15 +40,15 @@ class HaConfigDashboard extends LocalizeMixin(PolymerElement) {
           <span slot="header">[[localize('ui.panel.config.header')]]</span>
           <span slot="introduction">[[localize('ui.panel.config.introduction')]]</span>
 
-          <template is="dom-if" if="[[computeIsLoaded(hass, &quot;cloud&quot;)]]">
+          <template is="dom-if" if="[[computeIsLoaded(hass, 'cloud')]]">
             <ha-config-cloud-menu hass="[[hass]]" account="[[account]]"></ha-config-cloud-menu>
           </template>
 
-          <template is="dom-if" if="[[computeIsLoaded(hass, &quot;config.config_entries&quot;)]]">
+          <template is="dom-if" if="[[computeIsLoaded(hass, 'config.config_entries')]]">
             <ha-config-entries-menu hass="[[hass]]"></ha-config-entries-menu>
           </template>
 
-          <template is="dom-if" if="[[computeIsLoaded(hass, &quot;config.auth_provider_homeassistant&quot;)]]">
+          <template is="dom-if" if="[[computeIsLoaded(hass, 'config.auth_provider_homeassistant')]]">
             <ha-config-users-menu hass="[[hass]]"></ha-config-users-menu>
           </template>
 

@@ -9,23 +9,28 @@ import '../../../layouts/hass-subpage.js';
 
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
-
+import EventsMixin from '../../../mixins/events-mixin.js';
 
 let registeredDialog = false;
 
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin NavigateMixin
+ * @appliesMixin EventsMixin
  */
-class HaUserPicker extends NavigateMixin(LocalizeMixin(PolymerElement)) {
+class HaUserPicker extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElement))) {
   static get template() {
     return html`
-  <style include="iron-flex ha-style">
+  <style>
     paper-fab {
       position: fixed;
       bottom: 16px;
       right: 16px;
       z-index: 1;
+    }
+    paper-fab[is-wide] {
+      bottom: 24px;
+      right: 24px;
     }
     paper-card {
       display: block;
@@ -68,10 +73,6 @@ class HaUserPicker extends NavigateMixin(LocalizeMixin(PolymerElement)) {
       users: Array,
 
     };
-  }
-
-  ready() {
-    super.ready();
   }
 
   connectedCallback() {
