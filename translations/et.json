@@ -88,7 +88,34 @@
                 "on": "Madal"
             },
             "problem": {
+                "off": "OK",
                 "on": "Probleem"
+            },
+            "connectivity": {
+                "off": "Lahti ühendatud",
+                "on": "Ühendatud"
+            },
+            "cold": {
+                "on": "Jahe"
+            },
+            "door": {
+                "off": "Suletud",
+                "on": "Avatud"
+            },
+            "garage_door": {
+                "off": "Suletud",
+                "on": "Avatud"
+            },
+            "heat": {
+                "on": "Palav"
+            },
+            "window": {
+                "off": "Suletud",
+                "on": "Avatud"
+            },
+            "lock": {
+                "off": "Lukus",
+                "on": "Lukustamata"
             }
         },
         "calendar": {
@@ -138,7 +165,7 @@
         "group": {
             "off": "Off",
             "on": "On",
-            "home": "Kodu",
+            "home": "Kodus",
             "not_home": "Eemal",
             "open": "Avatud",
             "opening": "Avaneb",
@@ -146,7 +173,7 @@
             "closing": "Sulgub",
             "stopped": "Peatatud",
             "locked": "Lukus",
-            "unlocked": "Lahti",
+            "unlocked": "Lukustamata",
             "ok": "OK",
             "problem": "Probleem"
         },
@@ -210,10 +237,14 @@
             }
         },
         "weather": {
+            "clear_night": "Selge öö",
             "cloudy": "Pilvine",
             "fog": "Udu",
             "hail": "Rahe",
+            "lightning": "Äikeseline",
+            "lightning_rainy": "Äikeseline, vihmane",
             "partlycloudy": "Osaliselt pilvine",
+            "pouring": "Kallab",
             "rainy": "Vihmane",
             "snowy": "Lumine",
             "snowy_rainy": "Lörtsine",
@@ -265,31 +296,135 @@
                 "delete_button": "Kustuta"
             },
             "config": {
+                "core": {
+                    "section": {
+                        "core": {
+                            "server_management": {
+                                "restart": "Taaskäivita",
+                                "stop": "Peata"
+                            }
+                        },
+                        "translation": {
+                            "header": "Vali keel",
+                            "language": "Keel"
+                        },
+                        "themes": {
+                            "header": "Määra teema",
+                            "theme": "Teema"
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Kohandamine",
+                    "description": "Kohanda oma üksusi"
+                },
+                "script": {
+                    "caption": "Skript",
+                    "description": "Loo ja muuda skripte"
+                },
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "description": "Halda oma Z-Wave võrku"
                 },
                 "automation": {
                     "editor": {
-                        "conditions": {
-                            "add": "Lisa tingimus",
-                            "unsupported_condition": "Tundmatu tingimus:",
-                            "type_select": "Tingimus",
+                        "save": "Salvesta",
+                        "unsaved_confirm": "Sul on salvestamata muudatusi. Oled kindel, et soovid lahkuda?",
+                        "alias": "Nimi",
+                        "triggers": {
+                            "header": "Päästikud",
+                            "add": "Lisa päästik",
+                            "duplicate": "Paljunda",
+                            "delete": "Kustuta",
+                            "delete_confirm": "Oled kindel, et soovid kustutada?",
+                            "unsupported_platform": "Toetamata platvorm: {platform}",
+                            "type_select": "Päästiku tüüp",
                             "type": {
+                                "event": {
+                                    "label": "Sündmus",
+                                    "event_type": "Sündmuse tüüp",
+                                    "event_data": "Sündmuse andmed"
+                                },
+                                "state": {
+                                    "label": "Olek"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "Sündmus:",
+                                    "start": "Käivitamine",
+                                    "shutdown": "Seiskamine"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Teema",
+                                    "payload": "Kandam (valikuline)"
+                                },
+                                "numeric_state": {
+                                    "above": "Üle",
+                                    "below": "Alla",
+                                    "value_template": "Väärtuse mall (valikuline)"
+                                },
                                 "sun": {
-                                    "before": "Enne",
-                                    "after": "Peale",
-                                    "sunrise": "Päikesetõus",
-                                    "sunset": "Päikeseloojang"
+                                    "label": "Päike",
+                                    "sunrise": "Tõus",
+                                    "sunset": "Loojang",
+                                    "offset": "Nihe (valikuline)"
+                                },
+                                "template": {
+                                    "label": "Mall",
+                                    "value_template": "Väärtuse mall"
                                 },
                                 "time": {
+                                    "label": "Aeg",
+                                    "at": "Kell"
+                                },
+                                "zone": {
+                                    "label": "Ala",
+                                    "event": "Sündmus",
+                                    "enter": "Sisenemine",
+                                    "leave": "Lahkumine"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Tingimused",
+                            "add": "Lisa tingimus",
+                            "duplicate": "Kustuta",
+                            "delete": "Kustuta",
+                            "delete_confirm": "Oled kindel, et soovid kustutada?",
+                            "unsupported_condition": "Tundmatu tingimus: {condition}",
+                            "type_select": "Tingimus",
+                            "type": {
+                                "numeric_state": {
+                                    "value_template": "Väärtuse mall (valikuline)"
+                                },
+                                "sun": {
+                                    "label": "Päike",
+                                    "before": "Enne",
+                                    "after": "Peale",
+                                    "before_offset": "Eelnev viiteaeg (valikuline)",
+                                    "after_offset": "Pärastine viiteaeg (valikuline)",
+                                    "sunrise": "Tõusu",
+                                    "sunset": "Loojangut"
+                                },
+                                "template": {
+                                    "label": "Mall",
+                                    "value_template": "Väärtuse mall"
+                                },
+                                "time": {
+                                    "label": "Aeg",
                                     "after": "Peale",
                                     "before": "Enne"
                                 }
                             }
                         },
                         "actions": {
+                            "header": "Tegevused",
                             "add": "Lisa toiming",
-                            "unsupported_action": "Toetamata tegevus: {tegevus}",
+                            "duplicate": "Paljunda",
+                            "delete": "Kustuta",
+                            "delete_confirm": "Oled kindel, et soovid kustutada?",
+                            "unsupported_action": "Toetamata tegevus: {action}",
                             "type_select": "Tegevuse tüüp",
                             "type": {
                                 "service": {
@@ -297,7 +432,8 @@
                                     "service_data": "Teenuse andmed"
                                 },
                                 "delay": {
-                                    "label": "Viivitus"
+                                    "label": "Viivitus",
+                                    "delay": "Viide"
                                 },
                                 "wait_template": {
                                     "label": "Oota",
@@ -306,6 +442,10 @@
                                 },
                                 "condition": {
                                     "label": "Tingimus"
+                                },
+                                "event": {
+                                    "label": "Vallanda sündmus",
+                                    "event": "Sündmus"
                                 }
                             }
                         }
@@ -318,7 +458,15 @@
             "developer_tools": "Arendaja tööriistad"
         },
         "common": {
+            "loading": "Laadimine",
             "cancel": "Loobu"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
+            "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}",
+            "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
+            "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}"
         },
         "login-form": {
             "password": "Salasõna",
@@ -346,6 +494,24 @@
                     "visibility": "Nähtavus",
                     "wind_speed": "Tuule kiirus"
                 },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
                 "forecast": "Ennustus"
             },
             "alarm_control_panel": {
@@ -370,7 +536,7 @@
             },
             "light": {
                 "brightness": "Heledus",
-                "color_temperature": "Värvi temperatuur",
+                "color_temperature": "Värvustemperatuur",
                 "white_value": "Valge väärtus",
                 "effect": "Efekt"
             },
@@ -384,18 +550,29 @@
                 "on_off": "Sees \/ väljas",
                 "target_temperature": "Soovitud temperatuur",
                 "target_humidity": "Soovitud niiskusemäär",
+                "operation": "Töörežiim",
                 "fan_mode": "Ventilaatori režiim",
-                "away_mode": "Eemal"
+                "away_mode": "Eemal",
+                "aux_heat": "Abiküte"
             },
             "lock": {
+                "code": "Kood",
                 "lock": "Lukusta",
                 "unlock": "Ava"
             }
         },
         "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Üksus"
+                }
+            },
+            "service-picker": {
+                "service": "Teenus"
+            },
             "relative_time": {
-                "past": "{aega} tagasi",
-                "future": "{Aeg}",
+                "past": "{time} tagasi",
+                "future": "{time} pärast",
                 "never": "Iial"
             },
             "history_charts": {
@@ -404,8 +581,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "Sisse lülitatud {üksus} .",
-            "entity_turned_off": "Välja lülitatud {üksus}.",
+            "entity_turned_on": "Sisse lülitatud {entity}.",
+            "entity_turned_off": "Välja lülitatud {entity}.",
             "connection_lost": "Ühendus kadunud. Taasühendamine..."
         },
         "dialogs": {
@@ -416,14 +593,34 @@
         }
     },
     "domain": {
+        "alarm_control_panel": "Valvekeskuse juhtpaneel",
         "calendar": "Kalender",
         "camera": "Kaamera",
+        "climate": "Kliima",
+        "conversation": "Vestlus",
+        "cover": "Kate",
+        "fan": "Ventilaator",
+        "history_graph": "Ajaloo graafik",
+        "group": "Grupp",
+        "image_processing": "Pilditöötlus",
+        "input_select": "Vali sisend",
+        "input_number": "Sisendi number",
         "input_text": "Teksti sisestamine",
         "light": "Tuled",
         "lock": "Lukk",
+        "mailbox": "Postkast",
+        "media_player": "Meediamängija",
+        "notify": "Teata",
+        "plant": "Taim",
+        "proximity": "Lähedus",
+        "remote": "Kaugjuhtimispult",
+        "scene": "Stseen",
+        "script": "Skript",
         "sensor": "Andur",
         "sun": "Päike",
         "switch": "Lüliti",
+        "updater": "Uuendaja",
+        "weblink": "Veebilink",
         "zwave": "Z-Wave"
     },
     "attribute": {
