@@ -235,13 +235,20 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
         const host = window.location.protocol + '//' + window.location.host;
         const auth = conn.options;
         try {
+          if (auth.accessToken && Date.now() > auth.expires) {
+            // Refresh acess token if we know it expires
+            const accessToken = await window.refreshToken();
+            conn.options.accessToken = accessToken.access_token;
+            conn.options.expires = accessToken.expires;
+          }
           return await hassCallApi(host, auth, method, path, parameters);
         } catch (err) {
           if (!err || err.status_code !== 401 || !auth.accessToken) throw err;
 
           // If we connect with access token and get 401, refresh token and try again
           const accessToken = await window.refreshToken();
-          conn.options.accessToken = accessToken;
+          conn.options.accessToken = accessToken.access_token;
+          conn.options.expires = accessToken.expires;
           return await hassCallApi(host, auth, method, path, parameters);
         }
       },

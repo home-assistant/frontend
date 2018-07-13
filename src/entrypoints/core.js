@@ -18,7 +18,8 @@ const init = window.createHassConnection = function (password, accessToken) {
   if (password) {
     options.authToken = password;
   } else if (accessToken) {
-    options.accessToken = accessToken;
+    options.accessToken = accessToken.access_token;
+    options.expires = accessToken.expires;
   }
   return createConnection(url, options)
     .then(function (conn) {
@@ -39,12 +40,19 @@ function redirectLogin() {
 window.refreshToken = () =>
   refreshToken_(clientId(), window.tokens.refresh_token).then((accessTokenResp) => {
     window.tokens.access_token = accessTokenResp.access_token;
+    // shorten access token life 30 seconds to cover network cost
+    window.tokens.expires = ((accessTokenResp.expires_in - 30) * 1000) + Date.now();
     localStorage.tokens = JSON.stringify(window.tokens);
-    return accessTokenResp.access_token;
+    return {
+      access_token: accessTokenResp.access_token,
+      expires: window.tokens.expires
+    };
   }, () => redirectLogin());
 
 function resolveCode(code) {
   fetchToken(clientId(), code).then((tokens) => {
+    // shorten access token life 30 seconds to cover network cost
+    tokens.expires = ((tokens.expires_in - 30) * 1000) + Date.now();
     localStorage.tokens = JSON.stringify(tokens);
     // Refresh the page and have tokens in place.
     document.location = location.pathname;
@@ -66,11 +74,23 @@ function main() {
   }
   if (localStorage.tokens) {
     window.tokens = JSON.parse(localStorage.tokens);
-    window.hassConnection = init(null, window.tokens.access_token).catch((err) => {
-      if (err !== ERR_INVALID_AUTH) throw err;
+    if (window.tokens.expires === undefined) {
+      window.tokens.expires = Date.now() - 1;
+    }
+    if (Date.now() > window.tokens.expires) {
+      // refresh access token if we know it expires to reduce unncessary backend invalid auth event
+      window.hassConnection = window.refreshToken().then(accessToken => init(null, accessToken));
+    } else {
+      const accessTokenObject = {
+        access_token: window.tokens.access_token,
+        expires: window.tokens.expires
+      };
+      window.hassConnection = init(null, accessTokenObject).catch((err) => {
+        if (err !== ERR_INVALID_AUTH) throw err;
 
-      return window.refreshToken().then(accessToken => init(null, accessToken));
-    });
+        return window.refreshToken().then(accessToken => init(null, accessToken));
+      });
+    }
     return;
   }
   redirectLogin();
