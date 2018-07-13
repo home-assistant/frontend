@@ -635,7 +635,7 @@
                 "service": "Servicio"
             },
             "relative_time": {
-                "past": "{hora} hace",
+                "past": "hace {time} ",
                 "future": "En {time}",
                 "never": "Nunca"
             },
