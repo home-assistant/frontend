@@ -12,6 +12,7 @@ import './core/ha-config-core.js';
 import './customize/ha-config-customize.js';
 import './dashboard/ha-config-dashboard.js';
 import './script/ha-config-script.js';
+import './users/ha-config-users.js';
 import './zwave/ha-config-zwave.js';
 
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
@@ -103,6 +104,14 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
         hass='[[hass]]'
         is-wide='[[isWide]]'
       ></ha-config-entries>
+    </template>
+
+    <template is="dom-if" if='[[_equals(_routeData.page, "users")]]' restamp>
+      <ha-config-users
+        page-name='users'
+        route='[[route]]'
+        hass='[[hass]]'
+      ></ha-config-users>
     </template>
     `;
   }

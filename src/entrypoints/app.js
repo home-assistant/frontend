@@ -173,6 +173,8 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
         moreInfoEntityId: null,
         callService: null,
         callApi: null,
+        sendWS: null,
+        callWS: null,
       });
       return;
     }
@@ -242,6 +244,29 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
           conn.options.accessToken = accessToken;
           return await hassCallApi(host, auth, method, path, parameters);
         }
+      },
+      // For messages that do not get a response
+      sendWS: (msg) => {
+        // eslint-disable-next-line
+        if (__DEV__) console.log('Sending', msg);
+        conn.sendMessage(msg);
+      },
+      // For messages that expect a response
+      callWS: (msg) => {
+        /* eslint-disable no-console */
+        if (__DEV__) console.log('Sending', msg);
+
+        const resp = conn.sendMessagePromise(msg);
+
+        if (__DEV__) {
+          resp.then(
+            result => console.log('Received', result),
+            err => console.log('Error', err),
+          );
+        }
+        // In the future we'll do this as a breaking change
+        // inside home-assistant-js-websocket
+        return resp.then(result => result.result);
       },
     }, this.$.storage.getStoredState());
 
