@@ -25,6 +25,7 @@ class StateHistoryChartLine extends PolymerElement {
     return {
       chartData: Object,
       data: Object,
+      names: Object,
       unit: String,
       identifier: String,
 
@@ -91,9 +92,10 @@ class StateHistoryChartLine extends PolymerElement {
       endTime = new Date();
     }
 
+    const names = this.names || {};
     deviceStates.forEach((states) => {
       const domain = states.domain;
-      const name = states.name;
+      const name = names[states.entity_id] || states.name;
       // array containing [value1, value2, etc]
       let prevValues;
       const data = [];
