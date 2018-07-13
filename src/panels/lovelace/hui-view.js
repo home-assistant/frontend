@@ -105,6 +105,8 @@ class HUIView extends PolymerElement {
 
     const elements = [];
     config.badges.forEach((entityId) => {
+      if (!(entityId in this.hass.states)) continue;
+
       const element = document.createElement('ha-state-label-badge');
       element.state = this.hass.states[entityId];
       elements.push({ element, entityId });
