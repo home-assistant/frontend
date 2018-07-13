@@ -31,12 +31,12 @@ class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
     </template>
 
     <template is="dom-if" if="[[historyData.timeline.length]]">
-      <state-history-chart-timeline data="[[historyData.timeline]]" end-time="[[_computeEndTime(endTime, upToNow, historyData)]]" no-single="[[noSingle]]">
+      <state-history-chart-timeline data="[[historyData.timeline]]" end-time="[[_computeEndTime(endTime, upToNow, historyData)]]" no-single="[[noSingle]]" names="[[names]]">
       </state-history-chart-timeline>
     </template>
 
     <template is="dom-repeat" items="[[historyData.line]]">
-      <state-history-chart-line unit="[[item.unit]]" data="[[item.data]]" identifier="[[item.identifier]]" is-single-device="[[_computeIsSingleLineChart(item.data, noSingle)]]" end-time="[[_computeEndTime(endTime, upToNow, historyData)]]">
+      <state-history-chart-line unit="[[item.unit]]" data="[[item.data]]" identifier="[[item.identifier]]" is-single-device="[[_computeIsSingleLineChart(item.data, noSingle)]]" end-time="[[_computeEndTime(endTime, upToNow, historyData)]]" names="[[names]]">
       </state-history-chart-line>
     </template>
 `;
@@ -49,6 +49,7 @@ class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
         type: Object,
         value: null,
       },
+      names: Object,
 
       isLoadingData: Boolean,
 

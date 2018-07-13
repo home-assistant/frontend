@@ -5,6 +5,9 @@ import '../../../components/ha-card.js';
 import '../../../components/state-history-charts.js';
 import '../../../data/ha-state-history-data.js';
 
+import processConfigEntities from '../common/process-config-entities.js';
+
+
 class HuiHistoryGraphCard extends PolymerElement {
   static get template() {
     return html`
@@ -21,7 +24,7 @@ class HuiHistoryGraphCard extends PolymerElement {
         <ha-state-history-data
           hass="[[hass]]"
           filter-type="recent-entity"
-          entity-id="[[_config.entities]]"
+          entity-id="[[_entities]]"
           data="{{stateHistory}}"
           is-loading="{{stateHistoryLoading}}"
           cache-config="[[_computeCacheConfig(_config)]]"
@@ -30,6 +33,7 @@ class HuiHistoryGraphCard extends PolymerElement {
           hass="[[hass]]"
           history-data="[[stateHistory]]"
           is-loading-data="[[stateHistoryLoading]]"
+          names="[[_names]]"
           up-to-now
           no-single
         ></state-history-charts>
@@ -41,7 +45,11 @@ class HuiHistoryGraphCard extends PolymerElement {
     return {
       hass: Object,
       _config: Object,
-      stateHistory: Object,
+      stateHistory: {
+        type: Object,
+      },
+      _names: Array,
+      _entities: Object,
       stateHistoryLoading: Boolean,
     };
   }
@@ -51,11 +59,20 @@ class HuiHistoryGraphCard extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config.entities || !Array.isArray(config.entities)) {
-      throw new Error('Error in card configuration.');
-    }
+    const entities = processConfigEntities(config.entities);
 
     this._config = config;
+
+    const _entities = [];
+    const _names = {};
+    for (const entity of entities) {
+      _entities.push(entity.entity);
+      if (entity.name) {
+        _names[entity.entity] = entity.name;
+      }
+    }
+    this._entities = _entities;
+    this._names = _names;
   }
 
   _computeCacheConfig(config) {
