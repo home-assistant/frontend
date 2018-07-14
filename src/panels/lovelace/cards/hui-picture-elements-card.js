@@ -1,17 +1,15 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../../../components/buttons/ha-call-service-button.js';
-import '../../../components/entity/ha-state-label-badge.js';
-import '../../../components/entity/state-badge.js';
-import '../../../components/ha-icon.js';
-import '../../../components/ha-card.js';
-import '../components/hui-image.js';
+import '../elements/hui-service-button-element.js';
+import '../elements/hui-service-icon-element.js';
+import '../elements/hui-state-icon-element.js';
+import '../elements/hui-state-badge-element.js';
+import '../elements/hui-state-label-element.js';
+import '../elements/hui-navigation-element.js';
+import '../elements/hui-image-element.js';
 
-import computeStateDisplay from '../../../common/entity/compute_state_display.js';
-import computeStateName from '../../../common/entity/compute_state_name.js';
-import computeDomain from '../../../common/entity/compute_domain';
-import toggleEntity from '../common/entity/toggle-entity.js';
+import createElementElement from '../common/create-element-element.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
@@ -62,7 +60,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
         color: var(--primary-color);
         white-space: nowrap;
       }
-      hui-image {
+      hui-image-element {
         overflow-y: hidden;
       }
     </style>
@@ -85,10 +83,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
 
   constructor() {
     super();
-    this._stateBadges = [];
-    this._stateIcons = [];
-    this._stateLabels = [];
-    this._images = [];
+    this._elements = [];
   }
 
   ready() {
@@ -116,10 +111,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
   _buildConfig() {
     const config = this._config;
     const root = this.$.root;
-
-    this._stateBadges = [];
-    this._stateIcons = [];
-    this._stateLabels = [];
+    this._elements = [];
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -130,65 +122,9 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
     root.appendChild(img);
 
     config.elements.forEach((element) => {
-      const entityId = element.entity;
-      let el;
-      switch (element.type) {
-        case 'service-button':
-          el = document.createElement('ha-call-service-button');
-          [el.domain, el.service] = element.service.split('.', 2);
-          el.serviceData = element.service_data || {};
-          el.innerText = element.title;
-          el.hass = this.hass;
-          break;
-        case 'service-icon':
-          el = document.createElement('ha-icon');
-          el.icon = element.icon;
-          el.title = element.title || '';
-          el.addEventListener('click', () => this._handleClick(element));
-          el.classList.add('clickable');
-          break;
-        case 'state-badge':
-          el = document.createElement('ha-state-label-badge');
-          el.state = this.hass.states[entityId];
-          this._stateBadges.push({ el, entityId });
-          break;
-        case 'state-icon':
-          el = document.createElement('state-badge');
-          el.addEventListener('click', () => this._handleClick(element));
-          el.classList.add('clickable');
-          this._stateIcons.push({ el, entityId });
-          break;
-        case 'state-label':
-          el = document.createElement('div');
-          el.addEventListener('click', () => this._handleClick(element));
-          el.classList.add('clickable', 'state-label');
-          this._stateLabels.push({ el, entityId });
-          break;
-        case 'navigation':
-          el = document.createElement('ha-icon');
-          el.icon = element.icon || 'hass:image-filter-center-focus';
-          el.addEventListener('click', () => this.navigate(element.navigation_path));
-          el.title = element.navigation_path;
-          el.classList.add('clickable');
-          break;
-        case 'image':
-          el = document.createElement('hui-image');
-          el.hass = this.hass;
-          el.entity = element.entity;
-          el.image = element.image;
-          el.stateImage = element.state_image;
-          el.filter = element.filter;
-          el.stateFilter = element.state_filter;
-          if (!element.camera_image && computeDomain(element.entity) === 'camera') {
-            el.cameraImage = element.entity;
-          } else {
-            el.cameraImage = element.camera_image;
-          }
-          this._images.push(el);
-          if (element.tap_action === 'none') break;
-          el.addEventListener('click', () => this._handleClick(element));
-          el.classList.add('clickable');
-      }
+      const el = createElementElement(element);
+      el.hass = this.hass;
+      this._elements.push(el);
 
       el.classList.add('element');
       Object.keys(element.style).forEach((prop) => {
@@ -203,62 +139,9 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
   }
 
   _hassChanged(hass) {
-    this._stateBadges.forEach((element) => {
-      const { el, entityId } = element;
-      el.state = hass.states[entityId];
-      el.hass = hass;
+    this._elements.forEach((element) => {
+      element.hass = hass;
     });
-
-    this._stateIcons.forEach((element) => {
-      const { el, entityId } = element;
-      const stateObj = hass.states[entityId];
-      if (stateObj) {
-        el.stateObj = stateObj;
-        el.title = this._computeTooltip(stateObj);
-      }
-    });
-
-    this._stateLabels.forEach((element) => {
-      const { el, entityId } = element;
-      const stateObj = hass.states[entityId];
-      if (stateObj) {
-        el.innerText = computeStateDisplay(this.localize, stateObj);
-        el.title = this._computeTooltip(stateObj);
-      } else {
-        el.innerText = 'N/A';
-        el.title = '';
-      }
-    });
-
-    this._images.forEach((el) => {
-      el.hass = hass;
-    });
-  }
-
-  _computeTooltip(stateObj) {
-    return `${computeStateName(stateObj)}: ${computeStateDisplay(this.localize, stateObj)}`;
-  }
-
-  _handleClick(elementConfig) {
-    const tapAction = elementConfig.tap_action || (elementConfig.type === 'service-icon' ?
-      'call-service' : 'more-info');
-
-    switch (tapAction) {
-      case 'more-info':
-        this.fire('hass-more-info', { entityId: elementConfig.entity });
-        break;
-      case 'toggle':
-        toggleEntity(this.hass, elementConfig.entity);
-        break;
-      case 'call-service': {
-        const [domain, service] = elementConfig.service.split('.', 2);
-        const serviceData = Object.assign(
-          {}, { entity_id: elementConfig.entity },
-          elementConfig.service_data
-        );
-        this.hass.callService(domain, service, serviceData);
-      }
-    }
   }
 }
 
