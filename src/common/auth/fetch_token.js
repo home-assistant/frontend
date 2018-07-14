@@ -8,6 +8,9 @@ export default function fetchToken(clientId, code) {
     body: data,
   }).then((resp) => {
     if (!resp.ok) throw new Error('Unable to fetch tokens');
-    return resp.json();
+    const tokens = resp.json();
+    // shorten access token life 30 seconds to cover network cost
+    tokens.expires = ((tokens.expires_in - 30) * 1000) + Date.now();
+    return tokens;
   });
 }

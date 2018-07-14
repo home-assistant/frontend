@@ -40,8 +40,6 @@ function redirectLogin() {
 window.refreshToken = () =>
   refreshToken_(clientId(), window.tokens.refresh_token).then((accessTokenResp) => {
     window.tokens.access_token = accessTokenResp.access_token;
-    // shorten access token life 30 seconds to cover network cost
-    window.tokens.expires = ((accessTokenResp.expires_in - 30) * 1000) + Date.now();
     localStorage.tokens = JSON.stringify(window.tokens);
     return {
       access_token: accessTokenResp.access_token,
@@ -51,8 +49,6 @@ window.refreshToken = () =>
 
 function resolveCode(code) {
   fetchToken(clientId(), code).then((tokens) => {
-    // shorten access token life 30 seconds to cover network cost
-    tokens.expires = ((tokens.expires_in - 30) * 1000) + Date.now();
     localStorage.tokens = JSON.stringify(tokens);
     // Refresh the page and have tokens in place.
     document.location = location.pathname;
@@ -75,10 +71,11 @@ function main() {
   if (localStorage.tokens) {
     window.tokens = JSON.parse(localStorage.tokens);
     if (window.tokens.expires === undefined) {
+      // for those tokens got from previous version
       window.tokens.expires = Date.now() - 1;
     }
     if (Date.now() > window.tokens.expires) {
-      // refresh access token if we know it expires to reduce unncessary backend invalid auth event
+      // refresh access token if it has expired to reduce unncessary backend invalid auth event
       window.hassConnection = window.refreshToken().then(accessToken => init(null, accessToken));
     } else {
       const accessTokenObject = {

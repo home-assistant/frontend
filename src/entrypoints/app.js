@@ -236,7 +236,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
         const auth = conn.options;
         try {
           if (auth.accessToken && Date.now() > auth.expires) {
-            // Refresh acess token if we know it expires
+            // Refresh acess token if we know it has expired
             const accessToken = await window.refreshToken();
             conn.options.accessToken = accessToken.access_token;
             conn.options.expires = accessToken.expires;
