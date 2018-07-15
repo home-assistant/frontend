@@ -35,11 +35,6 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
     };
   }
 
-  constructor() {
-    super();
-    this._clickListener = this.handleClick.bind(this);
-  }
-
   ready() {
     super.ready();
     if (this._config.tap_action !== 'none') {
@@ -50,13 +45,8 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
     if (this._config.tap_action !== 'none') {
-      this.addEventListener('click', this._clickListener);
+      this.addEventListener('click', () => this.handleClick(this.hass, this._config));
     }
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener('click', this._clickListener);
   }
 
   setConfig(config) {

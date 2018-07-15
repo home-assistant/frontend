@@ -1,30 +1,33 @@
 import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
-import EventsMixin from '../../../mixins/events-mixin';
+import NavigateMixin from '../../../mixins/navigate-mixin';
 import toggleEntity from '../common/entity/toggle-entity.js';
 
 /*
  * @polymerMixin
- * @appliesMixin EventsMixin
+ * @appliesMixin NavigateMixin
  */
 export default dedupingMixin(superClass =>
-  class extends EventsMixin(superClass) {
-    handleClick() {
-      const tapAction = this._config.tap_action || 'more-info';
+  class extends NavigateMixin(superClass) {
+    handleClick(hass, config) {
+      const tapAction = config.tap_action || 'more-info';
 
       switch (tapAction) {
         case 'more-info':
-          this.fire('hass-more-info', { entityId: this._config.entity });
+          this.fire('hass-more-info', { entityId: config.entity });
+          break;
+        case 'navigate':
+          this.navigate(config.navigation_path);
           break;
         case 'toggle':
-          toggleEntity(this.hass, this._config.entity);
+          toggleEntity(this.hass, config.entity);
           break;
         case 'call-service': {
-          const [domain, service] = this._config.service.split('.', 2);
+          const [domain, service] = config.service.split('.', 2);
           const serviceData = Object.assign(
-            {}, { entity_id: this._config.entity },
-            this._config.service_data
+            {}, { entity_id: config.entity },
+            config.service_data
           );
-          this.hass.callService(domain, service, serviceData);
+          hass.callService(domain, service, serviceData);
         }
       }
     }

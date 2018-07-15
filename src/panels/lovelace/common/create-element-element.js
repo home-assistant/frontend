@@ -1,13 +1,16 @@
+import '../elements/hui-icon-element.js';
+import '../elements/hui-image-element.js';
 import '../elements/hui-service-button-element.js';
+import '../elements/hui-state-badge-element.js';
 import '../elements/hui-state-icon-element.js';
+import '../elements/hui-state-label-element.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
-const ELEMENT_TYPES = [
+export const ELEMENT_TYPES = [
+  'icon',
   'image',
-  'navigation',
   'service-button',
-  'service-icon',
   'state-badge',
   'state-icon',
   'state-label',

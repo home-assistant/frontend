@@ -1,36 +1,9 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../elements/hui-service-button-element.js';
-import '../elements/hui-service-icon-element.js';
-import '../elements/hui-state-icon-element.js';
-import '../elements/hui-state-badge-element.js';
-import '../elements/hui-state-label-element.js';
-import '../elements/hui-navigation-element.js';
-import '../elements/hui-image-element.js';
+import createElementElement, { ELEMENT_TYPES } from '../common/create-element-element.js';
 
-import createElementElement from '../common/create-element-element.js';
-
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-import NavigateMixin from '../../../mixins/navigate-mixin.js';
-
-const VALID_TYPES = new Set([
-  'image',
-  'navigation',
-  'service-button',
-  'service-icon',
-  'state-badge',
-  'state-icon',
-  'state-label',
-]);
-
-/*
- * @appliesMixin EventsMixin
- * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
- */
-class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(PolymerElement))) {
+class HuiPictureElementsCard extends PolymerElement {
   static get template() {
     return html`
     <style>
@@ -56,7 +29,7 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
       .clickable {
         cursor: pointer;
       }
-      ha-call-service-button {
+      hui-service-button-element {
         color: var(--primary-color);
         white-space: nowrap;
       }
@@ -99,7 +72,9 @@ class HuiPictureElementsCard extends NavigateMixin(EventsMixin(LocalizeMixin(Pol
     if (!config || !config.image || !Array.isArray(config.elements)) {
       throw new Error('Invalid card configuration');
     }
-    const invalidTypes = config.elements.map(el => el.type).filter(el => !VALID_TYPES.has(el));
+    const invalidTypes = config.elements
+      .map(el => el.type)
+      .filter(el => !ELEMENT_TYPES.includes(el));
     if (invalidTypes.length) {
       throw new Error(`Incorrect element types: ${invalidTypes.join(', ')}`);
     }

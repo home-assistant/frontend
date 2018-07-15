@@ -26,11 +26,6 @@ class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
     };
   }
 
-  constructor() {
-    super();
-    this._clickListener = this.handleClick.bind(this);
-  }
-
   ready() {
     super.ready();
     this.classList.add('clickable');
@@ -38,12 +33,7 @@ class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    this.addEventListener('click', this._clickListener);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener('click', this._clickListener);
+    this.addEventListener('click', () => this.handleClick(this.hass, this._config));
   }
 
   setConfig(config) {
