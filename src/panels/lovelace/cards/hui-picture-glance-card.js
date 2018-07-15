@@ -10,6 +10,7 @@ import computeStateDisplay from '../../../common/entity/compute_state_display.js
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import stateIcon from '../../../common/entity/state_icon.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
+import processConfigEntities from '../common/process-config-entities';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
@@ -112,6 +113,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     return {
       hass: Object,
       _config: Object,
+      _configEntities: Array,
       _entitiesDialog: {
         type: Array,
         computed: '_computeEntitiesDialog(hass, _config, _entitiesToggle)',
@@ -134,17 +136,17 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       (config.state_image && !config.entity)) {
       throw new Error('Invalid card configuration');
     }
-
+    this._configEntities = processConfigEntities(config.entities);
     this._config = config;
   }
 
   _computeEntitiesDialog(hass, config, entitiesService) {
     if (config.force_dialog) {
-      return config.entities;
+      return this._configEntities;
     }
 
-    return config.entities.filter(entity => !entitiesService.includes(entity) &&
-                                  (entity in hass.states));
+    return this._configEntities.filter(item => !entitiesService.includes(item.entity) &&
+                                  (item.entity in hass.states));
   }
 
   _computeEntitiesToggle(hass, config) {
@@ -152,24 +154,24 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       return [];
     }
 
-    return config.entities.filter(entity =>
-      (entity in hass.states) && DOMAINS_TOGGLE.has(computeDomain(entity)));
+    return this._configEntities.filter(item =>
+      (item.entity in hass.states) && DOMAINS_TOGGLE.has(computeDomain(item.entity)));
   }
 
-  _showEntity(entityId, states) {
-    return entityId in states;
+  _showEntity(item, states) {
+    return item.entity in states;
   }
 
-  _computeIcon(entityId, states) {
-    return stateIcon(states[entityId]);
+  _computeIcon(item, states) {
+    return stateIcon(states[item.entity]);
   }
 
-  _computeButtonClass(entityId, states) {
-    return STATES_OFF.includes(states[entityId].state) ? '' : 'state-on';
+  _computeButtonClass(item, states) {
+    return STATES_OFF.includes(states[item.entity].state) ? '' : 'state-on';
   }
 
-  _computeTooltip(entityId, states) {
-    return `${computeStateName(states[entityId])}: ${computeStateDisplay(this.localize, states[entityId])}`;
+  _computeTooltip(item, states) {
+    return `${computeStateName(states[item.entity])}: ${computeStateDisplay(this.localize, states[item.entity])}`;
   }
 
   _computeImageClass(config) {
@@ -177,11 +179,11 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   _openDialog(ev) {
-    this.fire('hass-more-info', { entityId: ev.model.item });
+    this.fire('hass-more-info', { entityId: ev.model.item.entity });
   }
 
   _callService(ev) {
-    const entityId = ev.model.item;
+    const entityId = ev.model.item.entity;
     toggleEntity(this.hass, entityId);
   }
 
