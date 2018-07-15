@@ -23,6 +23,7 @@ import '../../components/ha-icon.js';
 import { loadModule, loadJS } from '../../common/dom/load_resource.js';
 import './hui-unused-entities.js';
 import './hui-view.js';
+import debounce from '../../common/util/debounce.js';
 
 import createCardElement from './common/create-card-element.js';
 
@@ -105,7 +106,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         </div>
       </app-header>
 
-      <div id='view'></div>
+      <div id='view' on-rebuild-view='_debouncedConfigChanged'></div>
     </app-header-layout>
     `;
   }
@@ -138,6 +139,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       },
       routeData: Object
     };
+  }
+
+  constructor() {
+    super();
+    this._debouncedConfigChanged = debounce(() => this._selectView(this._curView), 100);
   }
 
   _routeChanged(route) {
