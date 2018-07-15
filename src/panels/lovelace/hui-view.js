@@ -4,7 +4,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../components/entity/ha-state-label-badge.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
-import debounce from '../../common/util/debounce.js';
 
 import createCardElement from './common/create-card-element';
 
@@ -62,7 +61,7 @@ class HUIView extends PolymerElement {
       }
       </style>
       <div id="badges"></div>
-      <div id="columns" on-rebuild-view="_debouncedConfigChanged"></div>
+      <div id="columns"></div>
     `;
   }
 
@@ -89,7 +88,6 @@ class HUIView extends PolymerElement {
     super();
     this._cards = [];
     this._badges = [];
-    this._debouncedConfigChanged = debounce(this._configChanged, 100);
   }
 
   _createBadges(config) {
