@@ -4,7 +4,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../components/entity/ha-state-label-badge.js';
 
 import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
-import debounce from '../../common/util/debounce.js';
 
 import createCardElement from './common/create-card-element';
 
