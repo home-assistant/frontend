@@ -26,14 +26,10 @@ class HuiNavigationElement extends NavigateMixin(PolymerElement) {
     };
   }
 
-  constructor() {
-    super();
-    this._clickListener = this.navigate.bind(this);
-  }
-
   ready() {
     super.ready();
     this.classList.add('clickable');
+    this._clickListener = this.navigate.bind(this, this._config.navigation_path);
   }
 
   connectedCallback() {
