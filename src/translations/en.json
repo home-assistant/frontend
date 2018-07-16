@@ -264,20 +264,20 @@
       "on": "[%key:state::default::on%]"
     },
     "weather": {
-      "clear_night": "Clear, night",
+      "clear-night": "Clear, night",
       "cloudy": "Cloudy",
       "fog": "Fog",
       "hail": "Hail",
       "lightning": "Lightning",
-      "lightning_rainy": "Lightning, rainy",
+      "lightning-rainy": "Lightning, rainy",
       "partlycloudy": "Partly cloudy",
       "pouring": "Pouring",
       "rainy": "Rainy",
       "snowy": "Snowy",
-      "snowy_rainy": "Snowy, rainy",
+      "snowy-rainy": "Snowy, rainy",
       "sunny": "Sunny",
       "windy": "Windy",
-      "windy_variant": "Windy"
+      "windy-variant": "Windy"
     },
     "zwave": {
       "default": {
