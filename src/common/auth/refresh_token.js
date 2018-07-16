@@ -8,6 +8,8 @@ export default function refreshAccessToken(clientId, refreshToken) {
     body: data,
   }).then((resp) => {
     if (!resp.ok) throw new Error('Unable to fetch tokens');
-    return resp.json();
+    const tokens = resp.json();
+    tokens.expires = (tokens.expires_in * 1000) + Date.now();
+    return tokens;
   });
 }
