@@ -48,7 +48,7 @@ class HaConfigDashboard extends LocalizeMixin(PolymerElement) {
             <ha-config-entries-menu hass="[[hass]]"></ha-config-entries-menu>
           </template>
 
-          <template is="dom-if" if="[[computeIsLoaded(hass, 'config.auth_provider_homeassistant')]]">
+          <template is="dom-if" if="[[hass.user.is_owner]]">
             <ha-config-users-menu hass="[[hass]]"></ha-config-users-menu>
           </template>
 

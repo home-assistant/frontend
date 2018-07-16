@@ -175,6 +175,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
         callApi: null,
         sendWS: null,
         callWS: null,
+        user: null,
       });
       return;
     }
@@ -313,17 +314,21 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
 
     let unsubThemes;
 
-    this.hass.connection.sendMessagePromise({
+    this.hass.callWS({
       type: 'frontend/get_themes',
-    }).then((resp) => {
-      this._updateHass({ themes: resp.result });
+    }).then((themes) => {
+      this._updateHass({ themes });
       applyThemesOnElement(
         document.documentElement,
-        resp.result,
+        themes,
         this.hass.selectedTheme,
         true
       );
     });
+
+    this.hass.callWS({
+      type: 'auth/current_user',
+    }).then(user => this._updateHass({ user }), () => {});
 
     conn.subscribeEvents((event) => {
       this._updateHass({ themes: event.data });
