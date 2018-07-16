@@ -70,7 +70,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
 
       <ha-card>
         <hui-image
-          class$='[[_computeImageClass(_config)]]'
+          class$='[[_computeImageClass]]'
           on-click='_handleImageClick'
           hass="[[hass]]"
           image="[[_config.image]]"
@@ -116,12 +116,12 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       _configEntities: Array,
       _entitiesDialog: {
         type: Array,
-        computed: '_computeEntitiesDialog(hass, _config, _entitiesToggle)',
+        computed: '_computeEntitiesDialog(hass, _entitiesToggle)',
       },
       _entitiesToggle: {
         type: Array,
         value: [],
-        computed: '_computeEntitiesToggle(hass, _config)',
+        computed: '_computeEntitiesToggle(hass)',
       },
     };
   }
@@ -137,13 +137,13 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       throw new Error('Invalid card configuration');
     }
     this.setProperties({
-      _configEntities: processConfigEntities(config.entities)
+      _configEntities: processConfigEntities(config.entities),
+      _config: config,
     });
-    this._config = config;
   }
 
-  _computeEntitiesDialog(hass, config, entitiesService) {
-    if (config.force_dialog) {
+  _computeEntitiesDialog(hass, entitiesService) {
+    if (this._config.force_dialog) {
       return this._configEntities;
     }
 
@@ -151,8 +151,8 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
                                   (item.entity in hass.states));
   }
 
-  _computeEntitiesToggle(hass, config) {
-    if (config.force_dialog) {
+  _computeEntitiesToggle(hass) {
+    if (this._config.force_dialog) {
       return [];
     }
 
@@ -176,8 +176,8 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     return `${computeStateName(states[item.entity])}: ${computeStateDisplay(this.localize, states[item.entity])}`;
   }
 
-  _computeImageClass(config) {
-    return config.navigation_path || config.camera_image ? 'clickable' : '';
+  _computeImageClass() {
+    return this._config.navigation_path || this._config.camera_image ? 'clickable' : '';
   }
 
   _openDialog(ev) {
