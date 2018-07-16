@@ -74,8 +74,8 @@ function main() {
       // for those tokens got from previous version
       window.tokens.expires = Date.now() - 1;
     }
-    if (Date.now() > window.tokens.expires) {
-      // refresh access token if it has expired to reduce unncessary backend invalid auth event
+    if (Date.now() + 30000 > window.tokens.expires) {
+      // refresh access token if it will expire in 30 seconds to avoid invalid auth event
       window.hassConnection = window.refreshToken().then(accessToken => init(null, accessToken));
     } else {
       const accessTokenObject = {
