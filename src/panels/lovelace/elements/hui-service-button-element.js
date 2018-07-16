@@ -7,7 +7,7 @@ class HuiServiceButtonElement extends PolymerElement {
   static get template() {
     return html`
       <style>
-        :host {
+        ha-call-service-button {
           color: var(--primary-color);
           white-space: nowrap;
         }
