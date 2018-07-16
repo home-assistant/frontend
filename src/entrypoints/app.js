@@ -24,7 +24,7 @@ import '../resources/ha-style.js';
 import '../util/ha-pref-storage.js';
 import { getActiveTranslation, getTranslation } from '../util/hass-translation.js';
 import '../util/legacy-support';
-import '../util/roboto.js';
+import '../resources/roboto.js';
 import hassCallApi from '../util/hass-call-api.js';
 import makeDialogManager from '../dialogs/dialog-manager.js';
 import registerServiceWorker from '../util/register-service-worker.js';
