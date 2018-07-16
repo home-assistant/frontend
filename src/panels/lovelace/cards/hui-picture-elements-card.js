@@ -26,10 +26,6 @@ class HuiPictureElementsCard extends PolymerElement {
         padding: 8px;
         white-space: nowrap;
       }
-      hui-service-button-element {
-        color: var(--primary-color);
-        white-space: nowrap;
-      }
       hui-image-element {
         overflow-y: hidden;
       }

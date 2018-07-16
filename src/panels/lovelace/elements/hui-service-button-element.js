@@ -6,6 +6,12 @@ import '../../../components/buttons/ha-call-service-button.js';
 class HuiServiceButtonElement extends PolymerElement {
   static get template() {
     return html`
+      <style>
+        :host {
+          color: var(--primary-color);
+          white-space: nowrap;
+        }
+      </style>
       <ha-call-service-button 
         hass="[[hass]]"
         domain="[[_domain]]" 

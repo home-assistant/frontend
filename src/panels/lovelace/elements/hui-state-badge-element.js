@@ -18,9 +18,9 @@ class HuiStateBadgeElement extends ElementClickMixin(PolymerElement) {
       </style>
       <template is="dom-if" if="[[_stateObj]]">
         <ha-state-label-badge 
-        state="[[_stateObj]]"
-        title$="[[computeTooltip(hass, _config)]]"
-      ></ha-state-label-badge> 
+          state="[[_stateObj]]"
+          title$="[[computeTooltip(hass, _config)]]"
+        ></ha-state-label-badge> 
       </template>
     `;
   }
