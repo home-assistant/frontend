@@ -11,9 +11,14 @@ import ElementClickMixin from '../mixins/element-click-mixin.js';
 class HuiIconElement extends ElementClickMixin(PolymerElement) {
   static get template() {
     return html`
+      <style>
+        :host(.clickable) {
+          cursor: pointer; 
+        } 
+      </style>
       <ha-icon 
         icon="[[_config.icon]]"
-        title$="[[_computeTooltip(_config)]]"
+        title$="[[computeTooltip(_config)]]"
       ></ha-icon> 
     `;
   }
@@ -27,12 +32,8 @@ class HuiIconElement extends ElementClickMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.classList.add('clickable');
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
     this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+    this.classList.add('clickable');
   }
 
   setConfig(config) {
@@ -41,27 +42,6 @@ class HuiIconElement extends ElementClickMixin(PolymerElement) {
     }
 
     this._config = config;
-  }
-
-  _computeTooltip(config) {
-    if (config.title) return config.title;
-
-    let tooltip;
-    switch (config.tap_action) {
-      case 'navigate':
-        tooltip = `Navigate to ${config.navigation_path}`;
-        break;
-      case 'toggle':
-        tooltip = `Toggle ${config.entity}`;
-        break;
-      case 'call-service':
-        tooltip = `Call service ${config.service}`;
-        break;
-      default:
-        tooltip = 'Show more-info';
-    }
-
-    return tooltip;
   }
 }
 customElements.define('hui-icon-element', HuiIconElement);

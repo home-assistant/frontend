@@ -11,7 +11,15 @@ import ElementClickMixin from '../mixins/element-click-mixin.js';
 class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
   static get template() {
     return html`
-      <state-badge state-obj="[[_stateObj]]"></state-badge> 
+      <style>
+        :host(.clickable) {
+          cursor: pointer; 
+        } 
+      </style>
+      <state-badge 
+        state-obj="[[_stateObj]]"
+        title$="[[computeTooltip(_config)]]"
+      ></state-badge> 
     `;
   }
 
@@ -28,12 +36,8 @@ class HuiStateIconElement extends ElementClickMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    this.classList.add('clickable');
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
     this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+    this.classList.add('clickable');
   }
 
   setConfig(config) {

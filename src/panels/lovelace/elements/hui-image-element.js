@@ -12,6 +12,9 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
+        :host(.clickable) {
+          cursor: pointer; 
+        } 
         hui-image {
           overflow-y: hidden;
         } 
@@ -24,6 +27,7 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
         camera-image="[[_config.camera_image]]"
         filter="[[_config.filter]]"
         state-filter="[[_config.state_filter]]"
+        title$="[[computeTooltip(_config)]]"
       ></hui-image>
     `;
   }
@@ -38,14 +42,8 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
   ready() {
     super.ready();
     if (this._config.tap_action !== 'none') {
-      this.classList.add('clickable');
-    }
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    if (this._config.tap_action !== 'none') {
       this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+      this.classList.add('clickable');
     }
   }
 

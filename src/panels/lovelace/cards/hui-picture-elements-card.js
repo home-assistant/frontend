@@ -1,7 +1,7 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import createElementElement, { ELEMENT_TYPES } from '../common/create-element-element.js';
+import createHuiElement from '../common/create-hui-element.js';
 
 class HuiPictureElementsCard extends PolymerElement {
   static get template() {
@@ -25,9 +25,6 @@ class HuiPictureElementsCard extends PolymerElement {
       .state-label {
         padding: 8px;
         white-space: nowrap;
-      }
-      .clickable {
-        cursor: pointer;
       }
       hui-service-button-element {
         color: var(--primary-color);
@@ -72,12 +69,6 @@ class HuiPictureElementsCard extends PolymerElement {
     if (!config || !config.image || !Array.isArray(config.elements)) {
       throw new Error('Invalid card configuration');
     }
-    const invalidTypes = config.elements
-      .map(el => el.type)
-      .filter(el => !ELEMENT_TYPES.includes(el));
-    if (invalidTypes.length) {
-      throw new Error(`Incorrect element types: ${invalidTypes.join(', ')}`);
-    }
 
     this._config = config;
     if (this.$) this._buildConfig();
@@ -97,7 +88,7 @@ class HuiPictureElementsCard extends PolymerElement {
     root.appendChild(img);
 
     config.elements.forEach((element) => {
-      const el = createElementElement(element);
+      const el = createHuiElement(element);
       el.hass = this.hass;
       this._elements.push(el);
 

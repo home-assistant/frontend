@@ -2,7 +2,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
-import computeStateName from '../../../common/entity/compute_state_name';
 
 import '../../../components/entity/ha-state-label-badge.js';
 
@@ -16,7 +15,12 @@ import ElementClickMixin from '../mixins/element-click-mixin.js';
 class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElement)) {
   static get template() {
     return html`
-      <div title$="[[_computeTooltip(_stateObj)]]">[[_computeStateDisplay(_stateObj)]]</div>
+      <style>
+        :host(.clickable) {
+          cursor: pointer; 
+        } 
+      </style>
+      <div title$="[[computeTooltip(_config)]]">[[_computeStateDisplay(_stateObj)]]</div>
     `;
   }
 
@@ -33,12 +37,8 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
 
   ready() {
     super.ready();
-    this.classList.add('clickable');
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
     this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+    this.classList.add('clickable');
   }
 
   setConfig(config) {
@@ -55,11 +55,6 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
 
   _computeStateDisplay(stateObj) {
     return stateObj && computeStateDisplay(this.localize, stateObj);
-  }
-
-  _computeTooltip(stateObj) {
-    return !stateObj ? '' :
-      `${computeStateName(stateObj)}: ${computeStateDisplay(this.localize, stateObj)}`;
   }
 }
 customElements.define('hui-state-label-element', HuiStateLabelElement);
