@@ -18,7 +18,8 @@ const init = window.createHassConnection = function (password, accessToken) {
   if (password) {
     options.authToken = password;
   } else if (accessToken) {
-    options.accessToken = accessToken;
+    options.accessToken = accessToken.access_token;
+    options.expires = accessToken.expires;
   }
   return createConnection(url, options)
     .then(function (conn) {
@@ -40,7 +41,10 @@ window.refreshToken = () =>
   refreshToken_(clientId(), window.tokens.refresh_token).then((accessTokenResp) => {
     window.tokens.access_token = accessTokenResp.access_token;
     localStorage.tokens = JSON.stringify(window.tokens);
-    return accessTokenResp.access_token;
+    return {
+      access_token: accessTokenResp.access_token,
+      expires: window.tokens.expires
+    };
   }, () => redirectLogin());
 
 function resolveCode(code) {
@@ -66,11 +70,24 @@ function main() {
   }
   if (localStorage.tokens) {
     window.tokens = JSON.parse(localStorage.tokens);
-    window.hassConnection = init(null, window.tokens.access_token).catch((err) => {
-      if (err !== ERR_INVALID_AUTH) throw err;
+    if (window.tokens.expires === undefined) {
+      // for those tokens got from previous version
+      window.tokens.expires = Date.now() - 1;
+    }
+    if (Date.now() + 30000 > window.tokens.expires) {
+      // refresh access token if it will expire in 30 seconds to avoid invalid auth event
+      window.hassConnection = window.refreshToken().then(accessToken => init(null, accessToken));
+    } else {
+      const accessTokenObject = {
+        access_token: window.tokens.access_token,
+        expires: window.tokens.expires
+      };
+      window.hassConnection = init(null, accessTokenObject).catch((err) => {
+        if (err !== ERR_INVALID_AUTH) throw err;
 
-      return window.refreshToken().then(accessToken => init(null, accessToken));
-    });
+        return window.refreshToken().then(accessToken => init(null, accessToken));
+      });
+    }
     return;
   }
   redirectLogin();
