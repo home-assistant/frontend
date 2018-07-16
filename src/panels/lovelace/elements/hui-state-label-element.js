@@ -16,11 +16,11 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
   static get template() {
     return html`
       <style>
-        :host(.clickable) {
+        :host {
           cursor: pointer; 
         } 
       </style>
-      <div title$="[[computeTooltip(_config)]]">[[_computeStateDisplay(_stateObj)]]</div>
+      <div title$="[[computeTooltip(hass, _config)]]">[[_computeStateDisplay(_stateObj)]]</div>
     `;
   }
 
@@ -38,7 +38,6 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
   ready() {
     super.ready();
     this.addEventListener('click', () => this.handleClick(this.hass, this._config));
-    this.classList.add('clickable');
   }
 
   setConfig(config) {

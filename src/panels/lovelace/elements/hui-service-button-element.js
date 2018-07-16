@@ -29,8 +29,12 @@ class HuiServiceButtonElement extends PolymerElement {
       throw Error('Error in element configuration');
     }
 
-    [this._domain, this._service] = config.service.split('.', 2);
-    this._config = config;
+    const [domain, service] = config.service.split('.', 2);
+    this.setProperties({
+      _config: config,
+      _domain: domain,
+      _service: service
+    });
   }
 }
 customElements.define('hui-service-button-element', HuiServiceButtonElement);

@@ -27,7 +27,7 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
         camera-image="[[_config.camera_image]]"
         filter="[[_config.filter]]"
         state-filter="[[_config.state_filter]]"
-        title$="[[computeTooltip(_config)]]"
+        title$="[[computeTooltip(hass, _config)]]"
       ></hui-image>
     `;
   }

@@ -7,14 +7,14 @@ import '../elements/hui-state-label-element.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
-const ELEMENT_TYPES = [
+const ELEMENT_TYPES = new Set([
   'icon',
   'image',
   'service-button',
   'state-badge',
   'state-icon',
   'state-label',
-];
+]);
 
 function _createElement(tag, config) {
   const element = document.createElement(tag);
@@ -35,11 +35,11 @@ function _createErrorElement(error, config) {
 
 export default function createHuiElement(config) {
   if (!config || typeof config !== 'object' || !config.type) {
-    return _createErrorElement('No card type configured.', config);
+    return _createErrorElement('No element type configured.', config);
   }
 
-  if (!ELEMENT_TYPES.includes(config.type)) {
-    return _createErrorElement(`Unknown card type encountered: ${config.type}.`, config);
+  if (!ELEMENT_TYPES.has(config.type)) {
+    return _createErrorElement(`Unknown element type encountered: ${config.type}.`, config);
   }
 
   return _createElement(`hui-${config.type}-element`, config);

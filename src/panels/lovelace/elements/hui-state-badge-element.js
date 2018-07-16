@@ -12,14 +12,14 @@ class HuiStateBadgeElement extends ElementClickMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
-        :host(.clickable) {
+        :host {
           cursor: pointer; 
         } 
       </style>
       <template is="dom-if" if="[[_stateObj]]">
         <ha-state-label-badge 
         state="[[_stateObj]]"
-        title$="[[computeTooltip(_config)]]"
+        title$="[[computeTooltip(hass, _config)]]"
       ></ha-state-label-badge> 
       </template>
     `;
@@ -39,7 +39,6 @@ class HuiStateBadgeElement extends ElementClickMixin(PolymerElement) {
   ready() {
     super.ready();
     this.addEventListener('click', () => this.handleClick(this.hass, this._config));
-    this.classList.add('clickable');
   }
 
   setConfig(config) {
