@@ -57,20 +57,17 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
         .box .title {
           font-weight: 500;
         }
-        paper-icon-button, iron-icon {
+        paper-icon-button {
           color: #A9A9A9;
         }
-        paper-icon-button.state-on, iron-icon.state-on {
+        paper-icon-button.state-on {
           color: white;
-        }
-        iron-icon {
-          padding: 8px;
         }
       </style>
 
       <ha-card>
         <hui-image
-          class$='[[_computeImageClass]]'
+          class$='[[_computeImageClass(_config)]]'
           on-click='_handleImageClick'
           hass="[[hass]]"
           image="[[_config.image]]"
@@ -82,24 +79,24 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
           <div class="title">[[_config.title]]</div>
           <div>
             <template is="dom-repeat" items="[[_entitiesDialog]]">
-              <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
+              <template is="dom-if" if="[[_showEntity(item.entity, hass.states)]]">
                 <paper-icon-button
                   on-click="_openDialog"
-                  class$="[[_computeButtonClass(item, hass.states)]]"
-                  icon="[[_computeIcon(item, hass.states)]]"
-                  title="[[_computeTooltip(item, hass.states)]]"
+                  class$="[[_computeButtonClass(item.entity, hass.states)]]"
+                  icon="[[_computeIcon(item.entity, hass.states)]]"
+                  title="[[_computeTooltip(item.entity, hass.states)]]"
                 ></paper-icon-button>
               </template>
             </template>
           </div>
           <div>
             <template is="dom-repeat" items="[[_entitiesToggle]]">
-              <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
+              <template is="dom-if" if="[[_showEntity(item.entity, hass.states)]]">
                 <paper-icon-button
                   on-click="_callService"
-                  class$="[[_computeButtonClass(item, hass.states)]]"
-                  icon="[[_computeIcon(item, hass.states)]]"
-                  title="[[_computeTooltip(item, hass.states)]]"
+                  class$="[[_computeButtonClass(item.entity, hass.states)]]"
+                  icon="[[_computeIcon(item.entity, hass.states)]]"
+                  title="[[_computeTooltip(item.entity, hass.states)]]"
                 ></paper-icon-button>
               </template>
             </template>
@@ -113,16 +110,8 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     return {
       hass: Object,
       _config: Object,
-      _configEntities: Array,
-      _entitiesDialog: {
-        type: Array,
-        computed: '_computeEntitiesDialog(hass, _entitiesToggle)',
-      },
-      _entitiesToggle: {
-        type: Array,
-        value: [],
-        computed: '_computeEntitiesToggle(hass)',
-      },
+      _entitiesDialog: Array,
+      _entitiesToggle: Array
     };
   }
 
@@ -136,48 +125,42 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       (config.state_image && !config.entity)) {
       throw new Error('Invalid card configuration');
     }
+    const entities = processConfigEntities(config.entities);
+    const dialog = [];
+    const toggle = [];
+
+    entities.forEach((item) => {
+      if (config.force_dialog || !DOMAINS_TOGGLE.has(computeDomain(item.entity))) {
+        dialog.push(item);
+      } else {
+        toggle.push(item);
+      }
+    });
     this.setProperties({
-      _configEntities: processConfigEntities(config.entities),
       _config: config,
+      _entitiesDialog: dialog,
+      _entitiesToggle: toggle
     });
   }
 
-  _computeEntitiesDialog(hass, entitiesService) {
-    if (this._config.force_dialog) {
-      return this._configEntities;
-    }
-
-    return this._configEntities.filter(item => !entitiesService.includes(item.entity) &&
-                                  (item.entity in hass.states));
+  _showEntity(entityId, states) {
+    return entityId in states;
   }
 
-  _computeEntitiesToggle(hass) {
-    if (this._config.force_dialog) {
-      return [];
-    }
-
-    return this._configEntities.filter(item =>
-      (item.entity in hass.states) && DOMAINS_TOGGLE.has(computeDomain(item.entity)));
+  _computeIcon(entityId, states) {
+    return stateIcon(states[entityId]);
   }
 
-  _showEntity(item, states) {
-    return item.entity in states;
+  _computeButtonClass(entityId, states) {
+    return STATES_OFF.includes(states[entityId].state) ? '' : 'state-on';
   }
 
-  _computeIcon(item, states) {
-    return stateIcon(states[item.entity]);
+  _computeTooltip(entityId, states) {
+    return `${computeStateName(states[entityId])}: ${computeStateDisplay(this.localize, states[entityId])}`;
   }
 
-  _computeButtonClass(item, states) {
-    return STATES_OFF.includes(states[item.entity].state) ? '' : 'state-on';
-  }
-
-  _computeTooltip(item, states) {
-    return `${computeStateName(states[item.entity])}: ${computeStateDisplay(this.localize, states[item.entity])}`;
-  }
-
-  _computeImageClass() {
-    return this._config.navigation_path || this._config.camera_image ? 'clickable' : '';
+  _computeImageClass(config) {
+    return config.navigation_path || config.camera_image ? 'clickable' : '';
   }
 
   _openDialog(ev) {
@@ -185,8 +168,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   _callService(ev) {
-    const entityId = ev.model.item.entity;
-    toggleEntity(this.hass, entityId);
+    toggleEntity(this.hass, ev.model.item.entity);
   }
 
   _handleImageClick() {
@@ -200,5 +182,4 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     }
   }
 }
-
 customElements.define('hui-picture-glance-card', HuiPictureGlanceCard);
