@@ -46,7 +46,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
           right: 0;
           bottom: 0;
           background-color: rgba(0, 0, 0, 0.3);
-          padding: 4px 16px;
+          padding: 4px 8px;
           font-size: 16px;
           line-height: 40px;
           color: white;
@@ -55,6 +55,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
         }
         .box .title {
           font-weight: 500;
+          margin-left: 8px;
         }
         paper-icon-button, iron-icon {
           color: #A9A9A9;
