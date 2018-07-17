@@ -78,6 +78,10 @@ function ensureLoaded(panel) {
       imported = import(/* webpackChunkName: "panel-map" */ '../panels/map/ha-panel-map.js');
       break;
 
+    case 'profile':
+      imported = import(/* webpackChunkName: "panel-profile" */ '../panels/profile/ha-panel-profile.js');
+      break;
+
     case 'shopping-list':
       imported = import(/* webpackChunkName: "panel-shopping-list" */ '../panels/shopping-list/ha-panel-shopping-list.js');
       break;
