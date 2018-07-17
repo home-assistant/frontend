@@ -12,16 +12,24 @@ const buildReplaces = {
   '/frontend_latest/authorize.js': 'authorize.js',
 };
 
-const es5Extra = "<script src='/static/custom-elements-es5-adapter.js'></script>";
-
 async function buildAuth(es6) {
   const targetPath = es6 ? config.output : config.output_es5;
   const targetUrl = es6 ? '/frontend_latest/' : '/frontend_es5/';
   const frontendPath = es6 ? 'frontend_latest' : 'frontend_es5';
   const toReplace = [
-    ['<!--EXTRA_SCRIPTS-->', es6 ? '' : es5Extra],
     ['/home-assistant-polymer/hass_frontend/authorize.js', `/${frontendPath}/authorize.js`],
   ];
+
+  if (!es6) {
+    const compatibilityPath = `/frontend_es5/compatibility-${md5(path.resolve(config.output_es5, 'compatibility.js'))}.js`;
+    const es5Extra = `
+    <script src='${compatibilityPath}'></script>
+    <script src='/static/custom-elements-es5-adapter.js'></script>
+    `;
+    toReplace.push([
+      '<!--EXTRA_SCRIPTS-->', es5Extra
+    ]);
+  }
 
   for (const [replaceSearch, filename] of Object.entries(buildReplaces)) {
     const parsed = path.parse(filename);
