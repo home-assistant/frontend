@@ -62,7 +62,7 @@ class HuiUnusedEntities extends PolymerElement {
       element.hass = this.hass;
       elements.push(element);
       root.appendChild(element);
-    })
+    });
     this._elements = elements;
   }
 
