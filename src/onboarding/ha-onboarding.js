@@ -26,7 +26,8 @@ class HaOnboarding extends PolymerElement {
     <div class="layout vertical center fit">
       <img src="/static/icons/favicon-192x192.png" height="192">
 
-      <p>Create your user account.</p>
+      <p>Create your owner user account.</p>
+      <p><i>It is not possible yet to change your password. Coming soon!</i></p>
 
       <template is='dom-if' if='[[_error]]'>
         <p class='error'>[[_error]]</p>
