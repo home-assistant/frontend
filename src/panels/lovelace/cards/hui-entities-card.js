@@ -7,11 +7,6 @@ import processConfigEntities from '../common/process-config-entities.js';
 import '../../../components/ha-card.js';
 import '../components/hui-entities-toggle.js';
 
-// just importing this now as shortcut to import correct state-card-*
-import '../../../state-summary/state-card-content.js';
-
-import EventsMixin from '../../../mixins/events-mixin.js';
-
 import createEntityRowElement from '../common/create-entity-row-element.js';
 import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
@@ -19,7 +14,7 @@ import computeDomain from '../../../common/entity/compute_domain.js';
 /*
  * @appliesMixin EventsMixin
  */
-class HuiEntitiesCard extends EventsMixin(PolymerElement) {
+class HuiEntitiesCard extends PolymerElement {
   static get template() {
     return html`
     <style>
@@ -44,9 +39,6 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       }
       .header .name {
         @apply --paper-font-common-nowrap;
-      }
-      .state-card-dialog {
-        cursor: pointer;
       }
     </style>
 
@@ -119,11 +111,6 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       const entityId = entity.entity;
 
       const element = createEntityRowElement(entity, this.hass);
-      if (entityId && !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
-        element.classList.add('state-card-dialog');
-        element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
-      }
-
       this._elements.push({ entityId, element });
       const container = document.createElement('div');
       container.appendChild(element);

@@ -1,6 +1,6 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
-import stateCardType from '../../../common/entity/state_card_type.js';
+import '../entity-row-elements/hui-generic-entity-row-element.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
@@ -58,7 +58,7 @@ export default function createEntityRowElement(config, hass) {
     return element;
   }
 
-  tag = stateObj ? `state-card-${stateCardType(hass, stateObj)}` : 'state-card-display';
+  tag = 'hui-generic-entity-row-element';
 
   return _createElement(tag, config, stateObj, hass);
 }
