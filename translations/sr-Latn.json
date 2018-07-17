@@ -78,20 +78,20 @@
     },
     "state": {
         "weather": {
-            "clear_night": "Vedra noć",
+            "clear-night": "Vedra noć",
             "cloudy": "Oblačno",
             "fog": "Magla",
             "hail": "Grad",
             "lightning": "Grmljavina",
-            "lightning_rainy": "Grmljavina sa kišom",
+            "lightning-rainy": "Grmljavina sa kišom",
             "partlycloudy": "Delimično oblačno",
             "pouring": "Pljusak",
             "rainy": "Kiša",
             "snowy": "Sneg",
-            "snowy_rainy": "Sneg i kiša",
+            "snowy-rainy": "Sneg i kiša",
             "sunny": "Sunčano",
             "windy": "Vetrovito",
-            "windy_variant": "Vetrovito"
+            "windy-variant": "Vetrovito"
         }
     }
 }

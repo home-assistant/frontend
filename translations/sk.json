@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Jasno, v noci",
+            "clear-night": "Jasno, v noci",
             "cloudy": "Zamračené",
             "fog": "Hmla",
             "hail": "Krupobitie",
             "lightning": "Blesky",
-            "lightning_rainy": "Blesky, daždivo",
+            "lightning-rainy": "Blesky, daždivo",
             "partlycloudy": "Čiastočne zamračené",
             "pouring": "Lejúco",
             "rainy": "Daždivo",
             "snowy": "Zasneženo",
-            "snowy_rainy": "Zasneženo, daždivo",
+            "snowy-rainy": "Zasneženo, daždivo",
             "sunny": "slnečno",
             "windy": "Veterno",
-            "windy_variant": "Veterno"
+            "windy-variant": "Veterno"
         }
     },
     "state_badge": {

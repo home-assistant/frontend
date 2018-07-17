@@ -225,20 +225,20 @@
             }
         },
         "weather": {
-            "clear_night": "Trời trong, đêm",
+            "clear-night": "Trời trong, đêm",
             "cloudy": "Nhiều mây",
             "fog": "Sương mù",
             "hail": "Mưa đá",
             "lightning": "Sét",
-            "lightning_rainy": "Sét, mưa",
+            "lightning-rainy": "Sét, mưa",
             "partlycloudy": "Mây rải rác",
             "pouring": "Mưa lớn",
             "rainy": "Mưa",
             "snowy": "Tuyết",
-            "snowy_rainy": "Tuyết, mưa",
+            "snowy-rainy": "Tuyết, mưa",
             "sunny": "Nắng đẹp",
             "windy": "Gió nhẹ",
-            "windy_variant": "Gió nhẹ"
+            "windy-variant": "Gió nhẹ"
         }
     },
     "state_badge": {

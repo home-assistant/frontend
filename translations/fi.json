@@ -238,20 +238,20 @@
             }
         },
         "weather": {
-            "clear_night": "Selkeää yöllä",
+            "clear-night": "Selkeää yöllä",
             "cloudy": "Pilvistä",
             "fog": "Sumuista",
             "hail": "Raekuuro",
             "lightning": "Ukkosvaara",
-            "lightning_rainy": "Ukkosvaara, sateista",
+            "lightning-rainy": "Ukkosvaara, sateista",
             "partlycloudy": "Osittain pilvistä",
             "pouring": "Tihkuista",
             "rainy": "Sateista",
             "snowy": "Lumisadetta",
-            "snowy_rainy": "Räntäsadetta",
+            "snowy-rainy": "Räntäsadetta",
             "sunny": "Aurinkoinen",
             "windy": "Tuulinen",
-            "windy_variant": "Tuulinen"
+            "windy-variant": "Tuulinen"
         }
     },
     "state_badge": {

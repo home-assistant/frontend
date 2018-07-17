@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Jasna, noč",
+            "clear-night": "Jasna, noč",
             "cloudy": "Oblačno",
             "fog": "Megla",
             "hail": "Toča",
             "lightning": "Grmenje",
-            "lightning_rainy": "Grmenje, deževno",
+            "lightning-rainy": "Grmenje, deževno",
             "partlycloudy": "Delno oblačno",
             "pouring": "Močan dež",
             "rainy": "Deževno",
             "snowy": "Snežno",
-            "snowy_rainy": "Snežno, deževno",
+            "snowy-rainy": "Snežno, deževno",
             "sunny": "Sončno",
             "windy": "Vetrovno",
-            "windy_variant": "Vetrovno"
+            "windy-variant": "Vetrovno"
         }
     },
     "state_badge": {

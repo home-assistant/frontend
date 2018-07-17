@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Klart, natt",
+            "clear-night": "Klart, natt",
             "cloudy": "Skyet",
             "fog": "Tåke",
             "hail": "Hagl",
             "lightning": "Lyn",
-            "lightning_rainy": "Lyn, regnfull",
+            "lightning-rainy": "Lyn, regnfull",
             "partlycloudy": "Delvis skyet",
             "pouring": "Kraftig regn",
             "rainy": "Regnfull",
             "snowy": "Snø",
-            "snowy_rainy": "Sludd",
+            "snowy-rainy": "Sludd",
             "sunny": "Solfylt",
             "windy": "Vind",
-            "windy_variant": "Vind"
+            "windy-variant": "Vind"
         }
     },
     "state_badge": {
