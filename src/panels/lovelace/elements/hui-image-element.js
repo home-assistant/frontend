@@ -41,10 +41,7 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
 
   ready() {
     super.ready();
-    if (this._config.tap_action !== 'none') {
-      this.addEventListener('click', () => this.handleClick(this.hass, this._config));
-      this.classList.add('clickable');
-    }
+    this.addEventListener('click', () => this.handleClick(this.hass, this._config));
   }
 
   setConfig(config) {
@@ -52,6 +49,7 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
       throw Error('Error in element configuration');
     }
 
+    this.classList.toggle('clickable', config.tap_action !== 'none');
     this._config = config;
   }
 }

@@ -1,44 +1,35 @@
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-
 import '../../../components/entity/ha-state-label-badge.js';
+import computeStateName from '../../../common/entity/compute_state_name';
 
-import ElementClickMixin from '../mixins/element-click-mixin.js';
-
-/*
- * @appliesMixin ElementClickMixin
- */
-class HuiStateBadgeElement extends ElementClickMixin(PolymerElement) {
-  static get template() {
-    return html`
-      <style>
-        :host {
-          cursor: pointer; 
-        } 
-      </style>
-      <template is="dom-if" if="[[_stateObj]]">
-        <ha-state-label-badge 
-          state="[[_stateObj]]"
-          title$="[[computeTooltip(hass, _config)]]"
-        ></ha-state-label-badge> 
-      </template>
-    `;
-  }
-
+class HuiStateBadgeElement extends PolymerElement {
   static get properties() {
     return {
-      hass: {
-        type: Object,
-        observer: '_hassChanged'
-      },
+      hass: Object,
       _config: Object,
-      _stateObj: Object
     };
   }
 
-  ready() {
-    super.ready();
-    this.addEventListener('click', () => this.handleClick(this.hass, this._config));
+  static get observers() {
+    return [
+      '_updateBadge(hass, _config)'
+    ];
+  }
+
+  _updateBadge(hass, config) {
+    if (!hass || !config || !(config.entity in hass.states)) return;
+
+    if (!this._badge) {
+      this._badge = document.createElement('ha-state-label-badge');
+    }
+
+    const stateObj = hass.states[config.entity];
+    this._badge.state = stateObj;
+    this._badge.setAttribute('title', computeStateName(stateObj));
+
+    if (!this.lastChild) {
+      this.appendChild(this._badge);
+    }
   }
 
   setConfig(config) {
@@ -46,11 +37,12 @@ class HuiStateBadgeElement extends ElementClickMixin(PolymerElement) {
       throw Error('Error in element configuration');
     }
 
-    this._config = config;
-  }
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
 
-  _hassChanged(hass) {
-    this._stateObj = hass.states[this._config.entity];
+    this._badge = null;
+    this._config = config;
   }
 }
 customElements.define('hui-state-badge-element', HuiStateBadgeElement);

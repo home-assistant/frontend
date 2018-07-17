@@ -13,6 +13,7 @@ export default dedupingMixin(superClass =>
   class extends NavigateMixin(EventsMixin(superClass)) {
     handleClick(hass, config) {
       const tapAction = config.tap_action || 'more-info';
+      if (tapAction === 'none') return;
 
       switch (tapAction) {
         case 'more-info':

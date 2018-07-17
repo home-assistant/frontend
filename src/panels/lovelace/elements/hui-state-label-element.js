@@ -19,8 +19,14 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
         :host {
           cursor: pointer; 
         } 
+        .state-label {
+          padding: 8px;
+          white-space: nowrap;
+        }
       </style>
-      <div title$="[[computeTooltip(hass, _config)]]">[[_computeStateDisplay(_stateObj)]]</div>
+      <div class="state-label" title$="[[computeTooltip(hass, _config)]]"> 
+        [[_computeStateDisplay(_stateObj)]]
+      </div>
     `;
   }
 

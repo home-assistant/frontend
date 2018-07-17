@@ -22,10 +22,6 @@ class HuiPictureElementsCard extends PolymerElement {
         position: absolute;
         transform: translate(-50%, -50%);
       }
-      .state-label {
-        padding: 8px;
-        white-space: nowrap;
-      }
       hui-image-element {
         overflow-y: hidden;
       }
