@@ -20,6 +20,7 @@ function createConfig(isProdBuild, latestBuild) {
   const entry = {
     app: './src/entrypoints/app.js',
     authorize: './src/entrypoints/authorize.js',
+    onboarding: './src/entrypoints/onboarding.js',
     core: './src/entrypoints/core.js',
     compatibility: './src/entrypoints/compatibility.js',
     'custom-panel': './src/entrypoints/custom-panel.js',

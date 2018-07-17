@@ -5,6 +5,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-iconset-svg.js';
+import '../resources/roboto.js';
 
 import '../auth/ha-auth-flow.js';
 import '../auth/ha-pick-auth-provider.js';
