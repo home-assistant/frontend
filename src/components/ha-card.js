@@ -18,7 +18,6 @@ class HaCard extends PolymerElement {
         @apply --paper-font-common-expensive-kerning;
         opacity: var(--dark-primary-opacity);
         padding: 24px 16px 16px;
-        text-transform: capitalize;
       }
     </style>
 
@@ -31,9 +30,7 @@ class HaCard extends PolymerElement {
 
   static get properties() {
     return {
-      header: {
-        type: String,
-      },
+      header: String
     };
   }
 }
