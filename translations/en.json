@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Clear, night",
+            "clear-night": "Clear, night",
             "cloudy": "Cloudy",
             "fog": "Fog",
             "hail": "Hail",
             "lightning": "Lightning",
-            "lightning_rainy": "Lightning, rainy",
+            "lightning-rainy": "Lightning, rainy",
             "partlycloudy": "Partly cloudy",
             "pouring": "Pouring",
             "rainy": "Rainy",
             "snowy": "Snowy",
-            "snowy_rainy": "Snowy, rainy",
+            "snowy-rainy": "Snowy, rainy",
             "sunny": "Sunny",
             "windy": "Windy",
-            "windy_variant": "Windy"
+            "windy-variant": "Windy"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Manage your Z-Wave network"
+                },
+                "users": {
+                    "caption": "Users",
+                    "description": "Manage users",
+                    "picker": {
+                        "title": "Users"
+                    },
+                    "editor": {
+                        "rename_user": "Rename user",
+                        "change_password": "Change password",
+                        "activate_user": "Activate user",
+                        "deactivate_user": "Deactivate user",
+                        "delete_user": "Delete user"
+                    }
                 }
             }
         },

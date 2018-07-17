@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Helder, nacht",
+            "clear-night": "Helder, nacht",
             "cloudy": "Bewolkt",
             "fog": "Mist",
             "hail": "Hagel",
             "lightning": "Bliksem",
-            "lightning_rainy": "Bliksem, regenachtig",
+            "lightning-rainy": "Bliksem, regenachtig",
             "partlycloudy": "Gedeeltelijk bewolkt",
             "pouring": "Gieten",
             "rainy": "Regenachtig",
             "snowy": "Sneeuwachtig",
-            "snowy_rainy": "Sneeuwachtig, regenachtig",
+            "snowy-rainy": "Sneeuwachtig, regenachtig",
             "sunny": "Zonnig",
             "windy": "Winderig",
-            "windy_variant": "Winderig"
+            "windy-variant": "Winderig"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Beheer je Z-Wave-netwerk"
+                },
+                "users": {
+                    "caption": "Gebruikers",
+                    "description": "Gebruikers beheren",
+                    "picker": {
+                        "title": "Gebruikers"
+                    },
+                    "editor": {
+                        "rename_user": "De naam van gebruiker wijzigen",
+                        "change_password": "Wachtwoord wijzigen",
+                        "activate_user": "Activeer gebruiker",
+                        "deactivate_user": "Deactiveer gebruiker",
+                        "delete_user": "Verwijder gebruiker"
+                    }
                 }
             }
         },
@@ -529,7 +543,8 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
             "week": "{count} {count, plural,\none {week}\nother {weken}\n}",
-            "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}"
+            "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
+            "minute": "{count} {count, plural,\néén {minuut}\nandere {minuten}\n}"
         },
         "login-form": {
             "password": "Wachtwoord",

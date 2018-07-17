@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Jasná noc",
+            "clear-night": "Jasná noc",
             "cloudy": "Zataženo",
             "fog": "Mlha",
             "hail": "Krupobití",
             "lightning": "Bouře",
-            "lightning_rainy": "Bouře a déšť",
+            "lightning-rainy": "Bouře a déšť",
             "partlycloudy": "Polojasno",
             "pouring": "Liják",
             "rainy": "Déšť",
             "snowy": "Sníh",
-            "snowy_rainy": "Déšť se sněhem",
+            "snowy-rainy": "Déšť se sněhem",
             "sunny": "Slunečno",
             "windy": "Větrno",
-            "windy_variant": "Větrno"
+            "windy-variant": "Větrno"
         }
     },
     "state_badge": {

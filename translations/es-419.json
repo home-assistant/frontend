@@ -204,10 +204,10 @@
             "pouring": "Torrencial",
             "rainy": "Lluvioso",
             "snowy": "Nevado",
-            "snowy_rainy": "Nevado, lluvioso",
+            "snowy-rainy": "Nevado, lluvioso",
             "sunny": "Soleado",
             "windy": "Ventoso",
-            "windy_variant": "Ventoso"
+            "windy-variant": "Ventoso"
         }
     },
     "state_badge": {

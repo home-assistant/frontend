@@ -238,20 +238,20 @@
             }
         },
         "weather": {
-            "clear_night": "เคลียร์, กลางคืน",
+            "clear-night": "เคลียร์, กลางคืน",
             "cloudy": "มีเมฆมาก",
             "fog": "หมอก",
             "hail": "ลูกเห็บ",
             "lightning": "ฟ้าแลบ",
-            "lightning_rainy": "ฟ้าแลบ, ฝนตก",
+            "lightning-rainy": "ฟ้าแลบ, ฝนตก",
             "partlycloudy": "มีเมฆบางส่วน",
             "pouring": "เท",
             "rainy": "ฝน",
             "snowy": "หิมะ",
-            "snowy_rainy": "หิมะ, ฝน",
+            "snowy-rainy": "หิมะ, ฝน",
             "sunny": "แดดจัด",
             "windy": "ลมแรง",
-            "windy_variant": "ลมแรง"
+            "windy-variant": "ลมแรง"
         }
     },
     "state_badge": {

@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Tiszta, éjszaka",
+            "clear-night": "Tiszta, éjszaka",
             "cloudy": "Felhős",
             "fog": "Köd",
             "hail": "Jégeső",
             "lightning": "Vihar",
-            "lightning_rainy": "Viharos, esős",
+            "lightning-rainy": "Viharos, esős",
             "partlycloudy": "Részben felhős",
             "pouring": "Szakad",
             "rainy": "Esős",
             "snowy": "Havazás",
-            "snowy_rainy": "Havas, esős",
+            "snowy-rainy": "Havas, esős",
             "sunny": "Napos",
             "windy": "Szeles",
-            "windy_variant": "Szeles"
+            "windy-variant": "Szeles"
         }
     },
     "state_badge": {
