@@ -15,9 +15,18 @@ class HuiUnusedEntities extends PolymerElement {
           margin: 0 auto;
           padding: 8px 0;
         }
+        hui-entities-card {
+          display: block;
+          margin-bottom: 8px;
+        }
       </style>
       <div id="root"></div>
     `;
+  }
+
+  constructor() {
+    super();
+    this._elements = [];
   }
 
   static get properties() {
@@ -35,24 +44,32 @@ class HuiUnusedEntities extends PolymerElement {
 
   _configChanged(config) {
     const root = this.$.root;
-    if (root.lastChild) root.removeChild(root.lastChild);
+    while (root.lastChild) {
+      root.removeChild(root.lastChild);
+    }
 
     const entities = computeUnusedEntities(this.hass, config);
-    const cardConfig = {
-      type: 'entities',
-      title: 'Unused entities',
-      entities,
-      show_header_toggle: false
-    };
-    const element = createCardElement(cardConfig);
-    element.hass = this.hass;
-    root.appendChild(element);
+    const elements = [];
+
+    entities.forEach((entity) => {
+      const cardConfig = {
+        type: 'entities',
+        title: entity,
+        entities: [entity],
+        show_header_toggle: false
+      };
+      const element = createCardElement(cardConfig);
+      element.hass = this.hass;
+      elements.push(element);
+      root.appendChild(element);
+    })
+    this._elements = elements;
   }
 
   _hassChanged(hass) {
-    const root = this.$.root;
-    if (!root.lastChild) return;
-    root.lastChild.hass = hass;
+    this._elements.forEach((element) => {
+      element.hass = hass;
+    });
   }
 }
 customElements.define('hui-unused-entities', HuiUnusedEntities);
