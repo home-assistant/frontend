@@ -118,10 +118,18 @@ class HaSidebar extends
         </paper-icon-item>
       </template>
 
-      <paper-icon-item on-click="menuClicked" data-panel="logout" class="logout">
-        <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
-        <span class="item-text">[[localize('ui.sidebar.log_out')]]</span>
-      </paper-icon-item>
+      <template is='dom-if' if='[[!hass.user]]'>
+        <paper-icon-item on-click="menuClicked" data-panel="logout" class="logout">
+          <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
+          <span class="item-text">[[localize('ui.sidebar.log_out')]]</span>
+        </paper-icon-item>
+      </template>
+      <template is='dom-if' if='[[hass.user]]'>
+        <paper-icon-item on-click="menuClicked" data-panel="profile">
+          <ha-icon slot="item-icon" icon="hass:account"></ha-icon>
+          <span class="item-text">[[hass.user.name]]</span>
+        </paper-icon-item>
+      </template>
     </paper-listbox>
 
     <div>
