@@ -48,6 +48,17 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
       _step: Object,
     };
   }
+
+  async ready() {
+    super.ready();
+
+    this.addEventListener('keypress', (ev) => {
+      if (ev.keyCode === 13) {
+        this._handleSubmit();
+      }
+    });
+  }
+
   connectedCallback() {
     super.connectedCallback();
 
