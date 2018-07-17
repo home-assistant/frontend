@@ -1,12 +1,12 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
-import '../entity-row-elements/hui-generic-entity-row-element.js';
+import '../entity-row/hui-generic-entity-row-element.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
-function _createElement(tag, config, stateObj, hass) {
+function _createElement(tag, config, hass) {
   const element = document.createElement(tag);
   try {
     if ('setConfig' in element) element.setConfig(config);
@@ -17,12 +17,7 @@ function _createElement(tag, config, stateObj, hass) {
     return _createErrorElement(err.message, config);
   }
 
-  element.stateObj = stateObj;
   element.hass = hass;
-  if (config.name) {
-    element.overrideName = config.name;
-  }
-
   return element;
 }
 
@@ -43,12 +38,11 @@ export default function createEntityRowElement(config, hass) {
   }
 
   const type = config.type || 'default';
-  const stateObj = hass.states[entityId];
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
     tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
     if (customElements.get(tag)) {
-      return _createElement(tag, config, stateObj, hass);
+      return _createElement(tag, config, hass);
     }
     const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
 
@@ -60,5 +54,5 @@ export default function createEntityRowElement(config, hass) {
 
   tag = 'hui-generic-entity-row-element';
 
-  return _createElement(tag, config, stateObj, hass);
+  return _createElement(tag, config, hass);
 }

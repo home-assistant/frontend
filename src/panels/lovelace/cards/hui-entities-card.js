@@ -2,18 +2,12 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import processConfigEntities from '../common/process-config-entities.js';
-
 import '../../../components/ha-card.js';
 import '../components/hui-entities-toggle.js';
 
+import processConfigEntities from '../common/process-config-entities.js';
 import createEntityRowElement from '../common/create-entity-row-element.js';
-import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
 
-/*
- * @appliesMixin EventsMixin
- */
 class HuiEntitiesCard extends PolymerElement {
   static get template() {
     return html`
