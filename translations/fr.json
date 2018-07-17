@@ -238,20 +238,20 @@
             }
         },
         "weather": {
-            "clear_night": "Nuit dégagée",
+            "clear-night": "Nuit dégagée",
             "cloudy": "Nuageux",
             "fog": "Brouillard",
             "hail": "Grêle",
             "lightning": "Orage",
-            "lightning_rainy": "Orage \/ Pluie",
+            "lightning-rainy": "Orage \/ Pluie",
             "partlycloudy": "Partiellement nuageux",
             "pouring": "Averses",
             "rainy": "Pluie",
             "snowy": "Neige",
-            "snowy_rainy": "Neige \/ Pluie",
+            "snowy-rainy": "Neige \/ Pluie",
             "sunny": "Soleil",
             "windy": "Vent",
-            "windy_variant": "Vent"
+            "windy-variant": "Vent"
         }
     },
     "state_badge": {

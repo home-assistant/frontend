@@ -209,20 +209,20 @@
             }
         },
         "weather": {
-            "clear_night": "Klar, Nacht",
+            "clear-night": "Klar, Nacht",
             "cloudy": "Bedeckt",
             "fog": "Näbu",
             "hail": "Hägu",
             "lightning": "Blitzä",
-            "lightning_rainy": "Blitzä, Räge",
+            "lightning-rainy": "Blitzä, Räge",
             "partlycloudy": "Teilwis bedeckt",
             "pouring": "Schütte",
             "rainy": "Rägnärisch",
             "snowy": "Schneie",
-            "snowy_rainy": "Schneie, rägnerisch",
+            "snowy-rainy": "Schneie, rägnerisch",
             "sunny": "sunnig",
             "windy": "windig",
-            "windy_variant": "windig"
+            "windy-variant": "windig"
         }
     },
     "state_badge": {

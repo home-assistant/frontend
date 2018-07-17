@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Ясно, ночь",
+            "clear-night": "Ясно, ночь",
             "cloudy": "Облачно",
             "fog": "Туман",
             "hail": "Град",
             "lightning": "Молния",
-            "lightning_rainy": "Молния, дождь",
+            "lightning-rainy": "Молния, дождь",
             "partlycloudy": "Переменная облачность",
             "pouring": "Ливень",
             "rainy": "Дождь",
             "snowy": "Снег",
-            "snowy_rainy": "Снег с дождем",
+            "snowy-rainy": "Снег с дождем",
             "sunny": "Ясно",
             "windy": "Ветрено",
-            "windy_variant": "Ветрено"
+            "windy-variant": "Ветрено"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Управляйте Вашей сетью Z-Wave"
+                },
+                "users": {
+                    "caption": "Пользователи",
+                    "description": "Управление пользователями",
+                    "picker": {
+                        "title": "Пользователи"
+                    },
+                    "editor": {
+                        "rename_user": "Изменить имя пользователя",
+                        "change_password": "Изменить пароль",
+                        "activate_user": "Активировать пользователя",
+                        "deactivate_user": "Деактивировать пользователя",
+                        "delete_user": "Удалить пользователя"
+                    }
                 }
             }
         },

@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Klart, natt",
+            "clear-night": "Klart, natt",
             "cloudy": "Molnigt",
             "fog": "Dimma",
             "hail": "Hagel",
             "lightning": "Åska",
-            "lightning_rainy": "Åska, regnigt",
+            "lightning-rainy": "Åska, regnigt",
             "partlycloudy": "Delvis molnigt",
             "pouring": "Ösregn",
             "rainy": "Regnigt",
             "snowy": "Snöigt",
-            "snowy_rainy": "Snöigt, regnigt",
+            "snowy-rainy": "Snöigt, regnigt",
             "sunny": "Soligt",
             "windy": "Blåsigt",
-            "windy_variant": "Blåsigt"
+            "windy-variant": "Blåsigt"
         }
     },
     "state_badge": {

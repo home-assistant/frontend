@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "pogodnie, noc",
+            "clear-night": "pogodnie, noc",
             "cloudy": "pochmurno",
             "fog": "mgła",
             "hail": "grad",
             "lightning": "błyskawice",
-            "lightning_rainy": "burza",
+            "lightning-rainy": "burza",
             "partlycloudy": "częściowe zachmurzenie",
             "pouring": "ulewa",
             "rainy": "deszczowo",
             "snowy": "śnieżnie",
-            "snowy_rainy": "śnieżnie, deszczowo",
+            "snowy-rainy": "śnieżnie, deszczowo",
             "sunny": "słonecznie",
             "windy": "wietrznie",
-            "windy_variant": "wietrznie"
+            "windy-variant": "wietrznie"
         }
     },
     "state_badge": {

@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "夜间晴朗",
+            "clear-night": "夜间晴朗",
             "cloudy": "多云",
             "fog": "雾",
             "hail": "冰雹",
             "lightning": "雷电",
-            "lightning_rainy": "雷阵雨",
+            "lightning-rainy": "雷阵雨",
             "partlycloudy": "局部多云",
             "pouring": "暴雨",
             "rainy": "雨",
             "snowy": "雪",
-            "snowy_rainy": "雨夹雪",
+            "snowy-rainy": "雨夹雪",
             "sunny": "晴",
             "windy": "有风",
-            "windy_variant": "有风"
+            "windy-variant": "有风"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "管理 Z-Wave 网络"
+                },
+                "users": {
+                    "caption": "用户",
+                    "description": "管理用户",
+                    "picker": {
+                        "title": "用户"
+                    },
+                    "editor": {
+                        "rename_user": "改变用户名称",
+                        "change_password": "更改密码",
+                        "activate_user": "激活用户",
+                        "deactivate_user": "停用用户",
+                        "delete_user": "删除用户"
+                    }
                 }
             }
         },

@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Noite clara",
+            "clear-night": "Noite clara",
             "cloudy": "Nublado",
             "fog": "Nevoeiro",
             "hail": "Granizo",
             "lightning": "Raios",
-            "lightning_rainy": "Raios, chuvoso",
+            "lightning-rainy": "Raios, chuvoso",
             "partlycloudy": "Parcialmente nublado",
             "pouring": "Torrencial",
             "rainy": "Chuvoso",
             "snowy": "Neve",
-            "snowy_rainy": "Neve, chuva",
+            "snowy-rainy": "Neve, chuva",
             "sunny": "Ensolarado",
             "windy": "Ventoso",
-            "windy_variant": "Ventoso"
+            "windy-variant": "Ventoso"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "",
                     "description": "Gerencie sua rede Z-Wave"
+                },
+                "users": {
+                    "caption": "Usuários",
+                    "description": "Gerenciar usuários",
+                    "picker": {
+                        "title": "Usuários"
+                    },
+                    "editor": {
+                        "rename_user": "Renomear usuário",
+                        "change_password": "Mudar senha",
+                        "activate_user": "Ativar usuário",
+                        "deactivate_user": "Desativar usuário",
+                        "delete_user": "Excluir usuário"
+                    }
                 }
             }
         },
