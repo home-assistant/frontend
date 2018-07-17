@@ -238,20 +238,20 @@
             }
         },
         "weather": {
-            "clear_night": "Clir, nos",
+            "clear-night": "Clir, nos",
             "cloudy": "Cymylog",
             "fog": "Niwl",
             "hail": "Cenllysg",
             "lightning": "Mellt",
-            "lightning_rainy": "Mellt, glawog",
+            "lightning-rainy": "Mellt, glawog",
             "partlycloudy": "Cymharol gymylog",
             "pouring": "Arllwys",
             "rainy": "Glawog",
             "snowy": "Eira",
-            "snowy_rainy": "Eira, gwlyb",
+            "snowy-rainy": "Eira, gwlyb",
             "sunny": "Heulog",
             "windy": "Gwyntog",
-            "windy_variant": "Gwyntog"
+            "windy-variant": "Gwyntog"
         }
     },
     "state_badge": {

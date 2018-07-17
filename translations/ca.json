@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Serè, nit",
+            "clear-night": "Serè, nit",
             "cloudy": "Ennuvolat",
             "fog": "Boira",
             "hail": "Calamarsa",
             "lightning": "Llamps",
-            "lightning_rainy": "Tempesta",
+            "lightning-rainy": "Tempesta",
             "partlycloudy": "Parcialment ennuvolat",
             "pouring": "Pluja",
             "rainy": "Plujós",
             "snowy": "Neu",
-            "snowy_rainy": "Aiguaneu",
+            "snowy-rainy": "Aiguaneu",
             "sunny": "Assolellat",
             "windy": "Ventós",
-            "windy_variant": "Ventós"
+            "windy-variant": "Ventós"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gestiona la teva xarxa Z-Wave"
+                },
+                "users": {
+                    "caption": "Usuaris",
+                    "description": "Gestionar els usuaris",
+                    "picker": {
+                        "title": "Usuaris"
+                    },
+                    "editor": {
+                        "rename_user": "Canviar el nom d'usuari",
+                        "change_password": "Canviar contrasenya",
+                        "activate_user": "Activar usuari",
+                        "deactivate_user": "Desactivar usuari",
+                        "delete_user": "Eliminar usuari"
+                    }
                 }
             }
         },

@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Kloer, Nuecht",
+            "clear-night": "Kloer, Nuecht",
             "cloudy": "Wollekeg",
             "fog": "Niwwel",
             "hail": "Knëppelsteng",
             "lightning": "Blëtz",
-            "lightning_rainy": "Blëtz, Reen",
+            "lightning-rainy": "Blëtz, Reen",
             "partlycloudy": "Liicht wollekeg",
             "pouring": "Schloreen",
             "rainy": "Reen",
             "snowy": "Schnéi",
-            "snowy_rainy": "Schnéi, Reen",
+            "snowy-rainy": "Schnéi, Reen",
             "sunny": "Sonneg",
             "windy": "Lëfteg",
-            "windy_variant": "Lëfteg"
+            "windy-variant": "Lëfteg"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Verwalt är Z-Wave Netzwierk"
+                },
+                "users": {
+                    "caption": "Benotzer",
+                    "description": "Benotzer verwalten",
+                    "picker": {
+                        "title": "Benotzer"
+                    },
+                    "editor": {
+                        "rename_user": "Benotzer ëmbenennen",
+                        "change_password": "Passwuert änneren",
+                        "activate_user": "Benotzer aktivéieren",
+                        "deactivate_user": "Benotzer déaktivéieren",
+                        "delete_user": "Benotzer läschen"
+                    }
                 }
             }
         },

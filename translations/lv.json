@@ -77,19 +77,19 @@
             "below_horizon": "Zem horizonta"
         },
         "weather": {
-            "clear_night": "Skaidrs, nakts",
+            "clear-night": "Skaidrs, nakts",
             "cloudy": "Mākoņains",
             "fog": "Migla",
             "lightning": "Zibens",
-            "lightning_rainy": "Zibens, lietus",
+            "lightning-rainy": "Zibens, lietus",
             "partlycloudy": "Daļēji apmācies",
             "pouring": "Lietusgāze",
             "rainy": "Lietains",
             "snowy": "Sniegs",
-            "snowy_rainy": "Sniegs, lietus",
+            "snowy-rainy": "Sniegs, lietus",
             "sunny": "Saulains",
             "windy": "Vējains",
-            "windy_variant": "Vējains"
+            "windy-variant": "Vējains"
         }
     },
     "state_badge": {

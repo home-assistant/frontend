@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Ясно, нощ",
+            "clear-night": "Ясно, нощ",
             "cloudy": "Облачно",
             "fog": "Мъгла",
             "hail": "Градушка",
             "lightning": "Светкавица",
-            "lightning_rainy": "Светкавица, дъждовно",
+            "lightning-rainy": "Светкавица, дъждовно",
             "partlycloudy": "Частична облачност",
             "pouring": "Обилен дъжд",
             "rainy": "Дъждовно",
             "snowy": "Снежно",
-            "snowy_rainy": "Снежно, дъждовно",
+            "snowy-rainy": "Снежно, дъждовно",
             "sunny": "Слънчево",
             "windy": "Ветровито",
-            "windy_variant": "Ветровито"
+            "windy-variant": "Ветровито"
         }
     },
     "state_badge": {

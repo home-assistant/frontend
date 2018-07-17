@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "Despejado, de noche",
+            "clear-night": "Despejado, de noche",
             "cloudy": "Nublado",
             "fog": "Niebla",
             "hail": "Granizo",
             "lightning": "Relámpagos",
-            "lightning_rainy": "Relámpagos, lluvioso",
+            "lightning-rainy": "Relámpagos, lluvioso",
             "partlycloudy": "Parcialmente nublado",
             "pouring": "Torrencial",
             "rainy": "Lluvioso",
             "snowy": "Nevado",
-            "snowy_rainy": "Nevado, lluvioso",
+            "snowy-rainy": "Nevado, lluvioso",
             "sunny": "Soleado",
             "windy": "Ventoso",
-            "windy_variant": "Ventoso"
+            "windy-variant": "Ventoso"
         }
     },
     "state_badge": {

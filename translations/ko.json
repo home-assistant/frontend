@@ -239,20 +239,20 @@
             }
         },
         "weather": {
-            "clear_night": "맑은 밤",
+            "clear-night": "맑은 밤",
             "cloudy": "흐림",
             "fog": "안개",
             "hail": "우박",
             "lightning": "번개",
-            "lightning_rainy": "뇌우",
+            "lightning-rainy": "뇌우",
             "partlycloudy": "대체로 흐림",
             "pouring": "호우",
             "rainy": "비",
             "snowy": "눈",
-            "snowy_rainy": "진눈개비",
+            "snowy-rainy": "진눈개비",
             "sunny": "맑음",
             "windy": "바람",
-            "windy_variant": "잦은바람"
+            "windy-variant": "잦은바람"
         }
     },
     "state_badge": {
@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave 네트워크를 관리합니다"
+                },
+                "users": {
+                    "caption": "사용자",
+                    "description": "사용자 관리",
+                    "picker": {
+                        "title": "사용자"
+                    },
+                    "editor": {
+                        "rename_user": "사용자 이름 변경",
+                        "change_password": "비밀번호 변경",
+                        "activate_user": "사용자 활성화",
+                        "deactivate_user": "사용자 비활성화",
+                        "delete_user": "사용자 삭제"
+                    }
                 }
             }
         },

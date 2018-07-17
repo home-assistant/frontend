@@ -237,20 +237,20 @@
             }
         },
         "weather": {
-            "clear_night": "Selge öö",
+            "clear-night": "Selge öö",
             "cloudy": "Pilvine",
             "fog": "Udu",
             "hail": "Rahe",
             "lightning": "Äikeseline",
-            "lightning_rainy": "Äikeseline, vihmane",
+            "lightning-rainy": "Äikeseline, vihmane",
             "partlycloudy": "Osaliselt pilvine",
             "pouring": "Kallab",
             "rainy": "Vihmane",
             "snowy": "Lumine",
-            "snowy_rainy": "Lörtsine",
+            "snowy-rainy": "Lörtsine",
             "sunny": "Päikeseline",
             "windy": "Tuuline",
-            "windy_variant": "Tuuline"
+            "windy-variant": "Tuuline"
         }
     },
     "state_badge": {

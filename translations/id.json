@@ -217,17 +217,17 @@
             }
         },
         "weather": {
-            "clear_night": "Cerah, malam",
+            "clear-night": "Cerah, malam",
             "cloudy": "Berawan",
             "fog": "Kabut",
             "hail": "Hujan es",
             "lightning": "Petir",
-            "lightning_rainy": "Petir, hujan",
+            "lightning-rainy": "Petir, hujan",
             "partlycloudy": "Sebagian berawan",
             "pouring": "Hujan lebat",
             "rainy": "Hujan",
             "snowy": "Bersalju",
-            "snowy_rainy": "Bersalju, hujan",
+            "snowy-rainy": "Bersalju, hujan",
             "sunny": "Cerah",
             "windy": "Berangin"
         }
