@@ -56,7 +56,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
               on-change="_selectedValueChanged"
             ></paper-input>
           </template>
-          <div id="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</div>
+          [[_value]] [[_stateObj.attributes.unit_of_measurement]]
         </div>
       </hui-generic-entity-row>
     `;
@@ -114,7 +114,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
   }
 
   _hiddenState() {
-    if (this.mode !== 'slider') return;
+    if (this._stateObj.attributes.mode !== 'slider') return;
     const sliderwidth = this.$.slider.offsetWidth;
     if (sliderwidth < 100) {
       this.$.state.hidden = true;

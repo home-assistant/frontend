@@ -39,7 +39,11 @@ class HuiTextEntityRow extends PolymerElement {
   }
 
   _stateObjChanged(stateObj) {
-    this._startInterval(stateObj);
+    if (stateObj) {
+      this._startInterval(stateObj);
+    } else {
+      this._clearInterval();
+    }
   }
 
   _clearInterval() {
