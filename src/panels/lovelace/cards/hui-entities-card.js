@@ -56,7 +56,7 @@ class HuiEntitiesCard extends PolymerElement {
         type: Object,
         observer: '_hassChanged',
       },
-      _config: Object,
+      _config: Object
     };
   }
 
@@ -105,7 +105,7 @@ class HuiEntitiesCard extends PolymerElement {
       const entityId = entity.entity;
 
       const element = createEntityRowElement(entity, this.hass);
-      this._elements.push({ entityId, element });
+      this._elements.push(element);
       const container = document.createElement('div');
       container.appendChild(element);
       root.appendChild(container);
@@ -113,12 +113,9 @@ class HuiEntitiesCard extends PolymerElement {
   }
 
   _hassChanged(hass) {
-    for (let i = 0; i < this._elements.length; i++) {
-      const { entityId, element } = this._elements[i];
-      const stateObj = hass.states[entityId];
-      element.stateObj = stateObj;
+    this._elements.forEach((element) => {
       element.hass = hass;
-    }
+    });
   }
 }
 

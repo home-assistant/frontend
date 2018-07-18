@@ -7,12 +7,8 @@ import '../components/entity/state-info.js';
 
 import timerTimeRemaining from '../common/entity/timer_time_remaining.js';
 import secondsToDuration from '../common/datetime/seconds_to_duration.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
-class StateCardTimer extends LocalizeMixin(PolymerElement) {
+class StateCardTimer extends PolymerElement {
   static get template() {
     return html`
     <style include="iron-flex iron-flex-alignment"></style>

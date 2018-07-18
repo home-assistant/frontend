@@ -1,10 +1,33 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
-import '../entity-row/hui-generic-entity-row-element.js';
+import '../entity-rows/hui-cover-entity-row.js';
+// import '../entity-rows/hui-input-number-entity-row.js';
+import '../entity-rows/hui-input-select-entity-row.js';
+import '../entity-rows/hui-input-text-entity-row.js';
+import '../entity-rows/hui-lock-entity-row.js';
+import '../entity-rows/hui-scene-entity-row.js';
+import '../entity-rows/hui-script-entity-row.js';
+import '../entity-rows/hui-text-entity-row.js';
+// import '../entity-rows/hui-timer-entity-row.js';
+import '../entity-rows/hui-toggle-entity-row.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
+const DOMAIN_TO_DEFAULT = {
+  cover: 'cover',
+  group: 'toggle',
+  input_boolean: 'toggle',
+  // input_number: 'input-number',
+  input_select: 'input-select',
+  input_text: 'input-text',
+  light: 'toggle',
+  lock: 'lock',
+  scene: 'scene',
+  script: 'script',
+  // timer: 'timer',
+  switch: 'toggle'
+};
 
 function _createElement(tag, config, hass) {
   const element = document.createElement(tag);
@@ -28,13 +51,8 @@ function _createErrorElement(error, config) {
 export default function createEntityRowElement(config, hass) {
   let tag;
 
-  if (!config || typeof config !== 'object') {
+  if (!config || typeof config !== 'object' || !config.entity) {
     return _createErrorElement('Invalid config given.', config);
-  }
-
-  const entityId = config.entity;
-  if (!(entityId in hass.states)) {
-    return _createErrorElement('Entity not found.', config);
   }
 
   const type = config.type || 'default';
@@ -52,7 +70,8 @@ export default function createEntityRowElement(config, hass) {
     return element;
   }
 
-  tag = 'hui-generic-entity-row-element';
+  const domain = config.entity.split('.', 1)[0];
+  tag = `hui-${DOMAIN_TO_DEFAULT[domain] || 'text'}-entity-row`;
 
   return _createElement(tag, config, hass);
 }
