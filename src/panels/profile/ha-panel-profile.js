@@ -8,9 +8,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
-import EventsMixin from '../../mixins/events-mixin.js';
+import './ha-change-password-card.js';
 
-let registeredDialog = false;
+import EventsMixin from '../../mixins/events-mixin.js';
 
 /*
  * @appliesMixin EventsMixin
@@ -51,11 +51,9 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
               class='warning'
               on-click='_handleLogOut'
             >Log out</paper-button>
-            <paper-button 
-              on-click="_changePassword"
-            >Change Password</paper-button>
           </div>
         </paper-card>
+        <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
       </div>
     </app-header-layout>
     `;
@@ -69,29 +67,8 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
     };
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    if (!registeredDialog) {
-      registeredDialog = true;
-      this.fire('register-dialog', {
-        dialogShowEvent: 'show-change-password',
-        dialogTag: 'ha-dialog-change-password',
-        dialogImport: () => import('./ha-dialog-change-password.js'),
-      });
-    }
-  }
-
   _handleLogOut() {
     this.fire('hass-logout');
-  }
-
-  _changePassword() {
-    this.fire('show-change-password', {
-      hass: this.hass,
-      dialogClosedCallback: async () => {
-        this.fire('reload-users');
-      },
-    });
   }
 }
 
