@@ -94,15 +94,17 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.fire('more-info-page', { page: null });
   }
 
-  _save() {
-    this.hass.connection.sendMessagePromise({
-      type: 'config/entity_registry/update',
-      entity_id: this.stateObj.entity_id,
-      name: this._name,
-    }).then(
-      (msg) => { this.registryInfo = msg.result; },
-      () => { alert('save failed!'); }
-    );
+  async _save() {
+    try {
+      const info = await this.hass.callWS({
+        type: 'config/entity_registry/update',
+        entity_id: this.stateObj.entity_id,
+        name: this._name,
+      });
+      this.registryInfo = info;
+    } catch (err) {
+      alert('save failed!');
+    }
   }
 }
 customElements.define('more-info-settings', MoreInfoSettings);

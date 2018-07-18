@@ -99,20 +99,19 @@ class HaCameraCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
   }
 
-  updateCameraFeedSrc() {
-    this.hass.connection.sendMessagePromise({
-      type: 'camera_thumbnail',
-      entity_id: this.stateObj.entity_id,
-    }).then((resp) => {
-      if (resp.success) {
-        this.setProperties({
-          imageLoaded: true,
-          cameraFeedSrc: `data:${resp.result.content_type};base64, ${resp.result.content}`,
-        });
-      } else {
-        this.imageLoaded = false;
-      }
-    });
+  async updateCameraFeedSrc() {
+    try {
+      const { content_type: contentType, content } = await this.hass.callWS({
+        type: 'camera_thumbnail',
+        entity_id: this.stateObj.entity_id,
+      });
+      this.setProperties({
+        imageLoaded: true,
+        cameraFeedSrc: `data:${contentType};base64, ${content}`,
+      });
+    } catch (err) {
+      this.imageLoaded = false;
+    }
   }
 
   _computeStateName(stateObj) {
