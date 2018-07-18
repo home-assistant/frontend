@@ -115,7 +115,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
   _hiddenState() {
     if (this._stateObj.attributes.mode !== 'slider') return;
     const sliderwidth = this.shadowRoot.querySelector('paper-slider').offsetWidth;
-    const stateElement = this.shadowRoot.querySelector('.state')
+    const stateElement = this.shadowRoot.querySelector('.state');
     if (sliderwidth < 100) {
       stateElement.style.display = 'none';
     } else if (sliderwidth >= 145) {
