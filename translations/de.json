@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave-Netzwerk verwalten"
+                },
+                "users": {
+                    "caption": "Benutzer",
+                    "description": "Benutzer verwalten",
+                    "picker": {
+                        "title": "Benutzer"
+                    },
+                    "editor": {
+                        "rename_user": "Benutzer umbenennen",
+                        "change_password": "Passwort ändern",
+                        "activate_user": "Benutzer aktivieren",
+                        "deactivate_user": "Benutzer deaktivieren",
+                        "delete_user": "Benutzer löschen"
+                    }
                 }
             }
         },

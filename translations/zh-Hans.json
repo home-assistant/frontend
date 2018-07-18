@@ -523,7 +523,7 @@
                         "title": "用户"
                     },
                     "editor": {
-                        "rename_user": "改变用户名称",
+                        "rename_user": "重命名用户",
                         "change_password": "更改密码",
                         "activate_user": "激活用户",
                         "deactivate_user": "停用用户",

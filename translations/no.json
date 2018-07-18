@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Administrer ditt Z-Wave-nettverk"
+                },
+                "users": {
+                    "caption": "Brukere",
+                    "description": "Administrer brukere",
+                    "picker": {
+                        "title": "Brukere"
+                    },
+                    "editor": {
+                        "rename_user": "Gi nytt navn til bruker",
+                        "change_password": "Endre passord",
+                        "activate_user": "Aktiver bruker",
+                        "deactivate_user": "Deaktiver bruker",
+                        "delete_user": "Slett bruker"
+                    }
                 }
             }
         },
