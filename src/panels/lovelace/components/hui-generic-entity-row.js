@@ -2,6 +2,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/entity/state-badge.js';
+import '../../../components/ha-relative-time.js';
 
 import computeStateName from '../../../common/entity/compute_state_name.js';
 
@@ -25,7 +26,9 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
           align-items: center;
           justify-content: space-between;
         }
-        .secondary {
+        .secondary,
+        ha-relative-time {
+          display: block;
           color: var(--secondary-text-color);
         }
       </style>
@@ -35,9 +38,17 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
           <div class="info">
             [[_computeName(config.name, _stateObj)]]
             <template is="dom-if" if="[[config.secondary_info]]">
-              <div class="secondary">
-                [[_computeSecondaryInfo(config.secondary_info, _stateObj)]]
-              </div>
+              <template is="dom-if" if="[[_equals(config.secondary_info, 'entity-id')]]">
+                <div class="secondary">
+                  [[_stateObj.entity_id]]
+                </div>
+              </template>
+              <template is="dom-if" if="[[_equals(config.secondary_info, 'last-changed')]]">
+                <ha-relative-time
+                  hass="[[hass]]"
+                  datetime="[[_stateObj.last_changed]]"
+                ></ha-relative-time>
+              </template>
             </template>
           </div>
           <slot></slot>
@@ -63,21 +74,16 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
       this.fire('hass-more-info', { entityId: this.config.entity }));
   }
 
+  _equals(a, b) {
+    return a === b;
+  }
+
   _computeStateObj(states, entityId) {
     return states && entityId && entityId in states ? states[entityId] : null;
   }
 
   _computeName(name, stateObj) {
     return name || computeStateName(stateObj);
-  }
-
-  _computeSecondaryInfo(info, stateObj) {
-    switch (info) {
-      case 'entity-id':
-        return stateObj.entity_id;
-      default:
-        return '';
-    }
   }
 }
 customElements.define('hui-generic-entity-row', HuiGenericEntityRow);

@@ -102,8 +102,6 @@ class HuiEntitiesCard extends PolymerElement {
     this._elements = [];
 
     for (const entity of entities) {
-      const entityId = entity.entity;
-
       const element = createEntityRowElement(entity, this.hass);
       this._elements.push(element);
       const container = document.createElement('div');

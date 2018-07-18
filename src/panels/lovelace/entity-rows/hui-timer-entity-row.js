@@ -50,7 +50,7 @@ class HuiTextEntityRow extends PolymerElement {
 
   _clearInterval() {
     if (this._updateRemaining) {
-      _clearInterval(this._updateRemaining);
+      clearInterval(this._updateRemaining);
       this._updateRemaining = null;
     }
   }
