@@ -5,7 +5,6 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import '../../../components/ha-card.js';
 import '../components/hui-image.js';
 
-import { STATES_OFF } from '../../../common/const.js';
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import stateIcon from '../../../common/entity/state_icon.js';
@@ -21,6 +20,13 @@ const DOMAINS_TOGGLE = new Set([
   'input_boolean',
   'light',
   'switch'
+]);
+
+const STATES_OFF = new Set([
+  'closed',
+  'locked',
+  'not_home',
+  'off'
 ]);
 
 /*
@@ -153,7 +159,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   _computeButtonClass(entityId, states) {
-    return STATES_OFF.includes(states[entityId].state) ? '' : 'state-on';
+    return STATES_OFF.has(states[entityId].state) ? '' : 'state-on';
   }
 
   _computeTooltip(entityId, states) {
