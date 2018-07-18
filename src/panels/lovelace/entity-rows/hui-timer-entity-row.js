@@ -14,7 +14,7 @@ class HuiTextEntityRow extends PolymerElement {
         config="[[_config]]"
       >
         <div>
-          [[_secondsToDuration(_timeRemaining)]]
+          [[_computeDisplay(_stateObj, _timeRemaining)]]
         </div>
       </hui-generic-entity-row>
     `;
@@ -66,8 +66,16 @@ class HuiTextEntityRow extends PolymerElement {
     this._timeRemaining = timerTimeRemaining(stateObj);
   }
 
-  _secondsToDuration(time) {
-    return secondsToDuration(time);
+  _computeDisplay(stateObj, time) {
+    if (stateObj.state === 'idle' || time === 0) return stateObj.state;
+
+    let display = secondsToDuration(time);
+
+    if (stateObj.state === 'paused') {
+      display += ' (paused)';
+    }
+
+    return display;
   }
 
   _computeStateObj(states, entityId) {
@@ -81,4 +89,4 @@ class HuiTextEntityRow extends PolymerElement {
     this._config = config;
   }
 }
-customElements.define('hui-text-entity-row', HuiTextEntityRow);
+customElements.define('hui-timer-entity-row', HuiTextEntityRow);

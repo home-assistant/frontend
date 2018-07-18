@@ -8,7 +8,7 @@ import '../entity-rows/hui-lock-entity-row.js';
 import '../entity-rows/hui-scene-entity-row.js';
 import '../entity-rows/hui-script-entity-row.js';
 import '../entity-rows/hui-text-entity-row.js';
-// import '../entity-rows/hui-timer-entity-row.js';
+import '../entity-rows/hui-timer-entity-row.js';
 import '../entity-rows/hui-toggle-entity-row.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
@@ -26,7 +26,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   lock: 'lock',
   scene: 'scene',
   script: 'script',
-  // timer: 'timer',
+  timer: 'timer',
   switch: 'toggle'
 };
 
