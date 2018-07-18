@@ -20,7 +20,6 @@ class HuiInputTextEntityRow extends PolymerElement {
           pattern="[[_stateObj.attributes.pattern]]"
           type="[[_stateObj.attributes.mode]]"
           on-change="_selectedValueChanged"
-          on-click="_stopPropagation"
           placeholder="(empty value)"
         ></paper-input>
       </hui-generic-entity-row>
@@ -33,7 +32,8 @@ class HuiInputTextEntityRow extends PolymerElement {
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
+        computed: '_computeStateObj(hass.states, _config.entity)',
+        observer: '_stateObjChanged',
       },
       _value: String
     };
@@ -50,8 +50,8 @@ class HuiInputTextEntityRow extends PolymerElement {
     this._config = config;
   }
 
-  _stopPropagation(ev) {
-    ev.stopPropagation();
+  _stateObjChanged(stateObj) {
+    this._value = stateObj.state;
   }
 
   _selectedValueChanged() {

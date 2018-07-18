@@ -26,15 +26,11 @@ class HuiTextEntityRow extends PolymerElement {
       _config: Object,
       _stateObj: {
         type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
+        computed: '_computeStateObj(hass.states, _config.entity)',
+        observer: '_stateObjChanged'
       },
       _timeRemaining: Number
     };
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this._startInterval(this.stateObj);
   }
 
   disconnectedCallback() {
@@ -42,7 +38,7 @@ class HuiTextEntityRow extends PolymerElement {
     this._clearInterval();
   }
 
-  stateObjChanged(stateObj) {
+  _stateObjChanged(stateObj) {
     this._startInterval(stateObj);
   }
 
@@ -58,7 +54,7 @@ class HuiTextEntityRow extends PolymerElement {
     this._calculateRemaining(stateObj);
 
     if (stateObj.state === 'active') {
-      this._updateRemaining = setInterval(() => this._calculateRemaining(this.stateObj), 1000);
+      this._updateRemaining = setInterval(() => this._calculateRemaining(this._stateObj), 1000);
     }
   }
 

@@ -1,7 +1,7 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
 import '../entity-rows/hui-cover-entity-row.js';
-// import '../entity-rows/hui-input-number-entity-row.js';
+import '../entity-rows/hui-input-number-entity-row.js';
 import '../entity-rows/hui-input-select-entity-row.js';
 import '../entity-rows/hui-input-text-entity-row.js';
 import '../entity-rows/hui-lock-entity-row.js';
@@ -19,7 +19,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   fan: 'toggle',
   group: 'toggle',
   input_boolean: 'toggle',
-  // input_number: 'input-number',
+  input_number: 'input-number',
   input_select: 'input-select',
   input_text: 'input-text',
   light: 'toggle',
