@@ -82,13 +82,12 @@ class StateInfo extends PolymerElement {
       },
       hass: Object,
       stateObj: Object,
-      inDialog: Boolean,
-      overrideName: String
+      inDialog: Boolean
     };
   }
 
   computeStateName(stateObj) {
-    return this.overrideName || computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 }
 
