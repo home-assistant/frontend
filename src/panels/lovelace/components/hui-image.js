@@ -135,18 +135,17 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     this.$.image.style.filter = filter || (isOff && this._imageFallback && DEFAULT_FILTER) || '';
   }
 
-  _updateCameraImageSrc() {
-    this.hass.connection.sendMessagePromise({
-      type: 'camera_thumbnail',
-      entity_id: this.cameraImage,
-    }).then((resp) => {
-      if (resp.success) {
-        this._imageSrc = `data:${resp.result.content_type};base64, ${resp.result.content}`;
-        this._onImageLoad();
-      } else {
-        this._onImageError();
-      }
-    }, () => this._onImageError());
+  async _updateCameraImageSrc() {
+    try {
+      const { content_type: contentType, content } = await this.hass.callWS({
+        type: 'camera_thumbnail',
+        entity_id: this.cameraImage,
+      });
+      this._imageSrc = `data:${contentType};base64, ${content}`;
+      this._onImageLoad();
+    } catch (err) {
+      this._onImageError();
+    }
   }
 }
 
