@@ -6,7 +6,7 @@ import '../components/hui-generic-entity-row.js';
 import timerTimeRemaining from '../../../common/entity/timer_time_remaining.js';
 import secondsToDuration from '../../../common/datetime/seconds_to_duration.js';
 
-class HuiTextEntityRow extends PolymerElement {
+class HuiTimerEntityRow extends PolymerElement {
   static get template() {
     return html`
       <hui-generic-entity-row
@@ -89,4 +89,4 @@ class HuiTextEntityRow extends PolymerElement {
     this._config = config;
   }
 }
-customElements.define('hui-timer-entity-row', HuiTextEntityRow);
+customElements.define('hui-timer-entity-row', HuiTimerEntityRow);
