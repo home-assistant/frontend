@@ -102,18 +102,19 @@ class Lovelace extends PolymerElement {
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   }
 
-  _fetchConfig() {
-    this.hass.connection.sendMessagePromise({ type: 'frontend/lovelace_config' })
-      .then(
-        conf => this.setProperties({
-          _config: conf.result,
-          _state: 'loaded',
-        }),
-        err => this.setProperties({
-          _state: 'error',
-          _errorMsg: err.message,
-        })
-      );
+  async _fetchConfig() {
+    try {
+      const conf = await this.hass.callWS({ type: 'frontend/lovelace_config' });
+      this.setProperties({
+        _config: conf,
+        _state: 'loaded',
+      });
+    } catch (err) {
+      this.setProperties({
+        _state: 'error',
+        _errorMsg: err.message,
+      });
+    }
   }
 
   _equal(a, b) {

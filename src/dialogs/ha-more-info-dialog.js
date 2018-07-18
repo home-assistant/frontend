@@ -128,7 +128,7 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
     return hass.states[hass.moreInfoEntityId] || null;
   }
 
-  _stateObjChanged(newVal, oldVal) {
+  async _stateObjChanged(newVal, oldVal) {
     if (!newVal) {
       this.setProperties({
         opened: false,
@@ -139,22 +139,26 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
       return;
     }
 
-    if (isComponentLoaded(this.hass, 'config.entity_registry') &&
-        (!oldVal || oldVal.entity_id !== newVal.entity_id)) {
-      this.hass.connection.sendMessagePromise({
-        type: 'config/entity_registry/get',
-        entity_id: newVal.entity_id,
-      }).then(
-        (msg) => { this._registryInfo = msg.result; },
-        () => { this._registryInfo = false; }
-      );
-    }
-
     requestAnimationFrame(() => requestAnimationFrame(() => {
       // allow dialog to render content before showing it so it will be
       // positioned correctly.
       this.opened = true;
     }));
+
+    if (!isComponentLoaded(this.hass, 'config.entity_registry') ||
+        (oldVal && oldVal.entity_id === newVal.entity_id)) {
+      return;
+    }
+
+    try {
+      const info = await this.hass.callWS({
+        type: 'config/entity_registry/get',
+        entity_id: newVal.entity_id,
+      });
+      this._registryInfo = info;
+    } catch (err) {
+      this._registryInfo = null;
+    }
   }
 
   _dialogOpenChanged(newVal) {

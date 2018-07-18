@@ -200,27 +200,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     };
   }
 
-  playerObjChanged(playerObj, oldPlayerObj) {
-    const picture = playerObj.stateObj.attributes.entity_picture;
-    const oldPicture = oldPlayerObj && oldPlayerObj.stateObj.attributes.entity_picture;
-
-    if (picture !== oldPicture && !picture) {
-      this.$.cover.style.backgroundImage = '';
-    } else if (picture !== oldPicture) {
-      // We have a new picture url
-      this.hass.connection.sendMessagePromise({
-        type: 'media_player_thumbnail',
-        entity_id: playerObj.stateObj.entity_id,
-      }).then((resp) => {
-        if (resp.success) {
-          this.$.cover.style.backgroundImage = `url(data:${resp.result.content_type};base64,${resp.result.content})`;
-        } else {
-          this.$.cover.style.backgroundImage = '';
-          this.$.cover.parentElement.classList.add('no-cover');
-        }
-      });
-    }
-
+  async playerObjChanged(playerObj, oldPlayerObj) {
     if (playerObj.isPlaying && playerObj.showProgress) {
       if (!this._positionTracking) {
         this._positionTracking = setInterval(() => this.updatePlaybackPosition(), 1000);
@@ -231,6 +211,28 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
     if (playerObj.showProgress) {
       this.updatePlaybackPosition();
+    }
+
+    const picture = playerObj.stateObj.attributes.entity_picture;
+    const oldPicture = oldPlayerObj && oldPlayerObj.stateObj.attributes.entity_picture;
+
+    if (picture !== oldPicture && !picture) {
+      this.$.cover.style.backgroundImage = '';
+      return;
+    } else if (picture === oldPicture) {
+      return;
+    }
+
+    // We have a new picture url
+    try {
+      const { content_type: contentType, content } = await this.hass.callWS({
+        type: 'media_player_thumbnail',
+        entity_id: playerObj.stateObj.entity_id,
+      });
+      this.$.cover.style.backgroundImage = `url(data:${contentType};base64,${content})`;
+    } catch (err) {
+      this.$.cover.style.backgroundImage = '';
+      this.$.cover.parentElement.classList.add('no-cover');
     }
   }
 
