@@ -2,19 +2,15 @@ import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import processConfigEntities from '../common/process-config-entities.js';
-
 import '../../../components/ha-card.js';
 import '../components/hui-entities-toggle.js';
 
-// just importing this now as shortcut to import correct state-card-*
-import '../../../state-summary/state-card-content.js';
+import createEntityRowElement from '../common/create-entity-row-element.js';
+import processConfigEntities from '../common/process-config-entities.js';
+import computeDomain from '../../../common/entity/compute_domain.js';
+import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 
 import EventsMixin from '../../../mixins/events-mixin.js';
-
-import createEntityRowElement from '../common/create-entity-row-element.js';
-import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
-import computeDomain from '../../../common/entity/compute_domain.js';
 
 /*
  * @appliesMixin EventsMixin
@@ -70,7 +66,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
         type: Object,
         observer: '_hassChanged',
       },
-      _config: Object,
+      _config: Object
     };
   }
 
@@ -117,14 +113,13 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
     for (const entity of entities) {
       const entityId = entity.entity;
-
-      const element = createEntityRowElement(entity, this.hass);
+      const element = createEntityRowElement(entity);
       if (entityId && !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
         element.classList.add('state-card-dialog');
         element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));
       }
-
-      this._elements.push({ entityId, element });
+      element.hass = this.hass;
+      this._elements.push(element);
       const container = document.createElement('div');
       container.appendChild(element);
       root.appendChild(container);
@@ -132,12 +127,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
   }
 
   _hassChanged(hass) {
-    for (let i = 0; i < this._elements.length; i++) {
-      const { entityId, element } = this._elements[i];
-      const stateObj = hass.states[entityId];
-      element.stateObj = stateObj;
+    this._elements.forEach((element) => {
       element.hass = hass;
-    }
+    });
   }
 }
 

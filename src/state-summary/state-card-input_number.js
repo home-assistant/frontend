@@ -51,12 +51,11 @@ class StateCardInputNumber extends mixinBehaviors([
 
   static get stateInfoTemplate() {
     return html`
-    <state-info 
-      hass="[[hass]]" 
-      state-obj="[[stateObj]]" 
-      in-dialog="[[inDialog]]" 
-      override-name="[[overrideName]]">
-    </state-info>
+    <state-info
+      hass="[[hass]]"
+      state-obj="[[stateObj]]"
+      in-dialog="[[inDialog]]"
+    ></state-info>
 `;
   }
 
@@ -105,16 +104,9 @@ class StateCardInputNumber extends mixinBehaviors([
         type: Number,
         value: 3
       },
-      step: {
-        type: Number,
-      },
-      value: {
-        type: Number,
-      },
-      mode: {
-        type: String,
-      },
-      overrideName: String
+      step: Number,
+      value: Number,
+      mode: String
     };
   }
 
