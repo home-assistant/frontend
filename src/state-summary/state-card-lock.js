@@ -38,8 +38,7 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
       hass="[[hass]]"
       state-obj="[[stateObj]]"
       in-dialog="[[inDialog]]"
-      override-name="[[overrideName]]">
-    </state-info>
+    ></state-info>
 `;
   }
 
@@ -54,8 +53,7 @@ class StateCardLock extends LocalizeMixin(PolymerElement) {
         type: Boolean,
         value: false,
       },
-      isLocked: Boolean,
-      overrideName: String
+      isLocked: Boolean
     };
   }
 

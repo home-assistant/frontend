@@ -40,8 +40,7 @@ class StateCardWeblink extends PolymerElement {
       inDialog: {
         type: Boolean,
         value: false,
-      },
-      overrideName: String
+      }
     };
   }
 
@@ -51,7 +50,7 @@ class StateCardWeblink extends PolymerElement {
   }
 
   _computeStateName(stateObj) {
-    return this.overrideName || computeStateName(stateObj);
+    return computeStateName(stateObj);
   }
 
   onTap(ev) {

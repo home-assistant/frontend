@@ -7,12 +7,8 @@ import '../components/entity/state-info.js';
 
 import timerTimeRemaining from '../common/entity/timer_time_remaining.js';
 import secondsToDuration from '../common/datetime/seconds_to_duration.js';
-import LocalizeMixin from '../mixins/localize-mixin.js';
 
-/*
- * @appliesMixin LocalizeMixin
- */
-class StateCardTimer extends LocalizeMixin(PolymerElement) {
+class StateCardTimer extends PolymerElement {
   static get template() {
     return html`
     <style include="iron-flex iron-flex-alignment"></style>
@@ -36,12 +32,11 @@ class StateCardTimer extends LocalizeMixin(PolymerElement) {
 
   static get stateInfoTemplate() {
     return html`
-    <state-info 
-      hass="[[hass]]" 
-      state-obj="[[stateObj]]" 
-      in-dialog="[[inDialog]]" 
-      override-name="[[overrideName]]">
-    </state-info>
+    <state-info
+      hass="[[hass]]"
+      state-obj="[[stateObj]]"
+      in-dialog="[[inDialog]]"
+    ></state-info>
 `;
   }
 
@@ -56,8 +51,7 @@ class StateCardTimer extends LocalizeMixin(PolymerElement) {
       inDialog: {
         type: Boolean,
         value: false,
-      },
-      overrideName: String
+      }
     };
   }
 
