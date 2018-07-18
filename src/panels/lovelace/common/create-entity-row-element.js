@@ -14,8 +14,9 @@ import '../entity-rows/hui-toggle-entity-row.js';
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
-const DOMAIN_TO_DEFAULT = {
+const DOMAIN_TO_ELEMENT_TYPE = {
   cover: 'cover',
+  fan: 'toggle',
   group: 'toggle',
   input_boolean: 'toggle',
   // input_number: 'input-number',
@@ -71,7 +72,7 @@ export default function createEntityRowElement(config, hass) {
   }
 
   const domain = config.entity.split('.', 1)[0];
-  tag = `hui-${DOMAIN_TO_DEFAULT[domain] || 'text'}-entity-row`;
+  tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
 
   return _createElement(tag, config, hass);
 }
