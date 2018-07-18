@@ -16,7 +16,6 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
     return html`
       <style>
         :host {
-          cursor: pointer;
           display: flex;
         }
         .flex {
@@ -76,12 +75,6 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
         computed: '_computeStateObj(hass.states, config.entity)'
       }
     };
-  }
-
-  ready() {
-    super.ready();
-    this.addEventListener('click', () =>
-      this.fire('hass-more-info', { entityId: this.config.entity }));
   }
 
   _equals(a, b) {
