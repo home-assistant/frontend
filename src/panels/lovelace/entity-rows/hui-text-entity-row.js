@@ -13,16 +13,14 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-      <template is="dom-if" if="[[_stateObj]]">
-        <hui-generic-entity-row
-          hass="[[hass]]"
-          config="[[_config]]"
-        >
-          <div>
-            [[_computeState(_stateObj)]]
-          </div>
-        </hui-generic-entity-row>
-      </template>
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        <div>
+          [[_computeState(_stateObj)]]
+        </div>
+      </hui-generic-entity-row>
     `;
   }
 
@@ -38,7 +36,7 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   setConfig(config) {
@@ -46,10 +44,6 @@ class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
       throw new Error('Entity not configured.');
     }
     this._config = config;
-  }
-
-  getCardSize() {
-    return 1;
   }
 
   _computeState(stateObj) {

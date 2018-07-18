@@ -25,7 +25,11 @@ class HuiInputSelectEntityRow extends EventsMixin(PolymerElement) {
           margin-left: 16px;
           flex: 1;
         }
-
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
+        }
       </style>
       <template is="dom-if" if="[[_stateObj]]">
         <state-badge state-obj="[[_stateObj]]"></state-badge>
@@ -36,6 +40,11 @@ class HuiInputSelectEntityRow extends EventsMixin(PolymerElement) {
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
+      </template>
+      <template is="dom-if" if="[[!_stateObj]]">
+        <div class="not-found">
+          Entity not available: [[_config.entity]]
+        </div>
       </template>
     `;
   }
@@ -62,12 +71,8 @@ class HuiInputSelectEntityRow extends EventsMixin(PolymerElement) {
     this._config = config;
   }
 
-  getCardSize() {
-    return 1;
-  }
-
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   _computeName(name, stateObj) {

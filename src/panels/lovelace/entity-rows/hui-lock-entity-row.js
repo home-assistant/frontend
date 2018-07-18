@@ -19,16 +19,14 @@ class HuiLockEntityRow extends LocalizeMixin(PolymerElement) {
           margin: 0;
         }
       </style>
-      <template is="dom-if" if="[[_stateObj]]">
-        <hui-generic-entity-row
-          hass="[[hass]]"
-          config="[[_config]]"
-        >
-          <paper-button on-click="_callService">
-            [[_computeButtonTitle(_stateObj.state)]]
-          </paper-button>
-        </hui-generic-entity-row>
-      </template>
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        <paper-button on-click="_callService">
+          [[_computeButtonTitle(_stateObj.state)]]
+        </paper-button>
+      </hui-generic-entity-row>
     `;
   }
 
@@ -44,7 +42,7 @@ class HuiLockEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   setConfig(config) {
@@ -52,10 +50,6 @@ class HuiLockEntityRow extends LocalizeMixin(PolymerElement) {
       throw new Error('Entity not configured.');
     }
     this._config = config;
-  }
-
-  getCardSize() {
-    return 1;
   }
 
   _computeButtonTitle(state) {

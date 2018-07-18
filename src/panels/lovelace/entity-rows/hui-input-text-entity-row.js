@@ -7,12 +7,12 @@ import '../components/hui-generic-entity-row.js';
 class HuiInputTextEntityRow extends PolymerElement {
   static get template() {
     return html`
-      <template is="dom-if" if="[[_stateObj]]">
-        <hui-generic-entity-row
-          hass="[[hass]]"
-          config="[[_config]]"
-        >
-        <paper-input no-label-float=
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        <paper-input
+          no-label-float
           minlength="[[_stateObj.attributes.min]]"
           maxlength="[[_stateObj.attributes.max]]"
           value="{{_value}}"
@@ -22,8 +22,8 @@ class HuiInputTextEntityRow extends PolymerElement {
           on-change="_selectedValueChanged"
           on-click="_stopPropagation"
           placeholder="(empty value)"
-        ></hui-generic-entity-row>
-      </template>
+        ></paper-input>
+      </hui-generic-entity-row>
     `;
   }
 
@@ -40,7 +40,7 @@ class HuiInputTextEntityRow extends PolymerElement {
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   setConfig(config) {
@@ -48,10 +48,6 @@ class HuiInputTextEntityRow extends PolymerElement {
       throw new Error('Entity not configured.');
     }
     this._config = config;
-  }
-
-  getCardSize() {
-    return 1;
   }
 
   _stopPropagation(ev) {

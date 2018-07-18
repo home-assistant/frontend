@@ -20,19 +20,17 @@ class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
           margin: 0;
         }
       </style>
-      <template is="dom-if" if="[[_stateObj]]">
-        <hui-generic-entity-row
-          hass="[[hass]]"
-          config="[[_config]]"
-        >
-          <template is="dom-if" if="[[_stateObj.attributes.can_cancel]]">
-            <ha-entity-toggle state-obj="[[_stateObj]]" hass="[[hass]]"></ha-entity-toggle>
-          </template>
-          <template is="dom-if" if="[[!_stateObj.attributes.can_cancel]]">
-            <paper-button on-click="_callService">[[localize('ui.card.script.execute')]]</paper-button>
-          </template>
-        </hui-generic-entity-row>
-      </template>
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        <template is="dom-if" if="[[_stateObj.attributes.can_cancel]]">
+          <ha-entity-toggle state-obj="[[_stateObj]]" hass="[[hass]]"></ha-entity-toggle>
+        </template>
+        <template is="dom-if" if="[[!_stateObj.attributes.can_cancel]]">
+          <paper-button on-click="_callService">[[localize('ui.card.script.execute')]]</paper-button>
+        </template>
+      </hui-generic-entity-row>
     `;
   }
 
@@ -48,7 +46,7 @@ class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   setConfig(config) {
@@ -56,10 +54,6 @@ class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
       throw new Error('Entity not configured.');
     }
     this._config = config;
-  }
-
-  getCardSize() {
-    return 1;
   }
 
   _callService(ev) {

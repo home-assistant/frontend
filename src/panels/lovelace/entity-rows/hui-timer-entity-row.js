@@ -9,16 +9,14 @@ import secondsToDuration from '../../../common/datetime/seconds_to_duration.js';
 class HuiTextEntityRow extends PolymerElement {
   static get template() {
     return html`
-      <template is="dom-if" if="[[_stateObj]]">
-        <hui-generic-entity-row
-          hass="[[hass]]"
-          config="[[_config]]"
-        >
-          <div>
-            [[_secondsToDuration(_timeRemaining)]]
-          </div>
-        </hui-generic-entity-row>
-      </template>
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        <div>
+          [[_secondsToDuration(_timeRemaining)]]
+        </div>
+      </hui-generic-entity-row>
     `;
   }
 
@@ -73,7 +71,7 @@ class HuiTextEntityRow extends PolymerElement {
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   setConfig(config) {
@@ -81,10 +79,6 @@ class HuiTextEntityRow extends PolymerElement {
       throw new Error('Entity not configured.');
     }
     this._config = config;
-  }
-
-  getCardSize() {
-    return 1;
   }
 }
 customElements.define('hui-text-entity-row', HuiTextEntityRow);

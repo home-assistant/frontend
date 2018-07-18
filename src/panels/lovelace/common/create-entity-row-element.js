@@ -30,7 +30,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   switch: 'toggle'
 };
 
-function _createElement(tag, config, hass) {
+function _createElement(tag, config) {
   const element = document.createElement(tag);
   try {
     if ('setConfig' in element) element.setConfig(config);
@@ -41,7 +41,6 @@ function _createElement(tag, config, hass) {
     return _createErrorElement(err.message, config);
   }
 
-  element.hass = hass;
   return element;
 }
 
@@ -49,7 +48,7 @@ function _createErrorElement(error, config) {
   return _createElement('hui-error-card', createErrorCardConfig(error, config));
 }
 
-export default function createEntityRowElement(config, hass) {
+export default function createEntityRowElement(config) {
   let tag;
 
   if (!config || typeof config !== 'object' || !config.entity) {
@@ -61,7 +60,7 @@ export default function createEntityRowElement(config, hass) {
     tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
     if (customElements.get(tag)) {
-      return _createElement(tag, config, hass);
+      return _createElement(tag, config);
     }
     const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
 
@@ -74,5 +73,5 @@ export default function createEntityRowElement(config, hass) {
   const domain = config.entity.split('.', 1)[0];
   tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
 
-  return _createElement(tag, config, hass);
+  return _createElement(tag, config);
 }

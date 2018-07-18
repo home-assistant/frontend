@@ -31,6 +31,11 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
           display: block;
           color: var(--secondary-text-color);
         }
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
+        }
       </style>
       <template is="dom-if" if="[[_stateObj]]">
         <state-badge state-obj="[[_stateObj]]"></state-badge>
@@ -52,6 +57,11 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
             </template>
           </div>
           <slot></slot>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!_stateObj]]">
+        <div class="not-found">
+          Entity not available: [[config.entity]]
         </div>
       </template>
     `;
@@ -79,7 +89,7 @@ class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   _computeName(name, stateObj) {

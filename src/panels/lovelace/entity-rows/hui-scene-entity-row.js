@@ -19,32 +19,26 @@ class HuiSceneEntityRow extends LocalizeMixin(PolymerElement) {
           margin: 0;
         }
       </style>
-      <template is="dom-if" if="[[_stateObj]]">
-        <hui-generic-entity-row
-          hass="[[hass]]"
-          config="[[_config]]"
-        >
-          <paper-button on-click="_callService">
-            [[localize('ui.card.scene.activate')]]
-          </paper-button>
-        </hui-generic-entity-row>
-      </template>
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        <paper-button on-click="_callService">
+          [[localize('ui.card.scene.activate')]]
+        </paper-button>
+      </hui-generic-entity-row>
     `;
   }
 
   static get properties() {
     return {
       hass: Object,
-      _config: Object,
-      _stateObj: {
-        type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
-      }
+      _config: Object
     };
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   setConfig(config) {
@@ -52,10 +46,6 @@ class HuiSceneEntityRow extends LocalizeMixin(PolymerElement) {
       throw new Error('Entity not configured.');
     }
     this._config = config;
-  }
-
-  getCardSize() {
-    return 1;
   }
 
   _callService(ev) {

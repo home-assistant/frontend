@@ -7,30 +7,24 @@ import '../../../components/entity/ha-entity-toggle.js';
 class HuiToggleEntityRow extends PolymerElement {
   static get template() {
     return html`
-      <template is="dom-if" if="[[_stateObj]]">
-        <hui-generic-entity-row
-          hass="[[hass]]"
-          config="[[_config]]"
-        >
-          <ha-entity-toggle hass="[[hass]]" state-obj="[[_stateObj]]"></ha-entity-toggle>
-        </hui-generic-entity-row>
-      </template>
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        <ha-entity-toggle hass="[[hass]]" state-obj="[[_computeStateObj(hass.states, _config.entity)]]"></ha-entity-toggle>
+      </hui-generic-entity-row>
     `;
   }
 
   static get properties() {
     return {
       hass: Object,
-      _config: Object,
-      _stateObj: {
-        type: Object,
-        computed: '_computeStateObj(hass.states, _config.entity)'
-      }
+      _config: Object
     };
   }
 
   _computeStateObj(states, entityId) {
-    return states && entityId && entityId in states ? states[entityId] : null;
+    return states && entityId in states ? states[entityId] : null;
   }
 
   setConfig(config) {
@@ -38,10 +32,6 @@ class HuiToggleEntityRow extends PolymerElement {
       throw new Error('Entity not configured.');
     }
     this._config = config;
-  }
-
-  getCardSize() {
-    return 1;
   }
 }
 customElements.define('hui-toggle-entity-row', HuiToggleEntityRow);
