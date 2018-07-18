@@ -26,7 +26,7 @@ class HaChangePasswordCard extends PolymerElement {
         max-width: 600px;
         margin: 16px auto;
       }
-      .password1 {
+      .currentPassword {
         margin-top: -4px;
       }
     </style>
@@ -41,7 +41,15 @@ class HaChangePasswordCard extends PolymerElement {
           </template>
           <paper-input
             autofocus
-            class='password1'
+            class='currentPassword'
+            label='Current Password'
+            type='password'
+            value='{{_currentPassword}}'
+            required
+            auto-validate
+            error-message='Required'
+          ></paper-input>
+          <paper-input
             label='New Password'
             type='password'
             value='{{_password1}}'
@@ -84,6 +92,7 @@ class HaChangePasswordCard extends PolymerElement {
       _statusMsg: String,
       _errorMsg: String,
 
+      _currentPassword: String,
       _password1: String,
       _password2: String,
     };
@@ -101,10 +110,15 @@ class HaChangePasswordCard extends PolymerElement {
 
   async _changePassword() {
     this._statusMsg = null;
-    if (!this._password1 || !this._password2) return;
+    if (!this._currentPassword || !this._password1 || !this._password2) return;
 
     if (this._password1 !== this._password2) {
-      this._errorMsg = "Passwords don't match";
+      this._errorMsg = "New password confirmation doesn't match";
+      return;
+    }
+
+    if (this._currentPassword === this._password1) {
+      this._errorMsg = 'New password must be different than current password';
       return;
     }
 
@@ -114,17 +128,18 @@ class HaChangePasswordCard extends PolymerElement {
     try {
       await this.hass.callWS({
         type: 'config/auth_provider/homeassistant/change_password',
+        current_password: this._currentPassword,
         new_password: this._password1,
       });
 
       this.setProperties({
         _statusMsg: 'Password changed successfully',
+        _currentPassword: null,
         _password1: null,
         _password2: null
       });
     } catch (err) {
       this._errorMsg = err.message;
-      return;
     }
 
     this._loading = false;
