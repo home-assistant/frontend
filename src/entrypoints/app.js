@@ -132,7 +132,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
 
     const language = this.hass.selectedLanguage || this.hass.language;
 
-    const resp = await this.hass.connection.sendMessagePromise({
+    const { resources } = await this.hass.callWS({
       type: 'frontend/get_translations',
       language,
     });
@@ -140,7 +140,7 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
     // If we've switched selected languages just ignore this response
     if ((this.hass.selectedLanguage || this.hass.language) !== language) return;
 
-    this._updateResources(language, resp.result.resources);
+    this._updateResources(language, resources);
   }
 
   _updateResources(language, data) {
@@ -427,10 +427,10 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
   }
 
   async _loadPanels() {
-    const msg = await this.connection.sendMessagePromise({
+    const panels = await this.hass.callWS({
       type: 'get_panels'
     });
-    this._updateHass({ panels: msg.result });
+    this._updateHass({ panels });
   }
 
 
