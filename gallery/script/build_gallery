@@ -1,0 +1,14 @@
+#!/bin/sh
+# Run the gallery
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+OUTPUT_DIR=dist
+
+rm -rf $OUTPUT_DIR
+
+# NEW BUILD
+NODE_ENV=production ../node_modules/.bin/webpack -p --config webpack.config.js
