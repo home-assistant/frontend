@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "{time} назад",
                 "future": "через {time}",
-                "never": "Никогда"
+                "never": "Никогда",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+                    "minute": "{count} {count, plural,\none {мин.}\nother {мин.}\n}",
+                    "hour": "{count} {count, plural,\none {ч.}\nother {ч.}\n}",
+                    "day": "{count} {count, plural,\none {д.}\nother {д.}\n}",
+                    "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Загрузка истории...",

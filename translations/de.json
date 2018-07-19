@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "Vor {time}",
                 "future": "In {time}",
-                "never": "Noch nie"
+                "never": "Noch nie",
+                "duration": {
+                    "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+                    "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+                    "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}",
+                    "day": "{count} {count, plural,\none {Tag}\nother {Tagen}\n}",
+                    "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Lade Zustandsverlauf...",
