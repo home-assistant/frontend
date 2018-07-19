@@ -20,7 +20,7 @@ class HaGallery extends PolymerElement {
         -moz-user-select: initial;
       }
       app-header-layout {
-        height: 100vh;
+        min-height: 100vh;
       }
       paper-icon-button.invisible {
         visibility: hidden;
