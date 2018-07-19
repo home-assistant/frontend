@@ -57,11 +57,11 @@ class DemoCard extends PolymerElement {
       heading.innerText = item.heading;
       container.appendChild(heading);
       const el = document.createElement(this.type);
-      el.setConfig(JsYaml.safeLoad(item.config));
+      el.setConfig(JsYaml.safeLoad(item.config)[0]);
       el.hass = hass;
       container.appendChild(el);
       const yaml = document.createElement('pre');
-      yaml.innerText = item.config;
+      yaml.innerText = item.config.trim();
       container.appendChild(yaml);
       root.appendChild(container);
     });
