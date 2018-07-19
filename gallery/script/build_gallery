@@ -10,5 +10,8 @@ OUTPUT_DIR=dist
 
 rm -rf $OUTPUT_DIR
 
-# NEW BUILD
+cd ..
+./node_modules/.bin/gulp build-translations gen-icons
+cd gallery
+
 NODE_ENV=production ../node_modules/.bin/webpack -p --config webpack.config.js
