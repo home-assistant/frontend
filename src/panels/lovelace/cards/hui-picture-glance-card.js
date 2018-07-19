@@ -83,7 +83,9 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
           entity="[[_config.entity]]"
         ></hui-image>
         <div class="box">
-          <div class="title">[[_config.title]]</div>
+          <template is="dom-if" if="[[_config.title]]">
+            <div class="title">[[_config.title]]</div>
+          </template>
           <div>
             <template is="dom-repeat" items="[[_entitiesDialog]]">
               <template is="dom-if" if="[[_showEntity(item.entity, hass.states)]]">
