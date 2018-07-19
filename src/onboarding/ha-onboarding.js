@@ -16,18 +16,24 @@ class HaOnboarding extends PolymerElement {
     <style>
       .layout {
         padding-top: 20px;
+        max-width: 600px;
+        margin: 0 auto;
       }
 
       .error {
         color: red;
         font-weight: bold;
       }
+
+      .action {
+        margin-top: 32px;
+      }
     </style>
     <div class="layout vertical center fit">
       <img src="/static/icons/favicon-192x192.png" height="192">
 
-      <p>Create your owner user account.</p>
-      <p><i>It is not possible yet to change your password. Coming soon!</i></p>
+      <p>Welcome to Home Assistant! Are you ready to awaken your home?</p>
+      <p>Let's get started by creating a user account.</p>
 
       <template is='dom-if' if='[[_error]]'>
         <p class='error'>[[_error]]</p>
@@ -61,8 +67,8 @@ class HaOnboarding extends PolymerElement {
       ></paper-input>
 
       <template is='dom-if' if='[[!_loading]]'>
-        <p>
-          <paper-button on-click='_submitForm'>Submit</paper-button>
+        <p class='action'>
+          <paper-button raised on-click='_submitForm'>Create Account</paper-button>
         </p>
       </template>
     </div>
@@ -96,8 +102,12 @@ class HaOnboarding extends PolymerElement {
   }
 
   _maybePopulateUsername() {
-    if (!this._username) {
-      this._username = this._name.toLowerCase().replace(/ /g, '');
+    if (this._username) return;
+
+    const parts = this._name.split(" ");
+
+    if (parts.length) {
+      this._username = parts[0].toLowerCase();
     }
   }
 

@@ -32,7 +32,15 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
           <div class='error'>[[_errorMsg]]</div>
         </template>
         <paper-input
-          autofocus
+          class='name'
+          label='Name'
+          value='{{_name}}'
+          required
+          auto-validate
+          error-message='Required'
+          on-blur='_maybePopulateUsername'
+        ></paper-input>
+        <paper-input
           class='username'
           label='Username'
           value='{{_username}}'
@@ -79,6 +87,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
         value: false,
       },
 
+      _name: String,
       _username: String,
       _password: String,
     };
@@ -98,10 +107,21 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
     this._dialogClosedCallback = dialogClosedCallback;
     this._loading = false;
     this._opened = true;
+    setTimeout(() => this.shadowRoot.querySelector('paper-input').focus(), 0);
+  }
+
+  _maybePopulateUsername() {
+    if (this._username) return;
+
+    const parts = this._name.split(" ");
+
+    if (parts.length) {
+      this._username = parts[0].toLowerCase();
+    }
   }
 
   async _createUser() {
-    if (!this._username || !this._password) return;
+    if (!this._name || !this._username || !this._password) return;
 
     this._loading = true;
     this._errorMsg = null;
@@ -111,7 +131,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
     try {
       const userResponse = await this.hass.callWS({
         type: 'config/auth/create',
-        name: this._username,
+        name: this._name,
       });
       userId = userResponse.user.id;
     } catch (err) {
@@ -163,6 +183,8 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
     if (this._dialogClosedCallback && !ev.detail.value) {
       this._dialogDone();
     }
+
+
   }
 }
 
