@@ -1,4 +1,6 @@
 import '@polymer/paper-styles/typography.js';
+import '@polymer/polymer/lib/elements/dom-if.js';
+import '@polymer/polymer/lib/elements/dom-repeat.js';
 
 import '../../src/resources/hass-icons.js';
 import '../../src/resources/ha-style.js';
