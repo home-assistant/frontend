@@ -122,7 +122,7 @@ class HUIView extends PolymerElement {
       root.removeChild(root.lastChild);
     }
 
-    if (!config) {
+    if (!config || !config.cards || !Array.isArray(config.cards)) {
       this._cards = [];
       return;
     }
