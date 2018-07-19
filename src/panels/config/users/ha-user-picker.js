@@ -38,6 +38,7 @@ class HaUserPicker extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElemen
       margin: 16px auto;
     }
     a {
+      text-decoration: none;
       color: var(--primary-text-color);
     }
   </style>

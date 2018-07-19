@@ -1,4 +1,5 @@
 import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-item/paper-item-body.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
@@ -11,12 +12,11 @@ class HaPickAuthProvider extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
-      :host {
-        text-align: center;
-        font-family: Roboto;
-      }
       paper-item {
         cursor: pointer;
+      }
+      p {
+        margin-top: 0;
       }
     </style>
     <template is="dom-if" if="[[_equal(_state, &quot;loading&quot;)]]">
@@ -29,9 +29,12 @@ class HaPickAuthProvider extends EventsMixin(PolymerElement) {
       Error loading
     </template>
     <template is="dom-if" if="[[_equal(_state, &quot;pick&quot;)]]">
-      <p>Log in with</p>
+      <p>Pick an auth provider to log in with:</p>
       <template is="dom-repeat" items="[[authProviders]]">
-        <paper-item on-click="_handlePick">[[item.name]]</paper-item>
+        <paper-item on-click="_handlePick">
+          <paper-item-body>[[item.name]]</paper-item-body>
+          <iron-icon icon="hass:chevron-right"></iron-icon>
+        </paper-item>
       </template>
     </template>
 `;

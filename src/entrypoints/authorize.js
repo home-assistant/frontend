@@ -15,12 +15,31 @@ class HaAuthorize extends PolymerElement {
     return html`
     <style include="iron-flex iron-positioning"></style>
     <style>
-      .layout {
-        padding-top: 20px;
+      .content {
+        padding: 20px 16px;
+        max-width: 360px;
+        margin: 0 auto;
       }
+
+      .header {
+        text-align: center;
+        font-size: 1.96em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 300;
+      }
+
+      .header img {
+        margin-right: 16px;
+      }
+
     </style>
-    <div class="layout vertical center fit">
-      <img src="/static/icons/favicon-192x192.png" height="192">
+    <div class="content layout vertical fit">
+      <div class='header'>
+        <img src="/static/icons/favicon-192x192.png" height="52">
+        Home Assistant
+      </div>
 
       <p>Logging in to <b>[[clientId]]</b>.</p>
 
