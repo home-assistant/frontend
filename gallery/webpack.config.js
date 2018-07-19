@@ -1,7 +1,6 @@
 const path = require('path');
-const webpack = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const CompressionPlugin = require("compression-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isProd = process.env.NODE_ENV === 'production'
 const chunkFilename = isProd ?
@@ -48,9 +47,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.DefinePlugin({
-      __DEV__: JSON.stringify(!isProd),
-    }),
+    new CopyWebpackPlugin(['public']),
     isProd && new UglifyJsPlugin({
       extractComments: true,
       sourceMap: true,
@@ -58,15 +55,6 @@ module.exports = {
         // Disabling because it broke output
         mangle: false,
       }
-    }),
-    isProd && new CompressionPlugin({
-      cache: true,
-      exclude: [
-        /\.js\.map$/,
-        /\.LICENSE$/,
-        /\.py$/,
-        /\.txt$/,
-      ]
     }),
   ].filter(Boolean),
   output: {
