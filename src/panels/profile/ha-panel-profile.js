@@ -8,6 +8,8 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
+import './ha-change-password-card.js';
+
 import EventsMixin from '../../mixins/events-mixin.js';
 
 /*
@@ -51,6 +53,7 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
             >Log out</paper-button>
           </div>
         </paper-card>
+        <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
       </div>
     </app-header-layout>
     `;
