@@ -14,20 +14,49 @@ class HaOnboarding extends PolymerElement {
     return html`
     <style include="iron-flex iron-positioning"></style>
     <style>
-      .layout {
-        padding-top: 20px;
+      .content {
+        padding: 20px 16px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        font-size: 1.96em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 300;
+      }
+
+      .header img {
+        margin-right: 16px;
+      }
+
+      h1 {
+        font-size: 1.2em;
       }
 
       .error {
         color: red;
         font-weight: bold;
       }
-    </style>
-    <div class="layout vertical center fit">
-      <img src="/static/icons/favicon-192x192.png" height="192">
 
-      <p>Create your owner user account.</p>
-      <p><i>It is not possible yet to change your password. Coming soon!</i></p>
+      .action {
+        margin: 32px 0;
+        text-align: center;
+      }
+    </style>
+    <div class="content layout vertical fit">
+      <div class='header'>
+        <img src="/static/icons/favicon-192x192.png" height="52">
+        Home Assistant
+      </div>
+
+      <div>
+        <p>Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?</p>
+        <p>Let's get started by creating a user account.</p>
+      </div>
 
       <template is='dom-if' if='[[_error]]'>
         <p class='error'>[[_error]]</p>
@@ -61,8 +90,8 @@ class HaOnboarding extends PolymerElement {
       ></paper-input>
 
       <template is='dom-if' if='[[!_loading]]'>
-        <p>
-          <paper-button on-click='_submitForm'>Submit</paper-button>
+        <p class='action'>
+          <paper-button raised on-click='_submitForm'>Create Account</paper-button>
         </p>
       </template>
     </div>
@@ -96,8 +125,12 @@ class HaOnboarding extends PolymerElement {
   }
 
   _maybePopulateUsername() {
-    if (!this._username) {
-      this._username = this._name.toLowerCase().replace(/ /g, '');
+    if (this._username) return;
+
+    const parts = this._name.split(' ');
+
+    if (parts.length) {
+      this._username = parts[0].toLowerCase();
     }
   }
 
