@@ -113,7 +113,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
   _maybePopulateUsername() {
     if (this._username) return;
 
-    const parts = this._name.split(" ");
+    const parts = this._name.split(' ');
 
     if (parts.length) {
       this._username = parts[0].toLowerCase();
@@ -183,8 +183,6 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
     if (this._dialogClosedCallback && !ev.detail.value) {
       this._dialogDone();
     }
-
-
   }
 }
 

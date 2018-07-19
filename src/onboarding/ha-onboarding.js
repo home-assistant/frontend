@@ -14,10 +14,27 @@ class HaOnboarding extends PolymerElement {
     return html`
     <style include="iron-flex iron-positioning"></style>
     <style>
-      .layout {
-        padding-top: 20px;
-        max-width: 600px;
+      .content {
+        padding: 20px 16px;
+        max-width: 400px;
         margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        font-size: 1.96em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 300;
+      }
+
+      .header img {
+        margin-right: 16px;
+      }
+
+      h1 {
+        font-size: 1.2em;
       }
 
       .error {
@@ -26,13 +43,17 @@ class HaOnboarding extends PolymerElement {
       }
 
       .action {
-        margin-top: 32px;
+        margin: 32px 0;
+        text-align: center;
       }
     </style>
-    <div class="layout vertical center fit">
-      <img src="/static/icons/favicon-192x192.png" height="192">
+    <div class="content layout vertical fit">
+      <div class='header'>
+        <img src="/static/icons/favicon-192x192.png" height="52">
+        Home Assistant
+      </div>
 
-      <p>Welcome to Home Assistant! Are you ready to awaken your home?</p>
+      <p>Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?</p>
       <p>Let's get started by creating a user account.</p>
 
       <template is='dom-if' if='[[_error]]'>
@@ -104,7 +125,7 @@ class HaOnboarding extends PolymerElement {
   _maybePopulateUsername() {
     if (this._username) return;
 
-    const parts = this._name.split(" ");
+    const parts = this._name.split(' ');
 
     if (parts.length) {
       this._username = parts[0].toLowerCase();
