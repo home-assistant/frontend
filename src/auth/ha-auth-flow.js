@@ -10,6 +10,12 @@ import EventsMixin from '../mixins/events-mixin.js';
 class HaAuthFlow extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
+    <style>
+      .action {
+        margin: 32px 0;
+        text-align: center;
+      }
+    </style>
     <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">
       Please wait
     </template>
@@ -26,7 +32,9 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
       <template is="dom-if" if="[[_equals(_step.type, &quot;form&quot;)]]">
         <ha-form data="{{_stepData}}" schema="[[_step.data_schema]]" error="[[_step.errors]]"></ha-form>
       </template>
-      <paper-button on-click="_handleSubmit">[[_computeSubmitCaption(_step.type)]]</paper-button>
+      <div class='action'>
+        <paper-button raised on-click="_handleSubmit">[[_computeSubmitCaption(_step.type)]]</paper-button>
+      </div>
     </template>
 `;
   }
@@ -87,7 +95,7 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
   }
 
   _computeSubmitCaption(stepType) {
-    return stepType === 'form' ? 'Submit' : 'Start over';
+    return stepType === 'form' ? 'Next' : 'Start over';
   }
 
   _handleSubmit() {
