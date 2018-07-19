@@ -3,7 +3,7 @@ import '@polymer/polymer/lib/elements/dom-repeat.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-const demos = require.context("./demos", true, /^(.*\.(js$))[^.]*$/im);
+const demos = require.context('./demos', true, /^(.*\.(js$))[^.]*$/im);
 
 const fixPath = path => path.substr(2, path.length - 5);
 
@@ -32,18 +32,17 @@ class HaGallery extends PolymerElement {
         type: Array,
         value: demos.keys().map(fixPath)
       }
-    }
+    };
   }
 
   ready() {
     super.ready();
 
-    this.addEventListener('hass-more-info', ev => {
+    this.addEventListener('hass-more-info', (ev) => {
       if (ev.detail.entityId) alert(`Showing more info for ${ev.detail.entityId}`);
     });
 
-    window.addEventListener(
-      'hashchange', ev => { this._demo = document.location.hash.substr(1); });
+    window.addEventListener('hashchange', () => { this._demo = document.location.hash.substr(1); });
   }
 
   _demoChanged(demo) {

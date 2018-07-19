@@ -2,7 +2,7 @@ const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === 'production';
 const chunkFilename = isProd ?
   'chunk.[chunkhash].js' : '[name].chunk.js';
 const buildPath = path.resolve(__dirname, 'dist');
@@ -23,7 +23,7 @@ module.exports = {
           options: {
             plugins: [
               // Only support the syntax, Webpack will handle it.
-              "syntax-dynamic-import",
+              'syntax-dynamic-import',
               [
                 'transform-react-jsx',
                 {

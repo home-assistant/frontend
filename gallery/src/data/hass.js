@@ -27,7 +27,7 @@ export default class FakeHass {
     if (callback) {
       callback(msg);
     } else {
-      console.error(`Unknown command: ${msg.type}`)
+      console.error(`Unknown command: ${msg.type}`);
     }
     console.log('sendWS', msg);
   }

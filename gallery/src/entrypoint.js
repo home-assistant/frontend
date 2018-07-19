@@ -10,8 +10,8 @@ import './ha-gallery.js';
 
 // Temp roboto fix
 const link = document.createElement('link');
-link.href = "https://fonts.googleapis.com/css?family=Roboto";
-link.rel = "stylesheet";
+link.href = 'https://fonts.googleapis.com/css?family=Roboto';
+link.rel = 'stylesheet';
 document.head.appendChild(link);
 
 document.body.appendChild(document.createElement('ha-gallery'));

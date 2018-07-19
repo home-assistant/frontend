@@ -37,7 +37,7 @@ const CONFIGS = [
       'light.ceiling_lights',
     ]
   },
-]
+];
 
 class DemoPicGlance extends PolymerElement {
   static get template() {
@@ -64,7 +64,7 @@ class DemoPicGlance extends PolymerElement {
     const hass = new HomeAssistant();
     hass.states = demoStates;
     console.log(demoStates);
-    CONFIGS.forEach(config => {
+    CONFIGS.forEach((config) => {
       const el = document.createElement('hui-picture-glance-card');
       el.setConfig(config);
       el.hass = hass;
