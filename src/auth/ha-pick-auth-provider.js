@@ -61,9 +61,9 @@ class HaPickAuthProvider extends EventsMixin(PolymerElement) {
         authProviders,
         _state: 'pick',
       });
-      // if (authProviders.length === 1) {
-      //   this.fire('pick', authProviders[0]);
-      // }
+      if (authProviders.length === 1) {
+        this.fire('pick', authProviders[0]);
+      }
     }).catch((err) => {
       // eslint-disable-next-line
       console.error('Error loading auth providers', err);

@@ -53,8 +53,10 @@ class HaOnboarding extends PolymerElement {
         Home Assistant
       </div>
 
-      <p>Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?</p>
-      <p>Let's get started by creating a user account.</p>
+      <div>
+        <p>Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?</p>
+        <p>Let's get started by creating a user account.</p>
+      </div>
 
       <template is='dom-if' if='[[_error]]'>
         <p class='error'>[[_error]]</p>
