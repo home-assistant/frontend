@@ -13,6 +13,9 @@ class DemoCard extends PolymerElement {
   static get template() {
     return html`
       <style>
+        #root {
+          padding: 8px 8px 32px 8px;
+        }
         h2 {
           margin: 0;
           color: var(--primary-color);

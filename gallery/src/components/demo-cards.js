@@ -13,7 +13,6 @@ class DemoCards extends PolymerElement {
         }
         #root > * {
           flex-basis: 600px;
-          padding: 8px 8px 32px 8px;
         }
       </style>
       <div id="root"></div>
