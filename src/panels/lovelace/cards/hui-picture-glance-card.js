@@ -87,27 +87,23 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
             <div class="title">[[_config.title]]</div>
           </template>
           <div>
-            <template is="dom-repeat" items="[[_entitiesDialog]]">
-              <template is="dom-if" if="[[_showEntity(item.entity, hass.states)]]">
-                <paper-icon-button
-                  on-click="_openDialog"
-                  class$="[[_computeButtonClass(item.entity, hass.states)]]"
-                  icon="[[_computeIcon(item.entity, hass.states)]]"
-                  title="[[_computeTooltip(item.entity, hass.states)]]"
-                ></paper-icon-button>
-              </template>
+            <template is="dom-repeat" items="[[_computeVisible(_entitiesDialog, hass.states)]]">
+              <paper-icon-button
+                on-click="_openDialog"
+                class$="[[_computeButtonClass(item.entity, hass.states)]]"
+                icon="[[_computeIcon(item.entity, hass.states)]]"
+                title="[[_computeTooltip(item.entity, hass.states)]]"
+              ></paper-icon-button>
             </template>
           </div>
           <div>
-            <template is="dom-repeat" items="[[_entitiesToggle]]">
-              <template is="dom-if" if="[[_showEntity(item.entity, hass.states)]]">
-                <paper-icon-button
-                  on-click="_callService"
-                  class$="[[_computeButtonClass(item.entity, hass.states)]]"
-                  icon="[[_computeIcon(item.entity, hass.states)]]"
-                  title="[[_computeTooltip(item.entity, hass.states)]]"
-                ></paper-icon-button>
-              </template>
+            <template is="dom-repeat" items="[[_computeVisible(_entitiesToggle, hass.states)]]">
+              <paper-icon-button
+                on-click="_callService"
+                class$="[[_computeButtonClass(item.entity, hass.states)]]"
+                icon="[[_computeIcon(item.entity, hass.states)]]"
+                title="[[_computeTooltip(item.entity, hass.states)]]"
+              ></paper-icon-button>
             </template>
           </div>
         </div>
@@ -150,6 +146,10 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
       _entitiesDialog: dialog,
       _entitiesToggle: toggle
     });
+  }
+
+  _computeVisible(collection, states) {
+    return collection.filter(el => el.entity in states);
   }
 
   _showEntity(entityId, states) {
