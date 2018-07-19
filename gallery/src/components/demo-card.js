@@ -2,8 +2,6 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import JsYaml from 'js-yaml';
 
-import '../../../src/panels/lovelace/common/create-card-element.js';
-
 import HomeAssistant from '../data/hass.js';
 import demoStates from '../data/demo_dump.js';
 import createCardElement from '../../../src/panels/lovelace/common/create-card-element.js';
