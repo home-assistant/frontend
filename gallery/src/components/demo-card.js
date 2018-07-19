@@ -25,10 +25,7 @@ class DemoCard extends PolymerElement {
         h2 {
           margin: 0;
           color: #03a9f4;
-        }
-        hui-glance-card {
-          margin-left: 20px;
-          margin-top: 20px;
+          margin-bottom: 20px;
         }
       </style>
       <div id="root"></div>
