@@ -2,59 +2,67 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import JsYaml from 'js-yaml';
 
-import '../../../src/panels/lovelace/cards/hui-glance-card.js';
-import '../../../src/panels/lovelace/cards/hui-picture-entity-card.js';
-import '../../../src/panels/lovelace/cards/hui-picture-glance-card.js';
+import '../../../src/panels/lovelace/common/create-card-element.js';
 
 import HomeAssistant from '../data/hass.js';
 import demoStates from '../data/demo_dump.js';
+import createCardElement from '../../../src/panels/lovelace/common/create-card-element.js';
 
 class DemoCard extends PolymerElement {
   static get template() {
     return html`
       <style>
-        #root {
-          padding: 8px 8px 32px 8px;
+        .root {
+          display: flex;
         }
         h2 {
           margin: 0;
           color: var(--primary-color);
           margin-bottom: 20px;
         }
+        #card {
+          max-width: 400px;
+        }
+        pre {
+          margin-left: 16px;
+        }
       </style>
-      <div id="root"></div>
+      <h2>[[config.heading]]</h2>
+      <div class='root'>
+        <div id="card"></div>
+        <template is='dom-if' if='[[showConfig]]'>
+          <pre>[[_trim(config.config)]]</pre>
+        </template>
+      </div>
     `;
   }
 
   static get properties() {
     return {
-      type: String,
       config: {
         type: Object,
         observer: '_configChanged'
-      }
+      },
+      showConfig: Boolean,
     };
   }
 
   _configChanged(config) {
-    const root = this.$.root;
-    while (root.lastChild) {
-      root.removeChild(root.lastChild);
+    const card = this.$.card;
+    while (card.lastChild) {
+      card.removeChild(card.lastChild);
     }
 
     const hass = new HomeAssistant();
     hass.states = demoStates;
 
-    const heading = document.createElement('h2');
-    heading.innerText = config.heading;
-    root.appendChild(heading);
-    const el = document.createElement(this.type);
-    el.setConfig(JsYaml.safeLoad(config.config)[0]);
+    const el = createCardElement(JsYaml.safeLoad(config.config)[0]);
     el.hass = hass;
-    root.appendChild(el);
-    const yaml = document.createElement('pre');
-    yaml.innerText = config.config.trim();
-    root.appendChild(yaml);
+    card.appendChild(el);
+  }
+
+  _trim(config) {
+    return config.trim();
   }
 }
 

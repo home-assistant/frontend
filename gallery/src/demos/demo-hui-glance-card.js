@@ -130,7 +130,7 @@ const CONFIGS = [
 class DemoPicEntity extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards type="hui-glance-card" configs="[[_configs]]"></demo-cards>
+      <demo-cards configs="[[_configs]]"></demo-cards>
     `;
   }
 
