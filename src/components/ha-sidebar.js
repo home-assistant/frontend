@@ -127,7 +127,7 @@ class HaSidebar extends
       <template is='dom-if' if='[[hass.user]]'>
         <paper-icon-item on-click="menuClicked" data-panel="profile">
           <ha-icon slot="item-icon" icon="hass:account"></ha-icon>
-          <span class="item-text">[[computeUserName(hass.user)]]</span>
+          <span class="item-text">[[_computeUserName(hass.user)]]</span>
         </paper-icon-item>
       </template>
     </paper-listbox>
@@ -175,7 +175,7 @@ class HaSidebar extends
     return hass.config.core.components.indexOf('mqtt') !== -1;
   }
 
-  computeUserName(user) {
+  _computeUserName(user) {
     return user && (user.name || 'Unnamed User');
   }
 
