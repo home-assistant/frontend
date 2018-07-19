@@ -13,18 +13,9 @@ class DemoCard extends PolymerElement {
   static get template() {
     return html`
       <style>
-        #root {
-          display: flex;
-          flex-wrap: wrap;
-          background-color: #fafafa;
-        }
-        div {
-          flex-basis: 600px;
-          padding: 8px 8px 32px 8px;
-        }
         h2 {
           margin: 0;
-          color: #03a9f4;
+          color: var(--primary-color);
           margin-bottom: 20px;
         }
       </style>
@@ -35,14 +26,14 @@ class DemoCard extends PolymerElement {
   static get properties() {
     return {
       type: String,
-      configs: {
+      config: {
         type: Object,
-        observer: '_configsChanged'
+        observer: '_configChanged'
       }
     };
   }
 
-  _configsChanged(configs) {
+  _configChanged(config) {
     const root = this.$.root;
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -51,20 +42,16 @@ class DemoCard extends PolymerElement {
     const hass = new HomeAssistant();
     hass.states = demoStates;
 
-    configs.forEach((item) => {
-      const container = document.createElement('div');
-      const heading = document.createElement('h2');
-      heading.innerText = item.heading;
-      container.appendChild(heading);
-      const el = document.createElement(this.type);
-      el.setConfig(JsYaml.safeLoad(item.config)[0]);
-      el.hass = hass;
-      container.appendChild(el);
-      const yaml = document.createElement('pre');
-      yaml.innerText = item.config.trim();
-      container.appendChild(yaml);
-      root.appendChild(container);
-    });
+    const heading = document.createElement('h2');
+    heading.innerText = config.heading;
+    root.appendChild(heading);
+    const el = document.createElement(this.type);
+    el.setConfig(JsYaml.safeLoad(config.config)[0]);
+    el.hass = hass;
+    root.appendChild(el);
+    const yaml = document.createElement('pre');
+    yaml.innerText = config.config.trim();
+    root.appendChild(yaml);
   }
 }
 

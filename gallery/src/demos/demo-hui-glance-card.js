@@ -1,7 +1,7 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import '../components/demo-card.js';
+import '../components/demo-cards.js';
 
 const CONFIGS = [
   {
@@ -130,7 +130,7 @@ const CONFIGS = [
 class DemoPicEntity extends PolymerElement {
   static get template() {
     return html`
-      <demo-card type="hui-glance-card" configs="[[_configs]]"></demo-card>
+      <demo-cards type="hui-glance-card" configs="[[_configs]]"></demo-cards>
     `;
   }
 
