@@ -15,7 +15,6 @@ export default {
     },
     last_changed: '2018-07-19T12:06:18.384550+00:00',
     last_updated: '2018-07-19T12:40:30.374858+00:00',
-    _entityDisplay: 'Sun'
   },
   'zone.home': {
     entity_id: 'zone.home',
@@ -50,7 +49,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.923256+00:00',
     last_updated: '2018-07-19T10:44:45.923256+00:00',
-    _entityDisplay: 'laundry'
   },
   'input_number.box1': {
     entity_id: 'input_number.box1',
@@ -64,7 +62,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.923416+00:00',
     last_updated: '2018-07-19T10:44:45.923416+00:00',
-    _entityDisplay: 'Numeric Input Box'
   },
   'input_number.slider1': {
     entity_id: 'input_number.slider1',
@@ -79,7 +76,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.923572+00:00',
     last_updated: '2018-07-19T10:44:45.923572+00:00',
-    _entityDisplay: 'Slider'
   },
   'sensor.brightness': {
     entity_id: 'sensor.brightness',
@@ -92,7 +88,6 @@ export default {
     },
     last_changed: '2018-07-19T12:40:28.378102+00:00',
     last_updated: '2018-07-19T12:40:28.378102+00:00',
-    _entityDisplay: 'brightness'
   },
   'sensor.battery': {
     entity_id: 'sensor.battery',
@@ -105,7 +100,6 @@ export default {
     },
     last_changed: '2018-07-19T12:40:28.377758+00:00',
     last_updated: '2018-07-19T12:40:28.377758+00:00',
-    _entityDisplay: 'battery'
   },
   'sensor.outside_temperature': {
     entity_id: 'sensor.outside_temperature',
@@ -118,7 +112,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.924111+00:00',
     last_updated: '2018-07-19T10:44:45.924111+00:00',
-    _entityDisplay: 'Outside Temperature'
   },
   'sensor.outside_humidity': {
     entity_id: 'sensor.outside_humidity',
@@ -130,7 +123,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.924273+00:00',
     last_updated: '2018-07-19T10:44:45.924273+00:00',
-    _entityDisplay: 'Outside Humidity'
   },
   'sensor.conductivity': {
     entity_id: 'sensor.conductivity',
@@ -143,7 +135,6 @@ export default {
     },
     last_changed: '2018-07-19T12:40:28.377305+00:00',
     last_updated: '2018-07-19T12:40:28.377305+00:00',
-    _entityDisplay: 'conductivity'
   },
   'weather.demo_weather_south': {
     entity_id: 'weather.demo_weather_south',
@@ -336,7 +327,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.935593+00:00',
     last_updated: '2018-07-19T10:44:45.935593+00:00',
-    _entityDisplay: 'Lounge room'
   },
   'media_player.bedroom': {
     entity_id: 'media_player.bedroom',
@@ -363,7 +353,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.936499+00:00',
     last_updated: '2018-07-19T10:44:45.936499+00:00',
-    _entityDisplay: 'Bedroom'
   },
   'media_player.living_room': {
     entity_id: 'media_player.living_room',
@@ -390,7 +379,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.937400+00:00',
     last_updated: '2018-07-19T10:44:45.937400+00:00',
-    _entityDisplay: 'Living Room'
   },
   'media_player.walkman': {
     entity_id: 'media_player.walkman',
@@ -417,7 +405,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:45.938179+00:00',
     last_updated: '2018-07-19T10:44:45.938179+00:00',
-    _entityDisplay: 'Walkman'
   },
   'input_select.who_cooks': {
     entity_id: 'input_select.who_cooks',
@@ -432,7 +419,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.105361+00:00',
     last_updated: '2018-07-19T10:44:46.105361+00:00',
-    _entityDisplay: 'Cook today'
   },
   'input_boolean.notify': {
     entity_id: 'input_boolean.notify',
@@ -443,7 +429,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.105940+00:00',
     last_updated: '2018-07-19T10:44:46.105940+00:00',
-    _entityDisplay: 'Notify Anne Therese is home'
   },
   'weblink.router': {
     entity_id: 'weblink.router',
@@ -453,7 +438,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.107286+00:00',
     last_updated: '2018-07-19T10:44:46.107286+00:00',
-    _entityDisplay: 'Router'
   },
   'group.all_plants': {
     entity_id: 'group.all_plants',
@@ -480,7 +464,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.198517+00:00',
     last_updated: '2018-07-19T10:44:46.198517+00:00',
-    _entityDisplay: 'Alarm'
   },
   'binary_sensor.basement_floor_wet': {
     entity_id: 'binary_sensor.basement_floor_wet',
@@ -491,7 +474,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.198923+00:00',
     last_updated: '2018-07-19T10:44:46.198923+00:00',
-    _entityDisplay: 'Basement Floor Wet'
   },
   'binary_sensor.movement_backyard': {
     entity_id: 'binary_sensor.movement_backyard',
@@ -502,7 +484,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.199163+00:00',
     last_updated: '2018-07-19T10:44:46.199163+00:00',
-    _entityDisplay: 'Movement Backyard'
   },
   'climate.ecobee': {
     entity_id: 'climate.ecobee',
@@ -544,7 +525,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.200333+00:00',
     last_updated: '2018-07-19T10:44:46.200333+00:00',
-    _entityDisplay: 'Ecobee'
   },
   'climate.hvac': {
     entity_id: 'climate.hvac',
@@ -589,7 +569,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.200650+00:00',
     last_updated: '2018-07-19T10:44:46.200650+00:00',
-    _entityDisplay: 'Hvac'
   },
   'climate.heatpump': {
     entity_id: 'climate.heatpump',
@@ -612,7 +591,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.200946+00:00',
     last_updated: '2018-07-19T10:44:46.200946+00:00',
-    _entityDisplay: 'HeatPump'
   },
   'mailbox.demomailbox': {
     entity_id: 'mailbox.demomailbox',
@@ -622,7 +600,6 @@ export default {
     },
     last_changed: '2018-07-19T10:45:16.555210+00:00',
     last_updated: '2018-07-19T10:45:16.555210+00:00',
-    _entityDisplay: 'DemoMailbox'
   },
   'input_select.living_room_preset': {
     entity_id: 'input_select.living_room_preset',
@@ -636,7 +613,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.211150+00:00',
     last_updated: '2018-07-19T10:44:46.211150+00:00',
-    _entityDisplay: 'living room preset'
   },
   'camera.demo_camera': {
     entity_id: 'camera.demo_camera',
@@ -659,7 +635,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.218790+00:00',
     last_updated: '2018-07-19T10:44:46.218790+00:00',
-    _entityDisplay: 'Garage Door'
   },
   'cover.living_room_window': {
     entity_id: 'cover.living_room_window',
@@ -672,7 +647,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.220347+00:00',
     last_updated: '2018-07-19T10:44:46.220347+00:00',
-    _entityDisplay: 'Living Room Window'
   },
   'cover.hall_window': {
     entity_id: 'cover.hall_window',
@@ -684,7 +658,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.281104+00:00',
     last_updated: '2018-07-19T10:44:46.281104+00:00',
-    _entityDisplay: 'Hall Window'
   },
   'cover.kitchen_window': {
     entity_id: 'cover.kitchen_window',
@@ -695,7 +668,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.281449+00:00',
     last_updated: '2018-07-19T10:44:46.281449+00:00',
-    _entityDisplay: 'Kitchen Window'
   },
   'fan.living_room_fan': {
     entity_id: 'fan.living_room_fan',
@@ -715,7 +687,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.281761+00:00',
     last_updated: '2018-07-19T10:44:46.281761+00:00',
-    _entityDisplay: 'Living Room Fan'
   },
   'fan.ceiling_fan': {
     entity_id: 'fan.ceiling_fan',
@@ -733,7 +704,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.282008+00:00',
     last_updated: '2018-07-19T10:44:46.282008+00:00',
-    _entityDisplay: 'Ceiling Fan'
   },
   'light.kitchen_lights': {
     entity_id: 'light.kitchen_lights',
@@ -762,7 +732,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.282257+00:00',
     last_updated: '2018-07-19T10:44:46.282257+00:00',
-    _entityDisplay: 'Kitchen Lights'
   },
   'light.bed_light': {
     entity_id: 'light.bed_light',
@@ -775,7 +744,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.282478+00:00',
     last_updated: '2018-07-19T10:44:46.282478+00:00',
-    _entityDisplay: 'Bed Light'
   },
   'light.ceiling_lights': {
     entity_id: 'light.ceiling_lights',
@@ -804,7 +772,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.282696+00:00',
     last_updated: '2018-07-19T10:44:46.282696+00:00',
-    _entityDisplay: 'Ceiling Lights'
   },
   'lock.openable_lock': {
     entity_id: 'lock.openable_lock',
@@ -815,7 +782,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.282949+00:00',
     last_updated: '2018-07-19T10:44:46.282949+00:00',
-    _entityDisplay: 'Openable Lock'
   },
   'lock.kitchen_door': {
     entity_id: 'lock.kitchen_door',
@@ -825,7 +791,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.283175+00:00',
     last_updated: '2018-07-19T10:44:46.283175+00:00',
-    _entityDisplay: 'Kitchen Door'
   },
   'lock.front_door': {
     entity_id: 'lock.front_door',
@@ -835,7 +800,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.283396+00:00',
     last_updated: '2018-07-19T10:44:46.283396+00:00',
-    _entityDisplay: 'Front Door'
   },
   'switch.decorative_lights': {
     entity_id: 'switch.decorative_lights',
@@ -848,7 +812,6 @@ export default {
     },
     last_changed: '2018-07-19T11:33:15.735386+00:00',
     last_updated: '2018-07-19T11:33:15.735386+00:00',
-    _entityDisplay: 'Decorative Lights'
   },
   'switch.ac': {
     entity_id: 'switch.ac',
@@ -860,7 +823,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.283901+00:00',
     last_updated: '2018-07-19T10:44:46.283901+00:00',
-    _entityDisplay: 'AC'
   },
   'device_tracker.demo_paulus': {
     entity_id: 'device_tracker.demo_paulus',
@@ -875,8 +837,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.287874+00:00',
     last_updated: '2018-07-19T10:44:46.287874+00:00',
-    _stateDisplay: 'Away',
-    _entityDisplay: 'Paulus'
   },
   'device_tracker.demo_anne_therese': {
     entity_id: 'device_tracker.demo_anne_therese',
@@ -891,8 +851,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.288213+00:00',
     last_updated: '2018-07-19T10:44:46.288213+00:00',
-    _stateDisplay: 'Away',
-    _entityDisplay: 'Anne Therese'
   },
   'device_tracker.demo_home_boy': {
     entity_id: 'device_tracker.demo_home_boy',
@@ -907,8 +865,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.288533+00:00',
     last_updated: '2018-07-19T10:44:46.288533+00:00',
-    _stateDisplay: 'Away',
-    _entityDisplay: 'Home Boy'
   },
   'calendar.calendar_2': {
     entity_id: 'calendar.calendar_2',
@@ -925,8 +881,6 @@ export default {
     },
     last_changed: '2018-07-19T11:27:25.017141+00:00',
     last_updated: '2018-07-19T11:27:25.017141+00:00',
-    _stateDisplay: 'Off',
-    _entityDisplay: 'Calendar 2'
   },
   'calendar.calendar_1': {
     entity_id: 'calendar.calendar_1',
@@ -943,8 +897,6 @@ export default {
     },
     last_changed: '2018-07-19T12:15:21.378222+00:00',
     last_updated: '2018-07-19T12:15:21.378222+00:00',
-    _stateDisplay: 'Off',
-    _entityDisplay: 'Calendar 1'
   },
   'group.all_covers': {
     entity_id: 'group.all_covers',
@@ -1080,8 +1032,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:56.654838+00:00',
     last_updated: '2018-07-19T10:44:56.654838+00:00',
-    _stateDisplay: 'AC3829',
-    _entityDisplay: 'Demo Alpr'
   },
   'image_processing.demo_face': {
     entity_id: 'image_processing.demo_face',
@@ -1112,8 +1062,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:56.641372+00:00',
     last_updated: '2018-07-19T10:44:56.641372+00:00',
-    _stateDisplay: 'Hans',
-    _entityDisplay: 'Demo Face'
   },
   'persistent_notification.notification_2': {
     entity_id: 'persistent_notification.notification_2',
@@ -1142,7 +1090,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.453731+00:00',
     last_updated: '2018-07-19T10:44:46.453731+00:00',
-    _entityDisplay: 'Living Room'
   },
   'group.bedroom': {
     entity_id: 'group.bedroom',
@@ -1160,7 +1107,6 @@ export default {
     },
     last_changed: '2018-07-19T11:33:15.736625+00:00',
     last_updated: '2018-07-19T11:33:15.736625+00:00',
-    _entityDisplay: 'Bedroom'
   },
   'group.kitchen': {
     entity_id: 'group.kitchen',
@@ -1176,7 +1122,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.455730+00:00',
     last_updated: '2018-07-19T10:44:46.455730+00:00',
-    _entityDisplay: 'Kitchen'
   },
   'group.doors': {
     entity_id: 'group.doors',
@@ -1193,7 +1138,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.509528+00:00',
     last_updated: '2018-07-19T10:44:46.509528+00:00',
-    _entityDisplay: 'Doors'
   },
   'group.automations': {
     entity_id: 'group.automations',
@@ -1208,7 +1152,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.509900+00:00',
     last_updated: '2018-07-19T10:44:46.509900+00:00',
-    _entityDisplay: 'Automations'
   },
   'group.people': {
     entity_id: 'group.people',
@@ -1224,7 +1167,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.510172+00:00',
     last_updated: '2018-07-19T10:44:46.510172+00:00',
-    _entityDisplay: 'People'
   },
   'group.downstairs': {
     entity_id: 'group.downstairs',
@@ -1246,7 +1188,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.510448+00:00',
     last_updated: '2018-07-19T10:44:46.510448+00:00',
-    _entityDisplay: 'Downstairs'
   },
   'history_graph.recent_switches': {
     entity_id: 'history_graph.recent_switches',
@@ -1275,7 +1216,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.512674+00:00',
     last_updated: '2018-07-19T10:44:46.512674+00:00',
-    _entityDisplay: 'Switch on and off'
   },
   'scene.romantic_lights': {
     entity_id: 'scene.romantic_lights',
@@ -1289,7 +1229,6 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.512985+00:00',
     last_updated: '2018-07-19T10:44:46.512985+00:00',
-    _entityDisplay: 'Romantic lights'
   },
   'configurator.philips_hue': {
     entity_id: 'configurator.philips_hue',
@@ -1309,6 +1248,5 @@ export default {
     },
     last_changed: '2018-07-19T10:44:46.515160+00:00',
     last_updated: '2018-07-19T10:44:46.515160+00:00',
-    _entityDisplay: 'Philips Hue'
   }
 };
