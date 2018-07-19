@@ -8,5 +8,14 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 - [More information about Home Assistant](https://home-assistant.io)
 - [Frontend development instructions](https://developers.home-assistant.io/docs/en/frontend_index.html)
 
+## Development
+
+- Initial setup: `script/setup`
+- Development: [Instructions](https://developers.home-assistant.io/docs/en/frontend_development.html)
+- Production build: `script/build_frontend`
+- Gallery: `cd gallery && script/develop_gallery`
+- Hass.io: [Instructions](https://developers.home-assistant.io/docs/en/hassio_hass.html)
+
 ## License
+
 Home Assistant is open-source and Apache 2 licensed. Feel free to browse the repository, learn and reuse parts in your own projects.
