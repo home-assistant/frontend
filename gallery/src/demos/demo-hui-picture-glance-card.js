@@ -60,12 +60,12 @@ class DemoPicGlance extends PolymerElement {
     return html`
       <style>
         #root {
+          padding: 10px;
         }
         hui-picture-glance-card {
           width: 400px;
           display: inline-block;
-          margin-left: 20px;
-          margin-top: 20px;
+          margin: 10px;
         }
       </style>
       <div id='root'>
