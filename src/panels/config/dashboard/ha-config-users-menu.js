@@ -18,6 +18,7 @@ class HaConfigUsersMenu extends LocalizeMixin(PolymerElement) {
         display: block;
       }
       a {
+        text-decoration: none;
         color: var(--primary-text-color);
       }
     </style>
