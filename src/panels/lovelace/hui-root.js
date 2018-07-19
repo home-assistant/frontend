@@ -192,7 +192,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   }
 
   _handleHelp() {
-    window.open('https://developers.home-assistant.io/docs/en/lovelace_index.html', '_blank');
+    window.open('https://www.home-assistant.io/lovelace/', '_blank');
   }
 
   _handleViewSelected(ev) {
