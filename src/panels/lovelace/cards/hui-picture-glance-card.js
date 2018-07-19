@@ -164,10 +164,6 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     return collection.filter(el => el.entity in states);
   }
 
-  _showEntity(entityId, states) {
-    return entityId in states;
-  }
-
   _computeIcon(entityId, states) {
     return stateIcon(states[entityId]);
   }
