@@ -86,18 +86,16 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
           <template is="dom-if" if="[[_config.title]]">
             <div class="title">[[_config.title]]</div>
           </template>
-          <template is="dom-if" if="[[_entitiesDialog.length]]">
-            <div>
-              <template is="dom-repeat" items="[[_entitiesDialog]]">
-                <paper-icon-button
-                  on-click="_openDialog"
-                  class$="[[_computeButtonClass(item.entity, hass.states)]]"
-                  icon="[[_computeIcon(item.entity, hass.states)]]"
-                  title="[[_computeTooltip(item.entity, hass.states)]]"
-                ></paper-icon-button>
-              </template>
-            </div>
-          </template>
+          <div>
+            <template is="dom-repeat" items="[[_entitiesDialog]]">
+              <paper-icon-button
+                on-click="_openDialog"
+                class$="[[_computeButtonClass(item.entity, hass.states)]]"
+                icon="[[_computeIcon(item.entity, hass.states)]]"
+                title="[[_computeTooltip(item.entity, hass.states)]]"
+              ></paper-icon-button>
+            </template>
+          </div>
           <template is="dom-if" if="[[_entitiesToggle.length]]">
             <div>
               <template is="dom-repeat" items="[[_entitiesToggle]]">
