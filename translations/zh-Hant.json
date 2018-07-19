@@ -637,7 +637,7 @@
             },
             "lock": {
                 "code": "密碼",
-                "lock": "鎖定",
+                "lock": "鎖",
                 "unlock": "解鎖"
             }
         },
@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "{time}前",
                 "future": "{time}後",
-                "never": "未執行"
+                "never": "未執行",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "minute": "{count} {count, plural,\n  one {分鐘}\n  other {分鐘}\n}",
+                    "hour": "{count} {count, plural,\n  one {小時}\n  other {小時}\n}",
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}",
+                    "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "正在載入狀態歷史...",

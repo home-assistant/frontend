@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "{time} 전",
                 "future": "{time} 후",
-                "never": "해당없음"
+                "never": "해당없음",
+                "duration": {
+                    "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+                    "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+                    "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+                    "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+                    "week": "{count} {count, plural,\none {주}\nother {주}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "히스토리 읽는 중...",

@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "Fa {time}",
                 "future": "D'aquí {time}",
-                "never": "Mai"
+                "never": "Mai",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {segon}\n  other {segons}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuts}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {hores}\n}",
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+                    "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Carregant historial d'estats...",

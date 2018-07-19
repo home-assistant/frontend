@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "virun {time}",
                 "future": "An {time}",
-                "never": "Nie"
+                "never": "Nie",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}",
+                    "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutten}\n}",
+                    "hour": "{count} {count, plural,\n  one {stonn}\n  other {stonnen}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",
+                    "week": "{count} {count, plural,\none {woch}\nother {woche}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Lued Status Verlaaf",
