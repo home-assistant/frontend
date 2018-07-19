@@ -37,6 +37,22 @@ const CONFIGS = [
       'light.ceiling_lights',
     ]
   },
+  {
+    type: 'picture-glance',
+    image: 'https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=240&w=495',
+    entities: [
+      'switch.decorative_lights',
+      'light.ceiling_lights',
+    ]
+  },
+  {
+    type: 'picture-glance',
+    image: 'https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=240&w=495',
+    entities: [
+      'binary_sensor.movement_backyard',
+      'binary_sensor.basement_floor_wet',
+    ]
+  },
 ];
 
 class DemoPicGlance extends PolymerElement {
