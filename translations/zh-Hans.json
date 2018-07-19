@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "{time}前",
                 "future": "{time}后",
-                "never": "从未"
+                "never": "从未",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "minute": "{count} {count, plural,\n  one {分钟}\n  other {分钟}\n}",
+                    "hour": "{count} {count, plural,\n  one {小时}\n  other {小时}\n}",
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}",
+                    "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "正在加载历史状态...",

@@ -459,6 +459,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Quản lý mạng Z-Wave"
+                },
+                "users": {
+                    "caption": "Người dùng",
+                    "description": "Quản lý Người dùng",
+                    "picker": {
+                        "title": "Người dùng"
+                    },
+                    "editor": {
+                        "rename_user": "Đổi tên người dùng",
+                        "change_password": "Đổi mật khẩu",
+                        "activate_user": "Kích hoạt người dùng",
+                        "deactivate_user": "Hủy kích hoạt người dùng",
+                        "delete_user": "Xóa người dùng"
+                    }
                 }
             }
         },
@@ -566,6 +580,7 @@
                 "aux_heat": "Nhiệt phụ trợ"
             },
             "lock": {
+                "code": "Mã",
                 "lock": "Khóa",
                 "unlock": "Mở khóa"
             }
@@ -582,7 +597,14 @@
             "relative_time": {
                 "past": "{time} trước",
                 "future": "Trong {time}",
-                "never": "Không bao giờ"
+                "never": "Không bao giờ",
+                "duration": {
+                    "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
+                    "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
+                    "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}",
+                    "day": "{count} {count, plural,\n  one { ngày }\n  other { ngày }\n}",
+                    "week": "{count} {count, plural,\n  one { tuần }\n  other { tuần }\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Đang tải lịch sử trạng thái ...",
