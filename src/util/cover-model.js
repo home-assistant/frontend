@@ -29,6 +29,14 @@ export default class CoverEntity {
     return this._attr.current_tilt_position === 0;
   }
 
+  get isOpening() {
+    return this.stateObj.state === 'opening';
+  }
+
+  get isClosing() {
+    return this.stateObj.state === 'closing';
+  }
+
   /* eslint-disable no-bitwise */
 
   get supportsOpen() {
