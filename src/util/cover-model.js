@@ -30,11 +30,11 @@ export default class CoverEntity {
   }
 
   get isOpening() {
-    return this.stateObj.state === 'opening'
+    return this.stateObj.state === 'opening';
   }
 
   get isClosing() {
-    return this.stateObj.state === 'closing'
+    return this.stateObj.state === 'closing';
   }
 
   /* eslint-disable no-bitwise */
