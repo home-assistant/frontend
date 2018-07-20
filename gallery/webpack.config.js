@@ -49,6 +49,8 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       'public',
+      { from: '../public', to: 'static' },
+      { from: '../build-translations/output', to: 'static/translations' },
       { from: '../node_modules/leaflet/dist/leaflet.css', to: 'static/images/leaflet/' },
       { from: '../node_modules/@polymer/font-roboto-local/fonts', to: 'static/fonts' },
       { from: '../node_modules/leaflet/dist/images', to: 'static/images/leaflet/' },

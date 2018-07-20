@@ -48,6 +48,10 @@ class DemoCard extends PolymerElement {
 
   static get properties() {
     return {
+      hass: {
+        type: Object,
+        observer: '_hassChanged',
+      },
       config: {
         type: Object,
         observer: '_configChanged'
@@ -62,15 +66,26 @@ class DemoCard extends PolymerElement {
       card.removeChild(card.lastChild);
     }
 
-    const hass = new HomeAssistant();
-    hass.config = demoConfig;
-    hass.resources = demoResources;
-    hass.language = 'en';
-    hass.states = demoStates;
-
     const el = createCardElement(JsYaml.safeLoad(config.config)[0]);
+
+
+    if (this.hass) {
+      el.hass = hass;
+    } else {
+      const hass = new HomeAssistant(demoStates);
+      hass.config = demoConfig;
+      hass.resources = demoResources;
+      hass.language = 'en';
+      hass.states = demoStates;
+    }
+
     el.hass = hass;
     card.appendChild(el);
+  }
+
+  _hassChanged(hass) {
+    const card = this.$.card.lastChild;
+    if (card) card.hass = hass;
   }
 
   _trim(config) {

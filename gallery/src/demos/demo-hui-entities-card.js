@@ -1,6 +1,8 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import demoDump from '../data/demo_dump.js';
+import provideHass from '../data/provide_hass.js';
 import '../components/demo-cards.js';
 
 const CONFIGS = [
@@ -48,7 +50,7 @@ const CONFIGS = [
     `
   },
   {
-    heading: 'With title, cant\'t toggle',
+    heading: 'With title, can\'t toggle',
     config: `
 - type: entities
   entities:
@@ -80,7 +82,11 @@ const CONFIGS = [
 class DemoEntities extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
+      <demo-cards
+        id='demos'
+        hass='[[hass]]'
+        configs="[[_configs]]"
+      ></demo-cards>
     `;
   }
 
@@ -89,8 +95,16 @@ class DemoEntities extends PolymerElement {
       _configs: {
         type: Object,
         value: CONFIGS
-      }
+      },
+      hass: Object,
     };
+  }
+
+  ready() {
+    super.ready();
+    provideHass(this.$.demos, {
+      states: demoDump,
+    });
   }
 }
 
