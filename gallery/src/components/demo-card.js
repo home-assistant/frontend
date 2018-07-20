@@ -70,16 +70,16 @@ class DemoCard extends PolymerElement {
 
 
     if (this.hass) {
-      el.hass = hass;
+      el.hass = this.hass;
     } else {
       const hass = new HomeAssistant(demoStates);
       hass.config = demoConfig;
       hass.resources = demoResources;
       hass.language = 'en';
       hass.states = demoStates;
+      el.hass = hass;
     }
 
-    el.hass = hass;
     card.appendChild(el);
   }
 

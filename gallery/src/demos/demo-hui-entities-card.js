@@ -1,7 +1,7 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import demoDump from '../data/demo_dump.js';
+import demoStates from '../data/demo_states.js';
 import provideHass from '../data/provide_hass.js';
 import '../components/demo-cards.js';
 
@@ -103,7 +103,7 @@ class DemoEntities extends PolymerElement {
   ready() {
     super.ready();
     provideHass(this.$.demos, {
-      states: demoDump,
+      states: demoStates,
     });
   }
 }
