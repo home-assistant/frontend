@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Spravujte svou síť Z-Wave"
+                },
+                "users": {
+                    "caption": "Uživatelé",
+                    "description": "Správa uživatelů",
+                    "picker": {
+                        "title": "Uživatelé"
+                    },
+                    "editor": {
+                        "rename_user": "Přejmenovat uživatele",
+                        "change_password": "Změnit heslo",
+                        "activate_user": "Aktivovat uživatele",
+                        "deactivate_user": "Deaktivovat uživatele",
+                        "delete_user": "Odstranit uživatele"
+                    }
                 }
             }
         },
@@ -527,8 +541,8 @@
             "cancel": "Zrušit"
         },
         "duration": {
-            "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dny}\n}",
-            "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}",
+            "day": "{count} {count, plural,\none {den}\nother {dny}\n}",
+            "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}",
             "second": "{count} {count, plural,\none {vteřina}\nfew {vteřiny}\nother {vteřin}\n}",
             "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minuty}\n}",
             "hour": "{count} {count, plural,\none {hodina}\nfew {hodiny}\nother {hodin}\n}"
@@ -639,7 +653,14 @@
             "relative_time": {
                 "past": "Před {time}",
                 "future": "Za {time}",
-                "never": "Nikdy"
+                "never": "Nikdy",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekundu}\nother {sekund}\n}",
+                    "minute": "{count} {count, plural,\none {minutu}\nother {minut}\n}",
+                    "hour": "{count} {count, plural,\none {hodinu}\nother {hodin}\n}",
+                    "day": "{count} {count, plural,\none {dnů}\nother {dnů}\n}",
+                    "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Historie stavu se načítá...",
