@@ -1,7 +1,10 @@
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -32,17 +35,19 @@ class HaGallery extends PolymerElement {
         margin: 20px auto;
       }
 
-      p:first-child {
-        margin-top: 0;
+      .intro {
+        margin: -1em 0;
       }
 
-      a {
+      p a {
         color: var(--primary-color);
       }
 
-      ul {
-        padding-left: 24px;
+      a paper-item {
+        color: var(--primary-text-color);
+        text-decoration: none;
       }
+
       </style>
 
       <app-header-layout>
@@ -61,7 +66,7 @@ class HaGallery extends PolymerElement {
           <div id='demo'></div>
           <template is='dom-if' if='[[!_demo]]'>
             <paper-card heading="Lovelace card demos">
-              <div class='card-content'>
+              <div class='card-content intro'>
                 <p>
                   Lovelace has many different cards. Each card allows the user to tell a different story about what is going on in their house. These cards are very customizable, as no household is the same.
                 </p>
@@ -73,14 +78,15 @@ class HaGallery extends PolymerElement {
                 <p>
                   Check <a href='https://www.home-assistant.io/lovelace'>the official website</a> for instructions on how to get started with Lovelace.</a>.
                 </p>
-
-
-                <ul>
-                  <template is='dom-repeat' items='[[_demos]]'>
-                    <li><a href='#[[item]]'>{{ item }}</a></li>
-                  </template>
-                </ul>
               </div>
+              <template is='dom-repeat' items='[[_demos]]'>
+                <a href='#[[item]]'>
+                  <paper-item>
+                    <paper-item-body>{{ item }}</paper-item-body>
+                    <iron-icon icon="hass:chevron-right"></iron-icon>
+                  </paper-item>
+                </a>
+              </template>
             </paper-card>
           </template>
         </div>
