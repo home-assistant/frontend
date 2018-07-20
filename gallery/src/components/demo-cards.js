@@ -15,7 +15,6 @@ class DemoCards extends PolymerElement {
           justify-content: center;
         }
         demo-card {
-          display: block;
           margin: 16px 16px 32px;
         }
         app-toolbar {
@@ -36,7 +35,6 @@ class DemoCards extends PolymerElement {
         <template is='dom-repeat' items='[[configs]]'>
           <demo-card
             config='[[item]]'
-            type='[[type]]'
             show-config='[[showConfig]]'
           ></demo-card>
         </template>
@@ -46,9 +44,7 @@ class DemoCards extends PolymerElement {
 
   static get properties() {
     return {
-      configs: {
-        type: Object,
-      },
+      configs: Object,
       showConfig: {
         type: Boolean,
         value: false,
