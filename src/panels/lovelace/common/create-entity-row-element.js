@@ -15,6 +15,7 @@ import createErrorCardConfig from './create-error-card-config.js';
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
 const DOMAIN_TO_ELEMENT_TYPE = {
+  automation: 'toggle',
   cover: 'cover',
   fan: 'toggle',
   group: 'toggle',
@@ -27,7 +28,8 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   scene: 'scene',
   script: 'script',
   timer: 'timer',
-  switch: 'toggle'
+  switch: 'toggle',
+  vacuum: 'toggle'
 };
 
 function _createElement(tag, config) {
