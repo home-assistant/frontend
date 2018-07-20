@@ -14,15 +14,22 @@ class DemoCard extends PolymerElement {
           display: flex;
         }
         h2 {
-          margin: 0;
+          margin: 0 0 20px;
           color: var(--primary-color);
-          margin-bottom: 20px;
         }
         #card {
-          max-width: 400px;
+          width: 400px;
         }
         pre {
           margin-left: 16px;
+        }
+        @media only screen and (max-width: 800px) {
+          .root {
+            flex-direction: column;
+          }
+          pre {
+            margin-left: 0;
+          }
         }
       </style>
       <h2>[[config.heading]]</h2>
