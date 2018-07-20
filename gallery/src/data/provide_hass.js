@@ -50,20 +50,38 @@ export class LightEntity extends Entity {
   }
 
   async handleService(domain, service, data) {
-    if (domain === 'light' && service === 'turn_on') {
+    if (domain !== this.domain) return;
+
+    if (service === 'turn_on') {
       const { brightness, hs_color } = data;
       this.update('on', Object.assign(this.attributes, {
         brightness,
         hs_color,
       }));
-    } else if (domain === 'light' && service === 'turn_off') {
+    } else if (service === 'turn_off') {
       this.update('off');
-    } else if (domain === 'light' && service === 'toggle') {
+    } else if (service === 'toggle') {
       if (this.state === 'on') {
         this.handleService(domain, 'turn_off', data);
       } else {
         this.handleService(domain, 'turn_on', data);
       }
+    }
+  }
+}
+
+export class LockEntity extends Entity {
+  constructor(objectId, state, baseAttributes) {
+    super('lock', objectId, state ? 'locked' : 'unlocked', baseAttributes);
+  }
+
+  async handleService(domain, service, data) {
+    if (domain !== this.domain) return;
+
+    if (service === 'lock') {
+      this.update('locked');
+    } else if (service === 'unlock') {
+      this.update('unlocked');
     }
   }
 }

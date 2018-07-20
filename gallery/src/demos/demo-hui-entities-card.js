@@ -5,6 +5,7 @@ import {
   provideHass,
   Entity,
   LightEntity,
+  LockEntity,
   GroupEntity,
 } from '../data/provide_hass.js';
 import '../components/demo-cards.js';
@@ -137,7 +138,7 @@ class DemoEntities extends PolymerElement {
         order: 8,
         friendly_name: 'Kitchen'
       }),
-      new Entity('lock', 'kitchen_door', 'locked', {
+      new LockEntity('kitchen_door', true, {
         friendly_name: 'Kitchen Door'
       }),
     ])
