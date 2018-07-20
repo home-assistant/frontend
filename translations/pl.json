@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Zarządzaj swoją siecią Z-Wave"
+                },
+                "users": {
+                    "caption": "Użytkownicy",
+                    "description": "Zarządzanie użytkownikami",
+                    "picker": {
+                        "title": "Użytkownicy"
+                    },
+                    "editor": {
+                        "rename_user": "Zmień nazwę użytkownika",
+                        "change_password": "Zmień hasło",
+                        "activate_user": "Aktywuj użytkownika",
+                        "deactivate_user": "Dezaktywuj użytkownika",
+                        "delete_user": "Usuń użytkownika"
+                    }
                 }
             }
         },
@@ -639,7 +653,14 @@
             "relative_time": {
                 "past": "{time} temu",
                 "future": "Za {time}",
-                "never": "Nigdy"
+                "never": "Nigdy",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekund(y)}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuta}\n  other {minut(y)}\n}",
+                    "hour": "{count} {count, plural,\n  one {godzina}\n  other {godzin(y)}\n}",
+                    "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
+                    "week": "{count} {count, plural,\n  one {tydzień}\n  other {tygodni(e)}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Ładowanie historii...",
