@@ -126,7 +126,7 @@ class DemoEntities extends PolymerElement {
         battery: 71,
         friendly_name: 'Paulus'
       }),
-      new Entity('cover', 'kitchen_window', '', {
+      new Entity('cover', 'kitchen_window', 'open', {
         friendly_name: 'Kitchen Window',
         supported_features: 11
       }),
