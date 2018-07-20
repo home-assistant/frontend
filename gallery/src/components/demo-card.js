@@ -21,7 +21,9 @@ class DemoCard extends PolymerElement {
           width: 400px;
         }
         pre {
-          margin-left: 16px;
+          width: 400px;
+          margin: 16px;
+          overflow: auto;
         }
         @media only screen and (max-width: 800px) {
           .root {
