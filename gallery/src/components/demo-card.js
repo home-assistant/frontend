@@ -68,7 +68,6 @@ class DemoCard extends PolymerElement {
 
     const el = createCardElement(JsYaml.safeLoad(config.config)[0]);
 
-
     if (this.hass) {
       el.hass = this.hass;
     } else {

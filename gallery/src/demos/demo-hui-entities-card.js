@@ -1,8 +1,12 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import demoStates from '../data/demo_states.js';
-import provideHass from '../data/provide_hass.js';
+import {
+  provideHass,
+  Entity,
+  LightEntity,
+  GroupEntity,
+} from '../data/provide_hass.js';
 import '../components/demo-cards.js';
 
 const CONFIGS = [
@@ -102,9 +106,42 @@ class DemoEntities extends PolymerElement {
 
   ready() {
     super.ready();
-    provideHass(this.$.demos, {
-      states: demoStates,
-    });
+    const hass = provideHass(this.$.demos);
+    hass.addEntities([
+      new LightEntity('bed_light', true, {
+        friendly_name: 'Bed Light'
+      }),
+      new Entity('scene', 'romantic_lights', 'scening', {
+        entity_id: [
+          'light.bed_light',
+          'light.ceiling_lights'
+        ],
+        friendly_name: 'Romantic lights'
+      }),
+      new Entity('device_tracker', 'demo_paulus', 'home', {
+        source_type: 'gps',
+        latitude: 32.877105,
+        longitude: 117.232185,
+        gps_accuracy: 91,
+        battery: 71,
+        friendly_name: 'Paulus'
+      }),
+      new Entity('cover', 'kitchen_window', '', {
+        friendly_name: 'Kitchen Window',
+        supported_features: 11
+      }),
+      new GroupEntity('kitchen', 'on', {
+        entity_id: [
+          'light.bed_light',
+        ],
+        order: 8,
+        friendly_name: 'Kitchen'
+      }),
+      new Entity('lock', 'kitchen_door', 'locked', {
+        friendly_name: 'Kitchen Door'
+      }),
+    ])
+
   }
 }
 
