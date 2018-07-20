@@ -333,9 +333,12 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
       );
     });
 
-    this.hass.callWS({
-      type: 'auth/current_user',
-    }).then(user => this._updateHass({ user }), () => {});
+    // only for new auth
+    if (conn.options.accessToken) {
+      this.hass.callWS({
+        type: 'auth/current_user',
+      }).then(user => this._updateHass({ user }), () => {});
+    }
 
     conn.subscribeEvents((event) => {
       this._updateHass({ themes: event.data });
