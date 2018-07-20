@@ -43,11 +43,11 @@ class HaCoverControls extends PolymerElement {
   }
   computeOpenDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
-    return entityObj.isFullyOpen && !assumedState;
+    return (entityObj.isFullyOpen || entityObj.isOpening) && !assumedState;
   }
   computeClosedDisabled(stateObj, entityObj) {
     var assumedState = (stateObj.attributes.assumed_state === true);
-    return entityObj.isFullyClosed && !assumedState;
+    return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
   }
   onOpenTap(ev) {
     ev.stopPropagation();
