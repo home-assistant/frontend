@@ -3,7 +3,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import JsYaml from 'js-yaml';
 
 import HomeAssistant from '../data/hass.js';
-import demoStates from '../data/demo_dump.js';
+import demoConfig from '../data/demo_config.js';
+import demoResources from '../data/demo_resources.js';
+import demoStates from '../data/demo_states.js';
 import createCardElement from '../../../src/panels/lovelace/common/create-card-element.js';
 
 class DemoCard extends PolymerElement {
@@ -61,6 +63,9 @@ class DemoCard extends PolymerElement {
     }
 
     const hass = new HomeAssistant();
+    hass.config = demoConfig;
+    hass.resources = demoResources;
+    hass.language = 'en';
     hass.states = demoStates;
 
     const el = createCardElement(JsYaml.safeLoad(config.config)[0]);
