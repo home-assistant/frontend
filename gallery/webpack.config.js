@@ -47,7 +47,12 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin(['public']),
+    new CopyWebpackPlugin([
+      'public',
+      { from: '../node_modules/leaflet/dist/leaflet.css', to: `static/images/leaflet/` },
+      { from: '../node_modules/@polymer/font-roboto-local/fonts', to: 'static/fonts' },
+      { from: '../node_modules/leaflet/dist/images', to: `static/images/leaflet/` },
+    ]),
     isProd && new UglifyJsPlugin({
       extractComments: true,
       sourceMap: true,
