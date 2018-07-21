@@ -7,20 +7,20 @@ class HuiWeblinkRow extends PolymerElement {
   static get template() {
     return html`
       <style>
-        :host {
-          cursor: pointer;
+        a {
+          display: block;
+          color: var(--primary-color);
         }
         ha-icon {
           padding: 8px;
+          margin-right: 16px;
           color: var(--paper-item-icon-color);
         }
-        a {
-          color: var(--primary-color);
-          margin-left: 16px;
-        }
+
       </style>
-      <ha-icon icon="[[_config.icon]]"></ha-icon>
-      <a href="[[_config.url]]">[[_config.name]]</a>
+      <a href="[[_config.url]]">
+        <ha-icon icon="[[_config.icon]]"></ha-icon>[[_config.name]]
+      </a>
     `;
   }
 
@@ -30,20 +30,11 @@ class HuiWeblinkRow extends PolymerElement {
     };
   }
 
-  ready() {
-    super.ready();
-    this.addEventListener('click', () => this._handleClick());
-  }
-
   setConfig(config) {
     if (!config || !config.icon || !config.name || !config.url) {
       throw new Error('Error in card configuration.');
     }
     this._config = config;
-  }
-
-  _handleClick() {
-    window.open(this._config.url, '_blank');
   }
 }
 customElements.define('hui-weblink-row', HuiWeblinkRow);

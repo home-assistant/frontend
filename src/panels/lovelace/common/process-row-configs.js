@@ -1,7 +1,7 @@
 // Parse array of entity objects from config
 import isValidEntityId from '../../../common/entity/valid_entity_id.js';
 
-export default function processConfigEntities(entities) {
+export default function processRowConfigs(entities) {
   if (!entities || !Array.isArray(entities)) {
     throw new Error('Entities need to be an array');
   }
