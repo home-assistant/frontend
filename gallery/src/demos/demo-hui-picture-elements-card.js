@@ -8,7 +8,6 @@ const CONFIGS = [
     heading: 'Basic card with icons',
     config: `
 - type: picture-elements
-  # title: Main Level
   image: /images/floorplan.png
   elements:
     - type: icon
