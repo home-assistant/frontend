@@ -28,6 +28,10 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
       #states > div {
         margin: 4px 0;
       }
+      #states > div > * {
+        display: block;
+        overflow: hidden;
+      }
       .header {
         @apply --paper-font-headline;
         /* overwriting line-height +8 because entity-toggle can be 40px height,
