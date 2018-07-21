@@ -11,9 +11,14 @@ import '../entity-rows/hui-text-entity-row.js';
 import '../entity-rows/hui-timer-entity-row.js';
 import '../entity-rows/hui-toggle-entity-row.js';
 
+import '../special-rows/hui-weblink-row.js';
+
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
+const SPECIAL_TYPES = new Set ([
+  'weblink'
+]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   automation: 'toggle',
   cover: 'cover',
@@ -50,10 +55,10 @@ function _createErrorElement(error, config) {
   return _createElement('hui-error-card', createErrorCardConfig(error, config));
 }
 
-export default function createEntityRowElement(config) {
+export default function createRowElement(config) {
   let tag;
 
-  if (!config || typeof config !== 'object' || !config.entity) {
+  if (!config || typeof config !== 'object' || (!config.entity && !config.type)) {
     return _createErrorElement('Invalid config given.', config);
   }
 
@@ -70,6 +75,10 @@ export default function createEntityRowElement(config) {
       .then(() => fireEvent(element, 'rebuild-view'));
 
     return element;
+  }
+
+  if (SPECIAL_TYPES.has(type)) {
+    return _createElement(`hui-${type}-row`, config);
   }
 
   const domain = config.entity.split('.', 1)[0];
