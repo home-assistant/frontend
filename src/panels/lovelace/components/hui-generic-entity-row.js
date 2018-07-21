@@ -39,7 +39,7 @@ class HuiGenericEntityRow extends PolymerElement {
         }
         ha-icon {
           padding: 8px;
-          color: var(--paper-item-icon-color, red);
+          color: var(--paper-item-icon-color);
         }
         .not-found {
           flex: 1;
