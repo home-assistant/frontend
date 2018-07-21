@@ -3,6 +3,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-relative-time.js';
+import '../../../components/ha-icon.js';
 
 import computeStateName from '../../../common/entity/compute_state_name.js';
 
@@ -36,6 +37,10 @@ class HuiGenericEntityRow extends PolymerElement {
           display: block;
           color: var(--secondary-text-color);
         }
+        ha-icon {
+          padding: 8px;
+          color: var(--paper-item-icon-color, red);
+        }
         .not-found {
           flex: 1;
           background-color: yellow;
@@ -43,7 +48,12 @@ class HuiGenericEntityRow extends PolymerElement {
         }
       </style>
       <template is="dom-if" if="[[_stateObj]]">
-        <state-badge state-obj="[[_stateObj]]"></state-badge>
+        <template is="dom-if" if="[[!config.icon]]">
+          <state-badge state-obj="[[_stateObj]]"></state-badge>
+        </template>
+        <template is="dom-if" if="[[config.icon]]">
+          <ha-icon icon="[[config.icon]]"></ha-icon>
+        </template>
         <div class="flex">
           <div class="info">
             [[_computeName(config.name, _stateObj)]]
