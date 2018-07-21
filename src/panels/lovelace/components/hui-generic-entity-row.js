@@ -6,24 +6,30 @@ import '../../../components/ha-relative-time.js';
 
 import computeStateName from '../../../common/entity/compute_state_name.js';
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-
-/*
- * @appliesMixin EventsMixin
- */
-class HuiGenericEntityRow extends EventsMixin(PolymerElement) {
+class HuiGenericEntityRow extends PolymerElement {
   static get template() {
     return html`
       <style>
         :host {
           display: flex;
+          align-items: center;
         }
         .flex {
-          margin-left: 16px;
           flex: 1;
+          overflow: hidden;
+          margin-left: 16px;
           display: flex;
-          align-items: center;
           justify-content: space-between;
+          align-items: center;
+        }
+        .info,
+        .info > * {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .flex ::slotted(*) {
+          margin-left: 8px;
         }
         .secondary,
         ha-relative-time {
