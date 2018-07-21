@@ -20,6 +20,7 @@ export const DOMAINS_WITH_CARD = [
   'scene',
   'script',
   'timer',
+  'vacuum',
   'weblink',
 ];
 

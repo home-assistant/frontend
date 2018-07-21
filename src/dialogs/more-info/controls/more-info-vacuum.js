@@ -30,9 +30,6 @@ class MoreInfoVacuum extends PolymerElement {
     </style>
 
     <div class="horizontal justified layout">
-      <div hidden$="[[!supportsStatus(stateObj)]]">
-        <span class="status-subtitle">Status: </span><span><strong>[[stateObj.attributes.status]]</strong></span>
-      </div>
       <div hidden$="[[!supportsBattery(stateObj)]]">
         <span><iron-icon icon="[[stateObj.attributes.battery_icon]]"></iron-icon> [[stateObj.attributes.battery_level]] %</span>
       </div>
@@ -121,10 +118,6 @@ class MoreInfoVacuum extends PolymerElement {
 
   supportsBattery(stateObj) {
     return (stateObj.attributes.supported_features & 64) !== 0;
-  }
-
-  supportsStatus(stateObj) {
-    return (stateObj.attributes.supported_features & 128) !== 0;
   }
 
   supportsLocate(stateObj) {
