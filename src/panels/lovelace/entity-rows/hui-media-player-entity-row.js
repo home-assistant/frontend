@@ -52,7 +52,20 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
 
   _computeMediaTitle(stateObj) {
     if (!stateObj) return null;
-    return stateObj.attributes.media_title || null;
+
+    let title;
+    switch (stateObj.attributes.media_content_type) {
+      case 'music':
+        title = `${stateObj.attributes.media_artist}: ${stateObj.attributes.media_title}`;
+        break;
+      case 'tvshow':
+        title = `${stateObj.attributes.media_series_title}: ${stateObj.attributes.media_title}`;
+        break;
+      default:
+        title = `${stateObj.attributes.media_title}`;
+    }
+
+    return title;
   }
 
   _computeState(stateObj) {
