@@ -32,6 +32,9 @@ class HuiGenericEntityRow extends PolymerElement {
         .flex ::slotted(*) {
           margin-left: 8px;
         }
+        .flex ::slotted([slot=secondary]) {
+          margin-left: 0;
+        }
         .secondary,
         ha-relative-time {
           display: block;
@@ -69,6 +72,11 @@ class HuiGenericEntityRow extends PolymerElement {
                   datetime="[[_stateObj.last_changed]]"
                 ></ha-relative-time>
               </template>
+            </template>
+            <template is="dom-if" if="[[!config.secondary_info]]">
+              <div class="secondary">
+                <slot name="secondary"></slot> 
+              </div>
             </template>
           </div>
           <slot></slot>
