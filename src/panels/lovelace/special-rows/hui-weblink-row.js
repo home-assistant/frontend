@@ -36,7 +36,7 @@ class HuiWeblinkRow extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config || !config.icon || !config.name || !config.url ) {
+    if (!config || !config.icon || !config.name || !config.url) {
       throw new Error('Error in card configuration.');
     }
     this._config = config;

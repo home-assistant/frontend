@@ -16,7 +16,7 @@ import '../special-rows/hui-weblink-row.js';
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
-const SPECIAL_TYPES = new Set ([
+const SPECIAL_TYPES = new Set([
   'weblink'
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
