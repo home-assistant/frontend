@@ -95,12 +95,13 @@ const CONFIGS = [
     `
   },
   {
-    heading: 'Custom name',
+    heading: 'Custom name, custom icon',
     config: `
 - type: glance
   entities:
     - entity: device_tracker.demo_paulus
       name: ¯\\_(ツ)_/¯
+      icon: mdi:home-assistant
     - media_player.living_room
     - sun.sun
     - cover.kitchen_window
