@@ -20,7 +20,7 @@ class HuiWeblinkRow extends PolymerElement {
         }
       </style>
       <ha-icon icon="[[_config.icon]]"></ha-icon>
-      <a href="[[[[_config.url]]]]">[[_config.name]]</a>
+      <a href="[[_config.url]]">[[_config.name]]</a>
     `;
   }
 
