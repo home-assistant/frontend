@@ -57,7 +57,7 @@ const CONFIGS = [
     `
   },
   {
-    heading: 'Custom name, secondary info',
+    heading: 'Custom name, secondary info, custom icon',
     config: `
 - type: entities
   entities:
@@ -67,7 +67,8 @@ const CONFIGS = [
       secondary_info: entity-id
     - entity: cover.kitchen_window
       secondary_info: last-changed
-    - group.kitchen
+    - entity: group.kitchen
+      icon: mdi:home-assistant
     - lock.kitchen_door
     - light.bed_light
   title: Random group
