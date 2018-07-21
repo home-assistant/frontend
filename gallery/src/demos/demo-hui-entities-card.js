@@ -80,9 +80,9 @@ const CONFIGS = [
 - type: entities
   entities:
     - type: weblink
-    url: http://google.com/
-    icon: mdi:google
-    name: Google
+      url: http://google.com/
+      icon: mdi:google
+      name: Google
     `
   },
 ];
