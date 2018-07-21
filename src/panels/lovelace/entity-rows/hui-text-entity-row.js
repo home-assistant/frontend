@@ -13,6 +13,11 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 class HuiTextEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
+      <style>
+        div {
+          text-align: right;
+        }
+      </style>
       <hui-generic-entity-row
         hass="[[hass]]"
         config="[[_config]]"
