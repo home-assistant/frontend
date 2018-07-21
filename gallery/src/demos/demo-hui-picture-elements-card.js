@@ -5,7 +5,7 @@ import '../components/demo-cards.js';
 
 const CONFIGS = [
   {
-    heading: 'Title, dialog, toggle',
+    heading: 'Basic card with icons',
     config: `
 - type: picture-elements
   # title: Main Level
