@@ -31,7 +31,7 @@ const CONFIGS = [
         --iron-icon-stroke-color: black
         --iron-icon-fill-color: rgba(50, 50, 50, .75)
     - type: image
-      entity: light.kitchen_lights
+      entity: light.bed_light
       tap_action: toggle
       image: /local/light_bulb_off.png
       state_image:
