@@ -74,4 +74,4 @@ export default (elements, { initialStates = {} } = {}) => {
   });
 
   return hass;
-}
+};

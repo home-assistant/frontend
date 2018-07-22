@@ -106,11 +106,11 @@ export class GroupEntity extends Entity {
 }
 
 const TYPES = {
-  'light': LightEntity,
-  'lock': LockEntity,
-  'cover': CoverEntity,
-  'group': GroupEntity,
-}
+  light: LightEntity,
+  lock: LockEntity,
+  cover: CoverEntity,
+  group: GroupEntity,
+};
 
 export default (domain, objectId, state, baseAttributes = {}) =>
   new (TYPES[domain] || Entity)(domain, objectId, state, baseAttributes);
