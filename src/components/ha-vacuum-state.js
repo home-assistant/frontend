@@ -31,7 +31,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
     <template is="dom-if" if="[[currentInteractable]]">
     <paper-button class="interactable" on-click="_callService">[[currentInteractable]]</paper-button>
     </template>
-    <template is="dom-if" if="[[!currentControl]]">
+    <template is="dom-if" if="[[currentNotInteractable]]">
     <paper-button class="notinteractable">[[currentNotInteractable]]</paper-button>
     </template>
 `;
@@ -56,7 +56,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  computeCurrentStatus(stateObj) {
+  computeCurrentInteractable(stateObj) {
     if (stateObj.state != null) {
       switch(stateObj.state) {
       	case "cleaning":
@@ -72,7 +72,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
     return null;
   }
 
-  computeCurrentStatus(stateObj) {
+  computeCurrentNotInteractable(stateObj) {
     if (stateObj.state != null) {
       switch(stateObj.state) {
         case "idle":
