@@ -11,13 +11,13 @@ import '../components/demo-more-infos.js';
 
 /* eslint-disable no-unused-vars */
 
-const SUPPORT_BRIGHTNESS = 1
-const SUPPORT_COLOR_TEMP = 2
-const SUPPORT_EFFECT = 4
-const SUPPORT_FLASH = 8
-const SUPPORT_COLOR = 16
-const SUPPORT_TRANSITION = 32
-const SUPPORT_WHITE_VALUE = 128
+const SUPPORT_BRIGHTNESS = 1;
+const SUPPORT_COLOR_TEMP = 2;
+const SUPPORT_EFFECT = 4;
+const SUPPORT_FLASH = 8;
+const SUPPORT_COLOR = 16;
+const SUPPORT_TRANSITION = 32;
+const SUPPORT_WHITE_VALUE = 128;
 
 const ENTITIES = [
   getEntity('light', 'bed_light', 'on', {

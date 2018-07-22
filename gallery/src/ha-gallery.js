@@ -189,13 +189,12 @@ class HaGallery extends PolymerElement {
     document.location.hash = '';
   }
 
-  _computeLovelace(demos) {
-    return demos.filter(demo => demo.includes('hui'));
+  _computeLovelace(dems) {
+    return dems.filter(demo => demo.includes('hui'));
   }
 
-  _computeMoreInfos(demos) {
-    console.log(demos, demos.filter(demo => demo.includes('more-info')))
-    return demos.filter(demo => demo.includes('more-info'));
+  _computeMoreInfos(dems) {
+    return dems.filter(demo => demo.includes('more-info'));
   }
 }
 

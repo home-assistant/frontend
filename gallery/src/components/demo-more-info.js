@@ -5,12 +5,10 @@ import '../../../src/state-summary/state-card-content.js';
 import '../../../src/dialogs/more-info/controls/more-info-content.js';
 import '../../../src/components/ha-card.js';
 
-import getEntity from '../data/entity.js';
-import provideHass from '../data/provide_hass.js';
 
 class DemoMoreInfo extends PolymerElement {
-    static get template() {
-      return html`
+  static get template() {
+    return html`
         <style>
           :host {
             display: flex;
@@ -61,35 +59,35 @@ class DemoMoreInfo extends PolymerElement {
             <pre>[[_jsonEntity(_stateObj)]]</pre>
         </template>
       `;
-    }
-
-    static get properties() {
-      return {
-        hass: Object,
-        entityId: String,
-        showConfig: Boolean,
-        _stateObj: {
-          type: Object,
-          computed: '_getState(entityId, hass.states)'
-        }
-      };
-    }
-
-    _getState(entityId, states) {
-      return states[entityId];
-    }
-
-    _jsonEntity(stateObj) {
-      // We are caching some things on stateObj
-      // (it sucks, we will remove in the future)
-      const tmp = {};
-      Object.keys(stateObj).forEach(key => {
-        if (key[0] != '_') {
-          tmp[key] = stateObj[key];
-        }
-      });
-      return JSON.stringify(tmp, null, 2);
-    }
   }
 
-  customElements.define('demo-more-info', DemoMoreInfo);
+  static get properties() {
+    return {
+      hass: Object,
+      entityId: String,
+      showConfig: Boolean,
+      _stateObj: {
+        type: Object,
+        computed: '_getState(entityId, hass.states)'
+      }
+    };
+  }
+
+  _getState(entityId, states) {
+    return states[entityId];
+  }
+
+  _jsonEntity(stateObj) {
+    // We are caching some things on stateObj
+    // (it sucks, we will remove in the future)
+    const tmp = {};
+    Object.keys(stateObj).forEach((key) => {
+      if (key[0] !== '_') {
+        tmp[key] = stateObj[key];
+      }
+    });
+    return JSON.stringify(tmp, null, 2);
+  }
+}
+
+customElements.define('demo-more-info', DemoMoreInfo);
