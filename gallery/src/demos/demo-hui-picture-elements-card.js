@@ -31,11 +31,11 @@ const CONFIGS = [
         --iron-icon-stroke-color: black
         --iron-icon-fill-color: rgba(50, 50, 50, .75)
     - type: image
-      entity: light.ceiling_lights
+      entity: light.bed_light
       tap_action: toggle
-      image: /local/light_bulb_off.png
+      image: /images/light_bulb_off.png
       state_image:
-        'on': /local/light_bulb_on.png
+        'on': /images/light_bulb_on.png
       state_filter:
         'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
         'off': brightness(80%) saturate(0.8)
