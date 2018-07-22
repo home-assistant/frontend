@@ -45,7 +45,7 @@ export class Entity {
 
 export class LightEntity extends Entity {
   async handleService(domain, service, data) {
-    if (domain !== this.domain) return;
+    if (!['homeassistant', this.domain].includes(domain)) return;
 
     if (service === 'turn_on') {
       // eslint-disable-next-line
@@ -94,7 +94,7 @@ export class CoverEntity extends Entity {
 
 export class GroupEntity extends Entity {
   async handleService(domain, service, data) {
-    if (!['group', 'homeassistant'].includes(domain)) return;
+    if (!['homeassistant', this.domain].includes(domain)) return;
 
     await Promise.all(this.attributes.entity_id.map((ent) => {
       const entity = this.hass.mockEntities[ent];
