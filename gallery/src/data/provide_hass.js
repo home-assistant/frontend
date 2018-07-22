@@ -1,5 +1,8 @@
 import fireEvent from '../../../src/common/dom/fire_event.js';
 
+import demoConfig from './demo_config.js';
+import demoResources from './demo_resources.js';
+
 const ensureArray = val => (Array.isArray(val) ? val : [val]);
 
 export default (elements, { initialStates = {} } = {}) => {
@@ -15,18 +18,16 @@ export default (elements, { initialStates = {} } = {}) => {
   }
 
   updateHass({
-    mockEntities: entities,
+    // Home Assistant properties
+    config: demoConfig,
+    language: 'en',
+    resources: demoResources,
     states: initialStates,
-    config: {
-      services: {
 
-      }
-    },
+    // Mock properties
+    mockEntities: entities,
 
-    addWSCommand(command, callback) {
-      wsCommands[command] = callback;
-    },
-
+    // Home Assistant functions
     async callService(domain, service, data) {
       fireEvent(elements[0], 'show-notification', { message: `Called service ${domain}/${service}` });
       if (data.entity_id) {
@@ -56,6 +57,7 @@ export default (elements, { initialStates = {} } = {}) => {
       console.log('sendWS', msg);
     },
 
+    // Mock functions
     updateHass,
     updateStates(newStates) {
       updateHass({
