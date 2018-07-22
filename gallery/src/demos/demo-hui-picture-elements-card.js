@@ -5,44 +5,50 @@ import '../components/demo-cards.js';
 
 const CONFIGS = [
   {
-    heading: 'Basic card with icons',
+    heading: 'Card with few elements',
     config: `
 - type: picture-elements
   image: /images/floorplan.png
   elements:
+    - type: service-button
+      title: Lights Off
+      style:
+        top: 97%
+        left: 90%
+        padding: 0px
+      service: light.turn_off
+      service_data:
+        entity_id: group.all_lights
     - type: icon
       icon: mdi:cctv
-      entity: camera.porch
+      entity: camera.demo_camera
       style:
-        top: 92.5%
-        left: 16%
-        transform: rotate(235deg)
-        --iron-icon-height: 30px
-        --iron-icon-width: 30px
-        --iron-icon-stroke-color: black
-        --iron-icon-fill-color: rgba(50, 50, 50, .75)
-    - type: icon
-      icon: mdi:cctv
-      entity: camera.patio
-      style:
-        top: 4.5%
-        left: 16%
+        top: 12%
+        left: 6%
         transform: rotate(-60deg) scaleX(-1)
         --iron-icon-height: 30px
         --iron-icon-width: 30px
         --iron-icon-stroke-color: black
         --iron-icon-fill-color: rgba(50, 50, 50, .75)
-    - type: icon
-      icon: mdi:cctv
-      entity: camera.backyard
+    - type: image
+      entity: light.bed_light
+      tap_action: toggle
+      image: /images/light_bulb_off.png
+      state_image:
+        'on': /images/light_bulb_on.png
+      state_filter:
+        'on': brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)
+        'off': brightness(80%) saturate(0.8)
       style:
-        top: 5%
-        left: 78%
-        transform: rotate(60deg)
-        --iron-icon-height: 30px
-        --iron-icon-width: 30px
-        --iron-icon-stroke-color: black
-        --iron-icon-fill-color: rgba(50, 50, 50, .75)
+        top: 35%
+        left: 65%
+        width: 7%
+        padding: 50px 50px 100px 50px
+    - type: state-icon
+      entity: binary_sensor.movement_backyard
+      style:
+        top: 8%
+        left: 35%
     `
   },
 ];
