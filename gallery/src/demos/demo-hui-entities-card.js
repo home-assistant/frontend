@@ -4,11 +4,47 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import {
   provideHass,
   Entity,
+  CoverEntity,
+  GroupEntity,
   LightEntity,
   LockEntity,
-  GroupEntity,
 } from '../data/provide_hass.js';
 import '../components/demo-cards.js';
+
+const ENTITIES = [
+  new LightEntity('bed_light', true, {
+    friendly_name: 'Bed Light'
+  }),
+  new GroupEntity('kitchen', 'on', {
+    entity_id: [
+      'light.bed_light',
+    ],
+    order: 8,
+    friendly_name: 'Kitchen'
+  }),
+  new LockEntity('kitchen_door', true, {
+    friendly_name: 'Kitchen Door'
+  }),
+  new CoverEntity('kitchen_window', 'open', {
+    friendly_name: 'Kitchen Window',
+    supported_features: 11
+  }),
+  new Entity('scene', 'romantic_lights', 'scening', {
+    entity_id: [
+      'light.bed_light',
+      'light.ceiling_lights'
+    ],
+    friendly_name: 'Romantic lights'
+  }),
+  new Entity('device_tracker', 'demo_paulus', 'home', {
+    source_type: 'gps',
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: 'Paulus'
+  }),
+];
 
 const CONFIGS = [
   {
@@ -108,40 +144,7 @@ class DemoEntities extends PolymerElement {
   ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
-    hass.addEntities([
-      new LightEntity('bed_light', true, {
-        friendly_name: 'Bed Light'
-      }),
-      new Entity('scene', 'romantic_lights', 'scening', {
-        entity_id: [
-          'light.bed_light',
-          'light.ceiling_lights'
-        ],
-        friendly_name: 'Romantic lights'
-      }),
-      new Entity('device_tracker', 'demo_paulus', 'home', {
-        source_type: 'gps',
-        latitude: 32.877105,
-        longitude: 117.232185,
-        gps_accuracy: 91,
-        battery: 71,
-        friendly_name: 'Paulus'
-      }),
-      new Entity('cover', 'kitchen_window', 'open', {
-        friendly_name: 'Kitchen Window',
-        supported_features: 11
-      }),
-      new GroupEntity('kitchen', 'on', {
-        entity_id: [
-          'light.bed_light',
-        ],
-        order: 8,
-        friendly_name: 'Kitchen'
-      }),
-      new LockEntity('kitchen_door', true, {
-        friendly_name: 'Kitchen Door'
-      }),
-    ]);
+    hass.addEntities(ENTITIES);
   }
 }
 

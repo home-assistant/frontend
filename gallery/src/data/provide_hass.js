@@ -90,6 +90,23 @@ export class LockEntity extends Entity {
   }
 }
 
+export class CoverEntity extends Entity {
+  constructor(objectId, state, baseAttributes) {
+    super('cover', objectId, state, baseAttributes);
+  }
+
+  // eslint-disable-next-line
+  async handleService(domain, service, data) {
+    if (domain !== this.domain) return;
+
+    if (service === 'open_cover') {
+      this.update('open');
+    } else if (service === 'close_cover') {
+      this.update('closing');
+    }
+  }
+}
+
 export class GroupEntity extends Entity {
   constructor(objectId, state, baseAttributes) {
     super('group', objectId, state, baseAttributes);
