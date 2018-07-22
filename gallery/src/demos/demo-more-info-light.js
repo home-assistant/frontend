@@ -55,10 +55,6 @@ class DemoMoreInfoLight extends PolymerElement {
     const hass = provideHass(this);
     hass.addEntities(ENTITIES);
   }
-
-  _getState(entityId, states) {
-    return states[entityId];
-  }
 }
 
 customElements.define('demo-more-info-light', DemoMoreInfoLight);

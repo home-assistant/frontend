@@ -27,7 +27,7 @@ class DemoCards extends PolymerElement {
       <app-toolbar>
         <div class='filters'>
           <paper-toggle-button
-            checked='{{showConfig}}'
+            checked='{{_showConfig}}'
           >Show config</paper-toggle-button>
         </div>
       </app-toolbar>
@@ -35,7 +35,7 @@ class DemoCards extends PolymerElement {
         <template is='dom-repeat' items='[[configs]]'>
           <demo-card
             config='[[item]]'
-            show-config='[[showConfig]]'
+            show-config='[[_showConfig]]'
             hass='[[hass]]'
           ></demo-card>
         </template>
@@ -47,7 +47,7 @@ class DemoCards extends PolymerElement {
     return {
       configs: Object,
       hass: Object,
-      showConfig: {
+      _showConfig: {
         type: Boolean,
         value: false,
       }
