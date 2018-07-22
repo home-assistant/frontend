@@ -2,7 +2,8 @@ import fireEvent from '../../../src/common/dom/fire_event.js';
 
 const ensureArray = val => (Array.isArray(val) ? val : [val]);
 const now = () => new Date().toISOString();
-const randomTime = () => new Date(new Date().getTime() - (Math.random() * 80 * 60 * 1000)).toISOString();
+const randomTime = () =>
+  new Date(new Date().getTime() - (Math.random() * 80 * 60 * 1000)).toISOString();
 
 export class Entity {
   constructor(domain, objectId, state, baseAttributes = {}) {
@@ -17,16 +18,17 @@ export class Entity {
     this.attributes = baseAttributes;
   }
 
+  // eslint-disable-next-line
   async handleService(domain, service, data) {
   }
 
   update(state, attributes = {}) {
     this.state = state;
     this.lastUpdated = now();
-    this.lastChanged = state == this.state ? this.lastChanged : this.lastUpdated;
+    this.lastChanged = state === this.state ? this.lastChanged : this.lastUpdated;
     this.attributes = Object.assign({}, this.baseAttributes, attributes);
 
-    console.log("update", this.entityId, this);
+    console.log('update', this.entityId, this);
 
     this.hass.updateStates({
       [this.entityId]: this.toState()
@@ -53,6 +55,7 @@ export class LightEntity extends Entity {
     if (domain !== this.domain) return;
 
     if (service === 'turn_on') {
+      // eslint-disable-next-line
       const { brightness, hs_color } = data;
       this.update('on', Object.assign(this.attributes, {
         brightness,
@@ -75,6 +78,7 @@ export class LockEntity extends Entity {
     super('lock', objectId, state ? 'locked' : 'unlocked', baseAttributes);
   }
 
+  // eslint-disable-next-line
   async handleService(domain, service, data) {
     if (domain !== this.domain) return;
 
@@ -94,13 +98,10 @@ export class GroupEntity extends Entity {
   async handleService(domain, service, data) {
     if (!['group', 'homeassistant'].includes(domain)) return;
 
-    await Promise.all(
-      this.attributes.entity_id.map(
-        ent => {
-          const entity = this.hass.mockEntities[ent];
-          entity.handleService(entity.domain, service, data);
-        }
-      ));
+    await Promise.all(this.attributes.entity_id.map((ent) => {
+      const entity = this.hass.mockEntities[ent];
+      return entity.handleService(entity.domain, service, data);
+    }));
 
     this.update(service === 'turn_on' ? 'on' : 'off');
   }
@@ -134,10 +135,10 @@ export function provideHass(elements, { initialStates = {} } = {}) {
     async callService(domain, service, data) {
       fireEvent(elements[0], 'show-notification', { message: `Called service ${domain}/${service}` });
       if (data.entity_id) {
-        await Promise.all(ensureArray(data.entity_id).map(
-          ent => entities[ent].handleService(domain, service, data)));
+        await Promise.all(ensureArray(data.entity_id).map(ent =>
+          entities[ent].handleService(domain, service, data)));
       } else {
-        console.log('unmocked callService', key, data);
+        console.log('unmocked callService', domain, service, data);
       }
     },
 
@@ -168,7 +169,7 @@ export function provideHass(elements, { initialStates = {} } = {}) {
     },
     addEntities(newEntities) {
       const states = {};
-      ensureArray(newEntities).forEach(ent => {
+      ensureArray(newEntities).forEach((ent) => {
         ent.hass = hass;
         entities[ent.entityId] = ent;
         states[ent.entityId] = ent.toState();

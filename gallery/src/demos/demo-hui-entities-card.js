@@ -141,8 +141,7 @@ class DemoEntities extends PolymerElement {
       new LockEntity('kitchen_door', true, {
         friendly_name: 'Kitchen Door'
       }),
-    ])
-
+    ]);
   }
 }
 
