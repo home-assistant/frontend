@@ -36,6 +36,7 @@ class DemoCards extends PolymerElement {
           <demo-card
             config='[[item]]'
             show-config='[[showConfig]]'
+            hass='[[hass]]'
           ></demo-card>
         </template>
       </div>
@@ -45,6 +46,7 @@ class DemoCards extends PolymerElement {
   static get properties() {
     return {
       configs: Object,
+      hass: Object,
       showConfig: {
         type: Boolean,
         value: false,

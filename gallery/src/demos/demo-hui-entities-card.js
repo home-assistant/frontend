@@ -1,7 +1,44 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import getEntity from '../data/entity.js';
+import provideHass from '../data/provide_hass.js';
 import '../components/demo-cards.js';
+
+const ENTITIES = [
+  getEntity('light', 'bed_light', 'on', {
+    friendly_name: 'Bed Light'
+  }),
+  getEntity('group', 'kitchen', 'on', {
+    entity_id: [
+      'light.bed_light',
+    ],
+    order: 8,
+    friendly_name: 'Kitchen'
+  }),
+  getEntity('lock', 'kitchen_door', 'locked', {
+    friendly_name: 'Kitchen Door'
+  }),
+  getEntity('cover', 'kitchen_window', 'open', {
+    friendly_name: 'Kitchen Window',
+    supported_features: 11
+  }),
+  getEntity('scene', 'romantic_lights', 'scening', {
+    entity_id: [
+      'light.bed_light',
+      'light.ceiling_lights'
+    ],
+    friendly_name: 'Romantic lights'
+  }),
+  getEntity('device_tracker', 'demo_paulus', 'home', {
+    source_type: 'gps',
+    latitude: 32.877105,
+    longitude: 117.232185,
+    gps_accuracy: 91,
+    battery: 71,
+    friendly_name: 'Paulus'
+  }),
+];
 
 const CONFIGS = [
   {
@@ -48,7 +85,7 @@ const CONFIGS = [
     `
   },
   {
-    heading: 'With title, cant\'t toggle',
+    heading: 'With title, can\'t toggle',
     config: `
 - type: entities
   entities:
@@ -80,7 +117,11 @@ const CONFIGS = [
 class DemoEntities extends PolymerElement {
   static get template() {
     return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
+      <demo-cards
+        id='demos'
+        hass='[[hass]]'
+        configs="[[_configs]]"
+      ></demo-cards>
     `;
   }
 
@@ -89,8 +130,15 @@ class DemoEntities extends PolymerElement {
       _configs: {
         type: Object,
         value: CONFIGS
-      }
+      },
+      hass: Object,
     };
+  }
+
+  ready() {
+    super.ready();
+    const hass = provideHass(this.$.demos);
+    hass.addEntities(ENTITIES);
   }
 }
 
