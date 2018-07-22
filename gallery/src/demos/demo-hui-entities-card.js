@@ -6,7 +6,7 @@ import provideHass from '../data/provide_hass.js';
 import '../components/demo-cards.js';
 
 const ENTITIES = [
-  getEntity('light', 'bed_light', true, {
+  getEntity('light', 'bed_light', 'on', {
     friendly_name: 'Bed Light'
   }),
   getEntity('group', 'kitchen', 'on', {
@@ -16,7 +16,7 @@ const ENTITIES = [
     order: 8,
     friendly_name: 'Kitchen'
   }),
-  getEntity('lock', 'kitchen_door', true, {
+  getEntity('lock', 'kitchen_door', 'locked', {
     friendly_name: 'Kitchen Door'
   }),
   getEntity('cover', 'kitchen_window', 'open', {

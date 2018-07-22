@@ -2,6 +2,8 @@ const now = () => new Date().toISOString();
 const randomTime = () =>
   new Date(new Date().getTime() - (Math.random() * 80 * 60 * 1000)).toISOString();
 
+/* eslint-disable no-unused-vars */
+
 export class Entity {
   constructor(domain, objectId, state, baseAttributes) {
     this.domain = domain;
@@ -15,8 +17,8 @@ export class Entity {
     this.attributes = baseAttributes;
   }
 
-  // eslint-disable-next-line
   async handleService(domain, service, data) {
+    console.log(`Unmocked service for ${this.entityId}: ${domain}/${service}`, data);
   }
 
   update(state, attributes = {}) {
@@ -67,7 +69,6 @@ export class LightEntity extends Entity {
 }
 
 export class LockEntity extends Entity {
-  // eslint-disable-next-line
   async handleService(domain, service, data) {
     if (domain !== this.domain) return;
 
@@ -80,7 +81,6 @@ export class LockEntity extends Entity {
 }
 
 export class CoverEntity extends Entity {
-  // eslint-disable-next-line
   async handleService(domain, service, data) {
     if (domain !== this.domain) return;
 
