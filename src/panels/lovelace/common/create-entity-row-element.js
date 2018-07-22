@@ -10,6 +10,7 @@ import '../entity-rows/hui-script-entity-row.js';
 import '../entity-rows/hui-text-entity-row.js';
 import '../entity-rows/hui-timer-entity-row.js';
 import '../entity-rows/hui-toggle-entity-row.js';
+import '../entity-rows/hui-vacuum-entity-row.js';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
@@ -29,7 +30,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   script: 'script',
   timer: 'timer',
   switch: 'toggle',
-  vacuum: 'toggle'
+  vacuum: 'vacuum'
 };
 
 function _createElement(tag, config) {
