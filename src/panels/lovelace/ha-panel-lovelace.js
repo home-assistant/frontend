@@ -5,7 +5,7 @@ import '@polymer/paper-button/paper-button.js';
 import '../../layouts/hass-loading-screen.js';
 import '../../layouts/hass-error-screen.js';
 import './hui-root.js';
-import validate from '../../../build/lovelace_schema.js'
+import validate from '../../../build/lovelace_schema.js';
 
 class Lovelace extends PolymerElement {
   static get template() {
@@ -112,8 +112,7 @@ class Lovelace extends PolymerElement {
       const conf = await this.hass.callWS({ type: 'frontend/lovelace_config' });
       const valid = validate(conf);
       if (!valid) {
-        throw new Error(
-          `Configuration error: ${this._parseErrors(validate.errors)}`);
+        throw new Error(`Configuration error: ${this._parseErrors(validate.errors)}`);
       }
       this.setProperties({
         _config: conf,
