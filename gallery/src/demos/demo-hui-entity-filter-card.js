@@ -39,6 +39,19 @@ const CONFIGS = [
     show_state: false
     `
   },
+  {
+    heading: 'Showing single entity conditionally',
+    config: `
+- type: entity-filter
+  entities:
+    - media_player.lounge_room
+  state_filter:
+    - 'playing'
+  card:
+    type: media-control
+    entity: media_player.lounge_room
+    `
+  }
 ];
 
 class DemoFilter extends PolymerElement {
