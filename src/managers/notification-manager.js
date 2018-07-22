@@ -13,7 +13,7 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
       }
     </style>
 
-    <paper-toast id="toast" text="[[_text]]" no-cancel-on-outside-click="[[_cancelOnOutsideClick]]"></paper-toast>
+    <paper-toast id="toast" no-cancel-on-outside-click="[[_cancelOnOutsideClick]]"></paper-toast>
     <paper-toast id="connToast" duration="0" text="[[localize('ui.notification_toast.connection_lost')]]" opened="[[connectionLost]]"></paper-toast>
 `;
   }
@@ -38,11 +38,6 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
       _cancelOnOutsideClick: {
         type: Boolean,
         value: false,
-      },
-
-      _text: {
-        type: String,
-        readOnly: true,
       },
 
       toastClass: {
@@ -90,8 +85,7 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
   }
 
   showNotification(message) {
-    this._set_text(message);
-    this.$.toast.show();
+    this.$.toast.show(message);
   }
 }
 

@@ -49,12 +49,11 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       'public',
+      { from: '../public', to: 'static' },
+      { from: '../build-translations/output', to: 'static/translations' },
       { from: '../node_modules/leaflet/dist/leaflet.css', to: 'static/images/leaflet/' },
       { from: '../node_modules/@polymer/font-roboto-local/fonts', to: 'static/fonts' },
       { from: '../node_modules/leaflet/dist/images', to: 'static/images/leaflet/' },
-      { from: './src/data/media_player_images/media_player.bedroom.jpg', to: 'api/media_player_proxy/media_player.bedroom' },
-      { from: './src/data/media_player_images/media_player.living_room.jpg', to: 'api/media_player_proxy/media_player.living_room' },
-      { from: './src/data/media_player_images/media_player.walkman.jpg', to: 'api/media_player_proxy/media_player.walkman' },
     ]),
     isProd && new UglifyJsPlugin({
       extractComments: true,
