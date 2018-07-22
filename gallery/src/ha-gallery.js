@@ -9,6 +9,8 @@ import '@polymer/paper-icon-button/paper-icon-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import '../../src/managers/notification-manager.js';
+
 const demos = require.context('./demos', true, /^(.*\.(js$))[^.]*$/im);
 
 const fixPath = path => path.substr(2, path.length - 5);
@@ -91,6 +93,7 @@ class HaGallery extends PolymerElement {
           </template>
         </div>
       </app-header-layout>
+      <notification-manager id='notifications'></notification-manager>
     `;
   }
 
@@ -111,8 +114,15 @@ class HaGallery extends PolymerElement {
   ready() {
     super.ready();
 
+    this.addEventListener(
+      'show-notification',
+      ev => this.$.notifications.showNotification(ev.detail.message)
+    );
+
     this.addEventListener('hass-more-info', (ev) => {
-      if (ev.detail.entityId) alert(`Showing more info for ${ev.detail.entityId}`);
+      if (ev.detail.entityId) {
+        this.$.notifications.showNotification(`Showing more info for ${ev.detail.entityId}`);
+      }
     });
 
     window.addEventListener('hashchange', () => { this._demo = document.location.hash.substr(1); });

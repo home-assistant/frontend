@@ -1,6 +1,6 @@
 export default class FakeHass {
-  constructor() {
-    this.states = {};
+  constructor(states = {}) {
+    this.states = states;
     this._wsCommands = {};
   }
 
