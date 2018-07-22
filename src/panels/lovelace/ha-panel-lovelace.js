@@ -5,6 +5,7 @@ import '@polymer/paper-button/paper-button.js';
 import '../../layouts/hass-loading-screen.js';
 import '../../layouts/hass-error-screen.js';
 import './hui-root.js';
+import validate from '../../../build/lovelace_schema.js'
 
 class Lovelace extends PolymerElement {
   static get template() {
@@ -102,9 +103,18 @@ class Lovelace extends PolymerElement {
     this._columns = Math.max(1, matchColumns - (!this.narrow && this.showMenu));
   }
 
+  _parseErrors(errors) {
+    return errors.map(error => `${error.dataPath} ${error.message}`).join(' ');
+  }
+
   async _fetchConfig() {
     try {
       const conf = await this.hass.callWS({ type: 'frontend/lovelace_config' });
+      const valid = validate(conf);
+      if (!valid) {
+        throw new Error(
+          `Configuration error: ${this._parseErrors(validate.errors)}`);
+      }
       this.setProperties({
         _config: conf,
         _state: 'loaded',

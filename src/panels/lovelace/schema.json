@@ -1,0 +1,38 @@
+{
+  "title": "Home Assistant UI Schema",
+  "description": "With Home Assistant UI, people can define a user interface to render their entities.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "views": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/ViewType" }
+    }
+  },
+  "required": ["views"],
+  "definitions": {
+    "ViewType": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the view. Used for the tab of this view if no icon specified."
+        },
+        "icon": {
+          "type": "string",
+          "description": "Icon to use for the tab."
+        },
+        "columnWidth": {
+          "type": "number",
+          "description": "Specifying the width of the column in pixels.",
+          "notes": [
+            "Not implemented"
+          ]
+        }
+      }
+    }
+  }
+}
