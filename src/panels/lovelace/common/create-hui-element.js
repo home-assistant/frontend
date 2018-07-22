@@ -44,7 +44,9 @@ export default function createHuiElement(config) {
     const tag = config.type.substr(CUSTOM_TYPE_PREFIX.length);
 
     if (customElements.get(tag)) {
-      return _createElement(tag, config);
+      const el = _createElement(tag, config);
+      el.isHuiElement = true;
+      return el;
     }
 
     const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
