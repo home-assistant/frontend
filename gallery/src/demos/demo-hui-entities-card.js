@@ -124,8 +124,9 @@ const CONFIGS = [
     - type: divider
     - type: divider
       style:
-        height: 16px
-        background: center / contain url("https://d33wubrfki0l68.cloudfront.net/075995fe17a5351e2699b2dd878652ec4f1d8654/8bfdd/demo/favicon-192x192.png")
+        height: 30px
+        margin: 4px 0
+        background: center / contain url("images/divider.png") no-repeat
     `
   },
 ];
