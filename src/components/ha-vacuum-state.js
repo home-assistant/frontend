@@ -9,7 +9,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
  * @appliesMixin LocalizeMixin
  */
 class HaVacuumState extends LocalizeMixin(PolymerElement) {
-	  static get template() {
+    static get template() {
     return html`
     <style>
       paper-button.interactable {
@@ -40,7 +40,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       <paper-toggle-button checked="[[toggleChecked]]" on-change="_callService"></paper-toggle-button>
     </template>
 `;
-}
+  }
 
   static get properties() {
     return {
@@ -70,13 +70,13 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
 
   computeCurrentInteractable(stateObj) {
     if (stateObj.state != null) {
-      switch(stateObj.state) {
-      	case "cleaning":
-      	  return "Return to dock";
-      	case "docked":
-      	  return "Start cleaning";
-        case "paused":
-          return "Resume cleaning";
+      switch (stateObj.state) {
+        case 'cleaning':
+          return 'Return to dock';
+        case 'docked':
+          return 'Start cleaning';
+        case 'paused':
+          return 'Resume cleaning';
         default:
           return null;
       }
@@ -86,13 +86,13 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
 
   computeCurrentNotInteractable(stateObj) {
     if (stateObj.state != null) {
-      switch(stateObj.state) {
-        case "idle":
-          return "Idle";
-        case "returning":
-          return "Returning to dock";
-        case "error":
-          return "Error";
+      switch (stateObj.state) {
+        case 'idle':
+          return 'Idle';
+        case 'returning':
+          return 'Returning to dock';
+        case 'error':
+          return 'Error';
         default:
           return null;
       }
@@ -102,17 +102,17 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
 
   computeCurrentService(stateObj) {
     if (stateObj.state != null) {
-      switch(stateObj.state) {
-        case "cleaning":
-          return "return_to_base";
-        case "docked":
-          return "start_pause";
-        case "paused":
-          return "start_pause";
-        case "on":
-          return "turn_off";
-        case "off":
-          return "turn_on";
+      switch (stateObj.state) {
+        case 'cleaning':
+          return 'return_to_base';
+        case 'docked':
+          return 'start_pause';
+        case 'paused':
+          return 'start_pause';
+        case 'on':
+          return 'turn_off';
+        case 'off':
+          return 'turn_on';
         default:
           return null;
       }
@@ -122,8 +122,9 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
 
   computeToggleChecked(stateObj) {
     if (stateObj.state != null) {
-      return (stateObj.state == "on")
+      return (stateObj.state === 'on');
     }
+    return null;
   }
 
   supportsState(stateObj) {
