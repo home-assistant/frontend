@@ -10,7 +10,7 @@ const CONFIGS = [
 - type: vertical-stack
   cards:
     - type: picture-entity
-      image: https://images.pexels.com/photos/1027508/pexels-photo-1027508.jpeg
+      image: /images/kitchen.png
       entity: light.kitchen_lights
     - type: glance
       entities:
@@ -25,7 +25,7 @@ const CONFIGS = [
 - type: horizontal-stack
   cards:
     - type: picture-entity
-      image: https://images.pexels.com/photos/1027508/pexels-photo-1027508.jpeg
+      image: /images/kitchen.png
       entity: light.kitchen_lights
     - type: glance
       entities:
@@ -42,7 +42,7 @@ const CONFIGS = [
     - type: horizontal-stack
       cards:
         - type: picture-entity
-          image: https://images.pexels.com/photos/1027508/pexels-photo-1027508.jpeg
+          image: /images/kitchen.png
           entity: light.kitchen_lights
         - type: glance
           entities:
@@ -50,7 +50,7 @@ const CONFIGS = [
             - device_tracker.demo_home_boy
             - device_tracker.demo_paulus
     - type: picture-entity
-      image: https://images.pexels.com/photos/775219/pexels-photo-775219.jpeg
+      image: /images/bed.png
       entity: light.bed_light
     `
   },
