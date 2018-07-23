@@ -17,14 +17,14 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
     return html`
       <style>
         :host {
-          cursor: pointer; 
-        } 
+          cursor: pointer;
+        }
         .state-label {
           padding: 8px;
           white-space: nowrap;
         }
       </style>
-      <div class="state-label" title$="[[computeTooltip(hass, _config)]]"> 
+      <div class="state-label" title$="[[computeTooltip(hass, _config)]]">
         [[_computeStateDisplay(_stateObj)]]
       </div>
     `;
@@ -59,7 +59,9 @@ class HuiStateLabelElement extends LocalizeMixin(ElementClickMixin(PolymerElemen
   }
 
   _computeStateDisplay(stateObj) {
-    return stateObj && computeStateDisplay(this.localize, stateObj);
+    const state = stateObj ? computeStateDisplay(this.localize, stateObj) : '-';
+    const config = this._config;
+    return `${config.prefix || ''}${state}${config.suffix || ''}`;
   }
 }
 customElements.define('hui-state-label-element', HuiStateLabelElement);
