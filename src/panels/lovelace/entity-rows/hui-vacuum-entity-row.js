@@ -23,11 +23,16 @@ class HuiVacuumEntityRow extends LocalizeMixin(PolymerElement) {
         hass="[[hass]]"
         config="[[_config]]"
       >
-    <template is="dom-if" if="[[currentInteractable]]">
-    <paper-button class="interactable" on-click="_callService">[[currentInteractable]]</paper-button>
+    <template is="dom-if" if="[[supportsState(_stateObj)]]">
+      <template is="dom-if" if="[[currentInteractable]]">
+      <paper-button class="interactable" on-click="_callService">[[currentInteractable]]</paper-button>
+      </template>
+      <template is="dom-if" if="[[currentNotInteractable]]">
+      <paper-button class="notinteractable">[[currentNotInteractable]]</paper-button>
+      </template>
     </template>
-    <template is="dom-if" if="[[currentNotInteractable]]">
-    <paper-button class="notinteractable">[[currentNotInteractable]]</paper-button>
+    <template is="dom-if" if="[[!supportsState(_stateObj)]]">
+      <paper-toggle-button checked="[[toggleChecked]]" on-change="_callService"></paper-toggle-button>
     </template>
     `;
   }
@@ -40,17 +45,25 @@ class HuiVacuumEntityRow extends LocalizeMixin(PolymerElement) {
         type: Object,
         computed: '_computeStateObj(hass.states, _config.entity)'
       },
+
       currentInteractable: {
         type: String,
         computed: 'computeCurrentInteractable(_stateObj)',
       },
+
       currentNotInteractable: {
         type: String,
         computed: 'computeCurrentNotInteractable(_stateObj)',
       },
+
       currentService: {
         type: String,
         computed: 'computeCurrentService(_stateObj)',
+      },
+
+      toggleChecked: {
+        type: Boolean,
+        computed: 'computeToggleChecked(_stateObj)',
       }
     };
   }
@@ -107,11 +120,25 @@ class HuiVacuumEntityRow extends LocalizeMixin(PolymerElement) {
           return "start_pause";
         case "paused":
           return "start_pause";
+        case "on":
+          return "turn_off";
+        case "off":
+          return "turn_on";
         default:
           return null;
       }
     }
     return null;
+  }
+
+  computeToggleChecked(stateObj) {
+    if (stateObj.state != null) {
+      return (stateObj.state == "on")
+    }
+  }
+
+  supportsState(stateObj) {
+    return (stateObj.attributes.supported_features & 4096) !== 0;
   }
 
   _callService(ev) {
