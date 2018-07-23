@@ -28,13 +28,11 @@ class HuiDividerRow extends PolymerElement {
     }
 
     const style = this._config.style || {
-      margin: 0,
-      border: 0,
       height: '1px',
       'background-color': 'var(--secondary-text-color)'
     };
 
-    const el = document.createElement('hr');
+    const el = document.createElement('div');
     Object.keys(style).forEach((prop) => {
       el.style.setProperty(prop, style[prop]);
     });
