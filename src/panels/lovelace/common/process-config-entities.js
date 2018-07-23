@@ -7,6 +7,10 @@ export default function processConfigEntities(entities) {
   }
 
   return entities.map((entityConf, index) => {
+    if (typeof entityConf === 'object' && !Array.isArray(entityConf) && entityConf.type) {
+      return entityConf;
+    }
+
     if (typeof entityConf === 'string') {
       entityConf = { entity: entityConf };
     } else if (typeof entityConf === 'object' && !Array.isArray(entityConf)) {
