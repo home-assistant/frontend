@@ -3,9 +3,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
-import './demo-card.js';
+import './demo-more-info.js';
 
-class DemoCards extends PolymerElement {
+class DemoMoreInfos extends PolymerElement {
   static get template() {
     return html`
       <style>
@@ -14,7 +14,7 @@ class DemoCards extends PolymerElement {
           flex-wrap: wrap;
           justify-content: center;
         }
-        demo-card {
+        demo-more-info {
           margin: 16px 16px 32px;
         }
         app-toolbar {
@@ -28,16 +28,16 @@ class DemoCards extends PolymerElement {
         <div class='filters'>
           <paper-toggle-button
             checked='{{_showConfig}}'
-          >Show config</paper-toggle-button>
+          >Show entity</paper-toggle-button>
         </div>
       </app-toolbar>
       <div class='cards'>
-        <template is='dom-repeat' items='[[configs]]'>
-          <demo-card
-            config='[[item]]'
+        <template is='dom-repeat' items='[[entities]]'>
+          <demo-more-info
+            entity-id='[[item]]'
             show-config='[[_showConfig]]'
             hass='[[hass]]'
-          ></demo-card>
+          ></demo-more-info>
         </template>
       </div>
     `;
@@ -45,7 +45,7 @@ class DemoCards extends PolymerElement {
 
   static get properties() {
     return {
-      configs: Object,
+      entities: Array,
       hass: Object,
       _showConfig: {
         type: Boolean,
@@ -55,4 +55,4 @@ class DemoCards extends PolymerElement {
   }
 }
 
-customElements.define('demo-cards', DemoCards);
+customElements.define('demo-more-infos', DemoMoreInfos);
