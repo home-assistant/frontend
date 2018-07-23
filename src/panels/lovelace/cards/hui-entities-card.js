@@ -5,8 +5,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../../../components/ha-card.js';
 import '../components/hui-entities-toggle.js';
 
-import createEntityRowElement from '../common/create-entity-row-element.js';
-import processConfigEntities from '../common/process-config-entities.js';
+import createRowElement from '../common/create-row-element.js';
 import computeDomain from '../../../common/entity/compute_domain.js';
 import { DOMAINS_HIDE_MORE_INFO } from '../../../common/const.js';
 
@@ -101,13 +100,12 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
   setConfig(config) {
     this._config = config;
-    this._configEntities = processConfigEntities(config.entities);
+    this._rows = config.entities.map(item => (typeof item === 'string' ? { entity: item } : item));
     if (this.$) this._buildConfig();
   }
 
   _buildConfig() {
     const root = this.$.states;
-    const entities = this._configEntities;
 
     while (root.lastChild) {
       root.removeChild(root.lastChild);
@@ -115,9 +113,9 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
     this._elements = [];
 
-    for (const entity of entities) {
-      const entityId = entity.entity;
-      const element = createEntityRowElement(entity);
+    for (const row of this._rows) {
+      const entityId = row.entity;
+      const element = createRowElement(row);
       if (entityId && !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityId))) {
         element.classList.add('state-card-dialog');
         element.addEventListener('click', () => this.fire('hass-more-info', { entityId }));

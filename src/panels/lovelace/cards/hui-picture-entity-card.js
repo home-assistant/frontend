@@ -57,7 +57,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           hass="[[hass]]"
           image="[[_config.image]]"
           state-image="[[_config.state_image]]"
-          camera-image="[[_getCameraImage(_config)]]" 
+          camera-image="[[_getCameraImage(_config)]]"
           entity="[[_config.entity]]"
         ></hui-image>
         <div class="info" hidden$='[[_computeHideInfo(_config)]]'>
@@ -148,19 +148,15 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   _cardClicked() {
-    const entityId = this._config && this._config.entity;
+    const config = this._config;
+    const entityId = config.entity;
 
-    if (!entityId || !(entityId in this.hass.states)) return;
+    if (!(entityId in this.hass.states)) return;
 
-    if (this._config.tap_action !== 'toggle') {
-      this.fire('hass-more-info', { entityId });
-      return;
-    }
-
-    if (this._entityDomain === 'weblink') {
-      window.open(this.hass.states[entityId].state);
-    } else {
+    if (config.tap_action === 'toggle') {
       toggleEntity(this.hass, entityId);
+    } else {
+      this.fire('hass-more-info', { entityId });
     }
   }
 
