@@ -11,7 +11,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../src/managers/notification-manager.js';
 
-const demos = require.context('./demos', true, /^(.*\.(js$))[^.]*$/im);
+const DEMOS = require.context('./demos', true, /^(.*\.(js$))[^.]*$/im);
 
 const fixPath = path => path.substr(2, path.length - 5);
 
@@ -135,7 +135,7 @@ class HaGallery extends PolymerElement {
       },
       _demos: {
         type: Array,
-        value: demos.keys().map(fixPath)
+        value: DEMOS.keys().map(fixPath)
       },
       _lovelaceDemos: {
         type: Array,
@@ -175,7 +175,7 @@ class HaGallery extends PolymerElement {
     while (root.lastChild) root.removeChild(root.lastChild);
 
     if (demo) {
-      demos(`./${demo}.js`);
+      DEMOS(`./${demo}.js`);
       const el = document.createElement(demo);
       root.appendChild(el);
     }
@@ -189,12 +189,12 @@ class HaGallery extends PolymerElement {
     document.location.hash = '';
   }
 
-  _computeLovelace(dems) {
-    return dems.filter(demo => demo.includes('hui'));
+  _computeLovelace(demos) {
+    return demos.filter(demo => demo.includes('hui'));
   }
 
-  _computeMoreInfos(dems) {
-    return dems.filter(demo => demo.includes('more-info'));
+  _computeMoreInfos(demos) {
+    return demos.filter(demo => demo.includes('more-info'));
   }
 }
 

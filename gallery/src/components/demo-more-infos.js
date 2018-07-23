@@ -13,7 +13,6 @@ class DemoMoreInfos extends PolymerElement {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
-          align-items: start;
         }
         demo-more-info {
           margin: 16px 16px 32px;

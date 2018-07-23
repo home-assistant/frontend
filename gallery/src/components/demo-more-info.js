@@ -56,7 +56,7 @@ class DemoMoreInfo extends PolymerElement {
           ></more-info-content>
         </ha-card>
         <template is='dom-if' if='[[showConfig]]'>
-            <pre>[[_jsonEntity(_stateObj)]]</pre>
+          <pre>[[_jsonEntity(_stateObj)]]</pre>
         </template>
       `;
   }
