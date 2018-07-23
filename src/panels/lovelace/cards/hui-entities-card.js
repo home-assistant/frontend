@@ -100,9 +100,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
 
   setConfig(config) {
     this._config = config;
-    this._rows = config.entities.map((item) => {
-      return typeof item === 'string' ? { entity: item } : item;
-    });
+    this._rows = config.entities.map(item => (typeof item === 'string' ? { entity: item } : item));
     if (this.$) this._buildConfig();
   }
 
