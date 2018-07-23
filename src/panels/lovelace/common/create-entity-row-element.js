@@ -11,16 +11,9 @@ import '../entity-rows/hui-text-entity-row.js';
 import '../entity-rows/hui-timer-entity-row.js';
 import '../entity-rows/hui-toggle-entity-row.js';
 
-import '../special-rows/hui-divider-row.js';
-import '../special-rows/hui-weblink-row.js';
-
 import createErrorCardConfig from './create-error-card-config.js';
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
-const SPECIAL_TYPES = new Set([
-  'divider',
-  'weblink'
-]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   automation: 'toggle',
   cover: 'cover',
@@ -36,7 +29,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   script: 'script',
   timer: 'timer',
   switch: 'toggle',
-  vacuum: 'vacuum'
+  vacuum: 'toggle'
 };
 
 function _createElement(tag, config) {
@@ -57,18 +50,14 @@ function _createErrorElement(error, config) {
   return _createElement('hui-error-card', createErrorCardConfig(error, config));
 }
 
-export default function createRowElement(config) {
+export default function createEntityRowElement(config) {
   let tag;
 
-  if (!config || typeof config !== 'object' || (!config.entity && !config.type)) {
+  if (!config || typeof config !== 'object' || !config.entity) {
     return _createErrorElement('Invalid config given.', config);
   }
 
   const type = config.type || 'default';
-  if (SPECIAL_TYPES.has(type)) {
-    return _createElement(`hui-${type}-row`, config);
-  }
-
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
     tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
