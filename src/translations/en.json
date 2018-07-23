@@ -437,7 +437,8 @@
     "dialogs": {
       "more_info_settings": {
         "save": "Save",
-        "name": "Name"
+        "name": "Name",
+        "entity_id": "Entity ID"
       }
     },
     "duration": {
