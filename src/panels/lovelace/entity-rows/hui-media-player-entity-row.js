@@ -4,15 +4,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/hui-generic-entity-row.js';
 
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
-
 const SUPPORT_PAUSE = 1;
 const SUPPORT_NEXT_TRACK = 32;
 
-/*
- * @appliesMixin LocalizeMixin
- */
-class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
+class HuiMediaPlayerEntityRow extends PolymerElement {
   static get template() {
     return html`
       <style>
@@ -77,19 +72,14 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
   _computeMediaTitle(stateObj) {
     if (!stateObj) return null;
 
-    let title;
     switch (stateObj.attributes.media_content_type) {
       case 'music':
-        title = `${stateObj.attributes.media_artist}: ${stateObj.attributes.media_title}`;
-        break;
+        return `${stateObj.attributes.media_artist}: ${stateObj.attributes.media_title}`;
       case 'tvshow':
-        title = `${stateObj.attributes.media_series_title}: ${stateObj.attributes.media_title}`;
-        break;
+        return `${stateObj.attributes.media_series_title}: ${stateObj.attributes.media_title}`;
       default:
-        title = `${stateObj.attributes.media_title}`;
+        return `${stateObj.attributes.media_title}`;
     }
-
-    return title;
   }
 
   _callService(service) {
