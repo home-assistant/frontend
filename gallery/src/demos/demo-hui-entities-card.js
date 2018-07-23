@@ -126,7 +126,7 @@ const CONFIGS = [
       style:
         height: 30px
         margin: 4px 0
-        background: center / contain url("images/divider.png") no-repeat
+        background: center / contain url("/images/divider.png") no-repeat
     `
   },
 ];

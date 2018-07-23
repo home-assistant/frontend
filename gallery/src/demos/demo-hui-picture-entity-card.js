@@ -8,7 +8,7 @@ const CONFIGS = [
     heading: 'State on',
     config: `
 - type: picture-entity
-  image: https://images.pexels.com/photos/1027508/pexels-photo-1027508.jpeg
+  image: /images/kitchen.png
   entity: light.kitchen_lights
     `
   },
@@ -16,7 +16,7 @@ const CONFIGS = [
     heading: 'State off',
     config: `
 - type: picture-entity
-  image: https://images.pexels.com/photos/775219/pexels-photo-775219.jpeg
+  image: /images/bed.png
   entity: light.bed_light
     `
   },
@@ -24,7 +24,7 @@ const CONFIGS = [
     heading: 'Entity unavailable',
     config: `
 - type: picture-entity
-  image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg
+  image: /images/living_room.png
   entity: light.non_existing
     `
   },
@@ -39,7 +39,7 @@ const CONFIGS = [
     heading: 'Hidden info',
     config: `
 - type: picture-entity
-  image: https://images.pexels.com/photos/1027508/pexels-photo-1027508.jpeg
+  image: /images/kitchen.png
   entity: light.kitchen_lights
   show_info: false
     `
