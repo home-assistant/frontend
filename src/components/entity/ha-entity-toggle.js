@@ -4,7 +4,7 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import { STATES_OFF } from '../../common/const.js';
-import computeStateDomain from '../../common/entity/compute_state_domain';
+import computeStateDomain from '../../common/entity/compute_state_domain.js';
 
 class HaEntityToggle extends PolymerElement {
   static get template() {

@@ -112,6 +112,17 @@ const CONFIGS = [
   show_header_toggle: false
     `
   },
+  {
+    heading: 'Special rows',
+    config: `
+- type: entities
+  entities:
+    - type: weblink
+      url: http://google.com/
+      icon: mdi:google
+      name: Google
+    `
+  },
 ];
 
 class DemoEntities extends PolymerElement {
