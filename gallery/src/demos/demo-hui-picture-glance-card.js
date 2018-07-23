@@ -8,7 +8,7 @@ const CONFIGS = [
     heading: 'Title, dialog, toggle',
     config: `
 - type: picture-glance
-  image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg
+  image: /images/living_room.png
   title: Living room
   entities:
     - switch.decorative_lights
@@ -21,7 +21,7 @@ const CONFIGS = [
     heading: 'Title, dialog, no toggle',
     config: `
 - type: picture-glance
-  image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg
+  image: /images/living_room.png
   title: Living room
   entities:
     - binary_sensor.movement_backyard
@@ -32,7 +32,7 @@ const CONFIGS = [
     heading: 'Title, no dialog, toggle',
     config: `
 - type: picture-glance
-  image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg
+  image: /images/living_room.png
   title: Living room
   entities:
     - switch.decorative_lights
@@ -43,7 +43,7 @@ const CONFIGS = [
     heading: 'No title, dialog, toggle',
     config: `
 - type: picture-glance
-  image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg
+  image: /images/living_room.png
   entities:
     - switch.decorative_lights
     - light.ceiling_lights
@@ -55,7 +55,7 @@ const CONFIGS = [
     heading: 'No title, dialog, no toggle',
     config: `
 - type: picture-glance
-  image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg
+  image: /images/living_room.png
   entities:
     - binary_sensor.movement_backyard
     - binary_sensor.basement_floor_wet
@@ -65,7 +65,7 @@ const CONFIGS = [
     heading: 'No title, no dialog, toggle',
     config: `
 - type: picture-glance
-  image: https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg
+  image: /images/living_room.png
   entities:
     - switch.decorative_lights
     - light.ceiling_lights
