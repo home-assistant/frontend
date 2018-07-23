@@ -11,7 +11,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../src/managers/notification-manager.js';
 
-const demos = require.context('./demos', true, /^(.*\.(js$))[^.]*$/im);
+const DEMOS = require.context('./demos', true, /^(.*\.(js$))[^.]*$/im);
 
 const fixPath = path => path.substr(2, path.length - 5);
 
@@ -31,10 +31,21 @@ class HaGallery extends PolymerElement {
         visibility: hidden;
       }
 
-      paper-card {
+      .pickers {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: start;
+      }
+
+      .pickers paper-card {
+        width: 400px;
         display: block;
-        max-width: 400px;
-        margin: 20px auto;
+        margin: 16px 8px 0;
+      }
+
+      .pickers paper-card:last-child {
+        margin-bottom: 16px;
       }
 
       .intro {
@@ -67,29 +78,47 @@ class HaGallery extends PolymerElement {
         <div class='content'>
           <div id='demo'></div>
           <template is='dom-if' if='[[!_demo]]'>
-            <paper-card heading="Lovelace card demos">
-              <div class='card-content intro'>
-                <p>
-                  Lovelace has many different cards. Each card allows the user to tell a different story about what is going on in their house. These cards are very customizable, as no household is the same.
-                </p>
+            <div class='pickers'>
+              <paper-card heading="Lovelace card demos">
+                <div class='card-content intro'>
+                  <p>
+                    Lovelace has many different cards. Each card allows the user to tell a different story about what is going on in their house. These cards are very customizable, as no household is the same.
+                  </p>
 
-                <p>
-                  This gallery helps our developers and designers to see all the different states that each card can be in.
-                </p>
+                  <p>
+                    This gallery helps our developers and designers to see all the different states that each card can be in.
+                  </p>
 
-                <p>
-                  Check <a href='https://www.home-assistant.io/lovelace'>the official website</a> for instructions on how to get started with Lovelace.</a>.
-                </p>
-              </div>
-              <template is='dom-repeat' items='[[_demos]]'>
-                <a href='#[[item]]'>
-                  <paper-item>
-                    <paper-item-body>{{ item }}</paper-item-body>
-                    <iron-icon icon="hass:chevron-right"></iron-icon>
-                  </paper-item>
-                </a>
-              </template>
-            </paper-card>
+                  <p>
+                    Check <a href='https://www.home-assistant.io/lovelace'>the official website</a> for instructions on how to get started with Lovelace.</a>.
+                  </p>
+                </div>
+                <template is='dom-repeat' items='[[_lovelaceDemos]]'>
+                  <a href='#[[item]]'>
+                    <paper-item>
+                      <paper-item-body>{{ item }}</paper-item-body>
+                      <iron-icon icon="hass:chevron-right"></iron-icon>
+                    </paper-item>
+                  </a>
+                </template>
+              </paper-card>
+
+              <paper-card heading="More Info demos">
+                <div class='card-content intro'>
+                  <p>
+                    More info screens show up when an entity is clicked.
+                  </p>
+                </div>
+                <template is='dom-repeat' items='[[_moreInfoDemos]]'>
+                  <a href='#[[item]]'>
+                    <paper-item>
+                      <paper-item-body>{{ item }}</paper-item-body>
+                      <iron-icon icon="hass:chevron-right"></iron-icon>
+                    </paper-item>
+                  </a>
+                </template>
+              </paper-card>
+            </div>
           </template>
         </div>
       </app-header-layout>
@@ -106,8 +135,16 @@ class HaGallery extends PolymerElement {
       },
       _demos: {
         type: Array,
-        value: demos.keys().map(fixPath)
-      }
+        value: DEMOS.keys().map(fixPath)
+      },
+      _lovelaceDemos: {
+        type: Array,
+        computed: '_computeLovelace(_demos)',
+      },
+      _moreInfoDemos: {
+        type: Array,
+        computed: '_computeMoreInfos(_demos)',
+      },
     };
   }
 
@@ -138,7 +175,7 @@ class HaGallery extends PolymerElement {
     while (root.lastChild) root.removeChild(root.lastChild);
 
     if (demo) {
-      demos(`./${demo}.js`);
+      DEMOS(`./${demo}.js`);
       const el = document.createElement(demo);
       root.appendChild(el);
     }
@@ -150,6 +187,14 @@ class HaGallery extends PolymerElement {
 
   _backTapped() {
     document.location.hash = '';
+  }
+
+  _computeLovelace(demos) {
+    return demos.filter(demo => demo.includes('hui'));
+  }
+
+  _computeMoreInfos(demos) {
+    return demos.filter(demo => demo.includes('more-info'));
   }
 }
 
