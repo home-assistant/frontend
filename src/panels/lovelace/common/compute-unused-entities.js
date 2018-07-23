@@ -1,5 +1,4 @@
 const EXCLUDED_DOMAINS = [
-  'group',
   'zone'
 ];
 
@@ -7,7 +6,11 @@ function computeUsedEntities(config) {
   const entities = new Set();
 
   function addEntityId(entity) {
-    entities.add(typeof entity === 'string' ? entity : entity.entity);
+    if (typeof entity === 'string') {
+      entities.add(entity);
+    } else if (entity.entity) {
+      entities.add(entity.entity);
+    }
   }
 
   function addEntities(obj) {
