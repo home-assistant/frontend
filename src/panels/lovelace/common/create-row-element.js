@@ -63,6 +63,10 @@ export default function createRowElement(config) {
   }
 
   const type = config.type || 'default';
+  if (SPECIAL_TYPES.has(type)) {
+    return _createElement(`hui-${type}-row`, config);
+  }
+
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
     tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
@@ -75,10 +79,6 @@ export default function createRowElement(config) {
       .then(() => fireEvent(element, 'rebuild-view'));
 
     return element;
-  }
-
-  if (SPECIAL_TYPES.has(type)) {
-    return _createElement(`hui-${type}-row`, config);
   }
 
   const domain = config.entity.split('.', 1)[0];
