@@ -30,7 +30,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         ha-card.canInteract {
           cursor: pointer;
         }
-        .info {
+        .footer {
           @apply --paper-font-common-nowrap;
           position: absolute;
           left: 0;
@@ -41,14 +41,13 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           font-size: 16px;
           line-height: 16px;
           color: white;
+        }
+        .both {
           display: flex;
           justify-content: space-between;
         }
-        #title {
-          font-weight: 500;
-        }
-        [hidden] {
-          display: none;
+        .state {
+          text-align: right;
         }
       </style>
 
@@ -60,10 +59,22 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           camera-image="[[_getCameraImage(_config)]]"
           entity="[[_config.entity]]"
         ></hui-image>
-        <div class="info" hidden$='[[_computeHideInfo(_config)]]'>
-          <div id="name"></div>
-          <div id="state"></div>
+        <template is="dom-if" if="[[_showNameAndState(_config)]]">
+          <div class="footer both">
+            <div>[[_name]]</div>
+            <div>[[_state]]</div>
         </div>
+        </template>
+        <template is="dom-if" if="[[_showName(_config)]]">
+          <div class="footer">
+            [[_name]]
+          </div>
+        </template>
+        <template is="dom-if" if="[[_showState(_config)]]">
+          <div class="footer state">
+            [[_state]]
+          </div>
+        </template>
       </ha-card>
     `;
   }
@@ -75,6 +86,8 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         observer: '_hassChanged'
       },
       _config: Object,
+      _name: String,
+      _state: String
     };
   }
 
@@ -110,41 +123,39 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     let name;
     let state;
     let stateLabel;
-    let canInteract = true;
+    let available;
 
     if (stateObj) {
       name = config.name || computeStateName(stateObj);
       state = stateObj.state;
-      stateLabel = this._computeStateLabel(stateObj);
+      stateLabel = computeStateDisplay(this.localize, stateObj);
+      available = true;
     } else {
       name = config.name || entityId;
       state = UNAVAILABLE;
-      stateLabel = UNAVAILABLE;
-      canInteract = false;
+      stateLabel = this.localize('state.default.unavailable');
+      available = false;
     }
 
-    this.$.name.innerText = name;
-    this.$.state.innerText = stateLabel;
-    this._oldState = state;
-    this.$.card.classList.toggle('canInteract', canInteract);
+    this.setProperties({
+      _name: name,
+      _state: stateLabel,
+      _oldState: state
+    });
+
+    this.$.card.classList.toggle('canInteract', available);
   }
 
-  _computeStateLabel(stateObj) {
-    switch (this._entityDomain) {
-      case 'scene':
-        return this.localize('ui.card.scene.activate');
-      case 'script':
-        return this.localize('ui.card.script.execute');
-      case 'weblink':
-        return 'Open';
-      default:
-        return computeStateDisplay(this.localize, stateObj);
+  _showNameAndState(config) {
+    return config.show_name !== false && config.show_state !== false;
     }
+
+  _showName(config) {
+    return config.show_name !== false && config.show_state === false;
   }
 
-  _computeHideInfo(config) {
-    // By default we will show it, so === undefined should be true.
-    return config.show_info === false;
+  _showState(config) {
+    return config.show_name === false && config.show_state !== false;
   }
 
   _cardClicked() {
