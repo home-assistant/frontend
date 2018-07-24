@@ -53,7 +53,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
         <div class='header'>
           <div class="name">[[_config.title]]</div>
           <template is="dom-if" if="[[_showHeaderToggle(_config.show_header_toggle)]]">
-            <hui-entities-toggle hass="[[hass]]" entities="[[_config.entities]]"></hui-entities-toggle>
+            <hui-entities-toggle hass="[[hass]]" entities="[[_filterEntities(_config.entities)]]"></hui-entities-toggle>
           </template>
         </div>
       </template>
@@ -131,6 +131,11 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
     this._elements.forEach((element) => {
       element.hass = hass;
     });
+  }
+
+  _filterEntities(items) {
+    return items.filter(item => (typeof item === 'string' || item.entity)).map(item =>
+      (typeof item === 'string' ? item : item.entity));
   }
 }
 

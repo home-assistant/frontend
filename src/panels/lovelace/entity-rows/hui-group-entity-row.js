@@ -5,14 +5,8 @@ import '../components/hui-generic-entity-row.js';
 import '../../../components/entity/ha-entity-toggle.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+import { DOMAINS_TOGGLE } from '../../../common/const.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
-
-const DOMAINS_TOGGLE = new Set([
-  'fan',
-  'input_boolean',
-  'light',
-  'switch'
-]);
 
 /*
  * @appliesMixin LocalizeMixin

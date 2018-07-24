@@ -2,11 +2,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
-import canToggleState from '../../../common/entity/can_toggle_state.js';
+import { DOMAINS_TOGGLE } from '../../../common/const.js';
 import turnOnOffEntities from '../common/entity/turn-on-off-entities.js';
-import { STATES_OFF } from '../../../common/const.js';
-
-const EXCLUDED_DOMAINS = ['cover', 'lock'];
 
 class HuiEntitiesToggle extends PolymerElement {
   static get template() {
@@ -41,12 +38,12 @@ class HuiEntitiesToggle extends PolymerElement {
   }
 
   _computeToggleEntities(hass, entityIds) {
-    return entityIds.filter(entityId => (entityId in hass.states ?
-      !EXCLUDED_DOMAINS.includes(entityId.split('.', 1)[0]) && canToggleState(hass, hass.states[entityId]) : false));
+    return entityIds.filter(entityId => (entityId in hass.states &&
+      DOMAINS_TOGGLE.has(entityId.split('.', 1)[0])));
   }
 
   _computeIsChecked(hass, entityIds) {
-    return entityIds.some(entityId => !STATES_OFF.includes(hass.states[entityId].state));
+    return entityIds.some(entityId => hass.states[entityId].state === 'on');
   }
 
   _callService(ev) {
