@@ -1,4 +1,4 @@
-import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
@@ -19,20 +19,13 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
         height: 37px;
         margin-right: -.57em;
       }
-      paper-button.notinteractable {
-        color: black;
-        font-weight: 500;
-        top: 3px;
-        height: 37px;
-        margin-right: -.57em;
-      }
     </style>
 
     <template is="dom-if" if="[[currentInteractable]]">
     <paper-button class="interactable" on-click="_callService">[[currentInteractable]]</paper-button>
     </template>
-    <template is="dom-if" if="[[currentNotInteractable]]">
-    <paper-button class="notinteractable">[[currentNotInteractable]]</paper-button>
+    <template is="dom-if" if="[[!currentInteractable]]">
+    [[stateObj.state]]
     </template>
 `;
   }
@@ -43,46 +36,27 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       stateObj: Object,
       currentInteractable: {
         type: String,
-        computed: 'computeCurrentInteractable(stateObj)',
-      },
-
-      currentNotInteractable: {
-        type: String,
-        computed: 'computeCurrentNotInteractable(stateObj)',
+        computed: 'computeCurrentInteractable(stateObj.state)',
       },
 
       currentService: {
         type: String,
-        computed: 'computeCurrentService(stateObj)',
+        computed: 'computeCurrentService(stateObj.state)',
       }
     };
   }
 
-  computeCurrentInteractable(stateObj) {
-    if (stateObj.state != null) {
-      switch (stateObj.state) {
+  computeCurrentInteractable(state) {
+    if (state != null) {
+      switch (state) {
         case 'cleaning':
           return 'Return to dock';
         case 'docked':
           return 'Start cleaning';
         case 'paused':
           return 'Resume cleaning';
-        default:
-          return null;
-      }
-    }
-    return null;
-  }
-
-  computeCurrentNotInteractable(stateObj) {
-    if (stateObj.state != null) {
-      switch (stateObj.state) {
         case 'idle':
-          return 'Idle';
-        case 'returning':
-          return 'Returning to dock';
-        case 'error':
-          return 'Error';
+          return 'Start cleaning';
         default:
           return null;
       }
@@ -90,14 +64,16 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
     return null;
   }
 
-  computeCurrentService(stateObj) {
-    if (stateObj.state != null) {
-      switch (stateObj.state) {
+  computeCurrentService(state) {
+    if (state != null) {
+      switch (state) {
         case 'cleaning':
           return 'return_to_base';
         case 'docked':
           return 'start_pause';
         case 'paused':
+          return 'start_pause';
+        case 'idle':
           return 'start_pause';
         default:
           return null;
