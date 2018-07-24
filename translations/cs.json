@@ -544,8 +544,8 @@
             "day": "{count} {count, plural,\none {den}\nother {dny}\n}",
             "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}",
             "second": "{count} {count, plural,\none {vteřina}\nfew {vteřiny}\nother {vteřin}\n}",
-            "minute": "{count} {count, plural,\none {minuta}\nfew {minuty}\nother {minuty}\n}",
-            "hour": "{count} {count, plural,\none {hodina}\nfew {hodiny}\nother {hodin}\n}"
+            "minute": "{count} {count, plural,\none {minutou}\nother {minuty}\n}",
+            "hour": "{count} {count, plural,\n  one {hodinou}\n  other {hodiny}\n}"
         },
         "login-form": {
             "password": "Heslo",
@@ -657,7 +657,7 @@
                 "duration": {
                     "second": "{count} {count, plural,\none {sekundu}\nother {sekund}\n}",
                     "minute": "{count} {count, plural,\none {minutu}\nother {minut}\n}",
-                    "hour": "{count} {count, plural,\none {hodinu}\nother {hodin}\n}",
+                    "hour": "{count} {count, plural,\none {hodinu}\nother {hodiny}\n}",
                     "day": "{count} {count, plural,\none {dnů}\nother {dnů}\n}",
                     "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
                 }
