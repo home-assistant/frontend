@@ -9,7 +9,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
  * @appliesMixin LocalizeMixin
  */
 class HaVacuumState extends LocalizeMixin(PolymerElement) {
-    static get template() {
+  static get template() {
     return html`
     <style>
       paper-button.interactable {
@@ -28,16 +28,11 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       }
     </style>
 
-    <template is="dom-if" if="[[supportsState(stateObj)]]">
-      <template is="dom-if" if="[[currentInteractable]]">
-      <paper-button class="interactable" on-click="_callService">[[currentInteractable]]</paper-button>
-      </template>
-      <template is="dom-if" if="[[currentNotInteractable]]">
-      <paper-button class="notinteractable">[[currentNotInteractable]]</paper-button>
-      </template>
+    <template is="dom-if" if="[[currentInteractable]]">
+    <paper-button class="interactable" on-click="_callService">[[currentInteractable]]</paper-button>
     </template>
-    <template is="dom-if" if="[[!supportsState(stateObj)]]">
-      <paper-toggle-button checked="[[toggleChecked]]" on-change="_callService"></paper-toggle-button>
+    <template is="dom-if" if="[[currentNotInteractable]]">
+    <paper-button class="notinteractable">[[currentNotInteractable]]</paper-button>
     </template>
 `;
   }
@@ -59,11 +54,6 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       currentService: {
         type: String,
         computed: 'computeCurrentService(stateObj)',
-      },
-
-      toggleChecked: {
-        type: Boolean,
-        computed: 'computeToggleChecked(stateObj)',
       }
     };
   }
@@ -109,26 +99,11 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
           return 'start_pause';
         case 'paused':
           return 'start_pause';
-        case 'on':
-          return 'turn_off';
-        case 'off':
-          return 'turn_on';
         default:
           return null;
       }
     }
     return null;
-  }
-
-  computeToggleChecked(stateObj) {
-    if (stateObj.state != null) {
-      return (stateObj.state === 'on');
-    }
-    return null;
-  }
-
-  supportsState(stateObj) {
-    return (stateObj.attributes.supported_features & 4096) !== 0;
   }
 
   _localizeState(state) {
