@@ -148,7 +148,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _showNameAndState(config) {
     return config.show_name !== false && config.show_state !== false;
-    }
+  }
 
   _showName(config) {
     return config.show_name !== false && config.show_state === false;
