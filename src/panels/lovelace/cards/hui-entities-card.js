@@ -28,7 +28,6 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
         margin: 4px 0;
       }
       #states > div > * {
-        display: block;
         overflow: hidden;
       }
       .header {
