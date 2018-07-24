@@ -108,7 +108,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeName(item, states) {
-    return item.name || computeStateName(states[item.entity]);
+    return 'name' in item ? item.name : computeStateName(states[item.entity]);
   }
 
   _computeStateObj(item, states) {
