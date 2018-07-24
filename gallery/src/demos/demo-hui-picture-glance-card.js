@@ -71,6 +71,18 @@ const CONFIGS = [
     - light.ceiling_lights
     `
   },
+  {
+    heading: 'Custom icon',
+    config: `
+- type: picture-glance
+  image: /images/living_room.png
+  title: Living room
+  entities:
+    - entity: switch.decorative_lights
+      icon: mdi:power
+    - binary_sensor.basement_floor_wet
+    `
+  },
 ];
 
 class DemoPicGlance extends PolymerElement {
