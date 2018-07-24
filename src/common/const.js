@@ -69,6 +69,14 @@ export const STATES_OFF = [
   'off'
 ];
 
+/** Domains where we allow toggle in Lovelace. */
+export const DOMAINS_TOGGLE = new Set([
+  'fan',
+  'input_boolean',
+  'light',
+  'switch'
+]);
+
 /** Temperature units. */
 export const UNIT_C = '°C';
 export const UNIT_F = '°F';
