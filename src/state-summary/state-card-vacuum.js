@@ -4,6 +4,7 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
 import '../components/ha-vacuum-state.js';
+import '../components/entity/ha-entity-toggle.js';
 
 class StateCardVacuum extends PolymerElement {
   static get template() {
@@ -12,7 +13,12 @@ class StateCardVacuum extends PolymerElement {
 
     <div class="horizontal justified layout">
       ${this.stateInfoTemplate}
-      <ha-vacuum-state hass="[[hass]]" state-obj="[[stateObj]]"></ha-vacuum-state>
+      <template is="dom-if" if="[[supportsState(stateObj)]]">
+        <ha-vacuum-state hass="[[hass]]" state-obj="[[stateObj]]"></ha-vacuum-state>
+      </template>
+      <template is="dom-if" if="[[!supportsState(stateObj)]]">
+        <ha-entity-toggle hass="[[hass]]" state-obj="[[stateObj]]"></ha-entity-toggle>
+      </template>
     </div>
 `;
   }
@@ -36,6 +42,10 @@ class StateCardVacuum extends PolymerElement {
         value: false,
       }
     };
+  }
+
+  supportsState(stateObj) {
+    return (stateObj.attributes.supported_features & 4096) !== 0;
   }
 }
 customElements.define('state-card-vacuum', StateCardVacuum);
