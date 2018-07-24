@@ -56,6 +56,7 @@
                 "on": "接続済"
             },
             "cold": {
+                "off": "通常",
                 "on": "低温"
             },
             "heat": {
@@ -72,6 +73,8 @@
         "climate": {
             "off": "オフ",
             "on": "オン",
+            "heat": "暖房",
+            "cool": "冷房",
             "idle": "アイドル",
             "auto": "オート",
             "dry": "ドライ",
@@ -94,7 +97,8 @@
         },
         "group": {
             "off": "オフ",
-            "on": "オン"
+            "on": "オン",
+            "ok": "OK"
         },
         "input_boolean": {
             "off": "オフ",
@@ -107,6 +111,7 @@
         "media_player": {
             "off": "オフ",
             "on": "オン",
+            "playing": "再生中",
             "paused": "一時停止",
             "idle": "アイドル"
         },
@@ -135,7 +140,12 @@
         },
         "zwave": {
             "default": {
-                "initializing": "初期化中"
+                "initializing": "初期化中",
+                "sleeping": "スリープ",
+                "ready": "準備完了"
+            },
+            "query_stage": {
+                "initializing": "初期化中({query_stage})"
             }
         },
         "weather": {
@@ -151,6 +161,11 @@
             "snowy-rainy": "みぞれ",
             "sunny": "晴れ",
             "windy": "強風"
+        }
+    },
+    "state_badge": {
+        "default": {
+            "unknown": "不明"
         }
     },
     "ui": {
@@ -171,6 +186,7 @@
                 "header": "Home Assistantの設定",
                 "core": {
                     "caption": "一般",
+                    "description": "設定ファイルの検証とサーバーの操作",
                     "section": {
                         "core": {
                             "validation": {
@@ -180,7 +196,7 @@
                                 "invalid": "設定は無効です"
                             },
                             "reloading": {
-                                "heading": "設定を再読込中",
+                                "heading": "設定の再読込",
                                 "introduction": "Home Assistantの一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                                 "core": "コアの再読込",
                                 "group": "グループの再読込",
@@ -210,6 +226,9 @@
                         }
                     }
                 },
+                "customize": {
+                    "caption": "カスタマイズ"
+                },
                 "automation": {
                     "caption": "オートメーション",
                     "description": "オートメーションの作成と編集",
@@ -224,8 +243,10 @@
                         "alias": "名前",
                         "triggers": {
                             "header": "トリガー",
+                            "introduction": "トリガーはオートメーションルールの処理を開始させます。同じルールに対して複数のトリガーを指定することが可能です。トリガーが開始されると、Home Assistantは条件があれば確認し、アクションを呼び出します。\n\n[トリガーについて](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "トリガーを追加",
                             "duplicate": "複製",
+                            "delete": "削除",
                             "delete_confirm": "本当に削除しますか？",
                             "type_select": "トリガーの種類",
                             "type": {
@@ -239,13 +260,20 @@
                                     "to": "変化後"
                                 },
                                 "homeassistant": {
+                                    "label": "Home Assistant",
                                     "start": "起動",
                                     "shutdown": "停止"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT"
                                 },
                                 "sun": {
                                     "sunrise": "日の出",
                                     "sunset": "日の入",
                                     "offset": "オフセット（オプション）"
+                                },
+                                "template": {
+                                    "label": "テンプレート"
                                 },
                                 "time": {
                                     "label": "時刻"
@@ -255,6 +283,8 @@
                         "conditions": {
                             "header": "条件",
                             "add": "条件を追加",
+                            "delete": "削除",
+                            "delete_confirm": "本当に削除しますか？",
                             "unsupported_condition": "未サポートの条件：{condition}",
                             "type_select": "条件の種類",
                             "type": {
@@ -268,6 +298,8 @@
                             "header": "アクション",
                             "introduction": "アクションは、オートメーションがトリガーされたときにHome Assistantが実行するものです。\n\n [アクションの詳細]（https:\/\/home-assistant.io\/docs\/automation\/action\/）",
                             "add": "アクションを追加",
+                            "delete": "削除",
+                            "delete_confirm": "本当に削除しますか？",
                             "unsupported_action": "未サポートのアクション：{action}",
                             "type_select": "アクションの種類",
                             "type": {
@@ -429,12 +461,22 @@
         "binary_sensor": "バイナリセンサー",
         "calendar": "カレンダー",
         "camera": "カメラ",
+        "group": "グループ",
+        "image_processing": "画像処理",
         "light": "照明",
         "mailbox": "メールボックス",
         "media_player": "メディアプレーヤー",
+        "notify": "通知",
         "script": "スクリプト",
         "sensor": "センサー",
         "switch": "スイッチ",
+        "updater": "アップデーター",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "湿度",
+            "wind_speed": "風速"
+        }
     }
 }

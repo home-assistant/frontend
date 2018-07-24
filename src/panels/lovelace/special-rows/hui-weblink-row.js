@@ -8,18 +8,27 @@ class HuiWeblinkRow extends PolymerElement {
     return html`
       <style>
         a {
-          display: block;
+          display: flex;
+          align-items: center;
           color: var(--primary-color);
         }
         ha-icon {
           padding: 8px;
-          margin-right: 16px;
           color: var(--paper-item-icon-color);
         }
-
+        div {
+          flex: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          margin-left: 16px;
+        }
       </style>
       <a href="[[_config.url]]">
-        <ha-icon icon="[[_config.icon]]"></ha-icon>[[_config.name]]
+        <ha-icon icon="[[_config.icon]]"></ha-icon>
+        <div>
+          [[_config.name]]
+        </div>
       </a>
     `;
   }
