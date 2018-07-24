@@ -48,7 +48,14 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
     </app-toolbar>
 
     <div class="form">
-      <paper-input value="{{_name}}" label="[[localize('ui.dialogs.more_info_settings.name')]]"></paper-input>
+      <paper-input
+        value="{{_name}}"
+        label="[[localize('ui.dialogs.more_info_settings.name')]]"
+      ></paper-input>
+      <paper-input
+        value="{{_entityId}}"
+        label="[[localize('ui.dialogs.more_info_settings.entity_id')]]"
+      ></paper-input>
     </div>
 `;
   }
@@ -70,6 +77,7 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
       },
 
       _name: String,
+      _entityId: String,
     };
   }
 
@@ -84,9 +92,15 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _registryInfoChanged(newVal) {
     if (newVal) {
-      this._name = newVal.name;
+      this.setProperties({
+        _name: newVal.name,
+        _entityId: newVal.entity_id,
+      });
     } else {
-      this._name = '';
+      this.setProperties({
+        _name: '',
+        _entityId: '',
+      });
     }
   }
 
@@ -100,10 +114,17 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
         type: 'config/entity_registry/update',
         entity_id: this.stateObj.entity_id,
         name: this._name,
+        new_entity_id: this._entityId,
       });
+
       this.registryInfo = info;
+
+      // Keep the more info dialog open at the new entity.
+      if (this.stateObj.entity_id !== this._entityId) {
+        this.fire('hass-more-info', { entityId: this._entityId });
+      }
     } catch (err) {
-      alert('save failed!');
+      alert(`save failed: ${err.message}`);
     }
   }
 }
