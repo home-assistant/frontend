@@ -121,6 +121,13 @@ const CONFIGS = [
       url: http://google.com/
       icon: mdi:google
       name: Google
+    - type: call-service
+      icon: mdi:power
+      name: Bed light
+      action_name: Toggle light
+      service: light.toggle
+      service_data:
+        entity_id: light.bed_light
     - type: divider
     - type: divider
       style:
