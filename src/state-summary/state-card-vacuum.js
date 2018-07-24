@@ -44,8 +44,8 @@ class StateCardVacuum extends PolymerElement {
     };
   }
 
-  _supportsState(supported_features) {
-    return (supported_features & 4096) !== 0;
+  _supportsState(supportedFeatures) {
+    return (supportedFeatures & 4096) !== 0;
   }
 }
 customElements.define('state-card-vacuum', StateCardVacuum);
