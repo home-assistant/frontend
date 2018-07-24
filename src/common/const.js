@@ -70,7 +70,7 @@ export const STATES_OFF = [
 ];
 
 /** Domains where we allow toggle in Lovelace. */
-const DOMAINS_TOGGLE = new Set([
+export const DOMAINS_TOGGLE = new Set([
   'fan',
   'input_boolean',
   'light',

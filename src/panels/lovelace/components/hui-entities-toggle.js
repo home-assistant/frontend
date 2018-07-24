@@ -2,9 +2,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-toggle-button/paper-toggle-button.js';
 
-import DOMAINS_TOGGLE from '../../../common/const.js';
+import { DOMAINS_TOGGLE } from '../../../common/const.js';
 import turnOnOffEntities from '../common/entity/turn-on-off-entities.js';
-import { STATES_OFF } from '../../../common/const.js';
 
 class HuiEntitiesToggle extends PolymerElement {
   static get template() {
@@ -44,7 +43,7 @@ class HuiEntitiesToggle extends PolymerElement {
   }
 
   _computeIsChecked(hass, entityIds) {
-    return entityIds.some(entityId => !STATES_OFF.includes(hass.states[entityId].state));
+    return entityIds.some(entityId => hass.states[entityId].state === 'on');
   }
 
   _callService(ev) {

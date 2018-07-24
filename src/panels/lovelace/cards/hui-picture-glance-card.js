@@ -7,6 +7,7 @@ import '../components/hui-image.js';
 
 import computeStateDisplay from '../../../common/entity/compute_state_display.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
+import { DOMAINS_TOGGLE } from '../../../common/const.js';
 import stateIcon from '../../../common/entity/state_icon.js';
 import toggleEntity from '../common/entity/toggle-entity.js';
 import processConfigEntities from '../common/process-config-entities';
@@ -15,12 +16,6 @@ import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import NavigateMixin from '../../../mixins/navigate-mixin.js';
 import computeDomain from '../../../common/entity/compute_domain';
-
-const DOMAINS_TOGGLE = new Set([
-  'input_boolean',
-  'light',
-  'switch'
-]);
 
 const STATES_OFF = new Set([
   'closed',
