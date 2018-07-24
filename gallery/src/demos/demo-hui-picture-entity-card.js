@@ -36,12 +36,31 @@ const CONFIGS = [
     `
   },
   {
-    heading: 'Hidden info',
+    heading: 'Hidden name',
     config: `
 - type: picture-entity
   image: /images/kitchen.png
   entity: light.kitchen_lights
-  show_info: false
+  show_name: false
+    `
+  },
+  {
+    heading: 'Hidden state',
+    config: `
+- type: picture-entity
+  image: /images/kitchen.png
+  entity: light.kitchen_lights
+  show_state: false
+    `
+  },
+  {
+    heading: 'Both hidden',
+    config: `
+- type: picture-entity
+  image: /images/kitchen.png
+  entity: light.kitchen_lights
+  show_name: false
+  show_state: false
     `
   },
 ];
