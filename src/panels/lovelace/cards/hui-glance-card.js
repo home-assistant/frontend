@@ -6,7 +6,6 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 import processConfigEntities from '../common/process-config-entities';
 
 import toggleEntity from '../common/entity/toggle-entity.js';
-import turnOnOffEntity from '../common/entity/turn-on-off-entity.js';
 
 import '../../../components/entity/state-badge.js';
 import '../../../components/ha-card.js';
@@ -121,14 +120,21 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _handleClick(ev) {
-    const entityId = ev.model.item.entity;
-    switch (ev.model.item.tap_action) {
+    const config = ev.model.item;
+    const entityId = config.entity;
+    switch (config.tap_action) {
       case 'toggle':
         toggleEntity(this.hass, entityId);
         break;
-      case 'turn-on':
-        turnOnOffEntity(this.hass, entityId, true);
+      case 'call-service': {
+        const [domain, service] = config.service.split('.', 2);
+        const serviceData = Object.assign(
+          {}, { entity_id: entityId },
+          config.service_data
+        );
+        this.hass.callService(domain, service, serviceData);
         break;
+      }
       default:
         this.fire('hass-more-info', { entityId });
     }

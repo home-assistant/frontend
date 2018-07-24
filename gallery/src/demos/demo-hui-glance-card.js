@@ -118,7 +118,8 @@ const CONFIGS = [
     - entity: lock.kitchen_door
       tap_action: toggle
     - entity: light.ceiling_lights
-      tap_action: turn-on
+      tap_action: call-service
+      service: light.turn_on
     - device_tracker.demo_paulus
     - media_player.living_room
     - sun.sun
