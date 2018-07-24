@@ -86,7 +86,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
               <paper-icon-button
                 on-click="_openDialog"
                 class$="[[_computeButtonClass(item.entity, hass.states)]]"
-                icon="[[_computeIcon(item.entity, hass.states)]]"
+                icon="[[_computeIcon(item, hass.states)]]"
                 title="[[_computeTooltip(item.entity, hass.states)]]"
               ></paper-icon-button>
             </template>
@@ -96,7 +96,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
               <paper-icon-button
                 on-click="_callService"
                 class$="[[_computeButtonClass(item.entity, hass.states)]]"
-                icon="[[_computeIcon(item.entity, hass.states)]]"
+                icon="[[_computeIcon(item, hass.states)]]"
                 title="[[_computeTooltip(item.entity, hass.states)]]"
               ></paper-icon-button>
             </template>
@@ -147,8 +147,8 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
     return collection.filter(el => el.entity in states);
   }
 
-  _computeIcon(entityId, states) {
-    return stateIcon(states[entityId]);
+  _computeIcon(item, states) {
+    return item.icon || stateIcon(states[item.entity]);
   }
 
   _computeButtonClass(entityId, states) {
