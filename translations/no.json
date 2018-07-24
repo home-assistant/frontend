@@ -653,7 +653,14 @@
             "relative_time": {
                 "past": "For {time} siden",
                 "future": "Om {time}",
-                "never": "Aldri"
+                "never": "Aldri",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+                    "minute": "{count} {count, plural,\none {minutt}\nother {minutter}\n}",
+                    "hour": "{count} {count, plural,\none {time}\nother {timer}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
+                    "week": "{count} {count, plural,\none {uke}\nother {uker}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Laster statushistorikk...",
