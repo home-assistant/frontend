@@ -4,14 +4,31 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/hui-generic-entity-row.js';
 import '../../../components/entity/ha-entity-toggle.js';
 
-class HuiToggleEntityRow extends PolymerElement {
+import computeStateDisplay from '../../../common/entity/compute_state_display.js';
+
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
+
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HuiToggleEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <hui-generic-entity-row
         hass="[[hass]]"
         config="[[_config]]"
       >
-        <ha-entity-toggle hass="[[hass]]" state-obj="[[_computeStateObj(hass.states, _config.entity)]]"></ha-entity-toggle>
+        <template is="dom-if" if="[[_canToggle]]">
+          <ha-entity-toggle
+            hass="[[hass]]"
+            state-obj="[[_stateObj]]"
+          ></ha-entity-toggle>
+        </template>
+        <template is="dom-if" if="[[!_canToggle]]">
+          <div>
+            [[_computeState(_stateObj)]]
+          </div>
+        </template>
       </hui-generic-entity-row>
     `;
   }
@@ -19,12 +36,28 @@ class HuiToggleEntityRow extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      _config: Object
+      _config: Object,
+      _stateObj: {
+        type: Object,
+        computed: '_computeStateObj(hass.states, _config.entity)'
+      },
+      _canToggle: {
+        type: Boolean,
+        computed: '_computeCanToggle(_stateObj.state)'
+      }
     };
   }
 
   _computeStateObj(states, entityId) {
     return states && entityId in states ? states[entityId] : null;
+  }
+
+  _computeCanToggle(state) {
+    return state === 'on' || state === 'off';
+  }
+
+  _computeState(stateObj) {
+    return stateObj && computeStateDisplay(this.localize, stateObj);
   }
 
   setConfig(config) {
