@@ -515,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave hálózat kezelése"
+                },
+                "users": {
+                    "caption": "Felhasználók",
+                    "description": "Felhasználók kezelése",
+                    "picker": {
+                        "title": "Felhasználók"
+                    },
+                    "editor": {
+                        "rename_user": "Felhasználó átnevezése",
+                        "change_password": "Jelszó módosítása",
+                        "activate_user": "Felhasználó aktiválása",
+                        "deactivate_user": "Felhasználó inaktiválása",
+                        "delete_user": "Felhasználó törlése"
+                    }
                 }
             }
         },
@@ -529,7 +543,7 @@
         "duration": {
             "day": "{count} {count, plural,\none {nap}\nother {nap}\n}",
             "week": "{count} {count, plural,\none {hét}\nother {hét}\n}",
-            "second": "{count} {count, plural,\none {mp}\nother {mp}\n}",
+            "second": "{count} {count, plural,\none {másodperc}\nother {másodperc}\n}",
             "minute": "{count} {count, plural,\none {perc}\nother {perc}\n}",
             "hour": "{count} {count, plural,\none {óra}\nother {óra}\n}"
         },
@@ -615,7 +629,7 @@
                 "on_off": "Be \/ ki",
                 "target_temperature": "Kívánt hőmérséklet",
                 "target_humidity": "Kívánt páratartalom",
-                "operation": "Művelet",
+                "operation": "Üzemmód",
                 "fan_mode": "Sebesség",
                 "swing_mode": "Forgási mód",
                 "away_mode": "Távoli mód",
@@ -639,7 +653,14 @@
             "relative_time": {
                 "past": "{time} ezelőtt",
                 "future": "{time} múlva",
-                "never": "Soha"
+                "never": "Soha",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {másodperc}\n  other {másodperc}\n}",
+                    "minute": "{count} {count, plural,\n  one {perc}\n  other {perc}\n}",
+                    "hour": "{count} {count, plural,\n  one {óra}\n  other {óra}\n}",
+                    "day": "{count} {count, plural,\n  one {nap}\n  other {nap}\n}",
+                    "week": "{count} {count, plural,\n  one {hét}\n  other {hét}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Állapot előzmények betöltése...",
