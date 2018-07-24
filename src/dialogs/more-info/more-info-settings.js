@@ -92,11 +92,15 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _registryInfoChanged(newVal) {
     if (newVal) {
-      this._name = newVal.name;
-      this._entityId = newVal.entity_id;
+      this.setProperties({
+        _name: newVal.name,
+        _entityId: newVal.entity_id,
+      });
     } else {
-      this._name = '';
-      this._entityId = '';
+      this.setProperties({
+        _name: '',
+        _entityId: '',
+      });
     }
   }
 
