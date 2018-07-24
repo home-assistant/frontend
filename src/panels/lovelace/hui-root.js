@@ -27,9 +27,9 @@ import debounce from '../../common/util/debounce.js';
 
 import createCardElement from './common/create-card-element.js';
 
-// JS should only be imported once. Modules and HTML are safe.
-const JS_CACHE = {};
+// CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
+const JS_CACHE = {};
 
 class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   static get template() {
