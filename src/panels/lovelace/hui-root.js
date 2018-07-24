@@ -20,14 +20,15 @@ import NavigateMixin from '../../mixins/navigate-mixin.js';
 import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import '../../components/ha-icon.js';
-import { loadModule, loadJS } from '../../common/dom/load_resource.js';
+import { loadModule, loadCSS, loadJS } from '../../common/dom/load_resource.js';
 import './hui-unused-entities.js';
 import './hui-view.js';
 import debounce from '../../common/util/debounce.js';
 
 import createCardElement from './common/create-card-element.js';
 
-// JS should only be imported once. Modules and HTML are safe.
+// CSS and JS should only be imported once. Modules and HTML are safe.
+const CSS_CACHE = {};
 const JS_CACHE = {};
 
 class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
@@ -258,6 +259,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   _loadResources(resources) {
     resources.forEach((resource) => {
       switch (resource.type) {
+        case 'css':
+          if (resource.url in CSS_CACHE) break;
+          CSS_CACHE[resource.url] = loadCSS(resource.url);
+          break;
+
         case 'js':
           if (resource.url in JS_CACHE) break;
           JS_CACHE[resource.url] = loadJS(resource.url);
