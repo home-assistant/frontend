@@ -269,7 +269,7 @@
       "idle": "Idle",
       "paused": "Paused",
       "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]",
+      "on": "[%key:state::default::on%]"
     },
     "weather": {
       "clear-night": "Clear, night",
