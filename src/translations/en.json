@@ -402,6 +402,11 @@
           "wsw": "WSW"
         },
         "forecast": "Forecast"
+      },
+      "vacuum": {
+        "returning": "Returning to dock",
+        "off": "Off",
+        "on": "On"
       }
     },
     "common": {

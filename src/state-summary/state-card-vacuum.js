@@ -13,12 +13,7 @@ class StateCardVacuum extends PolymerElement {
 
     <div class="horizontal justified layout">
       ${this.stateInfoTemplate}
-      <template is="dom-if" if="[[stateObj.attributes.supported_features]]">
         <ha-vacuum-state hass="[[hass]]" state-obj="[[stateObj]]"></ha-vacuum-state>
-      </template>
-      <template is="dom-if" if="[[!stateObj.attributes.supported_features]]">
-        <ha-entity-toggle hass="[[hass]]" state-obj="[[stateObj]]"></ha-entity-toggle>
-      </template>
     </div>
 `;
   }
@@ -42,10 +37,6 @@ class StateCardVacuum extends PolymerElement {
         value: false,
       }
     };
-  }
-
-  _supportsState(supportedFeatures) {
-    return (supportedFeatures & 4096) !== 0;
   }
 }
 customElements.define('state-card-vacuum', StateCardVacuum);
