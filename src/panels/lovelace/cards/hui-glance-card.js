@@ -55,7 +55,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           text-overflow: ellipsis;
         }
         .name {
-          min-height: 1em;
+          min-height: 20px;
         }
       </style>
 
