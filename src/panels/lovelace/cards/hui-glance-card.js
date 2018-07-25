@@ -54,6 +54,9 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           overflow: hidden;
           text-overflow: ellipsis;
         }
+        .name {
+          min-height: 1em;
+        }
       </style>
 
       <ha-card header$="[[_config.title]]">
@@ -62,7 +65,7 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
               <div class="entity" on-click="_handleClick">
                 <template is="dom-if" if="[[_showInfo(_config.show_name)]]">
-                  <div>[[_computeName(item, hass.states)]]</div>
+                  <div class="name">[[_computeName(item, hass.states)]]</div>
                 </template>
                 <template is="dom-if" if="[[!item.icon]]">
                   <state-badge state-obj="[[_computeStateObj(item, hass.states)]]"></state-badge>
