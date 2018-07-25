@@ -29,7 +29,7 @@ const STATES_INTERCEPTABLE = {
     action: 'Turn off',
     service: 'turn_off'
   },
-}
+};
 
 /*
  * @appliesMixin LocalizeMixin
@@ -70,11 +70,11 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
   }
 
   _computeInterceptable(state, supportedFeatures) {
-    return state in STATES_INTERCEPTABLE && supportedFeatures != 0;
+    return state in STATES_INTERCEPTABLE && supportedFeatures !== 0;
   }
 
   _computeLabel(state, supportedFeatures) {
-    return state in STATES_INTERCEPTABLE && supportedFeatures != 0 ?
+    return state in STATES_INTERCEPTABLE && supportedFeatures !== 0 ?
       STATES_INTERCEPTABLE[state].action : this.localize(`ui.card.vacuum.${state}`);
   }
 
