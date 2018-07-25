@@ -5,6 +5,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const translationMetadata = require('./build-translations/translationMetadata.json');
 
 const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -12,6 +13,22 @@ if (!version) {
   throw Error('Version not found');
 }
 const VERSION = version[0];
+
+const generateJSPage = (entrypoint, latestBuild) => {
+  return new HtmlWebpackPlugin({
+    inject: false,
+    template: './src/html/extra_page.html.template',
+    // Default templateParameterGenerator code
+    // https://github.com/jantimon/html-webpack-plugin/blob/master/index.js#L719
+    templateParameters: (compilation, assets, option) => (console.log(entrypoint, assets) || {
+      latestBuild,
+      tag: `ha-${entrypoint}`,
+      compatibility: assets.chunks.compatibility.entry,
+      entrypoint: assets.chunks[entrypoint].entry,
+    }),
+    filename: `${entrypoint}.html`,
+  })
+}
 
 function createConfig(isProdBuild, latestBuild) {
   let buildPath = latestBuild ? 'hass_frontend/' : 'hass_frontend_es5/';
@@ -163,6 +180,8 @@ function createConfig(isProdBuild, latestBuild) {
           ],
         }
       }),
+      generateJSPage('onboarding', latestBuild),
+      generateJSPage('authorize', latestBuild),
     ].filter(Boolean),
     output: {
       filename: '[name].js',
