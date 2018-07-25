@@ -140,7 +140,7 @@ const CONFIGS = [
       name:
     - light.kitchen_lights
     `
-},
+  },
 ];
 
 class DemoPicEntity extends PolymerElement {
