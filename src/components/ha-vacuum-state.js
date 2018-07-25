@@ -17,10 +17,6 @@ const STATES_INTERCEPTABLE = {
     action: 'start_cleaning',
     service: 'start_pause'
   },
-  paused: {
-    action: 'resume_cleaning',
-    service: 'start_pause'
-  },
   off: {
     action: 'turn_on',
     service: 'turn_on'
@@ -28,6 +24,10 @@ const STATES_INTERCEPTABLE = {
   on: {
     action: 'turn_off',
     service: 'turn_off'
+  },
+  paused: {
+    action: 'resume_cleaning',
+    service: 'start_pause'
   },
 };
 
@@ -54,7 +54,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       <paper-button
         on-click="_callService"
         disabled="[[!_interceptable]]"
-      >[[_computeLabel(stateObj.state, stateObj.attributes.supported_features)]]</paper-button>
+      >[[_computeLabel(stateObj.state)]]</paper-button>
     `;
   }
 
@@ -73,10 +73,10 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
     return state in STATES_INTERCEPTABLE && supportedFeatures !== 0;
   }
 
-  _computeLabel(state, supportedFeatures) {
-    return state in STATES_INTERCEPTABLE && supportedFeatures !== 0 ?
-      this.localize(`ui.card.vacuum.${STATES_INTERCEPTABLE[state].action}`)
-      : this.localize(`ui.card.vacuum.${state}`);
+  _computeLabel(state) {
+    return state in STATES_INTERCEPTABLE && this._interceptable ?
+      this.localize(`ui.card.vacuum.actions.${STATES_INTERCEPTABLE[state].action}`)
+      : this.localize(`state.vacuum.${state}`);
   }
 
   _callService(ev) {
