@@ -268,6 +268,8 @@
       "docked": "Docked",
       "idle": "Idle",
       "paused": "Paused",
+      "returning": "Returning",
+      "error": "Error",
       "off": "[%key:state::default::off%]",
       "on": "[%key:state::default::on%]"
     },
