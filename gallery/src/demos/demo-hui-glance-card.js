@@ -127,6 +127,20 @@ const CONFIGS = [
     - light.kitchen_lights
     `
   },
+  {
+    heading: 'Selectively hidden name',
+    config: `
+- type: glance
+  entities:
+    - device_tracker.demo_paulus
+    - entity: media_player.living_room
+      name:
+    - sun.sun
+    - entity: cover.kitchen_window
+      name:
+    - light.kitchen_lights
+    `
+  },
 ];
 
 class DemoPicEntity extends PolymerElement {
