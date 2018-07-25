@@ -405,6 +405,7 @@
       },
       "vacuum": {
         "returning": "Returning to dock",
+        "error": "Error",
         "off": "Off",
         "on": "On"
       }
