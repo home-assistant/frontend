@@ -33,6 +33,7 @@
     "sun": "Sun",
     "switch": "Switch",
     "updater": "Updater",
+    "vacuum": "Vacuum",
     "weblink": "Weblink",
     "zwave": "Z-Wave"
   },
@@ -266,12 +267,12 @@
     "vacuum": {
       "cleaning": "Cleaning",
       "docked": "Docked",
-      "idle": "Idle",
-      "paused": "Paused",
-      "returning": "Returning",
       "error": "Error",
+      "idle": "Idle",
       "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
+      "on": "[%key:state::default::on%]",
+      "paused": "Paused",
+      "returning": "Returning to dock"
     },
     "weather": {
       "clear-night": "Clear, night",
@@ -386,15 +387,13 @@
         "execute": "Execute"
       },
       "vacuum": {
-        "return_to_base": "Return to dock",
-        "start_cleaning": "Start cleaning",
-        "resume_cleaning": "Resume cleaning",
-        "turn_on": "Turn on",
-        "turn_off": "Turn off",
-        "returning": "Returning to dock",
-        "error": "Error",
-        "off": "[%key:state::default::off%]",
-        "on": "[%key:state::default::on%]"
+        "actions": {
+          "resume_cleaning": "Resume cleaning",
+          "return_to_base": "Return to dock",
+          "start_cleaning": "Start cleaning",
+          "turn_on": "Turn on",
+          "turn_off": "Turn off"
+        }
       },
       "weather": {
         "attributes": {
