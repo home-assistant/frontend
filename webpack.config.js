@@ -20,14 +20,14 @@ const generateJSPage = (entrypoint, latestBuild) => {
     template: './src/html/extra_page.html.template',
     // Default templateParameterGenerator code
     // https://github.com/jantimon/html-webpack-plugin/blob/master/index.js#L719
-    templateParameters: (compilation, assets, option) => (console.log(entrypoint, assets) || {
+    templateParameters: (compilation, assets, option) => ({
       latestBuild,
       tag: `ha-${entrypoint}`,
       compatibility: assets.chunks.compatibility.entry,
       entrypoint: assets.chunks[entrypoint].entry,
     }),
     filename: `${entrypoint}.html`,
-  })
+  });
 }
 
 function createConfig(isProdBuild, latestBuild) {
@@ -180,11 +180,35 @@ function createConfig(isProdBuild, latestBuild) {
           ],
         }
       }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: './src/html/index.html.template',
+        // Default templateParameterGenerator code
+        // https://github.com/jantimon/html-webpack-plugin/blob/master/index.js#L719
+        templateParameters: (compilation, assets, option) => ({
+          latestBuild,
+          compatibility: assets.chunks.compatibility.entry,
+          appjs: assets.chunks.app.entry,
+          corejs: assets.chunks.core.entry,
+        }),
+        filename: `index.html`,
+      }),
       generateJSPage('onboarding', latestBuild),
       generateJSPage('authorize', latestBuild),
     ].filter(Boolean),
     output: {
-      filename: '[name].js',
+      filename: ({ chunk }) => {
+        const dontHash = new Set([
+          // Because we don't include it in ES5 build
+          // And so can't reference it there
+          'hass-icons',
+          // This is loaded from service-worker-bootstrap.js
+          // which is processed by Workbox, not Webpack
+          'service-worker-hass',
+        ]);
+        if (!isProdBuild || dontHash.has(chunk.name)) return `${chunk.name}.js`;
+        return `${chunk.name}-${chunk.hash.substr(0, 8)}.js`;
+      },
       chunkFilename: chunkFilename,
       path: path.resolve(__dirname, buildPath),
       publicPath,

@@ -9,7 +9,7 @@
     <link rel='apple-touch-icon' sizes='180x180'
           href='/static/icons/favicon-apple-180x180.png'>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#3fbbf4">
-    <link rel='preload' href='/frontend_latest/core.js' as='script'/>
+    <link rel='preload' href='<%= corejs %>' as='script'/>
     <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
     <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
     <meta name='apple-mobile-web-app-capable' content='yes'>
@@ -36,30 +36,11 @@
       #ha-init-skeleton::before {
         display: block;
         content: "";
-        height: 64px;
+        height: 112px;
         background-color: {{ theme_color }};
-      }
-
-      #ha-init-skeleton .message {
-        transition: font-size 2s;
-        font-size: 0;
-        padding: 24px;
-      }
-
-      #ha-init-skeleton.error .message {
-        font-size: 16px;
-      }
-
-      #ha-init-skeleton a {
-        color: {{ theme_color }};
-        text-decoration: none;
-        font-weight: bold;
       }
     </style>
     <script>
-      function initError() {
-        document.getElementById('ha-init-skeleton').classList.add('error');
-      };
       window.noAuth = '{{ no_auth }}';
       window.useOAuth = '{{ use_oauth }}'
       window.Polymer = {
@@ -72,13 +53,13 @@
     </script>
   </head>
   <body>
-    <div id='ha-init-skeleton'>
-      <div class='message'>
-        Home Assistant had trouble<br>connecting to the server.<br><br>
-        <a href='/'>TRY AGAIN</a>
-      </div>
-    </div>
-    <home-assistant></home-assistant>
+    <home-assistant>
+      <div id='ha-init-skeleton'></div>
+    </home-assistant>
+    <% if (!latestBuild) { %>
+      <script src="/static/custom-elements-es5-adapter.js"></script>
+      <script src="<%= compatibility %>"></script>
+    <% } %>
     <script>
       var webComponentsSupported = (
         'customElements' in window &&
@@ -91,9 +72,8 @@
         }());
       }
     </script>
-    <!--EXTRA_SCRIPTS-->
-    <script src='/frontend_latest/core.js'></script>
-    <script src='/frontend_latest/app.js'></script>
+    <script src='<%= corejs %>'></script>
+    <script src='<%= appjs %>'></script>
     <script src='/frontend_latest/hass-icons.js' async></script>
     {% for extra_url in extra_urls -%}
       <link rel='import' href='{{ extra_url }}' async>

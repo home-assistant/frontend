@@ -17,13 +17,13 @@
         height: 100vh;
       }
     </style>
+  </head>
+  <body>
+    <<%= tag %>>Loading</<%= tag %>>
     <% if (!latestBuild) { %>
       <script src="/static/custom-elements-es5-adapter.js"></script>
       <script src="<%= compatibility %>"></script>
     <% } %>
-  </head>
-  <body>
-    <<%= tag %>>Loading</<%= tag %>>
     <script>
     var webComponentsSupported = (
       'customElements' in window &&

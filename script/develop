@@ -14,5 +14,4 @@ mkdir $OUTPUT_DIR $OUTPUT_DIR_ES5
 cp -r public/__init__.py $OUTPUT_DIR_ES5/
 
 ./node_modules/.bin/gulp build-translations gen-icons
-
 ./node_modules/.bin/webpack --watch --progress
