@@ -16,7 +16,7 @@ class HuiLockEntityRow extends LocalizeMixin(PolymerElement) {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin: 0;
+          margin-right: -.57em;
         }
       </style>
       <hui-generic-entity-row

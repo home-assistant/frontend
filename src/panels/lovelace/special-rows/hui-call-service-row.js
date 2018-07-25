@@ -33,7 +33,7 @@ class HuiCallServiceRow extends PolymerElement {
         paper-button {
           color: var(--primary-color);
           font-weight: 500;
-          margin: 0;
+          margin-right: -.57em;
         }
       </style>
       <ha-icon icon="[[_config.icon]]"></ha-icon>
