@@ -6,27 +6,27 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 
 const STATES_INTERCEPTABLE = {
   cleaning: {
-    action: 'Return to dock',
+    action: 'return_to_base',
     service: 'return_to_base'
   },
   docked: {
-    action: 'Start cleaning',
+    action: 'start_cleaning',
     service: 'start_pause'
   },
   idle: {
-    action: 'Start cleaning',
+    action: 'start_cleaning',
     service: 'start_pause'
   },
   paused: {
-    action: 'Resume cleaning',
+    action: 'resume_cleaning',
     service: 'start_pause'
   },
   off: {
-    action: 'Turn on',
+    action: 'turn_on',
     service: 'turn_on'
   },
   on: {
-    action: 'Turn off',
+    action: 'turn_off',
     service: 'turn_off'
   },
 };
@@ -75,7 +75,8 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
 
   _computeLabel(state, supportedFeatures) {
     return state in STATES_INTERCEPTABLE && supportedFeatures !== 0 ?
-      STATES_INTERCEPTABLE[state].action : this.localize(`ui.card.vacuum.${state}`);
+      this.localize(`ui.card.vacuum.${STATES_INTERCEPTABLE[state].action}`)
+        : this.localize(`ui.card.vacuum.${state}`);
   }
 
   _callService(ev) {

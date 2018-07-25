@@ -386,6 +386,11 @@
         "execute": "Execute"
       },
       "vacuum": {
+        "return_to_base": "Return to dock",
+        "start_cleaning": "Start cleaning",
+        "resume_cleaning": "Resume cleaning",
+        "turn_on": "Turn on",
+        "turn_off": "Turn off",
         "returning": "Returning to dock",
         "error": "Error",
         "off": "[%key:state::default::off%]",
