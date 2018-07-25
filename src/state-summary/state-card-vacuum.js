@@ -4,7 +4,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/entity/state-info.js';
 import '../components/ha-vacuum-state.js';
-import '../components/entity/ha-entity-toggle.js';
 
 class StateCardVacuum extends PolymerElement {
   static get template() {
