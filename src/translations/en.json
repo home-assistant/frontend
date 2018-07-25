@@ -263,6 +263,14 @@
       "off": "[%key:state::default::off%]",
       "on": "[%key:state::default::on%]"
     },
+    "vacuum": {
+      "cleaning": "Cleaning",
+      "docked": "Docked",
+      "idle": "Idle",
+      "paused": "Paused",
+      "off": "[%key:state::default::off%]",
+      "on": "[%key:state::default::on%]",
+    },
     "weather": {
       "clear-night": "Clear, night",
       "cloudy": "Cloudy",
@@ -375,6 +383,12 @@
       "script": {
         "execute": "Execute"
       },
+      "vacuum": {
+        "returning": "Returning to dock",
+        "error": "Error",
+        "off": "[%key:state::default::off%]",
+        "on": "[%key:state::default::on%]"
+      },
       "weather": {
         "attributes": {
           "air_pressure": "Air pressure",
@@ -402,12 +416,6 @@
           "wsw": "WSW"
         },
         "forecast": "Forecast"
-      },
-      "vacuum": {
-        "returning": "Returning to dock",
-        "error": "Error",
-        "off": "Off",
-        "on": "On"
       }
     },
     "common": {
