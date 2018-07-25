@@ -9,6 +9,12 @@ import CoverEntity from '../../../util/cover-model.js';
 class HuiCoverEntityRow extends PolymerElement {
   static get template() {
     return html`
+      <style>
+        ha-cover-controls,
+        ha-cover-tilt-controls {
+          margin-right: -.57em;
+        }
+      </style>
       <hui-generic-entity-row
         hass="[[hass]]"
         config="[[_config]]"
