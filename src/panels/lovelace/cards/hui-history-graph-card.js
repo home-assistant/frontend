@@ -50,7 +50,7 @@ class HuiHistoryGraphCard extends PolymerElement {
 
       _stateHistory: Object,
       _stateHistoryLoading: Boolean,
-      _cacheConfig : Object
+      _cacheConfig: Object
     };
   }
 
