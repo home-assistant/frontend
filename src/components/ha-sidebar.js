@@ -240,16 +240,17 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
   _computeUserInitials(name) {
     if (!name) return 'user';
-
+    name = 'J v B';
     return name.trim()
       // Split by space and take first 3 words
       .split(' ').slice(0, 3)
       // Of each word, take first letter
-      .map(s => s.substr(0, 1)).join('');
+      .map(s => s.substr(0, 1))
+      .join('');
   }
 
   _computeBadgeClass(initials) {
-    return `profile-badge ${initials.length > 2 ? 'long': ''}`;
+    return `profile-badge ${initials.length > 2 ? 'long' : ''}`;
   }
 
   _mqttLoaded(hass) {
