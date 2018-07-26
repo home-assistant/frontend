@@ -420,7 +420,7 @@
                                 },
                                 "zone": {
                                     "label": "區域",
-                                    "entity": "區域元件",
+                                    "entity": "區域物件",
                                     "zone": "區域",
                                     "event": "事件：",
                                     "enter": "進入區域",
@@ -468,7 +468,7 @@
                                 },
                                 "zone": {
                                     "label": "區域",
-                                    "entity": "區域元件",
+                                    "entity": "區域物件",
                                     "zone": "區域"
                                 }
                             }
@@ -677,7 +677,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "儲存",
-                "name": "名稱"
+                "name": "名稱",
+                "entity_id": "物件 ID"
             }
         }
     },
@@ -702,7 +703,7 @@
         "input_number": "數字框",
         "input_text": "輸入框",
         "light": "燈光",
-        "lock": "鎖",
+        "lock": "已上鎖",
         "mailbox": "郵箱",
         "media_player": "媒體播放器",
         "notify": "通知",

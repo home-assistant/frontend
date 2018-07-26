@@ -677,7 +677,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Späicheren",
-                "name": "Numm"
+                "name": "Numm",
+                "entity_id": "Entitéit ID"
             }
         }
     },
