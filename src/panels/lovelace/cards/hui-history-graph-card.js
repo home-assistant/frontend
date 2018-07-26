@@ -25,14 +25,14 @@ class HuiHistoryGraphCard extends PolymerElement {
           hass="[[hass]]"
           filter-type="recent-entity"
           entity-id="[[_entities]]"
-          data="{{stateHistory}}"
-          is-loading="{{stateHistoryLoading}}"
-          cache-config="[[_computeCacheConfig(_config)]]"
+          data="{{_stateHistory}}"
+          is-loading="{{_stateHistoryLoading}}"
+          cache-config="[[_cacheConfig]]"
         ></ha-state-history-data>
         <state-history-charts
           hass="[[hass]]"
-          history-data="[[stateHistory]]"
-          is-loading-data="[[stateHistoryLoading]]"
+          history-data="[[_stateHistory]]"
+          is-loading-data="[[_stateHistoryLoading]]"
           names="[[_names]]"
           up-to-now
           no-single
@@ -45,12 +45,12 @@ class HuiHistoryGraphCard extends PolymerElement {
     return {
       hass: Object,
       _config: Object,
-      stateHistory: {
-        type: Object,
-      },
-      _names: Array,
-      _entities: Object,
-      stateHistoryLoading: Boolean,
+      _names: Object,
+      _entities: Array,
+
+      _stateHistory: Object,
+      _stateHistoryLoading: Boolean,
+      _cacheConfig: Object
     };
   }
 
@@ -71,16 +71,16 @@ class HuiHistoryGraphCard extends PolymerElement {
         _names[entity.entity] = entity.name;
       }
     }
-    this._entities = _entities;
-    this._names = _names;
-  }
 
-  _computeCacheConfig(config) {
-    return {
-      cacheKey: config.entities,
-      hoursToShow: config.hours_to_show || 24,
-      refresh: config.refresh_interval || 0
-    };
+    this.setProperties({
+      _cacheConfig: {
+        cacheKey: _entities.sort().join(),
+        hoursToShow: config.hours_to_show || 24,
+        refresh: config.refresh_interval || 0
+      },
+      _entities,
+      _names
+    });
   }
 }
 
