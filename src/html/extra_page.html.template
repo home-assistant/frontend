@@ -6,13 +6,12 @@
     <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
     <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
     <title>Home Assistant</title>
-    <!--EXTRA_SCRIPTS-->
     <style>
       body {
-        font-family: 'Roboto', 'Noto', sans-serif;
-        font-weight: 400;
+        font-family: Roboto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
         -webkit-font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
+        font-weight: 400;
         margin: 0;
         padding: 0;
         height: 100vh;
@@ -20,7 +19,11 @@
     </style>
   </head>
   <body>
-    <ha-onboarding>Loading</ha-onboarding>
+    <<%= tag %>>Loading</<%= tag %>>
+    <% if (!latestBuild) { %>
+      <script src="/static/custom-elements-es5-adapter.js"></script>
+      <script src="<%= compatibility %>"></script>
+    <% } %>
     <script>
     var webComponentsSupported = (
       'customElements' in window &&
@@ -31,7 +34,7 @@
       document.write(e.outerHTML);
     }
     </script>
-    <script src="/frontend_latest/onboarding.js"></script>
-    <script src='/frontend_latest/hass-icons.js' async></script>
+    <script src="<%= entrypoint %>"></script>
+    <script src='/static/hass-icons.js' async></script>
   </body>
 </html>
