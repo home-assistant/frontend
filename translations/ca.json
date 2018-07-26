@@ -677,7 +677,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Desa",
-                "name": "Nom"
+                "name": "Nom",
+                "entity_id": "ID de l'entitat"
             }
         }
     },
