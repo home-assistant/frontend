@@ -74,7 +74,7 @@ class HuiHistoryGraphCard extends PolymerElement {
 
     this.setProperties({
       _cacheConfig: {
-        cacheKey: _entities.join(),
+        cacheKey: _entities.sort().join(),
         hoursToShow: config.hours_to_show || 24,
         refresh: config.refresh_interval || 0
       },
