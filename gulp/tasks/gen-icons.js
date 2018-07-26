@@ -98,7 +98,6 @@ function genHassIcons() {
 
 gulp.task('gen-icons-mdi', () => genMDIIcons());
 gulp.task('gen-icons-hass', () => genHassIcons());
-gulp.task('gen-icons-hassio', () => genHassIcons());
 gulp.task('gen-icons', ['gen-icons-hass', 'gen-icons-mdi'], () => {});
 
 module.exports = {
