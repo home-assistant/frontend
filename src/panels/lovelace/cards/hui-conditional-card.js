@@ -65,7 +65,7 @@ class HuiConditionalCard extends PolymerElement {
     root.lastChild.hass = hass;
 
     const conditions = this._config.conditions;
-    const show = conditions.every((c) => {
+    const visible = conditions.every((c) => {
       if (c.entity in hass.states) {
         if (c.state) return hass.states[c.entity].state === c.state;
         return hass.states[c.entity].state !== c.state_not;
