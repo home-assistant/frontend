@@ -116,7 +116,6 @@ class LoginForm extends LocalizeMixin(PolymerElement) {
 
   connectedCallback() {
     super.connectedCallback();
-    window.removeInitMsg();
   }
 
   computeLoadingMsg(isValidating) {
