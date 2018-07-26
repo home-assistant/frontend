@@ -55,7 +55,7 @@ class HuiConditionalCard extends PolymerElement {
 
   getCardSize() {
     const el = this.$.card.lastChild;
-    return el ? computeCardSize(el) : 1;
+    return el && this._visible ? computeCardSize(el) : 0;
   }
 
   _hassChanged(hass) {
@@ -72,7 +72,8 @@ class HuiConditionalCard extends PolymerElement {
       }
       return false;
     });
-    root.classList.toggle('hidden', !show);
+    this._visible = visible;
+    root.classList.toggle('hidden', !visible);
   }
 }
 customElements.define('hui-conditional-card', HuiConditionalCard);
