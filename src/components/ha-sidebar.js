@@ -1,3 +1,4 @@
+import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
@@ -9,15 +10,12 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '../components/ha-icon.js';
 
 import '../util/hass-translation.js';
-import NavigateMixin from '../mixins/navigate-mixin.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
- * @appliesMixin NavigateMixin
  */
-class HaSidebar extends
-  LocalizeMixin(NavigateMixin(PolymerElement)) {
+class HaSidebar extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex iron-flex-alignment iron-positioning">
@@ -44,21 +42,23 @@ class HaSidebar extends
         background-color: var(--primary-background-color);
       }
 
+      app-toolbar a {
+        color: var(--primary-text-color);
+      }
+
       paper-listbox {
         padding-bottom: 0;
       }
 
-      paper-icon-item {
-        --paper-icon-item: {
-          cursor: pointer;
-        };
+      a paper-icon-item {
+        text-decoration: none;
 
         --paper-item-icon: {
           color: var(--sidebar-icon-color);
         };
       }
 
-      paper-icon-item.iron-selected {
+      a.iron-selected {
         --paper-icon-item: {
           background-color: var(--sidebar-selected-background-color, var(--paper-grey-200));
         };
@@ -71,7 +71,7 @@ class HaSidebar extends
       paper-icon-item .item-text {
         @apply --sidebar-text;
       }
-      paper-icon-item.iron-selected .item-text {
+      a.iron-selected .item-text {
           color: var(--sidebar-selected-text-color);
       }
 
@@ -95,39 +95,62 @@ class HaSidebar extends
       }
 
       .dev-tools {
-        color: var(--sidebar-icon-color);
         padding: 0 8px;
+      }
+
+      .dev-tools a {
+        color: var(--sidebar-icon-color);
+      }
+
+      .profile-badge {
+        /* for ripple */
+        position: relative;
+        box-sizing: border-box;
+        width: 40px;
+        line-height: 40px;
+        border-radius: 50%;
+        text-align: center;
+        background-color: var(--light-primary-color);
+        text-decoration: none;
+        color: var(--primary-text-color);
+      }
+
+      .profile-badge.long {
+        font-size: 80%;
       }
     </style>
 
     <app-toolbar>
-      <div main-title="">Home Assistant</div>
-      <paper-icon-button icon="hass:chevron-left" hidden$="[[narrow]]" on-click="toggleMenu"></paper-icon-button>
+      <div main-title=>Home Assistant</div>
+      <template is='dom-if' if='[[hass.user]]'>
+        <a href='/profile' class$='[[_computeBadgeClass(_initials)]]'>
+          <paper-ripple></paper-ripple>
+          [[_initials]]
+        </a>
+      </template>
     </app-toolbar>
 
     <paper-listbox attr-for-selected="data-panel" selected="[[hass.panelUrl]]">
-      <paper-icon-item on-click="menuClicked" data-panel$="[[defaultPage]]">
-        <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
-        <span class="item-text">[[localize('panel.states')]]</span>
-      </paper-icon-item>
+      <a href='[[_computeUrl(defaultPage)]]' data-panel$="[[defaultPage]]">
+        <paper-icon-item>
+          <ha-icon slot="item-icon" icon="hass:apps"></ha-icon>
+          <span class="item-text">[[localize('panel.states')]]</span>
+        </paper-icon-item>
+      </a>
 
       <template is="dom-repeat" items="[[panels]]">
-        <paper-icon-item on-click="menuClicked">
-          <ha-icon slot="item-icon" icon="[[item.icon]]"></ha-icon>
-          <span class="item-text">[[computePanelName(localize, item)]]</span>
-        </paper-icon-item>
+        <a href='[[_computeUrl(item.url_path)]]' data-panel$='[[item.url_path]]'>
+          <paper-icon-item>
+            <ha-icon slot="item-icon" icon="[[item.icon]]"></ha-icon>
+            <span class="item-text">[[_computePanelName(localize, item)]]</span>
+          </paper-icon-item>
+        </a>
       </template>
 
       <template is='dom-if' if='[[!hass.user]]'>
-        <paper-icon-item on-click="menuClicked" data-panel="logout" class="logout">
+        <paper-icon-item on-click='_handleLogOut' class="logout">
           <ha-icon slot="item-icon" icon="hass:exit-to-app"></ha-icon>
           <span class="item-text">[[localize('ui.sidebar.log_out')]]</span>
-        </paper-icon-item>
-      </template>
-      <template is='dom-if' if='[[hass.user]]'>
-        <paper-icon-item on-click="menuClicked" data-panel="profile">
-          <ha-icon slot="item-icon" icon="hass:account"></ha-icon>
-          <span class="item-text">[[_computeUserName(hass.user)]]</span>
         </paper-icon-item>
       </template>
     </paper-listbox>
@@ -138,14 +161,54 @@ class HaSidebar extends
       <div class="subheader">[[localize('ui.sidebar.developer_tools')]]</div>
 
       <div class="dev-tools layout horizontal justified">
-        <paper-icon-button icon="hass:remote" data-panel="dev-service" alt="[[localize('panel.dev-services')]]" title="[[localize('panel.dev-services')]]" on-click="menuClicked"></paper-icon-button>
-        <paper-icon-button icon="hass:code-tags" data-panel="dev-state" alt="[[localize('panel.dev-states')]]" title="[[localize('panel.dev-states')]]" on-click="menuClicked"></paper-icon-button>
-        <paper-icon-button icon="hass:radio-tower" data-panel="dev-event" alt="[[localize('panel.dev-events')]]" title="[[localize('panel.dev-events')]]" on-click="menuClicked"></paper-icon-button>
-        <paper-icon-button icon="hass:file-xml" data-panel="dev-template" alt="[[localize('panel.dev-templates')]]" title="[[localize('panel.dev-templates')]]" on-click="menuClicked"></paper-icon-button>
+        <a href="/dev-service">
+          <paper-icon-button
+            icon="hass:remote"
+            alt="[[localize('panel.dev-services')]]"
+            title="[[localize('panel.dev-services')]]"
+          ></paper-icon-button>
+        </a>
+        <a href="/dev-state/">
+          <paper-icon-button
+            icon="hass:code-tags"
+            alt="[[localize('panel.dev-states')]]"
+            title="[[localize('panel.dev-states')]]"
+
+          ></paper-icon-button>
+        </a>
+        <a href="/dev-event/">
+          <paper-icon-button
+            icon="hass:radio-tower"
+            alt="[[localize('panel.dev-events')]]"
+            title="[[localize('panel.dev-events')]]"
+
+          ></paper-icon-button>
+        </a>
+        <a href="/dev-template/">
+          <paper-icon-button
+            icon="hass:file-xml"
+            alt="[[localize('panel.dev-templates')]]"
+            title="[[localize('panel.dev-templates')]]"
+
+          ></paper-icon-button>
+          </a>
         <template is="dom-if" if="[[_mqttLoaded(hass)]]">
-          <paper-icon-button icon="hass:altimeter" data-panel="dev-mqtt" alt="[[localize('panel.dev-mqtt')]]" title="[[localize('panel.dev-mqtt')]]" on-click="menuClicked"></paper-icon-button>
+          <a href="/dev-mqtt/">
+            <paper-icon-button
+              icon="hass:altimeter"
+              alt="[[localize('panel.dev-mqtt')]]"
+              title="[[localize('panel.dev-mqtt')]]"
+
+            ></paper-icon-button>
+          </a>
         </template>
-        <paper-icon-button icon="hass:information-outline" data-panel="dev-info" alt="[[localize('panel.dev-info')]]" title="[[localize('panel.dev-info')]]" on-click="menuClicked"></paper-icon-button>
+        <a href="/dev-info/">
+          <paper-icon-button
+            icon="hass:information-outline"
+            alt="[[localize('panel.dev-info')]]"
+            title="[[localize('panel.dev-info')]]"
+          ></paper-icon-button>
+        </a>
       </div>
     </div>
 `;
@@ -168,7 +231,25 @@ class HaSidebar extends
         computed: 'computePanels(hass)',
       },
       defaultPage: String,
+      _initials: {
+        type: String,
+        computed: '_computeUserInitials(hass.user.name)',
+      },
     };
+  }
+
+  _computeUserInitials(name) {
+    if (!name) return 'user';
+
+    return name.trim()
+      // Split by space and take first 3 words
+      .split(' ').slice(0, 3)
+      // Of each word, take first letter
+      .map(s => s.substr(0, 1)).join('');
+  }
+
+  _computeBadgeClass(initials) {
+    return `profile-badge ${initials.length > 2 ? 'long': ''}`;
   }
 
   _mqttLoaded(hass) {
@@ -179,7 +260,7 @@ class HaSidebar extends
     return user && (user.name || 'Unnamed User');
   }
 
-  computePanelName(localize, panel) {
+  _computePanelName(localize, panel) {
     return localize(`panel.${panel.title}`) || panel.title;
   }
 
@@ -222,45 +303,11 @@ class HaSidebar extends
     return result;
   }
 
-  menuClicked(ev) {
-    // Selection made inside dom-repeat
-    if (ev.model) {
-      this.selectPanel(ev.model.item.url_path);
-      return;
-    }
-
-    let target = ev.target;
-    let checks = 5;
-    let attr;
-
-    do {
-      attr = target.getAttribute('data-panel');
-      target = target.parentElement;
-      checks--;
-    } while (checks > 0 && target !== null && !attr);
-
-    if (checks > 0 && target !== null) {
-      this.selectPanel(attr);
-    }
+  _computeUrl(urlPath) {
+    return `/${urlPath}`;
   }
 
-  toggleMenu() {
-    this.fire('hass-close-menu');
-  }
-
-  selectPanel(newChoice) {
-    if (newChoice === 'logout') {
-      this.handleLogOut();
-      return;
-    }
-    var path = '/' + newChoice;
-    if (path === document.location.pathname) {
-      return;
-    }
-    this.navigate(path);
-  }
-
-  handleLogOut() {
+  _handleLogOut() {
     this.fire('hass-logout');
   }
 }
