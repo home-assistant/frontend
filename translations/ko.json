@@ -677,7 +677,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "저장",
-                "name": "이름"
+                "name": "이름",
+                "entity_id": "구성요소 ID"
             }
         }
     },

@@ -677,7 +677,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "保存",
-                "name": "名称"
+                "name": "名称",
+                "entity_id": "设备\/实体 ID"
             }
         }
     },
