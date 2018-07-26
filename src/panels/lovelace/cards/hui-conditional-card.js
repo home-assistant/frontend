@@ -11,7 +11,9 @@ class HuiConditionalCard extends PolymerElement {
         .hidden {
           display: none;
         }
-      </style>`;
+      </style>
+      <div id="card"></div>
+    `;
   }
 
   static get properties() {
@@ -41,7 +43,7 @@ class HuiConditionalCard extends PolymerElement {
 
   _buildConfig() {
     const config = this._config;
-    const root = this.shadowRoot;
+    const root = this.$.card;
     while(root.lastChild) {
       root.removeChild(root.lastChild);
     }
@@ -56,10 +58,10 @@ class HuiConditionalCard extends PolymerElement {
   }
 
   _hassChanged(hass) {
-    const card = this.shadowRoot && this.shadowRoot.lastChild;
-    if (!card) return;
+    const root = this.$.card;
+    if (!root || !root.lastChild) return;
 
-    card.hass = hass;
+    root.lastChild.hass = hass;
 
     const conditions = this._config.conditions;
     const show = conditions.every((c) => {
@@ -69,8 +71,7 @@ class HuiConditionalCard extends PolymerElement {
       }
       return false;
     });
-
-    card.classList.toggle('hidden',  !show);
+    root.classList.toggle('hidden',  !show);
   }
 }
 customElements.define('hui-conditional-card', HuiConditionalCard);
