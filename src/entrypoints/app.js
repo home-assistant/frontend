@@ -44,12 +44,6 @@ import(/* webpackChunkName: "notification-manager" */ '../managers/notification-
 setPassiveTouchGestures(true);
 /* LastPass createElement workaround. See #428 */
 document.createElement = Document.prototype.createElement;
-window.removeInitMsg = function () {
-  var initMsg = document.getElementById('ha-init-skeleton');
-  if (initMsg) {
-    initMsg.parentElement.removeChild(initMsg);
-  }
-};
 
 class HomeAssistant extends LocalizeMixin(PolymerElement) {
   static get template() {

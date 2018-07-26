@@ -25,9 +25,3 @@ echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR/__init__.py
 echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR/__init__.py
 echo "VERSION = '`git rev-parse HEAD`'" >> $OUTPUT_DIR_ES5/__init__.py
 echo "CREATED_AT = `date +%s`" >> $OUTPUT_DIR_ES5/__init__.py
-
-# Generate index.htmls with the MD5 hash of the builds
-./node_modules/.bin/gulp \
-    gen-index-html gen-index-html-es5 \
-    gen-authorize-html gen-authorize-html-es5 \
-    gen-onboarding-html gen-onboarding-html-es5

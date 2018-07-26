@@ -5,6 +5,7 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const translationMetadata = require('./build-translations/translationMetadata.json');
 
 const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -12,6 +13,22 @@ if (!version) {
   throw Error('Version not found');
 }
 const VERSION = version[0];
+
+const generateJSPage = (entrypoint, latestBuild) => {
+  return new HtmlWebpackPlugin({
+    inject: false,
+    template: './src/html/extra_page.html.template',
+    // Default templateParameterGenerator code
+    // https://github.com/jantimon/html-webpack-plugin/blob/master/index.js#L719
+    templateParameters: (compilation, assets, option) => ({
+      latestBuild,
+      tag: `ha-${entrypoint}`,
+      compatibility: assets.chunks.compatibility.entry,
+      entrypoint: assets.chunks[entrypoint].entry,
+    }),
+    filename: `${entrypoint}.html`,
+  });
+}
 
 function createConfig(isProdBuild, latestBuild) {
   let buildPath = latestBuild ? 'hass_frontend/' : 'hass_frontend_es5/';
@@ -163,9 +180,35 @@ function createConfig(isProdBuild, latestBuild) {
           ],
         }
       }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: './src/html/index.html.template',
+        // Default templateParameterGenerator code
+        // https://github.com/jantimon/html-webpack-plugin/blob/master/index.js#L719
+        templateParameters: (compilation, assets, option) => ({
+          latestBuild,
+          compatibility: assets.chunks.compatibility.entry,
+          appjs: assets.chunks.app.entry,
+          corejs: assets.chunks.core.entry,
+        }),
+        filename: `index.html`,
+      }),
+      generateJSPage('onboarding', latestBuild),
+      generateJSPage('authorize', latestBuild),
     ].filter(Boolean),
     output: {
-      filename: '[name].js',
+      filename: ({ chunk }) => {
+        const dontHash = new Set([
+          // Because we don't include it in ES5 build
+          // And so can't reference it there
+          'hass-icons',
+          // This is loaded from service-worker-bootstrap.js
+          // which is processed by Workbox, not Webpack
+          'service-worker-hass',
+        ]);
+        if (!isProdBuild || dontHash.has(chunk.name)) return `${chunk.name}.js`;
+        return `${chunk.name}-${chunk.hash.substr(0, 8)}.js`;
+      },
       chunkFilename: chunkFilename,
       path: path.resolve(__dirname, buildPath),
       publicPath,
