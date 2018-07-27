@@ -1,5 +1,6 @@
 import fireEvent from '../../../common/dom/fire_event.js';
 
+import '../cards/hui-conditional-card.js';
 import '../cards/hui-entities-card.js';
 import '../cards/hui-entity-filter-card.js';
 import '../cards/hui-error-card.js';
@@ -20,7 +21,8 @@ import '../cards/hui-weather-forecast-card';
 
 import createErrorCardConfig from './create-error-card-config.js';
 
-const CARD_TYPES = [
+const CARD_TYPES = new Set([
+  'conditional',
   'entities',
   'entity-filter',
   'error',
@@ -38,7 +40,7 @@ const CARD_TYPES = [
   'plant-status',
   'vertical-stack',
   'weather-forecast'
-];
+]);
 
 const CUSTOM_TYPE_PREFIX = 'custom:';
 
@@ -81,7 +83,7 @@ export default function createCardElement(config) {
     return element;
   }
 
-  if (!CARD_TYPES.includes(config.type)) {
+  if (!CARD_TYPES.has(config.type)) {
     return _createErrorElement(`Unknown card type encountered: ${config.type}.`, config);
   }
 
