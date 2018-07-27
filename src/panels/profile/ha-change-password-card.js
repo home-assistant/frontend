@@ -40,7 +40,6 @@ class HaChangePasswordCard extends PolymerElement {
             <div class="status">[[_statusMsg]]</div>
           </template>
           <paper-input
-            autofocus
             class='currentPassword'
             label='Current Password'
             type='password'
