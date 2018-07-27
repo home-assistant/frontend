@@ -4,36 +4,50 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/hui-generic-entity-row.js';
 
+import LocalizeMixin from '../../../mixins/localize-mixin.js';
+
 const SUPPORT_PAUSE = 1;
 const SUPPORT_NEXT_TRACK = 32;
+const SUPPORTS_PLAY = 16384;
+const OFF_STATES = ['off', 'idle'];
 
-class HuiMediaPlayerEntityRow extends PolymerElement {
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
         .controls {
           white-space: nowrap;
-        } 
+        }
       </style>
       <hui-generic-entity-row
         hass="[[hass]]"
         config="[[_config]]"
       >
-        <div class="controls">
-          <paper-icon-button 
-            icon="[[_computeControlIcon(_stateObj)]]" 
-            on-click="_playPause" 
-          ></paper-icon-button>
-          <template is="dom-if" if="[[_supportsNext(_stateObj)]]">
-            <paper-icon-button 
-              icon="hass:skip-next" 
-              on-click="_nextTrack" 
-            ></paper-icon-button>
-          </template>
-        </div>
-        
+        <template is="dom-if" if="[[!_isOff(_stateObj.state)]]">
+          <div class="controls">
+            <template is="dom-if" if="[[_computeControlIcon(_stateObj)]]">
+              <paper-icon-button
+                icon="[[_computeControlIcon(_stateObj)]]"
+                on-click="_playPause"
+              ></paper-icon-button>
+            </template>
+            <template is="dom-if" if="[[_supportsNext(_stateObj)]]">
+              <paper-icon-button
+                icon="hass:skip-next"
+                on-click="_nextTrack"
+              ></paper-icon-button>
+            </template>
+          </div>
+        </template>
+        <template is="dom-if" if="[[_isOff(_stateObj.state)]]">
+          <div>[[_computeState(_stateObj.state)]]</div>
+        </template> 
+ 
         <div slot="secondary">
-          [[_computeMediaTitle(_stateObj)]] 
+          [[_computeMediaTitle(_stateObj)]]
         </div>
       </hui-generic-entity-row>
     `;
@@ -63,14 +77,14 @@ class HuiMediaPlayerEntityRow extends PolymerElement {
 
   _computeControlIcon(stateObj) {
     if (stateObj.state !== 'playing') {
-      return 'hass:play';
+      return stateObj.attributes.supported_features & SUPPORTS_PLAY ? 'hass:play' : '';
     }
 
     return stateObj.attributes.supported_features & SUPPORT_PAUSE ? 'hass:pause' : 'hass:stop';
   }
 
   _computeMediaTitle(stateObj) {
-    if (!stateObj) return null;
+    if (!stateObj || this._isOff(stateObj.state)) return null;
 
     switch (stateObj.attributes.media_content_type) {
       case 'music':
@@ -78,8 +92,14 @@ class HuiMediaPlayerEntityRow extends PolymerElement {
       case 'tvshow':
         return `${stateObj.attributes.media_series_title}: ${stateObj.attributes.media_title}`;
       default:
-        return `${stateObj.attributes.media_title}`;
+        return stateObj.attributes.media_title || stateObj.attributes.app_name || stateObj.state;
     }
+  }
+
+  _computeState(state) {
+    return this.localize(`state.media_player.${state}`)
+      || this.localize(`state.default.${state}`)
+      || state;
   }
 
   _callService(service) {
@@ -96,6 +116,10 @@ class HuiMediaPlayerEntityRow extends PolymerElement {
     if (this._stateObj.attributes.supported_features & SUPPORT_NEXT_TRACK) {
       this._callService('media_next_track');
     }
+  }
+
+  _isOff(state) {
+    return OFF_STATES.includes(state);
   }
 
   _supportsNext(stateObj) {
