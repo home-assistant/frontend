@@ -10,12 +10,10 @@ import EventsMixin from '../mixins/events-mixin.js';
 class HaMenuButton extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <style>
-      .invisible {
-        visibility: hidden;
-      }
-    </style>
-    <paper-icon-button icon="[[_getIcon(hassio)]]" class$="[[computeMenuButtonClass(narrow, showMenu)]]" on-click="toggleMenu"></paper-icon-button>
+    <paper-icon-button
+      icon="[[_getIcon(hassio)]]"
+      on-click="toggleMenu"
+    ></paper-icon-button>
 `;
   }
 
@@ -38,13 +36,9 @@ class HaMenuButton extends EventsMixin(PolymerElement) {
     };
   }
 
-  computeMenuButtonClass(narrow, showMenu) {
-    return !narrow && showMenu ? 'invisible' : '';
-  }
-
   toggleMenu(ev) {
     ev.stopPropagation();
-    this.fire('hass-open-menu');
+    this.fire(this.showMenu ? 'hass-close-menu' : 'hass-open-menu');
   }
 
   _getIcon(hassio) {
