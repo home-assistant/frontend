@@ -49,12 +49,17 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
         padding-bottom: 0;
       }
 
-      a paper-icon-item {
+      paper-listbox > a {
+        @apply --sidebar-text;
         text-decoration: none;
 
         --paper-item-icon: {
           color: var(--sidebar-icon-color);
         };
+      }
+
+      paper-icon-item span {
+        @apply --sidebar-text;
       }
 
       a.iron-selected {
@@ -67,11 +72,8 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
         };
       }
 
-      paper-icon-item .item-text {
-        @apply --sidebar-text;
-      }
       a.iron-selected .item-text {
-          color: var(--sidebar-selected-text-color);
+        color: var(--sidebar-selected-text-color);
       }
 
       paper-icon-item.logout {
@@ -82,10 +84,6 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
         height: 1px;
         background-color: var(--divider-color);
         margin: 4px 0;
-      }
-
-      .setting {
-        @apply --sidebar-text;
       }
 
       .subheader {
@@ -239,7 +237,6 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
   _computeUserInitials(name) {
     if (!name) return 'user';
-    name = 'J v B';
     return name.trim()
       // Split by space and take first 3 words
       .split(' ').slice(0, 3)
