@@ -13,6 +13,7 @@ import './state-card-scene.js';
 import './state-card-script.js';
 import './state-card-timer.js';
 import './state-card-toggle.js';
+import './state-card-vacuum.js';
 import './state-card-weblink.js';
 
 import stateCardType from '../common/entity/state_card_type.js';
