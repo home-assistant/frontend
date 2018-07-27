@@ -53,7 +53,9 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
             >Log out</paper-button>
           </div>
         </paper-card>
-        <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
+        <template is="dom-if" if="[[_canChangePassword(hass.user)]]">
+          <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
+        </template>
       </div>
     </app-header-layout>
     `;
@@ -69,6 +71,10 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
 
   _handleLogOut() {
     this.fire('hass-logout');
+  }
+
+  _canChangePassword(user) {
+    return user.credentials.some(cred => cred.auth_provider_type === 'homeassistant');
   }
 }
 
