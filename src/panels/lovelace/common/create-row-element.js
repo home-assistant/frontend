@@ -62,20 +62,9 @@ function _createErrorElement(error, config) {
   return _createElement('hui-error-card', createErrorCardConfig(error, config));
 }
 
-export default function createRowElement(config) {
-  let tag;
-
-  if (!config || typeof config !== 'object' || (!config.entity && !config.type)) {
-    return _createErrorElement('Invalid config given.', config);
-  }
-
-  const type = config.type || 'default';
-  if (SPECIAL_TYPES.has(type)) {
-    return _createElement(`hui-${type}-row`, config);
-  }
-
+function _createRowFromType(type, config) {
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    tag = type.substr(CUSTOM_TYPE_PREFIX.length);
+    const tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
     if (customElements.get(tag)) {
       return _createElement(tag, config);
@@ -87,9 +76,25 @@ export default function createRowElement(config) {
 
     return element;
   }
+  return _createElement(`hui-${type}-entity-row`, config);
+}
+
+export default function createRowElement(config) {
+  if (!config || typeof config !== 'object' || (!config.entity && !config.type)) {
+    return _createErrorElement('Invalid config given.', config);
+  }
+
+  const type = config.type;
+  if (SPECIAL_TYPES.has(type)) {
+    return _createElement(`hui-${type}-row`, config);
+  }
+
+  if (type) {
+    return _createRowFromType(type, config);
+  }
 
   const domain = config.entity.split('.', 1)[0];
-  tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
+  const tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
 
   return _createElement(tag, config);
 }
