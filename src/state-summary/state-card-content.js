@@ -11,6 +11,7 @@ import './state-card-lock.js';
 import './state-card-media_player.js';
 import './state-card-scene.js';
 import './state-card-script.js';
+import './state-card-sous_vide.js';
 import './state-card-timer.js';
 import './state-card-toggle.js';
 import './state-card-vacuum.js';
