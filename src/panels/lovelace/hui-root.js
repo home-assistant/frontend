@@ -21,6 +21,8 @@ import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import '../../components/ha-icon.js';
 import { loadModule, loadCSS, loadJS } from '../../common/dom/load_resource.js';
+import './components/notifications/hui-notification-drawer.js';
+import './components/notifications/hui-notifications-button.js';
 import './hui-unused-entities.js';
 import './hui-view.js';
 import debounce from '../../common/util/debounce.js';
@@ -71,11 +73,17 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
+    <hui-notification-drawer
+      hass="[[hass]]"
+      open="[[_notificationsOpen]]"
+      narrow="[[narrow]]"
+    ></hui-notification-drawer>
     <ha-app-layout id="layout">
       <app-header slot="header" fixed>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
+          <hui-notifications-button hass="[[hass]]"></hui-notifications-button>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
           <paper-menu-button
             no-animations
@@ -138,13 +146,39 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: '_routeChanged'
       },
-      routeData: Object
+
+      _notificationsOpen: {
+        type: Boolean,
+        value: false,
+      },
+
+      routeData: Object,
     };
   }
 
   constructor() {
     super();
     this._debouncedConfigChanged = debounce(() => this._selectView(this._curView), 100);
+
+    this._debouncedNotificationsClose = debounce(() => {
+      this._notificationsOpen = false;
+    }, 100);
+
+    this._debouncedNotificationsOpen = debounce(() => {
+      this._notificationsOpen = true;
+    }, 100);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('close-notification-drawer', this._debouncedNotificationsClose);
+    this.addEventListener('open-notification-drawer', this._debouncedNotificationsOpen);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('close-notification-drawer', this._debouncedNotificationsClose);
+    this.removeEventListener('open-notification-drawer', this._debouncedNotificationsOpen);
   }
 
   _routeChanged(route) {
@@ -285,5 +319,4 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     });
   }
 }
-
 customElements.define('hui-root', HUIRoot);
