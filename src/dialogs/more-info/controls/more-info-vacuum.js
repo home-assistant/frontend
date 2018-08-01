@@ -41,8 +41,11 @@ class MoreInfoVacuum extends PolymerElement {
       <p></p>
       <div class="status-subtitle">Vacuum cleaner commands:</div>
       <div class="horizontal justified layout">
+        <div hidden$="[[!supportsStart(stateObj)]]">
+          <paper-icon-button icon="hass:play" on-click="onStart" title="Start"></paper-icon-button>
+        </div>
         <div hidden$="[[!supportsPause(stateObj)]]">
-          <paper-icon-button icon="hass:play-pause" on-click="onPlayPause" title="Start/Pause"></paper-icon-button>
+          <paper-icon-button icon="hass:pause" on-click="onPause" title="Pause"></paper-icon-button>
         </div>
         <div hidden$="[[!supportsStop(stateObj)]]">
           <paper-icon-button icon="hass:stop" on-click="onStop" title="Stop"></paper-icon-button>
@@ -135,12 +138,17 @@ class MoreInfoVacuum extends PolymerElement {
     return (stateObj.attributes.supported_features & 1024) !== 0;
   }
 
+  supportsStart(stateObj) {
+    return (stateObj.attributes.supported_features & 8192) !== 0;
+  }
+
   supportsCommandBar(stateObj) {
     return (((stateObj.attributes.supported_features & 4) !== 0)
             | ((stateObj.attributes.supported_features & 8) !== 0)
             | ((stateObj.attributes.supported_features & 16) !== 0)
             | ((stateObj.attributes.supported_features & 512) !== 0)
-            | ((stateObj.attributes.supported_features & 1024) !== 0));
+            | ((stateObj.attributes.supported_features & 1024) !== 0)
+            | ((stateObj.attributes.supported_features & 8192) !== 0));
   }
 
   /* eslint-enable no-bitwise */
@@ -165,8 +173,14 @@ class MoreInfoVacuum extends PolymerElement {
     });
   }
 
-  onPlayPause() {
-    this.hass.callService('vacuum', 'start_pause', {
+  onPause() {
+    this.hass.callService('vacuum', 'pause', {
+      entity_id: this.stateObj.entity_id
+    });
+  }
+
+  onStart() {
+    this.hass.callService('vacuum', 'start', {
       entity_id: this.stateObj.entity_id
     });
   }
