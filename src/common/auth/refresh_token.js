@@ -4,6 +4,7 @@ export default function refreshAccessToken(clientId, refreshToken) {
   data.append('grant_type', 'refresh_token');
   data.append('refresh_token', refreshToken);
   return fetch('/auth/token', {
+    credentials: 'same-origin',
     method: 'POST',
     body: data,
   }).then((resp) => {
