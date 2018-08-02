@@ -103,7 +103,7 @@ class HaForm extends EventsMixin(PolymerElement) {
         <paper-dropdown-menu label="[[computeLabel(schema)]]">
           <paper-listbox slot="dropdown-content" attr-for-selected="item-name" selected="{{data}}">
             <template is="dom-repeat" items="[[schema.options]]">
-              <paper-item item-name$="[[item]]">[[item]]</paper-item>
+              <paper-item item-name$="[[_optionValue(item)]]">[[_optionLabel(item)]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -168,6 +168,14 @@ class HaForm extends EventsMixin(PolymerElement) {
 
   _passwordFieldIcon(unmaskedPassword) {
     return unmaskedPassword ? 'hass:eye-off' : 'hass:eye';
+  }
+
+  _optionValue(item) {
+    return Array.isArray(item) ? item[0] : item;
+  }
+
+  _optionLabel(item) {
+    return Array.isArray(item) ? item[1] : item;
   }
 }
 
