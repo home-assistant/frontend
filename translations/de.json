@@ -136,6 +136,8 @@
             "cool": "Kühlen",
             "idle": "Untätig",
             "auto": "Automatisch",
+            "boost": "Boost",
+            "comfort": "Komfort",
             "dry": "Entfeuchten",
             "fan_only": "Nur Ventilator",
             "eco": "Sparmodus",
