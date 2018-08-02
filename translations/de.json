@@ -139,6 +139,8 @@
             "dry": "Entfeuchten",
             "fan_only": "Nur Ventilator",
             "eco": "Sparmodus",
+            "boost": 'Boost',
+            "comfort": 'Komfort',
             "electric": "Elektrisch",
             "performance": "Leistung",
             "high_demand": "Hoher Verbrauch",
