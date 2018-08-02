@@ -12,12 +12,12 @@ class HuiServiceButtonElement extends PolymerElement {
           white-space: nowrap;
         }
       </style>
-      <ha-call-service-button 
+      <ha-call-service-button
         hass="[[hass]]"
-        domain="[[_domain]]" 
+        domain="[[_domain]]"
         service="[[_service]]"
-        serviceData="[[_config.serviceData]]"
-      >[[_config.title]]</ha-call-service-button> 
+        service-data="[[_config.service_data]]"
+      >[[_config.title]]</ha-call-service-button>
     `;
   }
 
