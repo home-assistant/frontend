@@ -12,7 +12,8 @@
         "dev-events": "Tapahtumat",
         "dev-templates": "Mallit",
         "dev-mqtt": "MQTT",
-        "dev-info": "Tiedot"
+        "dev-info": "Tiedot",
+        "calendar": "Kalenteri"
     },
     "state": {
         "default": {
@@ -51,23 +52,23 @@
                 "on": "Havaittu"
             },
             "motion": {
-                "off": "Tyhjennä",
+                "off": "Ei liikettä",
                 "on": "Havaittu"
             },
             "occupancy": {
-                "off": "Tyhjennä",
+                "off": "Ei liikettä",
                 "on": "Havaittu"
             },
             "smoke": {
-                "off": "Tyhjennä",
+                "off": "Ei savua",
                 "on": "Havaittu"
             },
             "sound": {
-                "off": "Tyhjennä",
+                "off": "Ei ääntä",
                 "on": "Havaittu"
             },
             "vibration": {
-                "off": "Tyhjennä",
+                "off": "Ei värinää",
                 "on": "Havaittu"
             },
             "opening": {
@@ -514,6 +515,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave -verkon asetukset"
+                },
+                "users": {
+                    "caption": "Käyttäjät",
+                    "description": "Käyttäjien hallinta",
+                    "picker": {
+                        "title": "Käyttäjät"
+                    },
+                    "editor": {
+                        "rename_user": "Nimeä käyttäjä uudelleen",
+                        "change_password": "Vaihda salasana",
+                        "activate_user": "Aktivoi käyttäjä",
+                        "deactivate_user": "Passivoi käyttäjätunnus",
+                        "delete_user": "Poista käyttäjä"
+                    }
                 }
             }
         },
@@ -605,7 +620,9 @@
                 "effect": "Efekti"
             },
             "media_player": {
-                "text_to_speak": "Tekstistä puheeksi"
+                "text_to_speak": "Tekstistä puheeksi",
+                "source": "Äänilähde",
+                "sound_mode": "Äänitila"
             },
             "climate": {
                 "currently": "Tällä hetkellä",
@@ -649,6 +666,13 @@
             "service_called": "Palvelua {service} kutsuttiin.",
             "service_call_failed": "Palvelua {service} ei onnistuttu kutsumaan.",
             "connection_lost": "Ei yhteyttä. Yritetään muodostaa yhteys uudelleen..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Tallenna",
+                "name": "Nimi",
+                "entity_id": "Kohde ID"
+            }
         }
     },
     "domain": {

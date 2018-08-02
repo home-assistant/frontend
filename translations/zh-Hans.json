@@ -253,6 +253,16 @@
             "sunny": "晴",
             "windy": "有风",
             "windy-variant": "有风"
+        },
+        "vacuum": {
+            "cleaning": "清洁中",
+            "docked": "停靠",
+            "error": "错误",
+            "idle": "空闲",
+            "off": "已经关闭",
+            "on": "开启中",
+            "paused": "暂停",
+            "returning": "回到dock"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "密码",
                 "lock": "锁定",
                 "unlock": "解锁"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "恢复清洁",
+                    "return_to_base": "回到base",
+                    "start_cleaning": "开始清洁",
+                    "turn_on": "打开",
+                    "turn_off": "关闭"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "开关",
         "updater": "更新提示",
         "weblink": "网址",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "真空"
     },
     "attribute": {
         "weather": {

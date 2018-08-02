@@ -253,6 +253,16 @@
             "sunny": "晴天",
             "windy": "有風",
             "windy-variant": "有風"
+        },
+        "vacuum": {
+            "cleaning": "清掃中",
+            "docked": "充電中",
+            "error": "錯誤",
+            "idle": "暫停",
+            "off": "關閉",
+            "on": "開啟",
+            "paused": "暫停",
+            "returning": "返回充電"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "密碼",
                 "lock": "鎖",
                 "unlock": "解鎖"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "繼續清掃",
+                    "return_to_base": "返回充電",
+                    "start_cleaning": "開始清掃",
+                    "turn_on": "開啟",
+                    "turn_off": "關閉"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "開關",
         "updater": "更新器",
         "weblink": "網站鏈接",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "吸塵器"
     },
     "attribute": {
         "weather": {

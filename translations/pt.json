@@ -253,6 +253,16 @@
             "sunny": "Sol",
             "windy": "Vento fraco",
             "windy-variant": "Vento fraco"
+        },
+        "vacuum": {
+            "cleaning": "A limpar",
+            "docked": "Ancorado",
+            "error": "Erro",
+            "idle": "Em espera",
+            "off": "Desligado",
+            "on": "Ligado",
+            "paused": "Em pausa",
+            "returning": "A regressar ao cais"
         }
     },
     "state_badge": {
@@ -515,6 +525,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gerir a sua rede Z-Wave"
+                },
+                "users": {
+                    "caption": "Utilizadores",
+                    "description": "Gerir utilizadores",
+                    "picker": {
+                        "title": "Utilizadores"
+                    },
+                    "editor": {
+                        "rename_user": "Alterar nome do utilizador",
+                        "change_password": "Alterar palavra-passe",
+                        "activate_user": "Activar utilizador",
+                        "deactivate_user": "Desactivar utilizador",
+                        "delete_user": "Apagar utilizador"
+                    }
                 }
             }
         },
@@ -625,6 +649,15 @@
                 "code": "Código",
                 "lock": "Trancar",
                 "unlock": "Destrancar"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Retomar a limpeza",
+                    "return_to_base": "Regressar ao cais",
+                    "start_cleaning": "Iniciar a limpeza",
+                    "turn_on": "Ligar",
+                    "turn_off": "Desligar"
+                }
             }
         },
         "components": {
@@ -639,7 +672,14 @@
             "relative_time": {
                 "past": "{time} atrás",
                 "future": "Às {time}",
-                "never": "Nunca"
+                "never": "Nunca",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "minute": "{count} {count, plural,\n  um {minuto}\n  outros {minutos}\n}",
+                    "hour": "{count} {count, plural,\n  uma {hora}\n  umas {horas}\n}",
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "A carregar histórico de estados...",
@@ -656,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Salvar",
-                "name": "Nome"
+                "name": "Nome",
+                "entity_id": "ID da entidade"
             }
         }
     },
@@ -695,7 +736,8 @@
         "switch": "Interruptor",
         "updater": "Atualizador",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspiração"
     },
     "attribute": {
         "weather": {

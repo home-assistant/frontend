@@ -253,6 +253,16 @@
             "sunny": "Slunečno",
             "windy": "Větrno",
             "windy-variant": "Větrno"
+        },
+        "vacuum": {
+            "cleaning": "Čistí",
+            "docked": "V stanici",
+            "error": "Chyba",
+            "idle": "Nečinný",
+            "off": "Off",
+            "on": "On",
+            "paused": "Pozastaveno",
+            "returning": "Návrat do stanice"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Kód",
                 "lock": "Zamknout",
                 "unlock": "Odemknout"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Pokračovat v čištění",
+                    "return_to_base": "Vrátit do stanice",
+                    "start_cleaning": "Zahájit čištění",
+                    "turn_on": "Zapnout",
+                    "turn_off": "Vypnout"
+                }
             }
         },
         "components": {
@@ -677,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Uložit",
-                "name": "Název"
+                "name": "Název",
+                "entity_id": "Entity ID"
             }
         }
     },
@@ -716,7 +736,8 @@
         "switch": "Spínač",
         "updater": "Aktualizátor",
         "weblink": "Webový odkaz",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Vysavač"
     },
     "attribute": {
         "weather": {

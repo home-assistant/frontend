@@ -253,6 +253,16 @@
             "sunny": "Sunny",
             "windy": "Windy",
             "windy-variant": "Windy"
+        },
+        "vacuum": {
+            "cleaning": "Cleaning",
+            "docked": "Docked",
+            "error": "Error",
+            "idle": "Idle",
+            "off": "Off",
+            "on": "On",
+            "paused": "Paused",
+            "returning": "Returning to dock"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Code",
                 "lock": "Lock",
                 "unlock": "Unlock"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Resume cleaning",
+                    "return_to_base": "Return to dock",
+                    "start_cleaning": "Start cleaning",
+                    "turn_on": "Turn on",
+                    "turn_off": "Turn off"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "Switch",
         "updater": "Updater",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Vacuum"
     },
     "attribute": {
         "weather": {
