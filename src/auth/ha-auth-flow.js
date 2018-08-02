@@ -72,6 +72,7 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
 
     fetch('/auth/login_flow', {
       method: 'POST',
+      credentials: 'same-origin',
       body: JSON.stringify({
         client_id: this.clientId,
         handler: [this.authProvider.type, this.authProvider.id],
@@ -111,6 +112,7 @@ class HaAuthFlow extends EventsMixin(PolymerElement) {
 
     fetch(`/auth/login_flow/${this._step.flow_id}`, {
       method: 'POST',
+      credentials: 'same-origin',
       body: JSON.stringify(postData)
     }).then((response) => {
       if (!response.ok) throw new Error();

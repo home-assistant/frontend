@@ -4,6 +4,7 @@ export default function fetchToken(clientId, code) {
   data.append('grant_type', 'authorization_code');
   data.append('code', code);
   return fetch('/auth/token', {
+    credentials: 'same-origin',
     method: 'POST',
     body: data,
   }).then((resp) => {

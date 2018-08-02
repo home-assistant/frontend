@@ -80,7 +80,7 @@ export function getTranslation(fragment, translationInput) {
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {
     translations[translationFingerprint] =
-      fetch(`/static/translations/${translationFingerprint}`, { credentials: 'include' })
+      fetch(`/static/translations/${translationFingerprint}`, { credentials: 'same-origin' })
         .then(response => response.json()).then(data => ({
           language: translation,
           data: data,
