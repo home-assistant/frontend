@@ -53,7 +53,7 @@ class HaPickAuthProvider extends EventsMixin(PolymerElement) {
   connectedCallback() {
     super.connectedCallback();
 
-    fetch('/auth/providers').then((response) => {
+    fetch('/auth/providers', { credentials: 'same-origin' }).then((response) => {
       if (!response.ok) throw new Error();
       return response.json();
     }).then((authProviders) => {
