@@ -41,12 +41,20 @@ class MoreInfoVacuum extends PolymerElement {
       <p></p>
       <div class="status-subtitle">Vacuum cleaner commands:</div>
       <div class="horizontal justified layout">
-        <div hidden$="[[!supportsStart(stateObj)]]">
-          <paper-icon-button icon="hass:play" on-click="onStart" title="Start"></paper-icon-button>
-        </div>
-        <div hidden$="[[!supportsPause(stateObj)]]">
-          <paper-icon-button icon="hass:pause" on-click="onPause" title="Pause"></paper-icon-button>
-        </div>
+        <template is="dom-if" if="[[supportsStart(stateObj)]]">
+          <div hidden$="[[!supportsStart(stateObj)]]">
+            <paper-icon-button icon="hass:play" on-click="onStart" title="Start"></paper-icon-button>
+          </div>
+          <div hidden$="[[!supportsPause(stateObj)]]">
+            <paper-icon-button icon="hass:pause" on-click="onPause" title="Pause"></paper-icon-button>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!supportsStart(stateObj)]]">
+          <div hidden$="[[!supportsPause(stateObj)]]">
+            <paper-icon-button icon="hass:play-pause" on-click="onPlayPause" title="Pause"></paper-icon-button>
+          </div>
+        </template>
+        
         <div hidden$="[[!supportsStop(stateObj)]]">
           <paper-icon-button icon="hass:stop" on-click="onStop" title="Stop"></paper-icon-button>
         </div>
@@ -169,6 +177,12 @@ class MoreInfoVacuum extends PolymerElement {
 
   onStop() {
     this.hass.callService('vacuum', 'stop', {
+      entity_id: this.stateObj.entity_id
+    });
+  }
+
+  onPlayPause() {
+    this.hass.callService('vacuum', 'start_pause', {
       entity_id: this.stateObj.entity_id
     });
   }
