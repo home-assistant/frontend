@@ -13,7 +13,7 @@
         "dev-templates": "Modelos",
         "dev-mqtt": "",
         "dev-info": "Informação",
-        "calendar": "Calendario"
+        "calendar": "Calendário"
     },
     "state": {
         "default": {
@@ -253,6 +253,16 @@
             "sunny": "Ensolarado",
             "windy": "Ventoso",
             "windy-variant": "Ventoso"
+        },
+        "vacuum": {
+            "cleaning": "Limpando",
+            "docked": "Baseado",
+            "error": "Erro",
+            "idle": "Em espera",
+            "off": "Desligado",
+            "on": "Ligado",
+            "paused": "Pausado",
+            "returning": "Retornando para base"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Código",
                 "lock": "Trancar",
                 "unlock": "Destrancar"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Continuar limpeza",
+                    "return_to_base": "Retornar a base",
+                    "start_cleaning": "Iniciar limpeza",
+                    "turn_on": "Ligar",
+                    "turn_off": "Desligar"
+                }
             }
         },
         "components": {
@@ -653,7 +672,14 @@
             "relative_time": {
                 "past": "{time} atrás",
                 "future": "Em {time}",
-                "never": "Nunca"
+                "never": "Nunca",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Carregando histórico do estado ...",
@@ -670,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Salvar",
-                "name": "Nome"
+                "name": "Nome",
+                "entity_id": "ID da entidade"
             }
         }
     },
@@ -709,7 +736,8 @@
         "switch": "Interruptor",
         "updater": "Atualizador",
         "weblink": "Weblink",
-        "zwave": ""
+        "zwave": "",
+        "vacuum": "Aspirando"
     },
     "attribute": {
         "weather": {

@@ -133,7 +133,7 @@
             "off": "Av",
             "on": "På",
             "heat": "Varme",
-            "cool": "Kjøle",
+            "cool": "Kjøling",
             "idle": "Inaktiv",
             "auto": "Auto",
             "dry": "Tørr",
@@ -253,6 +253,16 @@
             "sunny": "Solfylt",
             "windy": "Vind",
             "windy-variant": "Vind"
+        },
+        "vacuum": {
+            "cleaning": "Rengjøring",
+            "docked": "Dokket",
+            "error": "Feil",
+            "idle": "Ledig",
+            "off": "Av",
+            "on": "På",
+            "paused": "Pauset",
+            "returning": "Returner til dokken"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Kode",
                 "lock": "Lås",
                 "unlock": "Låse opp"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Gjenoppta rengjøring",
+                    "return_to_base": "Returner til dokken",
+                    "start_cleaning": "Start rengjøring",
+                    "turn_on": "Slå på",
+                    "turn_off": "Slå av"
+                }
             }
         },
         "components": {
@@ -668,8 +687,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "Slo på {entity}.",
-            "entity_turned_off": "Slo av {entity}.",
+            "entity_turned_on": "Skrudd på {entity}.",
+            "entity_turned_off": "Skrudd av {entity}.",
             "service_called": "Tjenesten {service} kalt.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten {service}.",
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt..."
@@ -717,7 +736,8 @@
         "switch": "Bryter",
         "updater": "Oppdateringer",
         "weblink": "Nettlink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Støvsuger"
     },
     "attribute": {
         "weather": {

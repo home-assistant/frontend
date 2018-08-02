@@ -253,6 +253,16 @@
             "sunny": "Assolellat",
             "windy": "Ventós",
             "windy-variant": "Ventós"
+        },
+        "vacuum": {
+            "cleaning": "Netejant",
+            "docked": "Aparcat",
+            "error": "Error",
+            "idle": "Inactiu",
+            "off": "Off",
+            "on": "On",
+            "paused": "Aturat",
+            "returning": "Retornant a la base"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Codi",
                 "lock": "Bloquejar",
                 "unlock": "Desbloquejar"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reprendre neteja",
+                    "return_to_base": "Retornar a la base",
+                    "start_cleaning": "Començar neteja",
+                    "turn_on": "Encendre",
+                    "turn_off": "Apagar"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "Interruptor",
         "updater": "Actualitzador",
         "weblink": "Enllaç web",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspiradora"
     },
     "attribute": {
         "weather": {
