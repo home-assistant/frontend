@@ -253,6 +253,16 @@
             "sunny": "Sonneg",
             "windy": "Lëfteg",
             "windy-variant": "Lëfteg"
+        },
+        "vacuum": {
+            "cleaning": "Botzt",
+            "docked": "Agedockt",
+            "error": "Fehler",
+            "idle": "Waart",
+            "off": "Aus",
+            "on": "Un",
+            "paused": "Pauseiert",
+            "returning": "Kënnt zur Statioun zeréck"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Code",
                 "lock": "Spären",
                 "unlock": "Entspären"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Fuer mam botzen weider",
+                    "return_to_base": "Zeréck zur Statioun kommen",
+                    "start_cleaning": "Fänkt mam botzen un",
+                    "turn_on": "Uschalten",
+                    "turn_off": "Ausschalten"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "Schalter",
         "updater": "Aktualiséierung",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Staubsauger"
     },
     "attribute": {
         "weather": {

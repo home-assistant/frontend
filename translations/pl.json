@@ -253,6 +253,16 @@
             "sunny": "słonecznie",
             "windy": "wietrznie",
             "windy-variant": "wietrznie"
+        },
+        "vacuum": {
+            "cleaning": "sprzątanie",
+            "docked": "w stacji dokującej",
+            "error": "błąd",
+            "idle": "nieaktywny",
+            "off": "wyłączony",
+            "on": "włączony",
+            "paused": "wstrzymany",
+            "returning": "powrót do stacji dokującej"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Kod",
                 "lock": "Zablokuj",
                 "unlock": "Odblokuj"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Wznów sprzątanie",
+                    "return_to_base": "Wróć do stacji dokującej",
+                    "start_cleaning": "Rozpocznij sprzątanie",
+                    "turn_on": "Włącz",
+                    "turn_off": "Wyłącz"
+                }
             }
         },
         "components": {
@@ -677,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Zapisz",
-                "name": "Nazwa"
+                "name": "Nazwa",
+                "entity_id": "Identyfikator encji"
             }
         }
     },
@@ -716,7 +736,8 @@
         "switch": "Przełącznik",
         "updater": "Aktualizator",
         "weblink": "Link",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Odkurzacz"
     },
     "attribute": {
         "weather": {

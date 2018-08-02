@@ -253,6 +253,16 @@
             "sunny": "Sončno",
             "windy": "Vetrovno",
             "windy-variant": "Vetrovno"
+        },
+        "vacuum": {
+            "cleaning": "Čistim",
+            "docked": "Priključen",
+            "error": "Napaka",
+            "idle": "V pripravljenosti",
+            "off": "Izključen",
+            "on": "Vključen",
+            "paused": "Zaustavljeno",
+            "returning": "Vračam se na postajo"
         }
     },
     "state_badge": {
@@ -515,6 +525,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Upravljajte Z-Wave omrežje"
+                },
+                "users": {
+                    "caption": "Uporabniki",
+                    "description": "Upravljajte uporabnike",
+                    "picker": {
+                        "title": "Uporabniki"
+                    },
+                    "editor": {
+                        "rename_user": "Preimenuj uporabnika",
+                        "change_password": "Spremeni geslo",
+                        "activate_user": "Aktiviraj uporabnika",
+                        "deactivate_user": "Deaktiviraj uporabnika",
+                        "delete_user": "Izbriši uporabnika"
+                    }
                 }
             }
         },
@@ -625,6 +649,15 @@
                 "code": "Koda",
                 "lock": "Zakleni",
                 "unlock": "Odkleni"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Nadaljuj s čiščenjem",
+                    "return_to_base": "Vrni se na postajo",
+                    "start_cleaning": "Začni čiščenje",
+                    "turn_on": "Vklopite",
+                    "turn_off": "Izklopite"
+                }
             }
         },
         "components": {
@@ -639,7 +672,14 @@
             "relative_time": {
                 "past": "pred {time} ",
                 "future": "Čez {time}",
-                "never": "Nikoli"
+                "never": "Nikoli",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekunda}\nother {sekund}\n}",
+                    "minute": "{count} {count, plural,\n  ena {minuta}\n  other {minut}\n}",
+                    "hour": "{count} {count, plural,\n  one {Ura}\n  other {Ur}\n}",
+                    "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
+                    "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Nalagam zgodovino stanj...",
@@ -656,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Shrani",
-                "name": "Ime"
+                "name": "Ime",
+                "entity_id": "ID subjekta"
             }
         }
     },
@@ -695,7 +736,8 @@
         "switch": "Stikalo",
         "updater": "Posodobitelj",
         "weblink": "Spletna povezava",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Sesam"
     },
     "attribute": {
         "weather": {

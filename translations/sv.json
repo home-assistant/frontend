@@ -253,6 +253,16 @@
             "sunny": "Soligt",
             "windy": "Blåsigt",
             "windy-variant": "Blåsigt"
+        },
+        "vacuum": {
+            "cleaning": "Städar",
+            "docked": "Dockad",
+            "error": "Fel",
+            "idle": "Inaktiv",
+            "off": "Av",
+            "on": "På",
+            "paused": "Pausad",
+            "returning": "Återgår till docka"
         }
     },
     "state_badge": {
@@ -515,6 +525,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Hantera ditt Z-Wave-nätverk"
+                },
+                "users": {
+                    "caption": "Användare",
+                    "description": "Hantera användare",
+                    "picker": {
+                        "title": "Användare"
+                    },
+                    "editor": {
+                        "rename_user": "Byt namn på användare",
+                        "change_password": "Ändra lösenord",
+                        "activate_user": "Aktivera användare",
+                        "deactivate_user": "Avaktivera användare",
+                        "delete_user": "Ta bort användare"
+                    }
                 }
             }
         },
@@ -625,6 +649,15 @@
                 "code": "Kod",
                 "lock": "Lås",
                 "unlock": "Lås upp"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Fortsätt städning",
+                    "return_to_base": "Återgå till docka",
+                    "start_cleaning": "Börja städning",
+                    "turn_on": "Starta",
+                    "turn_off": "Stäng av"
+                }
             }
         },
         "components": {
@@ -639,7 +672,14 @@
             "relative_time": {
                 "past": "{time} sedan",
                 "future": "Om {time}",
-                "never": "Aldrig"
+                "never": "Aldrig",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+                    "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+                    "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Laddar historik...",
@@ -656,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Spara",
-                "name": "Namn"
+                "name": "Namn",
+                "entity_id": "Enhets-ID"
             }
         }
     },
@@ -695,7 +736,8 @@
         "switch": "Kontakt",
         "updater": "Uppdaterare",
         "weblink": "Webblänk",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Dammsugare"
     },
     "attribute": {
         "weather": {
