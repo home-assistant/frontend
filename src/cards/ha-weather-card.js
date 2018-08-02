@@ -217,7 +217,7 @@ class HaWeatherCard extends
   }
 
   computeState(state, localize) {
-    return localize(`state.weather.${state.replace('-', '_')}`) || state;
+    return localize(`state.weather.${state}`) || state;
   }
 
   showWeatherIcon(condition) {
