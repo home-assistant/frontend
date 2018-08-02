@@ -253,6 +253,16 @@
             "sunny": "Zonnig",
             "windy": "Winderig",
             "windy-variant": "Winderig"
+        },
+        "vacuum": {
+            "cleaning": "Reinigen",
+            "docked": "Gedockt",
+            "error": "Fout",
+            "idle": "Inactief",
+            "off": "Uit",
+            "on": "Aan",
+            "paused": "Gepauseerd",
+            "returning": "Terugkeren naar dock"
         }
     },
     "state_badge": {
@@ -544,7 +554,8 @@
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
             "week": "{count} {count, plural,\none {week}\nother {weken}\n}",
             "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
-            "minute": "{count} {count, plural,\néén {minuut}\nandere {minuten}\n}"
+            "minute": "{count} {count, plural,\néén {minuut}\nandere {minuten}\n}",
+            "hour": "{count} {count, plural,\none {uur}\nother {uur}\n}"
         },
         "login-form": {
             "password": "Wachtwoord",
@@ -631,11 +642,22 @@
                 "operation": "Werking",
                 "fan_mode": "Ventilatormodus",
                 "swing_mode": "Swingmodus",
-                "away_mode": "Afwezigheidsmodus"
+                "away_mode": "Afwezigheidsmodus",
+                "aux_heat": "Aux warmte"
             },
             "lock": {
+                "code": "Code",
                 "lock": "Vergrendelen",
                 "unlock": "Ontgrendelen"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Hervat reinigen",
+                    "return_to_base": "Keer terug naar dock",
+                    "start_cleaning": "Start reinigen",
+                    "turn_on": "Inschakelen",
+                    "turn_off": "Uitschakelen"
+                }
             }
         },
         "components": {
@@ -650,7 +672,14 @@
             "relative_time": {
                 "past": "{time} geleden",
                 "future": "Over {time}",
-                "never": "Nooit"
+                "never": "Nooit",
+                "duration": {
+                    "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
+                    "minute": "{count} {count, plural,\néén {minuut}\nandere {minuten}\n}",
+                    "hour": "{count} {count, plural,\none {uur}\nother {uur}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
+                    "week": "{count} {count, plural,\none {week}\nother {weken}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Geschiedenis laden ...",
@@ -667,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Opslaan",
-                "name": "Naam"
+                "name": "Naam",
+                "entity_id": "Entiteits-ID"
             }
         }
     },
@@ -706,7 +736,8 @@
         "switch": "Schakelaar",
         "updater": "Updater",
         "weblink": "Web link",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Stofzuigen"
     },
     "attribute": {
         "weather": {

@@ -253,6 +253,16 @@
             "sunny": "Ясно",
             "windy": "Ветрено",
             "windy-variant": "Ветрено"
+        },
+        "vacuum": {
+            "cleaning": "Уборка",
+            "docked": "У док-станции",
+            "error": "Ошибка",
+            "idle": "Бездействие",
+            "off": "Выключен",
+            "on": "Включен",
+            "paused": "Приостановлен",
+            "returning": "Возвращается к док-станции"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Код",
                 "lock": "Закрыть",
                 "unlock": "Открыть"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Продолжить уборку",
+                    "return_to_base": "Вернуться к док-станции",
+                    "start_cleaning": "Начать уборку",
+                    "turn_on": "Включить",
+                    "turn_off": "Выключить"
+                }
             }
         },
         "components": {
@@ -677,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Сохранить",
-                "name": "Название"
+                "name": "Название",
+                "entity_id": "ID объекта"
             }
         }
     },
@@ -716,7 +736,8 @@
         "switch": "Выключатель",
         "updater": "Обновление",
         "weblink": "Интернет-ссылка",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Пылесос"
     },
     "attribute": {
         "weather": {

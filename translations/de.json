@@ -253,6 +253,16 @@
             "sunny": "Sonnig",
             "windy": "Windig",
             "windy-variant": "Windig"
+        },
+        "vacuum": {
+            "cleaning": "Reinigen",
+            "docked": "Angedockt",
+            "error": "Fehler",
+            "idle": "Standby",
+            "off": "Aus",
+            "on": "An",
+            "paused": "Pausiert",
+            "returning": "Rückkehr zur Dockingstation"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Code",
                 "lock": "Verriegeln",
                 "unlock": "Entriegeln"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Fortsetzen der Reinigung",
+                    "return_to_base": "Zurück zur Dockingstation",
+                    "start_cleaning": "Beginn der Reinigung",
+                    "turn_on": "Einschalten",
+                    "turn_off": "Ausschalten"
+                }
             }
         },
         "components": {
@@ -677,7 +696,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Speichern",
-                "name": "Name"
+                "name": "Name",
+                "entity_id": "Entitäts-ID"
             }
         }
     },
@@ -716,7 +736,8 @@
         "switch": "Schalter",
         "updater": "Updater",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Staubsauger"
     },
     "attribute": {
         "weather": {
