@@ -41,6 +41,7 @@ function initPushNotifications() {
       delete payload.data;
     }
     fetch('/api/notify.html5/callback', {
+      credentials: 'same-origin',
       method: 'POST',
       headers: new Headers({ 'Content-Type': 'application/json',
         Authorization: 'Bearer ' + jwt }),
