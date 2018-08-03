@@ -51,6 +51,7 @@ class HuiConditionalCard extends PolymerElement {
     const element = createCardElement(config.card);
     element.hass = this.hass;
     root.appendChild(element);
+    if (this.hass) this._hassChanged(this.hass);
   }
 
   getCardSize() {
