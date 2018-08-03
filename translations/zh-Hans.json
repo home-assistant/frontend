@@ -255,14 +255,14 @@
             "windy-variant": "有风"
         },
         "vacuum": {
-            "cleaning": "清洁中",
+            "cleaning": "正在清扫",
             "docked": "停靠",
             "error": "错误",
             "idle": "空闲",
-            "off": "已经关闭",
-            "on": "开启中",
-            "paused": "暂停",
-            "returning": "回到dock"
+            "off": "关闭",
+            "on": "开启",
+            "paused": "已暂停",
+            "returning": "正在返回"
         }
     },
     "state_badge": {
@@ -652,9 +652,9 @@
             },
             "vacuum": {
                 "actions": {
-                    "resume_cleaning": "恢复清洁",
-                    "return_to_base": "回到base",
-                    "start_cleaning": "开始清洁",
+                    "resume_cleaning": "恢复清扫",
+                    "return_to_base": "返回底座",
+                    "start_cleaning": "开始清扫",
                     "turn_on": "打开",
                     "turn_off": "关闭"
                 }
@@ -737,7 +737,7 @@
         "updater": "更新提示",
         "weblink": "网址",
         "zwave": "Z-Wave",
-        "vacuum": "真空"
+        "vacuum": "扫地机"
     },
     "attribute": {
         "weather": {

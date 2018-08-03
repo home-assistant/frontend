@@ -253,6 +253,16 @@
             "sunny": "Napos",
             "windy": "Szeles",
             "windy-variant": "Szeles"
+        },
+        "vacuum": {
+            "cleaning": "Takarítás",
+            "docked": "Dokkolva",
+            "error": "Hiba",
+            "idle": "Tétlen",
+            "off": "Ki",
+            "on": "Be",
+            "paused": "Felfüggesztve",
+            "returning": "Visszatérés a dokkolóhoz"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "Kód",
                 "lock": "Bezár",
                 "unlock": "Kinyit"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Takarítás folytatása",
+                    "return_to_base": "Dokkolás",
+                    "start_cleaning": "Takarítás indítása",
+                    "turn_on": "Bekapcsolás",
+                    "turn_off": "Kikapcsolás"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "Kapcsoló",
         "updater": "Frissítések",
         "weblink": "Hivatkozás",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Porszívó"
     },
     "attribute": {
         "weather": {
