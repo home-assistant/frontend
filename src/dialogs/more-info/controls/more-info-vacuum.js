@@ -42,7 +42,7 @@ class MoreInfoVacuum extends PolymerElement {
       <div class="status-subtitle">Vacuum cleaner commands:</div>
       <div class="horizontal justified layout">
         <template is="dom-if" if="[[supportsStart(stateObj)]]">
-          <div hidden$="[[!supportsStart(stateObj)]]">
+          <div>
             <paper-icon-button icon="hass:play" on-click="onStart" title="Start"></paper-icon-button>
           </div>
           <div hidden$="[[!supportsPause(stateObj)]]">
