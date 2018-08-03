@@ -253,6 +253,16 @@
             "sunny": "Soleggiato",
             "windy": "Ventoso",
             "windy-variant": "Ventoso"
+        },
+        "vacuum": {
+            "cleaning": "Pulendo",
+            "docked": "In base",
+            "error": "Errore",
+            "idle": "Sconosciuto",
+            "off": "Spento",
+            "on": "Acceso",
+            "paused": "In pausa",
+            "returning": "Ritornando alla base"
         }
     },
     "state_badge": {
@@ -517,10 +527,10 @@
                     "description": "Gestisci la tua rete Z-Wave"
                 },
                 "users": {
-                    "caption": "utenti",
+                    "caption": "Utenti",
                     "description": "Gestisci gli utenti",
                     "picker": {
-                        "title": "utenti"
+                        "title": "Utenti"
                     },
                     "editor": {
                         "rename_user": "Rinomina utente",
@@ -639,6 +649,15 @@
                 "code": "Codice",
                 "lock": "Blocco",
                 "unlock": "Sbloccato"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Riprendere la pulizia",
+                    "return_to_base": "Ritornare alla base",
+                    "start_cleaning": "Iniziare la pulizia",
+                    "turn_on": "Accendere",
+                    "turn_off": "Spegnere"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "Interruttore",
         "updater": "Updater",
         "weblink": "Link Web",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspirapolvere"
     },
     "attribute": {
         "weather": {
