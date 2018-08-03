@@ -11,11 +11,11 @@ const STATES_INTERCEPTABLE = {
   },
   docked: {
     action: 'start_cleaning',
-    service: 'start_pause'
+    service: 'start'
   },
   idle: {
     action: 'start_cleaning',
-    service: 'start_pause'
+    service: 'start'
   },
   off: {
     action: 'turn_on',
@@ -27,7 +27,7 @@ const STATES_INTERCEPTABLE = {
   },
   paused: {
     action: 'resume_cleaning',
-    service: 'start_pause'
+    service: 'start'
   },
 };
 
