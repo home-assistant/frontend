@@ -253,6 +253,16 @@
             "sunny": "맑음",
             "windy": "바람",
             "windy-variant": "잦은바람"
+        },
+        "vacuum": {
+            "cleaning": "청소중",
+            "docked": "충전중",
+            "error": "에러",
+            "idle": "대기중",
+            "off": "꺼짐",
+            "on": "켜짐",
+            "paused": "일시 중지됨",
+            "returning": "충전 복귀 중"
         }
     },
     "state_badge": {
@@ -639,6 +649,15 @@
                 "code": "비밀번호",
                 "lock": "잠금",
                 "unlock": "잠금 해제"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "청소 재개",
+                    "return_to_base": "충전 복귀",
+                    "start_cleaning": "청소 시작",
+                    "turn_on": "끄기",
+                    "turn_off": "켜기"
+                }
             }
         },
         "components": {
@@ -717,7 +736,8 @@
         "switch": "스위치",
         "updater": "업데이터",
         "weblink": "웹링크",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "청소기"
     },
     "attribute": {
         "weather": {
