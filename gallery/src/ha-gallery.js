@@ -41,7 +41,7 @@ class HaGallery extends PolymerElement {
       .pickers paper-card {
         width: 400px;
         display: block;
-        margin: 16px 8px 0;
+        margin: 16px 8px;
       }
 
       .pickers paper-card:last-child {
