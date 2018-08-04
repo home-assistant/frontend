@@ -190,6 +190,7 @@ function createConfig(isProdBuild, latestBuild) {
           compatibility: assets.chunks.compatibility.entry,
           appjs: assets.chunks.app.entry,
           corejs: assets.chunks.core.entry,
+          customPanelJS: assets.chunks['custom-panel'].entry,
         }),
         filename: `index.html`,
       }),
