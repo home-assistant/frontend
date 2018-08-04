@@ -41,6 +41,7 @@
       }
     </style>
     <script>
+      window.customPanelJS = '<%= customPanelJS %>';
       window.noAuth = '{{ no_auth }}';
       window.useOAuth = '{{ use_oauth }}'
       window.Polymer = {
