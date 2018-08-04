@@ -5,10 +5,14 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../components/ha-iconset-svg.js';
+import '../resources/ha-style.js';
 import '../resources/roboto.js';
 
 import '../auth/ha-auth-flow.js';
 import '../auth/ha-pick-auth-provider.js';
+
+/* polyfill for paper-dropdown */
+import(/* webpackChunkName: "polyfill-web-animations-next" */ 'web-animations-js/web-animations-next-lite.min.js');
 
 class HaAuthorize extends PolymerElement {
   static get template() {
