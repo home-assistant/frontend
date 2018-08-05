@@ -8,25 +8,25 @@ export class HuiNotificationItem extends PolymerElement {
   static get properties() {
     return {
       hass: Object,
-      entity: {
+      stateObj: {
         type: Object,
-        observer: '_entityChanged'
+        observer: '_stateChanged'
       }
     };
   }
 
-  _entityChanged(entity) {
+  _stateChanged(stateObj) {
     if (this.lastChild) {
       this.removeChild(this.lastChild);
     }
 
-    if (!this.entity) return;
+    if (!stateObj) return;
 
-    const domain = computeDomain(entity.entity_id);
+    const domain = computeDomain(stateObj.entity_id);
     const tag = `hui-${domain}-notification-item`;
     const el = document.createElement(tag);
     el.hass = this.hass;
-    el.entity = entity;
+    el.stateObj = stateObj;
     this.appendChild(el);
   }
 }

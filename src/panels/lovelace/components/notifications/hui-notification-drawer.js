@@ -10,13 +10,15 @@ import './hui-notification-item.js';
 import computeNotifications from '../../common/compute-notifications.js';
 
 import EventsMixin from '../../../../mixins/events-mixin.js';
+import LocalizeMixin from '../../../../mixins/localize-mixin.js';
 
 let openTimer;
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-export class HuiNotificationDrawer extends EventsMixin(PolymerElement) {
+export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="paper-material-styles">
@@ -101,7 +103,7 @@ export class HuiNotificationDrawer extends EventsMixin(PolymerElement) {
     <div class="overlay" on-click="_closeDrawer"></div>
     <div class="container">
       <app-toolbar>
-        <div main-title>Notifications</div>
+        <div main-title>[[localize('ui.notification_drawer.title')]]</div>
         <paper-icon-button icon="hass:chevron-right" on-click="_closeDrawer"></paper-icon-button>
       </app-toolbar>
       <div class="notifications">
@@ -109,13 +111,13 @@ export class HuiNotificationDrawer extends EventsMixin(PolymerElement) {
           <dom-repeat items="[[_entities]]">
             <template>
               <div class="notification">
-                <hui-notification-item hass="[[hass]]" entity="[[item]]"></hui-notification-item>
+                <hui-notification-item hass="[[hass]]" state-obj="[[item]]"></hui-notification-item>
               </div>
             </template>
           </dom-repeat>
         </template>
         <template is="dom-if" if="[[_empty(_entities)]]">
-          <div class="empty">No Notifications</div>
+          <div class="empty">[[localize('ui.notification_drawer.empty')]]<div>
         </template>
       </div>
     </div>
