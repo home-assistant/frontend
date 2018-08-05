@@ -98,6 +98,17 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         </paper-listbox>
       </paper-dropdown-menu>
     </div>
+    <!-- CHANNEL PICKER -->
+    <div class="controls layout horizontal justified" hidden$="[[computeHideSelectChannel(playerObj)]]">
+      <iron-icon class="source-input" icon="hass:login-variant"></iron-icon>
+      <paper-dropdown-menu class="flex source-input" dynamic-align="" label-float="" label="[[localize('ui.card.media_player.channel')]]">
+        <paper-listbox slot="dropdown-content" selected="{{channelIndex}}">
+          <template is="dom-repeat" items="[[playerObj.channelList]]">
+            <paper-item>[[item]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </div>
     <!-- SOUND MODE PICKER -->
     <template is='dom-if' if='[[!computeHideSelectSoundMode(playerObj)]]'>
       <div class="controls layout horizontal justified">
@@ -135,6 +146,12 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         value: 0,
         observer: 'handleSourceChanged',
       },
+      
+      channelIndex: {
+        type: Number,
+        value: 0,
+        observer: 'handleChannelChanged',
+      },
 
       SoundModeInput: {
         type: String,
@@ -162,6 +179,10 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   playerObjChanged(newVal, oldVal) {
     if (newVal && newVal.sourceList !== undefined) {
       this.sourceIndex = newVal.sourceList.indexOf(newVal.source);
+    }
+
+    if (newVal && newVal.channelList !== undefined) {
+      this.channelIndex = newVal.channelList.indexOf(newVal.channel);
     }
 
     if (newVal && newVal.soundModeList !== undefined) {
@@ -204,6 +225,10 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   computeHideSelectSource(playerObj) {
     return playerObj.isOff || !playerObj.supportsSelectSource || !playerObj.sourceList;
+  }
+
+  computeHideSelectChannel(playerObj) {
+    return playerObj.isOff || !playerObj.channelList || !playerObj.channel;
   }
 
   computeHideSelectSoundMode(playerObj) {
@@ -254,6 +279,27 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
     this.playerObj.selectSource(sourceInput);
   }
+
+  handleChannelChanged(channelIndex, channelIndexOld) {
+    // Selected Option will transition to '' before transitioning to new value
+    if (!this.playerObj
+        || this.playerObj.channelList === undefined
+        || channelIndex < 0
+        || channelIndex >= this.playerObj.channelList
+        || channelIndexOld === undefined
+    ) {
+      return;
+    }
+
+    const channelInput = this.playerObj.channelList[channelIndex];
+
+    if (channelInput === this.playerObj.channel) {
+      return;
+    }
+
+    this.playerObj.selectChannel(channelInput);
+  }
+
 
   handleSoundModeChanged(newVal, oldVal) {
     if (oldVal
