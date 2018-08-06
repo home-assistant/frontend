@@ -42,12 +42,16 @@ export class HuiNotificationsButton extends EventsMixin(PolymerElement) {
 
   static get properties() {
     return {
-      hass: Object
+      hass: Object,
+      notificationsOpen: {
+        type: Boolean,
+        notify: true
+      }
     };
   }
 
   _clicked() {
-    this.fire('open-notification-drawer');
+    this.notificationsOpen = true;
   }
 
   _hasNotifications(states) {

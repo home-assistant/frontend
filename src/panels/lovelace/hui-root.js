@@ -75,7 +75,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <hui-notification-drawer
       hass="[[hass]]"
-      open="[[_notificationsOpen]]"
+      open="{{notificationsOpen}}"
       narrow="[[narrow]]"
     ></hui-notification-drawer>
     <ha-app-layout id="layout">
@@ -83,7 +83,10 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
-          <hui-notifications-button hass="[[hass]]"></hui-notifications-button>
+          <hui-notifications-button
+            hass="[[hass]]"
+            notifications-open="{{notificationsOpen}}"
+          ></hui-notifications-button>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
           <paper-menu-button
             no-animations
@@ -147,7 +150,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         observer: '_routeChanged'
       },
 
-      _notificationsOpen: {
+      notificationsOpen: {
         type: Boolean,
         value: false,
       },
@@ -159,26 +162,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   constructor() {
     super();
     this._debouncedConfigChanged = debounce(() => this._selectView(this._curView), 100);
-
-    this._debouncedNotificationsClose = debounce(() => {
-      this._notificationsOpen = false;
-    }, 100);
-
-    this._debouncedNotificationsOpen = debounce(() => {
-      this._notificationsOpen = true;
-    }, 100);
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener('close-notification-drawer', this._debouncedNotificationsClose);
-    this.addEventListener('open-notification-drawer', this._debouncedNotificationsOpen);
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this.removeEventListener('close-notification-drawer', this._debouncedNotificationsClose);
-    this.removeEventListener('open-notification-drawer', this._debouncedNotificationsOpen);
   }
 
   _routeChanged(route) {

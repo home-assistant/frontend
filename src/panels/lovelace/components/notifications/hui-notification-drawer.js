@@ -12,8 +12,6 @@ import computeNotifications from '../../common/compute-notifications.js';
 import EventsMixin from '../../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../../mixins/localize-mixin.js';
 
-let openTimer;
-
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin
@@ -137,6 +135,7 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
       },
       open: {
         type: Boolean,
+        notify: true,
         observer: '_openChanged'
       },
       hidden: {
@@ -153,7 +152,7 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
 
   _closeDrawer(ev) {
     ev.stopPropagation();
-    this.fire('close-notification-drawer');
+    this.open = false;
   }
 
   _empty(entities) {
@@ -161,17 +160,17 @@ export class HuiNotificationDrawer extends EventsMixin(LocalizeMixin(PolymerElem
   }
 
   _openChanged(open) {
-    clearTimeout(openTimer);
+    clearTimeout(this._openTimer);
     if (open) {
       // Render closed then animate open
       this.hidden = false;
-      openTimer = setTimeout(() => {
+      this._openTimer = setTimeout(() => {
         this.classList.add('open');
       }, 50);
     } else {
       // Animate closed then hide
       this.classList.remove('open');
-      openTimer = setTimeout(() => {
+      this._openTimer = setTimeout(() => {
         this.hidden = true;
       }, 250);
     }
