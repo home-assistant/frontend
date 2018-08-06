@@ -41,19 +41,19 @@ class ZwaveGroups extends PolymerElement {
       <!--TODO make api for getting groups and members-->
       <div class="device-picker">
         <paper-dropdown-menu label="Group" dynamic-align="" class="flex">
-          <paper-listbox slot="dropdown-content" selected="{{selectedGroup}}">
+          <paper-listbox slot="dropdown-content" selected="{{_selectedGroup}}">
             <template is="dom-repeat" items="[[groups]]" as="state">
-              <paper-item>[[computeSelectCaptionGroup(state)]]</paper-item>
+              <paper-item>[[_computeSelectCaptionGroup(state)]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
-      <template is="dom-if" if="[[computeIsGroupSelected(selectedGroup)]]">
+      <template is="dom-if" if="[[_computeIsGroupSelected(_selectedGroup)]]">
         <div class="device-picker">
           <paper-dropdown-menu label="Node to control" dynamic-align="" class="flex">
-            <paper-listbox slot="dropdown-content" selected="{{selectedTargetNode}}">
+            <paper-listbox slot="dropdown-content" selected="{{_selectedTargetNode}}">
               <template is="dom-repeat" items="[[nodes]]" as="state">
-                <paper-item>[[computeSelectCaption(state)]]</paper-item>
+                <paper-item>[[_computeSelectCaption(state)]]</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
@@ -61,23 +61,23 @@ class ZwaveGroups extends PolymerElement {
 
         <div class="help-text">
           <span>Other Nodes in this group:</span>
-          <template is="dom-repeat" items="[[otherGroupNodes]]" as="state">
+          <template is="dom-repeat" items="[[_otherGroupNodes]]" as="state">
             <div>[[state]]</div>
           </template>
         </div>
         <div class="help-text">
           <span>Max Associations:</span>
-          <span>[[maxAssociations]]</span>
+          <span>[[_maxAssociations]]</span>
         </div>
       </template>
 
-      <template is="dom-if" if="[[computeIsTargetNodeSelected(selectedTargetNode)]]">
+      <template is="dom-if" if="[[_computeIsTargetNodeSelected(_selectedTargetNode)]]">
         <div class="card-actions">
-          <template is="dom-if" if="[[!noAssociationsLeft]]">
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="change_association" service-data="[[computeAssocServiceData(selectedGroup, &quot;add&quot;)]]">Add To Group</ha-call-service-button>
+          <template is="dom-if" if="[[!_noAssociationsLeft]]">
+            <ha-call-service-button hass="[[hass]]" domain="zwave" service="change_association" service-data="[[_computeAssocServiceData(_selectedGroup, &quot;add&quot;)]]">Add To Group</ha-call-service-button>
           </template>
-          <template is="dom-if" if="[[computeTargetInGroup(selectedGroup, selectedTargetNode)]]">
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="change_association" service-data="[[computeAssocServiceData(selectedGroup, &quot;remove&quot;)]]">Remove From Group</ha-call-service-button>
+          <template is="dom-if" if="[[_computeTargetInGroup(_selectedGroup, _selectedTargetNode)]]">
+            <ha-call-service-button hass="[[hass]]" domain="zwave" service="change_association" service-data="[[_computeAssocServiceData(_selectedGroup, &quot;remove&quot;)]]">Remove From Group</ha-call-service-button>
           </template>
         </div>
       </template>
@@ -87,51 +87,49 @@ class ZwaveGroups extends PolymerElement {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
-      nodes: {
-        type: Array,
-      },
+      nodes: Array,
 
-      groups: {
-        type: Array,
-      },
+      groups: Array,
 
-      selectedNode: {
-        type: Number,
-      },
+      selectedNode: Number,
 
-      selectedTargetNode: {
+      _selectedTargetNode: {
         type: Number,
         value: -1
       },
 
-      selectedGroup: {
+      _selectedGroup: {
         type: Number,
-        value: -1,
-        observer: 'selectedGroupChanged'
+        value: -1
       },
 
-      otherGroupNodes: {
+      _otherGroupNodes: {
         type: Array,
         value: -1,
-        computed: 'computeOtherGroupNodes(selectedGroup)'
+        computed: '_computeOtherGroupNodes(_selectedGroup)'
       },
 
-      maxAssociations: {
+      _maxAssociations: {
         type: String,
         value: '',
-        computed: 'computeMaxAssociations(selectedGroup)'
+        computed: '_computeMaxAssociations(_selectedGroup)'
       },
 
-      noAssociationsLeft: {
+      _noAssociationsLeft: {
         type: Boolean,
         value: true,
-        computed: 'computeAssociationsLeft(selectedGroup)'
+        computed: '_computeAssociationsLeft(_selectedGroup)'
       },
     };
+  }
+
+  static get observers() {
+    return [
+      '_selectedGroupChanged(groups, _selectedGroup)',
+      '_selectedTargetNodeChanged(nodes, _selectedTargetNode)'
+    ];
   }
 
   ready() {
@@ -141,100 +139,115 @@ class ZwaveGroups extends PolymerElement {
 
   serviceCalled(ev) {
     if (ev.detail.success) {
-      var foo = this;
-      setTimeout(function () {
-        foo.refreshGroups(foo.selectedNode);
+      setTimeout(() => {
+        this._refreshGroups(this.selectedNode);
       }, 5000);
     }
   }
 
-  computeAssociationsLeft(selectedGroup) {
+  _computeAssociationsLeft(selectedGroup) {
     if (selectedGroup === -1) return true;
-    return (this.maxAssociations === this.otherGroupNodes.length);
+    return (this._maxAssociations === this._otherGroupNodes.length);
   }
 
-  computeMaxAssociations(selectedGroup) {
+  _computeMaxAssociations(selectedGroup) {
     if (selectedGroup === -1) return -1;
-    var maxAssociations = this.groups[selectedGroup].value.max_associations;
+    const maxAssociations = this.groups[selectedGroup].value.max_associations;
     if (!maxAssociations) return 'None';
     return maxAssociations;
   }
 
-  computeOtherGroupNodes(selectedGroup) {
+  _computeOtherGroupNodes(selectedGroup) {
     if (selectedGroup === -1) return -1;
-    var associations = Object.values(this.groups[selectedGroup].value.association_instances);
+    const associations = Object.values(this.groups[selectedGroup].value.association_instances);
     if (!associations.length) return ['None'];
     return associations.map((assoc) => {
       if (!assoc.length || assoc.length !== 2) {
-        return 'Unknown Node: ' + assoc;
+        return `Unknown Node: ${assoc}`;
       }
       const id = assoc[0];
       const instance = assoc[1];
       const node = this.nodes.find(n => n.attributes.node_id === id);
       if (!node) {
-        return 'Unknown Node (id: ' + (instance ? id + '.' + instance : id) + ')';
+        return `Unknown Node (${id}: (${instance} ? ${id}.${instance} : ${id}))`;
       }
-      let caption = this.computeSelectCaption(node);
+      let caption = this._computeSelectCaption(node);
       if (instance) {
-        caption += '/ Instance: ' + instance;
+        caption += `/ Instance: ${instance}`;
       }
       return caption;
     });
   }
 
-  computeTargetInGroup(selectedGroup, selectedTargetNode) {
+  _computeTargetInGroup(selectedGroup, selectedTargetNode) {
     if (selectedGroup === -1 || selectedTargetNode === -1) return false;
     const associations = Object.values(this.groups[selectedGroup].value.associations);
     if (!associations.length) return false;
     return associations.indexOf(this.nodes[selectedTargetNode].attributes.node_id) !== -1;
   }
 
-  computeSelectCaption(stateObj) {
-    return computeStateName(stateObj) + ' (Node:' +
-      stateObj.attributes.node_id + ' ' +
-      stateObj.attributes.query_stage + ')';
+  _computeSelectCaption(stateObj) {
+    return (
+      `${computeStateName(stateObj)}
+      (Node: ${stateObj.attributes.node_id}
+      ${stateObj.attributes.query_stage})`);
   }
 
-  computeSelectCaptionGroup(stateObj) {
-    return (stateObj.key + ': ' + stateObj.value.label);
+  _computeSelectCaptionGroup(stateObj) {
+    return (`${stateObj.key}: ${stateObj.value.label}`);
   }
 
-  computeIsTargetNodeSelected(selectedTargetNode) {
+  _computeIsTargetNodeSelected(selectedTargetNode) {
     return this.nodes && selectedTargetNode !== -1;
   }
 
-  computeIsGroupSelected(selectedGroup) {
+  _computeIsGroupSelected(selectedGroup) {
     return this.nodes && this.selectedNode !== -1 && selectedGroup !== -1;
   }
 
-  computeAssocServiceData(selectedGroup, type) {
-    if (!this.groups === -1 || selectedGroup === -1 || this.selectedNode === -1) return -1;
+  _computeAssocServiceData(selectedGroup, type) {
+    if (!this.groups === -1 || selectedGroup === -1 ||
+        this.selectedNode === -1 || this._selectedTargetNode === -1) return -1;
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,
-      target_node_id: this.nodes[this.selectedTargetNode].attributes.node_id,
+      target_node_id: this.nodes[this._selectedTargetNode].attributes.node_id,
       group: this.groups[selectedGroup].key
     };
   }
 
-  refreshGroups(selectedNode) {
-    var groupData = [];
-    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then(function (groups) {
-      Object.keys(groups).forEach(function (key) {
-        groupData.push({
-          key: key,
-          value: groups[key],
-        });
+  async _refreshGroups(selectedNode) {
+    const groupData = [];
+    const groups = await this.hass.callApi('GET', `zwave/groups/${this.nodes[selectedNode].attributes.node_id}`);
+    Object.keys(groups).forEach((key) => {
+      groupData.push({
+        key,
+        value: groups[key],
       });
-      this.groups = groupData;
-      this.selectedGroupChanged(this.selectedGroup);
-    }.bind(this));
+    });
+    this.setProperties({
+      groups: groupData,
+      _maxAssociations: groupData[this._selectedGroup].value.max_associations,
+      _otherGroupNodes: Object.values(groupData[this._selectedGroup].value.associations)
+    });
+    const oldGroup = this._selectedGroup;
+    this.setProperties({ _selectedGroup: -1 });
+    this.setProperties({ _selectedGroup: oldGroup });
   }
 
-  selectedGroupChanged(selectedGroup) {
-    if (this.selectedGroup === -1 || selectedGroup === -1) return;
-    this.maxAssociations = this.groups[selectedGroup].value.max_associations;
-    this.otherGroupNodes = Object.values(this.groups[selectedGroup].value.associations);
+  _selectedGroupChanged() {
+    if (this._selectedGroup === -1) return;
+    this.setProperties({
+      _maxAssociations: this.groups[this._selectedGroup].value.max_associations,
+      _otherGroupNodes: Object.values(this.groups[this._selectedGroup].value.associations) });
+  }
+
+  _selectedTargetNodeChanged() {
+    if (this._selectedGroup === -1) return;
+    this._computeAssocServiceData(this._selectedGroup, 'add');
+    if (this._computeTargetInGroup(this._selectedGroup, this._selectedTargetNode)) {
+      this._computeAssocServiceData(this._selectedGroup, 'remove');
+    }
   }
 }
 
