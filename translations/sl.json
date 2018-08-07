@@ -675,7 +675,7 @@
                 "never": "Nikoli",
                 "duration": {
                     "second": "{count} {count, plural,\none {sekunda}\nother {sekund}\n}",
-                    "minute": "{count} {count, plural,\n  ena {minuta}\n  other {minut}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuta}\n  other {minut}\n}",
                     "hour": "{count} {count, plural,\n  one {Ura}\n  other {Ur}\n}",
                     "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
                     "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}"
