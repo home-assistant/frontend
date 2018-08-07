@@ -675,8 +675,8 @@
                 "never": "Nunca",
                 "duration": {
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
-                    "minute": "{count} {count, plural,\n  um {minuto}\n  outros {minutos}\n}",
-                    "hour": "{count} {count, plural,\n  uma {hora}\n  umas {horas}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
                     "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 }

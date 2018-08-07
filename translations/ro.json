@@ -674,8 +674,8 @@
                 "future": "În {time}",
                 "never": "Niciodată",
                 "duration": {
-                    "second": "{count} {count, plural,\no {second}\nalta {seconds}\n}",
-                    "minute": "{count}{count, plural,\n  un { minute }\n  alte { minutes }\n}",
+                    "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
+                    "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
                     "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
                     "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
                     "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
