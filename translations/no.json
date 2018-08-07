@@ -689,7 +689,7 @@
         "notification_toast": {
             "entity_turned_on": "Skrudd på {entity}.",
             "entity_turned_off": "Skrudd av {entity}.",
-            "service_called": "Tjenesten {service} kalt.",
+            "service_called": "Tjenesten {service} tilkalt.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten {service}.",
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt..."
         },
