@@ -45,14 +45,6 @@ class ZwaveValues extends PolymerElement {
           </paper-listbox>
         </paper-dropdown-menu>
         </div>
-        <template is="dom-if" if="[[!computeIsValueSelected(selectedValue)]]">
-          <div class="card-actions">
-            <paper-input float-label="Value Name" type="text" value="{{newValueNameInput}}" placeholder="[[computeGetValueName(selectedValue)]]">
-            </paper-input>
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="rename_value" service-data="[[computeValueNameServiceData(newValueNameInput)]]">Rename Value</ha-call-service-button>
-
-          </div>
-        </template>
       </paper-card>
     </div>
 `;
@@ -102,14 +94,6 @@ class ZwaveValues extends PolymerElement {
     return item.value.label + ' (Instance: ' + item.value.instance + ', Index: ' + item.value.index + ')';
   }
 
-  computeGetValueName(selectedValue) {
-    return this.values[selectedValue].value.label;
-  }
-
-  computeIsValueSelected(selectedValue) {
-    return (!this.nodes || this.selectedNode === -1 || selectedValue === -1);
-  }
-
   refreshValues(selectedNode) {
     var valueData = [];
     this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(function (values) {
@@ -122,15 +106,6 @@ class ZwaveValues extends PolymerElement {
       this.values = valueData;
       this.selectedValueChanged(this.selectedValue);
     }.bind(this));
-  }
-
-  computeValueNameServiceData(newValueNameInput) {
-    if (!this.selectedNode === -1 || this.selectedValue === -1) return -1;
-    return {
-      node_id: this.nodes[this.selectedNode].attributes.node_id,
-      value_id: this.values[this.selectedValue].key,
-      name: newValueNameInput,
-    };
   }
 
   selectedValueChanged(selectedValue) {
