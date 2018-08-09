@@ -39,7 +39,7 @@ function redirectLogin() {
 
 window.refreshToken = () =>
   refreshToken_(clientId(), window.tokens.refresh_token).then((accessTokenResp) => {
-    window.tokens.access_token = accessTokenResp.access_token;
+    window.tokens = Object.assign({}, window.tokens, accessTokenResp);
     localStorage.tokens = JSON.stringify(window.tokens);
     return {
       access_token: accessTokenResp.access_token,
