@@ -165,7 +165,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
             title="[[localize('panel.dev-services')]]"
           ></paper-icon-button>
         </a>
-        <a href="/dev-state/">
+        <a href="/dev-state">
           <paper-icon-button
             icon="hass:code-tags"
             alt="[[localize('panel.dev-states')]]"
@@ -173,7 +173,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
           ></paper-icon-button>
         </a>
-        <a href="/dev-event/">
+        <a href="/dev-event">
           <paper-icon-button
             icon="hass:radio-tower"
             alt="[[localize('panel.dev-events')]]"
@@ -181,7 +181,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
           ></paper-icon-button>
         </a>
-        <a href="/dev-template/">
+        <a href="/dev-template">
           <paper-icon-button
             icon="hass:file-xml"
             alt="[[localize('panel.dev-templates')]]"
@@ -190,7 +190,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
           ></paper-icon-button>
           </a>
         <template is="dom-if" if="[[_mqttLoaded(hass)]]">
-          <a href="/dev-mqtt/">
+          <a href="/dev-mqtt">
             <paper-icon-button
               icon="hass:altimeter"
               alt="[[localize('panel.dev-mqtt')]]"
@@ -199,7 +199,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
             ></paper-icon-button>
           </a>
         </template>
-        <a href="/dev-info/">
+        <a href="/dev-info">
           <paper-icon-button
             icon="hass:information-outline"
             alt="[[localize('panel.dev-info')]]"
