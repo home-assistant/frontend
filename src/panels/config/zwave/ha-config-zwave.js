@@ -138,12 +138,6 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
             <ha-call-service-button hass="[[hass]]" domain="zwave" service="test_node" service-data="[[computeNodeServiceData(selectedNode)]]">Test Node</ha-call-service-button>
             <ha-service-description hass="[[hass]]" domain="zwave" service="test_node" hidden$="[[!showHelp]]"></ha-service-description>
           </div>
-          <div class="card-actions">
-            <paper-input float-label="New node name" type="text" value="{{newNodeNameInput}}" placeholder="[[computeGetNodeName(selectedNode)]]">
-            </paper-input>
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="rename_node" service-data="[[computeNodeNameServiceData(newNodeNameInput)]]">Rename Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="rename_node" hidden$="[[!showHelp]]"></ha-service-description>
-           </div>
 
            <div class="device-picker">
             <paper-dropdown-menu label="Entities of this node" dynamic-align="" class="flex">
@@ -302,10 +296,6 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
         type: Array,
       },
 
-      newNodeNameInput: {
-        type: String,
-      },
-
       userCodes: {
         type: Array,
         value: function () {
@@ -384,8 +374,6 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
   }
 
   selectedNodeChanged(selectedNode) {
-    this.newNodeNameInput = '';
-
     if (selectedNode === -1) return;
     this.selectedConfigParameter = -1;
     this.selectedConfigParameterValue = -1;
@@ -475,19 +463,6 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     return {
       node_id: this.nodes[selectedNode].attributes.node_id,
       return_routes: true
-    };
-  }
-
-  computeGetNodeName(selectedNode) {
-    if (this.selectedNode === -1 ||
-      !this.nodes[selectedNode].entity_id) return -1;
-    return this.nodes[selectedNode].attributes.node_name;
-  }
-
-  computeNodeNameServiceData(newNodeNameInput) {
-    return {
-      node_id: this.nodes[this.selectedNode].attributes.node_id,
-      name: newNodeNameInput
     };
   }
 
