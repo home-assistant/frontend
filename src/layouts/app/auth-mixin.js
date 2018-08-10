@@ -18,7 +18,7 @@ export default superClass => class extends superClass {
   }
 
   _handleLogout() {
-    this.connection.close();
+    this.hass.connection.close();
     clearState();
     document.location.href = '/';
   }
