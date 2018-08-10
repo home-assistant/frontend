@@ -7,6 +7,11 @@ import '../components/hui-generic-entity-row.js';
 class HuiClimateEntityRow extends PolymerElement {
   static get template() {
     return html`
+      <style>
+        ha-climate-state {
+          text-align: right;
+        }
+      </style>
       <hui-generic-entity-row
         hass="[[hass]]"
         config="[[_config]]"
