@@ -1,4 +1,5 @@
 // Load polyfill first so HTML imports start resolving
+/* eslint-disable import/first */
 import '../resources/html-import/polyfill.js';
 import '@polymer/app-route/app-location.js';
 import '@polymer/app-route/app-route.js';

@@ -15,33 +15,51 @@ import LocalizeMixin from '../../mixins/localize-mixin.js';
 import translationMetadata from '../../../build-translations/translationMetadata.json';
 import '../../layouts/home-assistant-main.js';
 import '../../resources/ha-style.js';
-import '../../util/ha-pref-storage.js';
-import { getActiveTranslation, getTranslation } from '../../util/hass-translation.js';
+import { getState, storeState, clearState } from '../../util/ha-pref-storage.js';
+import { getActiveTranslation } from '../../util/hass-translation.js';
 import hassCallApi from '../../util/hass-call-api.js';
 import makeDialogManager from '../../dialogs/dialog-manager.js';
 import registerServiceWorker from '../../util/register-service-worker.js';
 
 import computeStateName from '../../common/entity/compute_state_name.js';
-import applyThemesOnElement from '../../common/dom/apply_themes_on_element.js';
+
+import hassBaseMixin from './hass-base-mixin.js';
+import authMixin from './auth-mixin.js';
+import translationsMixin from './translations-mixin.js';
+import themesMixin from './themes-mixin.js';
 
 import(/* webpackChunkName: "login-form" */ '../../layouts/login-form.js');
 import(/* webpackChunkName: "notification-manager" */ '../../managers/notification-manager.js');
 
 
-class HomeAssistant extends LocalizeMixin(PolymerElement) {
+class HomeAssistant extends
+  LocalizeMixin(authMixin(themesMixin(translationsMixin(hassBaseMixin(PolymerElement))))) {
   static get template() {
     return html`
-    <ha-pref-storage hass="[[hass]]" id="storage"></ha-pref-storage>
     <notification-manager id="notifications" hass="[[hass]]"></notification-manager>
     <app-location route="{{route}}"></app-location>
-    <app-route route="{{route}}" pattern="/:panel" data="{{routeData}}"></app-route>
+    <app-route
+      route="{{route}}"
+      pattern="/:panel"
+      data="{{routeData}}"
+    ></app-route>
     <template is="dom-if" if="[[showMain]]" restamp="">
-      <home-assistant-main on-hass-more-info="handleMoreInfo" on-hass-dock-sidebar="handleDockSidebar" on-hass-notification="handleNotification" on-hass-logout="handleLogout" hass="[[hass]]" route="{{route}}"></home-assistant-main>
+      <home-assistant-main
+        on-hass-more-info="handleMoreInfo"
+        on-hass-dock-sidebar="handleDockSidebar"
+        on-hass-notification="handleNotification"
+        on-hass-logout="handleLogout"
+        hass="[[hass]]"
+        route="{{route}}"
+      ></home-assistant-main>
     </template>
 
     <template is="dom-if" if="[[!showMain]]" restamp="">
-      <login-form hass="[[hass]]" connection-promise="{{connectionPromise}}" show-loading="[[computeShowLoading(connectionPromise, hass)]]">
-      </login-form>
+      <login-form
+        hass="[[hass]]"
+        connection-promise="{{connectionPromise}}"
+        show-loading="[[computeShowLoading(connectionPromise, hass)]]"
+      ></login-form>
     </template>
 `;
   }
@@ -79,13 +97,11 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
   constructor() {
     super();
     makeDialogManager(this);
+    this.unsubFuncs = [];
   }
 
   ready() {
     super.ready();
-    this.addEventListener('settheme', e => this.setTheme(e));
-    this.addEventListener('hass-language-select', e => this.selectLanguage(e));
-    this.loadResources();
     afterNextRender(null, registerServiceWorker);
   }
 
@@ -99,45 +115,11 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
       || (hass && hass.connection && (!hass.states || !hass.config)));
   }
 
-  async loadResources(fragment) {
-    const result = await getTranslation(fragment);
-    this._updateResources(result.language, result.data);
-  }
-
-  async loadBackendTranslations() {
-    if (!this.hass.language) return;
-
-    const language = this.hass.selectedLanguage || this.hass.language;
-
-    const { resources } = await this.hass.callWS({
-      type: 'frontend/get_translations',
-      language,
-    });
-
-    // If we've switched selected languages just ignore this response
-    if ((this.hass.selectedLanguage || this.hass.language) !== language) return;
-
-    this._updateResources(language, resources);
-  }
-
-  _updateResources(language, data) {
-    // Update the language in hass, and update the resources with the newly
-    // loaded resources. This merges the new data on top of the old data for
-    // this language, so that the full translation set can be loaded across
-    // multiple fragments.
-    this._updateHass({
-      language: language,
-      resources: {
-        [language]: Object.assign({}, this.hass
-          && this.hass.resources && this.hass.resources[language], data),
-      },
-    });
-  }
-
   connectionChanged(conn, oldConn) {
     if (oldConn) {
-      this.unsubConnection();
-      this.unsubConnection = null;
+      while (this.unsubFuncs.length) {
+        this.unsubFuncs.pop()();
+      }
     }
     if (!conn) {
       this._updateHass({
@@ -173,9 +155,9 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
       translationMetadata: translationMetadata,
       dockedSidebar: false,
       moreInfoEntityId: null,
-      callService: async (domain, service, serviceData) => {
+      callService: async (domain, service, serviceData = {}) => {
         try {
-          await conn.callService(domain, service, serviceData || {});
+          await conn.callService(domain, service, serviceData);
 
           let message;
           let name;
@@ -253,91 +235,53 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
         // inside home-assistant-js-websocket
         return resp.then(result => result.result);
       },
-    }, this.$.storage.getStoredState());
+    }, getState());
 
-    var reconnected = () => {
-      this._updateHass({ connected: true });
-      this.loadBackendTranslations();
-      this._loadPanels();
-    };
+    this.hassConnected();
+  }
 
-    const disconnected = () => {
-      this._updateHass({ connected: false });
+  hassConnected() {
+    super.hassConnected();
+
+    const conn = this.hass.connection;
+
+    const reconnected = () => this.hassReconnected();
+    const disconnected = () => this._updateHass({ connected: false });
+    const reconnectError = async (_conn, err) => {
+      if (err !== ERR_INVALID_AUTH) return;
+      disconnected();
+      while (this.unsubFuncs.length) {
+        this.unsubFuncs.pop()();
+      }
+      const accessToken = await window.refreshToken();
+      this.handleConnectionPromise(window.createHassConnection(null, accessToken));
     };
 
     conn.addEventListener('ready', reconnected);
-
+    conn.addEventListener('disconnected', disconnected);
     // If we reconnect after losing connection and access token is no longer
     // valid.
-    conn.addEventListener('reconnect-error', async (_conn, err) => {
-      if (err !== ERR_INVALID_AUTH) return;
-      disconnected();
-      this.unsubConnection();
-      const accessToken = await window.refreshToken();
-      this.handleConnectionPromise(window.createHassConnection(null, accessToken));
-    });
-    conn.addEventListener('disconnected', disconnected);
+    conn.addEventListener('reconnect-error', reconnectError);
 
-    let unsubEntities;
-
-    subscribeEntities(conn, (states) => {
-      this._updateHass({ states: states });
-    }).then(function (unsub) {
-      unsubEntities = unsub;
-    });
-
-    let unsubConfig;
-
-    subscribeConfig(conn, (config) => {
-      this._updateHass({ config: config });
-    }).then(function (unsub) {
-      unsubConfig = unsub;
-    });
-
-    this._loadPanels();
-
-    let unsubThemes;
-
-    this.hass.callWS({
-      type: 'frontend/get_themes',
-    }).then((themes) => {
-      this._updateHass({ themes });
-      applyThemesOnElement(
-        document.documentElement,
-        themes,
-        this.hass.selectedTheme,
-        true
-      );
-    });
-
-    // only for new auth
-    if (conn.options.accessToken) {
-      this.hass.callWS({
-        type: 'auth/current_user',
-      }).then(user => this._updateHass({ user }), () => {});
-    }
-
-    conn.subscribeEvents((event) => {
-      this._updateHass({ themes: event.data });
-      applyThemesOnElement(
-        document.documentElement,
-        event.data,
-        this.hass.selectedTheme,
-        true
-      );
-    }, 'themes_updated').then(function (unsub) {
-      unsubThemes = unsub;
-    });
-
-    this.loadBackendTranslations();
-
-    this.unsubConnection = function () {
+    this.unsubFuncs.push(() => {
       conn.removeEventListener('ready', reconnected);
       conn.removeEventListener('disconnected', disconnected);
-      unsubEntities();
-      unsubConfig();
-      unsubThemes();
-    };
+      conn.removeEventListener('reconnect-error', reconnectError);
+    });
+
+    subscribeEntities(conn, states => this._updateHass({ states }))
+      .then(unsub => this.unsubFuncs.push(unsub));
+
+    subscribeConfig(conn, config => this._updateHass({ config }))
+      .then(unsub => this.unsubFuncs.push(unsub));
+
+    this._loadPanels();
+  }
+
+  hassReconnected() {
+    super.hassReconnected();
+    this._updateHass({ connected: true });
+    this._loadPanels();
   }
 
   computePanelUrl(routeData) {
@@ -345,8 +289,8 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
   }
 
   panelUrlChanged(newPanelUrl) {
+    super.panelUrlChanged(newPanelUrl);
     this._updateHass({ panelUrl: newPanelUrl });
-    this.loadTranslationFragment(newPanelUrl);
   }
 
   async handleConnectionPromise(prom) {
@@ -361,14 +305,13 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
 
   handleMoreInfo(ev) {
     ev.stopPropagation();
-
     this._updateHass({ moreInfoEntityId: ev.detail.entityId });
   }
 
   handleDockSidebar(ev) {
     ev.stopPropagation();
     this._updateHass({ dockedSidebar: ev.detail.dock });
-    this.$.storage.storeState();
+    storeState(this.hass);
   }
 
   handleNotification(ev) {
@@ -377,33 +320,8 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
 
   handleLogout() {
     this.connection.close();
-    localStorage.clear();
-    document.location = '/';
-  }
-
-  setTheme(event) {
-    this._updateHass({ selectedTheme: event.detail });
-    applyThemesOnElement(
-      document.documentElement,
-      this.hass.themes,
-      this.hass.selectedTheme,
-      true
-    );
-    this.$.storage.storeState();
-  }
-
-  selectLanguage(event) {
-    this._updateHass({ selectedLanguage: event.detail.language });
-    this.$.storage.storeState();
-    this.loadResources();
-    this.loadBackendTranslations();
-    this.loadTranslationFragment(this.panelUrl);
-  }
-
-  loadTranslationFragment(panelUrl) {
-    if (translationMetadata.fragments.includes(panelUrl)) {
-      this.loadResources(panelUrl);
-    }
+    clearState();
+    document.location.href = '/';
   }
 
   async _loadPanels() {
@@ -412,7 +330,6 @@ class HomeAssistant extends LocalizeMixin(PolymerElement) {
     });
     this._updateHass({ panels });
   }
-
 
   _updateHass(obj) {
     this.hass = Object.assign({}, this.hass, obj);
