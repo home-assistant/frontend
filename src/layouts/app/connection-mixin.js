@@ -87,13 +87,13 @@ export default superClass =>
                 'service', `${domain}/${service}`
               );
             }
-            this.fire("hass-notification", { message });
+            this.fire('hass-notification', { message });
           } catch (err) {
             const message = this.localize(
               'ui.notification_toast.service_call_failed',
               'service', `${domain}/${service}`
             );
-            this.fire("hass-notification", { message });
+            this.fire('hass-notification', { message });
             throw err;
           }
         },

@@ -3,12 +3,11 @@ export default superClass =>
     ready() {
       this.__notifEl = null;
       this.__notifInitLoad = false;
-      this.__notifProm = new Promise(resolve => {
+      this.__notifProm = new Promise((resolve) => {
         this.__loadingDone = resolve;
       });
-      this.addEventListener("hass-notification", e =>
-        this._showNotification(e.detail.message)
-      );
+      this.addEventListener('hass-notification', e =>
+        this._showNotification(e.detail.message));
       super.ready();
     }
 
@@ -17,8 +16,8 @@ export default superClass =>
         this.__notifInitLoad = true;
 
         // Load and add notification manager to DOM
-        await import(/* webpackChunkName: "notification-manager" */ "../../managers/notification-manager.js");
-        const el = document.createElement("notification-manager");
+        await import(/* webpackChunkName: "notification-manager" */ '../../managers/notification-manager.js');
+        const el = document.createElement('notification-manager');
         el.hass = this.hass;
         this.shadowRoot.appendChild(el);
         this.__notifEl = el;
