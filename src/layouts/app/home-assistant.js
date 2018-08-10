@@ -15,25 +15,35 @@ import LocalizeMixin from '../../mixins/localize-mixin.js';
 import translationMetadata from '../../../build-translations/translationMetadata.json';
 import '../../layouts/home-assistant-main.js';
 import '../../resources/ha-style.js';
-import { getState, storeState, clearState } from '../../util/ha-pref-storage.js';
+import { getState } from '../../util/ha-pref-storage.js';
 import { getActiveTranslation } from '../../util/hass-translation.js';
 import hassCallApi from '../../util/hass-call-api.js';
-import makeDialogManager from '../../dialogs/dialog-manager.js';
 import registerServiceWorker from '../../util/register-service-worker.js';
 
 import computeStateName from '../../common/entity/compute_state_name.js';
 
-import hassBaseMixin from './hass-base-mixin.js';
-import authMixin from './auth-mixin.js';
-import translationsMixin from './translations-mixin.js';
-import themesMixin from './themes-mixin.js';
+import HassBaseMixin from './hass-base-mixin.js';
+import AuthMixin from './auth-mixin.js';
+import TranslationsMixin from './translations-mixin.js';
+import ThemesMixin from './themes-mixin.js';
+import MoreInfoMixin from './more-info-mixin.js';
+import SidebarMixin from './sidebar-mixin.js';
+import DialogManagerMixin from './dialog-manager-mixin.js';
 
 import(/* webpackChunkName: "login-form" */ '../../layouts/login-form.js');
-import(/* webpackChunkName: "notification-manager" */ '../../managers/notification-manager.js');
 
+const ext = (baseClass, mixins) => mixins.reduceRight((base, mixin) => mixin(base), baseClass);
 
-class HomeAssistant extends
-  LocalizeMixin(authMixin(themesMixin(translationsMixin(hassBaseMixin(PolymerElement))))) {
+class HomeAssistant extends ext(PolymerElement, [
+  LocalizeMixin,
+  DialogManagerMixin,
+  AuthMixin,
+  ThemesMixin,
+  TranslationsMixin,
+  MoreInfoMixin,
+  SidebarMixin,
+  HassBaseMixin
+]) {
   static get template() {
     return html`
     <notification-manager id="notifications" hass="[[hass]]"></notification-manager>
@@ -43,18 +53,14 @@ class HomeAssistant extends
       pattern="/:panel"
       data="{{routeData}}"
     ></app-route>
-    <template is="dom-if" if="[[showMain]]" restamp="">
+    <template is="dom-if" if="[[showMain]]" restamp>
       <home-assistant-main
-        on-hass-more-info="handleMoreInfo"
-        on-hass-dock-sidebar="handleDockSidebar"
-        on-hass-notification="handleNotification"
-        on-hass-logout="handleLogout"
         hass="[[hass]]"
         route="{{route}}"
       ></home-assistant-main>
     </template>
 
-    <template is="dom-if" if="[[!showMain]]" restamp="">
+    <template is="dom-if" if="[[!showMain]]" restamp>
       <login-form
         hass="[[hass]]"
         connection-promise="{{connectionPromise}}"
@@ -96,13 +102,16 @@ class HomeAssistant extends
 
   constructor() {
     super();
-    makeDialogManager(this);
     this.unsubFuncs = [];
   }
 
   ready() {
     super.ready();
-    afterNextRender(null, registerServiceWorker);
+    this.addEventListener('hass-notification', e => this.handleNotification(e));
+    afterNextRender(null, () => {
+      registerServiceWorker();
+      import(/* webpackChunkName: "notification-manager" */ '../../managers/notification-manager.js');
+    });
   }
 
   computeShowMain(hass) {
@@ -303,25 +312,8 @@ class HomeAssistant extends
     }
   }
 
-  handleMoreInfo(ev) {
-    ev.stopPropagation();
-    this._updateHass({ moreInfoEntityId: ev.detail.entityId });
-  }
-
-  handleDockSidebar(ev) {
-    ev.stopPropagation();
-    this._updateHass({ dockedSidebar: ev.detail.dock });
-    storeState(this.hass);
-  }
-
   handleNotification(ev) {
     this.$.notifications.showNotification(ev.detail.message);
-  }
-
-  handleLogout() {
-    this.connection.close();
-    clearState();
-    document.location.href = '/';
   }
 
   async _loadPanels() {
