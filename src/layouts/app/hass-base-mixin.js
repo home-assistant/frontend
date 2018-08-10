@@ -3,13 +3,22 @@ export default superClass => class extends superClass {
   constructor() {
     super();
     this.__pendingHass = false;
+    this.__provideHass = [];
   }
 
   // Exists so all methods can safely call super method
   hassConnected() {}
   hassReconnected() {}
   panelUrlChanged(newPanelUrl) {}
-  hassChanged(hass, oldHass) {}
+  hassChanged(hass, oldHass) {
+    this.__provideHass.forEach((el) => {
+      el.hass = hass;
+    });
+  }
+
+  provideHass(el) {
+    this.__provideHass.push(el);
+  }
 
   async _updateHass(obj) {
     const oldHass = this.hass;

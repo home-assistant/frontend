@@ -15,15 +15,8 @@ export default superClass =>
       if (!this.__moreInfoEl) {
         this.__moreInfoEl = document.createElement('ha-more-info-dialog');
         this.shadowRoot.appendChild(this.__moreInfoEl);
+        this.provideHass(this.__moreInfoEl);
       }
       this._updateHass({ moreInfoEntityId: ev.detail.entityId });
-    }
-
-    hassChanged(hass, oldHass) {
-      super.hassChanged(hass, oldHass);
-
-      if (this.__moreInfoEl) {
-        this.__moreInfoEl.hass = hass;
-      }
     }
   };

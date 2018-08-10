@@ -84,7 +84,7 @@ class NotificationManager extends LocalizeMixin(PolymerElement) {
     this.$.connToast.classList.toggle('fit-bottom', ev.matches);
   }
 
-  showNotification(message) {
+  showDialog({ message }) {
     this.$.toast.show(message);
   }
 }

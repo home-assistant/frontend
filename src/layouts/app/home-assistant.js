@@ -24,7 +24,6 @@ import(/* webpackChunkName: "login-form" */ '../../layouts/login-form.js');
 const ext = (baseClass, mixins) => mixins.reduceRight((base, mixin) => mixin(base), baseClass);
 
 class HomeAssistant extends ext(PolymerElement, [
-  DialogManagerMixin,
   AuthMixin,
   ThemesMixin,
   TranslationsMixin,
@@ -32,6 +31,7 @@ class HomeAssistant extends ext(PolymerElement, [
   SidebarMixin,
   ConnectionMixin,
   NotificationMixin,
+  DialogManagerMixin,
   HassBaseMixin
 ]) {
   static get template() {
