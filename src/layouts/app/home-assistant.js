@@ -17,24 +17,25 @@ import MoreInfoMixin from './more-info-mixin.js';
 import SidebarMixin from './sidebar-mixin.js';
 import DialogManagerMixin from './dialog-manager-mixin.js';
 import ConnectionMixin from './connection-mixin.js';
+import NotificationMixin from './notification-mixin.js';
 
 import(/* webpackChunkName: "login-form" */ '../../layouts/login-form.js');
 
 const ext = (baseClass, mixins) => mixins.reduceRight((base, mixin) => mixin(base), baseClass);
 
 class HomeAssistant extends ext(PolymerElement, [
-  ConnectionMixin,
   DialogManagerMixin,
   AuthMixin,
   ThemesMixin,
   TranslationsMixin,
   MoreInfoMixin,
   SidebarMixin,
+  ConnectionMixin,
+  NotificationMixin,
   HassBaseMixin
 ]) {
   static get template() {
     return html`
-    <notification-manager id="notifications" hass="[[hass]]"></notification-manager>
     <app-location route="{{route}}"></app-location>
     <app-route
       route="{{route}}"
@@ -84,11 +85,7 @@ class HomeAssistant extends ext(PolymerElement, [
 
   ready() {
     super.ready();
-    this.addEventListener('hass-notification', e => this.handleNotification(e));
-    afterNextRender(null, () => {
-      registerServiceWorker();
-      import(/* webpackChunkName: "notification-manager" */ '../../managers/notification-manager.js');
-    });
+    afterNextRender(null, registerServiceWorker);
   }
 
   computeShowMain(hass) {
@@ -108,20 +105,6 @@ class HomeAssistant extends ext(PolymerElement, [
   panelUrlChanged(newPanelUrl) {
     super.panelUrlChanged(newPanelUrl);
     this._updateHass({ panelUrl: newPanelUrl });
-  }
-
-  // async handleConnectionPromise(prom) {
-  //   if (!prom) return;
-
-  //   try {
-  //     this.connection = await prom;
-  //   } catch (err) {
-  //     this.connectionPromise = null;
-  //   }
-  // }
-
-  handleNotification(ev) {
-    this.$.notifications.showNotification(ev.detail.message);
   }
 }
 

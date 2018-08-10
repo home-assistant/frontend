@@ -7,6 +7,7 @@ import {
 import translationMetadata from '../../../build-translations/translationMetadata.json';
 
 import LocalizeMixin from '../../mixins/localize-mixin.js';
+import EventsMixin from '../../mixins/events-mixin.js';
 
 import { getState } from '../../util/ha-pref-storage.js';
 import { getActiveTranslation } from '../../util/hass-translation.js';
@@ -14,7 +15,7 @@ import hassCallApi from '../../util/hass-call-api.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 
 export default superClass =>
-  class extends LocalizeMixin(superClass) {
+  class extends EventsMixin(LocalizeMixin(superClass)) {
     constructor() {
       super();
       this.unsubFuncs = [];
@@ -44,7 +45,6 @@ export default superClass =>
     }
 
     _setConnection(conn) {
-      const notifications = this.$.notifications;
       this.hass = Object.assign({
         connection: conn,
         connected: true,
@@ -87,13 +87,13 @@ export default superClass =>
                 'service', `${domain}/${service}`
               );
             }
-            notifications.showNotification(message);
+            this.fire("hass-notification", { message });
           } catch (err) {
-            const msg = this.localize(
+            const message = this.localize(
               'ui.notification_toast.service_call_failed',
               'service', `${domain}/${service}`
             );
-            notifications.showNotification(msg);
+            this.fire("hass-notification", { message });
             throw err;
           }
         },
