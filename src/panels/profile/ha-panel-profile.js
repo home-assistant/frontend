@@ -1,6 +1,8 @@
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
@@ -8,9 +10,13 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../components/ha-menu-button.js';
 import '../../resources/ha-style.js';
-import './ha-change-password-card.js';
 
 import EventsMixin from '../../mixins/events-mixin.js';
+
+import './ha-change-password-card.js';
+import './ha-pick-language-row.js';
+import './ha-pick-theme-row.js';
+import './ha-push-notifications-row.js';
 
 /*
  * @appliesMixin EventsMixin
@@ -25,10 +31,15 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
         -moz-user-select: initial;
       }
 
-      paper-card {
+      .content {
         display: block;
         max-width: 600px;
-        margin: 16px auto;
+        margin: 0 auto;
+      }
+
+      .content > * {
+        display: block;
+        margin: 24px 0;
       }
     </style>
 
@@ -46,6 +57,20 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
             You are currently logged in as [[hass.user.name]].
             <template is='dom-if' if='[[hass.user.is_owner]]'>You are an owner.</template>
           </div>
+
+          <ha-pick-language-row
+            narrow="[[narrow]]"
+            hass="[[hass]]"
+          ></ha-pick-language-row>
+          <ha-pick-theme-row
+            narrow="[[narrow]]"
+            hass="[[hass]]"
+          ></ha-pick-theme-row>
+          <ha-push-notifications-row
+            narrow="[[narrow]]"
+            hass="[[hass]]"
+          ></ha-push-notifications-row>
+
           <div class='card-actions'>
             <paper-button
               class='warning'
@@ -53,9 +78,11 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
             >Log out</paper-button>
           </div>
         </paper-card>
+
         <template is="dom-if" if="[[_canChangePassword(hass.user)]]">
           <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
         </template>
+
       </div>
     </app-header-layout>
     `;

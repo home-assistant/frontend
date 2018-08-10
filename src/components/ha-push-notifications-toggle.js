@@ -4,29 +4,31 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../mixins/events-mixin.js';
 
+export const pushSupported = (
+  'serviceWorker' in navigator && 'PushManager' in window &&
+  (document.location.protocol === 'https:' ||
+    document.location.hostname === 'localhost' ||
+    document.location.hostname === '127.0.0.1'));
+
 /*
  * @appliesMixin EventsMixin
  */
 class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-    <paper-toggle-button hidden$="[[!pushSupported]]" disabled="[[loading]]" checked="{{pushChecked}}"></paper-toggle-button>
+    <paper-toggle-button
+      disabled="[[_compDisabled(disabled, loading)]]"
+      checked="{{pushChecked}}"
+    ></paper-toggle-button>
 `;
   }
 
   static get properties() {
     return {
       hass: { type: Object, value: null },
-      pushSupported: {
+      disabled: {
         type: Boolean,
-        readOnly: true,
-        notify: true,
-        value: (
-          'serviceWorker' in navigator && 'PushManager' in window &&
-            (document.location.protocol === 'https:' ||
-              document.location.hostname === 'localhost' ||
-              document.location.hostname === '127.0.0.1')
-        )
+        value: false,
       },
       pushChecked: {
         type: Boolean,
@@ -40,22 +42,20 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
     };
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     super.connectedCallback();
-    if (!this.pushSupported) return;
 
-    navigator.serviceWorker.ready.then(
-      (reg) => {
-        reg.pushManager.getSubscription().then((subscription) => {
-          this.loading = false;
-          this.pushChecked = !!subscription;
-        });
-      },
-      () => {
-        // no service worker.
-        this._setPushSupported(false);
-      }
-    );
+    if (!('serviceWorker' in navigator)) return;
+
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      reg.pushManager.getSubscription().then((subscription) => {
+        this.loading = false;
+        this.pushChecked = !!subscription;
+      });
+    } catch (err) {
+      // We don't set loading to `false` so we remain disabled
+    }
   }
   handlePushChange(pushChecked) {
     if (!this.pushSupported) return;
@@ -120,6 +120,10 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
           message: 'Failed unsubscribing for push notifications.'
         });
       });
+  }
+
+  _compDisabled(disabled, loading) {
+    return disabled || loading;
   }
 }
 
