@@ -40,7 +40,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
                 on-change="_selectedValueChanged"
                 ignore-bar-touch
               ></paper-slider>
-              <div class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</div>
+              <span class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</span>
             </div>
           </template>
           <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'box')]]">
@@ -83,20 +83,6 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
     };
   }
 
-  ready() {
-    super.ready();
-    if (typeof ResizeObserver === 'function') {
-      const ro = new ResizeObserver((entries) => {
-        entries.forEach(() => {
-          this._hiddenState();
-        });
-      });
-      ro.observe(this.$.input_number_card);
-    } else {
-      this.addEventListener('iron-resize', this._hiddenState);
-    }
-  }
-
   _equals(a, b) {
     return a === b;
   }
@@ -112,27 +98,13 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
     this._config = config;
   }
 
-  _hiddenState() {
-    if (this._stateObj.attributes.mode !== 'slider') return;
-    const sliderwidth = this.shadowRoot.querySelector('paper-slider').offsetWidth;
-    const stateElement = this.shadowRoot.querySelector('.state');
-    if (sliderwidth < 100) {
-      stateElement.style.display = 'none';
-    } else if (sliderwidth >= 145) {
-      stateElement.style.display = 'inline';
-    }
-  }
-
-  _stateObjChanged(stateObj, oldStateObj) {
+  _stateObjChanged(stateObj) {
     this.setProperties({
       _min: Number(stateObj.attributes.min),
       _max: Number(stateObj.attributes.max),
       _step: Number(stateObj.attributes.step),
       _value: Number(stateObj.state)
     });
-    if (oldStateObj && stateObj.attributes.mode === 'slider' && oldStateObj.attributes.mode !== 'slider') {
-      this._hiddenState();
-    }
   }
 
   _selectedValueChanged() {
