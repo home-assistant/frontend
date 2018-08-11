@@ -108,14 +108,7 @@ class ZwaveValues extends PolymerElement {
     }.bind(this));
   }
 
-  selectedValueChanged(selectedValue) {
-    if (!this.selectedNode === -1 || this.selectedValue === -1) return;
-    var el = this;
-    this.hass.callApi('GET', 'config/zwave/device_config/' + this.values[selectedValue].value.entity_id)
-      .then(function (data) {
-        el.entityIgnored = data.ignored || false;
-        el.entityPollingIntensity = el.values[selectedValue].value.poll_intensity;
-      });
+  selectedValueChanged() {
   }
 }
 
