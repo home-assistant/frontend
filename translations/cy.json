@@ -327,21 +327,6 @@
                                 "restart": "Ailgychwyn",
                                 "stop": "Stopio"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Ffurfweddu hysbysiadau gwthio",
-                            "introduction": "Galluogwch y gosodiad i dderbyn hysbysiad gwthio ar y ddyfais",
-                            "push_notifications": "Hysbysiadau gwthio"
-                        },
-                        "translation": {
-                            "header": "Dewiswch iaith",
-                            "introduction": "Dewisiwch iaith ar gyfer rhyngwyneb Home Assistant ar y ddyfais",
-                            "language": "Iaith"
-                        },
-                        "themes": {
-                            "header": "Gosod thema",
-                            "introduction": "Dewiswch 'dewisiad-ol-wyneb', i ddefnyddio pa bynnag thema mae'r ol-wyneb yn dewis neu dewiswch thema ar gyfer y ddyfais yma",
-                            "theme": "Thema"
                         }
                     }
                 },

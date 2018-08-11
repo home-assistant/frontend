@@ -338,21 +338,6 @@
                                 "restart": "Neu starten",
                                 "stop": "Stoppen"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Push-Benachrichtigungen konfigurieren",
-                            "introduction": "Push-Benachrichtigungen für dieses Gerät aktivieren",
-                            "push_notifications": "Push-Benachrichtigungen"
-                        },
-                        "translation": {
-                            "header": "Wähle eine Sprache",
-                            "introduction": "Wähle eine Sprache für Home Assistant auf diesem Gerät",
-                            "language": "Sprache"
-                        },
-                        "themes": {
-                            "header": "Aussehen festlegen",
-                            "introduction": "Wähle \"Backend-selected\" für die Vorgabe vom Backend oder wähle ein Thema für dieses Gerät",
-                            "theme": "Aussehen"
                         }
                     }
                 },

@@ -338,21 +338,6 @@
                                 "restart": "Starta om",
                                 "stop": "Stoppa"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurera push-notiser",
-                            "introduction": "Aktivera den här inställningen för att ta emot push-notiser på den här enheten",
-                            "push_notifications": "Push-notiser"
-                        },
-                        "translation": {
-                            "header": "Välj ett språk",
-                            "introduction": "Välj ett språk för Home Assistants gränssnitt på denna enhet",
-                            "language": "Språk"
-                        },
-                        "themes": {
-                            "header": "Välj ett tema",
-                            "introduction": "Välj \"Backend-selected\" för att använda det tema som \"backend\" väljer, eller välj ett tema att använda på den här enheten.",
-                            "theme": "Tema"
                         }
                     }
                 },

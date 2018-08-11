@@ -311,21 +311,6 @@
                                 "restart": "Omstart",
                                 "stop": "Stopp"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Sett opp pushvarslar",
-                            "introduction": "Aktiver denne innstillinga for å få pushvarslar til denne eininga",
-                            "push_notifications": "Pushvarslar"
-                        },
-                        "translation": {
-                            "header": "Vel eit språk",
-                            "introduction": "Vel eit språk til Home Assistant-brukargrensesnittet på denne eininga",
-                            "language": "Språk"
-                        },
-                        "themes": {
-                            "header": "Vel tema",
-                            "introduction": "Vel \"Backend-selected\" for å bruke standard tema eller vel eit tema for denne eininga",
-                            "theme": "Tema"
                         }
                     }
                 },

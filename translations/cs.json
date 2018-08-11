@@ -338,21 +338,6 @@
                                 "restart": "Restartovat",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Nastavte push oznámení",
-                            "introduction": "Povolte toto nastavení, aby bylo v tomto zařízení přijímáno push oznámení",
-                            "push_notifications": "Push oznámení"
-                        },
-                        "translation": {
-                            "header": "Zvolte jazyk",
-                            "introduction": "Zvolte jazyk pro rozhraní Home Assistant v tomto zařízení",
-                            "language": "Jazyk"
-                        },
-                        "themes": {
-                            "header": "Nastavení motivu",
-                            "introduction": "Zvolte možnost 'Backend-selected' pro volbu motivu backendem, nebo vyberte téma pro toto zařízení",
-                            "theme": "Motiv"
                         }
                     }
                 },
