@@ -14,7 +14,6 @@ import EventsMixin from '../mixins/events-mixin.js';
 import NavigateMixin from '../mixins/navigate-mixin.js';
 
 import(/* webpackChunkName: "ha-sidebar" */ '../components/ha-sidebar.js');
-import(/* webpackChunkName: "more-info-dialog" */ '../dialogs/ha-more-info-dialog.js');
 import(/* webpackChunkName: "voice-command-dialog" */ '../dialogs/ha-voice-command-dialog.js');
 
 const NON_SWIPABLE_PANELS = ['kiosk', 'map'];
@@ -36,7 +35,6 @@ class HomeAssistantMain extends NavigateMixin(EventsMixin(PolymerElement)) {
       height: 100%;
     }
   </style>
-  <ha-more-info-dialog hass="[[hass]]"></ha-more-info-dialog>
   <ha-url-sync hass="[[hass]]"></ha-url-sync>
   <app-route route="{{route}}" pattern="/states" tail="{{statesRouteTail}}"></app-route>
   <ha-voice-command-dialog hass="[[hass]]" id="voiceDialog"></ha-voice-command-dialog>

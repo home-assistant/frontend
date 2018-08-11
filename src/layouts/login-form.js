@@ -9,11 +9,12 @@ import { ERR_CANNOT_CONNECT, ERR_INVALID_AUTH } from 'home-assistant-js-websocke
 
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
+import EventsMixin from '../mixins/events-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
  */
-class LoginForm extends LocalizeMixin(PolymerElement) {
+class LoginForm extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex iron-positioning"></style>
@@ -114,10 +115,6 @@ class LoginForm extends LocalizeMixin(PolymerElement) {
     this.addEventListener('keydown', ev => this.passwordKeyDown(ev));
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
   computeLoadingMsg(isValidating) {
     return isValidating ? 'Connecting' : 'Loading data';
   }
@@ -150,10 +147,11 @@ class LoginForm extends LocalizeMixin(PolymerElement) {
   validatePassword() {
     var auth = this.password;
     this.$.hideKeyboardOnFocus.focus();
-    this.connectionPromise = window.createHassConnection(auth);
+    const connProm = window.createHassConnection(auth);
+    this.fire('try-connection', { connProm });
 
     if (this.$.rememberLogin.checked) {
-      this.connectionPromise.then(function () {
+      connProm.then(function () {
         localStorage.authToken = auth;
       });
     }
