@@ -419,11 +419,13 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     var valueId = el.entities[selectedEntity].attributes.value_id;
     var valueData = el.values.find(function (obj) { return obj.key === valueId; });
     var valueIndex = el.values.indexOf(valueData);
-    el.hass.callApi('GET', 'config/zwave/device_config/' + valueId)
-      .then(function (data) {
-        el.entityIgnored = data.ignored || false;
-        el.entityPollingIntensity = el.values[valueIndex].value.poll_intensity;
-      });
+    if (!valueId) {
+      el.hass.callApi('GET', 'config/zwave/device_config/' + valueId)
+        .then(function (data) {
+          el.entityIgnored = data.ignored || false;
+          el.entityPollingIntensity = el.values[valueIndex].value.poll_intensity;
+        });
+    }
   }
 
   computeSelectedEntityAttrs(selectedEntity) {
