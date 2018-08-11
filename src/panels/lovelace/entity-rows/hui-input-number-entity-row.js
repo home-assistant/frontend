@@ -83,6 +83,20 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
     };
   }
 
+  ready() {
+    super.ready();
+    if (typeof ResizeObserver === 'function') {
+      const ro = new ResizeObserver((entries) => {
+        entries.forEach(() => {
+          this._hiddenState();
+        });
+      });
+      ro.observe(this.$.input_number_card);
+    } else {
+      this.addEventListener('iron-resize', this._hiddenState);
+    }
+  }
+
   _equals(a, b) {
     return a === b;
   }
@@ -98,13 +112,24 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
     this._config = config;
   }
 
-  _stateObjChanged(stateObj) {
+  _hiddenState() {
+    if (!this.$ || this._stateObj.attributes.mode !== 'slider') return;
+    const width = this.$.input_number_card.offsetWidth;
+    const stateEl = this.shadowRoot.querySelector('.state');
+    if (!stateEl) return;
+    stateEl.hidden = width <= 350;
+  }
+
+  _stateObjChanged(stateObj, oldStateObj) {
     this.setProperties({
       _min: Number(stateObj.attributes.min),
       _max: Number(stateObj.attributes.max),
       _step: Number(stateObj.attributes.step),
       _value: Number(stateObj.state)
     });
+    if (oldStateObj && stateObj.attributes.mode === 'slider' && oldStateObj.attributes.mode !== 'slider') {
+      this._hiddenState();
+    }
   }
 
   _selectedValueChanged() {
