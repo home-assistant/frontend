@@ -328,21 +328,6 @@
                                 "restart": "Käynnistä uudelleen",
                                 "stop": "Pysäytä"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfiguroi push-notifikaatioita",
-                            "introduction": "Valitse tämä asetus, jos haluat sallia push-notifikaatiot tältä laitteelta",
-                            "push_notifications": "Ilmoitukset"
-                        },
-                        "translation": {
-                            "header": "Valitse kieli",
-                            "introduction": "Valitse tämän laitteen käyttöliittymän kieli",
-                            "language": "Kieli"
-                        },
-                        "themes": {
-                            "header": "Valitse teema",
-                            "introduction": "Valitse 'Backend-selected', jos haluat käyttää palvelimen valitsemaa teemaa tällä laitteella",
-                            "theme": "Teema"
                         }
                     }
                 },

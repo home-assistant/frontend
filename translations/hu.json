@@ -338,21 +338,6 @@
                                 "restart": "Újraindítás",
                                 "stop": "Leállítás"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Push-értesítések beállítása",
-                            "introduction": "Engedélyezd ezt a beállítást a push-értesítések fogadásához ezen az eszközön",
-                            "push_notifications": "Push-értesítések"
-                        },
-                        "translation": {
-                            "header": "Nyelv kiválasztása",
-                            "introduction": "Válassz egy nyelvet a Home Assistant felületéhez ezen az eszközön",
-                            "language": "Nyelv"
-                        },
-                        "themes": {
-                            "header": "Téma beállítása",
-                            "introduction": "Válaszd ki a 'Backend-selected' opciót, ha a backend-re bízod a témaválasztást, vagy válassz egy témát ehhez az eszközhöz",
-                            "theme": "Téma"
                         }
                     }
                 },
@@ -676,8 +661,8 @@
                 "duration": {
                     "second": "{count} {count, plural,\n  one {másodperc}\n  other {másodperc}\n}",
                     "minute": "{count} {count, plural,\n  one {perc}\n  other {perc}\n}",
-                    "hour": "{count} {count, plural,\n  one {óra}\n  other {óra}\n}",
-                    "day": "{count} {count, plural,\n  one {nap}\n  other {nap}\n}",
+                    "hour": "{count} {count, plural,\none {nappal}\nother {nappal}\n}",
+                    "day": "{count} {count, plural,\n  one {nappal}\n  other {nappal}\n}",
                     "week": "{count} {count, plural,\n  one {hét}\n  other {hét}\n}"
                 }
             },

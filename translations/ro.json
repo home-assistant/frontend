@@ -338,21 +338,6 @@
                                 "restart": "Repornire",
                                 "stop": "Oprire"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurați notificările push",
-                            "introduction": "Activați această setare pentru a primi notificări push pe acest dispozitiv",
-                            "push_notifications": "Notificări push"
-                        },
-                        "translation": {
-                            "header": "Alegeți o limbă",
-                            "introduction": "Alegeți limba pentru interfața Home Assistant de pe acest dispozitiv",
-                            "language": "Limba"
-                        },
-                        "themes": {
-                            "header": "Setați o temă",
-                            "introduction": "Alegeți \"Backend-selected\" pentru a utiliza orice temă pe care o alege opțiunea de backend sau alegeți o temă pentru acest dispozitiv",
-                            "theme": "Temă"
                         }
                     }
                 },

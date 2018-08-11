@@ -328,21 +328,6 @@
                                 "restart": "Taaskäivita",
                                 "stop": "Peata"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Seadista tõuketeavitusi",
-                            "introduction": "Võimalda see seadistus, et saaksid sellele seadmele tõuketeavitusi",
-                            "push_notifications": "Tõuketeavitused"
-                        },
-                        "translation": {
-                            "header": "Vali keel",
-                            "introduction": "Vali Home Assistant-i liidese keel sellel seadmel",
-                            "language": "Keel"
-                        },
-                        "themes": {
-                            "header": "Määra teema",
-                            "introduction": "Vali 'Põhiprogrammi valitud', et kasutada põhiprogrammi valitud teemat või vali teema selle seadme jaoks",
-                            "theme": "Teema"
                         }
                     }
                 },

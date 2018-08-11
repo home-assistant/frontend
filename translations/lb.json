@@ -338,21 +338,6 @@
                                 "restart": "Neistart",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Push-Noriichte konfiguréieren",
-                            "introduction": "Aktivéiert dës Astellung fir Push-Noriichte op dësem Apparat ze kréien",
-                            "push_notifications": "Push-Noriichte"
-                        },
-                        "translation": {
-                            "header": "Sproch auswielen",
-                            "introduction": "Wielt eng Sproch fir den Home Assistant Interface op dësem Apparat",
-                            "language": "Sproch"
-                        },
-                        "themes": {
-                            "header": "Thema auswielen",
-                            "introduction": "Wielt 'Backend-Selected' fir all Thema ze benotzen deen de Backend auswielt oder e Thema fir dësen Apparat auswielen",
-                            "theme": "Thema"
                         }
                     }
                 },
