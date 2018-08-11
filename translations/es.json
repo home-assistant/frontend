@@ -253,6 +253,16 @@
             "sunny": "Soleado",
             "windy": "Ventoso",
             "windy-variant": "Ventoso"
+        },
+        "vacuum": {
+            "cleaning": "Limpiando",
+            "docked": "En base",
+            "error": "Error",
+            "idle": "Inactivo",
+            "off": "Apagado",
+            "on": "Encendido",
+            "paused": "En pausa",
+            "returning": "Volviendo a la base"
         }
     },
     "state_badge": {
@@ -328,21 +338,6 @@
                                 "restart": "Reiniciar",
                                 "stop": "Detener"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurar notificaciones push",
-                            "introduction": "Habilite esta opción para recibir notificaciones push en este dispositivo",
-                            "push_notifications": "Notificaciones Push"
-                        },
-                        "translation": {
-                            "header": "Elija un idioma",
-                            "introduction": "Elija un idioma para la interfaz de Home Assistant en este dispositivo",
-                            "language": "Idioma"
-                        },
-                        "themes": {
-                            "header": "Establecer un tema",
-                            "introduction": "Elija 'Backend-seleccionado\" utilizar cualquier tema de interés para el backend escoge o elige un tema para este dispositivo",
-                            "theme": "Tema"
                         }
                     }
                 },
@@ -480,7 +475,7 @@
                             "duplicate": "Duplicar",
                             "delete": "Borrar",
                             "delete_confirm": "¿Está seguro de querer borrar?",
-                            "unsupported_action": "Acción no admitida : {acción}",
+                            "unsupported_action": "Acción no admitida : {action}",
                             "type_select": "Tipo de acción",
                             "type": {
                                 "service": {
@@ -515,6 +510,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Administre su red Z-Wave"
+                },
+                "users": {
+                    "caption": "Usuarios",
+                    "description": "Administrar usuarios",
+                    "picker": {
+                        "title": "Usuarios"
+                    },
+                    "editor": {
+                        "rename_user": "Renombrar usuario",
+                        "change_password": "Cambia la contraseña",
+                        "activate_user": "Activar usuario",
+                        "deactivate_user": "Desactivar usuario",
+                        "delete_user": "Borrar usuario"
+                    }
                 }
             }
         },
@@ -531,7 +540,7 @@
             "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}",
             "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}",
             "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
-            "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}"
+            "hour": "{count} {count, plural,\nuna {hora}\nother {horas}\n}"
         },
         "login-form": {
             "password": "Contraseña",
@@ -623,6 +632,15 @@
             "lock": {
                 "lock": "Bloquear",
                 "unlock": "Desbloquear"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reanudar la limpieza",
+                    "return_to_base": "Volverr a la base",
+                    "start_cleaning": "Empezar la limpieza",
+                    "turn_on": "Encender",
+                    "turn_off": "Apagar"
+                }
             }
         },
         "components": {
@@ -637,7 +655,11 @@
             "relative_time": {
                 "past": "hace {time} ",
                 "future": "En {time}",
-                "never": "Nunca"
+                "never": "Nunca",
+                "duration": {
+                    "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
+                    "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Cargando historial de estado ...",
@@ -645,8 +667,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "Endendido {entidad}",
-            "entity_turned_off": "Apagado {entidad}.",
+            "entity_turned_on": "Encendido {entity}.",
+            "entity_turned_off": "Apagado {entity}.",
             "service_called": "Servicio {service} llamado.",
             "service_call_failed": "Error al llamar al servicio {service} .",
             "connection_lost": "Conexión perdida. Reconectando ..."

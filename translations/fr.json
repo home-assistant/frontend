@@ -327,21 +327,6 @@
                                 "restart": "Redémarrer",
                                 "stop": "Arrêter"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurer les notifications push",
-                            "introduction": "Activer ce paramètre pour recevoir des notifications push sur cet appareil",
-                            "push_notifications": "Notifications push"
-                        },
-                        "translation": {
-                            "header": "Choisissez une langue",
-                            "introduction": "Choisissez une langue pour l'interface Home Assistant sur cet appareil",
-                            "language": "Langue"
-                        },
-                        "themes": {
-                            "header": "Définir un thème",
-                            "introduction": "Choisissez « Backend-selected » pour utiliser le thème choisi par le backend ou choisissez un thème pour cet appareil",
-                            "theme": "Thème"
                         }
                     }
                 },

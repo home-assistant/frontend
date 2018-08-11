@@ -338,21 +338,6 @@
                                 "restart": "Uruchom ponownie",
                                 "stop": "Zatrzymaj"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Skonfiguruj powiadomienia push",
-                            "introduction": "Włącz tę opcję, aby otrzymywać powiadomienia push na tym urządzeniu",
-                            "push_notifications": "Powiadomienia push"
-                        },
-                        "translation": {
-                            "header": "Wybierz język",
-                            "introduction": "Wybierz język interfejsu Home Assistant'a na tym urządzeniu",
-                            "language": "Język"
-                        },
-                        "themes": {
-                            "header": "Ustaw motyw",
-                            "introduction": "Wybierz \"Backend-selected\", aby użyć dowolnego motywu, który wybiera backend lub wybierz motyw dla tego urządzenia",
-                            "theme": "Motyw"
                         }
                     }
                 },

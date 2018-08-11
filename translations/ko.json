@@ -338,21 +338,6 @@
                                 "restart": "재시작",
                                 "stop": "중지"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "푸시 알림 설정",
-                            "introduction": "이 장치에서 푸시 알림을 받으려면 이 항목을 활성화 합니다",
-                            "push_notifications": "푸시 알림"
-                        },
-                        "translation": {
-                            "header": "언어 선택",
-                            "introduction": "이 장치의 Home Assistant 인터페이스 언어를 선택합니다",
-                            "language": "언어"
-                        },
-                        "themes": {
-                            "header": "테마 설정",
-                            "introduction": "백엔드에서 선택한 테마를 사용하거나 이 장치의 테마를 선택하려면 '백엔드-선택'을 선택합니다",
-                            "theme": "테마"
                         }
                     }
                 },

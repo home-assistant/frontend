@@ -268,10 +268,6 @@
                                 "restart": "Neustart",
                                 "stop": "Stop"
                             }
-                        },
-                        "translation": {
-                            "header": "Sprach wähle",
-                            "language": "Sprach"
                         }
                     }
                 },

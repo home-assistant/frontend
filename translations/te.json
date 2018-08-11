@@ -292,15 +292,6 @@
                                 "restart": "పునఃప్రారంభించు",
                                 "stop": "ఆపు"
                             }
-                        },
-                        "translation": {
-                            "header": "భాషను ఎంచుకోండి",
-                            "introduction": "ఇచ్చట Home Assistant భాషను ఎంచుకోండి",
-                            "language": "భాష"
-                        },
-                        "themes": {
-                            "header": "థీమ్ను సెట్ చేయండి",
-                            "theme": "థీమ్"
                         }
                     }
                 },

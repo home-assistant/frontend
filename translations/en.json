@@ -338,21 +338,6 @@
                                 "restart": "Restart",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configure push notifications",
-                            "introduction": "Enable this setting to receive push notifications on this device",
-                            "push_notifications": "Push notifications"
-                        },
-                        "translation": {
-                            "header": "Choose a language",
-                            "introduction": "Choose a language for the Home Assistant interface on this device",
-                            "language": "Language"
-                        },
-                        "themes": {
-                            "header": "Set a theme",
-                            "introduction": "Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device",
-                            "theme": "Theme"
                         }
                     }
                 },
@@ -539,6 +524,27 @@
                         "deactivate_user": "Deactivate user",
                         "delete_user": "Delete user"
                     }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push Notifications",
+                    "description": "Send notifications to this device",
+                    "error_load_platform": "Configure notify.html5.",
+                    "error_use_https": "Requires SSL enabled for frontend.",
+                    "push_notifications": "Push notifications",
+                    "link_promo": "Learn more"
+                },
+                "language": {
+                    "header": "Language",
+                    "link_promo": "Help translating",
+                    "dropdown_label": "Language"
+                },
+                "themes": {
+                    "header": "Theme",
+                    "error_no_theme": "No themes available.",
+                    "link_promo": "Learn about themes",
+                    "dropdown_label": "Theme"
                 }
             }
         },

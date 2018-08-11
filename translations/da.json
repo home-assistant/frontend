@@ -306,20 +306,6 @@
                                 "restart": "Genstart",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurer push-meddelelser",
-                            "introduction": "Aktivér denne indstilling for at modtage push-meddelelser på denne enhed",
-                            "push_notifications": "Push-meddelelser"
-                        },
-                        "translation": {
-                            "header": "Vælg et sprog",
-                            "introduction": "Vælg et sprog til Home Assistant til denne enhed",
-                            "language": "Sprog"
-                        },
-                        "themes": {
-                            "header": "Vælg et tema",
-                            "theme": "Tema"
                         }
                     }
                 },

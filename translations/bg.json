@@ -253,6 +253,16 @@
             "sunny": "Слънчево",
             "windy": "Ветровито",
             "windy-variant": "Ветровито"
+        },
+        "vacuum": {
+            "cleaning": "Почистване",
+            "docked": "В базова станция",
+            "error": "Грешка",
+            "idle": "Неработещ",
+            "off": "Изключен",
+            "on": "Включен",
+            "paused": "Пауза",
+            "returning": "Връщане в базовата станция"
         }
     },
     "state_badge": {
@@ -328,21 +338,6 @@
                                 "restart": "Рестарт",
                                 "stop": "Спиране"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Конфигуриране на известия",
-                            "introduction": "Активирайте тази настройка, за да получавате известия на това устройство",
-                            "push_notifications": "Известия"
-                        },
-                        "translation": {
-                            "header": "Избор на език",
-                            "introduction": "Изберете език за интерфейса на Home Assistant на това устройство.",
-                            "language": "Език"
-                        },
-                        "themes": {
-                            "header": "Избор на тема",
-                            "introduction": "Изберете \"Backend-selected\", за да използвате каквито и да е теми, избрани от бекенда, или да изберете тема за това устройство",
-                            "theme": "Тема"
                         }
                     }
                 },
@@ -515,6 +510,20 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Управлявайте своята Z-Wave мрежа "
+                },
+                "users": {
+                    "caption": "Потребители",
+                    "description": "Управление на потребителите",
+                    "picker": {
+                        "title": "Потребители"
+                    },
+                    "editor": {
+                        "rename_user": "Преименуване на потребител",
+                        "change_password": "Смяна на парола ",
+                        "activate_user": "Активиране на потребител",
+                        "deactivate_user": "Деактивиране на потребителя",
+                        "delete_user": "Изтриване на потребител"
+                    }
                 }
             }
         },
@@ -625,6 +634,15 @@
                 "code": "Код",
                 "lock": "Заключване",
                 "unlock": "Отключване"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Продължете почистването",
+                    "return_to_base": "Върни се в базовата станция",
+                    "start_cleaning": "Започнете почистването",
+                    "turn_on": "Включи",
+                    "turn_off": "Изключи"
+                }
             }
         },
         "components": {
@@ -639,7 +657,14 @@
             "relative_time": {
                 "past": "Преди {time}",
                 "future": "След {time}",
-                "never": "Никога"
+                "never": "Никога",
+                "duration": {
+                    "second": "{count}{count, plural,\n  one {секунда}\n  other {секунди}\n}",
+                    "minute": "{count} {count, plural,\n  one {минута}\n  other {минути}\n}",
+                    "hour": "{count} {count, plural,\n  one {час}\n  other {часа}\n}",
+                    "day": "{count}{count, plural,\n  one {ден}\n  other {дни}\n}",
+                    "week": "{count}{count, plural,\n  one {седмица}\n  other {седмици}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Зареждане на история за състоянието...",
@@ -656,7 +681,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Запази",
-                "name": "Име"
+                "name": "Име",
+                "entity_id": "Идентификация на обект"
             }
         }
     },
@@ -695,7 +721,8 @@
         "switch": "Ключ",
         "updater": "Обновяване",
         "weblink": "Уеб връзка",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Прахосмукачка"
     },
     "attribute": {
         "weather": {

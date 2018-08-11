@@ -257,15 +257,6 @@
                                 "restart": "Перезапустити",
                                 "stop": "Зупинити"
                             }
-                        },
-                        "translation": {
-                            "header": "Виберіть мову",
-                            "introduction": "Виберіть мову інтерфейсу Home Assistant на цьому пристрої",
-                            "language": "Мова"
-                        },
-                        "themes": {
-                            "header": "Встановити тему",
-                            "theme": "Тема"
                         }
                     }
                 },

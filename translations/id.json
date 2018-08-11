@@ -289,21 +289,6 @@
                                 "restart": "Ulang kembali",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurasikan notifikasi push",
-                            "introduction": "Aktifkan setelan ini untuk menerima pemberitahuan push pada perangkat ini",
-                            "push_notifications": "Pemberitahuan push"
-                        },
-                        "translation": {
-                            "header": "Pilih bahasa",
-                            "introduction": "Pilih bahasa untuk antarmuka Home Assistant pada perangkat ini",
-                            "language": "Bahasa"
-                        },
-                        "themes": {
-                            "header": "Tetapkan tema",
-                            "introduction": "Pilih 'Backend-selected' untuk menggunakan tema apa pun yang dipilih oleh backend atau pilih tema untuk perangkat ini",
-                            "theme": "Tema"
                         }
                     }
                 },
