@@ -338,21 +338,6 @@
                                 "restart": "重啟",
                                 "stop": "停止"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "設定通知推送",
-                            "introduction": "啟用通知推送",
-                            "push_notifications": "通知推送"
-                        },
-                        "translation": {
-                            "header": "選擇語言",
-                            "introduction": "選擇想顯示的介面語言",
-                            "language": "語言"
-                        },
-                        "themes": {
-                            "header": "設定主題",
-                            "introduction": "選擇本設備使用主題，默認主題為 “Backend-selected”",
-                            "theme": "主題"
                         }
                     }
                 },

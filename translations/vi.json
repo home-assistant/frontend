@@ -306,21 +306,6 @@
                                 "restart": "Khởi động lại",
                                 "stop": "Dừng"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Cấu hình thông báo đẩy ",
-                            "introduction": "Kích hoạt thiết lập này để thông báo đẩy trên thiết bị này",
-                            "push_notifications": "Thông báo đẩy"
-                        },
-                        "translation": {
-                            "header": "Chọn ngôn ngữ",
-                            "introduction": "Chọn ngôn ngữ cho giao diện Home Assistant trên thiết bị này",
-                            "language": "Ngôn ngữ"
-                        },
-                        "themes": {
-                            "header": "Thiết lập một giao diện",
-                            "introduction": "Chọn 'Backend-selected' để sử dụng bất cứ giao diện nào hoặc chọn giao diện cho thiết bị này",
-                            "theme": "Giao diện"
                         }
                     }
                 },

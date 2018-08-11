@@ -338,21 +338,6 @@
                                 "restart": "Ponovni zagon",
                                 "stop": "Ustavi"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Nastavite push obvestila",
-                            "introduction": "To nastavitev omogočite za prejemanje potisnih obvestil v tej napravi",
-                            "push_notifications": "Push obvestila"
-                        },
-                        "translation": {
-                            "header": "Izberite jezik",
-                            "introduction": "Izberite jezik za Home Assistenta na tej napravi",
-                            "language": "Jezik"
-                        },
-                        "themes": {
-                            "header": "Nastavi temo",
-                            "introduction": "Izberite \"Backend-selected\", da uporabite samodejno izbrano temo ali izberite temo za to napravo",
-                            "theme": "Tema"
                         }
                     }
                 },

@@ -163,20 +163,6 @@
                                 "restart": "Restartēt",
                                 "stop": "Apturēt"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurēt pašpiegādes paziņojumus",
-                            "introduction": "Iespējojiet, lai saņemtu pašpiegādes paziņojumus šajā ierīcē",
-                            "push_notifications": "Pašpiegādes paziņojumi"
-                        },
-                        "translation": {
-                            "header": "Izvēlēties valodu",
-                            "introduction": "Izvēlieties Home Assistant saskarnes valodu šajā ierīcē",
-                            "language": "Valoda"
-                        },
-                        "themes": {
-                            "header": "Iestatīt motīvu",
-                            "theme": "Motīvs"
                         }
                     }
                 },

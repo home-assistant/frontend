@@ -338,21 +338,6 @@
                                 "restart": "Herstarten",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configureer pushmeldingen",
-                            "introduction": "Schakel deze instelling in om pushmeldingen op dit apparaat te ontvangen",
-                            "push_notifications": "Pushmeldingen"
-                        },
-                        "translation": {
-                            "header": "Kies een taal",
-                            "introduction": "Kies een taal voor de Home Assistant interface op dit apparaat",
-                            "language": "Taal"
-                        },
-                        "themes": {
-                            "header": "Stel een thema in",
-                            "introduction": "Kies 'gekozen in beheeromgeving' om het thema te gebruiken dat is gekozen in de beheeromgeving of kies een thema voor dit apparaat",
-                            "theme": "Thema"
                         }
                     }
                 },

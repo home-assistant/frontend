@@ -328,20 +328,6 @@
                                 "restart": "Reiniciar",
                                 "stop": "Detener"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurar notificaciones push",
-                            "introduction": "Habilite esta configuración para recibir notificaciones push en este dispositivo",
-                            "push_notifications": "Notificaciones Push"
-                        },
-                        "translation": {
-                            "header": "Seleccione un idioma",
-                            "introduction": "Elija un idioma para la interfaz de Home Assistant en este dispositivo",
-                            "language": "Idioma"
-                        },
-                        "themes": {
-                            "header": "Establecer un tema",
-                            "theme": "Plantilla"
                         }
                     }
                 },

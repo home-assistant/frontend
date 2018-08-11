@@ -209,20 +209,6 @@
                                 "restart": "再起動",
                                 "stop": "停止"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "プッシュ通知の設定",
-                            "introduction": "この機器でプッシュ通知を受信するには、この設定を有効にしてください",
-                            "push_notifications": "プッシュ通知"
-                        },
-                        "translation": {
-                            "header": "言語の選択",
-                            "introduction": "この機器でのHome Assistantインターフェイスの言語を選択してください",
-                            "language": "言語"
-                        },
-                        "themes": {
-                            "header": "テーマを設定",
-                            "theme": "テーマ"
                         }
                     }
                 },

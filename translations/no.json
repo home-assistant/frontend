@@ -338,21 +338,6 @@
                                 "restart": "Start på nytt",
                                 "stop": "Stopp"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurer push varslinger",
-                            "introduction": "Aktiver denne innstillingen for å motta push varsler på denne enheten",
-                            "push_notifications": "Push varslinger"
-                        },
-                        "translation": {
-                            "header": "Velg et språk",
-                            "introduction": "Velg et språk for Home Assistant grensesnittet på denne enheten",
-                            "language": "Språk"
-                        },
-                        "themes": {
-                            "header": "Angi et tema",
-                            "introduction": "Velg \"Backend-selected\" for å bruke standard tema eller velg et tema for denne enheten",
-                            "theme": "Tema"
                         }
                     }
                 },

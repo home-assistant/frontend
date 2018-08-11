@@ -338,21 +338,6 @@
                                 "restart": "重启服务",
                                 "stop": "停止服务"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "设置通知推送",
-                            "introduction": "启用此项以在本设备接受通知推送",
-                            "push_notifications": "通知推送"
-                        },
-                        "translation": {
-                            "header": "选择语言",
-                            "introduction": "选择 Home Assistant 在本设备显示的语言",
-                            "language": "语言"
-                        },
-                        "themes": {
-                            "header": "设定主题",
-                            "introduction": "为本设备选择一个主题，或选择 “Backend-selected” 使用后端默认主题",
-                            "theme": "主题"
                         }
                     }
                 },

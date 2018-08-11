@@ -321,20 +321,6 @@
                                 "restart": "הפעלה מחדש",
                                 "stop": "עצור"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "הגדר התראות דחיפה",
-                            "introduction": "הפעל הגדרה זו כדי לקבל הודעות דחיפה במכשיר זה",
-                            "push_notifications": "הודעות דחיפה"
-                        },
-                        "translation": {
-                            "header": "בחר שפה",
-                            "introduction": "בחר שפה עבור ממשק Home Assistant במכשיר זה",
-                            "language": "שפה"
-                        },
-                        "themes": {
-                            "header": "הגדר ערכת נושא",
-                            "theme": "ערכת נושא"
                         }
                     }
                 },

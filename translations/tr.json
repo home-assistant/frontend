@@ -307,21 +307,6 @@
                                 "restart": "Yeniden başlat",
                                 "stop": "Durdur"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Bildirimleri ayarlayın",
-                            "introduction": "Bu cihazda bildirim almak için bu ayarı etkinleştirin",
-                            "push_notifications": "Bildirimler"
-                        },
-                        "translation": {
-                            "header": "Bir dil seçin",
-                            "introduction": "Bu cihazdaki Home Assistant arayüzü için bir dil seçin",
-                            "language": "Dil"
-                        },
-                        "themes": {
-                            "header": "Bir tema ayarla",
-                            "introduction": "'Seçili-arkauç' un seçtiği temayı kullanın veya bu cihaz için yeni bir tema seçiniz.",
-                            "theme": "Tema"
                         }
                     }
                 },
