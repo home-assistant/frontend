@@ -5,49 +5,44 @@ import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import EventsMixin from '../../mixins/events-mixin.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
 
-import '../ha-config-section.js';
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import './ha-settings-row.js';
 
 /*
  * @appliesMixin LocalizeMixin
  * @appliesMixin EventsMixin
  */
-class HaConfigSectionTranslation extends
+class HaPickLanguageRow extends
   LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
-    <ha-config-section is-wide="[[isWide]]">
-      <span slot="header">[[localize('ui.panel.config.core.section.translation.header')]]</span>
-      <span slot="introduction">
-        [[localize('ui.panel.config.core.section.translation.introduction')]]
+    <style>
+      a { color: var(--primary-color); }
+    </style>
+    <ha-settings-row narrow='[[narrow]]'>
+      <span slot='heading'>[[localize('ui.panel.profile.language.header')]]</span>
+      <span slot='description'>
+        <a
+          href='https://developers.home-assistant.io/docs/en/internationalization_translation.html'
+          target='_blank'>[[localize('ui.panel.profile.language.link_promo')]]</a>
       </span>
-
-      <paper-card>
-        <div class="card-content">
-          <paper-dropdown-menu label="[[localize('ui.panel.config.core.section.translation.language')]]" dynamic-align="">
-            <paper-listbox slot="dropdown-content" attr-for-selected="language-tag" selected="{{languageSelection}}">
-              <template is="dom-repeat" items="[[languages]]">
-                <paper-item language-tag$="[[item.tag]]">[[item.nativeName]]</paper-item>
-              </template>
-            </paper-listbox>
-          &gt;</paper-dropdown-menu>
-        </div>
-      </paper-card>
-    </ha-config-section>
-`;
+      <paper-dropdown-menu label="[[localize('ui.panel.profile.language.dropdown_label')]]" dynamic-align="">
+        <paper-listbox slot="dropdown-content" attr-for-selected="language-tag" selected="{{languageSelection}}">
+          <template is="dom-repeat" items="[[languages]]">
+            <paper-item language-tag$="[[item.tag]]">[[item.nativeName]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
+    </ha-settings-row>
+    `;
   }
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
-
-      isWide: {
-        type: Boolean,
-      },
+      hass: Object,
+      narrow: Boolean,
       languageSelection: {
         type: String,
         observer: 'languageSelectionChanged',
@@ -83,4 +78,4 @@ class HaConfigSectionTranslation extends
   }
 }
 
-customElements.define('ha-config-section-translation', HaConfigSectionTranslation);
+customElements.define('ha-pick-language-row', HaPickLanguageRow);
