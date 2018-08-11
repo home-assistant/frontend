@@ -23,8 +23,6 @@ class HaChangePasswordCard extends PolymerElement {
       }
       paper-card {
         display: block;
-        max-width: 600px;
-        margin: 16px auto;
       }
       .currentPassword {
         margin-top: -4px;
@@ -48,22 +46,24 @@ class HaChangePasswordCard extends PolymerElement {
             auto-validate
             error-message='Required'
           ></paper-input>
-          <paper-input
-            label='New Password'
-            type='password'
-            value='{{_password1}}'
-            required
-            auto-validate
-            error-message='Required'
-          ></paper-input>
-          <paper-input
-            label='Confirm New Password'
-            type='password'
-            value='{{_password2}}'
-            required
-            auto-validate
-            error-message='Required'
-          ></paper-input>
+          <template is='dom-if' if='[[_currentPassword]]'>
+            <paper-input
+              label='New Password'
+              type='password'
+              value='{{_password1}}'
+              required
+              auto-validate
+              error-message='Required'
+            ></paper-input>
+            <paper-input
+              label='Confirm New Password'
+              type='password'
+              value='{{_password2}}'
+              required
+              auto-validate
+              error-message='Required'
+            ></paper-input>
+          </template>
         </div>
         <div class="card-actions">
           <template is="dom-if" if="[[_loading]]">
