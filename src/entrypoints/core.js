@@ -37,7 +37,7 @@ function redirectLogin() {
   document.location = `${__PUBLIC_PATH__}authorize.html?response_type=code&client_id=${encodeURIComponent(clientId())}&redirect_uri=${encodeURIComponent(location.toString())}`;
 }
 
-window.refreshToken = () =>
+window.refreshToken = () => (window.tokens ?
   refreshToken_(clientId(), window.tokens.refresh_token).then((accessTokenResp) => {
     window.tokens = Object.assign({}, window.tokens, accessTokenResp);
     localStorage.tokens = JSON.stringify(window.tokens);
@@ -45,7 +45,7 @@ window.refreshToken = () =>
       access_token: accessTokenResp.access_token,
       expires: window.tokens.expires
     };
-  }, () => redirectLogin());
+  }, () => redirectLogin()) : redirectLogin());
 
 function resolveCode(code) {
   fetchToken(clientId(), code).then((tokens) => {
