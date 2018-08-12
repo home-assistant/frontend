@@ -145,11 +145,11 @@ export default class MediaPlayerEntity {
   }
 
   get channel() {
-    if (this._attr.media_content_type == 'channel') {
-	return this._attr.media_title;
-    } else {
-        return;
+    if (this._attr.media_content_type === 'channel') {
+      return this._attr.media_title;
     }
+
+    return '';
   }
 
   get channelList() {

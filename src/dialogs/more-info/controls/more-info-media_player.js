@@ -146,7 +146,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         value: 0,
         observer: 'handleSourceChanged',
       },
-      
+
       channelIndex: {
         type: Number,
         value: 0,
