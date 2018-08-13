@@ -525,6 +525,27 @@
                         "delete_user": "Izbriši uporabnika"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push obvestila",
+                    "description": "Prikazuj obvestila na tej napravi",
+                    "error_load_platform": "Konfiguriraj notify.html5 (push obvestila).",
+                    "error_use_https": "Zahteva SSL za Frontend.",
+                    "push_notifications": "Push obvestila",
+                    "link_promo": "Preberite več"
+                },
+                "language": {
+                    "header": "Jezik",
+                    "link_promo": "Pomagajte pri prevodu",
+                    "dropdown_label": "Jezik"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Teme niso na voljo.",
+                    "link_promo": "Preberite več o temah",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {

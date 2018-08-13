@@ -90,6 +90,16 @@
             "sunny": "Saulains",
             "windy": "Vējains",
             "windy-variant": "Vējains"
+        },
+        "vacuum": {
+            "cleaning": "Notiek uzkopšana",
+            "docked": "Pie doka",
+            "error": "Kļūda",
+            "idle": "Dīkstāvē",
+            "off": "Izslēgts",
+            "on": "Ieslēgts",
+            "paused": "Apturēts",
+            "returning": "Ceļā pie doka"
         }
     },
     "state_badge": {
@@ -252,18 +262,38 @@
             },
             "media_player": {
                 "source": "Avots"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Atsākt uzkopšanu",
+                    "return_to_base": "Atgriezties pie doka",
+                    "start_cleaning": "Sākt uzkopšanu",
+                    "turn_on": "Izslēgt",
+                    "turn_off": "Ieslēgt"
+                }
             }
         },
         "components": {
             "relative_time": {
                 "past": "{time} atpakaļ",
                 "future": "Pēc {time}",
-                "never": "Nekad"
+                "never": "Nekad",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekundes}\n}",
+                    "minute": "{count} {count, plural,\n  one {minūte}\n  other {minūtes}\n}",
+                    "hour": "{count} {count, plural,\n  one {stunda}\n  other {stundas}\n}",
+                    "day": "{count} {count, plural,\n  one {diena}\n  other {dienas}\n}",
+                    "week": "{count} {count, plural,\n  one {nedēļa}\n  other {nedēļas}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Vēsturiskie ieraksti par stāvokli tiek ielādēti.",
+                "no_history_found": "Vēsturiskie ieraksti par stāvokli netika atrasti."
             }
         },
         "notification_toast": {
-            "entity_turned_on": "{entity} ieslēgts.",
-            "entity_turned_off": "{entity} izslēgts.",
+            "entity_turned_on": "Ieslēdzu {entity}.",
+            "entity_turned_off": "Izslēdzu {entity}.",
             "service_called": "Serviss {service} izsaukts.",
             "service_call_failed": "Neizdevās izsaukt servisu {service}.",
             "connection_lost": "Savienojums zaudēts. Atkārtota savienošanās ..."
@@ -293,7 +323,8 @@
         "sun": "Saule",
         "switch": "Slēdzis",
         "updater": "Atjauninātājs",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Putekļsūcējs"
     },
     "attribute": {
         "weather": {

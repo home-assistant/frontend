@@ -525,6 +525,27 @@
                         "delete_user": "Slett bruker"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push varslinger",
+                    "description": "Send varslinger til denne enheten",
+                    "error_load_platform": "Konfigurer notify.html5.",
+                    "error_use_https": "Krever SSL aktivert for grensesnitt.",
+                    "push_notifications": "Push varslinger",
+                    "link_promo": "Lær mer"
+                },
+                "language": {
+                    "header": "Språk",
+                    "link_promo": "Bidra til å oversette",
+                    "dropdown_label": "Språk"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Ingen temaer er tilgjengelig.",
+                    "link_promo": "Lær om temaer",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {
@@ -672,10 +693,10 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "Skrudd på {entity}.",
-            "entity_turned_off": "Skrudd av {entity}.",
-            "service_called": "Tjenesten {service} tilkalt.",
-            "service_call_failed": "Kunne ikke tilkalle tjenesten {service}.",
+            "entity_turned_on": "Slått på: {entity}",
+            "entity_turned_off": "Slått av: {entity}",
+            "service_called": "Tilkalte tjenesten: {service}",
+            "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt..."
         },
         "dialogs": {

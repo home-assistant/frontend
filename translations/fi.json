@@ -253,6 +253,16 @@
             "sunny": "Aurinkoinen",
             "windy": "Tuulinen",
             "windy-variant": "Tuulinen"
+        },
+        "vacuum": {
+            "cleaning": "Imuroi",
+            "docked": "Telakoituna",
+            "error": "Virhe",
+            "idle": "Lepotilassa",
+            "off": "Pois päältä",
+            "on": "Päällä",
+            "paused": "Pysäytetty",
+            "returning": "Palaamassa telakkaan"
         }
     },
     "state_badge": {
@@ -515,6 +525,27 @@
                         "delete_user": "Poista käyttäjä"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notifikaatiot",
+                    "description": "Tilaa notifikaatiot tälle laitteelle",
+                    "error_load_platform": "Konfiguroi notify.html5 komponentti",
+                    "error_use_https": "Vaatii SSL suojauksen",
+                    "push_notifications": "Notifikaatiot",
+                    "link_promo": "Lisätietoja"
+                },
+                "language": {
+                    "header": "Kieli",
+                    "link_promo": "Auta kääntämään",
+                    "dropdown_label": "Kieli"
+                },
+                "themes": {
+                    "header": "Teema",
+                    "error_no_theme": "Ei teemoja käytettävissä.",
+                    "link_promo": "Lisätietoja teemoista",
+                    "dropdown_label": "Teema"
+                }
             }
         },
         "sidebar": {
@@ -624,6 +655,15 @@
                 "code": "Koodi",
                 "lock": "Lukitse",
                 "unlock": "Avaa lukitus"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Jatka imurointia",
+                    "return_to_base": "Palaa telakkaan",
+                    "start_cleaning": "Aloita imurointi",
+                    "turn_on": "Päälle",
+                    "turn_off": "Sammuta"
+                }
             }
         },
         "components": {
@@ -695,7 +735,8 @@
         "switch": "Kytkin",
         "updater": "Päivitys",
         "weblink": "Linkki",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Imuri"
     },
     "attribute": {
         "weather": {
