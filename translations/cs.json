@@ -525,6 +525,27 @@
                         "delete_user": "Odstranit uživatele"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push notifikace",
+                    "description": "Posílat oznámení na toto zařízení",
+                    "error_load_platform": "Konfigurovat notify.html5.",
+                    "error_use_https": "Vyžaduje SSL pro frontend.",
+                    "push_notifications": "Push notifikace",
+                    "link_promo": "Další informace"
+                },
+                "language": {
+                    "header": "Jazyk",
+                    "link_promo": "Pomoc s překladem",
+                    "dropdown_label": "Jazyk"
+                },
+                "themes": {
+                    "header": "Motiv",
+                    "error_no_theme": "Žádné motivy nejsou k dispozici.",
+                    "link_promo": "Další info o motivech",
+                    "dropdown_label": "Motiv"
+                }
             }
         },
         "sidebar": {
