@@ -9,6 +9,7 @@ import translationMetadata from '../../../build-translations/translationMetadata
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
+import { refreshToken } from '../../common/auth/token.js';
 import { getState } from '../../util/ha-pref-storage.js';
 import { getActiveTranslation } from '../../util/hass-translation.js';
 import hassCallApi from '../../util/hass-call-api.js';
@@ -103,7 +104,7 @@ export default superClass =>
           try {
             // Refresh token if it will expire in 30 seconds
             if (auth.accessToken && Date.now() + 30000 > auth.expires) {
-              const accessToken = await window.refreshToken();
+              const accessToken = await refreshToken();
               conn.options.accessToken = accessToken.access_token;
               conn.options.expires = accessToken.expires;
             }
@@ -112,7 +113,7 @@ export default superClass =>
             if (!err || err.status_code !== 401 || !auth.accessToken) throw err;
 
             // If we connect with access token and get 401, refresh token and try again
-            const accessToken = await window.refreshToken();
+            const accessToken = await refreshToken();
             conn.options.accessToken = accessToken.access_token;
             conn.options.expires = accessToken.expires;
             return await hassCallApi(host, auth, method, path, parameters);
@@ -159,7 +160,7 @@ export default superClass =>
         while (this.unsubFuncs.length) {
           this.unsubFuncs.pop()();
         }
-        const accessToken = await window.refreshToken();
+        const accessToken = await refreshToken();
         this._handleNewConnProm(window.createHassConnection(null, accessToken));
       };
 
