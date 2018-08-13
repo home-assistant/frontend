@@ -18,6 +18,7 @@ import SidebarMixin from './sidebar-mixin.js';
 import DialogManagerMixin from './dialog-manager-mixin.js';
 import ConnectionMixin from './connection-mixin.js';
 import NotificationMixin from './notification-mixin.js';
+import DisconnectToastMixin from './disconnect-toast-mixin.js';
 
 import(/* webpackChunkName: "login-form" */ '../../layouts/login-form.js');
 
@@ -29,6 +30,7 @@ class HomeAssistant extends ext(PolymerElement, [
   TranslationsMixin,
   MoreInfoMixin,
   SidebarMixin,
+  DisconnectToastMixin,
   ConnectionMixin,
   NotificationMixin,
   DialogManagerMixin,
