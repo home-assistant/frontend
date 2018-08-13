@@ -525,6 +525,27 @@
                         "delete_user": "사용자 삭제"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "푸시 알림",
+                    "description": "이 기기에 알림 보내기",
+                    "error_load_platform": "notify.html5 를 구성해주세요.",
+                    "error_use_https": "프론트 엔드에는 SSL 사용이 필요합니다.",
+                    "push_notifications": "푸시 알림",
+                    "link_promo": "더 알아보기"
+                },
+                "language": {
+                    "header": "언어",
+                    "link_promo": "번역 도와주기",
+                    "dropdown_label": "언어"
+                },
+                "themes": {
+                    "header": "테마",
+                    "error_no_theme": "사용할 수 있는 테마가 없습니다.",
+                    "link_promo": "테마에 대해 알아보기",
+                    "dropdown_label": "테마"
+                }
             }
         },
         "sidebar": {

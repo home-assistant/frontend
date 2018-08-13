@@ -525,6 +525,27 @@
                         "delete_user": "Удалить пользователя"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push-уведомления",
+                    "description": "Отправлять уведомления на это устройство",
+                    "error_load_platform": "Настроить notify.html5.",
+                    "error_use_https": "Требуется SSL для интерфейса.",
+                    "push_notifications": "Push-уведомления",
+                    "link_promo": "Узнать больше"
+                },
+                "language": {
+                    "header": "Язык",
+                    "link_promo": "Помочь в переводе",
+                    "dropdown_label": "Язык"
+                },
+                "themes": {
+                    "header": "Тема",
+                    "error_no_theme": "Нет доступных тем.",
+                    "link_promo": "Узнать о темах",
+                    "dropdown_label": "Тема"
+                }
             }
         },
         "sidebar": {
