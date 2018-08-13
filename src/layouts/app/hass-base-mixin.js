@@ -9,6 +9,7 @@ export default superClass => class extends superClass {
   // Exists so all methods can safely call super method
   hassConnected() {}
   hassReconnected() {}
+  hassDisconnected() {}
   panelUrlChanged(newPanelUrl) {}
   hassChanged(hass, oldHass) {
     this.__provideHass.forEach((el) => {
