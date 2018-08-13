@@ -1,4 +1,3 @@
-import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
