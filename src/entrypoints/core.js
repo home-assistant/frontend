@@ -38,14 +38,13 @@ function redirectLogin() {
   return new Promise();
 }
 
-let tokenCache = undefined;
+let tokenCache;
 
 function storeTokens(tokens) {
-  console.log('storingTokens', tokens)
   tokenCache = tokens;
   try {
     localStorage.tokens = JSON.stringify(tokens);
-  } catch (err) {}
+  } catch (err) {}  // eslint-disable-line
 }
 
 function loadTokens() {
@@ -98,7 +97,8 @@ function main() {
   const tokens = loadTokens();
 
   if (tokens == null) {
-    return redirectLogin();
+    redirectLogin();
+    return;
   }
 
   if (Date.now() + 30000 > tokens.expires) {

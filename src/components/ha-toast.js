@@ -7,7 +7,7 @@ class HaToast extends PaperToast {
     super.connectedCallback();
 
     if (!this._resizeListener) {
-      this._resizeListener = (ev) => this.classList.toggle('fit-bottom', ev.matches);
+      this._resizeListener = ev => this.classList.toggle('fit-bottom', ev.matches);
       this._mediaq = window.matchMedia('(max-width: 599px');
     }
     this._mediaq.addListener(this._resizeListener);
