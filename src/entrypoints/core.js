@@ -34,24 +34,51 @@ function clientId() {
 }
 
 function redirectLogin() {
-  document.location = `${__PUBLIC_PATH__}authorize.html?response_type=code&client_id=${encodeURIComponent(clientId())}&redirect_uri=${encodeURIComponent(location.toString())}`;
+  document.location.href = `/auth/authorize?response_type=code&client_id=${encodeURIComponent(clientId())}&redirect_uri=${encodeURIComponent(location.toString())}`;
+  return new Promise();
 }
 
-window.refreshToken = () => (window.tokens ?
-  refreshToken_(clientId(), window.tokens.refresh_token).then((accessTokenResp) => {
-    window.tokens = Object.assign({}, window.tokens, accessTokenResp);
-    localStorage.tokens = JSON.stringify(window.tokens);
-    return {
-      access_token: accessTokenResp.access_token,
-      expires: window.tokens.expires
-    };
-  }, () => redirectLogin()) : redirectLogin());
+let tokenCache = undefined;
+
+function storeTokens(tokens) {
+  console.log('storingTokens', tokens)
+  tokenCache = tokens;
+  try {
+    localStorage.tokens = JSON.stringify(tokens);
+  } catch (err) {}
+}
+
+function loadTokens() {
+  if (tokenCache === undefined) {
+    try {
+      const tokens = localStorage.tokens;
+      tokenCache = tokens ? JSON.parse(tokens) : null;
+    } catch (err) {
+      tokenCache = null;
+    }
+  }
+  return tokenCache;
+}
+
+window.refreshToken = () => {
+  const tokens = loadTokens();
+
+  if (tokens === null) {
+    return redirectLogin();
+  }
+
+  return refreshToken_(clientId(), tokens.refresh_token).then((accessTokenResp) => {
+    const newTokens = Object.assign({}, tokens, accessTokenResp);
+    storeTokens(newTokens);
+    return newTokens;
+  }, () => redirectLogin());
+};
 
 function resolveCode(code) {
   fetchToken(clientId(), code).then((tokens) => {
-    localStorage.tokens = JSON.stringify(tokens);
+    storeTokens(tokens);
     // Refresh the page and have tokens in place.
-    document.location = location.pathname;
+    document.location.href = location.pathname;
   }, (err) => {
     // eslint-disable-next-line
     console.error('Resolve token failed', err);
@@ -68,29 +95,23 @@ function main() {
       return;
     }
   }
-  if (localStorage.tokens) {
-    window.tokens = JSON.parse(localStorage.tokens);
-    if (window.tokens.expires === undefined) {
-      // for those tokens got from previous version
-      window.tokens.expires = Date.now() - 1;
-    }
-    if (Date.now() + 30000 > window.tokens.expires) {
-      // refresh access token if it will expire in 30 seconds to avoid invalid auth event
-      window.hassConnection = window.refreshToken().then(accessToken => init(null, accessToken));
-    } else {
-      const accessTokenObject = {
-        access_token: window.tokens.access_token,
-        expires: window.tokens.expires
-      };
-      window.hassConnection = init(null, accessTokenObject).catch((err) => {
-        if (err !== ERR_INVALID_AUTH) throw err;
+  const tokens = loadTokens();
 
-        return window.refreshToken().then(accessToken => init(null, accessToken));
-      });
-    }
+  if (tokens == null) {
+    return redirectLogin();
+  }
+
+  if (Date.now() + 30000 > tokens.expires) {
+    // refresh access token if it will expire in 30 seconds to avoid invalid auth event
+    window.hassConnection = window.refreshToken().then(newTokens => init(null, newTokens));
     return;
   }
-  redirectLogin();
+
+  window.hassConnection = init(null, tokens).catch((err) => {
+    if (err !== ERR_INVALID_AUTH) throw err;
+
+    return window.refreshToken().then(newTokens => init(null, newTokens));
+  });
 }
 
 function mainLegacy() {
