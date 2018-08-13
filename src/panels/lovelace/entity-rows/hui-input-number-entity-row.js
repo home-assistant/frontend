@@ -40,7 +40,7 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
                 on-change="_selectedValueChanged"
                 ignore-bar-touch
               ></paper-slider>
-              <div class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</div>
+              <span class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</span>
             </div>
           </template>
           <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'box')]]">
@@ -113,14 +113,11 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
   }
 
   _hiddenState() {
-    if (this._stateObj.attributes.mode !== 'slider') return;
-    const sliderwidth = this.shadowRoot.querySelector('paper-slider').offsetWidth;
-    const stateElement = this.shadowRoot.querySelector('.state');
-    if (sliderwidth < 100) {
-      stateElement.style.display = 'none';
-    } else if (sliderwidth >= 145) {
-      stateElement.style.display = 'inline';
-    }
+    if (!this.$ || this._stateObj.attributes.mode !== 'slider') return;
+    const width = this.$.input_number_card.offsetWidth;
+    const stateEl = this.shadowRoot.querySelector('.state');
+    if (!stateEl) return;
+    stateEl.hidden = width <= 350;
   }
 
   _stateObjChanged(stateObj, oldStateObj) {

@@ -55,6 +55,15 @@ const ENTITIES = [
     unit_of_measurement: '°F',
     friendly_name: 'Ecobee',
     supported_features: 1014
+  }),
+  getEntity('input_number', 'noise_allowance', 5, {
+    min: 0,
+    max: 10,
+    step: 1,
+    mode: 'slider',
+    unit_of_measurement: 'dB',
+    friendly_name: 'Allowed Noise',
+    icon: 'mdi:bell-ring'
   })
 ];
 
@@ -72,6 +81,7 @@ const CONFIGS = [
     - light.bed_light
     - light.non_existing
     - climate.ecobee
+    - input_number.noise_allowance
     `
   },
   {
@@ -86,6 +96,7 @@ const CONFIGS = [
     - lock.kitchen_door
     - light.bed_light
     - climate.ecobee
+    - input_number.noise_allowance
   title: Random group
     `
   },
@@ -101,6 +112,7 @@ const CONFIGS = [
     - lock.kitchen_door
     - light.bed_light
     - climate.ecobee
+    - input_number.noise_allowance
   title: Random group
   show_header_toggle: false
     `
@@ -130,6 +142,7 @@ const CONFIGS = [
     - lock.kitchen_door
     - light.bed_light
     - climate.ecobee
+    - input_number.noise_allowance
   title: Random group
   show_header_toggle: false
     `
