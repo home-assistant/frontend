@@ -525,6 +525,27 @@
                         "delete_user": "Felhasználó törlése"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push Értesítések",
+                    "description": "Értesítések küldése erre az eszközre",
+                    "error_load_platform": "Állítsd be a notify.html5-t.",
+                    "error_use_https": "Szükséges az SSL engedélyezése a felülethez.",
+                    "push_notifications": "Push értesítések",
+                    "link_promo": "Tudj meg többet"
+                },
+                "language": {
+                    "header": "Nyelv",
+                    "link_promo": "Segíts a fordításban",
+                    "dropdown_label": "Nyelv"
+                },
+                "themes": {
+                    "header": "Téma",
+                    "error_no_theme": "Nincsenek elérhető témák.",
+                    "link_promo": "Tudj meg többet a témákról",
+                    "dropdown_label": "Téma"
+                }
             }
         },
         "sidebar": {
@@ -659,11 +680,11 @@
                 "future": "{time} múlva",
                 "never": "Soha",
                 "duration": {
-                    "second": "{count} {count, plural,\n  one {másodperc}\n  other {másodperc}\n}",
-                    "minute": "{count} {count, plural,\n  one {perc}\n  other {perc}\n}",
-                    "hour": "{count} {count, plural,\none {nappal}\nother {nappal}\n}",
+                    "second": "{count} {count, plural,\n  one {másodperccel}\n  other {másodperccel}\n}",
+                    "minute": "{count} {count, plural,\n  one {perccel}\n  other {perccel}\n}",
+                    "hour": "{count} {count, plural,\none {órával}\nother {órával}\n}",
                     "day": "{count} {count, plural,\n  one {nappal}\n  other {nappal}\n}",
-                    "week": "{count} {count, plural,\n  one {hét}\n  other {hét}\n}"
+                    "week": "{count} {count, plural,\n  one {héttel}\n  other {héttel}\n}"
                 }
             },
             "history_charts": {

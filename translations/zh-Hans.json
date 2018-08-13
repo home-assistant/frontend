@@ -525,6 +525,27 @@
                         "delete_user": "删除用户"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "通知推送",
+                    "description": "向本设备发送通知",
+                    "error_load_platform": "请配置 notify.html5。",
+                    "error_use_https": "需要为前端启用 SSL。",
+                    "push_notifications": "通知推送",
+                    "link_promo": "了解更多信息"
+                },
+                "language": {
+                    "header": "语言",
+                    "link_promo": "帮助翻译",
+                    "dropdown_label": "语言"
+                },
+                "themes": {
+                    "header": "主题",
+                    "error_no_theme": "没有可用的主题。",
+                    "link_promo": "了解主题",
+                    "dropdown_label": "主题"
+                }
             }
         },
         "sidebar": {

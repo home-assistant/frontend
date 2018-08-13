@@ -525,6 +525,27 @@
                         "delete_user": "Eliminar usuari"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificacions push",
+                    "description": "Envia notificacions a aquest dispositiu",
+                    "error_load_platform": "Configurar notify.html5.",
+                    "error_use_https": "Requereix tenir SSL habilitat a la interfície (frontend).",
+                    "push_notifications": "Notificacions push",
+                    "link_promo": "Més informació"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ajuda a traduir",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "No hi ha temes disponibles.",
+                    "link_promo": "Més informació sobre temes",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {

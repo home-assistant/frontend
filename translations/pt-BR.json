@@ -525,6 +525,27 @@
                         "delete_user": "Excluir usuário"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificações push",
+                    "description": "Enviar notificações para este dispositivo",
+                    "error_load_platform": "Configure o notify.html5.",
+                    "error_use_https": "Requer SSL habilitado para o frontend.",
+                    "push_notifications": "Notificações push",
+                    "link_promo": "Saiba mais"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ajude a traduzir",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Não há temas disponíveis.",
+                    "link_promo": "Aprenda sobre temas",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {

@@ -35,7 +35,7 @@
             "armed_custom_bypass": "Armada zona específica "
         },
         "automation": {
-            "off": "apagado",
+            "off": "Apagado",
             "on": "Encendido"
         },
         "binary_sensor": {
@@ -180,7 +180,7 @@
             "problem": "Problema"
         },
         "input_boolean": {
-            "off": "Apagadp",
+            "off": "Apagado",
             "on": "Encendido"
         },
         "light": {
@@ -253,6 +253,16 @@
             "sunny": "Soleado",
             "windy": "Ventoso",
             "windy-variant": "Ventoso"
+        },
+        "vacuum": {
+            "cleaning": "Limpiando",
+            "docked": "Acoplado",
+            "error": "Error",
+            "idle": "Inactivo",
+            "off": "Encendida",
+            "on": "Apagada",
+            "paused": "Pausado",
+            "returning": "Regresar al dock"
         }
     },
     "state_badge": {
@@ -515,6 +525,27 @@
                         "delete_user": "Eliminar usuario"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificaciones Push",
+                    "description": "Enviar notificaciones a este dispositivo",
+                    "error_load_platform": "Configurar notify.html5.",
+                    "error_use_https": "Requiere SSL habilitado para la interfaz.",
+                    "push_notifications": "Notificaciones Push",
+                    "link_promo": "Más información"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ayuda a traducir",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "No hay temas disponibles.",
+                    "link_promo": "Más información sobre los temas",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {
@@ -624,6 +655,15 @@
                 "code": "Código",
                 "lock": "Bloquear",
                 "unlock": "Desbloquear"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reanudar la limpieza",
+                    "return_to_base": "Regresar al dock",
+                    "start_cleaning": "Comenzar a limpiar",
+                    "turn_on": "Encender",
+                    "turn_off": "Apagar"
+                }
             }
         },
         "components": {
@@ -662,7 +702,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Guardar",
-                "name": "Nombre"
+                "name": "Nombre",
+                "entity_id": "ID de la entidad"
             }
         }
     },
@@ -701,7 +742,8 @@
         "switch": "Interruptor",
         "updater": "Actualizador",
         "weblink": "Enlace web",
-        "zwave": ""
+        "zwave": "",
+        "vacuum": "Aspiradora"
     },
     "attribute": {
         "weather": {
