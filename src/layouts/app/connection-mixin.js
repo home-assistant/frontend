@@ -153,15 +153,17 @@ export default superClass =>
       const conn = this.hass.connection;
 
       const reconnected = () => this.hassReconnected();
-      const disconnected = () => this._updateHass({ connected: false });
+      const disconnected = () => this.hassDisconnected();
       const reconnectError = async (_conn, err) => {
         if (err !== ERR_INVALID_AUTH) return;
-        disconnected();
+
         while (this.unsubFuncs.length) {
           this.unsubFuncs.pop()();
         }
         const accessToken = await refreshToken();
-        this._handleNewConnProm(window.createHassConnection(null, accessToken));
+        const newConn = window.createHassConnection(null, accessToken);
+        newConn.then(() => this.hassReconnected());
+        this._handleNewConnProm(newConn);
       };
 
       conn.addEventListener('ready', reconnected);
@@ -189,6 +191,11 @@ export default superClass =>
       super.hassReconnected();
       this._updateHass({ connected: true });
       this._loadPanels();
+    }
+
+    hassDisconnected() {
+      super.hassDisconnected();
+      this._updateHass({ connected: false });
     }
 
     async _loadPanels() {
