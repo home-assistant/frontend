@@ -191,6 +191,12 @@ documentContainer.innerHTML = `<custom-style>
       .card-actions ha-call-service-button.warning:not([disabled]) {
         color: var(--google-red-500);
       }
+
+      .card-actions paper-button[primary] {
+        background-color: var(--primary-color);
+        color: var(--text-primary-color);
+      }
+
     </style>
   </template>
 </dom-module><dom-module id="ha-style-dialog">
