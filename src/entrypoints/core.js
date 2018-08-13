@@ -8,6 +8,7 @@ import {
 import fetchToken from '../common/auth/fetch_token.js';
 import refreshToken_ from '../common/auth/refresh_token.js';
 import parseQuery from '../common/util/parse_query.js';
+import { storeTokens, loadTokens } from '../common/auth/token_storage.js';
 
 const init = window.createHassConnection = function (password, accessToken) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -35,28 +36,7 @@ function clientId() {
 
 function redirectLogin() {
   document.location.href = `/auth/authorize?response_type=code&client_id=${encodeURIComponent(clientId())}&redirect_uri=${encodeURIComponent(location.toString())}`;
-  return new Promise();
-}
-
-let tokenCache;
-
-function storeTokens(tokens) {
-  tokenCache = tokens;
-  try {
-    localStorage.tokens = JSON.stringify(tokens);
-  } catch (err) {}  // eslint-disable-line
-}
-
-function loadTokens() {
-  if (tokenCache === undefined) {
-    try {
-      const tokens = localStorage.tokens;
-      tokenCache = tokens ? JSON.parse(tokens) : null;
-    } catch (err) {
-      tokenCache = null;
-    }
-  }
-  return tokenCache;
+  return new Promise((() => {}));
 }
 
 window.refreshToken = () => {
@@ -74,10 +54,10 @@ window.refreshToken = () => {
 };
 
 function resolveCode(code) {
-  fetchToken(clientId(), code).then((tokens) => {
+  return fetchToken(clientId(), code).then((tokens) => {
     storeTokens(tokens);
-    // Refresh the page and have tokens in place.
-    document.location.href = location.pathname;
+    history.replaceState(null, null, location.pathname);
+    return init(null, tokens);
   }, (err) => {
     // eslint-disable-next-line
     console.error('Resolve token failed', err);
@@ -90,7 +70,7 @@ function main() {
   if (location.search) {
     const query = parseQuery(location.search.substr(1));
     if (query.code) {
-      resolveCode(query.code);
+      window.hassConnection = resolveCode(query.code);
       return;
     }
   }
