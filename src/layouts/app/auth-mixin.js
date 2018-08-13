@@ -9,7 +9,9 @@ export default superClass => class extends superClass {
 
     afterNextRender(null, () => {
       if (askWrite()) {
-        this.shadowRoot.appendChild(document.createElement('ha-store-auth-card'));
+        const el = document.createElement('ha-store-auth-card');
+        this.shadowRoot.appendChild(el);
+        this.provideHass(el);
         import(/* webpackChunkName: "ha-store-auth-card" */ '../../dialogs/ha-store-auth-card.js');
       }
     });

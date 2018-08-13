@@ -326,6 +326,11 @@
     }
   },
   "ui": {
+    "auth_store": {
+      "ask": "Do you want to save this login?",
+      "decline": "No thanks",
+      "confirm": "Save login"
+    },
     "card": {
       "alarm_control_panel": {
         "code": "Code",

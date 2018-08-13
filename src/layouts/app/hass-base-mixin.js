@@ -18,6 +18,7 @@ export default superClass => class extends superClass {
 
   provideHass(el) {
     this.__provideHass.push(el);
+    el.hass = this.hass;
   }
 
   async _updateHass(obj) {

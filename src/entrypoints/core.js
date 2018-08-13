@@ -5,10 +5,10 @@ import {
   subscribeEntities,
 } from 'home-assistant-js-websocket';
 
-import fetchToken from '../common/auth/fetch_token.js';
-import refreshToken_ from '../common/auth/refresh_token.js';
+import { redirectLogin, resolveCode, refreshToken } from '../common/auth/token.js';
+// import refreshToken_ from '../common/auth/refresh_token.js';
 import parseQuery from '../common/util/parse_query.js';
-import { storeTokens, loadTokens } from '../common/auth/token_storage.js';
+import { loadTokens } from '../common/auth/token_storage.js';
 
 const init = window.createHassConnection = function (password, accessToken) {
   const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -30,47 +30,11 @@ const init = window.createHassConnection = function (password, accessToken) {
     });
 };
 
-function clientId() {
-  return `${location.protocol}//${location.host}/`;
-}
-
-function redirectLogin() {
-  document.location.href = `/auth/authorize?response_type=code&client_id=${encodeURIComponent(clientId())}&redirect_uri=${encodeURIComponent(location.toString())}`;
-  return new Promise((() => {}));
-}
-
-window.refreshToken = () => {
-  const tokens = loadTokens();
-
-  if (tokens === null) {
-    return redirectLogin();
-  }
-
-  return refreshToken_(clientId(), tokens.refresh_token).then((accessTokenResp) => {
-    const newTokens = Object.assign({}, tokens, accessTokenResp);
-    storeTokens(newTokens);
-    return newTokens;
-  }, () => redirectLogin());
-};
-
-function resolveCode(code) {
-  return fetchToken(clientId(), code).then((tokens) => {
-    storeTokens(tokens);
-    history.replaceState(null, null, location.pathname);
-    return init(null, tokens);
-  }, (err) => {
-    // eslint-disable-next-line
-    console.error('Resolve token failed', err);
-    alert('Unable to fetch tokens');
-    redirectLogin();
-  });
-}
-
 function main() {
   if (location.search) {
     const query = parseQuery(location.search.substr(1));
     if (query.code) {
-      window.hassConnection = resolveCode(query.code);
+      window.hassConnection = resolveCode(query.code).then(newTokens => init(null, newTokens));
       return;
     }
   }
@@ -83,14 +47,14 @@ function main() {
 
   if (Date.now() + 30000 > tokens.expires) {
     // refresh access token if it will expire in 30 seconds to avoid invalid auth event
-    window.hassConnection = window.refreshToken().then(newTokens => init(null, newTokens));
+    window.hassConnection = refreshToken().then(newTokens => init(null, newTokens));
     return;
   }
 
   window.hassConnection = init(null, tokens).catch((err) => {
     if (err !== ERR_INVALID_AUTH) throw err;
 
-    return window.refreshToken().then(newTokens => init(null, newTokens));
+    return refreshToken().then(newTokens => init(null, newTokens));
   });
 }
 

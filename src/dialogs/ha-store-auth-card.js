@@ -3,23 +3,25 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import { enableWrite } from '../common/auth/token_storage.js';
+import LocalizeMixin from '../mixins/localize-mixin.js';
 
 import '../resources/ha-style.js';
 
-class HaStoreAuth extends PolymerElement {
+class HaStoreAuth extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include='ha-style'>
         paper-card {
           position: fixed;
           padding: 8px 0;
-          bottom: 8px;
-          right: 8px;
+          bottom: 16px;
+          right: 16px;
         }
 
         .card-actions {
           text-align: right;
           border-top: 0;
+          margin-right: -4px;
         }
 
         :host(.small) paper-card {
@@ -30,14 +32,20 @@ class HaStoreAuth extends PolymerElement {
       </style>
       <paper-card elevation="4">
         <div class='card-content'>
-          Do you want to save this login?
+          [[localize('ui.auth_store.ask')]]
         </div>
         <div class='card-actions'>
-          <paper-button on-click='_done'>No thanks</paper-button>
-          <paper-button primary on-click='_save'>Save login</paper-button>
+          <paper-button on-click='_done'>[[localize('ui.auth_store.decline')]]</paper-button>
+          <paper-button primary on-click='_save'>[[localize('ui.auth_store.confirm')]]</paper-button>
         </div>
       </paper-card>
     `;
+  }
+
+  static get properties() {
+    return {
+      hass: Object,
+    };
   }
 
   ready() {
