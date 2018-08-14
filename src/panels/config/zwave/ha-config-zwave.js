@@ -571,7 +571,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     const array = [];
     Object.keys(obj).forEach((key) => {
       array.push({
-        key: key,
+        key,
         value: obj[key],
       });
     });

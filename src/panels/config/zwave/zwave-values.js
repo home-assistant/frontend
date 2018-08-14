@@ -93,7 +93,7 @@ class ZwaveValues extends PolymerElement {
     const values = await this.hass.callApi('GET', `zwave/values/${this.nodes[selectedNode].attributes.node_id}`);
     Object.keys(values).forEach((key) => {
       valueData.push({
-        key: key,
+        key,
         value: values[key],
       });
     });
