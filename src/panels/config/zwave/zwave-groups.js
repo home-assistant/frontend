@@ -74,10 +74,22 @@ class ZwaveGroups extends PolymerElement {
       <template is="dom-if" if="[[_computeIsTargetNodeSelected(_selectedTargetNode)]]">
         <div class="card-actions">
           <template is="dom-if" if="[[!_noAssociationsLeft]]">
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="change_association" service-data="[[_computeAssocServiceData(_selectedGroup, &quot;add&quot;)]]">Add To Group</ha-call-service-button>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="change_association"
+              service-data="[[_addAssocServiceData]]">
+              Add To Group
+            </ha-call-service-button>
           </template>
           <template is="dom-if" if="[[_computeTargetInGroup(_selectedGroup, _selectedTargetNode)]]">
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="change_association" service-data="[[_computeAssocServiceData(_selectedGroup, &quot;remove&quot;)]]">Remove From Group</ha-call-service-button>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="change_association"
+              service-data="[[_removeAssocServiceData]]">
+              Remove From Group
+            </ha-call-service-button>
           </template>
         </div>
       </template>
@@ -93,11 +105,15 @@ class ZwaveGroups extends PolymerElement {
 
       groups: Array,
 
-      selectedNode: Number,
+      selectedNode: {
+        type: Number,
+        observer: '_selectedNodeChanged'
+      },
 
       _selectedTargetNode: {
         type: Number,
-        value: -1
+        value: -1,
+        observer: '_selectedTargetNodeChanged'
       },
 
       _selectedGroup: {
@@ -122,13 +138,22 @@ class ZwaveGroups extends PolymerElement {
         value: true,
         computed: '_computeAssociationsLeft(_selectedGroup)'
       },
+
+      _addAssocServiceData: {
+        type: String,
+        value: ''
+      },
+
+      _removeAssocServiceData: {
+        type: String,
+        value: ''
+      },
     };
   }
 
   static get observers() {
     return [
       '_selectedGroupChanged(groups, _selectedGroup)',
-      '_selectedTargetNodeChanged(nodes, _selectedTargetNode)'
     ];
   }
 
@@ -244,10 +269,20 @@ class ZwaveGroups extends PolymerElement {
 
   _selectedTargetNodeChanged() {
     if (this._selectedGroup === -1) return;
-    this._computeAssocServiceData(this._selectedGroup, 'add');
     if (this._computeTargetInGroup(this._selectedGroup, this._selectedTargetNode)) {
-      this._computeAssocServiceData(this._selectedGroup, 'remove');
+      this.setProperties({
+        _removeAssocServiceData: this._computeAssocServiceData(this._selectedGroup, 'remove')
+      });
+    } else {
+      this.setProperties({
+        _addAssocServiceData: this._computeAssocServiceData(this._selectedGroup, 'add')
+      });
     }
+  }
+
+  _selectedNodeChanged() {
+    if (this.selectedNode === -1) return;
+    this.setProperties({ _selectedTargetNode: -1, _selectedGroup: -1 });
   }
 }
 

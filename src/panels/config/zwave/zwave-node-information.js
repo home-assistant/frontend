@@ -46,10 +46,7 @@ class ZwaveNodeInformation extends PolymerElement {
 
   static get properties() {
     return {
-      nodes: {
-        type: Array,
-        observer: 'nodeChanged'
-      },
+      nodes: Array,
 
       selectedNode: {
         type: Number,
@@ -57,20 +54,16 @@ class ZwaveNodeInformation extends PolymerElement {
         observer: 'nodeChanged'
       },
 
-      selectedNodeAttrs: {
-        type: Array,
-      },
+      selectedNodeAttrs: Array,
 
-      nodeInfoActive: {
-        type: Boolean,
-      },
+      nodeInfoActive: Boolean,
     };
   }
 
   nodeChanged(selectedNode) {
     if (!this.nodes || selectedNode === -1) return;
-    var nodeAttrs = this.nodes[this.selectedNode].attributes;
-    var att = [];
+    const nodeAttrs = this.nodes[this.selectedNode].attributes;
+    const att = [];
     Object.keys(nodeAttrs).forEach(function (key) {
       att.push(key + ': ' + nodeAttrs[key]);
     });

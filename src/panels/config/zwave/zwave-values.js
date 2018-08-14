@@ -38,9 +38,9 @@ class ZwaveValues extends PolymerElement {
       <paper-card heading="Node Values">
         <div class="device-picker">
         <paper-dropdown-menu label="Value" dynamic-align="" class="flex">
-          <paper-listbox slot="dropdown-content" selected="{{selectedValue}}">
+          <paper-listbox slot="dropdown-content" selected="{{_selectedValue}}">
              <template is="dom-repeat" items="[[values]]" as="item">
-              <paper-item>[[computeSelectCaption(item)]]</paper-item>
+              <paper-item>[[_computeSelectCaption(item)]]</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
@@ -52,26 +52,21 @@ class ZwaveValues extends PolymerElement {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
-      nodes: {
-        type: Array,
-      },
+      nodes: Array,
 
-      values: {
-        type: Array,
-      },
+      values: Array,
 
       selectedNode: {
         type: Number,
+        observer: 'selectedNodeChanged',
       },
 
-      selectedValue: {
+      _selectedValue: {
         type: Number,
         value: -1,
-        observer: 'selectedValueChanged'
+        observer: '_selectedValueChanged'
       },
     };
   }
@@ -82,33 +77,36 @@ class ZwaveValues extends PolymerElement {
   }
 
   serviceCalled(ev) {
-    var foo = this;
     if (ev.detail.success) {
-      setTimeout(function () {
-        foo.refreshValues(foo.selectedNode);
+      setTimeout(() => {
+        this._refreshValues(this.selectedNode);
       }, 5000);
     }
   }
 
-  computeSelectCaption(item) {
-    return item.value.label + ' (Instance: ' + item.value.instance + ', Index: ' + item.value.index + ')';
+  _computeSelectCaption(item) {
+    return `${item.value.label} (Instance: ${item.value.instance}, Index: ${item.value.index})`;
   }
 
-  refreshValues(selectedNode) {
-    var valueData = [];
-    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then(function (values) {
-      Object.keys(values).forEach(function (key) {
-        valueData.push({
-          key: key,
-          value: values[key],
-        });
+  async _refreshValues(selectedNode) {
+    const valueData = [];
+    const values = await this.hass.callApi('GET', `zwave/values/${this.nodes[selectedNode].attributes.node_id}`);
+    Object.keys(values).forEach((key) => {
+      valueData.push({
+        key: key,
+        value: values[key],
       });
-      this.values = valueData;
-      this.selectedValueChanged(this.selectedValue);
-    }.bind(this));
+    });
+    this.setProperties({ values: valueData });
+    this._selectedValueChanged(this._selectedValue);
   }
 
-  selectedValueChanged() {
+  _selectedValueChanged() {
+  }
+
+  selectedNodeChanged(selectedNode) {
+    if (selectedNode === -1) return;
+    this.setProperties({ _selectedValue: -1 });
   }
 }
 
