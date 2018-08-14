@@ -64,7 +64,7 @@ class ZwaveNodeInformation extends PolymerElement {
     if (!this.nodes || selectedNode === -1) return;
     const nodeAttrs = this.nodes[this.selectedNode].attributes;
     const att = [];
-    Object.keys(nodeAttrs).forEach(function (key) {
+    Object.keys(nodeAttrs).forEach((key) => {
       att.push(key + ': ' + nodeAttrs[key]);
     });
     this.selectedNodeAttrs = att.sort();
