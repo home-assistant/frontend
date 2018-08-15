@@ -202,7 +202,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
     return '';
   }
-  
+
   computeHidePowerButton(playerObj) {
     return playerObj.isOff ? !playerObj.supportsTurnOn : !playerObj.supportsTurnOff;
   }
