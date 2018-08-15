@@ -275,7 +275,10 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
       return playerObj.supportsPause ? 'hass:pause' : 'hass:stop';
-    } else if (playerObj.isPaused || playerObj.isOff || playerObj.isIdle) {
+    } else if (playerObj.hasMediaControl || playerObj.isOff || playerObj.isIdle) {
+      if (playerObj.hasMediaControl && playerObj.supportsPause && !playerObj.isPaused) {
+        return 'hass:play-pause';
+      }
       return playerObj.supportsPlay ? 'hass:play' : null;
     }
     return '';
