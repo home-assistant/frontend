@@ -44,7 +44,12 @@ class ZwaveNodeProtection extends PolymerElement {
           </paper-dropdown-menu>
           </div>
           <div class="card-actions">
-            <ha-call-api-button hass="[[hass]]" path="[[_nodePath]]" data="[[_protectionData]]">Set Protection</ha-call-service-button>
+            <ha-call-api-button
+              hass="[[hass]]"
+              path="[[_nodePath]]"
+              data="[[_protectionData]]">
+              Set Protection
+            </ha-call-service-button>
           </div>
         </div>
 `;
