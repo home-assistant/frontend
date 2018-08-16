@@ -1,6 +1,7 @@
 import { h, Component } from 'preact';
 import '@polymer/paper-input/paper-input.js';
-import '@polymer/paper-input/paper-textarea.js';
+
+import '../../../../components/ha-textarea.js';
 
 import { onChangeEvent } from '../../../../common/preact/event.js';
 
@@ -26,7 +27,7 @@ export default class WaitAction extends Component {
     const { wait_template, timeout } = action;
     return (
       <div>
-        <paper-textarea
+        <ha-textarea
           label={localize('ui.panel.config.automation.editor.actions.type.wait_template.wait_template')}
           name="wait_template"
           value={wait_template}
