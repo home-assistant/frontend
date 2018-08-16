@@ -705,6 +705,11 @@
                 "name": "Nom",
                 "entity_id": "ID de l'entitat"
             }
+        },
+        "auth_store": {
+            "ask": "Voleu desar aquest inici de sessió?",
+            "decline": "No, gràcies",
+            "confirm": "Desar inici de sessió"
         }
     },
     "domain": {

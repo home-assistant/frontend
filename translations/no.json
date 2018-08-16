@@ -705,6 +705,11 @@
                 "name": "Navn",
                 "entity_id": "Enhets ID"
             }
+        },
+        "auth_store": {
+            "ask": "Ønsker du å lagre denne påloggingen?",
+            "decline": "Nei takk",
+            "confirm": "Lagre pålogging"
         }
     },
     "domain": {
