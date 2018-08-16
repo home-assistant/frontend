@@ -9,7 +9,7 @@
     <link rel='apple-touch-icon' sizes='180x180'
           href='/static/icons/favicon-apple-180x180.png'>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#3fbbf4">
-    <link rel='preload' href='<%= corejs %>' as='script'/>
+    <link rel='preload' href='<%= coreJS %>' as='script'/>
     <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
     <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
     <meta name='apple-mobile-web-app-capable' content='yes'>
@@ -73,9 +73,9 @@
         }());
       }
     </script>
-    <script src='<%= corejs %>'></script>
-    <script src='<%= appjs %>'></script>
-    <script src='/frontend_latest/hass-icons.js' async></script>
+    <script src='<%= coreJS %>'></script>
+    <script src='<%= appJS %>'></script>
+    <script src='<%= hassIconsJS %>' async></script>
     {% for extra_url in extra_urls -%}
       <link rel='import' href='{{ extra_url }}' async>
     {% endfor -%}
