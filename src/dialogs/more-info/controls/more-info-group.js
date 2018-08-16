@@ -55,7 +55,7 @@ class MoreInfoGroup extends PolymerElement {
 
   computeStates(stateObj, hass) {
     var states = [];
-    var entIds = stateObj.attributes.entity_id;
+    var entIds = stateObj.attributes.entity_id || [];
 
     for (var i = 0; i < entIds.length; i++) {
       var state = hass.states[entIds[i]];
