@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import '@polymer/paper-input/paper-textarea.js';
+import '../../../../components/ha-textarea.js';
 
 import { onChangeEvent } from '../../../../common/preact/event.js';
 
@@ -15,7 +15,7 @@ export default class TemplateCondition extends Component {
     const { value_template } = condition;
     return (
       <div>
-        <paper-textarea
+        <ha-textarea
           label={localize('ui.panel.config.automation.editor.conditions.type.template.value_template')}
           name="value_template"
           value={value_template}
