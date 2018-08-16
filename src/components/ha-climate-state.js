@@ -35,7 +35,7 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
       <span class="state-label">
         [[_localizeState(stateObj.state)]]
       </span>
-      [[computeTarget(stateObj)]]
+      [[computeTarget(hass, stateObj)]]
     </div>
 
     <template is="dom-if" if="[[currentStatus]]">
@@ -52,33 +52,35 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
       stateObj: Object,
       currentStatus: {
         type: String,
-        computed: 'computeCurrentStatus(stateObj)',
+        computed: 'computeCurrentStatus(hass, stateObj)',
       },
     };
   }
 
-  computeCurrentStatus(stateObj) {
+  computeCurrentStatus(hass, stateObj) {
+    if (!hass || !stateObj) return null;
     if (stateObj.attributes.current_temperature != null) {
-      return `${stateObj.attributes.current_temperature} ${stateObj.attributes.unit_of_measurement}`;
+      return `${stateObj.attributes.current_temperature} ${hass.config.core.unit_system.temperature}`;
     }
     if (stateObj.attributes.current_humidity != null) {
-      return `${stateObj.attributes.current_humidity} ${stateObj.attributes.unit_of_measurement}`;
+      return `${stateObj.attributes.current_humidity} %`;
     }
     return null;
   }
 
-  computeTarget(stateObj) {
+  computeTarget(hass, stateObj) {
+    if (!hass || !stateObj) return null;
     // We're using "!= null" on purpose so that we match both null and undefined.
     if (stateObj.attributes.target_temp_low != null &&
         stateObj.attributes.target_temp_high != null) {
-      return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${stateObj.attributes.unit_of_measurement}`;
+      return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${hass.config.core.unit_system.temperature}`;
     } else if (stateObj.attributes.temperature != null) {
-      return `${stateObj.attributes.temperature} ${stateObj.attributes.unit_of_measurement}`;
+      return `${stateObj.attributes.temperature} ${hass.config.core.unit_system.temperature}`;
     } else if (stateObj.attributes.target_humidity_low != null &&
                stateObj.attributes.target_humidity_high != null) {
-      return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} ${stateObj.attributes.unit_of_measurement}`;
+      return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} %`;
     } else if (stateObj.attributes.humidity != null) {
-      return `${stateObj.attributes.humidity} ${stateObj.attributes.unit_of_measurement}`;
+      return `${stateObj.attributes.humidity} %`;
     }
 
     return '';
