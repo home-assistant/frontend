@@ -705,6 +705,11 @@
                 "name": "이름",
                 "entity_id": "구성요소 ID"
             }
+        },
+        "auth_store": {
+            "ask": "현재 로그인을 저장 하시겠습니까?",
+            "decline": "아니요, 괜찮습니다",
+            "confirm": "저장해주세요"
         }
     },
     "domain": {

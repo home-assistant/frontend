@@ -525,6 +525,27 @@
                         "delete_user": "Benotzer läschen"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push-Noriichte",
+                    "description": "Noriichten op dësen Apparat schécken",
+                    "error_load_platform": "Notifiy.html5 konfiguréieren.",
+                    "error_use_https": "Benéidegt SSL fir de Frontend",
+                    "push_notifications": "Push-Noriichte",
+                    "link_promo": "Méi liesen"
+                },
+                "language": {
+                    "header": "Sproochen",
+                    "link_promo": "Hëllef beim Iwwersetzen",
+                    "dropdown_label": "Sprooch"
+                },
+                "themes": {
+                    "header": "Thema",
+                    "error_no_theme": "Keen Thema disponibel",
+                    "link_promo": "Méi iwwert Thema liesen",
+                    "dropdown_label": "Thema"
+                }
             }
         },
         "sidebar": {
@@ -684,6 +705,11 @@
                 "name": "Numm",
                 "entity_id": "Entitéit ID"
             }
+        },
+        "auth_store": {
+            "ask": "Soll dëse Login gespäichert ginn?",
+            "decline": "Nee Merci",
+            "confirm": "Login späicheren"
         }
     },
     "domain": {

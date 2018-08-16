@@ -525,6 +525,27 @@
                         "delete_user": "Benutzer löschen"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push-Benachrichtigungen",
+                    "description": "Sende Benachrichtigungen an dieses Gerät",
+                    "error_load_platform": "Konfiguriere notify.html5.",
+                    "error_use_https": "Erfordert aktiviertes SSL für das Frontend.",
+                    "push_notifications": "Push-Benachrichtigungen",
+                    "link_promo": "Mehr erfahren"
+                },
+                "language": {
+                    "header": "Sprache",
+                    "link_promo": "Helfe beim Übersetzen",
+                    "dropdown_label": "Sprache"
+                },
+                "themes": {
+                    "header": "Thema",
+                    "error_no_theme": "Keine Themen verfügbar.",
+                    "link_promo": "Erfahre mehr über Themen",
+                    "dropdown_label": "Thema"
+                }
             }
         },
         "sidebar": {
@@ -684,6 +705,11 @@
                 "name": "Name",
                 "entity_id": "Entitäts-ID"
             }
+        },
+        "auth_store": {
+            "ask": "Möchtest du diesen Login speichern?",
+            "decline": "Nein Danke",
+            "confirm": "Login speichern"
         }
     },
     "domain": {
