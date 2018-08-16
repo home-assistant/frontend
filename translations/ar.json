@@ -13,7 +13,7 @@
         "dev-templates": "نماذج",
         "dev-mqtt": "MQTT",
         "dev-info": "معلومات",
-        "calendar": "Kalender"
+        "calendar": "التقويم"
     },
     "state": {
         "default": {
@@ -241,6 +241,14 @@
         "weather": {
             "cloudy": "Bewolkt",
             "fog": "Mist"
+        },
+        "vacuum": {
+            "cleaning": "تنظيف",
+            "error": "خطأ",
+            "off": "مطفئ",
+            "on": "مشغل",
+            "paused": "موقّف مؤقتا",
+            "returning": "العودة "
         }
     },
     "state_badge": {
@@ -488,6 +496,40 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "إدارة شبكة Z-Wave"
+                },
+                "users": {
+                    "caption": "المستخدمين",
+                    "description": "ادارة المستخدمين",
+                    "picker": {
+                        "title": "المستخدمين"
+                    },
+                    "editor": {
+                        "rename_user": "إعادة تسمية المستخدم",
+                        "change_password": "تغيير كلمة السر",
+                        "activate_user": "تفعيل المستخدم",
+                        "deactivate_user": "إلغاء تنشيط المستخدم",
+                        "delete_user": "حذف المستخدم"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "التنبيهات",
+                    "description": "إرسال الإشعارات إلى هذا الجهاز",
+                    "error_use_https": "يتطلب تمكين SSL للواجهة الأمامية.",
+                    "push_notifications": "التنبيهات",
+                    "link_promo": "معرفة المزيد"
+                },
+                "language": {
+                    "header": "اللغة",
+                    "link_promo": "المساعدة في ترجمة",
+                    "dropdown_label": "اللغة"
+                },
+                "themes": {
+                    "header": "التصميم",
+                    "error_no_theme": "لا توجد تصاميم متاحة.",
+                    "link_promo": "تعرف على التصاميم",
+                    "dropdown_label": "التصميم"
                 }
             }
         },
@@ -525,18 +567,31 @@
                 "color_temperature": "Kleurtemperatuur",
                 "white_value": "Witwaarde"
             },
+            "media_player": {
+                "text_to_speak": "النص للتحدث",
+                "source": "المصدر",
+                "sound_mode": "وضع الصوت"
+            },
             "climate": {
-                "currently": "Momenteel",
-                "on_off": "Aan \/ uit",
-                "target_temperature": "Doeltemperatuur",
-                "target_humidity": "Doelluchtvochtigheid"
+                "currently": "حاليا",
+                "on_off": "إيقاف\/تشغيل",
+                "target_temperature": "درجة الحرارة المستهدفة",
+                "target_humidity": "Doelluchtvochtigheid",
+                "fan_mode": "وضع المروحة",
+                "away_mode": "خارج المنزل"
             },
             "lock": {
-                "lock": "Vergrendelen",
-                "unlock": "Ontgrendelen"
+                "lock": "قفل",
+                "unlock": "فتح"
             },
-            "media_player": {
-                "sound_mode": "Geluidsmodus"
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "استئناف التنظيف",
+                    "return_to_base": "العودة ",
+                    "start_cleaning": "بدء تنظيف",
+                    "turn_on": "تشغيل",
+                    "turn_off": "إيقاف"
+                }
             }
         },
         "components": {
@@ -554,8 +609,15 @@
         },
         "dialogs": {
             "more_info_settings": {
-                "save": "Opslaan"
+                "save": "حفظ",
+                "name": "الاسم",
+                "entity_id": "الكيان ID"
             }
+        },
+        "auth_store": {
+            "ask": "هل تريد حفظ هذا الدخول؟",
+            "decline": "لا شكرا",
+            "confirm": "حفظ الدخول"
         }
     },
     "domain": {
@@ -593,7 +655,8 @@
         "switch": "مفتاح",
         "updater": "تحديث",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "مكنسة كهرباء"
     },
     "attribute": {
         "weather": {

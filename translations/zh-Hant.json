@@ -174,7 +174,7 @@
             "closed": "關閉",
             "closing": "關閉中",
             "stopped": "停止",
-            "locked": "已上鎖",
+            "locked": "鎖",
             "unlocked": "已解鎖",
             "ok": "正常",
             "problem": "異常"
@@ -705,6 +705,11 @@
                 "name": "名稱",
                 "entity_id": "物件 ID"
             }
+        },
+        "auth_store": {
+            "ask": "是否要儲存此登錄資訊？",
+            "decline": "不用了，謝謝",
+            "confirm": "儲存資訊"
         }
     },
     "domain": {

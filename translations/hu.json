@@ -705,6 +705,11 @@
                 "name": "Név",
                 "entity_id": "Entitás ID"
             }
+        },
+        "auth_store": {
+            "ask": "Szeretnéd menteni ezt a bejelentkezést?",
+            "decline": "Köszönöm nem",
+            "confirm": "Bejelentkezés mentése"
         }
     },
     "domain": {

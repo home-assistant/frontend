@@ -445,6 +445,19 @@
                     "caption": "Z-Wave",
                     "description": "Administrer dit Z-Wave netværk"
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "link_promo": "Lær mere"
+                },
+                "language": {
+                    "header": "Sprog",
+                    "dropdown_label": "Sprog"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {
@@ -458,7 +471,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
             "week": "{count} {count, plural,\none {uge}\nother {uger}\n}",
-            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}"
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "minute": "{count} {count, plural,\none {minut}\nother {minutter}\n}",
+            "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}"
         },
         "login-form": {
             "password": "Adgangskode",
@@ -471,6 +486,22 @@
             },
             "persistent_notification": {
                 "dismiss": "Afvis"
+            },
+            "alarm_control_panel": {
+                "code": "Kode",
+                "clear_code": "Nulstil",
+                "disarm": "Frakoble",
+                "arm_home": "Tilkoble hjemme",
+                "arm_away": "Tilkoble ude"
+            },
+            "lock": {
+                "code": "Kode"
+            },
+            "vacuum": {
+                "actions": {
+                    "turn_on": "Tænd",
+                    "turn_off": "Sluk"
+                }
             }
         },
         "components": {
@@ -481,7 +512,22 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "relative_time": {
+                "past": "{time} siden",
+                "future": "Om {time}",
+                "never": "Aldrig",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "minute": "{count} {count, plural,\none {minut}\nother {minutter}\n}",
+                    "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
+                    "week": "{count} {count, plural,\none {uge}\nother {uger}\n}"
+                }
             }
+        },
+        "auth_store": {
+            "decline": "Nej tak"
         }
     },
     "domain": {
