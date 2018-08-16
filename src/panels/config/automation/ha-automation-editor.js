@@ -247,7 +247,7 @@ class HaAutomationEditor extends
 
     if (!this._renderScheduled) return;
 
-    // this._renderScheduled = false;
+    this._renderScheduled = false;
 
     this._rendered = AutomationEditor(this.$.root, {
       automation: this.config,
