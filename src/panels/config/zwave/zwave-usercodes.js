@@ -48,7 +48,7 @@ class ZwaveUsercodes extends PolymerElement {
                 label="User code"
                 type="text"
                 allowed-pattern="[0-9,a-f,x,\\\\]"
-                maxlength="{{_userCodeMaxLen}}"
+                maxlength="40"
                 minlength="16" value="{{_selectedUserCodeValue}}">
               </paper-input>
               <pre>Ascii: [[_computedCodeOutput]]</pre>
@@ -87,11 +87,6 @@ class ZwaveUsercodes extends PolymerElement {
       },
 
       userCodes: Object,
-
-      _userCodeMaxLen: {
-        type: Number,
-        value: 4
-      },
 
       _selectedUserCode: {
         type: Number,
@@ -134,9 +129,8 @@ class ZwaveUsercodes extends PolymerElement {
     if (this._selectedUserCode === -1 || selectedUserCode === -1) return;
     const value = this.userCodes[selectedUserCode].value.code;
     this.setProperties({
-      _userCodeMaxLen: (this.userCodes[selectedUserCode].value.length * 4),
       _selectedUserCodeValue: this._a2hex(value),
-      _computedCodeOutput: `[${this._hex2a(this._selectedUserCodeValue)}]`
+      _computedCodeOutput: `[${this._hex2a(this._a2hex(value))}]`
     });
   }
 
@@ -168,11 +162,11 @@ class ZwaveUsercodes extends PolymerElement {
     const userCodeData = await this.hass.callApi('GET', `zwave/usercodes/${this.nodes[selectedNode].attributes.node_id}`);
     Object.keys(userCodeData).forEach((key) => {
       userCodes.push({
-        key: key,
+        key,
         value: userCodeData[key],
       });
     });
-    this.setProperties({ userCodes: userCodeData });
+    this.setProperties({ userCodes: userCodes });
     this._selectedUserCodeChanged(this._selectedUserCode);
   }
 
