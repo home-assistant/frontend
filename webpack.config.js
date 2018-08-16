@@ -41,10 +41,10 @@ function createConfig(isProdBuild, latestBuild) {
     core: './src/entrypoints/core.js',
     compatibility: './src/entrypoints/compatibility.js',
     'custom-panel': './src/entrypoints/custom-panel.js',
+    'hass-icons': './src/entrypoints/hass-icons.js',
   };
 
   if (latestBuild) {
-    entry['hass-icons'] = './src/entrypoints/hass-icons.js';
     entry['service-worker-hass'] = './src/entrypoints/service-worker-hass.js';
   }
 
@@ -188,9 +188,10 @@ function createConfig(isProdBuild, latestBuild) {
         templateParameters: (compilation, assets, option) => ({
           latestBuild,
           compatibility: assets.chunks.compatibility.entry,
-          appjs: assets.chunks.app.entry,
-          corejs: assets.chunks.core.entry,
+          appJS: assets.chunks.app.entry,
+          coreJS: assets.chunks.core.entry,
           customPanelJS: assets.chunks['custom-panel'].entry,
+          hassIconsJS: assets.chunks['hass-icons'].entry,
         }),
         filename: `index.html`,
       }),
@@ -200,9 +201,6 @@ function createConfig(isProdBuild, latestBuild) {
     output: {
       filename: ({ chunk }) => {
         const dontHash = new Set([
-          // Because we don't include it in ES5 build
-          // And so can't reference it there
-          'hass-icons',
           // This is loaded from service-worker-bootstrap.js
           // which is processed by Workbox, not Webpack
           'service-worker-hass',
