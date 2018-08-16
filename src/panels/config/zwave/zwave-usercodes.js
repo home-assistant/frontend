@@ -34,23 +34,40 @@ class ZwaveUsercodes extends PolymerElement {
         <paper-card heading="Node user codes">
           <div class="device-picker">
           <paper-dropdown-menu label="Code slot" dynamic-align="" class="flex">
-            <paper-listbox slot="dropdown-content" selected="{{selectedUserCode}}">
+            <paper-listbox slot="dropdown-content" selected="{{_selectedUserCode}}">
               <template is="dom-repeat" items="[[userCodes]]" as="state">
-                <paper-item>[[computeSelectCaptionUserCodes(state)]]</paper-item>
+                <paper-item>[[_computeSelectCaptionUserCodes(state)]]</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
           </div>
 
-          <template is="dom-if" if="[[isUserCodeSelected(selectedUserCode)]]">
+          <template is="dom-if" if="[[_isUserCodeSelected(_selectedUserCode)]]">
             <div class="card-actions">
-              <paper-input label="User code" type="text" allowed-pattern="[0-9,a-f,x,\\\\]" maxlength="{{userCodeMaxLen}}" minlength="16" value="{{selectedUserCodeValue}}">
+              <paper-input
+                label="User code"
+                type="text"
+                allowed-pattern="[0-9,a-f,x,\\\\]"
+                maxlength="{{_userCodeMaxLen}}"
+                minlength="16" value="{{_selectedUserCodeValue}}">
               </paper-input>
-              <pre>Ascii: [[computedCodeOutput]]</pre>
+              <pre>Ascii: [[_computedCodeOutput]]</pre>
             </div>
             <div class="card-actions">
-              <ha-call-service-button hass="[[hass]]" domain="lock" service="set_usercode" service-data="[[computeUserCodeServiceData(selectedUserCodeValue, &quot;Add&quot;)]]">Set Usercode</ha-call-service-button>
-              <ha-call-service-button hass="[[hass]]" domain="lock" service="clear_usercode" service-data="[[computeUserCodeServiceData(selectedUserCode, &quot;Delete&quot;)]]">Delete Usercode</ha-call-service-button>
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="lock"
+                service="set_usercode"
+                service-data="[[_computeUserCodeServiceData(_selectedUserCodeValue, &quot;Add&quot;)]]">
+                Set Usercode
+              </ha-call-service-button>
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="lock"
+                service="clear_usercode"
+                service-data="[[_computeUserCodeServiceData(_selectedUserCode, &quot;Delete&quot;)]]">
+                Delete Usercode
+              </ha-call-service-button>
             </div>
           </template>
         </paper-card>
@@ -60,38 +77,31 @@ class ZwaveUsercodes extends PolymerElement {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
-      nodes: {
-        type: Array,
-      },
+      nodes: Array,
 
       selectedNode: {
         type: Number,
+        observer: '_selectedNodeChanged'
       },
 
-      userCodes: {
-        type: Object,
-      },
+      userCodes: Object,
 
-      userCodeMaxLen: {
+      _userCodeMaxLen: {
         type: Number,
         value: 4
       },
 
-      selectedUserCode: {
+      _selectedUserCode: {
         type: Number,
         value: -1,
-        observer: 'selectedUserCodeChanged'
+        observer: '_selectedUserCodeChanged'
       },
 
-      selectedUserCodeValue: {
-        type: String,
-      },
+      _selectedUserCodeValue: String,
 
-      computedCodeOutput: {
+      _computedCodeOutput: {
         type: String,
         value: ''
       },
@@ -105,72 +115,72 @@ class ZwaveUsercodes extends PolymerElement {
 
   serviceCalled(ev) {
     if (ev.detail.success) {
-      var foo = this;
-      setTimeout(function () {
-        foo.refreshUserCodes(foo.selectedNode);
+      setTimeout(() => {
+        this._refreshUserCodes(this.selectedNode);
       }, 5000);
     }
   }
 
-  isUserCodeSelected(selectedUserCode) {
+  _isUserCodeSelected(selectedUserCode) {
     if (selectedUserCode === -1) return false;
     return true;
   }
 
-  computeSelectCaptionUserCodes(stateObj) {
-    return (stateObj.key + ': ' + stateObj.value.label);
+  _computeSelectCaptionUserCodes(stateObj) {
+    return `${stateObj.key}: ${stateObj.value.label}`;
   }
 
-  selectedUserCodeChanged(selectedUserCode) {
-    if (this.selectedUserCode === -1 || selectedUserCode === -1) return;
-    var value = this.userCodes[selectedUserCode].value.code;
-    this.userCodeMaxLen = (this.userCodes[selectedUserCode].value.length * 4);
-    this.selectedUserCodeValue = this.a2hex(value);
-    this.computedCodeOutput = '[' + this.hex2a(this.selectedUserCodeValue) + ']';
+  _selectedUserCodeChanged(selectedUserCode) {
+    if (this._selectedUserCode === -1 || selectedUserCode === -1) return;
+    const value = this.userCodes[selectedUserCode].value.code;
+    this.setProperties({
+      _userCodeMaxLen: (this.userCodes[selectedUserCode].value.length * 4),
+      _selectedUserCodeValue: this._a2hex(value),
+      _computedCodeOutput: `[${this._hex2a(this._selectedUserCodeValue)}]`
+    });
   }
 
-  computeUserCodeServiceData(selectedUserCodeValue, type) {
+  _computeUserCodeServiceData(selectedUserCodeValue, type) {
     if (this.selectedNode === -1 || !selectedUserCodeValue) return -1;
-    var serviceData = null;
-    var valueData = null;
+    let serviceData = null;
+    let valueData = null;
     if (type === 'Add') {
-      valueData = this.hex2a(selectedUserCodeValue);
-      this.computedCodeOutput = '[' + valueData + ']';
+      valueData = this._hex2a(selectedUserCodeValue);
+      this._computedCodeOutput = `[${valueData}]`;
       serviceData = {
         node_id: this.nodes[this.selectedNode].attributes.node_id,
-        code_slot: this.selectedUserCode,
+        code_slot: this._selectedUserCode,
         usercode: valueData
       };
     }
     if (type === 'Delete') {
       serviceData = {
         node_id: this.nodes[this.selectedNode].attributes.node_id,
-        code_slot: this.selectedUserCode
+        code_slot: this._selectedUserCode
       };
     }
     return serviceData;
   }
 
-  refreshUserCodes(selectedNode) {
-    this.selectedUserCodeValue = '';
-    var userCodes = [];
-    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then(function (usercodes) {
-      Object.keys(usercodes).forEach(function (key) {
-        userCodes.push({
-          key: key,
-          value: usercodes[key],
-        });
+  async _refreshUserCodes(selectedNode) {
+    this.setProperties({ _selectedUserCodeValue: '' });
+    const userCodes = [];
+    const userCodeData = await this.hass.callApi('GET', `zwave/usercodes/${this.nodes[selectedNode].attributes.node_id}`);
+    Object.keys(userCodeData).forEach((key) => {
+      userCodes.push({
+        key: key,
+        value: userCodeData[key],
       });
-      this.userCodes = userCodes;
-      this.selectedUserCodeChanged(this.selectedUserCode);
-    }.bind(this));
+    });
+    this.setProperties({ userCodes: userCodeData });
+    this._selectedUserCodeChanged(this._selectedUserCode);
   }
 
-  a2hex(str) {
-    var arr = [];
-    var output = '';
-    for (var i = 0, l = str.length; i < l; i++) {
-      var hex = Number(str.charCodeAt(i)).toString(16);
+  _a2hex(str) {
+    const arr = [];
+    let output = '';
+    for (let i = 0, l = str.length; i < l; i++) {
+      const hex = Number(str.charCodeAt(i)).toString(16);
       if (hex === '0') {
         output = '00';
       } else {
@@ -181,14 +191,19 @@ class ZwaveUsercodes extends PolymerElement {
     return arr.join('');
   }
 
-  hex2a(hexx) {
-    var hex = hexx.toString();
-    var hexMod = hex.replace(/\\x/g, '');
-    var str = '';
-    for (var i = 0; i < hexMod.length; i += 2) {
+  _hex2a(hexx) {
+    const hex = hexx.toString();
+    const hexMod = hex.replace(/\\x/g, '');
+    let str = '';
+    for (let i = 0; i < hexMod.length; i += 2) {
       str += String.fromCharCode(parseInt(hexMod.substr(i, 2), 16));
     }
     return str;
+  }
+
+  _selectedNodeChanged() {
+    if (this.selectedNode === -1) return;
+    this.setProperties({ _selecteduserCode: -1 });
   }
 }
 
