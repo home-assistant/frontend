@@ -26,7 +26,7 @@ class HaTextarea extends PolymerElement {
         value='{{value}}'
       ></paper-textarea>
     `;
-      }
+  }
 
   static get properties() {
     return {
