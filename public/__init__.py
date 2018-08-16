@@ -22,10 +22,9 @@ def version(useragent):
     """Get the version for given user agent."""
     useragent = parse(useragent)
 
-    # on iOS every browser is a Safari which we support from version 11.
+    # on iOS every browser uses the Safari engine
     if useragent.os.family == 'iOS':
-        # Was >= 10, temp setting it to 12 to work around issue #11387
-        return useragent.os.version[0] >= 12
+        return useragent.os.version[0] >= FAMILY_MIN_VERSION['Safari']
 
     version = FAMILY_MIN_VERSION.get(useragent.browser.family)
     return version and useragent.browser.version[0] >= version
