@@ -239,19 +239,23 @@ class HaAutomationEditor extends
     history.back();
   }
 
-  _updateComponent() {
+  async _updateComponent() {
     if (this._renderScheduled || !this.hass || !this.config) return;
     this._renderScheduled = true;
-    Promise.resolve().then(() => {
-      this._rendered = AutomationEditor(this.$.root, {
-        automation: this.config,
-        onChange: this.configChanged,
-        isWide: this.isWide,
-        hass: this.hass,
-        localize: this.localize,
-      }, this._rendered);
-      this._renderScheduled = false;
-    });
+
+    await 0;
+
+    if (!this._renderScheduled) return;
+
+    // this._renderScheduled = false;
+
+    this._rendered = AutomationEditor(this.$.root, {
+      automation: this.config,
+      onChange: this.configChanged,
+      isWide: this.isWide,
+      hass: this.hass,
+      localize: this.localize,
+    }, this._rendered);
   }
 
   saveAutomation() {
