@@ -120,23 +120,89 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
           <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
           <div class="card-actions">
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="refresh_node" service-data="[[computeNodeServiceData(selectedNode)]]">Refresh Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="refresh_node" hidden$="[[!showHelp]]"></ha-service-description>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="refresh_node"
+              service-data="[[computeNodeServiceData(selectedNode)]]">
+              Refresh Node
+            </ha-call-service-button>
+            <ha-service-description
+              hass="[[hass]]"
+              domain="zwave"
+              service="refresh_node"
+              hidden$="[[!showHelp]]">
+            </ha-service-description>
 
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="remove_failed_node" service-data="[[computeNodeServiceData(selectedNode)]]">Remove Failed Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="remove_failed_node" hidden$="[[!showHelp]]"></ha-service-description>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="remove_failed_node"
+              service-data="[[computeNodeServiceData(selectedNode)]]">
+              Remove Failed Node
+            </ha-call-service-button>
+            <ha-service-description
+              hass="[[hass]]"
+              domain="zwave"
+              service="remove_failed_node"
+              hidden$="[[!showHelp]]">
+            </ha-service-description>
 
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="replace_failed_node" service-data="[[computeNodeServiceData(selectedNode)]]">Replace Failed Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="replace_failed_node" hidden$="[[!showHelp]]"></ha-service-description>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="replace_failed_node"
+              service-data="[[computeNodeServiceData(selectedNode)]]">
+              Replace Failed Node
+            </ha-call-service-button>
+            <ha-service-description
+              hass="[[hass]]"
+              domain="zwave"
+              service="replace_failed_node"
+              hidden$="[[!showHelp]]">
+            </ha-service-description>
 
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="print_node" service-data="[[computeNodeServiceData(selectedNode)]]">Print Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="print_node" hidden$="[[!showHelp]]"></ha-service-description>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="print_node"
+              service-data="[[computeNodeServiceData(selectedNode)]]">
+              Print Node
+            </ha-call-service-button>
+            <ha-service-description
+              hass="[[hass]]"
+              domain="zwave"
+              service="print_node"
+              hidden$="[[!showHelp]]">
+            </ha-service-description>
 
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="heal_node" service-data="[[computeHealNodeServiceData(selectedNode)]]">Heal Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="heal_node" hidden$="[[!showHelp]]"></ha-service-description>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="heal_node"
+              service-data="[[computeHealNodeServiceData(selectedNode)]]">
+              Heal Node
+            </ha-call-service-button>
+            <ha-service-description
+              hass="[[hass]]"
+              domain="zwave"
+              service="heal_node"
+              hidden$="[[!showHelp]]">
+            </ha-service-description>
 
-            <ha-call-service-button hass="[[hass]]" domain="zwave" service="test_node" service-data="[[computeNodeServiceData(selectedNode)]]">Test Node</ha-call-service-button>
-            <ha-service-description hass="[[hass]]" domain="zwave" service="test_node" hidden$="[[!showHelp]]"></ha-service-description>
+            <ha-call-service-button
+              hass="[[hass]]"
+              domain="zwave"
+              service="test_node"
+              service-data="[[computeNodeServiceData(selectedNode)]]">
+              Test Node
+            </ha-call-service-button>
+            <ha-service-description
+              hass="[[hass]]"
+              domain="zwave"
+              service="test_node"
+              hidden$="[[!showHelp]]">
+            </ha-service-description>
           </div>
 
            <div class="device-picker">
@@ -150,18 +216,40 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
            </div>
            <template is="dom-if" if="[[!computeIsEntitySelected(selectedEntity)]]">
            <div class="card-actions">
-             <ha-call-service-button hass="[[hass]]" domain="zwave" service="refresh_entity" service-data="[[computeRefreshEntityServiceData(selectedEntity)]]">Refresh Entity</ha-call-service-button>
-             <ha-service-description hass="[[hass]]" domain="zwave" service="refresh_entity" hidden$="[[!showHelp]]"></ha-service-description>
+             <ha-call-service-button
+               hass="[[hass]]"
+               domain="zwave"
+               service="refresh_entity"
+               service-data="[[computeRefreshEntityServiceData(selectedEntity)]]">
+               Refresh Entity
+             </ha-call-service-button>
+             <ha-service-description
+               hass="[[hass]]"
+               domain="zwave"
+               service="refresh_entity"
+               hidden$="[[!showHelp]]">
+             </ha-service-description>
            </div>
            <div class="form-group">
              <paper-checkbox checked="{{entityIgnored}}" class="form-control">
              Exclude this entity from Home Assistant
              </paper-checkbox>
-             <paper-input disabled="{{entityIgnored}}" label="Polling intensity" type="number" min="0" value="{{entityPollingIntensity}}">
+             <paper-input
+               disabled="{{entityIgnored}}"
+               label="Polling intensity"
+               type="number"
+               min="0"
+               value="{{entityPollingIntensity}}">
              </paper-input>
            </div>
            <div class="card-actions">
-             <ha-call-service-button hass="[[hass]]" domain="zwave" service="set_poll_intensity" service-data="[[computePollIntensityServiceData(entityPollingIntensity)]]">Save</ha-call-service-button>
+             <ha-call-service-button
+               hass="[[hass]]"
+               domain="zwave"
+               service="set_poll_intensity"
+               service-data="[[computePollIntensityServiceData(entityPollingIntensity)]]">
+               Save
+             </ha-call-service-button>
            </div>
            <div class="content">
              <div class="card-actions">
@@ -248,6 +336,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
+
       isWide: Boolean,
 
       nodes: {
@@ -263,9 +352,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
       config: {
         type: Array,
-        value: function () {
-          return [];
-        }
+        value: () => []
       },
 
       entities: {
@@ -273,9 +360,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
         computed: 'computeEntities(selectedNode)',
       },
 
-      entityInfoActive: {
-        type: Boolean,
-      },
+      entityInfoActive: Boolean,
 
       selectedEntity: {
         type: Number,
@@ -298,9 +383,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
       userCodes: {
         type: Array,
-        value: function () {
-          return [];
-        },
+        value: () => []
       },
 
       hasNodeUserCodes: {
@@ -313,9 +396,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
         value: false,
       },
 
-      entityIgnored: {
-        type: Boolean,
-      },
+      entityIgnored: Boolean,
 
       entityPollingIntensity: {
         type: Number,
@@ -324,7 +405,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
       _protection: {
         type: Array,
-        value: () => [],
+        value: () => []
       },
 
       _protectionNode: {
@@ -340,28 +421,25 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
   }
 
   serviceCalled(ev) {
-    var el = this;
     if ((ev.detail.success) && (ev.detail.service === 'set_poll_intensity')) {
-      el.saveEntity();
+      this._saveEntity();
     }
   }
 
   computeNodes(hass) {
     return Object.keys(hass.states)
-      .map(function (key) { return hass.states[key]; })
-      .filter(function (ent) {
-        return ((ent.entity_id).match('zwave[.]'));
-      })
+      .map(key => hass.states[key])
+      .filter(ent => (ent.entity_id).match('zwave[.]'))
       .sort(sortByName);
   }
 
   computeEntities(selectedNode) {
     if (!this.nodes || selectedNode === -1) return -1;
-    var hass = this.hass;
-    var nodeid = this.nodes[this.selectedNode].attributes.node_id;
-    return Object.keys(hass.states)
-      .map(function (key) { return hass.states[key]; })
-      .filter(function (ent) {
+    const nodeid = this.nodes[this.selectedNode].attributes.node_id;
+    const hass = this.hass;
+    return Object.keys(this.hass.states)
+      .map(key => hass.states[key])
+      .filter((ent) => {
         if (ent.attributes.node_id === undefined) {
           return false;
         }
@@ -375,25 +453,23 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
   selectedNodeChanged(selectedNode) {
     if (selectedNode === -1) return;
-    this.selectedConfigParameter = -1;
-    this.selectedConfigParameterValue = -1;
-    this.selectedGroup = -1;
+    this.selectedEntity = -1;
 
-    this.hass.callApi('GET', 'zwave/config/' + this.nodes[selectedNode].attributes.node_id).then((configs) => {
+    this.hass.callApi('GET', `zwave/config/${this.nodes[selectedNode].attributes.node_id}`).then((configs) => {
       this.config = this._objToArray(configs);
     });
 
-    this.hass.callApi('GET', 'zwave/values/' + this.nodes[selectedNode].attributes.node_id).then((values) => {
+    this.hass.callApi('GET', `zwave/values/${this.nodes[selectedNode].attributes.node_id}`).then((values) => {
       this.values = this._objToArray(values);
     });
 
-    this.hass.callApi('GET', 'zwave/groups/' + this.nodes[selectedNode].attributes.node_id).then((groups) => {
+    this.hass.callApi('GET', `zwave/groups/${this.nodes[selectedNode].attributes.node_id}`).then((groups) => {
       this.groups = this._objToArray(groups);
     });
 
     this.hasNodeUserCodes = false;
     this.notifyPath('hasNodeUserCodes');
-    this.hass.callApi('GET', 'zwave/usercodes/' + this.nodes[selectedNode].attributes.node_id).then((usercodes) => {
+    this.hass.callApi('GET', `zwave/usercodes/${this.nodes[selectedNode].attributes.node_id}`).then((usercodes) => {
       this.userCodes = this._objToArray(usercodes);
       this.hasNodeUserCodes = this.userCodes.length > 0;
       this.notifyPath('hasNodeUserCodes');
@@ -411,26 +487,25 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
 
   selectedEntityChanged(selectedEntity) {
     if (selectedEntity === -1) return;
-    var el = this;
-    el.hass.callApi('GET', 'zwave/values/' + el.nodes[el.selectedNode].attributes.node_id).then((values) => {
-      el.values = el._objToArray(values);
+    this.hass.callApi('GET', `zwave/values/${this.nodes[this.selectedNode].attributes.node_id}`).then((values) => {
+      this.values = this._objToArray(values);
     });
 
-    var valueId = el.entities[selectedEntity].attributes.value_id;
-    var valueData = el.values.find(function (obj) { return obj.key === valueId; });
-    var valueIndex = el.values.indexOf(valueData);
-    el.hass.callApi('GET', 'config/zwave/device_config/' + valueId)
-      .then(function (data) {
-        el.entityIgnored = data.ignored || false;
-        el.entityPollingIntensity = el.values[valueIndex].value.poll_intensity;
+    const valueId = this.entities[selectedEntity].attributes.value_id;
+    const valueData = this.values.find(obj => obj.key === valueId);
+    const valueIndex = this.values.indexOf(valueData);
+    this.hass.callApi('GET', `config/zwave/device_config/${this.entities[selectedEntity].entity_id}`)
+      .then((data) => {
+        this.entityIgnored = data.ignored || false;
+        this.entityPollingIntensity = this.values[valueIndex].value.poll_intensity;
       });
   }
 
   computeSelectedEntityAttrs(selectedEntity) {
     if (selectedEntity === -1) return 'No entity selected';
-    var entityAttrs = this.entities[selectedEntity].attributes;
-    var att = [];
-    Object.keys(entityAttrs).forEach(function (key) {
+    const entityAttrs = this.entities[selectedEntity].attributes;
+    const att = [];
+    Object.keys(entityAttrs).forEach((key) => {
       att.push(key + ': ' + entityAttrs[key]);
     });
     return att.sort();
@@ -480,12 +555,12 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  saveEntity() {
-    var data = {
+  _saveEntity() {
+    const data = {
       ignored: this.entityIgnored,
       polling_intensity: parseInt(this.entityPollingIntensity),
     };
-    return this.hass.callApi('POST', 'config/zwave/device_config/' + this.entities[this.selectedEntity].entity_id, data);
+    return this.hass.callApi('POST', `config/zwave/device_config/${this.entities[this.selectedEntity].entity_id}`, data);
   }
 
   toggleHelp() {
@@ -493,10 +568,10 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
   }
 
   _objToArray(obj) {
-    var array = [];
-    Object.keys(obj).forEach(function (key) {
+    const array = [];
+    Object.keys(obj).forEach((key) => {
       array.push({
-        key: key,
+        key,
         value: obj[key],
       });
     });

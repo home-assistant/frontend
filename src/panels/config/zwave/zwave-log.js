@@ -47,9 +47,7 @@ class OzwLog extends PolymerElement {
 
   static get properties() {
     return {
-      hass: {
-        type: Object,
-      },
+      hass: Object,
 
       isWide: {
         type: Boolean,
