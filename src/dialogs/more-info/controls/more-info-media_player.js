@@ -265,7 +265,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
         || !this.playerObj.supportsSelectSource
         || this.playerObj.sourceList === undefined
         || sourceIndex < 0
-        || sourceIndex >= this.playerObj.sourceList
+        // In case source list has been updated and a source removed
+        || sourceIndex >= this.playerObj.sourceList.length
         || sourceIndexOld === undefined
     ) {
       return;
@@ -285,7 +286,8 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (!this.playerObj
         || this.playerObj.channelList === undefined
         || channelIndex < 0
-        || channelIndex >= this.playerObj.channelList
+        // In case channel list has been updated and a channel removed
+        || channelIndex >= this.playerObj.channelList.length
         || channelIndexOld === undefined
     ) {
       return;
