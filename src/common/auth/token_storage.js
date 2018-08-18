@@ -10,7 +10,7 @@ if (!tokenCache) {
 }
 
 export function askWrite() {
-  return tokenCache.writeEnabled === undefined;
+  return tokenCache.tokens !== undefined && tokenCache.writeEnabled === undefined;
 }
 
 export function storeTokens(tokens) {
