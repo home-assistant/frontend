@@ -705,6 +705,11 @@
                 "name": "Nombre",
                 "entity_id": "ID de la entidad"
             }
+        },
+        "auth_store": {
+            "ask": "¿Deseas guardar este inicio de sesión?",
+            "decline": "No, gracias",
+            "confirm": "Guardar inicio de sesión"
         }
     },
     "domain": {
