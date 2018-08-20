@@ -57,69 +57,62 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       // We don't set loading to `false` so we remain disabled
     }
   }
+
   handlePushChange(pushChecked) {
-    if (!this.pushSupported) return;
     if (pushChecked) {
       this.subscribePushNotifications();
     } else {
       this.unsubscribePushNotifications();
     }
   }
-  subscribePushNotifications() {
-    navigator.serviceWorker.ready
-      .then(reg => reg.pushManager.subscribe({ userVisibleOnly: true }))
-      .then(
-        (sub) => {
-          let browserName;
-          if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-            browserName = 'firefox';
-          } else {
-            browserName = 'chrome';
-          }
 
-          return this.hass.callApi('POST', 'notify.html5', {
-            subscription: sub,
-            browser: browserName
-          });
-        },
-        (err) => {
-          let message;
-          if (err.message && err.message.indexOf('gcm_sender_id') !== -1) {
-            message = 'Please setup the notify.html5 platform.';
-          } else {
-            message = 'Notification registration failed.';
-          }
+  async subscribePushNotifications() {
+    const reg = await navigator.serviceWorker.ready;
 
-          /* eslint-disable no-console */
-          console.error(err);
-          /* eslint-enable no-console */
+    try {
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
 
-          this.fire('hass-notification', { message: message });
-          this.pushChecked = false;
-        }
-      );
-  }
-  unsubscribePushNotifications() {
-    navigator.serviceWorker.ready
-      .then(reg => reg.pushManager.getSubscription())
-      .then((sub) => {
-        if (!sub) return Promise.resolve();
+      let browserName;
+      if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
+        browserName = 'firefox';
+      } else {
+        browserName = 'chrome';
+      }
 
-        return this.hass
-          .callApi('DELETE', 'notify.html5', { subscription: sub })
-          .then(() => {
-            sub.unsubscribe();
-          });
-      })
-      .catch((err) => {
-        /* eslint-disable no-console */
-        console.error('Error in unsub push', err);
-        /* eslint-enable no-console */
-
-        this.fire('hass-notification', {
-          message: 'Failed unsubscribing for push notifications.'
-        });
+      await this.hass.callApi('POST', 'notify.html5', {
+        subscription: sub,
+        browser: browserName
       });
+    } catch (err) {
+      const message = err.message || 'Notification registration failed.';
+
+      // eslint-disable-next-line
+      console.error(err);
+
+      this.fire('hass-notification', { message });
+      this.pushChecked = false;
+    }
+  }
+
+  async unsubscribePushNotifications() {
+    const reg = await navigator.serviceWorker.ready;
+
+    try {
+      const sub = await reg.pushManager.getSubscription();
+
+      if (!sub) return;
+
+      await this.hass.callApi('DELETE', 'notify.html5', { subscription: sub });
+      await sub.unsubscribe();
+    } catch (err) {
+      const message = err.message || 'Failed unsubscribing for push notifications.';
+
+      // eslint-disable-next-line
+      console.error('Error in unsub push', err);
+
+      this.fire('hass-notification', { message });
+      this.pushChecked = true;
+    }
   }
 
   _compDisabled(disabled, loading) {
