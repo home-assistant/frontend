@@ -100,11 +100,11 @@
                 "on": "Frio"
             },
             "door": {
-                "off": "Cerrado",
+                "off": "Cerrada",
                 "on": "Abierto"
             },
             "garage_door": {
-                "off": "Cerrado",
+                "off": "Cerrada",
                 "on": "Abierto"
             },
             "heat": {
@@ -112,7 +112,7 @@
                 "on": "Caliente"
             },
             "window": {
-                "off": "Cerrado",
+                "off": "Cerrada",
                 "on": "Abierto"
             },
             "lock": {
@@ -525,6 +525,27 @@
                         "delete_user": "Borrar usuario"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificaciones push",
+                    "description": "Enviar notificaciones a este dispositivo",
+                    "error_load_platform": "Configurar notify.html5.",
+                    "error_use_https": "Requiere SSL habilitado para frontend.",
+                    "push_notifications": "Notificaciones push",
+                    "link_promo": "Aprender más"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ayuda traduciendo",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "No hay temas disponibles",
+                    "link_promo": "Aprenda sobre los temas",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {
@@ -630,6 +651,7 @@
                 "aux_heat": "Calor auxiliar"
             },
             "lock": {
+                "code": "Código",
                 "lock": "Bloquear",
                 "unlock": "Desbloquear"
             },
@@ -657,8 +679,11 @@
                 "future": "En {time}",
                 "never": "Nunca",
                 "duration": {
+                    "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}",
                     "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
-                    "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}"
+                    "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}",
+                    "day": "{count} {count, plural,\none {día}\nother {días}\n}",
+                    "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}"
                 }
             },
             "history_charts": {
@@ -676,8 +701,14 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Guardar",
-                "name": "Nombre"
+                "name": "Nombre",
+                "entity_id": "Identificación de la entidad"
             }
+        },
+        "auth_store": {
+            "ask": "¿Quieres guardar este inicio de sesión?",
+            "decline": "No, gracias",
+            "confirm": "Guardar usuario"
         }
     },
     "domain": {
@@ -715,7 +746,8 @@
         "switch": "Interruptor",
         "updater": "Actualizador",
         "weblink": "Enlace web",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspiradora"
     },
     "attribute": {
         "weather": {

@@ -12,7 +12,8 @@
         "dev-events": "Begivenheder",
         "dev-templates": "Skabeloner",
         "dev-mqtt": "MQTT",
-        "dev-info": "Udvikler Information"
+        "dev-info": "Udvikler Information",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -236,6 +237,27 @@
                 "initializing": "Initialiserer ({query_stage})",
                 "dead": "Død ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Klart, nat",
+            "cloudy": "Overskyet",
+            "fog": "Tåge",
+            "hail": "Hagl",
+            "lightning": "Lyn",
+            "lightning-rainy": "Lyn, regnvejr",
+            "partlycloudy": "Delvist overskyet",
+            "rainy": "Regnfuldt",
+            "snowy": "Snedækket",
+            "snowy-rainy": "Snedækket, regnfuldt"
+        },
+        "vacuum": {
+            "cleaning": "Rengøring",
+            "error": "Fejl",
+            "idle": "Inaktiv",
+            "off": "Off",
+            "on": "On",
+            "paused": "Sat på pause",
+            "returning": "Vender tilbage til dock"
         }
     },
     "state_badge": {
@@ -282,19 +304,24 @@
             },
             "config": {
                 "header": "Konfigurer Home Assistant",
+                "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugergrænsefladen endnu, men vi arbejder på det.",
                 "core": {
                     "caption": "Generelt",
+                    "description": "Valider din konfigurationsfil og kontroller serveren",
                     "section": {
                         "core": {
                             "header": "Konfiguration og server kontrol",
+                            "introduction": "Ændring af din konfiguration kan det være en trættende proces. Vi ved det. Dette afsnit vil forsøge at gøre dit liv en smule nemmere.",
                             "validation": {
                                 "heading": "Konfigurations validering ",
+                                "introduction": "Validér din konfiguration, hvis du for nylig lavede nogle ændringer i din konfiguration og vil sikre dig, at alt er validt",
                                 "check_config": "Tjek konfiguration",
                                 "valid": "Konfiguration gyldig!",
                                 "invalid": "Konfigurationen ugyldig"
                             },
                             "reloading": {
                                 "heading": "Genindlæsning af konfiguration",
+                                "introduction": "Nogle dele af Home Assistant kan genindlæse uden at kræve en genstart. Tryk på reload vil af montere deres nuværende konfiguration og indlæse den nye.",
                                 "core": "Genindlæs system",
                                 "group": "Genindlæs grupper",
                                 "automation": "Genindlæs automatiseringer",
@@ -333,6 +360,7 @@
                             "duplicate": "Kopier",
                             "delete": "Slet",
                             "delete_confirm": "Sikker på, at du vil slette?",
+                            "unsupported_platform": "Ikke understøttet platform: {platform}",
                             "type_select": "Udløser type",
                             "type": {
                                 "event": {
@@ -432,6 +460,9 @@
                                 },
                                 "condition": {
                                     "label": "Betingelse"
+                                },
+                                "event": {
+                                    "service_data": "Service data"
                                 }
                             }
                         }
@@ -444,18 +475,39 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Administrer dit Z-Wave netværk"
+                },
+                "users": {
+                    "description": "Administrer brugere",
+                    "picker": {
+                        "title": "Brugere"
+                    },
+                    "editor": {
+                        "rename_user": "Omdøb bruger",
+                        "change_password": "Skift adgangskode",
+                        "activate_user": "Aktivér bruger",
+                        "deactivate_user": "Deaktiver bruger",
+                        "delete_user": "Slet bruger"
+                    }
                 }
             },
             "profile": {
                 "push_notifications": {
+                    "header": "Push notifikationer",
+                    "description": "Send meddelelser til denne enhed",
+                    "error_load_platform": "Konfigurer notify.html5",
+                    "error_use_https": "Kræver SSL aktiveret til frontend.",
+                    "push_notifications": "Push-meddelelser",
                     "link_promo": "Lær mere"
                 },
                 "language": {
                     "header": "Sprog",
+                    "link_promo": "Hjælpe med at oversætte",
                     "dropdown_label": "Sprog"
                 },
                 "themes": {
                     "header": "Tema",
+                    "error_no_theme": "Ingen temaer til rådighed.",
+                    "link_promo": "Lær om temaer",
                     "dropdown_label": "Tema"
                 }
             }
@@ -487,6 +539,21 @@
             "persistent_notification": {
                 "dismiss": "Afvis"
             },
+            "scene": {
+                "activate": "Aktiver"
+            },
+            "script": {
+                "execute": "Udfør"
+            },
+            "weather": {
+                "cardinal_direction": {
+                    "sw": "SV",
+                    "w": "V",
+                    "wnw": "VNV",
+                    "wsw": "VSV"
+                },
+                "forecast": "Vejrudsigt"
+            },
             "alarm_control_panel": {
                 "code": "Kode",
                 "clear_code": "Nulstil",
@@ -494,11 +561,41 @@
                 "arm_home": "Tilkoble hjemme",
                 "arm_away": "Tilkoble ude"
             },
+            "automation": {
+                "last_triggered": "Senest udløst",
+                "trigger": "Udløser"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Tippe position"
+            },
+            "fan": {
+                "speed": "Hastighed",
+                "oscillate": "Sving",
+                "direction": "Retning"
+            },
+            "light": {
+                "brightness": "Lysstyrke",
+                "color_temperature": "Farvetemperatur",
+                "effect": "Effekt"
+            },
+            "climate": {
+                "on_off": "On \/ off",
+                "fan_mode": "Ventilator tilstand"
+            },
             "lock": {
-                "code": "Kode"
+                "code": "Kode",
+                "lock": "Lås",
+                "unlock": "Lås op"
+            },
+            "media_player": {
+                "source": "Kilde"
             },
             "vacuum": {
                 "actions": {
+                    "resume_cleaning": "Genoptag rengøring",
+                    "return_to_base": "Tilbage til dock",
+                    "start_cleaning": "Start rengøring",
                     "turn_on": "Tænd",
                     "turn_off": "Sluk"
                 }
@@ -524,10 +621,29 @@
                     "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
                     "week": "{count} {count, plural,\none {uge}\nother {uger}\n}"
                 }
+            },
+            "history_charts": {
+                "loading_history": "Indlæser statushistorik ...",
+                "no_history_found": "Ingen statushistorik fundet."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Tændte for {entity} .",
+            "entity_turned_off": "Slukkede for {entity}.",
+            "service_called": "Servicen {service} kaldes.",
+            "service_call_failed": "Kunne ikke få forbindelse til servicen {service} .",
+            "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Gem",
+                "name": "Navn"
             }
         },
         "auth_store": {
-            "decline": "Nej tak"
+            "ask": "Vil du gemme dette login?",
+            "decline": "Nej tak",
+            "confirm": "Gem login"
         }
     },
     "domain": {
@@ -565,7 +681,8 @@
         "switch": "Kontakt",
         "updater": "Opdater",
         "weblink": "Link",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Støvsuger"
     },
     "attribute": {
         "weather": {
