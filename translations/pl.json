@@ -504,7 +504,7 @@
                     }
                 },
                 "script": {
-                    "caption": "Skrypt",
+                    "caption": "Skrypty",
                     "description": "Twórz i edytuj skrypty"
                 },
                 "zwave": {
@@ -524,6 +524,27 @@
                         "deactivate_user": "Dezaktywuj użytkownika",
                         "delete_user": "Usuń użytkownika"
                     }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Powiadomienia push",
+                    "description": "Wysyłaj powiadomienia na to urządzenie",
+                    "error_load_platform": "Skonfiguruj notify.html5.",
+                    "error_use_https": "Wymagany protokół SSL dla interfejsu użytkownika.",
+                    "push_notifications": "Powiadomienia push",
+                    "link_promo": "Dowiedz się więcej"
+                },
+                "language": {
+                    "header": "Język",
+                    "link_promo": "Pomóż w tłumaczeniu",
+                    "dropdown_label": "Język"
+                },
+                "themes": {
+                    "header": "Motyw",
+                    "error_no_theme": "Brak dostępnych motywów.",
+                    "link_promo": "Dowiedz się więcej o motywch",
+                    "dropdown_label": "Motyw"
                 }
             }
         },
@@ -684,6 +705,11 @@
                 "name": "Nazwa",
                 "entity_id": "Identyfikator encji"
             }
+        },
+        "auth_store": {
+            "ask": "Czy chcesz zapamiętać dane logowania?",
+            "decline": "Nie, dziękuję",
+            "confirm": "Zapamiętaj"
         }
     },
     "domain": {

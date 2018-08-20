@@ -677,7 +677,7 @@
             },
             "relative_time": {
                 "past": "{time} ezelőtt",
-                "future": "{time} múlva",
+                "future": "{time} később",
                 "never": "Soha",
                 "duration": {
                     "second": "{count} {count, plural,\n  one {másodperccel}\n  other {másodperccel}\n}",

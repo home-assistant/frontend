@@ -529,7 +529,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "Push Notifications",
-                    "description": "Send notifications to this device",
+                    "description": "Send notifications to this device.",
                     "error_load_platform": "Configure notify.html5.",
                     "error_use_https": "Requires SSL enabled for frontend.",
                     "push_notifications": "Push notifications",

@@ -525,6 +525,27 @@
                         "delete_user": "Ta bort användare"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Pushmeddelanden",
+                    "description": "Skicka meddelanden till den här enheten",
+                    "error_load_platform": "Konfigurera notify.html5.",
+                    "error_use_https": "Kräver att SSL aktiverat för frontend.",
+                    "push_notifications": "Pushmeddelanden",
+                    "link_promo": "Läs mer"
+                },
+                "language": {
+                    "header": "Språk",
+                    "link_promo": "Hjälp till att översätta",
+                    "dropdown_label": "Språk"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Inga teman finns tillgängliga.",
+                    "link_promo": "Läs mer om teman",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {
@@ -684,6 +705,11 @@
                 "name": "Namn",
                 "entity_id": "Enhets-ID"
             }
+        },
+        "auth_store": {
+            "ask": "Vill du spara den här inloggningen?",
+            "decline": "Nej tack",
+            "confirm": "Spara inloggning"
         }
     },
     "domain": {
