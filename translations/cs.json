@@ -705,6 +705,11 @@
                 "name": "Název",
                 "entity_id": "Entity ID"
             }
+        },
+        "auth_store": {
+            "ask": "Chcete toto přihlášení uložit?",
+            "decline": "Ne děkuji",
+            "confirm": "Uložit login"
         }
     },
     "domain": {

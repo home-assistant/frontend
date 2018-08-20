@@ -3,7 +3,7 @@
         "config": "Configurações",
         "states": "Visão geral",
         "map": "Mapa",
-        "logbook": "Eventos",
+        "logbook": "Log de eventos",
         "history": "Histórico",
         "mailbox": "Caixa de correio",
         "shopping_list": "Lista de compras",
@@ -12,7 +12,7 @@
         "dev-events": "Eventos",
         "dev-templates": "Modelos",
         "dev-mqtt": "",
-        "dev-info": "Informação",
+        "dev-info": "Informações",
         "calendar": "Calendário"
     },
     "state": {
@@ -683,7 +683,7 @@
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
                     "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
                     "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
-                    "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "day": "{count} {count, plural,\n  one {dia}\n other {dias}\n}",
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 }
             },
@@ -693,8 +693,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "{entidade} ligado(a).",
-            "entity_turned_off": "{entidade} desligado(a).",
+            "entity_turned_on": "{entity} ligado(a).",
+            "entity_turned_off": "{entity} desligado(a).",
             "service_called": "Serviço {service} chamado.",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
             "connection_lost": "Conexão perdida. Reconectando…"
@@ -724,7 +724,7 @@
         "image_processing": "Processamento de imagem",
         "input_boolean": "Botão alternar",
         "input_datetime": "Entrada de data e hora",
-        "input_select": "Entrada de seleção",
+        "input_select": "Selecione uma entrada",
         "input_number": "Entrada numérica",
         "input_text": "Entrada de texto",
         "light": "Luz",
