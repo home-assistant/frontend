@@ -96,12 +96,11 @@ function createConfig(isProdBuild, latestBuild) {
         __DEV__: JSON.stringify(!isProdBuild),
         __BUILD__: JSON.stringify(latestBuild ? 'latest' : 'es5'),
         __VERSION__: JSON.stringify(VERSION),
-        __PUBLIC_PATH__: JSON.stringify(publicPath),
+        __STATIC_PATH__: '/static/',
         'process.env.NODE_ENV': JSON.stringify(isProdBuild ? 'production' : 'development'),
       }),
       new CopyWebpackPlugin([
-        // Leave here until Hass.io no longer references the ES5 build.
-        'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
+        latestBuild && 'node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js',
         latestBuild && { from: 'public', to: '.' },
         latestBuild && { from: 'build-translations/output', to: `translations` },
         latestBuild && { from: 'node_modules/@polymer/font-roboto-local/fonts', to: 'fonts' },
