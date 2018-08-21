@@ -14,11 +14,12 @@ class HaStateIcon extends PolymerElement {
       stateObj: {
         type: Object,
       },
+      overrideIcon: String
     };
   }
 
   computeIcon(stateObj) {
-    return stateIcon(stateObj);
+    return this.overrideIcon || stateIcon(stateObj);
   }
 }
 

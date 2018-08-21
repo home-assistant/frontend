@@ -28,10 +28,6 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         ha-card[header] {
           padding-top: 0;
         }
-        ha-icon {
-          padding: 8px;
-          color: var(--paper-item-icon-color);
-        }
         .entities {
           display: flex;
           margin-bottom: -12px;
@@ -67,12 +63,10 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 <template is="dom-if" if="[[_showInfo(_config.show_name)]]">
                   <div class="name">[[_computeName(item, hass.states)]]</div>
                 </template>
-                <template is="dom-if" if="[[!item.icon]]">
-                  <state-badge state-obj="[[_computeStateObj(item, hass.states)]]"></state-badge>
-                </template>
-                <template is="dom-if" if="[[item.icon]]">
-                  <ha-icon icon="[[item.icon]]"></ha-icon>
-                </template>
+                <state-badge 
+                  state-obj="[[_computeStateObj(item, hass.states)]]" 
+                  override-icon="[[item.icon]]"
+                ></state-badge>
                 <template is="dom-if" if="[[_showInfo(_config.show_state)]]">
                   <div>[[_computeState(item, hass.states)]]</div>
                 </template>
