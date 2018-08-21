@@ -16,13 +16,11 @@ export default function loadCustomPanel(panelConfig) {
     return Promise.all(toLoad).then(([{ importHrefPromise }]) =>
       importHrefPromise(panelConfig.html_url));
   } else if (panelConfig.js_url) {
-    if (panelConfig.js_is_module) {
-      return loadModule(panelConfig.js_url)
-    }
     if (!(panelConfig.js_url in JS_CACHE)) {
       JS_CACHE[panelConfig.js_url] = loadJS(panelConfig.js_url);
     }
     return JS_CACHE[panelConfig.js_url];
-  }
+  } else if (panelConfig.module_url) {
+    return loadModule(panelConfig.module_url);
   return Promise.reject('No valid url found in panel config.');
 }
