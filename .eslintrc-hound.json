@@ -18,10 +18,9 @@
   },
   "globals": {
     "__DEV__": false,
-    "__DEMO__": false,
     "__BUILD__": false,
     "__VERSION__": false,
-    "__PUBLIC_PATH__": false,
+    "__STATIC_PATH__": false,
     "Polymer": true,
     "webkitSpeechRecognition": false,
     "ResizeObserver": false
