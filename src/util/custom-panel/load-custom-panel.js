@@ -21,6 +21,7 @@ export default function loadCustomPanel(panelConfig) {
     }
     return JS_CACHE[panelConfig.js_url];
   } else if (panelConfig.module_url) {
+    // Return module load promise
     return loadModule(panelConfig.module_url);
   }
   return Promise.reject('No valid url found in panel config.');
