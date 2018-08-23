@@ -47,7 +47,7 @@ class HaPanelCustom extends NavigateMixin(EventsMixin(PolymerElement)) {
     const config = panel.config._panel_custom;
 
     const tempA = document.createElement('a');
-    tempA.href = config.html_url || config.js_url;
+    tempA.href = config.html_url || config.js_url || config.module_url;
 
     if (!config.trust_external && !['localhost', '127.0.0.1', location.hostname].includes(tempA.hostname)) {
       if (!confirm(`Do you trust the external panel "${config.name}" at "${tempA.href}"?
