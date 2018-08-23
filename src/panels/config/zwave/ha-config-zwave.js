@@ -496,8 +496,16 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     const valueIndex = this.values.indexOf(valueData);
     this.hass.callApi('GET', `config/zwave/device_config/${this.entities[selectedEntity].entity_id}`)
       .then((data) => {
-        this.entityIgnored = data.ignored || false;
-        this.entityPollingIntensity = this.values[valueIndex].value.poll_intensity;
+        this.setProperties({
+          entityIgnored: data.ignored || false,
+          entityPollingIntensity: this.values[valueIndex].value.poll_intensity
+        });
+      })
+      .catch(() => {
+        this.setProperties({
+          entityIgnored: false,
+          entityPollingIntensity: this.values[valueIndex].value.poll_intensity
+        });
       });
   }
 
