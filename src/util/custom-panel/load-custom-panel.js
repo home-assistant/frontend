@@ -1,4 +1,4 @@
-import { loadJS } from '../../common/dom/load_resource.js';
+import { loadJS, loadModule } from '../../common/dom/load_resource.js';
 
 // Make sure we only import every JS-based panel once (HTML import has this built-in)
 const JS_CACHE = {};
@@ -20,6 +20,8 @@ export default function loadCustomPanel(panelConfig) {
       JS_CACHE[panelConfig.js_url] = loadJS(panelConfig.js_url);
     }
     return JS_CACHE[panelConfig.js_url];
+  } else if (panelConfig.module_url) {
+    return loadModule(panelConfig.module_url);
   }
   return Promise.reject('No valid url found in panel config.');
 }
