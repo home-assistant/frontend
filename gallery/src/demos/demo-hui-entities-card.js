@@ -140,7 +140,9 @@ const CONFIGS = [
     - entity: group.kitchen
       icon: mdi:home-assistant
     - lock.kitchen_door
-    - light.bed_light
+    - entity: light.bed_light
+      icon: mdi:alarm-light
+      name: Bed Light Custom Icon
     - climate.ecobee
     - input_number.noise_allowance
   title: Random group
