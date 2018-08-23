@@ -1,8 +1,9 @@
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-import './ha-state-icon.js';
+import '../ha-icon.js';
 import computeStateDomain from '../../common/entity/compute_state_domain.js';
+import stateIcon from '../../common/entity/state_icon.js';
 
 class StateBadge extends PolymerElement {
   static get template() {
@@ -20,32 +21,31 @@ class StateBadge extends PolymerElement {
       line-height: 40px;
     }
 
-    ha-state-icon {
+    ha-icon {
       transition: color .3s ease-in-out, filter .3s ease-in-out;
     }
 
     /* Color the icon if light or sun is on */
-    ha-state-icon[data-domain=light][data-state=on],
-    ha-state-icon[data-domain=switch][data-state=on],
-    ha-state-icon[data-domain=binary_sensor][data-state=on],
-    ha-state-icon[data-domain=fan][data-state=on],
-    ha-state-icon[data-domain=sun][data-state=above_horizon] {
+    ha-icon[data-domain=light][data-state=on],
+    ha-icon[data-domain=switch][data-state=on],
+    ha-icon[data-domain=binary_sensor][data-state=on],
+    ha-icon[data-domain=fan][data-state=on],
+    ha-icon[data-domain=sun][data-state=above_horizon] {
       color: var(--paper-item-icon-active-color, #FDD835);
     }
 
     /* Color the icon if unavailable */
-    ha-state-icon[data-state=unavailable] {
+    ha-icon[data-state=unavailable] {
       color: var(--state-icon-unavailable-color);
     }
     </style>
 
-    <ha-state-icon 
-      id="icon" 
-      state-obj="[[stateObj]]" 
-      data-domain$="[[computeDomain(stateObj)]]" 
-      data-state$="[[stateObj.state]]" 
-      override-icon="[[overrideIcon]]"
-    ></ha-state-icon>
+    <ha-icon
+      id="icon"
+      data-domain$="[[_computeDomain(stateObj)]]"
+      data-state$="[[stateObj.state]]"
+      icon="[[_computeIcon(stateObj)]]"
+    ></ha-icon>
 `;
   }
 
@@ -53,20 +53,22 @@ class StateBadge extends PolymerElement {
     return {
       stateObj: {
         type: Object,
-        observer: 'updateIconAppearance',
+        observer: '_updateIconAppearance',
       },
       overrideIcon: String
     };
   }
 
-  computeDomain(stateObj) {
+  _computeDomain(stateObj) {
     return computeStateDomain(stateObj);
   }
 
+  _computeIcon(stateObj) {
+    return this.overrideIcon || stateIcon(stateObj);
+  }
 
-  updateIconAppearance(newVal) {
+  _updateIconAppearance(newVal) {
     const iconStyle = {
-      display: 'inline',
       color: '',
       filter: '',
     };

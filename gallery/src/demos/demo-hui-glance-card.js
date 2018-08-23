@@ -105,7 +105,8 @@ const CONFIGS = [
     - media_player.living_room
     - sun.sun
     - cover.kitchen_window
-    - light.kitchen_lights
+    - entity: light.kitchen_lights
+      icon: mdi:alarm-light
     - lock.kitchen_door
     - light.ceiling_lights
     `

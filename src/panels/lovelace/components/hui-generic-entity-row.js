@@ -44,7 +44,7 @@ class HuiGenericEntityRow extends PolymerElement {
         }
       </style>
       <template is="dom-if" if="[[_stateObj]]">
-        <state-badge 
+        <state-badge
           state-obj="[[_stateObj]]"
           override-icon="[[config.icon]]"
         ></state-badge>

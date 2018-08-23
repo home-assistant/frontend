@@ -63,8 +63,8 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 <template is="dom-if" if="[[_showInfo(_config.show_name)]]">
                   <div class="name">[[_computeName(item, hass.states)]]</div>
                 </template>
-                <state-badge 
-                  state-obj="[[_computeStateObj(item, hass.states)]]" 
+                <state-badge
+                  state-obj="[[_computeStateObj(item, hass.states)]]"
                   override-icon="[[item.icon]]"
                 ></state-badge>
                 <template is="dom-if" if="[[_showInfo(_config.show_state)]]">
