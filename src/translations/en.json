@@ -478,6 +478,11 @@
       "remember": "Remember",
       "log_in": "Log in"
     },
+    "notification_drawer": {
+      "click_to_configure": "Click button to configure {entity}",
+      "empty": "No Notifications",
+      "title": "Notifications"
+    },
     "notification_toast": {
       "entity_turned_on": "Turned on {entity}.",
       "entity_turned_off": "Turned off {entity}.",
