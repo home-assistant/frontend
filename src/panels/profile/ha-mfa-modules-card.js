@@ -90,11 +90,6 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubEvents) this._unsubEvents();
-  }
-
   _enable(ev) {
     this.fire('show-mfa-module-setup-flow', {
       hass: this.hass,
@@ -117,10 +112,12 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   async _refreshCurrentUser() {
-    const user = await this.hass.callWS({
-      type: 'auth/current_user',
-    });
-    this.mfaModules = user.mfa_modules;
+    this.fire('hass-refresh-current-user');
+    // const user = await this.hass.callWS({
+    //   type: 'auth/current_user',
+    // });
+    // await this._updateHass({ user });
+    // this.mfaModules = user.mfa_modules;
   }
 }
 
