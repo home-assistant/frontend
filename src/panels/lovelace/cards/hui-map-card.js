@@ -159,14 +159,20 @@ class HuiMapCard extends PolymerElement {
   }
 
   _fitMap() {
+    const zoom = this._config.default_zoom;
     if (this._mapItems.length === 0) {
       this._map.setView(
         new Leaflet.LatLng(this.hass.config.core.latitude, this.hass.config.core.longitude),
-        14
+        zoom || 14
       );
-    } else {
-      const bounds = new Leaflet.latLngBounds(this._mapItems.map(item => item.getLatLng()));
-      this._map.fitBounds(bounds.pad(0.5));
+      return;
+    }
+
+    const bounds = new Leaflet.latLngBounds(this._mapItems.map(item => item.getLatLng()));
+    this._map.fitBounds(bounds.pad(0.5));
+
+    if (zoom && this._map.getZoom() > zoom) {
+      this._map.setZoom(zoom);
     }
   }
 
