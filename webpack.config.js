@@ -25,6 +25,7 @@ const generateJSPage = (entrypoint, latestBuild) => {
       tag: `ha-${entrypoint}`,
       compatibility: assets.chunks.compatibility.entry,
       entrypoint: assets.chunks[entrypoint].entry,
+      hassIconsJS: assets.chunks['hass-icons'].entry,
     }),
     filename: `${entrypoint}.html`,
   });
