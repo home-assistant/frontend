@@ -135,7 +135,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(EventsMixin(PolymerElement
         _codeFormat: newVal.attributes.code_format,
         _armVisible: state === 'disarmed',
         _disarmVisible: this._armedStates.includes(state) ||
-          state === 'pending' || state === 'triggered'
+          state === 'pending' || state === 'triggered' || state === 'arming'
       };
       props._inputEnabled = props._disarmVisible || props._armVisible;
       this.setProperties(props);
