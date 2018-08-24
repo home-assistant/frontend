@@ -22,6 +22,8 @@ import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import '../../components/ha-icon.js';
 import { loadModule, loadCSS, loadJS } from '../../common/dom/load_resource.js';
+import './components/notifications/hui-notification-drawer.js';
+import './components/notifications/hui-notifications-button.js';
 import './hui-unused-entities.js';
 import './hui-view.js';
 import debounce from '../../common/util/debounce.js';
@@ -72,11 +74,20 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
       }
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
+    <hui-notification-drawer
+      hass="[[hass]]"
+      open="{{notificationsOpen}}"
+      narrow="[[narrow]]"
+    ></hui-notification-drawer>
     <ha-app-layout id="layout">
       <app-header slot="header" effects="waterfall" fixed condenses>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
+          <hui-notifications-button
+            hass="[[hass]]"
+            notifications-open="{{notificationsOpen}}"
+          ></hui-notifications-button>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
           <paper-menu-button
             no-animations
@@ -139,7 +150,13 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         type: Object,
         observer: '_routeChanged'
       },
-      routeData: Object
+
+      notificationsOpen: {
+        type: Boolean,
+        value: false,
+      },
+
+      routeData: Object,
     };
   }
 
@@ -286,5 +303,4 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     });
   }
 }
-
 customElements.define('hui-root', HUIRoot);
