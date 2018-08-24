@@ -111,13 +111,8 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
     });
   }
 
-  async _refreshCurrentUser() {
+  _refreshCurrentUser() {
     this.fire('hass-refresh-current-user');
-    // const user = await this.hass.callWS({
-    //   type: 'auth/current_user',
-    // });
-    // await this._updateHass({ user });
-    // this.mfaModules = user.mfa_modules;
   }
 }
 
