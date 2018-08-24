@@ -6,6 +6,7 @@ export default superClass => class extends superClass {
   ready() {
     super.ready();
     this.addEventListener('hass-logout', () => this._handleLogout());
+    this.addEventListener('hass-refresh-current-user', () => this._getCurrentUser());
 
     afterNextRender(null, () => {
       if (askWrite()) {
@@ -20,6 +21,10 @@ export default superClass => class extends superClass {
   hassConnected() {
     super.hassConnected();
 
+    this._getCurrentUser();
+  }
+
+  _getCurrentUser() {
     // only for new auth
     if (this.hass.connection.options.accessToken) {
       this.hass.callWS({
