@@ -1,5 +1,6 @@
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
+import '@polymer/app-layout/app-scroll-effects/effects/waterfall.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/app-route/app-route.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
@@ -72,7 +73,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     </style>
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <ha-app-layout id="layout">
-      <app-header slot="header" fixed>
+      <app-header slot="header" effects="waterfall" fixed condenses>
         <app-toolbar>
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[_computeTitle(config)]]</div>
