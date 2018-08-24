@@ -14,6 +14,7 @@ import '../../resources/ha-style.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
 import './ha-change-password-card.js';
+import './ha-mfa-modules-card.js';
 import './ha-pick-language-row.js';
 import './ha-pick-theme-row.js';
 import './ha-push-notifications-row.js';
@@ -83,6 +84,7 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
           <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
         </template>
 
+        <ha-mfa-modules-card hass='[[hass]]' mfa-modules='[[hass.user.mfa_modules]]'></ha-mfa-modules-card>
       </div>
     </app-header-layout>
     `;
