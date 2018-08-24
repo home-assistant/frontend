@@ -20,7 +20,7 @@
             "off": "Desactivado",
             "on": "Encendido",
             "unknown": "Desconocido",
-            "unavailable": "No Disponible"
+            "unavailable": "No disponible"
         },
         "alarm_control_panel": {
             "armed": "Armado",

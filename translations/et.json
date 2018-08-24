@@ -253,6 +253,16 @@
             "sunny": "Päikeseline",
             "windy": "Tuuline",
             "windy-variant": "Tuuline"
+        },
+        "vacuum": {
+            "cleaning": "Puhastamine",
+            "docked": "Dokitud",
+            "error": "Viga",
+            "idle": "Ootel",
+            "off": "Väljas",
+            "on": "Sees",
+            "paused": "Peatatud",
+            "returning": "Pöördun tagasi dokki"
         }
     },
     "state_badge": {
@@ -515,6 +525,27 @@
                         "delete_user": "Kustuta kasutaja"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Tõuketeavitused",
+                    "description": "Saada teatisi sellele seadmele.",
+                    "error_load_platform": "Seadista notify.html5.",
+                    "error_use_https": "Nõuab kasutajaliidese jaoks SSL lubamist.",
+                    "push_notifications": "Tõuketeavitused",
+                    "link_promo": "Lisateave"
+                },
+                "language": {
+                    "header": "Keel",
+                    "link_promo": "Aita tõlkida",
+                    "dropdown_label": "Keel"
+                },
+                "themes": {
+                    "header": "Teema",
+                    "error_no_theme": "Teemasid pole saadaval.",
+                    "link_promo": "Lisateave teemade kohta",
+                    "dropdown_label": "Teema"
+                }
             }
         },
         "sidebar": {
@@ -624,6 +655,15 @@
                 "code": "Kood",
                 "lock": "Lukusta",
                 "unlock": "Ava"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Jätka puhastamist",
+                    "return_to_base": "Tagasi dokki",
+                    "start_cleaning": "Alusta puhastamist",
+                    "turn_on": "Lülita sisse",
+                    "turn_off": "Lülita välja"
+                }
             }
         },
         "components": {
@@ -665,6 +705,11 @@
                 "name": "Nimi",
                 "entity_id": "Üksuse ID"
             }
+        },
+        "auth_store": {
+            "ask": "Kas soovid selle sisselogimise salvestada?",
+            "decline": "Tänan ei",
+            "confirm": "Salvesta sisselogimine"
         }
     },
     "domain": {
@@ -702,7 +747,8 @@
         "switch": "Lüliti",
         "updater": "Uuendaja",
         "weblink": "Veebilink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Tühjenda"
     },
     "attribute": {
         "weather": {

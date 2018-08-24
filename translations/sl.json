@@ -705,6 +705,11 @@
                 "name": "Ime",
                 "entity_id": "ID subjekta"
             }
+        },
+        "auth_store": {
+            "ask": "Ali želite shraniti to prijavo?",
+            "decline": "Ne hvala",
+            "confirm": "Shrani prijavo"
         }
     },
     "domain": {
