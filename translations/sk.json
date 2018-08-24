@@ -253,6 +253,16 @@
             "sunny": "slnečno",
             "windy": "Veterno",
             "windy-variant": "Veterno"
+        },
+        "vacuum": {
+            "cleaning": "Čistí",
+            "docked": "V doku",
+            "error": "Chyba",
+            "idle": "Nečinný",
+            "off": "Vypnutý",
+            "on": "Zapnutý",
+            "paused": "Pozastavený",
+            "returning": "Vracia sa do doku"
         }
     },
     "state_badge": {
@@ -500,6 +510,41 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Spravujte svoju Z-Wave sieť"
+                },
+                "users": {
+                    "caption": "Používatelia",
+                    "description": "Správa používateľov",
+                    "picker": {
+                        "title": "Používatelia"
+                    },
+                    "editor": {
+                        "rename_user": "Premenovať používateľa",
+                        "change_password": "Zmeniť heslo",
+                        "activate_user": "Aktivovať používateľa",
+                        "deactivate_user": "Deaktivovať používateľa",
+                        "delete_user": "Vymazať používateľa"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push upozornenia",
+                    "description": "Posielať upozornenia na toto zariadenie.",
+                    "error_load_platform": "Konfigurujte upozornenia notify.html5.",
+                    "error_use_https": "Vyžaduje zapnuté SSL pre rozhranie.",
+                    "push_notifications": "Push upozornenia",
+                    "link_promo": "Viac informácií"
+                },
+                "language": {
+                    "header": "Jazyk",
+                    "link_promo": "Pomôžte s prekladom",
+                    "dropdown_label": "Jazyk"
+                },
+                "themes": {
+                    "header": "Téma",
+                    "error_no_theme": "Nie sú k dispozícii žiadne témy.",
+                    "link_promo": "Získajte viac informácií o témach",
+                    "dropdown_label": "Téma"
                 }
             }
         },
@@ -610,6 +655,15 @@
                 "code": "Kód",
                 "lock": "Zamknúť",
                 "unlock": "Odomknúť"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Pokračovať v čistení",
+                    "return_to_base": "Návrat do doku",
+                    "start_cleaning": "Začať čistenie",
+                    "turn_on": "Zapnúť",
+                    "turn_off": "Vypnúť"
+                }
             }
         },
         "components": {
@@ -624,7 +678,14 @@
             "relative_time": {
                 "past": "Pred {time}",
                 "future": "O {time}",
-                "never": "Nikdy"
+                "never": "Nikdy",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekunda}\nother {sekúnd}\n}",
+                    "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
+                    "hour": "{count} {count, plural,\n  one {hodina}\n  other {hodiny}\n}",
+                    "day": "{count} {count, plural,\none {deň}\nother {dní}\n}",
+                    "week": "{count} {count, plural,\none {týždeň}\nother {týždne}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Načítavam históriu stavov",
@@ -641,8 +702,14 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Uložiť",
-                "name": "Názov"
+                "name": "Názov",
+                "entity_id": "Entity ID"
             }
+        },
+        "auth_store": {
+            "ask": "Chcete tieto prihlasovacie údaje uložiť?",
+            "decline": "Nie ďakujem",
+            "confirm": "Uložiť prihlasovacie údaje"
         }
     },
     "domain": {
@@ -680,7 +747,8 @@
         "switch": "Prepínač",
         "updater": "Aktualizátor",
         "weblink": "Webový odkaz",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Vysávač"
     },
     "attribute": {
         "weather": {

@@ -12,7 +12,8 @@
         "dev-events": "Event",
         "dev-templates": "Template",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -143,7 +144,7 @@
             "stopped": "Terhenti"
         },
         "device_tracker": {
-            "home": "Di rumah",
+            "home": "Rumah",
             "not_home": "Keluar"
         },
         "fan": {
@@ -153,7 +154,7 @@
         "group": {
             "off": "Off",
             "on": "On",
-            "home": "Di rumah",
+            "home": "Rumah",
             "not_home": "Keluar",
             "open": "Terbuka",
             "opening": "Membuka",
@@ -234,8 +235,8 @@
     },
     "state_badge": {
         "device_tracker": {
-            "home": "di rumah",
-            "not_home": "di luar"
+            "home": "Rumah",
+            "not_home": "Keluar"
         }
     },
     "ui": {
@@ -424,7 +425,7 @@
                             "duplicate": "Gandakan",
                             "delete": "Hapus",
                             "delete_confirm": "Anda yakin ingin menghapus?",
-                            "unsupported_action": "Aksi tidak didukung: {condition}",
+                            "unsupported_action": "Aksi tidak didukung: {action}",
                             "type_select": "Jenis aksi",
                             "type": {
                                 "service": {
@@ -471,14 +472,16 @@
             "cancel": "Batalkan"
         },
         "duration": {
-            "day": "{count}{count, plural,\n  one { hari }\n  other { hari }\n}",
-            "week": "{count}{count, plural,\n  one { minggu }\n  other { minggu }\n}",
-            "second": "{count}{count, plural,\n  one { detik }\n  other { detik }\n}"
+            "day": "{count}{count, plural,\n  one {hari}\n  other {hari}\n}",
+            "week": "{count}{count, plural,\n  one {minggu}\n  other {minggu}\n}",
+            "second": "{count}{count, plural,\n  one {detik}\n  other {detik}\n}",
+            "minute": "{count} {count, plural,\n  one {menit}\n  other {menit}\n}",
+            "hour": "{count} {count, plural,\n  one {jam}\n  other {jam}\n}"
         },
         "login-form": {
             "password": "Kata sandi",
             "remember": "Ingat",
-            "log_in": "Masuk"
+            "log_in": "Log in"
         },
         "card": {
             "camera": {
@@ -522,7 +525,24 @@
             },
             "service-picker": {
                 "service": "Layanan"
+            },
+            "relative_time": {
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {detik}\n  other {detik}\n}",
+                    "minute": "{count} {count, plural,\n  one {menit}\n  other {menit}\n}",
+                    "hour": "{count} {count, plural,\n  one {jam}\n  other {jam}\n}",
+                    "day": "{count} {count, plural,\n  one {hari}\n  other {hari}\n}",
+                    "week": "{count} {count, plural,\n  one {minggu}\n  other {minggu}\n}"
+                }
             }
+        },
+        "notification_toast": {
+            "connection_lost": "Koneksi terputus. Menghubungan kembali ..."
+        },
+        "auth_store": {
+            "ask": "Apakah Anda ingin menyimpan login ini?",
+            "decline": "Tidak, terima kasih",
+            "confirm": "Simpan login"
         }
     },
     "domain": {
@@ -542,20 +562,22 @@
         "image_processing": "Pengolahan gambar",
         "input_boolean": "Masukan boolean",
         "input_datetime": "Masukkan tanggal waktu",
-        "input_select": "Pilih input",
+        "input_select": "Input Pilihan",
         "input_number": "Masukkan angka",
-        "input_text": "Masukkan teks",
+        "input_text": "Input Text",
         "light": "Lampu",
         "lock": "Kunci",
         "mailbox": "Kotak pesan",
         "media_player": "Pemutar media",
-        "notify": "Memberitahu",
+        "notify": "Pemberitahuan",
+        "plant": "Tanaman",
         "scene": "Scene",
         "script": "Script",
         "sensor": "Sensor",
         "sun": "Matahari",
         "switch": "Sakelar",
-        "updater": "Updater"
+        "updater": "Updater",
+        "zwave": "Z-Wave"
     },
     "attribute": {
         "weather": {

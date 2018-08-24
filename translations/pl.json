@@ -617,8 +617,8 @@
                 "arm_away": "Uzbrojony (nieobecny)"
             },
             "automation": {
-                "last_triggered": "Ostatnio uruchomione",
-                "trigger": "Wyzwalacz"
+                "last_triggered": "Ostatnie uruchomienie",
+                "trigger": "Uruchom"
             },
             "cover": {
                 "position": "Pozycja",
