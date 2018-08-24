@@ -35,6 +35,6 @@
     }
     </script>
     <script src="<%= entrypoint %>"></script>
-    <script src='/static/hass-icons.js' async></script>
+    <script src='<%= hassIconsJS %>' async></script>
   </body>
 </html>
