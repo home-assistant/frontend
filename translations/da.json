@@ -246,12 +246,17 @@
             "lightning": "Lyn",
             "lightning-rainy": "Lyn, regnvejr",
             "partlycloudy": "Delvist overskyet",
+            "pouring": "Regnvejr",
             "rainy": "Regnfuldt",
             "snowy": "Snedækket",
-            "snowy-rainy": "Snedækket, regnfuldt"
+            "snowy-rainy": "Snedækket, regnfuldt",
+            "sunny": "Solrig",
+            "windy": "Blæsende",
+            "windy-variant": "Blæsende"
         },
         "vacuum": {
             "cleaning": "Rengøring",
+            "docked": "I dock",
             "error": "Fejl",
             "idle": "Inaktiv",
             "off": "Off",
@@ -321,7 +326,7 @@
                             },
                             "reloading": {
                                 "heading": "Genindlæsning af konfiguration",
-                                "introduction": "Nogle dele af Home Assistant kan genindlæse uden at kræve en genstart. Tryk på reload vil af montere deres nuværende konfiguration og indlæse den nye.",
+                                "introduction": "Nogle dele af Home Assistant kan genindlæse uden at kræve en genstart. Tryk på \"genindlæs\" vil afmontere deres nuværende konfiguration og indlæse den nye.",
                                 "core": "Genindlæs system",
                                 "group": "Genindlæs grupper",
                                 "automation": "Genindlæs automatiseringer",
@@ -344,6 +349,8 @@
                     "caption": "Automatisering",
                     "description": "Opret og rediger automatiseringer",
                     "picker": {
+                        "header": "Automatiserings editor",
+                        "introduction": "Automatiserings editoren giver dig mulighed for at oprette og redigere automatiseringer. Læs venligst [instruktionerne] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "pick_automation": "Vælg automatisering for at redigere",
                         "no_automations": "Vi kunne ikke finde nogen redigerbare automatiseringer",
                         "add_automation": "Tilføj automatisering"
@@ -356,6 +363,7 @@
                         "alias": "Navn",
                         "triggers": {
                             "header": "Udløser",
+                            "introduction": "Udløsere er, hvad der begynder behandlingen af en automatiseringsregel. Det er muligt at angive flere udløsere for samme regel. Når en udløser starter, vil Home Assistant validere betingelserne, hvis nogen, og udføre handlingen. \n\n [Lær mere om udløsere.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Tilføj udløser",
                             "duplicate": "Kopier",
                             "delete": "Slet",
@@ -384,13 +392,16 @@
                                     "topic": "Emne"
                                 },
                                 "numeric_state": {
+                                    "label": "Numerisk tilstand",
                                     "above": "Over",
                                     "below": "Under"
                                 },
                                 "sun": {
                                     "label": "Sol",
+                                    "event": "Begivenhed",
                                     "sunrise": "Solopgang",
-                                    "sunset": "Solnedgang"
+                                    "sunset": "Solnedgang",
+                                    "offset": "Timeout (valgfri)"
                                 },
                                 "template": {
                                     "label": "Skabelon",
@@ -401,7 +412,9 @@
                                     "at": "Klokken"
                                 },
                                 "zone": {
+                                    "label": "Zone",
                                     "entity": "Enhed med placering",
+                                    "zone": "Zone",
                                     "event": "Begivenhed",
                                     "enter": "Ankom",
                                     "leave": "Forlade"
@@ -410,6 +423,7 @@
                         },
                         "conditions": {
                             "header": "Betingelser",
+                            "introduction": "Betingelser er en valgfri del af en automatiseringsregel og kan bruges til at forhindre, at en handling sker, når den udløses. Betingelser ligner meget udløsere, men er meget forskellige. En udløser vil se på begivenheder der sker i systemet, mens en tilstand kun ser på, hvordan systemet ser ud lige nu. En udløser kan observere, at der er tændt for en kontakt. En tilstand kan kun se, om en switch er i øjeblikket til eller fra. \n\n [Lær mere om betingelser.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Tilføj betingelse",
                             "duplicate": "Kopier",
                             "delete": "Slet",
@@ -440,23 +454,34 @@
                                     "label": "Tid",
                                     "after": "Efter",
                                     "before": "Før"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "entity": "Enhed med placering",
+                                    "zone": "Zone"
                                 }
                             }
                         },
                         "actions": {
+                            "header": "Handlinger",
+                            "introduction": "Handlingerne er, hvad Home Assistant skal gøre, når automatiseringen udløses. \n\n [Lær mere om handlinger.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "Tilføj automatisering",
                             "duplicate": "Kopier",
                             "delete": "Slet",
                             "delete_confirm": "Er du sikker på du vil slette?",
+                            "unsupported_action": "Ikke-understøttet handling: {action}",
                             "type": {
                                 "service": {
-                                    "label": "Kald service"
+                                    "label": "Kald service",
+                                    "service_data": "Service data"
                                 },
                                 "delay": {
                                     "label": "Forsinkelse",
                                     "delay": "Forsinkelse"
                                 },
                                 "wait_template": {
-                                    "label": "Vent"
+                                    "label": "Vent",
+                                    "timeout": "Timeout (valgfri)"
                                 },
                                 "condition": {
                                     "label": "Betingelse"
@@ -477,6 +502,7 @@
                     "description": "Administrer dit Z-Wave netværk"
                 },
                 "users": {
+                    "caption": "Brugere",
                     "description": "Administrer brugere",
                     "picker": {
                         "title": "Brugere"
@@ -546,7 +572,26 @@
                 "execute": "Udfør"
             },
             "weather": {
+                "attributes": {
+                    "air_pressure": "Lufttryk",
+                    "humidity": "Fugtighed",
+                    "temperature": "Temperatur",
+                    "visibility": "Sigtbarhed",
+                    "wind_speed": "Vindhastighed"
+                },
                 "cardinal_direction": {
+                    "e": "Ø",
+                    "ene": "ØNØ",
+                    "ese": "ØSØ",
+                    "n": "N",
+                    "ne": "NØ",
+                    "nne": "NNØ",
+                    "nw": "NV",
+                    "nnw": "NNV",
+                    "s": "S",
+                    "se": "SØ",
+                    "sse": "SSØ",
+                    "ssw": "SSV",
                     "sw": "SV",
                     "w": "V",
                     "wnw": "VNV",
@@ -579,7 +624,12 @@
                 "color_temperature": "Farvetemperatur",
                 "effect": "Effekt"
             },
+            "media_player": {
+                "text_to_speak": "Tekst til tale",
+                "source": "Kilde"
+            },
             "climate": {
+                "currently": "Lige nu",
                 "on_off": "On \/ off",
                 "fan_mode": "Ventilator tilstand"
             },
@@ -587,9 +637,6 @@
                 "code": "Kode",
                 "lock": "Lås",
                 "unlock": "Lås op"
-            },
-            "media_player": {
-                "source": "Kilde"
             },
             "vacuum": {
                 "actions": {
@@ -637,7 +684,8 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Gem",
-                "name": "Navn"
+                "name": "Navn",
+                "entity_id": "Enheds ID"
             }
         },
         "auth_store": {

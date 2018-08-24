@@ -529,7 +529,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "Push Értesítések",
-                    "description": "Értesítések küldése erre az eszközre",
+                    "description": "Értesítések küldése erre az eszközre.",
                     "error_load_platform": "Állítsd be a notify.html5-t.",
                     "error_use_https": "Szükséges az SSL engedélyezése a felülethez.",
                     "push_notifications": "Push értesítések",
