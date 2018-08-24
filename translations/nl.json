@@ -525,6 +525,27 @@
                         "delete_user": "Verwijder gebruiker"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push-meldingen",
+                    "description": "Verstuur meldingen naar dit apparaat.",
+                    "error_load_platform": "Configureer notify.html5.",
+                    "error_use_https": "Vereist SSL voor de frontend",
+                    "push_notifications": "Push-meldingen",
+                    "link_promo": "Kom meer te weten"
+                },
+                "language": {
+                    "header": "Taal",
+                    "link_promo": "Help met vertalen",
+                    "dropdown_label": "Taal"
+                },
+                "themes": {
+                    "header": "Thema",
+                    "error_no_theme": "Geen thema's beschikbaar.",
+                    "link_promo": "Meer informatie over thema's",
+                    "dropdown_label": "Thema"
+                }
             }
         },
         "sidebar": {
@@ -684,6 +705,11 @@
                 "name": "Naam",
                 "entity_id": "Entiteits-ID"
             }
+        },
+        "auth_store": {
+            "ask": "Wilt u de inloggegevens opslaan?",
+            "decline": "Nee dank u",
+            "confirm": "Bewaar inloggegevens"
         }
     },
     "domain": {

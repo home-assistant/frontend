@@ -705,6 +705,11 @@
                 "name": "Nome",
                 "entity_id": "ID da entidade"
             }
+        },
+        "auth_store": {
+            "ask": "Você quer salvar este login?",
+            "decline": "Não, obrigado",
+            "confirm": "Salvar login"
         }
     },
     "domain": {
