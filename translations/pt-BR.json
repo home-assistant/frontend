@@ -710,6 +710,11 @@
             "ask": "Você quer salvar este login?",
             "decline": "Não, obrigado",
             "confirm": "Salvar login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Clique no botão para configurar {entity}",
+            "empty": "Sem notificações",
+            "title": "Notificações"
         }
     },
     "domain": {
