@@ -710,6 +710,11 @@
             "ask": "Voleu desar aquest inici de sessió?",
             "decline": "No, gràcies",
             "confirm": "Desar inici de sessió"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Prem el botó per configurar {entity}",
+            "empty": "No hi ha notificacions",
+            "title": "Notificacions"
         }
     },
     "domain": {
