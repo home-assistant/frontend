@@ -710,6 +710,11 @@
             "ask": "Czy chcesz zapamiętać dane logowania?",
             "decline": "Nie, dziękuję",
             "confirm": "Zapamiętaj"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Kliknij przycisk, aby skonfigurować {entity}",
+            "empty": "Brak powiadomień",
+            "title": "Powiadomienia"
         }
     },
     "domain": {

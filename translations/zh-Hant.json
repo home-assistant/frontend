@@ -710,6 +710,11 @@
             "ask": "是否要儲存此登錄資訊？",
             "decline": "不用了，謝謝",
             "confirm": "儲存資訊"
+        },
+        "notification_drawer": {
+            "click_to_configure": "點擊按鈕以設定{entity}",
+            "empty": "沒有通知",
+            "title": "通知提示"
         }
     },
     "domain": {
