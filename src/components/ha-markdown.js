@@ -35,9 +35,7 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
     loaded.then(
       ({ marked, filterXSS }) => {
         this.marked = marked;
-        this.filterXSS = this.allowSvg ? c => filterXSS(c, {
-          onIgnoreTag: (tag, html) => (svgWhiteList.indexOf(tag) >= 0 ? html : null)
-        }) : filterXSS;
+        this.filterXSS = filterXSS;
         this._scriptLoaded = 1;
       },
       () => { this._scriptLoaded = 2; },
@@ -58,7 +56,11 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
           gfm: true,
           tables: true,
           breaks: true
-        }));
+        }), {
+          onIgnoreTag: this.allowSvg
+            ? (tag, html) => (svgWhiteList.indexOf(tag) >= 0 ? html : null)
+            : null
+        });
         this._resize();
 
         const walker = document.createTreeWalker(this, 1 /* SHOW_ELEMENT */, null, false);
