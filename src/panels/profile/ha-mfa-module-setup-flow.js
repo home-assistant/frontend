@@ -29,9 +29,13 @@ class HaMfaModuleSetupFlow extends
       paper-dialog {
         max-width: 500px;
       }
-      ha-markdown img:first-child:last-child {
+      ha-markdown img:first-child:last-child,
+      ha-markdown svg:first-child:last-child {
         display: block;
         margin: 0 auto;
+      }
+      ha-markdown a {
+        color: var(--primary-color);
       }
       .init-spinner {
         padding: 10px 100px 34px;
