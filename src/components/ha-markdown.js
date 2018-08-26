@@ -3,7 +3,11 @@ import EventsMixin from '../mixins/events-mixin.js';
 
 let loaded = null;
 
-const svgWhiteList = ['svg', 'g', 'path'];
+/**
+ * White list allowed svg tag.
+ * Only put in the tag used in QR code, can be extend in future.
+ */
+const svgWhiteList = ['svg', 'path'];
 
 /*
  * @appliesMixin EventsMixin
