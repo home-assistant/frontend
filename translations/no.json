@@ -710,6 +710,11 @@
             "ask": "Ønsker du å lagre denne påloggingen?",
             "decline": "Nei takk",
             "confirm": "Lagre pålogging"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klikk på knappen for å konfigurere {entity}",
+            "empty": "Ingen varsler",
+            "title": "Varsler"
         }
     },
     "domain": {
