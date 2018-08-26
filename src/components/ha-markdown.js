@@ -12,7 +12,11 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
       content: {
         type: String,
         observer: '_render',
-      }
+      },
+      disableXssFilter: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -29,7 +33,7 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
     loaded.then(
       ({ marked, filterXSS }) => {
         this.marked = marked;
-        this.filterXSS = filterXSS;
+        this.filterXSS = this.disableXssFilter ? c => c : filterXSS;
         this._scriptLoaded = 1;
       },
       () => { this._scriptLoaded = 2; },
