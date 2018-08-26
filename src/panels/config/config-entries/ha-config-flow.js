@@ -71,7 +71,7 @@ class HaConfigFlow extends
 
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
             <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
-              <ha-markdown content="[[_computeStepDescription(localize, _step)]]" disable-xss-filter></ha-markdown>
+              <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
             </template>
 
             <ha-form

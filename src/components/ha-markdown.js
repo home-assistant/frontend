@@ -3,6 +3,8 @@ import EventsMixin from '../mixins/events-mixin.js';
 
 let loaded = null;
 
+const svgWhiteList = ['svg', 'g', 'path'];
+
 /*
  * @appliesMixin EventsMixin
  */
@@ -13,7 +15,7 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
         type: String,
         observer: '_render',
       },
-      disableXssFilter: {
+      allowSvg: {
         type: Boolean,
         value: false,
       },
@@ -33,7 +35,9 @@ class HaMarkdown extends EventsMixin(PolymerElement) {
     loaded.then(
       ({ marked, filterXSS }) => {
         this.marked = marked;
-        this.filterXSS = this.disableXssFilter ? c => c : filterXSS;
+        this.filterXSS = this.allowSvg ? c => filterXSS(c, {
+          onIgnoreTag: (tag, html) => (svgWhiteList.indexOf(tag) >= 0 ? html : null)
+        }) : filterXSS;
         this._scriptLoaded = 1;
       },
       () => { this._scriptLoaded = 2; },
