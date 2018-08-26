@@ -525,6 +525,18 @@
                         "delete_user": "Elimina utente"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notifiche push"
+                },
+                "language": {
+                    "header": "Lingua"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "dropdown_label": "Tema"
+                }
             }
         },
         "sidebar": {
