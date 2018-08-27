@@ -1,4 +1,3 @@
-import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/polymer/lib/elements/dom-if.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
 import '@polymer/paper-input/paper-input.js';
@@ -6,40 +5,16 @@ import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import hassCallApi from '../util/hass-call-api.js';
+import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
 
 const callApi = (method, path, data) => hassCallApi('', {}, method, path, data);
 
-class HaOnboarding extends PolymerElement {
+class HaOnboarding extends localizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
-    <style include="iron-flex iron-positioning"></style>
     <style>
-      .content {
-        padding: 20px 16px;
-        max-width: 400px;
-        margin: 0 auto;
-      }
-
-      .header {
-        text-align: center;
-        font-size: 1.96em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 300;
-      }
-
-      .header img {
-        margin-right: 16px;
-      }
-
-      h1 {
-        font-size: 1.2em;
-      }
-
       .error {
         color: red;
-        font-weight: bold;
       }
 
       .action {
@@ -47,54 +22,56 @@ class HaOnboarding extends PolymerElement {
         text-align: center;
       }
     </style>
-    <div class="content layout vertical fit">
-      <div class='header'>
-        <img src="/static/icons/favicon-192x192.png" height="52">
-        Home Assistant
-      </div>
 
-      <div>
-        <p>Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?</p>
-        <p>Let's get started by creating a user account.</p>
-      </div>
+    <p>
+      [[localize('ui.panel.page-onboarding.intro')]]
+    </p>
 
-      <template is='dom-if' if='[[_error]]'>
-        <p class='error'>[[_error]]</p>
-      </template>
+    <p>
+      [[localize('ui.panel.page-onboarding.user.intro')]]
+    </p>
 
+    <template is='dom-if' if='[[_errorMsg]]'>
+      <p class='error'>[[_computeErrorMsg(localize, _errorMsg)]]</p>
+    </template>
+
+    <form>
       <paper-input
         autofocus
-        label='Name'
+        label="[[localize('ui.panel.page-onboarding.user.data.name')]]"
         value='{{_name}}'
         required
         auto-validate
-        error-message='Required'
+        error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
         on-blur='_maybePopulateUsername'
       ></paper-input>
 
       <paper-input
-        label='Username'
+        label="[[localize('ui.panel.page-onboarding.user.data.username')]]"
         value='{{_username}}'
         required
         auto-validate
-        error-message='Required'
+        error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
       ></paper-input>
 
       <paper-input
-        label='Password'
+        label="[[localize('ui.panel.page-onboarding.user.data.password')]]"
         value='{{_password}}'
         required
         type='password'
         auto-validate
-        error-message='Required'
+        error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
       ></paper-input>
 
       <template is='dom-if' if='[[!_loading]]'>
         <p class='action'>
-          <paper-button raised on-click='_submitForm'>Create Account</paper-button>
+          <paper-button raised on-click='_submitForm'>
+            [[localize('ui.panel.page-onboarding.user.create_account')]]
+          </paper-button>
         </p>
       </template>
     </div>
+  </form>
 `;
   }
 
@@ -106,7 +83,12 @@ class HaOnboarding extends PolymerElement {
       _loading: {
         type: Boolean,
         value: false,
-      }
+      },
+      translationFragment: {
+        type: String,
+        value: 'page-onboarding',
+      },
+      _errorMsg: String,
     };
   }
 
@@ -117,10 +99,24 @@ class HaOnboarding extends PolymerElement {
         this._submitForm();
       }
     });
-    const steps = await callApi('get', 'onboarding');
-    if (steps.every(step => step.done)) {
-      // Onboarding is done!
-      document.location = '/';
+
+    try {
+      const response = await window.stepsPromise;
+
+      if (response.status === 404) {
+        // We don't load the component when onboarding is done
+        document.location = '/';
+        return;
+      }
+
+      const steps = await response.json();
+
+      if (steps.every(step => step.done)) {
+        // Onboarding is done!
+        document.location = '/';
+      }
+    } catch (err) {
+      alert('Something went wrong loading loading onboarding, try refreshing');
     }
   }
 
@@ -135,7 +131,12 @@ class HaOnboarding extends PolymerElement {
   }
 
   async _submitForm() {
-    if (!this._name || !this._username || !this._password) return;
+    if (!this._name || !this._username || !this._password) {
+      this._errorMsg = 'required_fields';
+      return;
+    }
+
+    this._errorMsg = '';
 
     try {
       await callApi('post', 'onboarding/users', {
@@ -150,9 +151,13 @@ class HaOnboarding extends PolymerElement {
       console.error(err);
       this.setProperties({
         _loading: false,
-        _error: err.message,
+        _errorMsg: err.message,
       });
     }
+  }
+
+  _computeErrorMsg(localize, errorMsg) {
+    return localize(`ui.panel.page-onboarding.user.error.${errorMsg}`) || errorMsg;
   }
 }
 customElements.define('ha-onboarding', HaOnboarding);
