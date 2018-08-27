@@ -546,6 +546,75 @@
                     "link_promo": "Learn about themes",
                     "dropdown_label": "Theme"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Initializing",
+                "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
+                "logging_in_with": "Logging in with **{authProviderName}**.",
+                "pick_auth_provider": "Or log in with",
+                "abort_intro": "Login aborted",
+                "form": {
+                    "working": "Please wait",
+                    "unknown_error": "Something went wrong",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Username",
+                                        "password": "Password"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Invalid username or password"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Password"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Invalid API password"
+                            },
+                            "abort": {
+                                "no_api_password_set": "You don't have an API password configured."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "User"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Your computer is not whitelisted."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+                "user": {
+                    "intro": "Let's get started by creating a user account.",
+                    "required_field": "Required",
+                    "data": {
+                        "name": "Name",
+                        "username": "Username",
+                        "password": "Password"
+                    },
+                    "create_account": "Create Account",
+                    "error": {
+                        "required_fields": "Fill in all required fields"
+                    }
+                }
             }
         },
         "sidebar": {

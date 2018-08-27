@@ -710,6 +710,11 @@
             "ask": "Szeretnéd menteni ezt a bejelentkezést?",
             "decline": "Köszönöm nem",
             "confirm": "Bejelentkezés mentése"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Kattints a gombra a(z) {entity} beállításához",
+            "empty": "Nincsenek Értesítések",
+            "title": "Értesítések"
         }
     },
     "domain": {
