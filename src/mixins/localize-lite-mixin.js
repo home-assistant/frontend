@@ -6,8 +6,6 @@ import { dedupingMixin } from '@polymer/polymer/lib/utils/mixin.js';
 import { AppLocalizeBehavior } from '../util/app-localize-behavior.js';
 import { getActiveTranslation, getTranslation } from '../util/hass-translation.js';
 
-const language = getActiveTranslation();
-
 /**
  * @polymerMixin
  * @appliesMixin AppLocalizeBehavior
@@ -37,9 +35,11 @@ export default dedupingMixin(superClass =>
         // In dev mode, we will issue a warning if after a second we are still
         // not configured correctly.
         if (__DEV__) {
+          // eslint-disable-next-line
           setTimeout(() => !this.resources && console.error(
             'Forgot to pass in resources or set translationFragment for',
-            this.nodeName), 1000);
+            this.nodeName
+          ), 1000);
         }
         return;
       }

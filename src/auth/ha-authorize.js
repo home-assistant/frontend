@@ -16,6 +16,9 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
       ha-markdown a {
         color: var(--primary-color);
       }
+      ha-markdown p:last-child{
+        margin-bottom: 0;
+      }
       ha-pick-auth-provider {
         display: block;
         margin-top: 48px;
@@ -27,9 +30,7 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
     </template>
 
     <template is="dom-if" if="[[_authProviders]]">
-      <ha-markdown
-        content="[[localize('ui.panel.page-authorize.logging_in', 'clientId', clientId, 'authProviderName', _authProvider.name)]]"
-      ></ha-markdown>
+      <ha-markdown content='[[_computeIntro(localize, clientId, _authProvider)]]'></ha-markdown>
 
       <ha-auth-flow
         resources="[[resources]]"
@@ -82,9 +83,7 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
     if (query.state) props.oauth2State = query.state;
     this.setProperties(props);
 
-    import(
-      /* webpackChunkName: "pick-auth-provider" */
-      '../auth/ha-pick-auth-provider.js');
+    import(/* webpackChunkName: "pick-auth-provider" */ '../auth/ha-pick-auth-provider.js');
 
     // Fetch auth providers
     try {
@@ -100,11 +99,11 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
         _authProviders: authProviders,
         _authProvider: authProviders[0],
       });
-    } catch(err) {
+    } catch (err) {
       // eslint-disable-next-line
       console.error('Error loading auth providers', err);
       this._state = 'error-loading';
-    };
+    }
   }
 
   _computeMultiple(array) {
@@ -118,6 +117,14 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   _computeInactiveProvders(curProvider, providers) {
     return providers.filter(prv =>
       prv.type !== curProvider.type || prv.id !== curProvider.id);
+  }
+
+  _computeIntro(localize, clientId, authProvider) {
+    return (
+      localize('ui.panel.page-authorize.authorizing_client', 'clientId', clientId) +
+      '\n\n' +
+      localize('ui.panel.page-authorize.logging_in_with', 'authProviderName', authProvider.name)
+    );
   }
 }
 customElements.define('ha-authorize', HaAuthorize);

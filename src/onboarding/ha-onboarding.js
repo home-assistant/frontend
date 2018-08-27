@@ -99,19 +99,23 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
         this._submitForm();
       }
     });
+
     try {
       const response = await window.stepsPromise;
+
+      if (response.status === 404) {
+        // We don't load the component when onboarding is done
+        document.location = '/';
+        return;
+      }
+
       const steps = await response.json();
+
       if (steps.every(step => step.done)) {
         // Onboarding is done!
         document.location = '/';
       }
     } catch (err) {
-      if (err.status_code == 404) {
-        // Onboarding is done when we don't load the component.
-        document.location = '/';
-        return;
-      }
       alert('Something went wrong loading loading onboarding, try refreshing');
     }
   }

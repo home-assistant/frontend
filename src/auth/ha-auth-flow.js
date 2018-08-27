@@ -91,9 +91,9 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
   async _providerChanged(newProvider, oldProvider) {
     if (oldProvider && this._step && this._step.type === 'form') {
       fetch(`/auth/login_flow/${this._step.flow_id}`, {
-          method: 'DELETE',
-          credentials: 'same-origin',
-        }).catch(() => {});
+        method: 'DELETE',
+        credentials: 'same-origin',
+      }).catch(() => {});
     }
 
     try {
@@ -109,11 +109,11 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
 
       const step = await response.json();
       this._updateStep(step);
-    } catch(err) {
+    } catch (err) {
       // eslint-disable-next-line
       console.error('Error starting auth flow', err);
       this._state = 'error';
-    };
+    }
   }
 
   _updateStep(step) {
@@ -168,7 +168,7 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
     }
     this._state = 'loading';
     // To avoid a jumping UI.
-    this.style.setProperty('min-height', `${this.offsetHeight}px`)
+    this.style.setProperty('min-height', `${this.offsetHeight}px`);
 
     const postData = Object.assign({}, this._stepData, {
       client_id: this.clientId,
@@ -202,13 +202,13 @@ class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
         return;
       }
       this._updateStep(newStep);
-    } catch(err) {
+    } catch (err) {
       // eslint-disable-next-line
       console.error('Error submitting step', err);
       this._state = 'error-loading';
     } finally {
       this.style.setProperty('min-height', '');
-    };
+    }
   }
 }
 customElements.define('ha-auth-flow', HaAuthFlow);

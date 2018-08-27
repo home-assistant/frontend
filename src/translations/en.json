@@ -755,7 +755,8 @@
       },
       "page-authorize": {
         "initializing": "Initializing",
-        "logging_in": "Logging in to **{clientId}** with **{authProviderName}**.",
+        "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
+        "logging_in_with": "Logging in with **{authProviderName}**.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",
         "form": {
