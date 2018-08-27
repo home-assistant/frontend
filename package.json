@@ -117,6 +117,7 @@
     "polymer-analyzer": "^3.0.1",
     "polymer-bundler": "^4.0.1",
     "polymer-cli": "^1.7.4",
+    "raw-loader": "^0.5.1",
     "reify": "^0.16.2",
     "require-dir": "^1.0.0",
     "sinon": "^6.0.0",

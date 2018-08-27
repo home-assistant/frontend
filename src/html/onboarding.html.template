@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Home Assistant</title>
+    <link rel='preload' href='/static/fonts/roboto/Roboto-Light.ttf' as='font' crossorigin />
+    <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
+    <%= require('raw-loader!./_header.html.template') %>
+    <style>
+      .content {
+        padding: 20px 16px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        font-size: 1.96em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 300;
+      }
+
+      .header img {
+        margin-right: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <div class='header'>
+        <img src="/static/icons/favicon-192x192.png" height="52">
+        Home Assistant
+      </div>
+
+      <div>
+        <p>Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?</p>
+        <p>Let's get started by creating a user account.</p>
+      </div>
+
+      <ha-onboarding>Initializing…</ha-onboarding>
+    </div>
+    <% if (!latestBuild) { %>
+      <script src="/static/custom-elements-es5-adapter.js"></script>
+      <script src="<%= compatibility %>"></script>
+    <% } %>
+    <script>
+    window.stepsPromise = fetch('/api/onboarding', { credentials: 'same-origin' });
+
+    var webComponentsSupported = (
+      'customElements' in window &&
+      'content' in document.createElement('template'));
+    if (!webComponentsSupported) {
+      var e = document.createElement('script');
+      e.src = '/static/webcomponents-bundle.js';
+      document.write(e.outerHTML);
+    }
+    </script>
+    <script src="<%= entrypoint %>"></script>
+    <script src='<%= hassIconsJS %>' async></script>
+  </body>
+</html>
