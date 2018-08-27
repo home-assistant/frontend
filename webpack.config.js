@@ -17,12 +17,11 @@ const VERSION = version[0];
 const generateJSPage = (entrypoint, latestBuild) => {
   return new HtmlWebpackPlugin({
     inject: false,
-    template: './src/html/extra_page.html.template',
+    template: `./src/html/${entrypoint}.html.template`,
     // Default templateParameterGenerator code
     // https://github.com/jantimon/html-webpack-plugin/blob/master/index.js#L719
     templateParameters: (compilation, assets, option) => ({
       latestBuild,
-      tag: `ha-${entrypoint}`,
       compatibility: assets.chunks.compatibility.entry,
       entrypoint: assets.chunks[entrypoint].entry,
       hassIconsJS: assets.chunks['hass-icons'].entry,
