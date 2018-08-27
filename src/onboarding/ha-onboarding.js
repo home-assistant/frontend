@@ -5,16 +5,16 @@ import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import hassCallApi from '../util/hass-call-api.js';
+import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
 
 const callApi = (method, path, data) => hassCallApi('', {}, method, path, data);
 
-class HaOnboarding extends PolymerElement {
+class HaOnboarding extends localizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
       .error {
         color: red;
-        font-weight: bold;
       }
 
       .action {
@@ -23,41 +23,51 @@ class HaOnboarding extends PolymerElement {
       }
     </style>
 
-    <template is='dom-if' if='[[_error]]'>
-      <p class='error'>[[_error]]</p>
+    <p>
+      [[localize('ui.panel.page-onboarding.intro')]]
+    </p>
+
+    <p>
+      [[localize('ui.panel.page-onboarding.user.intro')]]
+    </p>
+
+    <template is='dom-if' if='[[_errorMsg]]'>
+      <p class='error'>[[_computeErrorMsg(localize, _errorMsg)]]</p>
     </template>
 
     <form>
       <paper-input
         autofocus
-        label='Name'
+        label="[[localize('ui.panel.page-onboarding.user.data.name')]]"
         value='{{_name}}'
         required
         auto-validate
-        error-message='Required'
+        error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
         on-blur='_maybePopulateUsername'
       ></paper-input>
 
       <paper-input
-        label='Username'
+        label="[[localize('ui.panel.page-onboarding.user.data.username')]]"
         value='{{_username}}'
         required
         auto-validate
-        error-message='Required'
+        error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
       ></paper-input>
 
       <paper-input
-        label='Password'
+        label="[[localize('ui.panel.page-onboarding.user.data.password')]]"
         value='{{_password}}'
         required
         type='password'
         auto-validate
-        error-message='Required'
+        error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
       ></paper-input>
 
       <template is='dom-if' if='[[!_loading]]'>
         <p class='action'>
-          <paper-button raised on-click='_submitForm'>Create Account</paper-button>
+          <paper-button raised on-click='_submitForm'>
+            [[localize('ui.panel.page-onboarding.user.create_account')]]
+          </paper-button>
         </p>
       </template>
     </div>
@@ -73,7 +83,12 @@ class HaOnboarding extends PolymerElement {
       _loading: {
         type: Boolean,
         value: false,
-      }
+      },
+      translationFragment: {
+        type: String,
+        value: 'page-onboarding',
+      },
+      _errorMsg: String,
     };
   }
 
@@ -92,7 +107,6 @@ class HaOnboarding extends PolymerElement {
         document.location = '/';
       }
     } catch (err) {
-      debugger;
       if (err.status_code == 404) {
         // Onboarding is done when we don't load the component.
         document.location = '/';
@@ -114,9 +128,11 @@ class HaOnboarding extends PolymerElement {
 
   async _submitForm() {
     if (!this._name || !this._username || !this._password) {
-      this._error = 'Fill in all required fields';
+      this._errorMsg = 'required_fields';
       return;
     }
+
+    this._errorMsg = '';
 
     try {
       await callApi('post', 'onboarding/users', {
@@ -131,9 +147,13 @@ class HaOnboarding extends PolymerElement {
       console.error(err);
       this.setProperties({
         _loading: false,
-        _error: err.message,
+        _errorMsg: err.message,
       });
     }
+  }
+
+  _computeErrorMsg(localize, errorMsg) {
+    return localize(`ui.panel.page-onboarding.user.error.${errorMsg}`) || errorMsg;
   }
 }
 customElements.define('ha-onboarding', HaOnboarding);

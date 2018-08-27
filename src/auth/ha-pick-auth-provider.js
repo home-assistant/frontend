@@ -4,11 +4,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../mixins/events-mixin.js';
+import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
 
 /*
  * @appliesMixin EventsMixin
  */
-class HaPickAuthProvider extends EventsMixin(PolymerElement) {
+class HaPickAuthProvider extends EventsMixin(localizeLiteMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
@@ -19,7 +20,7 @@ class HaPickAuthProvider extends EventsMixin(PolymerElement) {
         margin-top: 0;
       }
     </style>
-    <p>Or log in with:</p>
+    <p>[[localize('ui.panel.page-authorize.pick_auth_provider')]]:</p>
     <template is="dom-repeat" items="[[authProviders]]">
       <paper-item on-click="_handlePick">
         <paper-item-body>[[item.name]]</paper-item-body>

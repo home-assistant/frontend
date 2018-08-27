@@ -3,12 +3,19 @@ import '@polymer/polymer/lib/elements/dom-repeat.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
+import '../components/ha-markdown.js';
+
+import LocalizeLiteMixin from '../mixins/localize-lite-mixin.js';
+
 import '../auth/ha-auth-flow.js';
 
-class HaAuthorize extends PolymerElement {
+class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
+      ha-markdown a {
+        color: var(--primary-color);
+      }
       ha-pick-auth-provider {
         display: block;
         margin-top: 48px;
@@ -16,13 +23,16 @@ class HaAuthorize extends PolymerElement {
     </style>
 
     <template is="dom-if" if="[[!_authProviders]]">
-      Initializing
+      <p>[[localize('ui.panel.page-authorize.initializing')]]</p>
     </template>
 
     <template is="dom-if" if="[[_authProviders]]">
-      <p>Logging in to <b>[[clientId]]</b> with <b>[[_authProvider.name]]</b></p>
+      <ha-markdown
+        content="[[localize('ui.panel.page-authorize.logging_in', 'clientId', clientId, 'authProviderName', _authProvider.name)]]"
+      ></ha-markdown>
 
       <ha-auth-flow
+        resources="[[resources]]"
         client-id="[[clientId]]"
         redirect-uri="[[redirectUri]]"
         oauth2-state="[[oauth2State]]"
@@ -32,6 +42,7 @@ class HaAuthorize extends PolymerElement {
 
       <template is="dom-if" if="[[_computeMultiple(_authProviders)]]">
         <ha-pick-auth-provider
+          resources="[[resources]]"
           client-id="[[clientId]]"
           auth-providers="[[_computeInactiveProvders(_authProvider, _authProviders)]]"
           on-pick="_handleAuthProviderPick"
@@ -43,18 +54,15 @@ class HaAuthorize extends PolymerElement {
 
   static get properties() {
     return {
-      _authProvider: {
-        type: String,
-        value: null,
-      },
-      _authProviders: {
-        type: Array,
-        value: null,
-      },
-      _step: Object,
+      _authProvider: String,
+      _authProviders: Array,
       clientId: String,
       redirectUri: String,
       oauth2State: String,
+      translationFragment: {
+        type: String,
+        value: 'page-authorize',
+      }
     };
   }
 

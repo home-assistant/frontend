@@ -2,11 +2,16 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../components/ha-form.js';
+import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
 
-class HaAuthFlow extends PolymerElement {
+class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
+      :host {
+        /* So we can set min-height to avoid jumping during loading */
+        display: block;
+      }
       .action {
         margin: 24px 0 8px;
         text-align: center;
@@ -14,23 +19,28 @@ class HaAuthFlow extends PolymerElement {
     </style>
     <form>
       <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">
-        Please wait
+      [[localize('ui.panel.page-authorize.form.working')]]:
       </template>
       <template is="dom-if" if="[[_equals(_state, &quot;error&quot;)]]">
-        Something went wrong
+      [[localize('ui.panel.page-authorize.form.unknown_error')]]:
       </template>
       <template is="dom-if" if="[[_equals(_state, &quot;step&quot;)]]">
         <template is="dom-if" if="[[_equals(_step.type, &quot;abort&quot;)]]">
-          Aborted: [[_step.reason]]
+          [[localize('ui.panel.page-authorize.abort_intro')]]:
+          <ha-markdown content="[[_computeStepAbortedReason(localize, _step)]]"></ha-markdown>
         </template>
-        <template is="dom-if" if="[[_equals(_step.type, &quot;create_entry&quot;)]]">
-          Success!
-        </template>
+
         <template is="dom-if" if="[[_equals(_step.type, &quot;form&quot;)]]">
+          <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
+            <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
+          </template>
+
           <ha-form
             data="{{_stepData}}"
             schema="[[_step.data_schema]]"
             error="[[_step.errors]]"
+            compute-label="[[_computeLabelCallback(localize, _step)]]"
+            compute-error="[[_computeErrorCallback(localize, _step)]]"
           ></ha-form>
         </template>
         <div class='action'>
@@ -79,7 +89,7 @@ class HaAuthFlow extends PolymerElement {
   }
 
   async _providerChanged(newProvider, oldProvider) {
-    if (oldProvider && this._step && this._step.type !== 'form') {
+    if (oldProvider && this._step && this._step.type === 'form') {
       fetch(`/auth/login_flow/${this._step.flow_id}`, {
           method: 'DELETE',
           credentials: 'same-origin',
@@ -127,12 +137,38 @@ class HaAuthFlow extends PolymerElement {
     return stepType === 'form' ? 'Next' : 'Start over';
   }
 
+  _computeStepAbortedReason(localize, step) {
+    return localize(`ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`);
+  }
+
+  _computeStepDescription(localize, step) {
+    const args = [`ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description`];
+    const placeholders = step.description_placeholders || {};
+    Object.keys(placeholders).forEach((key) => {
+      args.push(key);
+      args.push(placeholders[key]);
+    });
+    return localize(...args);
+  }
+
+  _computeLabelCallback(localize, step) {
+    // Returns a callback for ha-form to calculate labels per schema object
+    return schema => localize(`ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.data.${schema.name}`);
+  }
+
+  _computeErrorCallback(localize, step) {
+    // Returns a callback for ha-form to calculate error messages
+    return error => localize(`ui.panel.page-authorize.form.providers.${step.handler[0]}.error.${error}`);
+  }
+
   async _handleSubmit() {
     if (this._step.type !== 'form') {
       this._providerChanged(this.authProvider, null);
       return;
     }
     this._state = 'loading';
+    // To avoid a jumping UI.
+    this.style.setProperty('min-height', `${this.offsetHeight}px`)
 
     const postData = Object.assign({}, this._stepData, {
       client_id: this.clientId,
@@ -170,6 +206,8 @@ class HaAuthFlow extends PolymerElement {
       // eslint-disable-next-line
       console.error('Error submitting step', err);
       this._state = 'error-loading';
+    } finally {
+      this.style.setProperty('min-height', '');
     };
   }
 }

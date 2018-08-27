@@ -33,11 +33,6 @@
         Home Assistant
       </div>
 
-      <div>
-        <p>Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?</p>
-        <p>Let's get started by creating a user account.</p>
-      </div>
-
       <ha-onboarding>Initializing…</ha-onboarding>
     </div>
     <% if (!latestBuild) { %>
