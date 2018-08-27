@@ -2,9 +2,9 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '../components/ha-form.js';
-import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
+import LocalizeLiteMixin from '../mixins/localize-lite-mixin.js';
 
-class HaAuthFlow extends localizeLiteMixin(PolymerElement) {
+class HaAuthFlow extends LocalizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
     <style>

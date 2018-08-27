@@ -4,12 +4,12 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import EventsMixin from '../mixins/events-mixin.js';
-import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
+import LocalizeLiteMixin from '../mixins/localize-lite-mixin.js';
 
 /*
  * @appliesMixin EventsMixin
  */
-class HaPickAuthProvider extends EventsMixin(localizeLiteMixin(PolymerElement)) {
+class HaPickAuthProvider extends EventsMixin(LocalizeLiteMixin(PolymerElement)) {
   static get template() {
     return html`
     <style>
