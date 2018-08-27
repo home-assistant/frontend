@@ -22,7 +22,10 @@ const TRANSLATION_FRAGMENTS = [
   'history',
   'logbook',
   'mailbox',
+  'profile',
   'shopping-list',
+  'page-authorize',
+  'page-onboarding',
 ];
 
 const tasks = [];
