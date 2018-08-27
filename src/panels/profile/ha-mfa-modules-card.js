@@ -41,7 +41,7 @@ class HaMfaModulesCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         margin-right: -.57em;
       }
     </style>
-    <paper-card heading="Multi-factor Authenication Modules">
+    <paper-card heading="Multi-factor Authentication Modules">
       <template is="dom-repeat" items="[[mfaModules]]" as="module">
         <paper-item>
           <paper-item-body two-line="">
