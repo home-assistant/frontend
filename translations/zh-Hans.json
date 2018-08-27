@@ -707,9 +707,14 @@
             }
         },
         "auth_store": {
-            "ask": "您想保存此登录信息吗？",
+            "ask": "是否保存本次登录？",
             "decline": "不，谢谢",
             "confirm": "保存"
+        },
+        "notification_drawer": {
+            "click_to_configure": "单击按钮可以配置{entity}",
+            "empty": "没有任何通知",
+            "title": "通知"
         }
     },
     "domain": {

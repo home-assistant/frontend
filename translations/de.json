@@ -710,6 +710,11 @@
             "ask": "Möchtest du diesen Login speichern?",
             "decline": "Nein Danke",
             "confirm": "Login speichern"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klicken Sie auf die Schaltfläche, um {entity} zu konfigurieren.",
+            "empty": "Keine Benachrichtigungen",
+            "title": "Benachrichtigungen"
         }
     },
     "domain": {
