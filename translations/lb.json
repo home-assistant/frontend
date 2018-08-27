@@ -710,6 +710,11 @@
             "ask": "Soll dëse Login gespäichert ginn?",
             "decline": "Nee Merci",
             "confirm": "Login späicheren"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Dréck de Knäppchen fir {entity} ze konfiguréieren",
+            "empty": "Keng Notifikatioune",
+            "title": "Notifikatioune"
         }
     },
     "domain": {
