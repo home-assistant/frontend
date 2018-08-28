@@ -18,6 +18,7 @@ function computeUsedEntities(config) {
     if (obj.entities) obj.entities.forEach(entity => addEntityId(entity));
     if (obj.card) addEntities(obj.card);
     if (obj.cards) obj.cards.forEach(card => addEntities(card));
+    if (obj.badges) obj.badges.forEach(badge => addEntityId(badge));
   }
 
   config.views.forEach(view => addEntities(view));
