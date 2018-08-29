@@ -122,7 +122,8 @@ class HaAuthFlow extends LocalizeLiteMixin(PolymerElement) {
       _state: 'step',
     };
 
-    if (this._step && step.step_id !== this._step.step_id) {
+    if (this._step &&
+        (step.flow_id !== this._step.flow_id || step.step_id !== this._step.step_id)) {
       props._stepData = {};
     }
 
