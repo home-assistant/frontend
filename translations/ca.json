@@ -546,6 +546,75 @@
                     "link_promo": "Més informació sobre temes",
                     "dropdown_label": "Tema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "S'està inicialitzant",
+                "authorizing_client": "Esteu a punt de permetre l'accés a la vostra instància de Home Assistant al client {clientId}.",
+                "logging_in_with": "Iniciant sessió amb **{authProviderName}**.",
+                "pick_auth_provider": "O bé inicieu sessió amb",
+                "abort_intro": "S'ha avortat l'inici de sessió",
+                "form": {
+                    "working": "Si us plau, espereu",
+                    "unknown_error": "Alguna cosa no ha anat bé",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'usuari",
+                                        "password": "Contrasenya"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'usuari o contrasenya incorrectes"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Contrasenya API"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Contrasenya API no vàlida"
+                            },
+                            "abort": {
+                                "no_api_password_set": "No teniu una contrasenya API configurada."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Usuari"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "El teu ordinador no es troba accessible a la llista."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
+                "user": {
+                    "intro": "Comencem creant un nou compte d'usuari.",
+                    "required_field": "Obligatori",
+                    "data": {
+                        "name": "Nom",
+                        "username": "Nom d'usuari",
+                        "password": "Contrasenya"
+                    },
+                    "create_account": "Crear un compte",
+                    "error": {
+                        "required_fields": "Ompliu tots els camps obligatoris"
+                    }
+                }
             }
         },
         "sidebar": {

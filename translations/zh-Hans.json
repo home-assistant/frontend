@@ -546,6 +546,75 @@
                     "link_promo": "了解主题",
                     "dropdown_label": "主题"
                 }
+            },
+            "page-authorize": {
+                "initializing": "正在初始化",
+                "authorizing_client": "您即将授权 {clientId} 访问 Home Assistant 实例。",
+                "logging_in_with": "正在用 **{authProviderName}** 登录。",
+                "pick_auth_provider": "或者用以下方式登录",
+                "abort_intro": "登录中断",
+                "form": {
+                    "working": "请稍候",
+                    "unknown_error": "出现了一些问题",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "用户名",
+                                        "password": "密码"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "无效的用户名或密码"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API 密码"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "无效的 API 密码"
+                            },
+                            "abort": {
+                                "no_api_password_set": "您还没有配置 API 密码。"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "用户"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "您的电脑不在白名单内。"
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "准备好唤醒你的家、找回你的隐私，并加入世界级的极客社区了吗？",
+                "user": {
+                    "intro": "让我们从创建用户帐户开始吧。",
+                    "required_field": "必填",
+                    "data": {
+                        "name": "姓名",
+                        "username": "用户名",
+                        "password": "密码"
+                    },
+                    "create_account": "创建帐户",
+                    "error": {
+                        "required_fields": "请填写所有必填字段"
+                    }
+                }
             }
         },
         "sidebar": {
