@@ -546,6 +546,95 @@
                     "link_promo": "Meer informatie over thema's",
                     "dropdown_label": "Thema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Initialiseren",
+                "authorizing_client": "U staat op het punt {clientId} toegang te geven tot uw Home Assistant-instantie.",
+                "logging_in_with": "Aan het inloggen met **{authProviderName}**.",
+                "pick_auth_provider": "Of log in met",
+                "abort_intro": "Inloggen afgebroken",
+                "form": {
+                    "working": "Een ogenblik geduld",
+                    "unknown_error": "Er ging iets mis",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Gebruikersnaam",
+                                        "password": "Wachtwoord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Twee-factor-authenticatiecode"
+                                    },
+                                    "description": "Open de **{mfa_module_name}** op uw apparaat om uw twee-factor-authenticatiecode te bekijken en verifieer uw identiteit:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord",
+                                "invalid_code": "Ongeldige authenticatiecode"
+                            },
+                            "abort": {
+                                "login_expired": "Sessie verlopen, meldt u opnieuw aan."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-wachtwoord"
+                                    },
+                                    "description": "Voer het API-wachtwoord in van uw http configuratie:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Twee-factor-authenticatiecode"
+                                    },
+                                    "description": "Open de **{mfa_module_name}** op uw apparaat om uw twee-factor-authenticatiecode te bekijken en verifieer uw identiteit:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongeldig API-wachtwoord",
+                                "invalid_code": "Ongeldige authenticatiecode"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Er is geen API-wachtwoord ingesteld.",
+                                "login_expired": "Sessie verlopen, meldt u opnieuw aan."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Gebruiker"
+                                    },
+                                    "description": "Selecteer een gebruiker waarmee u wilt aanmelden:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Uw computer staat niet op de whitelist."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Bent u klaar om uw huis wakker te maken, uw privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
+                "user": {
+                    "intro": "Laten we beginnen door een gebruikersaccount aan te maken.",
+                    "required_field": "Verplicht",
+                    "data": {
+                        "name": "Naam",
+                        "username": "Gebruikersnaam",
+                        "password": "Wachtwoord"
+                    },
+                    "create_account": "Account aanmaken",
+                    "error": {
+                        "required_fields": "Vul alle verplichte velden in"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -710,6 +799,11 @@
             "ask": "Wilt u de inloggegevens opslaan?",
             "decline": "Nee dank u",
             "confirm": "Bewaar inloggegevens"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klik op de knop om {entity} te configureren",
+            "empty": "Geen notificaties",
+            "title": "Notificaties"
         }
     },
     "domain": {

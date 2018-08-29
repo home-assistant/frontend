@@ -564,10 +564,20 @@
                                         "username": "Nom d'usuari",
                                         "password": "Contrasenya"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codi de verificació en dos passos"
+                                    },
+                                    "description": "Obriu el **{mfa_module_name}** al vostre dispositiu per veure el codi de verificació en dos passos i verificar la vostra identitat:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nom d'usuari o contrasenya incorrectes"
+                                "invalid_auth": "Nom d'usuari o contrasenya incorrectes",
+                                "invalid_code": "El codi d'autenticació no és vàlid"
+                            },
+                            "abort": {
+                                "login_expired": "La sessió ha caducat, torneu a iniciar la sessió."
                             }
                         },
                         "legacy_api_password": {
@@ -575,14 +585,23 @@
                                 "init": {
                                     "data": {
                                         "password": "Contrasenya API"
-                                    }
+                                    },
+                                    "description": "Introduïu la contrasenya API en la vostra configuració http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codi de verificació en dos passos"
+                                    },
+                                    "description": "Obriu el **{mfa_module_name}** al vostre dispositiu per veure el codi de verificació en dos passos i verificar la vostra identitat:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Contrasenya API no vàlida"
+                                "invalid_auth": "Contrasenya API no vàlida",
+                                "invalid_code": "El codi d'autenticació no és vàlid"
                             },
                             "abort": {
-                                "no_api_password_set": "No teniu una contrasenya API configurada."
+                                "no_api_password_set": "No teniu una contrasenya API configurada.",
+                                "login_expired": "La sessió ha caducat, torneu a iniciar la sessió."
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +609,8 @@
                                 "init": {
                                     "data": {
                                         "user": "Usuari"
-                                    }
+                                    },
+                                    "description": "Seleccioneu l'usuari amb el qual iniciar la sessió:"
                                 }
                             },
                             "abort": {

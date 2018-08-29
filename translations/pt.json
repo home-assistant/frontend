@@ -525,6 +525,116 @@
                         "delete_user": "Apagar utilizador"
                     }
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificações push",
+                    "description": "Enviar notificações para este dispositivo.",
+                    "error_load_platform": "Configurar notify.html5.",
+                    "error_use_https": "Requer interface com utilizador, com SSL activo.",
+                    "push_notifications": "Notificações push",
+                    "link_promo": "Saiba mais"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ajude a traduzir",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Não há temas disponíveis.",
+                    "link_promo": "Saiba mais sobre temas",
+                    "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "A inicializar",
+                "authorizing_client": "Você está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
+                "logging_in_with": "Fazendo login com ** {authProviderName} **.",
+                "pick_auth_provider": "Ou faça login com",
+                "abort_intro": "Login abortado",
+                "form": {
+                    "working": "Por favor, aguarde",
+                    "unknown_error": "Algo de errado aconteceu",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Utilizador",
+                                        "password": "Palavra-passe"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticação por dois factores"
+                                    },
+                                    "description": "Abra o **{mfa_module_name}** no seu dispositivo para ver o código de autenticação por dois factores e verificar a sua identidade."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nome de utilizador ou palavra-passe inválida",
+                                "invalid_code": "Código de autenticação inválido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessão expirou, por favor entre novamente."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Palavra-passe para API"
+                                    },
+                                    "description": "Por favor, insira a palavra-passe da API na sua configuração http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticação por dois factores"
+                                    },
+                                    "description": "Abra o **{mfa_module_name}** no seu dispositivo para ver o código de autenticação por dois factores e verificar a sua identidade."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Palavra-passe para API inválida",
+                                "invalid_code": "Código de autenticação inválido"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Não tem uma palavra-passe para a API configurada.",
+                                "login_expired": "Sessão expirou, por favor entre novamente."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Utilizador"
+                                    },
+                                    "description": "Por favor seleccione o utilizador com o qual pretende entrar:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "O seu computador não está na lista de endereços permitidos."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Está pronto para despertar a sua casa, reclamar a sua privacidade e juntar a uma comunidade mundial de tecnólogos?",
+                "user": {
+                    "intro": "Vamos começar por criar um utilizador.",
+                    "required_field": "Obrigatório",
+                    "data": {
+                        "name": "Nome",
+                        "username": "Utilizador",
+                        "password": "Palavra-passe"
+                    },
+                    "create_account": "Criar conta",
+                    "error": {
+                        "required_fields": "Preencha todos os campos obrigatórios"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -684,6 +794,16 @@
                 "name": "Nome",
                 "entity_id": "ID da entidade"
             }
+        },
+        "auth_store": {
+            "ask": "Deseja guardar este login?",
+            "decline": "Não, obrigado",
+            "confirm": "Guardar login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Clique no botão para configurar {entity}",
+            "empty": "Sem Notificações",
+            "title": "Notificações"
         }
     },
     "domain": {

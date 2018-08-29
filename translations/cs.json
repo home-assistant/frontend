@@ -564,10 +564,20 @@
                                         "username": "Uživatelské jméno",
                                         "password": "Heslo"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvoufaktorový ověřovací kód"
+                                    },
+                                    "description": "Otevřte **{mfa_module_name}** na vašem zařízení pro zobrazení dvoufaktorového ověřovacího kódu a ověřte vaší identitu"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Neplatné uživatelské jméno či heslo"
+                                "invalid_auth": "Neplatné uživatelské jméno či heslo",
+                                "invalid_code": "Neplatný ověřovací kód"
+                            },
+                            "abort": {
+                                "login_expired": "Relace vypršela, přihlaste se prosím znovu."
                             }
                         },
                         "legacy_api_password": {
@@ -575,14 +585,23 @@
                                 "init": {
                                     "data": {
                                         "password": "Heslo API"
-                                    }
+                                    },
+                                    "description": "Zadejte API heslo v http config"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvoufaktorový ověřovací kód"
+                                    },
+                                    "description": "Otevřte **{mfa_module_name}** na vašem zařízení pro zobrazení dvoufaktorového ověřovacího kódu a ověřte vaší identitu"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Neplatné heslo API"
+                                "invalid_auth": "Neplatné heslo API",
+                                "invalid_code": "Neplatný ověřovací kód"
                             },
                             "abort": {
-                                "no_api_password_set": "Nemáte nakonfigurované heslo API."
+                                "no_api_password_set": "Nemáte nakonfigurované heslo API.",
+                                "login_expired": "Relace vypršela, přihlaste se prosím znovu."
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +609,8 @@
                                 "init": {
                                     "data": {
                                         "user": "Uživatel"
-                                    }
+                                    },
+                                    "description": "Vyberte uživatele, za kterého se chcete přihlásit"
                                 }
                             },
                             "abort": {

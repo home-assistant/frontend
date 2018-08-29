@@ -244,12 +244,12 @@
             "fog": "Nebel",
             "hail": "Hagel",
             "lightning": "Gewitter",
-            "lightning-rainy": "Gewitter, Regnerisch",
+            "lightning-rainy": "Gewitter, regnerisch",
             "partlycloudy": "Teilweise bewölkt",
             "pouring": "Strömend",
             "rainy": "Regnerisch",
             "snowy": "Verschneit",
-            "snowy-rainy": "Verschneit, Regnerisch",
+            "snowy-rainy": "Verschneit, regnerisch",
             "sunny": "Sonnig",
             "windy": "Windig",
             "windy-variant": "Windig"
@@ -529,7 +529,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "Push-Benachrichtigungen",
-                    "description": "Sende Benachrichtigungen an dieses Gerät",
+                    "description": "Sende Benachrichtigungen an dieses Gerät.",
                     "error_load_platform": "Konfiguriere notify.html5.",
                     "error_use_https": "Erfordert aktiviertes SSL für das Frontend.",
                     "push_notifications": "Push-Benachrichtigungen",
@@ -537,7 +537,7 @@
                 },
                 "language": {
                     "header": "Sprache",
-                    "link_promo": "Helfe beim Übersetzen",
+                    "link_promo": "Hilf beim Übersetzen",
                     "dropdown_label": "Sprache"
                 },
                 "themes": {
@@ -545,6 +545,95 @@
                     "error_no_theme": "Keine Themen verfügbar.",
                     "link_promo": "Erfahre mehr über Themen",
                     "dropdown_label": "Thema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initialisieren",
+                "authorizing_client": "Du bist dabei, {clientId} Zugriff auf deine Home Assistant Instanz zu gewähren.",
+                "logging_in_with": "Anmeldung mit **{authProviderName}**.",
+                "pick_auth_provider": "Oder melde dich an mit",
+                "abort_intro": "Anmeldung abgebrochen",
+                "form": {
+                    "working": "Bitte warten",
+                    "unknown_error": "Etwas lief schief",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benutzername",
+                                        "password": "Passwort"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwei-Faktor Authentifizierungscode"
+                                    },
+                                    "description": "Öffne das **{mfa_module_name}** auf deinem Gerät um den 2-Faktor Authentifizierungscode zu sehen und deine Identität zu bestätigen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ungültiger Benutzername oder Passwort",
+                                "invalid_code": "Ungültiger Authentifizierungscode"
+                            },
+                            "abort": {
+                                "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-Passwort"
+                                    },
+                                    "description": "Bitte gib das API-Passwort deiner http-Konfiguration ein:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwei-Faktor Authentifizierungscode"
+                                    },
+                                    "description": "Öffne das **{mfa_module_name}** auf deinem Gerät um den 2-Faktor Authentifizierungscode zu sehen und deine Identität zu bestätigen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ungültiges API-Passwort",
+                                "invalid_code": "Ungültiger Authentifizierungscode"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du hast kein API-Passwort konfiguriert.",
+                                "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Benutzer"
+                                    },
+                                    "description": "Bitte wähle einen Benutzer aus, mit dem du dich anmelden möchtest:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Dein Computer ist nicht auf der Whitelist."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Bist du bereit, dein Zuhause zu erwecken, deine Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
+                "user": {
+                    "intro": "Beginnen wir mit dem Erstellen eines Benutzerkontos.",
+                    "required_field": "Erforderlich",
+                    "data": {
+                        "name": "Name",
+                        "username": "Benutzername",
+                        "password": "Passwort"
+                    },
+                    "create_account": "Benutzerkonto anlegen",
+                    "error": {
+                        "required_fields": "Fülle alle Pflichtfelder aus."
+                    }
                 }
             }
         },
@@ -712,7 +801,7 @@
             "confirm": "Login speichern"
         },
         "notification_drawer": {
-            "click_to_configure": "Klicken Sie auf die Schaltfläche, um {entity} zu konfigurieren.",
+            "click_to_configure": "Klicke auf die Schaltfläche, um {entity} zu konfigurieren.",
             "empty": "Keine Benachrichtigungen",
             "title": "Benachrichtigungen"
         }

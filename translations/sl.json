@@ -546,6 +546,95 @@
                     "link_promo": "Preberite več o temah",
                     "dropdown_label": "Tema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Inicializacija",
+                "authorizing_client": "Dali boste {clientId} dostop do vašega Home assistenta.",
+                "logging_in_with": "Prijava z ** {authProviderName} **.",
+                "pick_auth_provider": "Ali se prijavite z",
+                "abort_intro": "Prijava prekinjena",
+                "form": {
+                    "working": "Prosimo počakajte",
+                    "unknown_error": "Nekaj ​​je šlo narobe",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Uporabniško ime",
+                                        "password": "Geslo"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvofaktorska koda za avtorizacijo"
+                                    },
+                                    "description": "V svoji napravi odprite ** {mfa_module_name} **, da si ogledate svojo dvofaktorsko kodo za preverjanje pristnosti in preverite svojo identiteto:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Neveljavno uporabniško ime ali geslo",
+                                "invalid_code": "Neveljavna avtorizacijska koda"
+                            },
+                            "abort": {
+                                "login_expired": "Seja je potekla, prosimo, prijavite se znova."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Geslo"
+                                    },
+                                    "description": "Prosimo vnesite API geslo v vašem http config-u:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvofaktorska avtorizacijska koda"
+                                    },
+                                    "description": "Odprite **{mfa_module_name}** na vaši napravi za ogled dvofaktorske avtorizacijske kode in potrdite vašo identiteto:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Neveljavna API geslo",
+                                "invalid_code": "Neveljavna avtorizacijska koda"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Nimate nastavljenega gesla API-ja.",
+                                "login_expired": "Seja je potekla, prosim ponovno se prijavite."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Uporabnik"
+                                    },
+                                    "description": "Izberite uporabnika s katerim se želite prijaviti:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Vaš računalnik ni dodan med zaupanja vredne."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Ali ste pripravljeni prebuditi svoj dom, povrniti svojo zasebnost in se pridružiti svetovni skupnosti ustvarjalcev?",
+                "user": {
+                    "intro": "Začnite tako, da ustvarite uporabniški račun.",
+                    "required_field": "Zahtevano",
+                    "data": {
+                        "name": "Ime",
+                        "username": "Uporabniško ime",
+                        "password": "Geslo"
+                    },
+                    "create_account": "Ustvarite račun",
+                    "error": {
+                        "required_fields": "Izpolnite vsa zahtevana polja"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -710,6 +799,11 @@
             "ask": "Ali želite shraniti to prijavo?",
             "decline": "Ne hvala",
             "confirm": "Shrani prijavo"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Kliknite gumb, da konfigurirate {entity}",
+            "empty": "Ni obvestil",
+            "title": "Obvestila"
         }
     },
     "domain": {
