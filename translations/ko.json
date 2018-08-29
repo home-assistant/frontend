@@ -564,10 +564,20 @@
                                         "username": "사용자 이름",
                                         "password": "비밀번호"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2 단계 인증 코드"
+                                    },
+                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 ** {mfa_module_name} ** 을(를) 열어주세요:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다"
+                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
+                            },
+                            "abort": {
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
                             }
                         },
                         "legacy_api_password": {
@@ -575,14 +585,23 @@
                                 "init": {
                                     "data": {
                                         "password": "API 비밀번호"
-                                    }
+                                    },
+                                    "description": "http config 에 API password 를 입력해주세요:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2 단계 인증 코드"
+                                    },
+                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 ** {mfa_module_name} ** 을(를) 열어주세요:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "API 비밀번호가 잘못되었습니다"
+                                "invalid_auth": "API 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
                             },
                             "abort": {
-                                "no_api_password_set": "API 비밀번호를 구성하지 않았습니다."
+                                "no_api_password_set": "API 비밀번호를 구성하지 않았습니다.",
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요"
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +609,8 @@
                                 "init": {
                                     "data": {
                                         "user": "사용자"
-                                    }
+                                    },
+                                    "description": "로그인하려는 사용자를 선택해주세요:"
                                 }
                             },
                             "abort": {
@@ -778,7 +798,7 @@
         "auth_store": {
             "ask": "현재 로그인을 저장 하시겠습니까?",
             "decline": "아니요, 괜찮습니다",
-            "confirm": "저장해주세요"
+            "confirm": "로그인 저장하기"
         },
         "notification_drawer": {
             "click_to_configure": "버튼을 클릭하여 구성하세요 {entity}",

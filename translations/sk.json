@@ -546,6 +546,19 @@
                     "link_promo": "Získajte viac informácií o témach",
                     "dropdown_label": "Téma"
                 }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "Välj en användare att logga in som:"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
