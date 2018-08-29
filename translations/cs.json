@@ -546,6 +546,75 @@
                     "link_promo": "Další info o motivech",
                     "dropdown_label": "Motiv"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Inicializuji",
+                "authorizing_client": "Chystáte se dát {clientId} práva pro Home Assistant instanci.",
+                "logging_in_with": "Přihlásit se pomocí ** {authProviderName} **.",
+                "pick_auth_provider": "Nebo se přihlaste s",
+                "abort_intro": "Přihlášení bylo zrušeno",
+                "form": {
+                    "working": "Počkejte prosím",
+                    "unknown_error": "Něco se pokazilo",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Uživatelské jméno",
+                                        "password": "Heslo"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Neplatné uživatelské jméno či heslo"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Heslo API"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Neplatné heslo API"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Nemáte nakonfigurované heslo API."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Uživatel"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Váš počítač není na seznamu povolených."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
+                "user": {
+                    "intro": "Začněme tím, že vytvoříme uživatelský účet.",
+                    "required_field": "Povinný",
+                    "data": {
+                        "name": "Jméno",
+                        "username": "Uživatelské jméno",
+                        "password": "Heslo"
+                    },
+                    "create_account": "Vytvořit účet",
+                    "error": {
+                        "required_fields": "Vyplňte všechna povinná pole"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -710,6 +779,11 @@
             "ask": "Chcete toto přihlášení uložit?",
             "decline": "Ne děkuji",
             "confirm": "Uložit login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klepnutím na tlačítko nastavíte {entity}",
+            "empty": "Žádné oznámení",
+            "title": "Oznámení"
         }
     },
     "domain": {

@@ -546,6 +546,51 @@
                     "link_promo": "Узнать о темах",
                     "dropdown_label": "Тема"
                 }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Пароль API"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Неверный пароль API"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Вы не настроили пароль для API."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Пользователь"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Ваш компьютер не включён в белый список."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Готовы ли вы разбудить свой дом, восстановить свою конфиденциальность и присоединиться к всемирному сообществу \"жестянщиков\"?",
+                "user": {
+                    "intro": "Давайте начнём с создания учётной записи пользователя.",
+                    "required_field": "Обязательное поле",
+                    "data": {
+                        "name": "Имя",
+                        "username": "Имя пользователя",
+                        "password": "Пароль"
+                    }
+                }
             }
         },
         "sidebar": {

@@ -546,6 +546,75 @@
                     "link_promo": "Más información sobre los temas",
                     "dropdown_label": "Tema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Inicializando",
+                "authorizing_client": "Está por dar acceso a {clientId} a su instancia de Home Assistant.",
+                "logging_in_with": "Iniciando sesión con ** {authProviderName} **.",
+                "pick_auth_provider": "O inicia sesión con",
+                "abort_intro": "Inicio de sesión cancelado",
+                "form": {
+                    "working": "Por favor, espere",
+                    "unknown_error": "Algo salió mal",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nombre de usuario",
+                                        "password": "Contraseña"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nombre de usuario o contraseña inválidos"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Contraseña API"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Contraseña API inválida"
+                            },
+                            "abort": {
+                                "no_api_password_set": "No tienes una contraseña API configurada."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Usuario"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Tu computadora no está incluida en la lista blanca."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "¿Estás listo para despertar tu hogar, reclamar tu privacidad y unirte a una comunidad mundial de experimentadores?",
+                "user": {
+                    "intro": "Comencemos creando una cuenta de usuario.",
+                    "required_field": "Necesario",
+                    "data": {
+                        "name": "Nombre",
+                        "username": "Nombre de usuario",
+                        "password": "Contraseña"
+                    },
+                    "create_account": "Crear una cuenta",
+                    "error": {
+                        "required_fields": "Completar todos los campos requeridos"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -710,6 +779,11 @@
             "ask": "¿Deseas guardar este inicio de sesión?",
             "decline": "No, gracias",
             "confirm": "Guardar inicio de sesión"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Haga clic en el botón para configurar {entidad}.",
+            "empty": "Sin Notificaciones",
+            "title": "Notificaciones"
         }
     },
     "domain": {
