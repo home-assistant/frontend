@@ -792,7 +792,7 @@
                   "data": {
                     "password": "API Password"
                   },
-                  "description": "Please input the API passowrd in your http config:"
+                  "description": "Please input the API password in your http config:"
                 },
                 "mfa": {
                   "data": {
@@ -816,7 +816,7 @@
                   "data": {
                     "user": "User"
                   },
-                  "description": "Please select an user you want login as:"
+                  "description": "Please select a user you want to login as:"
                 }
               },
               "abort": {
