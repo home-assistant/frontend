@@ -564,10 +564,20 @@
                                         "username": "用户名",
                                         "password": "密码"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "双重认证口令"
+                                    },
+                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "无效的用户名或密码"
+                                "invalid_auth": "无效的用户名或密码",
+                                "invalid_code": "无效口令"
+                            },
+                            "abort": {
+                                "login_expired": "会话已过期，请重新登录。"
                             }
                         },
                         "legacy_api_password": {
@@ -575,14 +585,23 @@
                                 "init": {
                                     "data": {
                                         "password": "API 密码"
-                                    }
+                                    },
+                                    "description": "请输入 http 配置中的 API 密码:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "双重认证口令"
+                                    },
+                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "无效的 API 密码"
+                                "invalid_auth": "无效的 API 密码",
+                                "invalid_code": "无效口令"
                             },
                             "abort": {
-                                "no_api_password_set": "您还没有配置 API 密码。"
+                                "no_api_password_set": "您还没有配置 API 密码。",
+                                "login_expired": "会话已过期，请重新登录。"
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +609,8 @@
                                 "init": {
                                     "data": {
                                         "user": "用户"
-                                    }
+                                    },
+                                    "description": "请选择要登录的用户:"
                                 }
                             },
                             "abort": {

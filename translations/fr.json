@@ -12,7 +12,8 @@
         "dev-events": "Événements",
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Calendrier"
     },
     "state": {
         "default": {
@@ -252,6 +253,14 @@
             "sunny": "Soleil",
             "windy": "Vent",
             "windy-variant": "Vent"
+        },
+        "vacuum": {
+            "cleaning": "Nettoyage",
+            "docked": "Sur la base",
+            "error": "Erreur",
+            "idle": "Inactif",
+            "paused": "En pause",
+            "returning": "Retourne à la base"
         }
     },
     "state_badge": {
@@ -473,7 +482,7 @@
                                 },
                                 "delay": {
                                     "label": "Délai",
-                                    "delay": "Délais"
+                                    "delay": "Délai"
                                 },
                                 "wait_template": {
                                     "label": "Attendre",
@@ -499,6 +508,35 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gérez votre réseau Z-Wave"
+                },
+                "users": {
+                    "caption": "Utilisateurs",
+                    "description": "Gérer les utilisateurs",
+                    "picker": {
+                        "title": "Utilisateurs"
+                    },
+                    "editor": {
+                        "rename_user": "Renommer l'utilisateur",
+                        "change_password": "Changer le mot de passe",
+                        "activate_user": "Activer l'utilisateur",
+                        "deactivate_user": "Désactiver l'utilisateur",
+                        "delete_user": "Supprimer l'utilisateur"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notifications push",
+                    "description": "Envoyer des notifications à cet appareil.",
+                    "push_notifications": "Notifications push"
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "name": "Nom",
+                        "username": "Nom d'utilisateur"
+                    }
                 }
             }
         },
@@ -550,8 +588,8 @@
                     "n": "N",
                     "ne": "NE",
                     "nne": "N-NE",
-                    "nw": "NW",
-                    "nnw": "N-NW",
+                    "nw": "NO",
+                    "nnw": "N-NO",
                     "s": "S",
                     "se": "SE",
                     "sse": "S-SE",
@@ -590,7 +628,8 @@
                 "effect": "Effet"
             },
             "media_player": {
-                "text_to_speak": "Texte à lire"
+                "text_to_speak": "Texte à lire",
+                "source": "Source"
             },
             "climate": {
                 "currently": "Actuellement",
@@ -607,6 +646,15 @@
                 "code": "Code",
                 "lock": "Verrouiller",
                 "unlock": "Déverrouiller"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reprendre le nettoyage",
+                    "return_to_base": "Retourner à la base",
+                    "start_cleaning": "Commencer à nettoyer",
+                    "turn_on": "Allumer",
+                    "turn_off": "Éteindre"
+                }
             }
         },
         "components": {
@@ -634,6 +682,12 @@
             "service_called": "Service \"{service}\" appelé.",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "connection_lost": "Connexion perdue. Reconnexion en cours ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Sauvegarder",
+                "name": "Nom"
+            }
         }
     },
     "domain": {

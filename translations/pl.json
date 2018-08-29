@@ -564,10 +564,20 @@
                                         "username": "Nazwa użytkownika",
                                         "password": "Hasło"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dwuskładnikowy kod uwierzytelniający"
+                                    },
+                                    "description": "Otwórz ** {mfa_module_name} ** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło"
+                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło",
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
+                            },
+                            "abort": {
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie."
                             }
                         },
                         "legacy_api_password": {
@@ -575,14 +585,23 @@
                                 "init": {
                                     "data": {
                                         "password": "Hasło API"
-                                    }
+                                    },
+                                    "description": "Proszę wprowadzić hasło API w Twoim configu http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dwuskładnikowy kod uwierzytelniający"
+                                    },
+                                    "description": "Otwórz ** {mfa_module_name} ** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nieprawidłowe hasło API"
+                                "invalid_auth": "Nieprawidłowe hasło API",
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
                             },
                             "abort": {
-                                "no_api_password_set": "Nie masz skonfigurowanego hasła interfejsu API."
+                                "no_api_password_set": "Nie masz skonfigurowanego hasła interfejsu API.",
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie."
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +609,8 @@
                                 "init": {
                                     "data": {
                                         "user": "Użytkownik"
-                                    }
+                                    },
+                                    "description": "Proszę wybrać użytkownika, na którego chcesz się zalogować jako:"
                                 }
                             },
                             "abort": {
