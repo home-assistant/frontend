@@ -546,6 +546,95 @@
                     "link_promo": "Lær om temaer",
                     "dropdown_label": "Tema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Initialiserer",
+                "authorizing_client": "Du er i ferd med å gi {clientId} tilgang til din Home Assistant",
+                "logging_in_with": "Logg inn med ** {authProviderName} **.",
+                "pick_auth_provider": "Eller logg inn med",
+                "abort_intro": "Innlogging avbrutt",
+                "form": {
+                    "working": "Vennligst vent",
+                    "unknown_error": "Noe gikk galt",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Brukernavn",
+                                        "password": "Passord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor Autentisering Kode"
+                                    },
+                                    "description": "Åpne ** {mfa_module_name} ** på enheten din for å se din tofaktors autentiseringskode og bekrefte identiteten din:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig brukernavn eller passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
+                            },
+                            "abort": {
+                                "login_expired": "Sessionen utløpt, vennligst logg inn igjen."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-passord"
+                                    },
+                                    "description": "Vennligst skriv inn API-passordet i http-konfigurasjonen din:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor Autentiseringskode"
+                                    },
+                                    "description": "Åpne **{mfa_module_name}** på din enhet for å vise to-faktor autentiseringkode og vertifiser din identitet."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig API-passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du har ikke et API-passord konfigurert.",
+                                "login_expired": "Sesjonen har utløpt, vennligst logg inn igjen: "
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Bruker"
+                                    },
+                                    "description": "Vennligst velg en bruker du vil logge inn som:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Datamaskinen din er ikke hvitlistet."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Er du klar til å vekke hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av tinkerers?",
+                "user": {
+                    "intro": "La oss begynne med å opprette en brukerkonto.",
+                    "required_field": "Kreves",
+                    "data": {
+                        "name": "Navn",
+                        "username": "Brukernavn",
+                        "password": "Passord"
+                    },
+                    "create_account": "Opprett konto",
+                    "error": {
+                        "required_fields": "Fyll ut alle nødvendige felt"
+                    }
+                }
             }
         },
         "sidebar": {

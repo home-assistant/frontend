@@ -564,10 +564,19 @@
                                         "username": "Nombre de usuario",
                                         "password": "Contraseña"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticación de dos factores"
+                                    }
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nombre de usuario o contraseña inválidos"
+                                "invalid_auth": "Nombre de usuario o contraseña inválidos",
+                                "invalid_code": "Código de autenticación inválido"
+                            },
+                            "abort": {
+                                "login_expired": "La sesión expiró, por favor inicie sesión nuevamente."
                             }
                         },
                         "legacy_api_password": {
@@ -582,7 +591,8 @@
                                 "invalid_auth": "Contraseña API inválida"
                             },
                             "abort": {
-                                "no_api_password_set": "No tienes una contraseña API configurada."
+                                "no_api_password_set": "No tienes una contraseña API configurada.",
+                                "login_expired": "La sesión ha expirado, por favor inicie sesión nuevamente."
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +600,8 @@
                                 "init": {
                                     "data": {
                                         "user": "Usuario"
-                                    }
+                                    },
+                                    "description": "Por favor, seleccione el usuario con el que desea iniciar sesión:"
                                 }
                             },
                             "abort": {

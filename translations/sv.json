@@ -546,6 +546,27 @@
                     "link_promo": "Läs mer om teman",
                     "dropdown_label": "Tema"
                 }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "legacy_api_password": {
+                            "error": {
+                                "invalid_code": "Felaktig autentierings kod"
+                            },
+                            "abort": {
+                                "login_expired": "Sessionen avslutades, logga in igen."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "Välj den användare du vill logga in som:"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
