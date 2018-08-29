@@ -155,7 +155,10 @@ class HaForm extends EventsMixin(PolymerElement) {
   }
 
   _getValue(obj, item) {
-    return obj[item.name];
+    if (obj) {
+      return obj[item.name];
+    }
+    return null;
   }
 
   _valueChanged(ev) {
