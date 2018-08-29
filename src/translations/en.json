@@ -770,10 +770,20 @@
                     "username": "Username",
                     "password": "Password"
                   }
+                },
+                "mfa": {
+                  "data": {
+                    "code": "Two-factor Authentication Code"
+                  },
+                  "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
                 }
               },
               "error": {
-                "invalid_auth": "Invalid username or password"
+                "invalid_auth": "Invalid username or password",
+                "invalid_code": "Invalid authentication code"
+              },
+              "abort": {
+                "login_expired": "Session expired, please login again."
               }
             },
             "legacy_api_password": {
@@ -781,14 +791,23 @@
                 "init": {
                   "data": {
                     "password": "API Password"
-                  }
+                  },
+                  "description": "Please input the API password in your http config:"
+                },
+                "mfa": {
+                  "data": {
+                    "code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::data::code%]"
+                  },
+                  "description": "[%key:ui::panel::page-authorize::form::providers::homeassistant::step::mfa::description%]"
                 }
               },
               "error": {
-                "invalid_auth": "Invalid API password"
+                "invalid_auth": "Invalid API password",
+                "invalid_code": "[%key:ui::panel::page-authorize::form::providers::homeassistant::error::invalid_code%]"
               },
               "abort": {
-                "no_api_password_set": "You don't have an API password configured."
+                "no_api_password_set": "You don't have an API password configured.",
+                "login_expired": "[%key:ui::panel::page-authorize::form::providers::homeassistant::abort::login_expired%]"
               }
             },
             "trusted_networks": {
@@ -796,7 +815,8 @@
                 "init": {
                   "data": {
                     "user": "User"
-                  }
+                  },
+                  "description": "Please select a user you want to login as:"
                 }
               },
               "abort": {
