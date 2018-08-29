@@ -546,6 +546,75 @@
                     "link_promo": "Dowiedz się więcej o motywch",
                     "dropdown_label": "Motyw"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Inicjowanie",
+                "authorizing_client": "Czy na pewno chcesz dać dostęp {clientId} do Twojej instancji Home Assistant.",
+                "logging_in_with": "Logowanie za pomocą ** {authProviderName} **.",
+                "pick_auth_provider": "Lub zaloguj się za pomocą",
+                "abort_intro": "Logowanie przerwane",
+                "form": {
+                    "working": "Proszę czekać",
+                    "unknown_error": "Coś poszło nie tak",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nazwa użytkownika",
+                                        "password": "Hasło"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Hasło API"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nieprawidłowe hasło API"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Nie masz skonfigurowanego hasła interfejsu API."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Użytkownik"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Twój komputer nie znajduje się na białej liście."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Czy jesteś gotowy, aby obudzić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
+                "user": {
+                    "intro": "Zacznijmy od utworzenia konta użytkownika.",
+                    "required_field": "Wymagane",
+                    "data": {
+                        "name": "Nazwa",
+                        "username": "Nazwa użytkownika",
+                        "password": "Hasło"
+                    },
+                    "create_account": "Utwórz konto",
+                    "error": {
+                        "required_fields": "Wypełnij wszystkie wymagane pola"
+                    }
+                }
             }
         },
         "sidebar": {
