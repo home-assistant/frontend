@@ -546,6 +546,74 @@
                     "link_promo": "Aprenda sobre los temas",
                     "dropdown_label": "Tema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Inicializando",
+                "authorizing_client": "Está por dar acceso a {clientId} a su instancia de Home Assistant.",
+                "logging_in_with": "Iniciando sesión con ** {authProviderName} **.",
+                "pick_auth_provider": "O inicia sesión con",
+                "abort_intro": "Inicio de sesión cancelado",
+                "form": {
+                    "working": "Por favor, espere",
+                    "unknown_error": "Algo salió mal",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nombre de usuario",
+                                        "password": "Contraseña"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nombre de usuario o contraseña inválidos"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Contraseña de API"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Contraseña de API inválida"
+                            },
+                            "abort": {
+                                "no_api_password_set": "No tienes una contraseña de API configurada."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Usuario"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Tu computadora no está en la lista de autorizados."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "Comencemos creando una cuenta de usuario.",
+                    "required_field": "Obligatorio",
+                    "data": {
+                        "name": "Nombre",
+                        "username": "Nombre de usuario",
+                        "password": "Contraseña"
+                    },
+                    "create_account": "Crear una cuenta",
+                    "error": {
+                        "required_fields": "Complete todos los campos requeridos"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -658,7 +726,7 @@
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "Reanudar la limpieza",
-                    "return_to_base": "Volverr a la base",
+                    "return_to_base": "Volver a la base",
                     "start_cleaning": "Empezar la limpieza",
                     "turn_on": "Encender",
                     "turn_off": "Apagar"
@@ -709,6 +777,11 @@
             "ask": "¿Quieres guardar este inicio de sesión?",
             "decline": "No, gracias",
             "confirm": "Guardar usuario"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Haga clic en el botón para configurar {entity}",
+            "empty": "Sin Notificaciones",
+            "title": "Notificaciones"
         }
     },
     "domain": {

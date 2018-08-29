@@ -546,6 +546,75 @@
                     "link_promo": "關於此主題",
                     "dropdown_label": "主題"
                 }
+            },
+            "page-authorize": {
+                "initializing": "初始化中",
+                "authorizing_client": "即將授與 {clientId} 訪問 Home Assistant 系統權限。",
+                "logging_in_with": "使用 **{authProviderName}** 登入。",
+                "pick_auth_provider": "或以其他方式登入",
+                "abort_intro": "登入中止",
+                "form": {
+                    "working": "請稍候",
+                    "unknown_error": "發生錯誤",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "使用者名稱",
+                                        "password": "使用者密碼"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "使用者名稱或密碼無效"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API 密碼"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "API 密碼無效"
+                            },
+                            "abort": {
+                                "no_api_password_set": "尚未設定 API 密碼。"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "使用者"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "電腦尚未加入許可清單。"
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "準備喚醒您的智能家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
+                "user": {
+                    "intro": "開始創建帳號吧。",
+                    "required_field": "必填",
+                    "data": {
+                        "name": "名字",
+                        "username": "使用者名稱",
+                        "password": "使用者密碼"
+                    },
+                    "create_account": "創建帳號",
+                    "error": {
+                        "required_fields": "填寫所有所需欄位"
+                    }
+                }
             }
         },
         "sidebar": {

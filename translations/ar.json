@@ -531,6 +531,13 @@
                     "link_promo": "تعرف على التصاميم",
                     "dropdown_label": "التصميم"
                 }
+            },
+            "page-onboarding": {
+                "user": {
+                    "error": {
+                        "required_fields": "املأ جميع الحقول المطلوبة"
+                    }
+                }
             }
         },
         "sidebar": {

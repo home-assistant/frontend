@@ -546,6 +546,75 @@
                     "link_promo": "Méi iwwert Thema liesen",
                     "dropdown_label": "Thema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Initialiséiert",
+                "authorizing_client": "Dir gitt elo {clientId} Zougang zu ärem Home Assistant.",
+                "logging_in_with": "Verbannt iech mat **{authProviderName}**.",
+                "pick_auth_provider": "Oder verbannt iech mat",
+                "abort_intro": "Login ofgebrach",
+                "form": {
+                    "working": "W.e.g. waarden",
+                    "unknown_error": "Eppes ass schifgaange",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benotzernumm",
+                                        "password": "Passwuert"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongëltege Benotzernumm oder Passwuert"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Passwuert"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongëltegt API Passwuert"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Dir hutt nach keen API Passwuert definéiert."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Benotzer"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Äre Computer ass net fräigeschalt."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Sidd Dir prett fir Äert Heem interessant ze maachen, Är Privatsphär ze garantéieren an enger weltwäiter Gemeinschaft bei ze trieden?",
+                "user": {
+                    "intro": "Looss eis ufänken andeems en e Benotzerkont erstellt.",
+                    "required_field": "Néideg",
+                    "data": {
+                        "name": "Numm",
+                        "username": "Benotzernumm",
+                        "password": "Passwuert"
+                    },
+                    "create_account": "Kont erstellen",
+                    "error": {
+                        "required_fields": "Fëllt all néideg Felder aus"
+                    }
+                }
             }
         },
         "sidebar": {
