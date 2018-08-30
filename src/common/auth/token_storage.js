@@ -13,7 +13,7 @@ export function askWrite() {
   return tokenCache.tokens !== undefined && tokenCache.writeEnabled === undefined;
 }
 
-export function storeTokens(tokens) {
+export function saveTokens(tokens) {
   tokenCache.tokens = tokens;
   if (tokenCache.writeEnabled) {
     try {
@@ -24,7 +24,7 @@ export function storeTokens(tokens) {
 
 export function enableWrite() {
   tokenCache.writeEnabled = true;
-  storeTokens(tokenCache.tokens);
+  saveTokens(tokenCache.tokens);
 }
 
 export function loadTokens() {

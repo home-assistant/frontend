@@ -19,95 +19,17 @@ class LoginForm extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return html`
     <style include="iron-flex iron-positioning"></style>
     <style>
-      :host {
-        white-space: nowrap;
-      }
-
-      paper-input {
-        display: block;
-        margin-bottom: 16px;
-      }
-
-      paper-checkbox {
-        margin-right: 8px;
-      }
-
-      paper-button {
-        margin-left: 72px;
-      }
-
-      .interact {
-        height: 125px;
-      }
-
-      #validatebox {
-        margin-top: 16px;
-        text-align: center;
-      }
-
-      .validatemessage {
-        margin-top: 10px;
+      paper-spinner {
+        margin-bottom: 10px;
       }
     </style>
 
     <div class="layout vertical center center-center fit">
       <img src="/static/icons/favicon-192x192.png" height="192">
-      <a href="#" id="hideKeyboardOnFocus"></a>
-      <div class="interact">
-        <div id="loginform" hidden$="[[showSpinner]]">
-          <paper-input id="passwordInput" label="[[localize('ui.login-form.password')]]" type="password" autofocus="" invalid="[[errorMessage]]" error-message="[[errorMessage]]" value="{{password}}"></paper-input>
-          <div class="layout horizontal center">
-            <paper-checkbox for="" id="rememberLogin">[[localize('ui.login-form.remember')]]</paper-checkbox>
-            <paper-button on-click="validatePassword">[[localize('ui.login-form.log_in')]]</paper-button>
-          </div>
-        </div>
-        <div id="validatebox" hidden$="[[!showSpinner]]">
-          <paper-spinner active="true"></paper-spinner><br>
-          <div class="validatemessage">[[computeLoadingMsg(isValidating)]]</div>
-        </div>
-      </div>
+      <paper-spinner active="true"></paper-spinner><br>
+      Loading data
     </div>
 `;
-  }
-
-  static get properties() {
-    return {
-      hass: {
-        type: Object,
-      },
-
-      connectionPromise: {
-        type: Object,
-        notify: true,
-        observer: 'handleConnectionPromiseChanged',
-      },
-
-      errorMessage: {
-        type: String,
-        value: '',
-      },
-
-      isValidating: {
-        type: Boolean,
-        observer: 'isValidatingChanged',
-        value: false,
-      },
-
-      showLoading: {
-        type: Boolean,
-        value: false,
-      },
-
-      showSpinner: {
-        type: Boolean,
-        computed: 'computeShowSpinner(showLoading, isValidating)',
-      },
-
-      password: {
-        type: String,
-        value: '',
-      },
-    };
   }
 
   ready() {

@@ -79,7 +79,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
     if (this._mapItems.length === 0) {
       this._map.setView(
-        new Leaflet.LatLng(this.hass.config.core.latitude, this.hass.config.core.longitude),
+        new Leaflet.LatLng(this.hass.config.latitude, this.hass.config.longitude),
         14
       );
     } else {

@@ -4,12 +4,7 @@ export default function hassCallApi(host, auth, method, path, parameters) {
   return new Promise(function (resolve, reject) {
     var req = new XMLHttpRequest();
     req.open(method, url, true);
-
-    if (auth.authToken) {
-      req.setRequestHeader('X-HA-access', auth.authToken);
-    } else if (auth.accessToken) {
-      req.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
-    }
+    req.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
 
     req.onload = function () {
       let body = req.responseText;
