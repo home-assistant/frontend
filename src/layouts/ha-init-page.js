@@ -14,7 +14,7 @@ import EventsMixin from '../mixins/events-mixin.js';
 /*
  * @appliesMixin LocalizeMixin
  */
-class LoginForm extends EventsMixin(LocalizeMixin(PolymerElement)) {
+class HaInitPage extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex iron-positioning"></style>
@@ -26,7 +26,7 @@ class LoginForm extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
     <div class="layout vertical center center-center fit">
       <img src="/static/icons/favicon-192x192.png" height="192">
-      <paper-spinner active="true"></paper-spinner><br>
+      <paper-spinner active="true"></paper-spinner>
       Loading data
     </div>
 `;
@@ -105,4 +105,4 @@ class LoginForm extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 }
 
-customElements.define('login-form', LoginForm);
+customElements.define('ha-init-page', HaInitPage);
