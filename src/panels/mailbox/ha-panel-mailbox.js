@@ -218,23 +218,23 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
     //           how-to-set-loaded-audio-to-a-html-audio-tag-controller
     var url = '/api/mailbox/media/' + platform + '/' + event.model.item.sha;
     var oReq = new XMLHttpRequest();
-    var mp3 = this.$.mp3
-    var auth = this.hass.connection.options
-    oReq.open("GET", url, true);
-    oReq.responseType = "blob";
+    var mp3 = this.$.mp3;
+    var auth = this.hass.connection.options;
+    oReq.open('GET', url, true);
+    oReq.responseType = 'blob';
     if (auth.authToken) {
       oReq.setRequestHeader('X-HA-access', auth.authToken);
     } else if (auth.accessToken) {
       oReq.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
     }
-    oReq.onload = function (oEvent) {
+    oReq.onload = function () {
       var blob = oReq.response; // Note: not oReq.responseText
       if (blob) {
         mp3.src = window.URL.createObjectURL(blob);
         mp3.play();
       }
     };
-    oReq.send();    
+    oReq.send();
   }
 
   _mp3Closed() {
