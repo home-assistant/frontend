@@ -129,7 +129,7 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
       </div>
     </app-header-layout>
 
-    <paper-dialog with-backdrop id="mp3dialog" on-iron-overlay-closed="_mp3Closed">
+    <paper-dialog id="mp3dialog" on-iron-overlay-closed="_mp3Closed">
       <h2>
         [[localize('ui.panel.mailbox.playback_title')]]
         <paper-icon-button
@@ -143,7 +143,7 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
       </div>
     </paper-dialog>
 
-    <paper-dialog with-backdrop id="confirmdel">
+    <paper-dialog id="confirmdel">
       <p>[[localize('ui.panel.mailbox.delete_prompt')]]</p>
       <div class="buttons">
         <paper-button dialog-dismiss>[[localize('ui.common.cancel')]]</paper-button>
@@ -212,10 +212,29 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
     var platform = event.model.item.platform;
     this.currentMessage = event.model.item;
     this.$.mp3dialog.open();
-    this.$.mp3src.src = '/api/mailbox/media/' + platform + '/' + event.model.item.sha;
     this.$.transcribe.innerText = event.model.item.message;
-    this.$.mp3.load();
-    this.$.mp3.play();
+    // Pass authorization in request:
+    //   https://stackoverflow.com/questions/46878787/
+    //           how-to-set-loaded-audio-to-a-html-audio-tag-controller
+    var url = '/api/mailbox/media/' + platform + '/' + event.model.item.sha;
+    var oReq = new XMLHttpRequest();
+    var mp3 = this.$.mp3
+    var auth = this.hass.connection.options
+    oReq.open("GET", url, true);
+    oReq.responseType = "blob";
+    if (auth.authToken) {
+      oReq.setRequestHeader('X-HA-access', auth.authToken);
+    } else if (auth.accessToken) {
+      oReq.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
+    }
+    oReq.onload = function (oEvent) {
+      var blob = oReq.response; // Note: not oReq.responseText
+      if (blob) {
+        mp3.src = window.URL.createObjectURL(blob);
+        mp3.play();
+      }
+    };
+    oReq.send();    
   }
 
   _mp3Closed() {
