@@ -95,7 +95,7 @@ export default superClass =>
             throw err;
           }
 
-          return await hassCallApi(host, auth, method, path, parameters)
+          return await hassCallApi(host, auth, method, path, parameters);
         },
         // For messages that do not get a response
         sendWS: (msg) => {

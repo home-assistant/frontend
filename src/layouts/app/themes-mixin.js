@@ -6,7 +6,7 @@ export default superClass => class extends superClass {
   ready() {
     super.ready();
 
-    this.addEventListener('settheme', ev => {
+    this.addEventListener('settheme', (ev) => {
       this._updateHass({ selectedTheme: ev.detail });
       this._applyTheme();
       storeState(this.hass);
@@ -16,7 +16,7 @@ export default superClass => class extends superClass {
   hassConnected() {
     super.hassConnected();
 
-    subscribeThemes(this.hass.connection, themes => {
+    subscribeThemes(this.hass.connection, (themes) => {
       this._updateHass({ themes });
       this._applyTheme();
     });

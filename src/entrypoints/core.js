@@ -17,7 +17,7 @@ window.hassAuth = getAuth({
   loadTokens: () => Promise.resolve(loadTokens()),
 });
 
-window.hassConnection = window.hassAuth.then(auth => {
+window.hassConnection = window.hassAuth.then((auth) => {
   if (location.search.includes('auth_callback=1')) {
     history.replaceState(null, null, location.pathname);
   }
