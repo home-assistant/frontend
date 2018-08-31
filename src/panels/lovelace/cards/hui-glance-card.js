@@ -22,16 +22,13 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
-        ha-card {
-          padding: 16px;
-        }
-        ha-card[header] {
-          padding-top: 0;
-        }
         .entities {
           display: flex;
-          margin-bottom: -12px;
+          padding: 0 16px 4px;
           flex-wrap: wrap;
+        }
+        .entities.no-header {
+          padding-top: 16px;
         }
         .entity {
           box-sizing: border-box;
@@ -55,8 +52,8 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
       </style>
 
-      <ha-card header$="[[_config.title]]">
-        <div class="entities">
+      <ha-card header="[[_config.title]]">
+        <div class$="[[_computeClasses(_config.title)]]">
           <template is="dom-repeat" items="[[_configEntities]]">
             <template is="dom-if" if="[[_showEntity(item, hass.states)]]">
               <div class="entity" on-click="_handleClick">
@@ -94,6 +91,10 @@ class HuiGlanceCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     this._config = config;
     this.updateStyles({ '--glance-column-width': (config && config.column_width) || '20%' });
     this._configEntities = processConfigEntities(config.entities);
+  }
+
+  _computeClasses(hasHeader) {
+    return `entities ${hasHeader ? '' : 'no-header'}`;
   }
 
   _showEntity(item, states) {
