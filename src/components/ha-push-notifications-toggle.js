@@ -45,10 +45,13 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   async connectedCallback() {
     super.connectedCallback();
 
-    if (!('serviceWorker' in navigator)) return;
+    if (!pushSupported) return;
 
     try {
       const reg = await navigator.serviceWorker.ready;
+      if (!reg.pushManager) {
+        return;
+      }
       reg.pushManager.getSubscription().then((subscription) => {
         this.loading = false;
         this.pushChecked = !!subscription;
@@ -59,6 +62,10 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   }
 
   handlePushChange(pushChecked) {
+    // Somehow this is triggered on Safari on page load causing
+    // it to get into a loop and crash the page.
+    if (!pushSupported) return;
+
     if (pushChecked) {
       this.subscribePushNotifications();
     } else {
