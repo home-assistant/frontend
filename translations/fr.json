@@ -259,6 +259,8 @@
             "docked": "Sur la base",
             "error": "Erreur",
             "idle": "Inactif",
+            "off": "Off",
+            "on": "On",
             "paused": "En pause",
             "returning": "Retourne à la base"
         }
@@ -528,14 +530,109 @@
                 "push_notifications": {
                     "header": "Notifications push",
                     "description": "Envoyer des notifications à cet appareil.",
-                    "push_notifications": "Notifications push"
+                    "error_load_platform": "Configurer notify.html5.",
+                    "error_use_https": "Nécessite l'activation de SSL pour le frontend.",
+                    "push_notifications": "Notifications push",
+                    "link_promo": "En savoir plus"
+                },
+                "language": {
+                    "header": "Langue",
+                    "link_promo": "Aider à traduire",
+                    "dropdown_label": "Langue"
+                },
+                "themes": {
+                    "header": "Thème",
+                    "error_no_theme": "Aucun thème disponible.",
+                    "link_promo": "En savoir plus sur les thèmes",
+                    "dropdown_label": "Thème"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initialisation",
+                "authorizing_client": "Vous êtes sur le point de donner accès à {clientId} à votre instance de Home Assistant.",
+                "logging_in_with": "Se connecter avec **{authProviderName}**.",
+                "pick_auth_provider": "Ou connectez-vous avec",
+                "abort_intro": "Connexion interrompue",
+                "form": {
+                    "working": "Veuillez patienter",
+                    "unknown_error": "Quelque chose a mal tourné",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'utilisateur",
+                                        "password": "Mot de passe"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Code d'authentification à deux facteurs"
+                                    },
+                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'utilisateur ou mot de passe invalide",
+                                "invalid_code": "Code d'authentification invalide"
+                            },
+                            "abort": {
+                                "login_expired": "Session expirée, veuillez vous connecter à nouveau."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Mot de passe API"
+                                    },
+                                    "description": "Veuillez saisir le mot de passe API dans votre configuration http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Code d'authentification à deux facteurs"
+                                    },
+                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Mot de passe API invalide",
+                                "invalid_code": "Code d'authentification invalide"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Vous n'avez pas de mot de passe API configuré.",
+                                "login_expired": "Session expirée, veuillez vous connecter à nouveau."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Utilisateur"
+                                    },
+                                    "description": "Sélectionnez l'utilisateur avec lequel vous souhaitez vous connecter :"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Votre ordinateur n'est pas en liste blanche."
+                            }
+                        }
+                    }
                 }
             },
             "page-onboarding": {
+                "intro": "Êtes-vous prêt à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs?",
                 "user": {
+                    "intro": "Commençons par créer un compte utilisateur.",
+                    "required_field": "Requis",
                     "data": {
                         "name": "Nom",
-                        "username": "Nom d'utilisateur"
+                        "username": "Nom d'utilisateur",
+                        "password": "Mot de passe"
+                    },
+                    "create_account": "Créer un compte",
+                    "error": {
+                        "required_fields": "Remplissez tous les champs requis"
                     }
                 }
             }
@@ -629,7 +726,8 @@
             },
             "media_player": {
                 "text_to_speak": "Texte à lire",
-                "source": "Source"
+                "source": "Source",
+                "sound_mode": "Mode sonore"
             },
             "climate": {
                 "currently": "Actuellement",
@@ -669,7 +767,14 @@
             "relative_time": {
                 "past": "{time} auparavant",
                 "future": "Dans {time}",
-                "never": "Jamais"
+                "never": "Jamais",
+                "duration": {
+                    "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
+                    "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Chargement de l'historique des valeurs ...",
@@ -686,8 +791,19 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Sauvegarder",
-                "name": "Nom"
+                "name": "Nom",
+                "entity_id": "ID de l'entité"
             }
+        },
+        "auth_store": {
+            "ask": "Voulez-vous enregistrer cette connexion?",
+            "decline": "Non merci",
+            "confirm": "Enregistrer la connexion"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Cliquez sur le bouton pour configurer {entity}",
+            "empty": "Aucune notification",
+            "title": "Notifications"
         }
     },
     "domain": {
@@ -725,7 +841,8 @@
         "switch": "Interrupteur",
         "updater": "Mise à jour",
         "weblink": "Lien",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspirateur"
     },
     "attribute": {
         "weather": {
