@@ -586,7 +586,7 @@
                                     "data": {
                                         "password": "API 비밀번호"
                                     },
-                                    "description": "http config 에 API password 를 입력해주세요:"
+                                    "description": "http config 에 API 암호를 입력해주세요:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -632,7 +632,7 @@
                     },
                     "create_account": "계정 만들기",
                     "error": {
-                        "required_fields": "모든 필수 입력란을 채워주세요"
+                        "required_fields": "필수 입력란을 모두 채워주세요"
                     }
                 }
             }

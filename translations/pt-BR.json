@@ -546,6 +546,95 @@
                     "link_promo": "Aprenda sobre temas",
                     "dropdown_label": "Tema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Iniciando",
+                "authorizing_client": "Você está prestes a dar acesso pra {clientId} à sua instância do Home Assistant.",
+                "logging_in_with": "Fazendo login com ** {authProviderName} **.",
+                "pick_auth_provider": "Ou entre com",
+                "abort_intro": "Login cancelado",
+                "form": {
+                    "working": "Aguarde",
+                    "unknown_error": "Alguma coisa saiu errada",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Usuário",
+                                        "password": "Senha"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticação de dois fatores"
+                                    },
+                                    "description": "Abra o ** {mfa_module_name} ** no seu dispositivo para ver seu código de autenticação de dois fatores e confirmar sua identidade:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Usuário ou senha inválidos",
+                                "invalid_code": "Código de autenticação inválido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessão expirada, por favor fazer o login novamente."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Senha de API"
+                                    },
+                                    "description": "Por favor insira a senha da API em sua configuração http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticação de dois fatores"
+                                    },
+                                    "description": "Abra o ** {mfa_module_name} ** no seu dispositivo para ver seu código de autenticação de dois fatores e confirmar sua identidade:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Senha de API inválida",
+                                "invalid_code": "Código de autenticação inválido"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Você não tem uma senha de API configurada.",
+                                "login_expired": "Sessão expirada, por favor fazer o login novamente."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Usuário"
+                                    },
+                                    "description": "Por favor, selecione o usuário que você quer fazer o login como:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Seu computador não está na lista de permissões."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Você está pronto para despertar sua casa, recuperar sua privacidade e se juntar a uma comunidade mundial de consertadores?",
+                "user": {
+                    "intro": "Vamos começar criando uma conta de usuário.",
+                    "required_field": "Obrigatório",
+                    "data": {
+                        "name": "Nome",
+                        "username": "Usuário",
+                        "password": "Senha"
+                    },
+                    "create_account": "Criar Conta",
+                    "error": {
+                        "required_fields": "Preencha todos os campos obrigatórios"
+                    }
+                }
             }
         },
         "sidebar": {

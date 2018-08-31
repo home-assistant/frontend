@@ -743,7 +743,7 @@
             "lock": {
                 "code": "Kode",
                 "lock": "Lås",
-                "unlock": "Låse opp"
+                "unlock": "Lås opp"
             },
             "vacuum": {
                 "actions": {

@@ -484,7 +484,7 @@
                                 },
                                 "delay": {
                                     "label": "Retardo",
-                                    "delay": "Retardo"
+                                    "delay": "Demora"
                                 },
                                 "wait_template": {
                                     "label": "Esperar",
@@ -564,10 +564,20 @@
                                         "username": "Nombre de usuario",
                                         "password": "Contraseña"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticado de dos factores"
+                                    },
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código autenticado de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nombre de usuario o contraseña inválidos"
+                                "invalid_auth": "Nombre de usuario o contraseña inválidos",
+                                "invalid_code": "Código de autenticación inválido"
+                            },
+                            "abort": {
+                                "login_expired": "La sesión expiró, por favor inicie sesión de nuevo."
                             }
                         },
                         "legacy_api_password": {
@@ -575,14 +585,23 @@
                                 "init": {
                                     "data": {
                                         "password": "Contraseña de API"
-                                    }
+                                    },
+                                    "description": "Por favor, introduzca la contraseña de la API en su configuración http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticar de dos factores"
+                                    },
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código autenticado de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Contraseña de API inválida"
+                                "invalid_auth": "Contraseña de API inválida",
+                                "invalid_code": "Código de verificación invalido"
                             },
                             "abort": {
-                                "no_api_password_set": "No tienes una contraseña de API configurada."
+                                "no_api_password_set": "No tienes una contraseña de API configurada.",
+                                "login_expired": "Sesión vencida, por favor iniciar sesión de nuevo."
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +609,8 @@
                                 "init": {
                                     "data": {
                                         "user": "Usuario"
-                                    }
+                                    },
+                                    "description": "Por favor, seleccione el usuario con el que desea iniciar sesión:"
                                 }
                             },
                             "abort": {
@@ -601,6 +621,7 @@
                 }
             },
             "page-onboarding": {
+                "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
                 "user": {
                     "intro": "Comencemos creando una cuenta de usuario.",
                     "required_field": "Obligatorio",
@@ -689,7 +710,8 @@
                 "trigger": "Desencadenar"
             },
             "cover": {
-                "position": "Posición"
+                "position": "Posición",
+                "tilt_position": "Posición inclinada"
             },
             "fan": {
                 "speed": "Velocidad",

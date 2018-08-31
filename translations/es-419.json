@@ -568,7 +568,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Código de autenticación de dos factores"
-                                    }
+                                    },
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código de autenticar de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {
@@ -584,11 +585,19 @@
                                 "init": {
                                     "data": {
                                         "password": "Contraseña API"
-                                    }
+                                    },
+                                    "description": "Por favor, introduzca la contraseña de la API en su configuración http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticado de dos factores"
+                                    },
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código de autenticar de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Contraseña API inválida"
+                                "invalid_auth": "Contraseña API inválida",
+                                "invalid_code": "Código de autenticado invalido"
                             },
                             "abort": {
                                 "no_api_password_set": "No tienes una contraseña API configurada.",

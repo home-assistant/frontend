@@ -564,10 +564,20 @@
                                         "username": "Benotzernumm",
                                         "password": "Passwuert"
                                     }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2-Faktor-Authentifikatiouns Code"
+                                    },
+                                    "description": "Maacht **{mfa_module_name}** op Ärem Apparat op, fir ären 2-Faktor-Authentifikatiouns Code ze kucken an Är Identitéit z'iwwerpréiwen:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Ongëltege Benotzernumm oder Passwuert"
+                                "invalid_auth": "Ongëltege Benotzernumm oder Passwuert",
+                                "invalid_code": "Ongëlte Authentifikatiouns Code"
+                            },
+                            "abort": {
+                                "login_expired": "Sessioun ofgelaaf, log dech rëm frësch an w.e.g."
                             }
                         },
                         "legacy_api_password": {
@@ -575,14 +585,23 @@
                                 "init": {
                                     "data": {
                                         "password": "API Passwuert"
-                                    }
+                                    },
+                                    "description": "Gitt d'API Passwuert vun ärer http Konfiguratioun an:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2-Faktor-Authentifikatiouns Code"
+                                    },
+                                    "description": "Maacht **{mfa_module_name}** op Ärem Apparat op, fir ären 2-Faktor-Authentifikatiouns Code ze kucken an Är Identitéit z'iwwerpréiwen:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Ongëltegt API Passwuert"
+                                "invalid_auth": "Ongëltegt API Passwuert",
+                                "invalid_code": "Ongëlte Authentifikatiouns Code"
                             },
                             "abort": {
-                                "no_api_password_set": "Dir hutt nach keen API Passwuert definéiert."
+                                "no_api_password_set": "Dir hutt nach keen API Passwuert definéiert.",
+                                "login_expired": "Sessioun ofgelaaf, log dech rëm frësch an w.e.g."
                             }
                         },
                         "trusted_networks": {
@@ -590,7 +609,8 @@
                                 "init": {
                                     "data": {
                                         "user": "Benotzer"
-                                    }
+                                    },
+                                    "description": "Wielt den User aus mat deem dir iech wëllt aloggen:"
                                 }
                             },
                             "abort": {

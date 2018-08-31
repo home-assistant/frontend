@@ -528,14 +528,112 @@
             },
             "profile": {
                 "push_notifications": {
-                    "header": "Notifiche push"
+                    "header": "Notifiche push",
+                    "description": "Invia notifiche a questo dispositivo.",
+                    "error_load_platform": "Configura notify.html5.",
+                    "error_use_https": "Richiede SSL abilitato per il frontend.",
+                    "push_notifications": "Notifiche push",
+                    "link_promo": "Per saperne di più"
                 },
                 "language": {
-                    "header": "Lingua"
+                    "header": "Lingua",
+                    "link_promo": "Aiuta a tradurre",
+                    "dropdown_label": "Lingua"
                 },
                 "themes": {
                     "header": "Tema",
+                    "error_no_theme": "Nessun tema disponibile.",
+                    "link_promo": "Per saperne di più sui temi",
                     "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Inizializzazione",
+                "authorizing_client": "Stai per dare accesso {clientId} alla tua istanza di Assistente Home.",
+                "logging_in_with": "Accesso con ** {authProviderName} **.",
+                "pick_auth_provider": "Oppure accedi con",
+                "abort_intro": "Login interrotto",
+                "form": {
+                    "working": "Attendere prego",
+                    "unknown_error": "Qualcosa è andato storto",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nome utente",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codice di autenticazione a due fattori"
+                                    },
+                                    "description": "Apri ** {mfa_module_name} ** sul tuo dispositivo per visualizzare il codice di autenticazione a due fattori e verificare la tua identità:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nome utente o password errati",
+                                "invalid_code": "Codice di autenticazione non valido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessione scaduta, effettua nuovamente il login."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Password API"
+                                    },
+                                    "description": "Inserisci l'API password nella configurazione http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codice di autenticazione a due fattori"
+                                    },
+                                    "description": "Apri il **{mfa_module_name}** sul tuo dispositivo per vedere il codice di autenticazione a due fattori (2FA) e verifica la tua identità:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Password API non valida",
+                                "invalid_code": "Codice di autenticazione non valido"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Non hai una password API configurata.",
+                                "login_expired": "Sessione scaduta, effettua nuovamente l'accesso."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Utente"
+                                    },
+                                    "description": "Perfavore, scegli l'utente con cui vuoi effettuare l'accesso:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Il tuo computer non è nella whitelist."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Sei pronto per risvegliare la tua casa, reclamare la tua privacy e far parte di una comunità mondiale di smanettoni?",
+                "user": {
+                    "intro": "Cominciamo con la creazione di un account utente.",
+                    "required_field": "Necessario",
+                    "data": {
+                        "name": "Nome",
+                        "username": "Nome utente",
+                        "password": "Password"
+                    },
+                    "create_account": "Crea un Account",
+                    "error": {
+                        "required_fields": "Compila tutti i campi richiesti"
+                    }
                 }
             }
         },
@@ -696,6 +794,16 @@
                 "name": "Nome",
                 "entity_id": "ID Entità"
             }
+        },
+        "auth_store": {
+            "ask": "Vuoi salvare questo login?",
+            "decline": "No grazie",
+            "confirm": "Salva login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Fare clic sul pulsante per configurare {entity}",
+            "empty": "Nessuna notifica",
+            "title": "Notifiche"
         }
     },
     "domain": {
