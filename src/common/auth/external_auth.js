@@ -1,7 +1,7 @@
 /**
  * Auth class that connects to a native app for authentication.
  */
-import { Auth } from "home-assistant-js-websocket";
+import { Auth } from 'home-assistant-js-websocket';
 
 const CALLBACK_METHOD = 'externalAuthSetToken';
 
@@ -14,7 +14,7 @@ export default class ExternalAuth extends Auth {
       access_token: '',
       // This will trigger connection to do a refresh right away
       expires: 0,
-    }
+    };
   }
 
   async refreshAccessToken() {
@@ -22,7 +22,7 @@ export default class ExternalAuth extends Auth {
       window.externalApp.getExternalAuth :
       window.webkit.messageHandlers.getExternalAuth.postMessage;
 
-      const responseProm = new Promise(resolve => { window[CALLBACK_METHOD] = resolve; });
+    const responseProm = new Promise((resolve) => { window[CALLBACK_METHOD] = resolve; });
 
     // Allow promise to set resolve on window object.
     await 0;
@@ -37,6 +37,6 @@ export default class ExternalAuth extends Auth {
     const tokens = await responseProm;
 
     this.data.access_token = tokens.access_token;
-    this.data.expires = tokens.expires_in * 1000 + Date.now();
+    this.data.expires = (tokens.expires_in * 1000) + Date.now();
   }
 }
