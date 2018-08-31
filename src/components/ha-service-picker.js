@@ -34,13 +34,13 @@ class HaServicePicker extends LocalizeMixin(PolymerElement) {
     if (!hass) {
       this._services = [];
       return;
-    } else if (oldHass && hass.config.services === oldHass.config.services) {
+    } else if (oldHass && hass.services === oldHass.services) {
       return;
     }
     const result = [];
 
-    Object.keys(hass.config.services).sort().forEach((domain) => {
-      const services = Object.keys(hass.config.services[domain]).sort();
+    Object.keys(hass.services).sort().forEach((domain) => {
+      const services = Object.keys(hass.services[domain]).sort();
 
       for (let i = 0; i < services.length; i++) {
         result.push(`${domain}.${services[i]}`);

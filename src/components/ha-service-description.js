@@ -17,7 +17,7 @@ class HaServiceDescription extends PolymerElement {
   }
 
   _getDescription(hass, domain, service) {
-    var domainServices = hass.config.services[domain];
+    var domainServices = hass.services[domain];
     if (!domainServices) return '';
     var serviceObject = domainServices[service];
     if (!serviceObject) return '';

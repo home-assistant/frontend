@@ -1,5 +1,5 @@
 export default function canToggleDomain(hass, domain) {
-  const services = hass.config.services[domain];
+  const services = hass.services[domain];
   if (!services) { return false; }
 
   if (domain === 'lock') {

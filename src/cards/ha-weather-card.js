@@ -203,7 +203,7 @@ class HaWeatherCard extends
   }
 
   getUnit(measure) {
-    const lengthUnit = this.hass.config.core.unit_system.length || '';
+    const lengthUnit = this.hass.config.unit_system.length || '';
     switch (measure) {
       case 'air_pressure':
         return lengthUnit === 'km' ? 'hPa' : 'inHg';
@@ -212,7 +212,7 @@ class HaWeatherCard extends
       case 'precipitation':
         return lengthUnit === 'km' ? 'mm' : 'in';
       default:
-        return this.hass.config.core.unit_system[measure] || '';
+        return this.hass.config.unit_system[measure] || '';
     }
   }
 

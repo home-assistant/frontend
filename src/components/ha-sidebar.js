@@ -10,6 +10,7 @@ import '../components/ha-icon.js';
 
 import '../util/hass-translation.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
+import isComponentLoaded from '../common/config/is_component_loaded.js';
 
 /*
  * @appliesMixin LocalizeMixin
@@ -250,7 +251,7 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
   }
 
   _mqttLoaded(hass) {
-    return hass.config.core.components.indexOf('mqtt') !== -1;
+    return isComponentLoaded(hass, 'mqtt');
   }
 
   _computeUserName(user) {

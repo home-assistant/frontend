@@ -1,6 +1,7 @@
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { clearState } from '../../util/ha-pref-storage.js';
 import { askWrite } from '../../common/auth/token_storage.js';
+import { subscribeUser } from '../../data/ws-user.js';
 
 export default superClass => class extends superClass {
   ready() {
@@ -20,17 +21,7 @@ export default superClass => class extends superClass {
 
   hassConnected() {
     super.hassConnected();
-
-    this._getCurrentUser();
-  }
-
-  _getCurrentUser() {
-    // only for new auth
-    if (this.hass.connection.options.accessToken) {
-      this.hass.callWS({
-        type: 'auth/current_user',
-      }).then(user => this._updateHass({ user }), () => {});
-    }
+    subscribeUser(this.hass.connection, user => this._updateHass({ user }));
   }
 
   _handleLogout() {

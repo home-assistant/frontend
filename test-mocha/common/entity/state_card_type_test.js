@@ -4,12 +4,10 @@ import stateCardType from '../../../src/common/entity/state_card_type.js';
 
 describe('stateCardType', () => {
   const hass = {
-    config: {
-      services: {
-        light: {
-          turn_on: null, // Service keys only need to be present for test
-          turn_off: null,
-        },
+    services: {
+      light: {
+        turn_on: null, // Service keys only need to be present for test
+        turn_off: null,
       },
     },
   };
