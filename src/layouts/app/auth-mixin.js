@@ -1,4 +1,5 @@
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { getUser } from 'home-assistant-js-websocket';
 import { clearState } from '../../util/ha-pref-storage.js';
 import { askWrite } from '../../common/auth/token_storage.js';
 import { subscribeUser } from '../../data/ws-user.js';
@@ -7,7 +8,9 @@ export default superClass => class extends superClass {
   ready() {
     super.ready();
     this.addEventListener('hass-logout', () => this._handleLogout());
-    this.addEventListener('hass-refresh-current-user', () => this._getCurrentUser());
+    // HACK :( We don't have a way yet to trigger an update of `subscribeUser`
+    this.addEventListener('hass-refresh-current-user', () =>
+      getUser(this.hass.connection).then(user => this._updateHass({ user })));
 
     afterNextRender(null, () => {
       if (askWrite()) {
