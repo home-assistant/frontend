@@ -389,12 +389,14 @@
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "topic": "Emne"
+                                    "topic": "Emne",
+                                    "payload": "Indhold (valgfri)"
                                 },
                                 "numeric_state": {
                                     "label": "Numerisk tilstand",
                                     "above": "Over",
-                                    "below": "Under"
+                                    "below": "Under",
+                                    "value_template": "Værdi-skabelon"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -436,6 +438,7 @@
                                     "state": "Tilstand"
                                 },
                                 "numeric_state": {
+                                    "label": "Numerisk stadie",
                                     "above": "Over",
                                     "below": "Under",
                                     "value_template": "Værdi skabelon (ikke krævet)"
@@ -444,11 +447,14 @@
                                     "label": "Sol",
                                     "before": "Før:",
                                     "after": "Efter:",
+                                    "before_offset": "Forskydning før",
+                                    "after_offset": "Forskydning efter",
                                     "sunrise": "Solopgang",
                                     "sunset": "Solnedgang"
                                 },
                                 "template": {
-                                    "label": "Skabelon"
+                                    "label": "Skabelon",
+                                    "value_template": "Værdi-skabelon"
                                 },
                                 "time": {
                                     "label": "Tid",
@@ -470,6 +476,7 @@
                             "delete": "Slet",
                             "delete_confirm": "Er du sikker på du vil slette?",
                             "unsupported_action": "Ikke-understøttet handling: {action}",
+                            "type_select": "Begivenhedstype",
                             "type": {
                                 "service": {
                                     "label": "Kald service",
@@ -481,12 +488,15 @@
                                 },
                                 "wait_template": {
                                     "label": "Vent",
+                                    "wait_template": "Vente-skabelon",
                                     "timeout": "Timeout (valgfri)"
                                 },
                                 "condition": {
                                     "label": "Betingelse"
                                 },
                                 "event": {
+                                    "label": "Afsend hændelse",
+                                    "event": "Hændelse:",
                                     "service_data": "Service data"
                                 }
                             }
@@ -535,6 +545,95 @@
                     "error_no_theme": "Ingen temaer til rådighed.",
                     "link_promo": "Lær om temaer",
                     "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initialiserer",
+                "authorizing_client": "Du er ved at give {clientId} adgang til din Home Assistant-instans.",
+                "logging_in_with": "Log ind med ** {authProviderName} **.",
+                "pick_auth_provider": "Eller log ind med",
+                "abort_intro": "Login afbrudt",
+                "form": {
+                    "working": "Vent venligst",
+                    "unknown_error": "Noget gik galt",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Brugernavn",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor godkendelseskode"
+                                    },
+                                    "description": "Åbn ** {mfa_module_name} ** på din enhed for at se din to-faktor godkendelseskode og bekræft din identitet:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldigt brugernavn eller password",
+                                "invalid_code": "Ugyldig godkendelseskode"
+                            },
+                            "abort": {
+                                "login_expired": "Session er udløbet, log ind igen."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API password"
+                                    },
+                                    "description": "Indtast venligst API-adgangskoden fra din http-konfiguration:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To faktor godkendelseskode"
+                                    },
+                                    "description": "Åbn ** {mfa_module_name} ** på din enhed for at se din to-faktor godkendelseskode og bekræft din identitet:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig API password",
+                                "invalid_code": "Ugyldig godkendelseskode"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du har ikke konfigureret en API-adgangskode.",
+                                "login_expired": "Sessionen er udløbet, log venligst ind igen"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Bruger"
+                                    },
+                                    "description": "Vælg venligst den bruger, du vil logge ind som:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Din computer er ikke whitelistet."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Er du klar til at vække din hjem, genvinde dit privatliv og deltage i et verdensomspændende fællesskab af tinkerers?",
+                "user": {
+                    "intro": "Lad os komme i gang ved at oprette en brugerkonto.",
+                    "required_field": "Nødvendig",
+                    "data": {
+                        "name": "Navn",
+                        "username": "Brugernavn",
+                        "password": "Password"
+                    },
+                    "create_account": "Opret konto",
+                    "error": {
+                        "required_fields": "Udfyld alle obligatoriske felter"
+                    }
                 }
             }
         },
@@ -622,16 +721,20 @@
             "light": {
                 "brightness": "Lysstyrke",
                 "color_temperature": "Farvetemperatur",
+                "white_value": "Hvidværdi",
                 "effect": "Effekt"
             },
             "media_player": {
                 "text_to_speak": "Tekst til tale",
-                "source": "Kilde"
+                "source": "Kilde",
+                "sound_mode": "Lydtilstand"
             },
             "climate": {
                 "currently": "Lige nu",
                 "on_off": "On \/ off",
-                "fan_mode": "Ventilator tilstand"
+                "fan_mode": "Ventilator tilstand",
+                "away_mode": "Ude af huset-modus",
+                "aux_heat": "Støtte-varme"
             },
             "lock": {
                 "code": "Kode",
@@ -692,6 +795,11 @@
             "ask": "Vil du gemme dette login?",
             "decline": "Nej tak",
             "confirm": "Gem login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klik på knappen for at konfigurere {entity}",
+            "empty": "Ingen notifikationer",
+            "title": "Notifikationer"
         }
     },
     "domain": {
