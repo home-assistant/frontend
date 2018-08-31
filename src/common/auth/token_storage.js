@@ -13,24 +13,26 @@ export function askWrite() {
   return tokenCache.tokens !== undefined && tokenCache.writeEnabled === undefined;
 }
 
-export function storeTokens(tokens) {
+export function saveTokens(tokens) {
   tokenCache.tokens = tokens;
   if (tokenCache.writeEnabled) {
     try {
-      storage.tokens = JSON.stringify(tokens);
+      storage.hassTokens = JSON.stringify(tokens);
     } catch (err) {}  // eslint-disable-line
   }
 }
 
 export function enableWrite() {
   tokenCache.writeEnabled = true;
-  storeTokens(tokenCache.tokens);
+  saveTokens(tokenCache.tokens);
 }
 
 export function loadTokens() {
   if (tokenCache.tokens === undefined) {
     try {
-      const tokens = storage.tokens;
+      // Delete the old token cache.
+      delete storage.tokens;
+      const tokens = storage.hassTokens;
       if (tokens) {
         tokenCache.tokens = JSON.parse(tokens);
         tokenCache.writeEnabled = true;

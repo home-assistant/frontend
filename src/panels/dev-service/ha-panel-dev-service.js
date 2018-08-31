@@ -230,7 +230,7 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _computeAttributesArray(hass, domain, service) {
-    const serviceDomains = hass.config.services;
+    const serviceDomains = hass.services;
     if (!(domain in serviceDomains)) return [];
     if (!(service in serviceDomains[domain])) return [];
 
@@ -241,7 +241,7 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _computeDescription(hass, domain, service) {
-    const serviceDomains = hass.config.services;
+    const serviceDomains = hass.services;
     if (!(domain in serviceDomains)) return undefined;
     if (!(service in serviceDomains[domain])) return undefined;
     return serviceDomains[domain][service].description;

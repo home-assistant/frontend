@@ -4,19 +4,17 @@ import canToggleDomain from '../../../src/common/entity/can_toggle_domain';
 
 describe('canToggleDomain', () => {
   const hass = {
-    config: {
-      services: {
-        light: {
-          turn_on: null, // Service keys only need to be present for test
-          turn_off: null,
-        },
-        lock: {
-          lock: null,
-          unlock: null,
-        },
-        sensor: {
-          custom_service: null,
-        },
+    services: {
+      light: {
+        turn_on: null, // Service keys only need to be present for test
+        turn_off: null,
+      },
+      lock: {
+        lock: null,
+        unlock: null,
+      },
+      sensor: {
+        custom_service: null,
       },
     },
   };

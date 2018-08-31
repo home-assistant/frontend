@@ -125,13 +125,13 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class$="[[stateObj.attributes.operation_mode]]">
           <div hidden$="[[!supportsTemperatureControls(stateObj)]]">[[localize('ui.card.climate.target_temperature')]]</div>
           <template is="dom-if" if="[[supportsTemperature(stateObj)]]">
-            <ha-climate-control value="[[stateObj.attributes.temperature]]" units="[[hass.config.core.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.max_temp]]" on-change="targetTemperatureChanged">
+            <ha-climate-control value="[[stateObj.attributes.temperature]]" units="[[hass.config.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.max_temp]]" on-change="targetTemperatureChanged">
             </ha-climate-control>
           </template>
           <template is="dom-if" if="[[supportsTemperatureRange(stateObj)]]">
-            <ha-climate-control value="[[stateObj.attributes.target_temp_low]]" units="[[hass.config.core.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.target_temp_high]]" class="range-control-left" on-change="targetTemperatureLowChanged">
+            <ha-climate-control value="[[stateObj.attributes.target_temp_low]]" units="[[hass.config.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.min_temp]]" max="[[stateObj.attributes.target_temp_high]]" class="range-control-left" on-change="targetTemperatureLowChanged">
             </ha-climate-control>
-            <ha-climate-control value="[[stateObj.attributes.target_temp_high]]" units="[[hass.config.core.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.target_temp_low]]" max="[[stateObj.attributes.max_temp]]" class="range-control-right" on-change="targetTemperatureHighChanged">
+            <ha-climate-control value="[[stateObj.attributes.target_temp_high]]" units="[[hass.config.unit_system.temperature]]" step="[[computeTemperatureStepSize(hass, stateObj)]]" min="[[stateObj.attributes.target_temp_low]]" max="[[stateObj.attributes.max_temp]]" class="range-control-right" on-change="targetTemperatureHighChanged">
             </ha-climate-control>
           </template>
         </div>
@@ -293,7 +293,7 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeTemperatureStepSize(hass, stateObj) {
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
-    } else if (hass.config.core.unit_system.temperature.indexOf('F') !== -1) {
+    } else if (hass.config.unit_system.temperature.indexOf('F') !== -1) {
       return 1;
     }
     return 0.5;
