@@ -4,12 +4,10 @@ import canToggleState from '../../../src/common/entity/can_toggle_state';
 
 describe('canToggleState', () => {
   const hass = {
-    config: {
-      services: {
-        light: {
-          turn_on: null, // Service keys only need to be present for test
-          turn_off: null,
-        },
+    services: {
+      light: {
+        turn_on: null, // Service keys only need to be present for test
+        turn_off: null,
       },
     },
   };
