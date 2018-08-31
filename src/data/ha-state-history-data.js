@@ -31,8 +31,8 @@ function computeHistory(hass, stateHistory, localize, language) {
     let unit = false;
     if (stateWithUnit) {
       unit = stateWithUnit.attributes.unit_of_measurement;
-    } else if (stateInfo.some(state => computeStateDomain(state) === 'climate')) {
-      unit = hass.config.core.unit_system.temperature;
+    } else if (computeStateDomain(stateInfo[0]) === 'climate') {
+      unit = hass.config.unit_system.temperature;
     }
 
     if (!unit) {
