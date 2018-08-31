@@ -2,6 +2,8 @@ import {
   ERR_INVALID_AUTH,
   subscribeEntities,
   subscribeConfig,
+  subscribeServices,
+  callService,
 } from 'home-assistant-js-websocket';
 
 import translationMetadata from '../../../build-translations/translationMetadata.json';
@@ -9,44 +11,24 @@ import translationMetadata from '../../../build-translations/translationMetadata
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 import EventsMixin from '../../mixins/events-mixin.js';
 
-import { refreshToken } from '../../common/auth/token.js';
 import { getState } from '../../util/ha-pref-storage.js';
 import { getActiveTranslation } from '../../util/hass-translation.js';
 import hassCallApi from '../../util/hass-call-api.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
+import { subscribePanels } from '../../data/ws-panels';
 
 export default superClass =>
   class extends EventsMixin(LocalizeMixin(superClass)) {
-    constructor() {
-      super();
-      this.unsubFuncs = [];
-    }
-
     ready() {
       super.ready();
-      this.addEventListener('try-connection', e =>
-        this._handleNewConnProm(e.detail.connProm));
-      if (window.hassConnection) {
-        this._handleNewConnProm(window.hassConnection);
-      }
+      this._handleConnProm();
     }
 
-    async _handleNewConnProm(connProm) {
-      this.connectionPromise = connProm;
+    async _handleConnProm() {
+      const [auth, conn] = await Promise.all([window.hassAuth, window.hassConnection]);
 
-      let conn;
-
-      try {
-        conn = await connProm;
-      } catch (err) {
-        this.connectionPromise = null;
-        return;
-      }
-      this._setConnection(conn);
-    }
-
-    _setConnection(conn) {
       this.hass = Object.assign({
+        auth,
         connection: conn,
         connected: true,
         states: null,
@@ -64,7 +46,7 @@ export default superClass =>
         moreInfoEntityId: null,
         callService: async (domain, service, serviceData = {}) => {
           try {
-            await conn.callService(domain, service, serviceData);
+            await callService(conn, domain, service, serviceData);
 
             let message;
             let name;
@@ -100,24 +82,20 @@ export default superClass =>
         },
         callApi: async (method, path, parameters) => {
           const host = window.location.protocol + '//' + window.location.host;
-          const auth = conn.options;
-          try {
-            // Refresh token if it will expire in 30 seconds
-            if (auth.accessToken && Date.now() + 30000 > auth.expires) {
-              const accessToken = await refreshToken();
-              conn.options.accessToken = accessToken.access_token;
-              conn.options.expires = accessToken.expires;
-            }
-            return await hassCallApi(host, auth, method, path, parameters);
-          } catch (err) {
-            if (!err || err.status_code !== 401 || !auth.accessToken) throw err;
 
-            // If we connect with access token and get 401, refresh token and try again
-            const accessToken = await refreshToken();
-            conn.options.accessToken = accessToken.access_token;
-            conn.options.expires = accessToken.expires;
-            return await hassCallApi(host, auth, method, path, parameters);
+          try {
+            if (auth.expired) await auth.refreshAccessToken();
+          } catch (err) {
+            if (err === ERR_INVALID_AUTH) {
+              // Trigger auth flow
+              location.reload();
+              // ensure further JS is not executed
+              await new Promise(() => {});
+            }
+            throw err;
           }
+
+          return await hassCallApi(host, auth, method, path, parameters);
         },
         // For messages that do not get a response
         sendWS: (msg) => {
@@ -138,9 +116,7 @@ export default superClass =>
               err => console.log('Error', err),
             );
           }
-          // In the future we'll do this as a breaking change
-          // inside home-assistant-js-websocket
-          return resp.then(result => result.result);
+          return resp;
         },
       }, getState());
 
@@ -152,56 +128,26 @@ export default superClass =>
 
       const conn = this.hass.connection;
 
-      const reconnected = () => this.hassReconnected();
-      const disconnected = () => this.hassDisconnected();
-      const reconnectError = async (_conn, err) => {
-        if (err !== ERR_INVALID_AUTH) return;
-
-        while (this.unsubFuncs.length) {
-          this.unsubFuncs.pop()();
-        }
-        const accessToken = await refreshToken();
-        const newConn = window.createHassConnection(null, accessToken);
-        newConn.then(() => this.hassReconnected());
-        this._handleNewConnProm(newConn);
-      };
-
-      conn.addEventListener('ready', reconnected);
-      conn.addEventListener('disconnected', disconnected);
-      // If we reconnect after losing connection and access token is no longer
-      // valid.
-      conn.addEventListener('reconnect-error', reconnectError);
-
-      this.unsubFuncs.push(() => {
-        conn.removeEventListener('ready', reconnected);
-        conn.removeEventListener('disconnected', disconnected);
-        conn.removeEventListener('reconnect-error', reconnectError);
+      conn.addEventListener('ready', () => this.hassReconnected());
+      conn.addEventListener('disconnected', () => this.hassDisconnected());
+      // If we reconnect after losing connection and auth is no longer valid.
+      conn.addEventListener('reconnect-error', (_conn, err) => {
+        if (err === ERR_INVALID_AUTH) location.reload();
       });
 
-      subscribeEntities(conn, states => this._updateHass({ states }))
-        .then(unsub => this.unsubFuncs.push(unsub));
-
-      subscribeConfig(conn, config => this._updateHass({ config }))
-        .then(unsub => this.unsubFuncs.push(unsub));
-
-      this._loadPanels();
+      subscribeEntities(conn, states => this._updateHass({ states }));
+      subscribeConfig(conn, config => this._updateHass({ config }));
+      subscribeServices(conn, services => this._updateHass({ services }));
+      subscribePanels(conn, panels => this._updateHass({ panels }));
     }
 
     hassReconnected() {
       super.hassReconnected();
       this._updateHass({ connected: true });
-      this._loadPanels();
     }
 
     hassDisconnected() {
       super.hassDisconnected();
       this._updateHass({ connected: false });
-    }
-
-    async _loadPanels() {
-      const panels = await this.hass.callWS({
-        type: 'get_panels'
-      });
-      this._updateHass({ panels });
     }
   };

@@ -304,7 +304,7 @@ class MoreInfoMediaPlayer extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   sendTTS() {
-    const services = this.hass.config.services.tts;
+    const services = this.hass.services.tts;
     const serviceKeys = Object.keys(services).sort();
     let service;
     let i;
