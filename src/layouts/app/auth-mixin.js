@@ -1,8 +1,8 @@
 import { afterNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+import { getUser } from 'home-assistant-js-websocket';
 import { clearState } from '../../util/ha-pref-storage.js';
 import { askWrite } from '../../common/auth/token_storage.js';
 import { subscribeUser } from '../../data/ws-user.js';
-import { getUser } from 'home-assistant-js-websocket';
 
 export default superClass => class extends superClass {
   ready() {
