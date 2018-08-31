@@ -14,7 +14,7 @@ const DOMAINS_USE_LAST_UPDATED = ['thermostat', 'climate'];
 const LINE_ATTRIBUTES_TO_KEEP = ['temperature', 'current_temperature', 'target_temp_low', 'target_temp_high'];
 const stateHistoryCache = {};
 
-function computeHistory(stateHistory, localize, language) {
+function computeHistory(hass, stateHistory, localize, language) {
   const lineChartDevices = {};
   const timelineDevices = [];
   if (!stateHistory) {
@@ -28,8 +28,12 @@ function computeHistory(stateHistory, localize, language) {
 
     const stateWithUnit = stateInfo.find(state => 'unit_of_measurement' in state.attributes);
 
-    const unit = stateWithUnit ?
-      stateWithUnit.attributes.unit_of_measurement : false;
+    let unit = false;
+    if (stateWithUnit) {
+      unit = stateWithUnit.attributes.unit_of_measurement;
+    } else if (computeStateDomain(stateInfo[0]) === 'climate') {
+      unit = hass.config.unit_system.temperature;
+    }
 
     if (!unit) {
       timelineDevices.push({
@@ -311,7 +315,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       // Use only data from the new fetch. Old fetch is already stored in cache.data
       .then(oldAndNew => oldAndNew[1])
       // Convert data into format state-history-chart-* understands.
-      .then(stateHistory => computeHistory(stateHistory, localize, language))
+      .then(stateHistory => computeHistory(this.hass, stateHistory, localize, language))
       // Merge old and new.
       .then((stateHistory) => {
         this.mergeLine(stateHistory.line, cache.data.line);
@@ -341,7 +345,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     }
 
     const prom = this.fetchRecent(entityId, startTime, endTime).then(
-      stateHistory => computeHistory(stateHistory, localize, language),
+      stateHistory => computeHistory(this.hass, stateHistory, localize, language),
       () => {
         RECENT_CACHE[entityId] = false;
         return null;
@@ -376,7 +380,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
     const filter = startTime.toISOString() + '?end_time=' + endTime.toISOString();
 
     const prom = this.hass.callApi('GET', 'history/period/' + filter).then(
-      stateHistory => computeHistory(stateHistory, localize, language),
+      stateHistory => computeHistory(this.hass, stateHistory, localize, language),
       () => null
     );
 
