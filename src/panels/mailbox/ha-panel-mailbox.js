@@ -3,7 +3,6 @@ import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-card/paper-card.js';
-import '@polymer/paper-dialog/paper-dialog.js';
 import '@polymer/paper-input/paper-textarea.js';
 import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/paper-item/paper-item.js';
@@ -16,6 +15,8 @@ import '../../resources/ha-style.js';
 
 import formatDateTime from '../../common/datetime/format_date_time.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
+
+let registeredDialog = false;
 
 /*
  * @appliesMixin LocalizeMixin
@@ -57,32 +58,8 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
         display: flex;
        justify-content: space-between;
       }
-      paper-dialog {
-        border-radius: 2px;
-      }
-      paper-dialog p {
-        color: var(--secondary-text-color);
-      }
-
-      #mp3dialog paper-icon-button {
-        float: right;
-      }
 
       @media all and (max-width: 450px) {
-        paper-dialog {
-          margin: 0;
-          width: 100%;
-          max-height: calc(100% - 64px);
-
-          position: fixed !important;
-          bottom: 0px;
-          left: 0px;
-          right: 0px;
-          overflow: scroll;
-          border-bottom-left-radius: 0px;
-          border-bottom-right-radius: 0px;
-        }
-
         .content {
           width: auto;
           padding: 0;
@@ -128,28 +105,6 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
         </paper-card>
       </div>
     </app-header-layout>
-
-    <paper-dialog id="mp3dialog" on-iron-overlay-closed="_mp3Closed">
-      <h2>
-        [[localize('ui.panel.mailbox.playback_title')]]
-        <paper-icon-button
-          on-click='openDeleteDialog'
-          icon='hass:delete'
-        ></paper-icon-button>
-      </h2>
-      <div id="transcribe"></div>
-      <div>
-        <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg" /></audio>
-      </div>
-    </paper-dialog>
-
-    <paper-dialog id="confirmdel">
-      <p>[[localize('ui.panel.mailbox.delete_prompt')]]</p>
-      <div class="buttons">
-        <paper-button dialog-dismiss>[[localize('ui.common.cancel')]]</paper-button>
-        <paper-button dialog-confirm autofocus on-click="deleteSelected">[[localize('ui.panel.mailbox.delete_button')]]</paper-button>
-      </div>
-    </paper-dialog>
     `;
   }
 
@@ -176,15 +131,19 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
       _messages: {
         type: Array,
       },
-
-      currentMessage: {
-        type: Object,
-      },
     };
   }
 
   connectedCallback() {
     super.connectedCallback();
+    if (!registeredDialog) {
+      registeredDialog = true;
+      this.fire('register-dialog', {
+        dialogShowEvent: 'show-audio-message-dialog',
+        dialogTag: 'ha-dialog-show-audio-message',
+        dialogImport: () => import('./ha-dialog-show-audio-message.js'),
+      });
+    }
     this.hassChanged = this.hassChanged.bind(this);
     this.hass.connection.subscribeEvents(this.hassChanged, 'mailbox_updated')
       .then(function (unsub) { this._unsubEvents = unsub; }.bind(this));
@@ -209,47 +168,12 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
   }
 
   openMP3Dialog(event) {
-    var platform = event.model.item.platform;
-    this.currentMessage = event.model.item;
-    this.$.mp3dialog.open();
-    this.$.transcribe.innerText = event.model.item.message;
-    // Pass authorization in request:
-    //   https://stackoverflow.com/questions/46878787/
-    //           how-to-set-loaded-audio-to-a-html-audio-tag-controller
-    var url = '/api/mailbox/media/' + platform + '/' + event.model.item.sha;
-    var oReq = new XMLHttpRequest();
-    var mp3 = this.$.mp3;
-    var auth = this.hass.connection.options;
-    oReq.open('GET', url, true);
-    oReq.responseType = 'blob';
-    if (auth.authToken) {
-      oReq.setRequestHeader('X-HA-access', auth.authToken);
-    } else if (auth.accessToken) {
-      oReq.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
-    }
-    oReq.onload = function () {
-      var blob = oReq.response; // Note: not oReq.responseText
-      if (blob) {
-        mp3.src = window.URL.createObjectURL(blob);
-        mp3.play();
-      }
-    };
-    oReq.send();
+    this.fire('show-audio-message-dialog', {
+      hass: this.hass,
+      message: event.model.item,
+    });
   }
 
-  _mp3Closed() {
-    this.$.mp3.pause();
-  }
-
-  openDeleteDialog() {
-    this.$.confirmdel.open();
-  }
-
-  deleteSelected() {
-    var msg = this.currentMessage;
-    this.hass.callApi('DELETE', 'mailbox/delete/' + msg.platform + '/' + msg.sha);
-    this.$.mp3dialog.close();
-  }
   getMessages() {
     const items = this.platforms.map(function (platform) {
       return this.hass.callApi('GET', 'mailbox/messages/' + platform).then(function (values) {
