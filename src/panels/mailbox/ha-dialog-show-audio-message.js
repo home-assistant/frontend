@@ -70,9 +70,9 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  showDialog({ hass, platform, message }) {
+  showDialog({ hass, message }) {
     this.hass = hass;
-    this._currentMessage = message
+    this._currentMessage = message;
     this.$.mp3.src = null;
     this._opened = true;
     this.$.transcribe.innerText = message.message;
@@ -99,14 +99,14 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
 
   openDeleteDialog() {
     if (confirm(this.localize('ui.panel.mailbox.delete_prompt'))) {
-        this.deleteSelected()
+      this.deleteSelected();
     }
   }
 
   deleteSelected() {
     var msg = this._currentMessage;
     this.hass.callApi('DELETE', 'mailbox/delete/' + msg.platform + '/' + msg.sha);
-    this._dialogDone()
+    this._dialogDone();
   }
 
   _dialogDone() {
@@ -122,7 +122,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     // Check against dialogClosedCallback to make sure we didn't change
     // programmatically
     if (!ev.detail.value) {
-      this._dialogDone()
+      this._dialogDone();
     }
   }
 }
