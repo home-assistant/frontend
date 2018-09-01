@@ -41,7 +41,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
         float: right;
       }
     </style>
-    <paper-dialog id="mp3dialog" opened="{{_opened}}" on-opened-changed="_openedChanged">
+    <paper-dialog id="mp3dialog" with-backdrop opened="{{_opened}}" on-opened-changed="_openedChanged">
       <h2>
         [[localize('ui.panel.mailbox.playback_title')]]
         <paper-icon-button
