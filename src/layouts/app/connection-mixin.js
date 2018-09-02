@@ -89,7 +89,7 @@ export default superClass =>
             throw err;
           }
         },
-        callApi: async (method, path, parameters) => {
+        callApi: async (method, path, parameters, responseType = '') => {
           const host = window.location.protocol + '//' + window.location.host;
 
           try {
@@ -104,7 +104,7 @@ export default superClass =>
             throw err;
           }
 
-          return await hassCallApi(host, auth, method, path, parameters);
+          return await hassCallApi(host, auth, method, path, parameters, responseType);
         },
         // For messages that do not get a response
         sendWS: (msg) => {

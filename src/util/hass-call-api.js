@@ -1,28 +1,31 @@
-export default function hassCallApi(host, auth, method, path, parameters) {
+export default function hassCallApi(host, auth, method, path, parameters, responseType = '') {
   var url = host + '/api/' + path;
 
   return new Promise(function (resolve, reject) {
     var req = new XMLHttpRequest();
+    req.responseType = responseType;
     req.open(method, url, true);
     req.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
 
     req.onload = function () {
-      let body = req.responseText;
-      const contentType = req.getResponseHeader('content-type');
+      var body = req.response
+      if (responseType == '' || responseType == 'text') {
+        body = req.responseText;
+        const contentType = req.getResponseHeader('content-type');
 
-      if (contentType && contentType.indexOf('application/json') !== -1) {
-        try {
-          body = JSON.parse(req.responseText);
-        } catch (err) {
-          reject({
-            error: 'Unable to parse JSON response',
-            status_code: req.status,
-            body: body,
-          });
-          return;
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+          try {
+            body = JSON.parse(req.responseText);
+          } catch (err) {
+            reject({
+              error: 'Unable to parse JSON response',
+              status_code: req.status,
+              body: body,
+            });
+            return;
+          }
         }
       }
-
       if (req.status > 199 && req.status < 300) {
         resolve(body);
       } else {

@@ -1,5 +1,6 @@
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-dialog/paper-dialog.js';
+import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
@@ -14,6 +15,9 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="ha-style-dialog">
+      .error {
+        color: red;
+      }
       @media all and (max-width: 500px) {
         paper-dialog {
           margin: 0;
@@ -37,20 +41,30 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
         color: var(--secondary-text-color);
       }
 
-      #mp3dialog paper-icon-button {
+      .icon {
         float: right;
       }
     </style>
     <paper-dialog id="mp3dialog" with-backdrop opened="{{_opened}}" on-opened-changed="_openedChanged">
       <h2>
         [[localize('ui.panel.mailbox.playback_title')]]
-        <paper-icon-button
-          on-click='openDeleteDialog'
-          icon='hass:delete'
-        ></paper-icon-button>
+        <div class='icon'>
+        <template is="dom-if" if="[[_loading]]">
+          <paper-spinner active></paper-spinner>
+        </template>
+        <template is="dom-if" if="[[!_loading]]">
+          <paper-icon-button
+            on-click='openDeleteDialog'
+            icon='hass:delete'
+          ></paper-icon-button>
+        </template>
+        </div>
       </h2>
       <div id="transcribe"></div>
       <div>
+        <template is="dom-if" if="[[_errorMsg]]">
+          <div class='error'>[[_errorMsg]]</div>
+        </template>
         <audio id="mp3" preload="none" controls> <source id="mp3src" src="" type="audio/mpeg" /></audio>
       </div>
     </paper-dialog>
@@ -63,6 +77,14 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
 
       _currentMessage: Object,
 
+      // Error message when can't talk to server etc
+      _errorMsg: String,
+
+      _loading: {
+        type: Boolean,
+        value: false,
+      },
+
       _opened: {
         type: Boolean,
         value: false,
@@ -72,6 +94,8 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
 
   showDialog({ hass, message }) {
     this.hass = hass;
+    this._loading = true;
+    this._errorMsg = null;
     this._currentMessage = message;
     this.$.mp3.src = null;
     this._opened = true;
@@ -79,22 +103,20 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     var platform = message.platform;
     var mp3 = this.$.mp3;
     var url = 'mailbox/media/' + platform + '/' + message.sha;
-    // Pass authorization in request:
-    //   https://stackoverflow.com/questions/46878787/
-    //           how-to-set-loaded-audio-to-a-html-audio-tag-controller
-    var oReq = new XMLHttpRequest();
-    var auth = this.hass.connection.options.auth;
-    oReq.open('GET', '/api/' + url, true);
-    oReq.responseType = 'blob';
-    oReq.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
-    oReq.onload = function () {
-      var blob = oReq.response; // Note: not oReq.responseText
-      if (blob) {
-        mp3.src = window.URL.createObjectURL(blob);
-        mp3.play();
-      }
-    };
-    oReq.send();
+    var apicall = this.hass.callApi('GET', url, '', 'blob');
+    apicall.then((blob) => {
+        this._loading = false;
+        if (blob) {
+          mp3.src = window.URL.createObjectURL(blob);
+          mp3.play();
+        } else {
+          this.errorMsg = "Error loading audio:  No audio data";
+        }
+      });
+    apicall.catch((err) => {
+      this._loading = false;
+      this._errorMsg = "Error loading audio: " + err.error
+    });
   }
 
   openDeleteDialog() {
@@ -113,6 +135,8 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     this.$.mp3.pause();
     this.setProperties({
       _currentMessage: null,
+      _errorMsg: null,
+      _loading: false,
       _opened: false,
     });
   }
