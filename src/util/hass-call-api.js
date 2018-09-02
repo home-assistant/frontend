@@ -8,8 +8,8 @@ export default function hassCallApi(host, auth, method, path, parameters, respon
     req.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
 
     req.onload = function () {
-      var body = req.response
-      if (responseType == '' || responseType == 'text') {
+      var body = req.response;
+      if (responseType === '' || responseType === 'text') {
         body = req.responseText;
         const contentType = req.getResponseHeader('content-type');
 
