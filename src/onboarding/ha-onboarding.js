@@ -42,6 +42,7 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
         value='{{_name}}'
         required
         auto-validate
+        autocapitalize='words'
         error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
         on-blur='_maybePopulateUsername'
       ></paper-input>
@@ -51,6 +52,7 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
         value='{{_username}}'
         required
         auto-validate
+        autocapitalize='none'
         error-message="[[localize('ui.panel.page-onboarding.user.required_field')]]"
       ></paper-input>
 
