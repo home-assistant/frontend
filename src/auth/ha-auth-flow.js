@@ -16,13 +16,16 @@ class HaAuthFlow extends LocalizeLiteMixin(PolymerElement) {
         margin: 24px 0 8px;
         text-align: center;
       }
+      .error {
+        color: red;
+      }
     </style>
     <form>
       <template is="dom-if" if="[[_equals(_state, &quot;loading&quot;)]]">
       [[localize('ui.panel.page-authorize.form.working')]]:
       </template>
       <template is="dom-if" if="[[_equals(_state, &quot;error&quot;)]]">
-      [[localize('ui.panel.page-authorize.form.unknown_error')]]:
+      <div class='error'>Error: [[_errorMsg]]</div>
       </template>
       <template is="dom-if" if="[[_equals(_state, &quot;step&quot;)]]">
         <template is="dom-if" if="[[_equals(_step.type, &quot;abort&quot;)]]">
@@ -74,7 +77,8 @@ class HaAuthFlow extends LocalizeLiteMixin(PolymerElement) {
       _step: {
         type: Object,
         notify: true,
-      }
+      },
+      _errorMsg: String,
     };
   }
 
@@ -107,12 +111,23 @@ class HaAuthFlow extends LocalizeLiteMixin(PolymerElement) {
         })
       });
 
-      const step = await response.json();
-      this._updateStep(step);
+      const data = await response.json();
+
+      if (response.ok) {
+        this._updateStep(data);
+      } else {
+        this.setProperties({
+          _state: 'error',
+          _errorMsg: data.message,
+        });
+      }
     } catch (err) {
       // eslint-disable-next-line
       console.error('Error starting auth flow', err);
-      this._state = 'error';
+      this.setProperties({
+        _state: 'error',
+        _errorMsg: this.localize('ui.panel.page-authorize.form.unknown_error'),
+      });
     }
   }
 

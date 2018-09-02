@@ -13,6 +13,10 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
+      ha-markdown {
+        display: block;
+        margin-bottom: 16px;
+      }
       ha-markdown a {
         color: var(--primary-color);
       }
