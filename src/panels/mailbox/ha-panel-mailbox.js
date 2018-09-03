@@ -176,11 +176,11 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
 
   getMessages() {
     const items = this.platforms.map(function (platform) {
-      return this.hass.callApi('GET', 'mailbox/messages/' + platform).then(function (values) {
-        var platformItems = [];
-        var arrayLength = values.length;
-        for (var i = 0; i < arrayLength; i++) {
-          var datetime = formatDateTime(new Date(values[i].info.origtime * 1000));
+      return this.hass.callApi('GET', `mailbox/messages/${platform}`).then(function (values) {
+        const platformItems = [];
+        const arrayLength = values.length;
+        for (let i = 0; i < arrayLength; i++) {
+          const datetime = formatDateTime(new Date(values[i].info.origtime * 1000));
           platformItems.push({
             timestamp: datetime,
             caller: values[i].info.callerid,
@@ -194,15 +194,9 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
       });
     }.bind(this));
     return Promise.all(items).then(function (platformItems) {
-      var arrayLength = items.length;
-      var final = [];
-      for (var i = 0; i < arrayLength; i++) {
-        final = final.concat(platformItems[i]);
-      }
-      final.sort(function (a, b) {
+      return [].concat.apply([], platformItems).sort(function (a, b) {
         return new Date(b.timestamp) - new Date(a.timestamp);
       });
-      return final;
     });
   }
 

@@ -1,5 +1,5 @@
 export default function hassCallApi(host, auth, method, path, parameters, responseType = '') {
-  var url = host + '/api/' + path;
+  const url = `${host}/api/${path}`;
 
   return new Promise(function (resolve, reject) {
     var req = new XMLHttpRequest();
