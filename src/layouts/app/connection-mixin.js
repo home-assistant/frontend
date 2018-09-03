@@ -89,7 +89,7 @@ export default superClass =>
             throw err;
           }
         },
-        callApi: async (method, path, parameters, responseType = '') => {
+        callApi: async (method, path, parameters, responseType) => {
           const host = window.location.protocol + '//' + window.location.host;
 
           try {
