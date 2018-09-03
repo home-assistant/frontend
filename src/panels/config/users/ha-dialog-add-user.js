@@ -37,6 +37,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
           value='{{_name}}'
           required
           auto-validate
+          autocapitalize='on'
           error-message='Required'
           on-blur='_maybePopulateUsername'
         ></paper-input>
@@ -46,6 +47,7 @@ class HaDialogAddUser extends LocalizeMixin(PolymerElement) {
           value='{{_username}}'
           required
           auto-validate
+          autocapitalize='none'
           error-message='Required'
         ></paper-input>
         <paper-input
