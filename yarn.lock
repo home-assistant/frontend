@@ -578,8 +578,8 @@
     to-fast-properties "^2.0.0"
 
 "@mdi/svg@^2.4.85":
-  version "2.4.85"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-2.4.85.tgz#b707508ff08597a63f3fa5f4a138be8c3d85ed0b"
+  version "2.7.94"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-2.7.94.tgz#5f2b03c363b10f7e4cf8c8a5fdc81cbd838bf44b"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
