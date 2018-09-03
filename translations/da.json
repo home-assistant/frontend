@@ -732,6 +732,9 @@
             "climate": {
                 "currently": "Lige nu",
                 "on_off": "On \/ off",
+                "target_temperature": "Ønsket temperatur",
+                "target_humidity": "Ønsket luftfugtighed",
+                "operation": "Drift",
                 "fan_mode": "Ventilator tilstand",
                 "away_mode": "Ude af huset-modus",
                 "aux_heat": "Støtte-varme"

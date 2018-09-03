@@ -626,7 +626,7 @@
                     "intro": "Zacznijmy od utworzenia konta użytkownika.",
                     "required_field": "Wymagane",
                     "data": {
-                        "name": "Nazwa",
+                        "name": "Imię",
                         "username": "Nazwa użytkownika",
                         "password": "Hasło"
                     },
