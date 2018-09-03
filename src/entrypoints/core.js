@@ -11,11 +11,18 @@ import { subscribePanels } from '../data/ws-panels.js';
 import { subscribeThemes } from '../data/ws-themes.js';
 import { subscribeUser } from '../data/ws-user.js';
 
-window.hassAuth = getAuth({
-  hassUrl: `${location.protocol}//${location.host}`,
-  saveTokens,
-  loadTokens: () => Promise.resolve(loadTokens()),
-});
+const hassUrl = `${location.protocol}//${location.host}`;
+
+if (location.search.includes('external_auth=1')) {
+  window.hassAuth = import('../common/auth/external_auth.js')
+    .then(mod => new mod.default(hassUrl));
+} else {
+  window.hassAuth = getAuth({
+    hassUrl,
+    saveTokens,
+    loadTokens: () => Promise.resolve(loadTokens()),
+  });
+}
 
 window.hassConnection = window.hassAuth.then((auth) => {
   if (location.search.includes('auth_callback=1')) {
