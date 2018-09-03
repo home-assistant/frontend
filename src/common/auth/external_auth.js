@@ -5,6 +5,10 @@ import { Auth } from 'home-assistant-js-websocket';
 
 const CALLBACK_METHOD = 'externalAuthSetToken';
 
+if (!window.externalApp && !window.webkit) {
+  throw new Error('External auth requires either externalApp or webkit defined on Window object.');
+}
+
 export default class ExternalAuth extends Auth {
   constructor(hassUrl) {
     super();
