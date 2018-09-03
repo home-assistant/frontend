@@ -546,6 +546,57 @@
                     "link_promo": "Научете повече за темите",
                     "dropdown_label": "Тема"
                 }
+            },
+            "page-authorize": {
+                "form": {
+                    "working": "Моля, изчакайте",
+                    "unknown_error": "Ся си еба майката",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Потребителско име",
+                                        "password": "Парола"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Невалидно потребителско име или парола"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Потребител"
+                                    },
+                                    "description": "Моля, изберете потребител, като който искате да влезете:"
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "error": {
+                                "invalid_code": "Невалиден код за аутентикация"
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "Нека да започнете, като създадете потребителски акаунт.",
+                    "required_field": "Задължително",
+                    "data": {
+                        "name": "Име",
+                        "username": "Потребителско име",
+                        "password": "Парола"
+                    },
+                    "create_account": "Създай акаунт",
+                    "error": {
+                        "required_fields": "Попълнете всички задължителни полета"
+                    }
+                }
             }
         },
         "sidebar": {

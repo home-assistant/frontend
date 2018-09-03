@@ -548,24 +548,87 @@
                 }
             },
             "page-authorize": {
+                "initializing": "Initierar",
+                "authorizing_client": "Du håller på att ge {clientid} behörighet till din Home Assistant.",
+                "logging_in_with": "Loggar in med **{authProviderName}**.",
+                "pick_auth_provider": "Eller logga in med",
+                "abort_intro": "Login avbruten",
                 "form": {
+                    "working": "Vänligen vänta",
+                    "unknown_error": "Något gick fel",
                     "providers": {
-                        "legacy_api_password": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Användarnamn",
+                                        "password": "Lösenord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Tvåfaktorsautentiseringskod"
+                                    }
+                                }
+                            },
                             "error": {
-                                "invalid_code": "Felaktig autentierings kod"
+                                "invalid_auth": "Felaktigt användarnamn eller lösenord",
+                                "invalid_code": "Ogiltig autentiseringskod"
                             },
                             "abort": {
+                                "login_expired": "Sessionen avslutades. Logga in igen."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-lösenord"
+                                    },
+                                    "description": "Lägg in ett API-lösenord i din http konfig:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Tvåfaktorsautentiseringskod:"
+                                    },
+                                    "description": "Öppna **(mfa_module_name)** på din enhet för att se din tvåfaktorsautentiseringskod och verifiera din identitet:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ogiltigt API-lösenord",
+                                "invalid_code": "Felaktig autentiserings kod"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du har inget API lösenord konfigurerat",
                                 "login_expired": "Sessionen avslutades, logga in igen."
                             }
                         },
                         "trusted_networks": {
                             "step": {
                                 "init": {
+                                    "data": {
+                                        "user": "Användare"
+                                    },
                                     "description": "Välj den användare du vill logga in som:"
                                 }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Din dator är inte vitlistad"
                             }
                         }
                     }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "Låt oss börja med att skapa ett användarkonto",
+                    "required_field": "Krävs",
+                    "data": {
+                        "name": "Namn",
+                        "username": "Användarnamn",
+                        "password": "Lösenord"
+                    },
+                    "create_account": "Skapa konto"
                 }
             }
         },
@@ -731,6 +794,11 @@
             "ask": "Vill du spara den här inloggningen?",
             "decline": "Nej tack",
             "confirm": "Spara inloggning"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klicka på knappen för att konfigurera {entity}",
+            "empty": "Ingra notiser",
+            "title": "Notiser"
         }
     },
     "domain": {

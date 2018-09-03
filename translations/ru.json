@@ -531,7 +531,7 @@
                     "header": "Push-уведомления",
                     "description": "Отправлять уведомления на это устройство",
                     "error_load_platform": "Настроить notify.html5.",
-                    "error_use_https": "Требуется включить SSL для веб-интерфейса.",
+                    "error_use_https": "Требуется SSL для веб-интерфейса.",
                     "push_notifications": "Push-уведомления",
                     "link_promo": "Узнать больше"
                 },
