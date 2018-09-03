@@ -154,7 +154,7 @@
                             "introduction": "Izmaiņas konfigurācijā var būt nogurdinošs process. Mēs zinām. Šai sadaļai vajadzētu padarīt dzīvi mazliet vieglāku.",
                             "validation": {
                                 "heading": "Konfigurācijas pārbaude",
-                                "introduction": "Veiciet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta",
+                                "introduction": "Veiciet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta.",
                                 "check_config": "Pārbaudīt",
                                 "valid": "Konfigurācija korekta!",
                                 "invalid": "Konfigurācija kļūdaina"
@@ -190,6 +190,26 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave"
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Pašpiegādes paziņojumi",
+                    "description": "Sūtīt paziņojumus uz šo ierīci.",
+                    "error_load_platform": "Konfigurēt notify.html5.",
+                    "push_notifications": "Pašpiegādes paziņojumi",
+                    "link_promo": "Uzziniet vairāk"
+                },
+                "language": {
+                    "header": "Valoda",
+                    "link_promo": "Palīdziet tulkot",
+                    "dropdown_label": "Valoda"
+                },
+                "themes": {
+                    "header": "Motīvs",
+                    "error_no_theme": "Nav pieejams neviens motīvs",
+                    "link_promo": "Uzziniet par tēmām",
+                    "dropdown_label": "Motīvs"
                 }
             }
         },

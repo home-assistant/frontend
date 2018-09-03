@@ -525,6 +525,46 @@
                         "delete_user": "Ștergeți utilizatorul"
                     }
                 }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "homeassistant": {
+                            "error": {
+                                "invalid_code": "Codul 'Two-factor Authentication' invalid"
+                            },
+                            "abort": {
+                                "login_expired": "Sesiunea a expirat, va rugam logati-va din nou."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "description": "Introduceti parola API in http config:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codul 'Two-factor Authentication'"
+                                    },
+                                    "description": "Deschideti **{mfa_module_name}** pe dispozitivul d-voastra pentru a vedea codul de 'two-factor authentication' si a va verifica indentitatea:"
+                                }
+                            },
+                            "error": {
+                                "invalid_code": "Cod de autentificare invalid"
+                            },
+                            "abort": {
+                                "login_expired": "Sesiune expirata, e nevoie sa va logati din nou."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "Selectati utilizatorul cu care doriti sa va logati:"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
