@@ -257,7 +257,7 @@
         "vacuum": {
             "cleaning": "청소중",
             "docked": "충전중",
-            "error": "에러",
+            "error": "작동 에러",
             "idle": "대기중",
             "off": "꺼짐",
             "on": "켜짐",
@@ -531,7 +531,7 @@
                     "header": "푸시 알림",
                     "description": "이 기기에 알림 보내기",
                     "error_load_platform": "notify.html5 를 구성해주세요.",
-                    "error_use_https": "프론트 엔드에는 SSL 사용이 필요합니다.",
+                    "error_use_https": "SSL 을 통한 보안연결된 환경이 필요합니다.",
                     "push_notifications": "푸시 알림",
                     "link_promo": "더 알아보기"
                 },

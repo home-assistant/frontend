@@ -283,7 +283,7 @@
             "armed_custom_bypass": "Éles"
         },
         "device_tracker": {
-            "home": "0tthon",
+            "home": "Otthon",
             "not_home": "Távol"
         }
     },
@@ -545,6 +545,95 @@
                     "error_no_theme": "Nincsenek elérhető témák.",
                     "link_promo": "Tudj meg többet a témákról",
                     "dropdown_label": "Téma"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Inicializálás",
+                "authorizing_client": "Éppen a {clientId} számára készülsz hozzáférést biztosítani a Home Assistant példányodhoz.",
+                "logging_in_with": "Bejelentkezés **{authProviderName}** használatával.",
+                "pick_auth_provider": "Vagy válassz a következő bejelentkezési módok közül:",
+                "abort_intro": "Bejelentkezés megszakítva",
+                "form": {
+                    "working": "Kérlek várj",
+                    "unknown_error": "Valami hiba történt",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Felhasználónév",
+                                        "password": "Jelszó"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kétfaktoros Hitelesítési Kód"
+                                    },
+                                    "description": "Nyisd meg a(z) **{mfa_module_name}** applikációt az eszközödön, hogy megtekintsd a kétfaktoros hitelesítési kódodat a személyazonosságod ellenőrzéséhez."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Érvénytelen felhasználónév vagy jelszó",
+                                "invalid_code": "Érvénytelen hitelesítési kód"
+                            },
+                            "abort": {
+                                "login_expired": "A munkamenet lejárt, jelentkezz be újra."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Jelszó"
+                                    },
+                                    "description": "Kérlek, add meg az API jelszót a http konfigurációban:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kétfaktoros Hitelesítési Kód"
+                                    },
+                                    "description": "Nyisd meg a(z) **{mfa_module_name}** applikációt az eszközödön, hogy megtekintsd a kétfaktoros hitelesítési kódodat a személyazonosságod ellenőrzéséhez."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Érvénytelen API jelszó",
+                                "invalid_code": "Érvénytelen hitelesítési kód"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Nincs megadva API jelszó a konfigurációban.",
+                                "login_expired": "A munkamenet lejárt, jelentkezz be újra."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Felhasználó"
+                                    },
+                                    "description": "Kérlek, válassz egy felhasználót a bejelentkezéshez:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "A számítógéped nem engedélyezett."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Készen állsz arra, hogy felébreszd az otthonod, visszaszerezed a magánéleted és csatlakozz egy világhálós közösséghez?",
+                "user": {
+                    "intro": "Kezdjük a felhasználói fiók létrehozásával.",
+                    "required_field": "Szükséges",
+                    "data": {
+                        "name": "Név",
+                        "username": "Felhasználónév",
+                        "password": "Jelszó"
+                    },
+                    "create_account": "Fiók Létrehozása",
+                    "error": {
+                        "required_fields": "Töltsd ki az összes szükséges mezőt"
+                    }
                 }
             }
         },

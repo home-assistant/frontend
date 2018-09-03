@@ -312,11 +312,11 @@
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
                 "core": {
                     "caption": "Generelt",
-                    "description": "Validere konfigurasjonsfilen din og kontroller serveren",
+                    "description": "Valider konfigurasjonsfilen din og kontroller serveren",
                     "section": {
                         "core": {
                             "header": "Konfigurasjon og serverkontroll",
-                            "introduction": "Endringer i konfigurasjonen kan være en slitsom prosess, vi vet det. Denne delen vil forsøke å gjøre livet ditt litt lettere.",
+                            "introduction": "Endring av konfigurasjonen kan være en slitsom prosess, det vet vi. Denne delen vil forsøke å gjøre livet ditt litt lettere.",
                             "validation": {
                                 "heading": "Konfigurasjonsvalidering",
                                 "introduction": "Sjekk konfigurasjon din hvis du nylig har gjort noen endringer og ønsker å være sikker på at den er gyldig ved å kjøre en valideringstest",
@@ -334,7 +334,7 @@
                             },
                             "server_management": {
                                 "heading": "Serveradministrasjon",
-                                "introduction": "Kontroller Home Assistant fra Home Assistant.",
+                                "introduction": "Kontroller din Home Assistant server...fra Home Assistant.",
                                 "restart": "Start på nytt",
                                 "stop": "Stopp"
                             }
@@ -359,7 +359,7 @@
                         "introduction": "Bruk automatiseringer for å få liv i hjemmet ditt",
                         "default_name": "Ny automatisering",
                         "save": "Lagre",
-                        "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil forlate?",
+                        "unsaved_confirm": "Du har endringer som ikke er lagret. Er du sikker på at du vil forlate?",
                         "alias": "Navn",
                         "triggers": {
                             "header": "Utløsere",
@@ -567,7 +567,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "To-faktor Autentisering Kode"
+                                        "code": "To-faktor autentiseringskode"
                                     },
                                     "description": "Åpne ** {mfa_module_name} ** på enheten din for å se din tofaktors autentiseringskode og bekrefte identiteten din:"
                                 }
@@ -577,7 +577,7 @@
                                 "invalid_code": "Ugyldig autentiseringskode"
                             },
                             "abort": {
-                                "login_expired": "Sessionen utløpt, vennligst logg inn igjen."
+                                "login_expired": "Økten er utløpt, vennligst logg inn på nytt"
                             }
                         },
                         "legacy_api_password": {
@@ -590,7 +590,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "To-faktor Autentiseringskode"
+                                        "code": "To-faktor autentiseringskode"
                                     },
                                     "description": "Åpne **{mfa_module_name}** på din enhet for å vise to-faktor autentiseringkode og vertifiser din identitet."
                                 }
@@ -600,7 +600,7 @@
                                 "invalid_code": "Ugyldig autentiseringskode"
                             },
                             "abort": {
-                                "no_api_password_set": "Du har ikke et API-passord konfigurert.",
+                                "no_api_password_set": "Du har ikke konfigurert et API-passord.",
                                 "login_expired": "Sesjonen har utløpt, vennligst logg inn igjen: "
                             }
                         },
@@ -778,7 +778,7 @@
             },
             "history_charts": {
                 "loading_history": "Laster statushistorikk...",
-                "no_history_found": "Ingen status history funnet."
+                "no_history_found": "Ingen statushistorikk funnet."
             }
         },
         "notification_toast": {
@@ -840,7 +840,7 @@
         "sun": "Sol",
         "switch": "Bryter",
         "updater": "Oppdateringer",
-        "weblink": "Nettlink",
+        "weblink": "Lenke",
         "zwave": "Z-Wave",
         "vacuum": "Støvsuger"
     },
