@@ -11,6 +11,11 @@ export default superClass => class extends superClass {
     // HACK :( We don't have a way yet to trigger an update of `subscribeUser`
     this.addEventListener('hass-refresh-current-user', () =>
       getUser(this.hass.connection).then(user => this._updateHass({ user })));
+  }
+
+  hassConnected() {
+    super.hassConnected();
+    subscribeUser(this.hass.connection, user => this._updateHass({ user }));
 
     afterNextRender(null, () => {
       if (askWrite()) {
@@ -20,11 +25,6 @@ export default superClass => class extends superClass {
         import(/* webpackChunkName: "ha-store-auth-card" */ '../../dialogs/ha-store-auth-card.js');
       }
     });
-  }
-
-  hassConnected() {
-    super.hassConnected();
-    subscribeUser(this.hass.connection, user => this._updateHass({ user }));
   }
 
   _handleLogout() {
