@@ -97,9 +97,7 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
               With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.
               <ul>
                 <li>
-                  <a href="https://alexa.amazon.com/spa/index.html#skills/dp/B0772J1QKB/?ref=skill_dsk_skb_sr_2" target="_blank">
-                    Activate the Home Assistant skill for Alexa
-                  </a>
+                  To activate, search in the Alexa app for the Home Assistant Smart Home skill.
                 </li>
                 <li>
                   <a href="https://www.home-assistant.io/cloud/alexa/" target="_blank">
