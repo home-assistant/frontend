@@ -2,13 +2,13 @@ export default function hassCallApi(host, auth, method, path, parameters, respon
   const url = `${host}/api/${path}`;
 
   return new Promise(function (resolve, reject) {
-    var req = new XMLHttpRequest();
+    const req = new XMLHttpRequest();
     req.responseType = responseType;
     req.open(method, url, true);
     req.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
 
     req.onload = function () {
-      var body = req.response;
+      let body = req.response;
       if (responseType === '' || responseType === 'text') {
         const contentType = req.getResponseHeader('content-type');
 
