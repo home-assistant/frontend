@@ -106,12 +106,8 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     this.hass.callApi('GET', url, '', 'blob')
       .then((blob) => {
         this._loading = false;
-        if (blob) {
-          mp3.src = window.URL.createObjectURL(blob);
-          mp3.play();
-        } else {
-          this._errorMsg = 'Error loading audio:  No audio data';
-        }
+        mp3.src = window.URL.createObjectURL(blob);
+        mp3.play();
       })
       .catch((err) => {
         this._loading = false;
