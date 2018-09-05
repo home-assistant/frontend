@@ -6,6 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const zopfli = require('@gfx/zopfli');
 const translationMetadata = require('./build-translations/translationMetadata.json');
 
 const version = fs.readFileSync('setup.py', 'utf8').match(/\d{8}[^']*/);
@@ -138,7 +139,10 @@ function createConfig(isProdBuild, latestBuild) {
           /\.LICENSE$/,
           /\.py$/,
           /\.txt$/,
-        ]
+       ],
+       algorithm(input, compressionOptions, callback) {
+         return zopfli.gzip(input, compressionOptions, callback);
+       },
       }),
       new WorkboxPlugin.InjectManifest({
         swSrc: './src/entrypoints/service-worker-bootstrap.js',
