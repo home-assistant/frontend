@@ -9,7 +9,7 @@ export default function hassCallApi(host, auth, method, path, parameters, respon
 
     req.onload = function () {
       let body = req.response;
-      if (responseType === '' || responseType === 'text') {
+      if (!responseType) {
         const contentType = req.getResponseHeader('content-type');
 
         if (contentType && contentType.indexOf('application/json') !== -1) {

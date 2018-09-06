@@ -194,7 +194,7 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
       });
     }.bind(this));
     return Promise.all(items).then(function (platformItems) {
-      return [].concat.apply([], platformItems).sort(function (a, b) {
+      return [].concat(...platformItems).sort(function (a, b) {
         return new Date(b.timestamp) - new Date(a.timestamp);
       });
     });
