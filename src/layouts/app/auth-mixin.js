@@ -27,9 +27,15 @@ export default superClass => class extends superClass {
     });
   }
 
-  _handleLogout() {
-    this.hass.connection.close();
-    clearState();
-    document.location.href = '/';
+  async _handleLogout() {
+    try {
+      await this.hass.auth.revoke();
+      this.hass.connection.close();
+      clearState();
+      document.location.href = '/';
+    } catch (err) {
+      console.error(err);
+      alert('Log out failed');
+    }
   }
 };

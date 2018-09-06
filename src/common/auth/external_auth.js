@@ -3,7 +3,8 @@
  */
 import { Auth } from 'home-assistant-js-websocket';
 
-const CALLBACK_METHOD = 'externalAuthSetToken';
+const CALLBACK_SET_TOKEN = 'externalAuthSetToken';
+const CALLBACK_REVOKE_TOKEN = 'externalAuthRevokeToken';
 
 if (!window.externalApp && !window.webkit) {
   throw new Error('External auth requires either externalApp or webkit defined on Window object.');
@@ -22,7 +23,7 @@ export default class ExternalAuth extends Auth {
   }
 
   async refreshAccessToken() {
-    const responseProm = new Promise((resolve) => { window[CALLBACK_METHOD] = resolve; });
+    const responseProm = new Promise((resolve) => { window[CALLBACK_SET_TOKEN] = resolve; });
 
     // Allow promise to set resolve on window object.
     await 0;
@@ -44,5 +45,22 @@ export default class ExternalAuth extends Auth {
 
     this.data.access_token = tokens.access_token;
     this.data.expires = (tokens.expires_in * 1000) + Date.now();
+  }
+
+  async revoke() {
+    const responseProm = new Promise((resolve) => { window[CALLBACK_REVOKE_TOKEN] = resolve; });
+
+    // Allow promise to set resolve on window object.
+    await 0;
+
+    const callbackPayload = { callback: CALLBACK_REVOKE_TOKEN };
+
+    if (window.externalApp) {
+      window.externalApp.revokeExternalAuth(callbackPayload);
+    } else {
+      window.webkit.messageHandlers.revokeExternalAuth.postMessage(callbackPayload);
+    }
+
+    await responseProm;
   }
 }
