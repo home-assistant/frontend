@@ -34,6 +34,7 @@ export default superClass => class extends superClass {
       clearState();
       document.location.href = '/';
     } catch (err) {
+      // eslint-disable-next-line
       console.error(err);
       alert('Log out failed');
     }
