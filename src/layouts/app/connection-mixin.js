@@ -25,7 +25,8 @@ export default superClass =>
     }
 
     async _handleConnProm() {
-      let auth, conn;
+      let auth;
+      let conn;
       try {
         const result = await window.hassConnection;
         auth = result.auth;

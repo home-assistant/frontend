@@ -45,7 +45,7 @@ const connProm = async (auth) => {
     const conn = await createConnection({ auth });
     return { auth, conn };
   }
-}
+};
 
 window.hassConnection = authProm().then(connProm);
 

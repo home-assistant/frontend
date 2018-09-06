@@ -3,8 +3,6 @@ import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import { ERR_CANNOT_CONNECT, ERR_INVALID_AUTH } from 'home-assistant-js-websocket';
-
 
 import LocalizeMixin from '../mixins/localize-mixin.js';
 import EventsMixin from '../mixins/events-mixin.js';
