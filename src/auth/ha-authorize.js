@@ -92,6 +92,14 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
     // Fetch auth providers
     try {
       const response = await window.providersPromise;
+      const result = await response.json();
+
+      // Forward to main screen which will redirect to right onboarding page.
+      if (response.status === 400 && result.code === 'onboarding_required') {
+        location.href = '/';
+        return;
+      }
+
       const authProviders = await response.json();
 
       if (authProviders.length === 0) {
@@ -104,6 +112,9 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
         _authProvider: authProviders[0],
       });
     } catch (err) {
+      if (response && response.status) {
+
+      }
       // eslint-disable-next-line
       console.error('Error loading auth providers', err);
       this._state = 'error-loading';
