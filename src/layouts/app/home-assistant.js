@@ -51,7 +51,7 @@ class HomeAssistant extends ext(PolymerElement, [
     </template>
 
     <template is="dom-if" if="[[!showMain]]" restamp>
-      <ha-init-page></ha-init-page>
+      <ha-init-page error='[[_error]]'></ha-init-page>
     </template>
 `;
   }
@@ -73,6 +73,10 @@ class HomeAssistant extends ext(PolymerElement, [
         computed: 'computePanelUrl(routeData)',
         observer: 'panelUrlChanged',
       },
+      _error: {
+        type: Boolean,
+        value: false,
+      }
     };
   }
 

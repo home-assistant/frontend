@@ -25,7 +25,15 @@ export default superClass =>
     }
 
     async _handleConnProm() {
-      const [auth, conn] = await Promise.all([window.hassAuth, window.hassConnection]);
+      let auth, conn;
+      try {
+        const result = await window.hassConnection;
+        auth = result.auth;
+        conn = result.conn;
+      } catch (err) {
+        this._error = true;
+        return;
+      }
 
       this.hass = Object.assign({
         auth,
