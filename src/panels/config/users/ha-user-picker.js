@@ -50,7 +50,12 @@ class HaUserPicker extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElemen
           <paper-item>
             <paper-item-body two-line>
               <div>[[_withDefault(user.name, 'Unnamed User')]]</div>
-              <div secondary="">[[user.id]]</div>
+              <div secondary="">
+                [[user.id]]
+                <template is='dom-if' if='[[user.system_generated]]'>
+                - System Generated
+                </template>
+              </div>
             </paper-item-body>
             <iron-icon icon="hass:chevron-right"></iron-icon>
           </paper-item>
