@@ -112,9 +112,6 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
         _authProvider: authProviders[0],
       });
     } catch (err) {
-      if (response && response.status) {
-
-      }
       // eslint-disable-next-line
       console.error('Error loading auth providers', err);
       this._state = 'error-loading';
