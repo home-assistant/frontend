@@ -28,7 +28,7 @@ export default class ExternalAuth extends Auth {
     // Allow promise to set resolve on window object.
     await 0;
 
-    const callbackPayload = { callback: CALLBACK_METHOD };
+    const callbackPayload = { callback: CALLBACK_SET_TOKEN };
 
     if (window.externalApp) {
       window.externalApp.getExternalAuth(callbackPayload);
