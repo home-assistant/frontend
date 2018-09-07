@@ -22,16 +22,18 @@ export default class ExternalAuth extends Auth {
   }
 
   async refreshAccessToken() {
-    const meth = window.externalApp ?
-      window.externalApp.getExternalAuth :
-      window.webkit.messageHandlers.getExternalAuth.postMessage;
-
     const responseProm = new Promise((resolve) => { window[CALLBACK_METHOD] = resolve; });
 
     // Allow promise to set resolve on window object.
     await 0;
 
-    meth({ callback: CALLBACK_METHOD });
+    const callbackPayload = { callback: CALLBACK_METHOD };
+
+    if (window.externalApp) {
+      window.externalApp.getExternalAuth(callbackPayload);
+    } else {
+      window.webkit.messageHandlers.getExternalAuth.postMessage(callbackPayload);
+    }
 
     // Response we expect back:
     // {
