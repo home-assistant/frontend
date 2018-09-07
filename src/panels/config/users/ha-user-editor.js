@@ -29,9 +29,6 @@ class HaUserEditor extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElemen
     paper-card:last-child {
       margin-bottom: 16px;
     }
-    paper-button {
-      display: block;
-    }
   </style>
 
   <hass-subpage header="View user">
@@ -57,9 +54,12 @@ class HaUserEditor extends EventsMixin(NavigateMixin(LocalizeMixin(PolymerElemen
     </paper-card>
     <paper-card>
       <div class='card-actions'>
-        <paper-button on-click='_deleteUser'>
+        <paper-button on-click='_deleteUser' disabled='[[user.system_generated]]'>
           [[localize('ui.panel.config.users.editor.delete_user')]]
         </paper-button>
+        <template is='dom-if' if='[[user.system_generated]]'>
+          Unable to remove system generated users.
+        </template>
       </div>
     </paper-card>
   </hass-subpage>
