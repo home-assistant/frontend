@@ -4,6 +4,7 @@ import {
   subscribeConfig,
   subscribeEntities,
   subscribeServices,
+  ERR_INVALID_AUTH,
 } from 'home-assistant-js-websocket';
 
 import { loadTokens, saveTokens } from '../common/auth/token_storage.js';
@@ -12,27 +13,44 @@ import { subscribeThemes } from '../data/ws-themes.js';
 import { subscribeUser } from '../data/ws-user.js';
 
 const hassUrl = `${location.protocol}//${location.host}`;
+const isExternal = location.search.includes('external_auth=1');
 
-if (location.search.includes('external_auth=1')) {
-  window.hassAuth = import('../common/auth/external_auth.js')
-    .then(mod => new mod.default(hassUrl));
-} else {
-  window.hassAuth = getAuth({
+const authProm = isExternal ?
+  () => import('../common/auth/external_auth.js')
+    .then(mod => new mod.default(hassUrl)) :
+  () => getAuth({
     hassUrl,
     saveTokens,
     loadTokens: () => Promise.resolve(loadTokens()),
   });
-}
 
-window.hassConnection = window.hassAuth.then((auth) => {
-  if (location.search.includes('auth_callback=1')) {
-    history.replaceState(null, null, location.pathname);
+const connProm = async (auth) => {
+  try {
+    const conn = await createConnection({ auth });
+
+    // Clear url if we have been able to establish a connection
+    if (location.search.includes('auth_callback=1')) {
+      history.replaceState(null, null, location.pathname);
+    }
+
+    return { auth, conn };
+  } catch (err) {
+    if (err !== ERR_INVALID_AUTH) {
+      throw err;
+    }
+    // We can get invalid auth if auth tokens were stored that are no longer valid
+    // Clear stored tokens.
+    if (!isExternal) saveTokens(null);
+    auth = await authProm();
+    const conn = await createConnection({ auth });
+    return { auth, conn };
   }
-  return createConnection({ auth });
-});
+};
+
+window.hassConnection = authProm().then(connProm);
 
 // Start fetching some of the data that we will need.
-window.hassConnection.then((conn) => {
+window.hassConnection.then(({ conn }) => {
   const noop = () => {};
   subscribeEntities(conn, noop);
   subscribeConfig(conn, noop);
