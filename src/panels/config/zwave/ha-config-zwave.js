@@ -21,7 +21,6 @@ import './zwave-groups.js';
 import './zwave-log.js';
 import './zwave-network.js';
 import './zwave-node-config.js';
-import './zwave-node-information.js';
 import './zwave-usercodes.js';
 import './zwave-values.js';
 import './zwave-node-protection.js';
@@ -203,6 +202,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
               service="test_node"
               hidden$="[[!showHelp]]">
             </ha-service-description>
+            <paper-button on-click="nodeMoreInfo">Node Information</paper-button>
           </div>
 
            <div class="device-picker">
@@ -269,12 +269,6 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
         </paper-card>
 
         <template is="dom-if" if="[[computeIsNodeSelected(selectedNode)]]">
-          <!--Node info card-->
-          <zwave-node-information
-            id="zwave-node-information"
-            nodes="[[nodes]]"
-            selected-node="[[selectedNode]]"
-          ></zwave-node-information>
 
           <!--Value card-->
           <zwave-values
@@ -561,6 +555,11 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
       value_id: this.entities[this.selectedEntity].attributes.value_id,
       poll_intensity: parseInt(entityPollingIntensity),
     };
+  }
+
+  nodeMoreInfo(ev) {
+    ev.preventDefault();
+    this.fire('hass-more-info', { entityId: this.nodes[this.selectedNode].entity_id });
   }
 
   _saveEntity() {
