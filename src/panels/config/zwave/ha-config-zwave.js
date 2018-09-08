@@ -209,7 +209,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
             <paper-dropdown-menu label="Entities of this node" dynamic-align="" class="flex">
               <paper-listbox slot="dropdown-content" selected="{{selectedEntity}}">
                 <template is="dom-repeat" items="[[entities]]" as="state">
-                  <paper-item>[[computeSelectCaptionEnt(state)]]</paper-item>
+                  <paper-item>[[state.entity_id]]</paper-item>
                 </template>
               </paper-listbox>
             </paper-dropdown-menu>
