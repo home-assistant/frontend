@@ -26,6 +26,10 @@ class OzwLog extends PolymerElement {
         padding-right: 24px;
         padding-bottom: 24px;
       }
+
+      .help-text {
+        padding: 5px 24px;
+      }
     </style>
     <ha-config-section is-wide="[[isWide]]">
       <span slot="header">OZW Log</span>
