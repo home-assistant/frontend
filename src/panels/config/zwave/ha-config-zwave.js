@@ -34,7 +34,7 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 /*
  * @appliesMixin LocalizeMixin
  */
-class HaConfigZwave extends LocalizeMixin(PolymerElement) {
+class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style ha-form-style">
@@ -558,7 +558,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  _nodeMoreInfo(ev) {
+  _nodeMoreInfo() {
     this.fire('hass-more-info', { entityId: this.nodes[this.selectedNode].entity_id });
   }
 
