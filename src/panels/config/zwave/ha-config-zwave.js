@@ -33,6 +33,7 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
+ * @appliesMixin EventsMixin
  */
 class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
