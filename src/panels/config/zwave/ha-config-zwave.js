@@ -28,6 +28,7 @@ import './zwave-node-protection.js';
 import sortByName from '../../../common/entity/states_sort_by_name.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import computeStateDomain from '../../../common/entity/compute_state_domain.js';
+import EventsMixin from '../../../mixins/events-mixin.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
 /*
@@ -202,7 +203,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
               service="test_node"
               hidden$="[[!showHelp]]">
             </ha-service-description>
-            <paper-button on-click="nodeMoreInfo">Node Information</paper-button>
+            <paper-button on-click="_nodeMoreInfo">Node Information</paper-button>
           </div>
 
            <div class="device-picker">
@@ -557,8 +558,7 @@ class HaConfigZwave extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  nodeMoreInfo(ev) {
-    ev.preventDefault();
+  _nodeMoreInfo(ev) {
     this.fire('hass-more-info', { entityId: this.nodes[this.selectedNode].entity_id });
   }
 
