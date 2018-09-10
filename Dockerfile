@@ -8,7 +8,7 @@ RUN apk update \
   && apk add make g++ curl bash binutils tar git python2 python3 \
   && rm -rf /var/cache/apk/* \
   && /bin/bash \
-  && touch ~/.bashrc 
+  && touch ~/.bashrc
 
 ## Install yarn
 RUN curl -o- -L https://yarnpkg.com/install.sh | bash
@@ -18,13 +18,9 @@ RUN mkdir -p /frontend
 
 WORKDIR /frontend
 
-COPY package.json ./
+COPY package.json yarn.lock ./
 
-RUN yarn install
-
-COPY bower.json ./
-
-RUN node_modules/.bin/bower install --allow-root
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
