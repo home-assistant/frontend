@@ -26,20 +26,24 @@ class OzwLog extends PolymerElement {
         padding-right: 24px;
         padding-bottom: 24px;
       }
+
+      .help-text {
+        padding: 5px 24px;
+      }
     </style>
     <ha-config-section is-wide="[[isWide]]">
       <span slot="header">OZW Log</span>
       <paper-card>
-      <div class="device-picker">
-        <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
-        </paper-input>
-      </div>
-      <div class="card-actions">
-        <paper-button raised="" on-click="refreshLog">Refresh</paper-button>
-      </div>
-      <div class="help-text">
-             <pre>[[ozwLogs]]</pre>
-      </div>
+        <div class="device-picker">
+          <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
+          </paper-input>
+        </div>
+        <div class="card-actions">
+          <paper-button raised="" on-click="refreshLog">Refresh</paper-button>
+        </div>
+        <div class="help-text">
+          <pre>[[ozwLogs]]</pre>
+        </div>
       </paper-card>
     </ha-config-section>
 `;
