@@ -27,23 +27,17 @@ class OzwLog extends PolymerElement {
         padding-bottom: 24px;
       }
 
-      .help-text {
-        padding: 5px 24px;
-      }
     </style>
     <ha-config-section is-wide="[[isWide]]">
       <span slot="header">OZW Log</span>
       <paper-card>
         <div class="device-picker">
-          <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
+          <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{_numLogLines}}">
           </paper-input>
         </div>
         <div class="card-actions">
-          <paper-button raised="" on-click="refreshLog">Refresh</paper-button>
-        </div>
-        <div class="help-text">
-          <pre>[[ozwLogs]]</pre>
-        </div>
+          <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>   
+          <paper-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</paper-button>
       </paper-card>
     </ha-config-section>
 `;
@@ -58,25 +52,53 @@ class OzwLog extends PolymerElement {
         value: false,
       },
 
-      ozwLogs: {
-        type: String,
-        value: 'Refresh to pull log'
+      _ozwLogs: String,
+
+      _completeLog: {
+        type: Boolean,
+        value: true
       },
 
-      numLogLines: {
+      _numLogLines: {
         type: Number,
-        value: 0
+        value: 0,
+        observer: '_isCompleteLog'
       },
+
+      _intervalId: String,
     };
   }
 
-  refreshLog() {
-    this.ozwLogs = 'Loading ozw log...';
-    this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this.numLogLines)
-      .then((info) => {
-        this.ozwLogs = info;
-      });
+  async _tailLog() {
+    const ozwWindow = await this._openLogWindow();
+    this.setProperties({
+      _intervalId: setInterval(() => { this._refreshLog(ozwWindow); }, 1500) });
+  }
+
+  async _openLogWindow() {
+    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
+    this.setProperties({ _ozwLogs: info });
+    const ozwWindow = window.open('', 'OpenZwave internal log', 'toolbar');
+    ozwWindow.document.title = 'OpenZwave internal logfile';
+    ozwWindow.document.body.innerText = this._ozwLogs;
+    return ozwWindow;
+  }
+
+  async _refreshLog(ozwWindow) {
+    if (ozwWindow.closed === true) {
+      clearInterval(this._intervalId);
+      this.setProperties({ _intervalId: null });
+    } else {
+      const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
+      this.setProperties({ _ozwLogs: info });
+      ozwWindow.document.body.innerText = this._ozwLogs;
+    }
+  }
+
+  _isCompleteLog() {
+    if (this._numLogLines !== '0') {
+      this.setProperties({ _completeLog: false });
+    } else { this.setProperties({ _completeLog: true }); }
   }
 }
-
 customElements.define('ozw-log', OzwLog);
