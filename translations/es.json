@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "Inicializando",
                 "authorizing_client": "Está por dar acceso a {clientId} a su instancia de Home Assistant.",
-                "logging_in_with": "Iniciando sesión con ** {authProviderName} **.",
+                "logging_in_with": "Iniciando sesión con **{authProviderName}**.",
                 "pick_auth_provider": "O inicia sesión con",
                 "abort_intro": "Inicio de sesión cancelado",
                 "form": {
@@ -590,18 +590,18 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Código de autenticar de dos factores"
+                                        "code": "Código de autenticado de dos factores"
                                     },
                                     "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código autenticado de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {
                                 "invalid_auth": "Contraseña de API inválida",
-                                "invalid_code": "Código de verificación invalido"
+                                "invalid_code": "Código de autenticación inválido"
                             },
                             "abort": {
                                 "no_api_password_set": "No tienes una contraseña de API configurada.",
-                                "login_expired": "Sesión vencida, por favor iniciar sesión de nuevo."
+                                "login_expired": "La sesión expiró, por favor inicie sesión de nuevo."
                             }
                         },
                         "trusted_networks": {

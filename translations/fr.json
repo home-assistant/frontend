@@ -569,7 +569,7 @@
                                     "data": {
                                         "code": "Code d'authentification à deux facteurs"
                                     },
-                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                    "description": "Ouvrez le **{mfa_module_name}** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
                                 }
                             },
                             "error": {
@@ -592,7 +592,7 @@
                                     "data": {
                                         "code": "Code d'authentification à deux facteurs"
                                     },
-                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                    "description": "Ouvrez le **{mfa_module_name}** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
                                 }
                             },
                             "error": {

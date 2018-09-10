@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "A inicializar",
                 "authorizing_client": "Você está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
-                "logging_in_with": "Fazendo login com ** {authProviderName} **.",
+                "logging_in_with": "Fazendo login com **{authProviderName}**.",
                 "pick_auth_provider": "Ou faça login com",
                 "abort_intro": "Login abortado",
                 "form": {

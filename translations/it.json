@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "Inizializzazione",
                 "authorizing_client": "Stai per dare accesso {clientId} alla tua istanza di Assistente Home.",
-                "logging_in_with": "Accesso con ** {authProviderName} **.",
+                "logging_in_with": "Accesso con **{authProviderName}**.",
                 "pick_auth_provider": "Oppure accedi con",
                 "abort_intro": "Login interrotto",
                 "form": {
@@ -569,7 +569,7 @@
                                     "data": {
                                         "code": "Codice di autenticazione a due fattori"
                                     },
-                                    "description": "Apri ** {mfa_module_name} ** sul tuo dispositivo per visualizzare il codice di autenticazione a due fattori e verificare la tua identità:"
+                                    "description": "Apri il **{mfa_module_name}** sul tuo dispositivo per visualizzare il codice di autenticazione a due fattori e verificare la tua identità:"
                                 }
                             },
                             "error": {
@@ -592,7 +592,7 @@
                                     "data": {
                                         "code": "Codice di autenticazione a due fattori"
                                     },
-                                    "description": "Apri il **{mfa_module_name}** sul tuo dispositivo per vedere il codice di autenticazione a due fattori (2FA) e verifica la tua identità:"
+                                    "description": "Apri il **{mfa_module_name}** sul tuo dispositivo per visualizzare il codice di autenticazione a due fattori e verificare la tua identità:"
                                 }
                             },
                             "error": {
@@ -601,7 +601,7 @@
                             },
                             "abort": {
                                 "no_api_password_set": "Non hai una password API configurata.",
-                                "login_expired": "Sessione scaduta, effettua nuovamente l'accesso."
+                                "login_expired": "Sessione scaduta, effettua nuovamente il login."
                             }
                         },
                         "trusted_networks": {

@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "Inicializacija",
                 "authorizing_client": "Dali boste {clientId} dostop do vašega Home assistenta.",
-                "logging_in_with": "Prijava z ** {authProviderName} **.",
+                "logging_in_with": "Prijava z **{authProviderName}**.",
                 "pick_auth_provider": "Ali se prijavite z",
                 "abort_intro": "Prijava prekinjena",
                 "form": {
@@ -569,7 +569,7 @@
                                     "data": {
                                         "code": "Dvofaktorska koda za avtorizacijo"
                                     },
-                                    "description": "V svoji napravi odprite ** {mfa_module_name} **, da si ogledate svojo dvofaktorsko kodo za preverjanje pristnosti in preverite svojo identiteto:"
+                                    "description": "V svoji napravi odprite **{mfa_module_name}**, da si ogledate svojo dvofaktorsko kodo za preverjanje pristnosti in preverite svojo identiteto:"
                                 }
                             },
                             "error": {
@@ -590,9 +590,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Dvofaktorska avtorizacijska koda"
+                                        "code": "Dvofaktorska koda za avtorizacijo"
                                     },
-                                    "description": "Odprite **{mfa_module_name}** na vaši napravi za ogled dvofaktorske avtorizacijske kode in potrdite vašo identiteto:"
+                                    "description": "V svoji napravi odprite **{mfa_module_name}**, da si ogledate svojo dvofaktorsko kodo za preverjanje pristnosti in preverite svojo identiteto:"
                                 }
                             },
                             "error": {
@@ -601,7 +601,7 @@
                             },
                             "abort": {
                                 "no_api_password_set": "Nimate nastavljenega gesla API-ja.",
-                                "login_expired": "Seja je potekla, prosim ponovno se prijavite."
+                                "login_expired": "Seja je potekla, prosimo, prijavite se znova."
                             }
                         },
                         "trusted_networks": {

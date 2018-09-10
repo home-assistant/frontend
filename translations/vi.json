@@ -24,7 +24,7 @@
         },
         "alarm_control_panel": {
             "armed": "Vũ trang",
-            "disarmed": "Giải giáp",
+            "disarmed": "Vô hiệu hóa",
             "armed_home": "Vũ trang khi ở nhà",
             "armed_away": "Vũ trang khi đi vắng",
             "armed_night": "Vũ trang đêm",
@@ -248,7 +248,7 @@
         },
         "alarm_control_panel": {
             "armed": "VT",
-            "disarmed": "Giải giáp",
+            "disarmed": "Vô hiệu hoá",
             "pending": "Chờ",
             "arming": "Đang VT",
             "disarming": "Giải giáp"
@@ -459,6 +459,19 @@
                         "delete_user": "Xóa người dùng"
                     }
                 }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "Vui lòng lựa chọn một tài khoản để đăng nhập"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "sidebar": {
@@ -526,8 +539,8 @@
                 "code": "Mã số",
                 "clear_code": "Xóa",
                 "disarm": "Không vũ trang",
-                "arm_home": "VT Ở nhà",
-                "arm_away": "VT Đi vắng"
+                "arm_home": "An ninh khi ở nhà",
+                "arm_away": "An ninh khi đi vắng"
             },
             "automation": {
                 "last_triggered": "Kích hoạt lần cuối",
@@ -611,7 +624,7 @@
         }
     },
     "domain": {
-        "alarm_control_panel": "Bảng điều khiển báo động",
+        "alarm_control_panel": "Bảng điều khiển an ninh",
         "automation": "Tự động hóa",
         "binary_sensor": "Cảm biến nhị phân",
         "calendar": "Lịch",
