@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "Initialiserer",
                 "authorizing_client": "Du er ved at give {clientId} adgang til din Home Assistant-instans.",
-                "logging_in_with": "Log ind med ** {authProviderName} **.",
+                "logging_in_with": "Log ind med **{authProviderName}**.",
                 "pick_auth_provider": "Eller log ind med",
                 "abort_intro": "Login afbrudt",
                 "form": {
@@ -569,7 +569,7 @@
                                     "data": {
                                         "code": "To-faktor godkendelseskode"
                                     },
-                                    "description": "Åbn ** {mfa_module_name} ** på din enhed for at se din to-faktor godkendelseskode og bekræft din identitet:"
+                                    "description": "Åbn **{mfa_module_name}** på din enhed for at se din to-faktor godkendelseskode og bekræft din identitet:"
                                 }
                             },
                             "error": {
@@ -590,9 +590,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "To faktor godkendelseskode"
+                                        "code": "To-faktor godkendelseskode"
                                     },
-                                    "description": "Åbn ** {mfa_module_name} ** på din enhed for at se din to-faktor godkendelseskode og bekræft din identitet:"
+                                    "description": "Åbn **{mfa_module_name}** på din enhed for at se din to-faktor godkendelseskode og bekræft din identitet:"
                                 }
                             },
                             "error": {
@@ -601,7 +601,7 @@
                             },
                             "abort": {
                                 "no_api_password_set": "Du har ikke konfigureret en API-adgangskode.",
-                                "login_expired": "Sessionen er udløbet, log venligst ind igen"
+                                "login_expired": "Session er udløbet, log ind igen."
                             }
                         },
                         "trusted_networks": {

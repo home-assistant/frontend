@@ -546,6 +546,95 @@
                     "link_promo": "Lisateave teemade kohta",
                     "dropdown_label": "Teema"
                 }
+            },
+            "page-authorize": {
+                "initializing": "Lähtestan",
+                "authorizing_client": "Kavatsed anda {clientId} jaoks juurdepääsu oma Home Assistant serverile.",
+                "logging_in_with": "Login sisse **{authProviderName}** abil.",
+                "pick_auth_provider": "Või logi sisse, kasutades",
+                "abort_intro": "Sisselogimine katkestatud",
+                "form": {
+                    "working": "Palun oota",
+                    "unknown_error": "Midagi läks valesti",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Kasutajanimi",
+                                        "password": "Salasõna"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kaheastmeline autentimiskood"
+                                    },
+                                    "description": "Ava oma seadmes **{mfa_module_name}**, et näha oma kahetasemelise autentimise koodi ja tõendada oma isikut:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Vale kasutajanimi või salasõna",
+                                "invalid_code": "Vigane autentimiskood"
+                            },
+                            "abort": {
+                                "login_expired": "Sessioon aegus, palun logi uuesti sisse."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API salasõna"
+                                    },
+                                    "description": "Palun seadista http seadetes oma API salasõna:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kaheastmeline autentimiskood"
+                                    },
+                                    "description": "Ava oma seadmes **{mfa_module_name}**, et näha oma kahetasemelise autentimise koodi ja tõendada oma isikut:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Vale API salasõna",
+                                "invalid_code": "Vigane autentimiskood"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Sul pole API salasõna seadistatud",
+                                "login_expired": "Sessioon aegus, palun logi uuesti sisse."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Kasutaja"
+                                    },
+                                    "description": "Palun vali kasutaja, kellena soovid sisse logida:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Sinu arvuti ei ole lubatute nimekirjas."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Kas oled valmis oma kodu ellu äratama, oma privaatsust tagasi võitma ja ühinema ülemaailmse nokitsejate kogukonnaga?",
+                "user": {
+                    "intro": "Alustame kasutajakonto loomisega.",
+                    "required_field": "Nõutud",
+                    "data": {
+                        "name": "Nimi",
+                        "username": "Kasutajanimi",
+                        "password": "Salasõna"
+                    },
+                    "create_account": "Loo konto",
+                    "error": {
+                        "required_fields": "Täida kõik nõutud väljad"
+                    }
+                }
             }
         },
         "sidebar": {
@@ -710,6 +799,11 @@
             "ask": "Kas soovid selle sisselogimise salvestada?",
             "decline": "Tänan ei",
             "confirm": "Salvesta sisselogimine"
+        },
+        "notification_drawer": {
+            "click_to_configure": "{entity} seadistamiseks klõpsa nuppu",
+            "empty": "Teavitusi pole",
+            "title": "Teavitused"
         }
     },
     "domain": {
