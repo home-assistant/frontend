@@ -12,7 +12,8 @@
         "dev-events": "Eventos",
         "dev-templates": "Modelos",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informações"
+        "dev-info": "Informações",
+        "calendar": "Calendário"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "A inicializar ({query_stage})",
                 "dead": "Morto ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Limpo, Noite",
+            "cloudy": "Nublado",
+            "fog": "Nevoeiro",
+            "hail": "Granizo",
+            "lightning": "Relâmpago",
+            "lightning-rainy": "Relâmpagos, chuva",
+            "partlycloudy": "Parcialmente nublado",
+            "pouring": "Chuva forte",
+            "rainy": "Chuva",
+            "snowy": "Neve",
+            "snowy-rainy": "Neve, chuva",
+            "sunny": "Sol",
+            "windy": "Vento fraco",
+            "windy-variant": "Vento fraco"
+        },
+        "vacuum": {
+            "cleaning": "A limpar",
+            "docked": "Ancorado",
+            "error": "Erro",
+            "idle": "Em espera",
+            "off": "Desligado",
+            "on": "Ligado",
+            "paused": "Em pausa",
+            "returning": "A regressar ao cais"
         }
     },
     "state_badge": {
@@ -289,7 +316,7 @@
                     "section": {
                         "core": {
                             "header": "Configuração e controlo do servidor",
-                            "introduction": "Alterar a configuração pode ser um processo repetitivo. Nós sabemos. Esta seção pretende tornar sua vida um pouco mais fácil.",
+                            "introduction": "Alterar a configuração pode ser um processo repetitivo. Nós sabemos. Esta seção pretende tornar a sua vida um pouco mais fácil.",
                             "validation": {
                                 "heading": "Validar a configuração",
                                 "introduction": "Valide sua configuração caso tenha alterado recentemente a mesma e quiser certificar-se de que tudo é válido.",
@@ -299,7 +326,7 @@
                             },
                             "reloading": {
                                 "heading": "Recarregar configuração",
-                                "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem necessidade de reiniciar. Ao carregar em Recarregar configuração irá descarregar a configuração atual e carregar a nova.",
+                                "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem necessidade de reiniciar. Ao pressionar em Recarregar irá descarregar a configuração atual e carregar a nova.",
                                 "core": "Recarregar núcleo",
                                 "group": "Recarregar grupos",
                                 "automation": "Recarregar automações",
@@ -311,21 +338,6 @@
                                 "restart": "Reiniciar",
                                 "stop": "Parar"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurar notificações por push",
-                            "introduction": "Ative esta configuração para receber notificações push neste dispositivo",
-                            "push_notifications": "Notificações push"
-                        },
-                        "translation": {
-                            "header": "Escolha um idioma",
-                            "introduction": "Escolha um idioma para a interface do Home Assistant neste dispositivo",
-                            "language": "Idioma"
-                        },
-                        "themes": {
-                            "header": "Definir um tema",
-                            "introduction": "Escolha 'Backend-selected' para usar qualquer tema que o backend escolha ou escolha um tema para este dispositivo",
-                            "theme": "Tema"
                         }
                     }
                 },
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gerir a sua rede Z-Wave"
+                },
+                "users": {
+                    "caption": "Utilizadores",
+                    "description": "Gerir utilizadores",
+                    "picker": {
+                        "title": "Utilizadores"
+                    },
+                    "editor": {
+                        "rename_user": "Alterar nome do utilizador",
+                        "change_password": "Alterar palavra-passe",
+                        "activate_user": "Activar utilizador",
+                        "deactivate_user": "Desactivar utilizador",
+                        "delete_user": "Apagar utilizador"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificações push",
+                    "description": "Enviar notificações para este dispositivo.",
+                    "error_load_platform": "Configurar notify.html5.",
+                    "error_use_https": "Requer interface com utilizador, com SSL activo.",
+                    "push_notifications": "Notificações push",
+                    "link_promo": "Saiba mais"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ajude a traduzir",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Não há temas disponíveis.",
+                    "link_promo": "Saiba mais sobre temas",
+                    "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "A inicializar",
+                "authorizing_client": "Você está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
+                "logging_in_with": "Fazendo login com ** {authProviderName} **.",
+                "pick_auth_provider": "Ou faça login com",
+                "abort_intro": "Login abortado",
+                "form": {
+                    "working": "Por favor, aguarde",
+                    "unknown_error": "Algo de errado aconteceu",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Utilizador",
+                                        "password": "Palavra-passe"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticação por dois factores"
+                                    },
+                                    "description": "Abra o **{mfa_module_name}** no seu dispositivo para ver o código de autenticação por dois factores e verificar a sua identidade."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nome de utilizador ou palavra-passe inválida",
+                                "invalid_code": "Código de autenticação inválido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessão expirou, por favor entre novamente."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Palavra-passe para API"
+                                    },
+                                    "description": "Por favor, insira a palavra-passe da API na sua configuração http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticação por dois factores"
+                                    },
+                                    "description": "Abra o **{mfa_module_name}** no seu dispositivo para ver o código de autenticação por dois factores e verificar a sua identidade."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Palavra-passe para API inválida",
+                                "invalid_code": "Código de autenticação inválido"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Não tem uma palavra-passe para a API configurada.",
+                                "login_expired": "Sessão expirou, por favor entre novamente."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Utilizador"
+                                    },
+                                    "description": "Por favor seleccione o utilizador com o qual pretende entrar:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "O seu computador não está na lista de endereços permitidos."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Está pronto para despertar a sua casa, reclamar a sua privacidade e juntar a uma comunidade mundial de tecnólogos?",
+                "user": {
+                    "intro": "Vamos começar por criar um utilizador.",
+                    "required_field": "Obrigatório",
+                    "data": {
+                        "name": "Nome",
+                        "username": "Utilizador",
+                        "password": "Palavra-passe"
+                    },
+                    "create_account": "Criar conta",
+                    "error": {
+                        "required_fields": "Preencha todos os campos obrigatórios"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
             "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}",
-            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}"
+            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+            "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+            "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}"
         },
         "login-form": {
             "password": "Palavra-passe",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Fechar"
+            },
+            "scene": {
+                "activate": "Ativar"
+            },
+            "script": {
+                "execute": "Executar"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Press. Atmosférica",
+                    "humidity": "Humidade",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilidade",
+                    "wind_speed": "Vel. do vento"
+                },
+                "cardinal_direction": {
+                    "e": "",
+                    "ene": "",
+                    "ese": "",
+                    "n": "",
+                    "ne": "",
+                    "nne": "",
+                    "nw": "",
+                    "nnw": "",
+                    "s": "",
+                    "se": "",
+                    "sse": "",
+                    "ssw": "",
+                    "sw": "",
+                    "w": "",
+                    "wnw": "",
+                    "wsw": ""
+                },
+                "forecast": "Previsão"
+            },
+            "alarm_control_panel": {
+                "code": "Código",
+                "clear_code": "Limpo",
+                "disarm": "Desarmar",
+                "arm_home": "Armado casa",
+                "arm_away": "Armado ausente"
+            },
+            "automation": {
+                "last_triggered": "Última ocorrência",
+                "trigger": "Despoletar"
+            },
+            "cover": {
+                "position": "Posição",
+                "tilt_position": "Posição de inclinação"
+            },
+            "fan": {
+                "speed": "Velocidade",
+                "oscillate": "Oscilar",
+                "direction": "Direção"
+            },
+            "light": {
+                "brightness": "Brilho",
+                "color_temperature": "Temperatura de cor",
+                "white_value": "Quantidade de branco",
+                "effect": "Efeito"
+            },
+            "media_player": {
+                "text_to_speak": "Texto para fala",
+                "source": "Fonte",
+                "sound_mode": "Modo de som"
+            },
+            "climate": {
+                "currently": "Atualmente",
+                "on_off": "Lig. \/ Des.",
+                "target_temperature": "Temperatura pretendida",
+                "target_humidity": "Humidade pretendida",
+                "operation": "Operação",
+                "fan_mode": "Modo ventilar",
+                "swing_mode": "Modo oscilante",
+                "away_mode": "Modo ausente",
+                "aux_heat": "Calor auxiliar"
+            },
+            "lock": {
+                "code": "Código",
+                "lock": "Trancar",
+                "unlock": "Destrancar"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Retomar a limpeza",
+                    "return_to_base": "Regressar ao cais",
+                    "start_cleaning": "Iniciar a limpeza",
+                    "turn_on": "Ligar",
+                    "turn_off": "Desligar"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Serviço"
+            },
+            "relative_time": {
+                "past": "{time} atrás",
+                "future": "Às {time}",
+                "never": "Nunca",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "A carregar histórico de estados...",
+                "no_history_found": "Nenhum histórico de estado encontrado."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Ativou {entity} .",
+            "entity_turned_off": "Desativou {entity} .",
+            "service_called": "Serviço {service} chamado.",
+            "service_call_failed": "Falha ao chamar o serviço {service} .",
+            "connection_lost": "Ligação perdida. A ligar de novo..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Salvar",
+                "name": "Nome",
+                "entity_id": "ID da entidade"
+            }
+        },
+        "auth_store": {
+            "ask": "Deseja guardar este login?",
+            "decline": "Não, obrigado",
+            "confirm": "Guardar login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Clique no botão para configurar {entity}",
+            "empty": "Sem Notificações",
+            "title": "Notificações"
         }
     },
     "domain": {
@@ -573,13 +841,14 @@
         "switch": "Interruptor",
         "updater": "Atualizador",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspiração"
     },
     "attribute": {
         "weather": {
             "humidity": "Humidade",
             "visibility": "Visibilidade",
-            "wind_speed": "Velocidade do vento"
+            "wind_speed": "Vel. do vento"
         }
     }
 }

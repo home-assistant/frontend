@@ -12,7 +12,8 @@
         "dev-events": "Evenementer",
         "dev-templates": "Modeller",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalenner"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "Initialiséiert ({query_stage})",
                 "dead": "Net Ereechbar ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Kloer, Nuecht",
+            "cloudy": "Wollekeg",
+            "fog": "Niwwel",
+            "hail": "Knëppelsteng",
+            "lightning": "Blëtz",
+            "lightning-rainy": "Blëtz, Reen",
+            "partlycloudy": "Liicht wollekeg",
+            "pouring": "Schloreen",
+            "rainy": "Reen",
+            "snowy": "Schnéi",
+            "snowy-rainy": "Schnéi, Reen",
+            "sunny": "Sonneg",
+            "windy": "Lëfteg",
+            "windy-variant": "Lëfteg"
+        },
+        "vacuum": {
+            "cleaning": "Botzt",
+            "docked": "Agedockt",
+            "error": "Fehler",
+            "idle": "Waart",
+            "off": "Aus",
+            "on": "Un",
+            "paused": "Pauseiert",
+            "returning": "Kënnt zur Statioun zeréck"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "Neistart",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Push-Noriichte konfiguréieren",
-                            "introduction": "Aktivéiert dës Astellung fir Push-Noriichte op dësem Apparat ze kréien",
-                            "push_notifications": "Push-Noriichte"
-                        },
-                        "translation": {
-                            "header": "Sproch auswielen",
-                            "introduction": "Wielt eng Sproch fir den Home Assistant Interface op dësem Apparat",
-                            "language": "Sproch"
-                        },
-                        "themes": {
-                            "header": "Thema auswielen",
-                            "introduction": "Wielt 'Backend-Selected' fir all Thema ze benotzen deen de Backend auswielt oder e Thema fir dësen Apparat auswielen",
-                            "theme": "Thema"
                         }
                     }
                 },
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Verwalt är Z-Wave Netzwierk"
+                },
+                "users": {
+                    "caption": "Benotzer",
+                    "description": "Benotzer verwalten",
+                    "picker": {
+                        "title": "Benotzer"
+                    },
+                    "editor": {
+                        "rename_user": "Benotzer ëmbenennen",
+                        "change_password": "Passwuert änneren",
+                        "activate_user": "Benotzer aktivéieren",
+                        "deactivate_user": "Benotzer déaktivéieren",
+                        "delete_user": "Benotzer läschen"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push-Noriichte",
+                    "description": "Noriichten op dësen Apparat schécken",
+                    "error_load_platform": "Notifiy.html5 konfiguréieren.",
+                    "error_use_https": "Benéidegt SSL fir de Frontend",
+                    "push_notifications": "Push-Noriichte",
+                    "link_promo": "Méi liesen"
+                },
+                "language": {
+                    "header": "Sproochen",
+                    "link_promo": "Hëllef beim Iwwersetzen",
+                    "dropdown_label": "Sprooch"
+                },
+                "themes": {
+                    "header": "Thema",
+                    "error_no_theme": "Keen Thema disponibel",
+                    "link_promo": "Méi iwwert Thema liesen",
+                    "dropdown_label": "Thema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initialiséiert",
+                "authorizing_client": "Dir gitt elo {clientId} Zougang zu ärem Home Assistant.",
+                "logging_in_with": "Verbannt iech mat **{authProviderName}**.",
+                "pick_auth_provider": "Oder verbannt iech mat",
+                "abort_intro": "Login ofgebrach",
+                "form": {
+                    "working": "W.e.g. waarden",
+                    "unknown_error": "Eppes ass schifgaange",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benotzernumm",
+                                        "password": "Passwuert"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2-Faktor-Authentifikatiouns Code"
+                                    },
+                                    "description": "Maacht **{mfa_module_name}** op Ärem Apparat op, fir ären 2-Faktor-Authentifikatiouns Code ze kucken an Är Identitéit z'iwwerpréiwen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongëltege Benotzernumm oder Passwuert",
+                                "invalid_code": "Ongëlte Authentifikatiouns Code"
+                            },
+                            "abort": {
+                                "login_expired": "Sessioun ofgelaaf, log dech rëm frësch an w.e.g."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Passwuert"
+                                    },
+                                    "description": "Gitt d'API Passwuert vun ärer http Konfiguratioun an:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2-Faktor-Authentifikatiouns Code"
+                                    },
+                                    "description": "Maacht **{mfa_module_name}** op Ärem Apparat op, fir ären 2-Faktor-Authentifikatiouns Code ze kucken an Är Identitéit z'iwwerpréiwen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ongëltegt API Passwuert",
+                                "invalid_code": "Ongëlte Authentifikatiouns Code"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Dir hutt nach keen API Passwuert definéiert.",
+                                "login_expired": "Sessioun ofgelaaf, log dech rëm frësch an w.e.g."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Benotzer"
+                                    },
+                                    "description": "Wielt den User aus mat deem dir iech wëllt aloggen:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Äre Computer ass net fräigeschalt."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Sidd Dir prett fir Äert Heem interessant ze maachen, Är Privatsphär ze garantéieren an enger weltwäiter Gemeinschaft bei ze trieden?",
+                "user": {
+                    "intro": "Looss eis ufänken andeems en e Benotzerkont erstellt.",
+                    "required_field": "Néideg",
+                    "data": {
+                        "name": "Numm",
+                        "username": "Benotzernumm",
+                        "password": "Passwuert"
+                    },
+                    "create_account": "Kont erstellen",
+                    "error": {
+                        "required_fields": "Fëllt all néideg Felder aus"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",
             "week": "{count} {count, plural,\none {woch}\nother {woche}\n}",
-            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}"
+            "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}",
+            "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutten}\n}",
+            "hour": "{count} {count, plural,\n  one {stonn}\n  other {stonnen}\n}"
         },
         "login-form": {
             "password": "Passwuert",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Verwerfen"
+            },
+            "scene": {
+                "activate": "Aktivéieren"
+            },
+            "script": {
+                "execute": "Ausféieren"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Loftdrock",
+                    "humidity": "Fiichtegkeet",
+                    "temperature": "Temperatur",
+                    "visibility": "Visibilitéit",
+                    "wind_speed": "Wandvitesse"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Prognose"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Kloer",
+                "disarm": "Desaktivéieren",
+                "arm_home": "Aktivéiert Doheem",
+                "arm_away": "Aktivéiert Ënnerwee"
+            },
+            "automation": {
+                "last_triggered": "Läscht ausgeléist",
+                "trigger": "Ausléiser"
+            },
+            "cover": {
+                "position": "Positioun",
+                "tilt_position": "Kippestellung"
+            },
+            "fan": {
+                "speed": "Vitesse",
+                "oscillate": "Pendele",
+                "direction": "Richtung"
+            },
+            "light": {
+                "brightness": "Hellegkeet",
+                "color_temperature": "Faarf Temperatur",
+                "white_value": "Wäisse Wäert",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text zu Sprooch",
+                "source": "Quell",
+                "sound_mode": "Toun Modus"
+            },
+            "climate": {
+                "currently": "Momentan",
+                "on_off": "Un \/ Aus",
+                "target_temperature": "Zieltemperatur",
+                "target_humidity": "Zielfiichtegkeet",
+                "operation": "Aktioun",
+                "fan_mode": "Ventilatioun Modus",
+                "swing_mode": "Schwenk Modus",
+                "away_mode": "Modus Keen Doheem",
+                "aux_heat": "Zousätzlech Heizung"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Spären",
+                "unlock": "Entspären"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Fuer mam botzen weider",
+                    "return_to_base": "Zeréck zur Statioun kommen",
+                    "start_cleaning": "Fänkt mam botzen un",
+                    "turn_on": "Uschalten",
+                    "turn_off": "Ausschalten"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "relative_time": {
+                "past": "virun {time}",
+                "future": "An {time}",
+                "never": "Nie",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekonn}\nother {sekonne}\n}",
+                    "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutten}\n}",
+                    "hour": "{count} {count, plural,\n  one {stonn}\n  other {stonnen}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {deeg}\n}",
+                    "week": "{count} {count, plural,\none {woch}\nother {woche}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Lued Status Verlaaf",
+                "no_history_found": "Keen Status Verlaaf fonnt"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} gouf ausgeschalt",
+            "entity_turned_off": "{entity} gouf ugeschalt",
+            "service_called": "Service {service} operuff",
+            "service_call_failed": "Fehler beim opruffen vun {service}",
+            "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Späicheren",
+                "name": "Numm",
+                "entity_id": "Entitéit ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Soll dëse Login gespäichert ginn?",
+            "decline": "Nee Merci",
+            "confirm": "Login späicheren"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Dréck de Knäppchen fir {entity} ze konfiguréieren",
+            "empty": "Keng Notifikatioune",
+            "title": "Notifikatioune"
         }
     },
     "domain": {
@@ -573,7 +841,8 @@
         "switch": "Schalter",
         "updater": "Aktualiséierung",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Staubsauger"
     },
     "attribute": {
         "weather": {

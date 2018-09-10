@@ -12,7 +12,8 @@
         "dev-events": "Hendelser",
         "dev-templates": "Maler",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -132,7 +133,7 @@
             "off": "Av",
             "on": "På",
             "heat": "Varme",
-            "cool": "Kjøle",
+            "cool": "Kjøling",
             "idle": "Inaktiv",
             "auto": "Auto",
             "dry": "Tørr",
@@ -236,6 +237,32 @@
                 "initializing": "Initialiserer ({query_stage})",
                 "dead": "Død  ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Klart, natt",
+            "cloudy": "Skyet",
+            "fog": "Tåke",
+            "hail": "Hagl",
+            "lightning": "Lyn",
+            "lightning-rainy": "Lyn, regnfull",
+            "partlycloudy": "Delvis skyet",
+            "pouring": "Kraftig regn",
+            "rainy": "Regnfull",
+            "snowy": "Snø",
+            "snowy-rainy": "Sludd",
+            "sunny": "Solfylt",
+            "windy": "Vind",
+            "windy-variant": "Vind"
+        },
+        "vacuum": {
+            "cleaning": "Rengjøring",
+            "docked": "Dokket",
+            "error": "Feil",
+            "idle": "Ledig",
+            "off": "Av",
+            "on": "På",
+            "paused": "Pauset",
+            "returning": "Returner til dokken"
         }
     },
     "state_badge": {
@@ -285,11 +312,11 @@
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
                 "core": {
                     "caption": "Generelt",
-                    "description": "Validere konfigurasjonsfilen din og kontroller serveren",
+                    "description": "Valider konfigurasjonsfilen din og kontroller serveren",
                     "section": {
                         "core": {
                             "header": "Konfigurasjon og serverkontroll",
-                            "introduction": "Endringer i konfigurasjonen kan være en slitsom prosess, vi vet det. Denne delen vil forsøke å gjøre livet ditt litt lettere.",
+                            "introduction": "Endring av konfigurasjonen kan være en slitsom prosess, det vet vi. Denne delen vil forsøke å gjøre livet ditt litt lettere.",
                             "validation": {
                                 "heading": "Konfigurasjonsvalidering",
                                 "introduction": "Sjekk konfigurasjon din hvis du nylig har gjort noen endringer og ønsker å være sikker på at den er gyldig ved å kjøre en valideringstest",
@@ -307,25 +334,10 @@
                             },
                             "server_management": {
                                 "heading": "Serveradministrasjon",
-                                "introduction": "Kontroller Home Assistant fra Home Assistant.",
+                                "introduction": "Kontroller din Home Assistant server...fra Home Assistant.",
                                 "restart": "Start på nytt",
                                 "stop": "Stopp"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurer push varslinger",
-                            "introduction": "Aktiver denne innstillingen for å motta push varsler på denne enheten",
-                            "push_notifications": "Push varslinger"
-                        },
-                        "translation": {
-                            "header": "Velg et språk",
-                            "introduction": "Velg et språk for Home Assistant grensesnittet på denne enheten",
-                            "language": "Språk"
-                        },
-                        "themes": {
-                            "header": "Angi et tema",
-                            "introduction": "Velg \"Backend-selected\" for å bruke standard tema eller velg et tema for denne enheten",
-                            "theme": "Tema"
                         }
                     }
                 },
@@ -347,7 +359,7 @@
                         "introduction": "Bruk automatiseringer for å få liv i hjemmet ditt",
                         "default_name": "Ny automatisering",
                         "save": "Lagre",
-                        "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil forlate?",
+                        "unsaved_confirm": "Du har endringer som ikke er lagret. Er du sikker på at du vil forlate?",
                         "alias": "Navn",
                         "triggers": {
                             "header": "Utløsere",
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Administrer ditt Z-Wave-nettverk"
+                },
+                "users": {
+                    "caption": "Brukere",
+                    "description": "Administrer brukere",
+                    "picker": {
+                        "title": "Brukere"
+                    },
+                    "editor": {
+                        "rename_user": "Gi nytt navn til bruker",
+                        "change_password": "Endre passord",
+                        "activate_user": "Aktiver bruker",
+                        "deactivate_user": "Deaktiver bruker",
+                        "delete_user": "Slett bruker"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push varslinger",
+                    "description": "Send varslinger til denne enheten",
+                    "error_load_platform": "Konfigurer notify.html5.",
+                    "error_use_https": "Krever SSL aktivert for grensesnitt.",
+                    "push_notifications": "Push varslinger",
+                    "link_promo": "Lær mer"
+                },
+                "language": {
+                    "header": "Språk",
+                    "link_promo": "Bidra til å oversette",
+                    "dropdown_label": "Språk"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Ingen temaer er tilgjengelig.",
+                    "link_promo": "Lær om temaer",
+                    "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initialiserer",
+                "authorizing_client": "Du er i ferd med å gi {clientId} tilgang til din Home Assistant",
+                "logging_in_with": "Logg inn med ** {authProviderName} **.",
+                "pick_auth_provider": "Eller logg inn med",
+                "abort_intro": "Innlogging avbrutt",
+                "form": {
+                    "working": "Vennligst vent",
+                    "unknown_error": "Noe gikk galt",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Brukernavn",
+                                        "password": "Passord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor autentiseringskode"
+                                    },
+                                    "description": "Åpne ** {mfa_module_name} ** på enheten din for å se din tofaktors autentiseringskode og bekrefte identiteten din:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig brukernavn eller passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
+                            },
+                            "abort": {
+                                "login_expired": "Økten er utløpt, vennligst logg inn på nytt"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-passord"
+                                    },
+                                    "description": "Vennligst skriv inn API-passordet i http-konfigurasjonen din:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor autentiseringskode"
+                                    },
+                                    "description": "Åpne **{mfa_module_name}** på din enhet for å vise to-faktor autentiseringkode og vertifiser din identitet."
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig API-passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du har ikke konfigurert et API-passord.",
+                                "login_expired": "Sesjonen har utløpt, vennligst logg inn igjen: "
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Bruker"
+                                    },
+                                    "description": "Vennligst velg en bruker du vil logge inn som:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Datamaskinen din er ikke hvitlistet."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Er du klar til å vekke hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av tinkerers?",
+                "user": {
+                    "intro": "La oss begynne med å opprette en brukerkonto.",
+                    "required_field": "Kreves",
+                    "data": {
+                        "name": "Navn",
+                        "username": "Brukernavn",
+                        "password": "Passord"
+                    },
+                    "create_account": "Opprett konto",
+                    "error": {
+                        "required_fields": "Fyll ut alle nødvendige felt"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
             "week": "{count} {count, plural,\none {uke}\nother {uker}\n}",
-            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}"
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "minute": "{count} {count, plural,\none {minutt}\nother {minutter}\n}",
+            "hour": "{count} {count, plural,\none {time}\nother {timer}\n}"
         },
         "login-form": {
             "password": "Passord",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Avvis"
+            },
+            "scene": {
+                "activate": "Aktiver"
+            },
+            "script": {
+                "execute": "Utfør"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Lufttrykk",
+                    "humidity": "Luftfuktighet",
+                    "temperature": "Temperatur",
+                    "visibility": "Sikt",
+                    "wind_speed": "Vindstyrke"
+                },
+                "cardinal_direction": {
+                    "e": "Ø",
+                    "ene": "ØNØ",
+                    "ese": "ØSØ",
+                    "n": "N",
+                    "ne": "NØ",
+                    "nne": "NNØ",
+                    "nw": "NV",
+                    "nnw": "NNV",
+                    "s": "S",
+                    "se": "SØ",
+                    "sse": "SSØ",
+                    "ssw": "SSV",
+                    "sw": "SV",
+                    "w": "V",
+                    "wnw": "VNV",
+                    "wsw": "VSV"
+                },
+                "forecast": "Prognose"
+            },
+            "alarm_control_panel": {
+                "code": "Kode",
+                "clear_code": "Klarer",
+                "disarm": "Deaktiver",
+                "arm_home": "Armer hjemme",
+                "arm_away": "Armer bort"
+            },
+            "automation": {
+                "last_triggered": "Sist utløst",
+                "trigger": "Utløs"
+            },
+            "cover": {
+                "position": "Posisjon",
+                "tilt_position": "Vend posisjon"
+            },
+            "fan": {
+                "speed": "Hastighet",
+                "oscillate": "Svinge",
+                "direction": "Retning"
+            },
+            "light": {
+                "brightness": "Lysstyrke",
+                "color_temperature": "Fargetemperatur",
+                "white_value": "Hvit verdi",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Tekst til tale",
+                "source": "Kilde",
+                "sound_mode": "Lydmodus"
+            },
+            "climate": {
+                "currently": "Er nå",
+                "on_off": "På \/ av",
+                "target_temperature": "Ønsket temperatur",
+                "target_humidity": "Ønsket luftfuktighet",
+                "operation": "Operasjon",
+                "fan_mode": "Viftemodus",
+                "swing_mode": "Svingmodus",
+                "away_mode": "Bortemodus",
+                "aux_heat": "Aux varme"
+            },
+            "lock": {
+                "code": "Kode",
+                "lock": "Lås",
+                "unlock": "Lås opp"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Gjenoppta rengjøring",
+                    "return_to_base": "Returner til dokken",
+                    "start_cleaning": "Start rengjøring",
+                    "turn_on": "Slå på",
+                    "turn_off": "Slå av"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Tjeneste"
+            },
+            "relative_time": {
+                "past": "For {time} siden",
+                "future": "Om {time}",
+                "never": "Aldri",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutter}\n}",
+                    "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}",
+                    "day": "{count} {count, plural,\n  one {dag}\n  other {dager}\n}",
+                    "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Laster statushistorikk...",
+                "no_history_found": "Ingen statushistorikk funnet."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Slått på: {entity}",
+            "entity_turned_off": "Slått av: {entity}",
+            "service_called": "Tilkalte tjenesten: {service}",
+            "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
+            "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Lagre",
+                "name": "Navn",
+                "entity_id": "Enhets ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Ønsker du å lagre denne påloggingen?",
+            "decline": "Nei takk",
+            "confirm": "Lagre pålogging"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klikk på knappen for å konfigurere {entity}",
+            "empty": "Ingen varsler",
+            "title": "Varsler"
         }
     },
     "domain": {
@@ -572,8 +840,9 @@
         "sun": "Sol",
         "switch": "Bryter",
         "updater": "Oppdateringer",
-        "weblink": "Nettlink",
-        "zwave": "Z-Wave"
+        "weblink": "Lenke",
+        "zwave": "Z-Wave",
+        "vacuum": "Støvsuger"
     },
     "attribute": {
         "weather": {

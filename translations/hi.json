@@ -157,6 +157,19 @@
                         }
                     }
                 }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "कृपया उस उपयोगकर्ता का चयन करें जिसके रूप में आप लॉगिन करना चाहते हैं:"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "sidebar": {

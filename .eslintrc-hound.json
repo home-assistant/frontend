@@ -9,14 +9,18 @@
   "settings": {
     "react": {
       "pragma": "h"
+    },
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.js"
+      }
     }
   },
   "globals": {
     "__DEV__": false,
-    "__DEMO__": false,
     "__BUILD__": false,
     "__VERSION__": false,
-    "__ROOT__": false,
+    "__STATIC_PATH__": false,
     "Polymer": true,
     "webkitSpeechRecognition": false,
     "ResizeObserver": false
@@ -45,6 +49,7 @@
     "no-multi-assign": 0,
     "radix": 0,
     "no-alert": 0,
+    "no-return-await": 0,
     "prefer-destructuring": 0,
     "no-restricted-globals": [2, "event"],
     "prefer-promise-reject-errors": 0,
@@ -52,6 +57,7 @@
     "import/no-unresolved": 0,
     "import/extensions": [2, "ignorePackages"],
     "object-curly-newline": 0,
+    "default-case": 0,
     "react/jsx-no-bind": [2, { "ignoreRefs": true }],
     "react/jsx-no-duplicate-props": 2,
     "react/self-closing-comp": 2,
@@ -64,7 +70,8 @@
     "react/jsx-curly-spacing": 2,
     "react/jsx-no-undef": 2,
     "react/jsx-uses-react": 2,
-    "react/jsx-uses-vars": 2
+    "react/jsx-uses-vars": 2,
+    "no-restricted-syntax": [0, "ForOfStatement"]
   },
   "plugins": [
     "react"

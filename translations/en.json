@@ -12,7 +12,8 @@
         "dev-events": "Events",
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Calendar"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "Initializing ({query_stage})",
                 "dead": "Dead ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Clear, night",
+            "cloudy": "Cloudy",
+            "fog": "Fog",
+            "hail": "Hail",
+            "lightning": "Lightning",
+            "lightning-rainy": "Lightning, rainy",
+            "partlycloudy": "Partly cloudy",
+            "pouring": "Pouring",
+            "rainy": "Rainy",
+            "snowy": "Snowy",
+            "snowy-rainy": "Snowy, rainy",
+            "sunny": "Sunny",
+            "windy": "Windy",
+            "windy-variant": "Windy"
+        },
+        "vacuum": {
+            "cleaning": "Cleaning",
+            "docked": "Docked",
+            "error": "Error",
+            "idle": "Idle",
+            "off": "Off",
+            "on": "On",
+            "paused": "Paused",
+            "returning": "Returning to dock"
         }
     },
     "state_badge": {
@@ -311,27 +338,6 @@
                                 "restart": "Restart",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configure push notifications",
-                            "introduction": "Enable this setting to receive push notifications on this device",
-                            "push_notifications": "Push notifications"
-                        },
-                        "translation": {
-                            "header": "Choose a language",
-                            "introduction": "Choose a language for the Home Assistant interface on this device",
-                            "language": "Language"
-                        },
-                        "themes": {
-                            "header": "Set a theme",
-                            "introduction": "Choose 'Backend-selected' to use whatever theme the backend chooses or pick a theme for this device",
-                            "theme": "Theme"
-                        },
-                        "hassbian": {
-                            "header": "Bring Hassbian to the next level",
-                            "introduction": "Discover exciting add-ons to enhance your Home Assistant installation. Add an MQTT server or control a connected TV via HDMI-CEC.",
-                            "learn_more": "Learn more",
-                            "install": "Install"
                         }
                     }
                 },
@@ -504,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Manage your Z-Wave network"
+                },
+                "users": {
+                    "caption": "Users",
+                    "description": "Manage users",
+                    "picker": {
+                        "title": "Users"
+                    },
+                    "editor": {
+                        "rename_user": "Rename user",
+                        "change_password": "Change password",
+                        "activate_user": "Activate user",
+                        "deactivate_user": "Deactivate user",
+                        "delete_user": "Delete user"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push Notifications",
+                    "description": "Send notifications to this device.",
+                    "error_load_platform": "Configure notify.html5.",
+                    "error_use_https": "Requires SSL enabled for frontend.",
+                    "push_notifications": "Push notifications",
+                    "link_promo": "Learn more"
+                },
+                "language": {
+                    "header": "Language",
+                    "link_promo": "Help translating",
+                    "dropdown_label": "Language"
+                },
+                "themes": {
+                    "header": "Theme",
+                    "error_no_theme": "No themes available.",
+                    "link_promo": "Learn about themes",
+                    "dropdown_label": "Theme"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initializing",
+                "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
+                "logging_in_with": "Logging in with **{authProviderName}**.",
+                "pick_auth_provider": "Or log in with",
+                "abort_intro": "Login aborted",
+                "form": {
+                    "working": "Please wait",
+                    "unknown_error": "Something went wrong",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Username",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Two-factor Authentication Code"
+                                    },
+                                    "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Invalid username or password",
+                                "invalid_code": "Invalid authentication code"
+                            },
+                            "abort": {
+                                "login_expired": "Session expired, please login again."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Password"
+                                    },
+                                    "description": "Please input the API password in your http config:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Two-factor Authentication Code"
+                                    },
+                                    "description": "Open the **{mfa_module_name}** on your device to view your two-factor authentication code and verify your identity:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Invalid API password",
+                                "invalid_code": "Invalid authentication code"
+                            },
+                            "abort": {
+                                "no_api_password_set": "You don't have an API password configured.",
+                                "login_expired": "Session expired, please login again."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "User"
+                                    },
+                                    "description": "Please select a user you want to login as:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Your computer is not whitelisted."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
+                "user": {
+                    "intro": "Let's get started by creating a user account.",
+                    "required_field": "Required",
+                    "data": {
+                        "name": "Name",
+                        "username": "Username",
+                        "password": "Password"
+                    },
+                    "create_account": "Create Account",
+                    "error": {
+                        "required_fields": "Fill in all required fields"
+                    }
                 }
             }
         },
@@ -518,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
             "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}",
-            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}"
+            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+            "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+            "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}"
         },
         "login-form": {
             "password": "Password",
@@ -531,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Dismiss"
+            },
+            "scene": {
+                "activate": "Activate"
+            },
+            "script": {
+                "execute": "Execute"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Air pressure",
+                    "humidity": "Humidity",
+                    "temperature": "Temperature",
+                    "visibility": "Visibility",
+                    "wind_speed": "Wind speed"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Forecast"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Clear",
+                "disarm": "Disarm",
+                "arm_home": "Arm home",
+                "arm_away": "Arm away"
+            },
+            "automation": {
+                "last_triggered": "Last triggered",
+                "trigger": "Trigger"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Tilt position"
+            },
+            "fan": {
+                "speed": "Speed",
+                "oscillate": "Oscillate",
+                "direction": "Direction"
+            },
+            "light": {
+                "brightness": "Brightness",
+                "color_temperature": "Color temperature",
+                "white_value": "White value",
+                "effect": "Effect"
+            },
+            "media_player": {
+                "text_to_speak": "Text to speak",
+                "source": "Source",
+                "sound_mode": "Sound mode"
+            },
+            "climate": {
+                "currently": "Currently",
+                "on_off": "On \/ off",
+                "target_temperature": "Target temperature",
+                "target_humidity": "Target humidity",
+                "operation": "Operation",
+                "fan_mode": "Fan mode",
+                "swing_mode": "Swing mode",
+                "away_mode": "Away mode",
+                "aux_heat": "Aux heat"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Lock",
+                "unlock": "Unlock"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Resume cleaning",
+                    "return_to_base": "Return to dock",
+                    "start_cleaning": "Start cleaning",
+                    "turn_on": "Turn on",
+                    "turn_off": "Turn off"
+                }
             }
         },
         "components": {
@@ -541,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "relative_time": {
+                "past": "{time} ago",
+                "future": "In {time}",
+                "never": "Never",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Loading state history...",
+                "no_history_found": "No state history found."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Turned on {entity}.",
+            "entity_turned_off": "Turned off {entity}.",
+            "service_called": "Service {service} called.",
+            "service_call_failed": "Failed to call service {service}.",
+            "connection_lost": "Connection lost. Reconnecting…"
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Save",
+                "name": "Name",
+                "entity_id": "Entity ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Do you want to save this login?",
+            "decline": "No thanks",
+            "confirm": "Save login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Click button to configure {entity}",
+            "empty": "No Notifications",
+            "title": "Notifications"
         }
     },
     "domain": {
@@ -579,7 +841,8 @@
         "switch": "Switch",
         "updater": "Updater",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Vacuum"
     },
     "attribute": {
         "weather": {

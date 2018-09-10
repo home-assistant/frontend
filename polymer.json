@@ -1,31 +1,39 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/home-assistant.html",
+  "shell": "src/entrypoints/app.js",
   "fragments": [
-    "panels/config/ha-panel-config.html",
-    "panels/dev-event/ha-panel-dev-event.html",
-    "panels/dev-info/ha-panel-dev-info.html",
-    "panels/dev-mqtt/ha-panel-dev-mqtt.html",
-    "panels/dev-service/ha-panel-dev-service.html",
-    "panels/dev-state/ha-panel-dev-state.html",
-    "panels/dev-template/ha-panel-dev-template.html",
-    "panels/hassio/ha-panel-hassio.html",
-    "panels/history/ha-panel-history.html",
-    "panels/iframe/ha-panel-iframe.html",
-    "panels/kiosk/ha-panel-kiosk.html",
-    "panels/logbook/ha-panel-logbook.html",
-    "panels/map/ha-panel-map.html",
-    "panels/shopping-list/ha-panel-shopping-list.html",
-    "panels/mailbox/ha-panel-mailbox.html",
-    "src/resources/ha-chart-scripts.html"
+    "src/panels/config/ha-panel-config.js",
+    "src/panels/dev-event/ha-panel-dev-event.js",
+    "src/panels/dev-info/ha-panel-dev-info.js",
+    "src/panels/dev-mqtt/ha-panel-dev-mqtt.js",
+    "src/panels/dev-service/ha-panel-dev-service.js",
+    "src/panels/dev-state/ha-panel-dev-state.js",
+    "src/panels/dev-template/ha-panel-dev-template.js",
+    "src/panels/history/ha-panel-history.js",
+    "src/panels/iframe/ha-panel-iframe.js",
+    "src/panels/kiosk/ha-panel-kiosk.js",
+    "src/panels/logbook/ha-panel-logbook.js",
+    "src/panels/map/ha-panel-map.js",
+    "src/panels/shopping-list/ha-panel-shopping-list.js",
+    "src/panels/mailbox/ha-panel-mailbox.js",
+    "hassio/src/entrypoint.js"
   ],
   "sources": [
     "src/**/*",
-    "panels/**/*",
     "!src/translations/*"
   ],
   "lint": {
-    "rules": ["polymer-2"]
+    "rules": ["polymer-3"],
+    "ignoreWarnings": ["could-not-resolve-reference"],
+    "filesToIgnore": [
+      "**/*.html",
+      "**/src/panels/config/js/**/*.js",
+      "**/ha-paper-slider.js",
+      "**/ha-iconset-svg.js",
+      "**/ha-script-editor.js",
+      "**/ha-automation-editor.js",
+      "**/ha-big-calendar.js"
+    ]
   },
   "builds": [
     {

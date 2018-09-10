@@ -12,7 +12,8 @@
         "dev-events": "Zdarzenia",
         "dev-templates": "Szablony",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informacje"
+        "dev-info": "Informacje",
+        "calendar": "Kalendarz"
     },
     "state": {
         "default": {
@@ -126,14 +127,14 @@
         "camera": {
             "recording": "nagrywanie",
             "streaming": "strumieniowanie",
-            "idle": "bezczynna"
+            "idle": "nieaktywna"
         },
         "climate": {
             "off": "wyłączony",
             "on": "włączony",
             "heat": "ogrzewanie",
             "cool": "chłodzenie",
-            "idle": "bezczynny",
+            "idle": "nieaktywny",
             "auto": "automatyczny",
             "dry": "osuszanie",
             "fan_only": "tylko wentylator",
@@ -195,7 +196,7 @@
             "on": "włączony",
             "playing": "odtwarzanie",
             "paused": "pauza",
-            "idle": "bezczynny",
+            "idle": "nieaktywny",
             "standby": "tryb czuwania"
         },
         "plant": {
@@ -236,6 +237,32 @@
                 "initializing": "inicjalizacja ({query_stage})",
                 "dead": "martwy ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "pogodnie, noc",
+            "cloudy": "pochmurno",
+            "fog": "mgła",
+            "hail": "grad",
+            "lightning": "błyskawice",
+            "lightning-rainy": "burza",
+            "partlycloudy": "częściowe zachmurzenie",
+            "pouring": "ulewa",
+            "rainy": "deszczowo",
+            "snowy": "śnieżnie",
+            "snowy-rainy": "śnieżnie, deszczowo",
+            "sunny": "słonecznie",
+            "windy": "wietrznie",
+            "windy-variant": "wietrznie"
+        },
+        "vacuum": {
+            "cleaning": "sprzątanie",
+            "docked": "w stacji dokującej",
+            "error": "błąd",
+            "idle": "nieaktywny",
+            "off": "wyłączony",
+            "on": "włączony",
+            "paused": "wstrzymany",
+            "returning": "powrót do stacji dokującej"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "Uruchom ponownie",
                                 "stop": "Zatrzymaj"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Skonfiguruj powiadomienia push",
-                            "introduction": "Włącz tę opcję, aby otrzymywać powiadomienia push na tym urządzeniu",
-                            "push_notifications": "Powiadomienia push"
-                        },
-                        "translation": {
-                            "header": "Wybierz język",
-                            "introduction": "Wybierz język interfejsu Home Assistant'a na tym urządzeniu",
-                            "language": "Język"
-                        },
-                        "themes": {
-                            "header": "Ustaw motyw",
-                            "introduction": "Wybierz \"Backend-selected\", aby użyć dowolnego motywu, który wybiera backend lub wybierz motyw dla tego urządzenia",
-                            "theme": "Motyw"
                         }
                     }
                 },
@@ -338,7 +350,7 @@
                     "description": "Twórz i edytuj automatyzacje",
                     "picker": {
                         "header": "Edytor automatyzacji",
-                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzację. Przeczytaj [instrukcje] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant.",
+                        "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzację. Przeczytaj [instrukcje](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby upewnić się, że poprawnie skonfigurowałeś Home Assistant.",
                         "pick_automation": "Wybierz automatyzację do edycji",
                         "no_automations": "Nie znaleziono żadnych edytowalnych automatyzacji",
                         "add_automation": "Dodaj automatyzację"
@@ -351,7 +363,7 @@
                         "alias": "Nazwa",
                         "triggers": {
                             "header": "Wyzwalacze",
-                            "introduction": "Wyzwalacze uruchamiają przetwarzanie reguły automatyzacji. Możliwe jest określenie wielu wyzwalaczy dla tej samej reguły. Po uruchomieniu wyzwalacza Home Assistant potwierdzi ewentualne warunki i wywoła akcję. \n\n [Dowiedz się więcej o wyzwalaczach.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Wyzwalacze uruchamiają przetwarzanie reguły automatyzacji. Możliwe jest określenie wielu wyzwalaczy dla tej samej reguły. Po uruchomieniu wyzwalacza Home Assistant potwierdzi ewentualne warunki i wywoła akcję. \n\n[Dowiedz się więcej o wyzwalaczach.](Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Dodaj wyzwalacz",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -413,7 +425,7 @@
                         },
                         "conditions": {
                             "header": "Warunki",
-                            "introduction": "Warunki są opcjonalną częścią reguły automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest włączony. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony. \n\n [Dowiedz się więcej o warunkach.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Warunki są opcjonalną częścią reguły automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest włączony. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony. \n\n[Dowiedz się więcej o warunkach.](Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Dodaj warunek",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -458,7 +470,7 @@
                         },
                         "actions": {
                             "header": "Akcje",
-                            "introduction": "Akcje są wykonywane przez Home Assistant po uruchomieniu automatyki. \n\n [Dowiedz się więcej o akcjach.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcje są wykonywane przez Home Assistant po uruchomieniu automatyki. \n\n[Dowiedz się więcej o akcjach.](Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Dodaj akcję",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
@@ -492,12 +504,136 @@
                     }
                 },
                 "script": {
-                    "caption": "Skrypt",
+                    "caption": "Skrypty",
                     "description": "Twórz i edytuj skrypty"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Zarządzaj swoją siecią Z-Wave"
+                },
+                "users": {
+                    "caption": "Użytkownicy",
+                    "description": "Zarządzanie użytkownikami",
+                    "picker": {
+                        "title": "Użytkownicy"
+                    },
+                    "editor": {
+                        "rename_user": "Zmień nazwę użytkownika",
+                        "change_password": "Zmień hasło",
+                        "activate_user": "Aktywuj użytkownika",
+                        "deactivate_user": "Dezaktywuj użytkownika",
+                        "delete_user": "Usuń użytkownika"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Powiadomienia push",
+                    "description": "Wysyłaj powiadomienia na to urządzenie",
+                    "error_load_platform": "Skonfiguruj notify.html5.",
+                    "error_use_https": "Wymagany protokół SSL dla interfejsu użytkownika.",
+                    "push_notifications": "Powiadomienia push",
+                    "link_promo": "Dowiedz się więcej"
+                },
+                "language": {
+                    "header": "Język",
+                    "link_promo": "Pomóż w tłumaczeniu",
+                    "dropdown_label": "Język"
+                },
+                "themes": {
+                    "header": "Motyw",
+                    "error_no_theme": "Brak dostępnych motywów.",
+                    "link_promo": "Dowiedz się więcej o motywch",
+                    "dropdown_label": "Motyw"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Inicjowanie",
+                "authorizing_client": "Czy na pewno chcesz dać dostęp {clientId} do Twojej instancji Home Assistant.",
+                "logging_in_with": "Logowanie za pomocą ** {authProviderName} **.",
+                "pick_auth_provider": "Lub zaloguj się za pomocą",
+                "abort_intro": "Logowanie przerwane",
+                "form": {
+                    "working": "Proszę czekać",
+                    "unknown_error": "Coś poszło nie tak",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nazwa użytkownika",
+                                        "password": "Hasło"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dwuskładnikowy kod uwierzytelniający"
+                                    },
+                                    "description": "Otwórz ** {mfa_module_name} ** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nieprawidłowa nazwa użytkownika lub hasło",
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
+                            },
+                            "abort": {
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Hasło API"
+                                    },
+                                    "description": "Proszę wprowadzić hasło API w Twoim configu http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dwuskładnikowy kod uwierzytelniający"
+                                    },
+                                    "description": "Otwórz ** {mfa_module_name} ** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nieprawidłowe hasło API",
+                                "invalid_code": "Nieprawidłowy kod uwierzytelniający"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Nie masz skonfigurowanego hasła interfejsu API.",
+                                "login_expired": "Sesja wygasła, zaloguj się ponownie."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Użytkownik"
+                                    },
+                                    "description": "Proszę wybrać użytkownika, na którego chcesz się zalogować jako:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Twój komputer nie znajduje się na białej liście."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Czy jesteś gotowy, aby obudzić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
+                "user": {
+                    "intro": "Zacznijmy od utworzenia konta użytkownika.",
+                    "required_field": "Wymagane",
+                    "data": {
+                        "name": "Imię",
+                        "username": "Nazwa użytkownika",
+                        "password": "Hasło"
+                    },
+                    "create_account": "Utwórz konto",
+                    "error": {
+                        "required_fields": "Wypełnij wszystkie wymagane pola"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
             "week": "{count} {count, plural,\n  one {tydzień}\n  other {tygodni(e)}\n}",
-            "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekund(y)}\n}"
+            "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekund(y)}\n}",
+            "minute": "{count} {count, plural,\none {minuta}\nother {minut(y)}\n}",
+            "hour": "{count} {count, plural,\none {godzina}\nother {godzin(y)}\n}"
         },
         "login-form": {
             "password": "Hasło",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Odrzuć"
+            },
+            "scene": {
+                "activate": "Aktywuj"
+            },
+            "script": {
+                "execute": "Wykonaj"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Ciśnienie",
+                    "humidity": "Wilgotność",
+                    "temperature": "Temperatura",
+                    "visibility": "Widoczność",
+                    "wind_speed": "Prędkość wiatru"
+                },
+                "cardinal_direction": {
+                    "e": "zach.",
+                    "ene": "wsch. płn.-wsch.",
+                    "ese": "wsch. płd.-wsch.",
+                    "n": "płn.",
+                    "ne": "płn.-wsch.",
+                    "nne": "płn. płn.-wsch.",
+                    "nw": "płn.-zach.",
+                    "nnw": "płn. płn.-zach.",
+                    "s": "płd.",
+                    "se": "płd.-wsch.",
+                    "sse": "płd. płd.-wsch.",
+                    "ssw": "płd. płd.-zach.",
+                    "sw": "płd.-zach.",
+                    "w": "zach.",
+                    "wnw": "zach. płn.-zach.",
+                    "wsw": "zach. płd.-zach."
+                },
+                "forecast": "Prognoza"
+            },
+            "alarm_control_panel": {
+                "code": "Kod",
+                "clear_code": "Wyczyść",
+                "disarm": "Rozbrojony",
+                "arm_home": "Uzbrojony (w domu)",
+                "arm_away": "Uzbrojony (nieobecny)"
+            },
+            "automation": {
+                "last_triggered": "Ostatnie uruchomienie",
+                "trigger": "Uruchom"
+            },
+            "cover": {
+                "position": "Pozycja",
+                "tilt_position": "Pochylenie"
+            },
+            "fan": {
+                "speed": "Prędkość",
+                "oscillate": "Oscylacja",
+                "direction": "Kierunek"
+            },
+            "light": {
+                "brightness": "Jasność",
+                "color_temperature": "Temperatura barwy",
+                "white_value": "Biel",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Zamień tekst na mowę",
+                "source": "Źródło",
+                "sound_mode": "Tryb dźwięku"
+            },
+            "climate": {
+                "currently": "Obecnie",
+                "on_off": "Wł. \/ wył.",
+                "target_temperature": "Docelowa temperatura",
+                "target_humidity": "Docelowa wilgotność",
+                "operation": "Tryb działania",
+                "fan_mode": "Tryb pracy wentylatora",
+                "swing_mode": "Tryb ruchu łopatek",
+                "away_mode": "Tryb poza domem",
+                "aux_heat": "Dodatkowe źródło ciepła"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "Zablokuj",
+                "unlock": "Odblokuj"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Wznów sprzątanie",
+                    "return_to_base": "Wróć do stacji dokującej",
+                    "start_cleaning": "Rozpocznij sprzątanie",
+                    "turn_on": "Włącz",
+                    "turn_off": "Wyłącz"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Usługa"
+            },
+            "relative_time": {
+                "past": "{time} temu",
+                "future": "Za {time}",
+                "never": "Nigdy",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekund(y)}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuta}\n  other {minut(y)}\n}",
+                    "hour": "{count} {count, plural,\n  one {godzina}\n  other {godzin(y)}\n}",
+                    "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
+                    "week": "{count} {count, plural,\n  one {tydzień}\n  other {tygodni(e)}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Ładowanie historii...",
+                "no_history_found": "Nie znaleziono historii."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Włączono {entity}.",
+            "entity_turned_off": "Wyłączono {entity}.",
+            "service_called": "Usługa {service} wywołana.",
+            "service_call_failed": "Nie udało się wywołać usługi {service}.",
+            "connection_lost": "Utracono połączenie. Łączę ponownie..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Zapisz",
+                "name": "Nazwa",
+                "entity_id": "Identyfikator encji"
+            }
+        },
+        "auth_store": {
+            "ask": "Czy chcesz zapamiętać dane logowania?",
+            "decline": "Nie, dziękuję",
+            "confirm": "Zapamiętaj"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Kliknij przycisk, aby skonfigurować {entity}",
+            "empty": "Brak powiadomień",
+            "title": "Powiadomienia"
         }
     },
     "domain": {
@@ -573,7 +841,8 @@
         "switch": "Przełącznik",
         "updater": "Aktualizator",
         "weblink": "Link",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Odkurzacz"
     },
     "attribute": {
         "weather": {

@@ -12,7 +12,8 @@
         "dev-events": "Evenimente",
         "dev-templates": "Sabloane",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Calendar"
     },
     "state": {
         "default": {
@@ -47,28 +48,28 @@
                 "on": "Umed"
             },
             "gas": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "motion": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "occupancy": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "smoke": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "sound": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "vibration": {
-                "off": "Curat",
-                "on": "Detectat"
+                "off": "Liber",
+                "on": "Detecție"
             },
             "opening": {
                 "off": "Închis",
@@ -236,6 +237,32 @@
                 "initializing": "Se inițializează ( {query_stage} )",
                 "dead": "Inactiv ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Noapte senină",
+            "cloudy": "Noros",
+            "fog": "Ceaţă",
+            "hail": "Grindină",
+            "lightning": "Desărcări electrice",
+            "lightning-rainy": "Ploaie cu descărcări electrice",
+            "partlycloudy": "Parțial noros",
+            "pouring": "Aversă",
+            "rainy": "Ploios",
+            "snowy": "Zăpadă",
+            "snowy-rainy": "Lapoviță și ninsoare",
+            "sunny": "însorit",
+            "windy": "Vant",
+            "windy-variant": "Vant"
+        },
+        "vacuum": {
+            "cleaning": "Curățare",
+            "docked": "Andocat",
+            "error": "Eroare",
+            "idle": "Inactiv",
+            "off": "Oprit",
+            "on": "Pornit",
+            "paused": "Întrerupt",
+            "returning": "În curs de întoarcere la doc"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "Repornire",
                                 "stop": "Oprire"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurați notificările push",
-                            "introduction": "Activați această setare pentru a primi notificări push pe acest dispozitiv",
-                            "push_notifications": "Notificări push"
-                        },
-                        "translation": {
-                            "header": "Alegeți o limbă",
-                            "introduction": "Alegeți limba pentru interfața Home Assistant de pe acest dispozitiv",
-                            "language": "Limba"
-                        },
-                        "themes": {
-                            "header": "Setați o temă",
-                            "introduction": "Alegeți \"Backend-selected\" pentru a utiliza orice temă pe care o alege opțiunea de backend sau alegeți o temă pentru acest dispozitiv",
-                            "theme": "Temă"
                         }
                     }
                 },
@@ -498,6 +510,60 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gestionați-vă rețeaua Z-Wave"
+                },
+                "users": {
+                    "caption": "Utilizatori",
+                    "description": "Gestionați utilizatorii",
+                    "picker": {
+                        "title": "Utilizatori"
+                    },
+                    "editor": {
+                        "rename_user": "Redenumiți utilizatorul",
+                        "change_password": "Schimbaţi parola",
+                        "activate_user": "Activați utilizatorul",
+                        "deactivate_user": "Dezactivați utilizatorul",
+                        "delete_user": "Ștergeți utilizatorul"
+                    }
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "homeassistant": {
+                            "error": {
+                                "invalid_code": "Codul 'Two-factor Authentication' invalid"
+                            },
+                            "abort": {
+                                "login_expired": "Sesiunea a expirat, va rugam logati-va din nou."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "description": "Introduceti parola API in http config:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codul 'Two-factor Authentication'"
+                                    },
+                                    "description": "Deschideti **{mfa_module_name}** pe dispozitivul d-voastra pentru a vedea codul de 'two-factor authentication' si a va verifica indentitatea:"
+                                }
+                            },
+                            "error": {
+                                "invalid_code": "Cod de autentificare invalid"
+                            },
+                            "abort": {
+                                "login_expired": "Sesiune expirata, e nevoie sa va logati din nou."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "Selectati utilizatorul cu care doriti sa va logati:"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -512,7 +578,9 @@
         "duration": {
             "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
             "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}",
-            "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}"
+            "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
+            "minute": "{count}{count, plural,\n  un { minute }\n  alte { minutes }\n}",
+            "hour": "{count}{count, plural,\n  o { hour }\n  alte { hours }\n}"
         },
         "login-form": {
             "password": "Parola",
@@ -525,6 +593,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Ascunde"
+            },
+            "scene": {
+                "activate": "Activati"
+            },
+            "script": {
+                "execute": "Executa"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Presiunea aerului",
+                    "humidity": "Umiditate",
+                    "temperature": "Temperatura",
+                    "visibility": "Vizibilitate",
+                    "wind_speed": "Viteza vântului"
+                },
+                "cardinal_direction": {
+                    "e": "Est",
+                    "ene": "EstNordEst",
+                    "ese": "EstSudEst",
+                    "n": "Nord",
+                    "ne": "NordEst",
+                    "nne": "NordNordEst",
+                    "nw": "NW",
+                    "nnw": "NordNordVest",
+                    "s": "Sud",
+                    "se": "SudEst",
+                    "sse": "SudSudEst",
+                    "ssw": "SudSudVest",
+                    "sw": "SudVest",
+                    "w": "Vest",
+                    "wnw": "VestNordVest",
+                    "wsw": "VestSudVest"
+                },
+                "forecast": "Prognoză"
+            },
+            "alarm_control_panel": {
+                "code": "Cod Alarmă",
+                "clear_code": "Şterge",
+                "disarm": "Dezarmat",
+                "arm_home": "Armat acasă",
+                "arm_away": "Armat plecat"
+            },
+            "automation": {
+                "last_triggered": "Ultima declanșare",
+                "trigger": "Declanşare"
+            },
+            "cover": {
+                "position": "Poziţie",
+                "tilt_position": "Poziție de înclinare"
+            },
+            "fan": {
+                "speed": "Viteză",
+                "oscillate": "Oscilare",
+                "direction": "Direcţie"
+            },
+            "light": {
+                "brightness": "Luminozitate",
+                "color_temperature": "Temperatura de culoare",
+                "white_value": "Valoare albă",
+                "effect": "Efect"
+            },
+            "media_player": {
+                "text_to_speak": "Text pentru a vorbi",
+                "source": "Sursă",
+                "sound_mode": "Mod sunet"
+            },
+            "climate": {
+                "currently": "În prezent",
+                "on_off": "Pornit \/ Oprit",
+                "target_temperature": "Temperatura țintă",
+                "target_humidity": "Țintă umiditate",
+                "operation": "Operație",
+                "fan_mode": "Mod ventilator",
+                "swing_mode": "Mod baleare",
+                "away_mode": "Plecat",
+                "aux_heat": "Încălzire auxiliară"
+            },
+            "lock": {
+                "code": "Cod",
+                "lock": "Blocat",
+                "unlock": "Deblocare"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reluați curățarea",
+                    "return_to_base": "Întoarcere la doc",
+                    "start_cleaning": "Începeți curățarea",
+                    "turn_on": "Porniți",
+                    "turn_off": "Opriți"
+                }
             }
         },
         "components": {
@@ -535,6 +693,36 @@
             },
             "service-picker": {
                 "service": "Serviciu"
+            },
+            "relative_time": {
+                "past": "{time} în urmă",
+                "future": "În {time}",
+                "never": "Niciodată",
+                "duration": {
+                    "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
+                    "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
+                    "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
+                    "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
+                    "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Încărcarea istoricului de stare ...",
+                "no_history_found": "Nici un istoric de stare nu a fost găsit."
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Pornit {entity}",
+            "entity_turned_off": "Oprit {entity}.",
+            "service_called": "Serviciu {service} apelat.",
+            "service_call_failed": "Nu s-a putut apela serviciul {service} .",
+            "connection_lost": "Conexiunea a fost pierdută. Se reconectează ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Salvați",
+                "name": "Nume",
+                "entity_id": "ID-ul entității"
             }
         }
     },
@@ -573,7 +761,8 @@
         "switch": "Comutator",
         "updater": "Updater",
         "weblink": "Legătură web",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspirator"
     },
     "attribute": {
         "weather": {

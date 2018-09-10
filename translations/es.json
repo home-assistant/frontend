@@ -12,7 +12,8 @@
         "dev-events": "Eventos",
         "dev-templates": "Plantillas",
         "dev-mqtt": "MQTT",
-        "dev-info": "Información"
+        "dev-info": "Información",
+        "calendar": "Calendario"
     },
     "state": {
         "default": {
@@ -99,11 +100,11 @@
                 "on": "Frio"
             },
             "door": {
-                "off": "Cerrado",
+                "off": "Cerrada",
                 "on": "Abierto"
             },
             "garage_door": {
-                "off": "Cerrado",
+                "off": "Cerrada",
                 "on": "Abierto"
             },
             "heat": {
@@ -111,7 +112,7 @@
                 "on": "Caliente"
             },
             "window": {
-                "off": "Cerrado",
+                "off": "Cerrada",
                 "on": "Abierto"
             },
             "lock": {
@@ -236,6 +237,32 @@
                 "initializing": "Inicializando ({query_stage})",
                 "dead": "No responde ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Despejado, de noche",
+            "cloudy": "Nublado",
+            "fog": "Niebla",
+            "hail": "Granizo",
+            "lightning": "Relámpagos",
+            "lightning-rainy": "Relámpagos, lluvioso",
+            "partlycloudy": "Parcialmente nublado",
+            "pouring": "Torrencial",
+            "rainy": "Lluvioso",
+            "snowy": "Nevado",
+            "snowy-rainy": "Nevado, lluvioso",
+            "sunny": "Soleado",
+            "windy": "Ventoso",
+            "windy-variant": "Ventoso"
+        },
+        "vacuum": {
+            "cleaning": "Limpiando",
+            "docked": "En base",
+            "error": "Error",
+            "idle": "Inactivo",
+            "off": "Apagado",
+            "on": "Encendido",
+            "paused": "En pausa",
+            "returning": "Volviendo a la base"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "Reiniciar",
                                 "stop": "Detener"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurar notificaciones push",
-                            "introduction": "Habilite esta opción para recibir notificaciones push en este dispositivo",
-                            "push_notifications": "Notificaciones Push"
-                        },
-                        "translation": {
-                            "header": "Elija un idioma",
-                            "introduction": "Elija un idioma para la interfaz de Home Assistant en este dispositivo",
-                            "language": "Idioma"
-                        },
-                        "themes": {
-                            "header": "Establecer un tema",
-                            "introduction": "Elija 'Backend-seleccionado\" utilizar cualquier tema de interés para el backend escoge o elige un tema para este dispositivo",
-                            "theme": "Tema"
                         }
                     }
                 },
@@ -463,7 +475,7 @@
                             "duplicate": "Duplicar",
                             "delete": "Borrar",
                             "delete_confirm": "¿Está seguro de querer borrar?",
-                            "unsupported_action": "Acción no admitida : {acción}",
+                            "unsupported_action": "Acción no admitida : {action}",
                             "type_select": "Tipo de acción",
                             "type": {
                                 "service": {
@@ -472,7 +484,7 @@
                                 },
                                 "delay": {
                                     "label": "Retardo",
-                                    "delay": "Retardo"
+                                    "delay": "Demora"
                                 },
                                 "wait_template": {
                                     "label": "Esperar",
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Administre su red Z-Wave"
+                },
+                "users": {
+                    "caption": "Usuarios",
+                    "description": "Administrar usuarios",
+                    "picker": {
+                        "title": "Usuarios"
+                    },
+                    "editor": {
+                        "rename_user": "Renombrar usuario",
+                        "change_password": "Cambia la contraseña",
+                        "activate_user": "Activar usuario",
+                        "deactivate_user": "Desactivar usuario",
+                        "delete_user": "Borrar usuario"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificaciones push",
+                    "description": "Enviar notificaciones a este dispositivo",
+                    "error_load_platform": "Configurar notify.html5.",
+                    "error_use_https": "Requiere SSL habilitado para frontend.",
+                    "push_notifications": "Notificaciones push",
+                    "link_promo": "Aprender más"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ayuda traduciendo",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "No hay temas disponibles",
+                    "link_promo": "Aprenda sobre los temas",
+                    "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Inicializando",
+                "authorizing_client": "Está por dar acceso a {clientId} a su instancia de Home Assistant.",
+                "logging_in_with": "Iniciando sesión con ** {authProviderName} **.",
+                "pick_auth_provider": "O inicia sesión con",
+                "abort_intro": "Inicio de sesión cancelado",
+                "form": {
+                    "working": "Por favor, espere",
+                    "unknown_error": "Algo salió mal",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nombre de usuario",
+                                        "password": "Contraseña"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticado de dos factores"
+                                    },
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código autenticado de dos factores y verificar su identidad:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nombre de usuario o contraseña inválidos",
+                                "invalid_code": "Código de autenticación inválido"
+                            },
+                            "abort": {
+                                "login_expired": "La sesión expiró, por favor inicie sesión de nuevo."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Contraseña de API"
+                                    },
+                                    "description": "Por favor, introduzca la contraseña de la API en su configuración http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Código de autenticar de dos factores"
+                                    },
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código autenticado de dos factores y verificar su identidad:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Contraseña de API inválida",
+                                "invalid_code": "Código de verificación invalido"
+                            },
+                            "abort": {
+                                "no_api_password_set": "No tienes una contraseña de API configurada.",
+                                "login_expired": "Sesión vencida, por favor iniciar sesión de nuevo."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Usuario"
+                                    },
+                                    "description": "Por favor, seleccione el usuario con el que desea iniciar sesión:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Tu computadora no está en la lista de autorizados."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
+                "user": {
+                    "intro": "Comencemos creando una cuenta de usuario.",
+                    "required_field": "Obligatorio",
+                    "data": {
+                        "name": "Nombre",
+                        "username": "Nombre de usuario",
+                        "password": "Contraseña"
+                    },
+                    "create_account": "Crear una cuenta",
+                    "error": {
+                        "required_fields": "Complete todos los campos requeridos"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {día}\nother {días}\n}",
             "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}",
-            "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}"
+            "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}",
+            "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
+            "hour": "{count} {count, plural,\nuna {hora}\nother {horas}\n}"
         },
         "login-form": {
             "password": "Contraseña",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Descartar"
+            },
+            "scene": {
+                "activate": "Activar"
+            },
+            "script": {
+                "execute": "Ejecutar"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Presión del aire",
+                    "humidity": "Humedad",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilidad",
+                    "wind_speed": "Velocidad del viento"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NO",
+                    "nnw": "NNO",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
+                },
+                "forecast": "Pronóstico"
+            },
+            "alarm_control_panel": {
+                "code": "Código",
+                "clear_code": "Limpiar",
+                "disarm": "Desarmar",
+                "arm_home": "Armar en casa",
+                "arm_away": "Armar fuera de casa"
+            },
+            "automation": {
+                "last_triggered": "Última activación",
+                "trigger": "Desencadenar"
+            },
+            "cover": {
+                "position": "Posición",
+                "tilt_position": "Posición inclinada"
+            },
+            "fan": {
+                "speed": "Velocidad",
+                "oscillate": "Oscilar",
+                "direction": "Dirección"
+            },
+            "light": {
+                "brightness": "Brillo",
+                "color_temperature": "Temperatura del color",
+                "white_value": "Valor de blanco",
+                "effect": "Efecto"
+            },
+            "media_player": {
+                "text_to_speak": "Texto para hablar",
+                "source": "Fuente",
+                "sound_mode": "Modo de sonido"
+            },
+            "climate": {
+                "currently": "Actualmente",
+                "on_off": "Encendido \/ Apagado",
+                "target_temperature": "Temperatura fijada",
+                "target_humidity": "Humedad fijada",
+                "operation": "Modo",
+                "fan_mode": "Modo del ventilador",
+                "swing_mode": "Modo de oscilación",
+                "away_mode": "Fuera de casa",
+                "aux_heat": "Calor auxiliar"
+            },
+            "lock": {
+                "code": "Código",
+                "lock": "Bloquear",
+                "unlock": "Desbloquear"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reanudar la limpieza",
+                    "return_to_base": "Volver a la base",
+                    "start_cleaning": "Empezar la limpieza",
+                    "turn_on": "Encender",
+                    "turn_off": "Apagar"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Servicio"
+            },
+            "relative_time": {
+                "past": "hace {time} ",
+                "future": "En {time}",
+                "never": "Nunca",
+                "duration": {
+                    "second": "{count} {count, plural,\none {segundo}\nother {segundos}\n}",
+                    "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
+                    "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}",
+                    "day": "{count} {count, plural,\none {día}\nother {días}\n}",
+                    "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Cargando historial de estado ...",
+                "no_history_found": "No se encontró historial de estado."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Encendido {entity}.",
+            "entity_turned_off": "Apagado {entity}.",
+            "service_called": "Servicio {service} llamado.",
+            "service_call_failed": "Error al llamar al servicio {service} .",
+            "connection_lost": "Conexión perdida. Reconectando ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Guardar",
+                "name": "Nombre",
+                "entity_id": "Identificación de la entidad"
+            }
+        },
+        "auth_store": {
+            "ask": "¿Quieres guardar este inicio de sesión?",
+            "decline": "No, gracias",
+            "confirm": "Guardar usuario"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Haga clic en el botón para configurar {entity}",
+            "empty": "Sin Notificaciones",
+            "title": "Notificaciones"
         }
     },
     "domain": {
@@ -573,7 +841,8 @@
         "switch": "Interruptor",
         "updater": "Actualizador",
         "weblink": "Enlace web",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspiradora"
     },
     "attribute": {
         "weather": {

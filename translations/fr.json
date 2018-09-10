@@ -10,9 +10,10 @@
         "dev-services": "Services",
         "dev-states": "États",
         "dev-events": "Événements",
-        "dev-templates": "Modèles",
+        "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Calendrier"
     },
     "state": {
         "default": {
@@ -23,9 +24,9 @@
         },
         "alarm_control_panel": {
             "armed": "Enclenchée",
-            "disarmed": "Désactivé",
+            "disarmed": "Désactivée",
             "armed_home": "Enclenchée (présent)",
-            "armed_away": "Enclenché (absent)",
+            "armed_away": "Enclenchée (absent)",
             "armed_night": "Enclenché (nuit)",
             "pending": "En attente",
             "arming": "Activation",
@@ -47,7 +48,7 @@
                 "on": "Humide"
             },
             "gas": {
-                "off": "Non décelé",
+                "off": "Non détecté",
                 "on": "Détecté"
             },
             "motion": {
@@ -126,7 +127,7 @@
         "camera": {
             "recording": "Enregistrement",
             "streaming": "Diffusion en cours",
-            "idle": "Inactif"
+            "idle": "En veille"
         },
         "climate": {
             "off": "Off",
@@ -195,7 +196,7 @@
             "on": "On",
             "playing": "Lecture en cours",
             "paused": "En pause",
-            "idle": "Inactif",
+            "idle": "En veille",
             "standby": "En veille"
         },
         "plant": {
@@ -228,14 +229,40 @@
         "zwave": {
             "default": {
                 "initializing": "Initialisation",
-                "dead": "Mort",
+                "dead": "Morte",
                 "sleeping": "En veille",
                 "ready": "Prêt"
             },
             "query_stage": {
                 "initializing": "Initialisation ({query_stage})",
-                "dead": "Mort ({query_stage})"
+                "dead": "Morte ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Nuit dégagée",
+            "cloudy": "Nuageux",
+            "fog": "Brouillard",
+            "hail": "Grêle",
+            "lightning": "Orage",
+            "lightning-rainy": "Orage \/ Pluie",
+            "partlycloudy": "Partiellement nuageux",
+            "pouring": "Averses",
+            "rainy": "Pluie",
+            "snowy": "Neige",
+            "snowy-rainy": "Neige \/ Pluie",
+            "sunny": "Soleil",
+            "windy": "Vent",
+            "windy-variant": "Vent"
+        },
+        "vacuum": {
+            "cleaning": "Nettoyage",
+            "docked": "Sur la base",
+            "error": "Erreur",
+            "idle": "Inactif",
+            "off": "Off",
+            "on": "On",
+            "paused": "En pause",
+            "returning": "Retourne à la base"
         }
     },
     "state_badge": {
@@ -263,7 +290,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Effacement complété",
+                "clear_completed": "Effacement accompli",
                 "add_item": "Ajouter un élément",
                 "microphone_tip": "Cliquez sur le microphone en haut à droite et dites “Ajouter des bonbons à ma liste d'achat”"
             },
@@ -275,9 +302,9 @@
                 "showing_entries": "Afficher les entrées pour"
             },
             "mailbox": {
-                "empty": "Vous n'avez pas de message",
+                "empty": "Vous n'avez aucun message",
                 "playback_title": "Lecture de messages",
-                "delete_prompt": "Effacer ce message?",
+                "delete_prompt": "Supprimer ce message ?",
                 "delete_button": "Effacer"
             },
             "config": {
@@ -311,21 +338,6 @@
                                 "restart": "Redémarrer",
                                 "stop": "Arrêter"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurer les notifications push",
-                            "introduction": "Activer ce paramètre pour recevoir des notifications push sur cet appareil",
-                            "push_notifications": "Notifications push"
-                        },
-                        "translation": {
-                            "header": "Choisissez une langue",
-                            "introduction": "Choisissez une langue pour l'interface Home Assistant sur cet appareil",
-                            "language": "Langue"
-                        },
-                        "themes": {
-                            "header": "Définir un thème",
-                            "introduction": "Choisissez « Backend-selected » pour utiliser le thème choisit par le backend ou choisissez un thème pour cet appareil",
-                            "theme": "Thème"
                         }
                     }
                 },
@@ -344,9 +356,9 @@
                         "add_automation": "Ajouter une automatisation"
                     },
                     "editor": {
-                        "introduction": "Utilisez les automatisations pour rendre votre maison vivante",
+                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "default_name": "Nouvelle automatisation",
-                        "save": "sauvegarder",
+                        "save": "Sauvegarder",
                         "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
                         "alias": "Nom",
                         "triggers": {
@@ -354,8 +366,8 @@
                             "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Ajouter un déclencheur",
                             "duplicate": "Dupliquer",
-                            "delete": "Éfface",
-                            "delete_confirm": "Voulez-vous éffacé?",
+                            "delete": "Efface",
+                            "delete_confirm": "Voulez-vous effacer ?",
                             "unsupported_platform": "Platefome non supportée : {platform}",
                             "type_select": "Type de déclencheur",
                             "type": {
@@ -372,7 +384,7 @@
                                 "homeassistant": {
                                     "label": "Home Assistant",
                                     "event": "Événement :",
-                                    "start": "Démarrer",
+                                    "start": "Démarrage",
                                     "shutdown": "Arrêt"
                                 },
                                 "mqtt": {
@@ -390,7 +402,7 @@
                                     "label": "Soleil",
                                     "event": "Événement :",
                                     "sunrise": "Lever du soleil",
-                                    "sunset": "Coucher de soleil",
+                                    "sunset": "Coucher du soleil",
                                     "offset": "Décalage (optionnel)"
                                 },
                                 "template": {
@@ -406,18 +418,18 @@
                                     "entity": "Entité avec emplacement",
                                     "zone": "Zone",
                                     "event": "Événement :",
-                                    "enter": "Entrez",
-                                    "leave": "Quitté"
+                                    "enter": "Entre",
+                                    "leave": "Quitter"
                                 }
                             }
                         },
                         "conditions": {
                             "header": "Conditions",
-                            "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemble aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.\n\n[En apprendre plus sur les conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemblent aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.\n\n[En apprendre plus sur les conditions.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Ajouter une condition",
                             "duplicate": "Dupliquer",
-                            "delete": "Éffacement",
-                            "delete_confirm": "Voulez-vous éffacé?",
+                            "delete": "Effacement",
+                            "delete_confirm": "Voulez-vous effacer ?",
                             "unsupported_condition": "Condition non supportée : {condition}",
                             "type_select": "Type de condition",
                             "type": {
@@ -438,7 +450,7 @@
                                     "before_offset": "Décalage avant (optionnel)",
                                     "after_offset": "Décalage après (optionnel)",
                                     "sunrise": "Lever du soleil",
-                                    "sunset": "Coucher de soleil"
+                                    "sunset": "Coucher du soleil"
                                 },
                                 "template": {
                                     "label": "Template",
@@ -472,7 +484,7 @@
                                 },
                                 "delay": {
                                     "label": "Délai",
-                                    "delay": "Délais"
+                                    "delay": "Délai"
                                 },
                                 "wait_template": {
                                     "label": "Attendre",
@@ -483,8 +495,8 @@
                                     "label": "Condition"
                                 },
                                 "event": {
-                                    "label": "Déclencher l'événement",
-                                    "event": "Événement :",
+                                    "label": "Déclencher l'évènement",
+                                    "event": "Évènement :",
                                     "service_data": "Données du service"
                                 }
                             }
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gérez votre réseau Z-Wave"
+                },
+                "users": {
+                    "caption": "Utilisateurs",
+                    "description": "Gérer les utilisateurs",
+                    "picker": {
+                        "title": "Utilisateurs"
+                    },
+                    "editor": {
+                        "rename_user": "Renommer l'utilisateur",
+                        "change_password": "Changer le mot de passe",
+                        "activate_user": "Activer l'utilisateur",
+                        "deactivate_user": "Désactiver l'utilisateur",
+                        "delete_user": "Supprimer l'utilisateur"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notifications push",
+                    "description": "Envoyer des notifications à cet appareil.",
+                    "error_load_platform": "Configurer notify.html5.",
+                    "error_use_https": "Nécessite l'activation de SSL pour le frontend.",
+                    "push_notifications": "Notifications push",
+                    "link_promo": "En savoir plus"
+                },
+                "language": {
+                    "header": "Langue",
+                    "link_promo": "Aider à traduire",
+                    "dropdown_label": "Langue"
+                },
+                "themes": {
+                    "header": "Thème",
+                    "error_no_theme": "Aucun thème disponible.",
+                    "link_promo": "En savoir plus sur les thèmes",
+                    "dropdown_label": "Thème"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initialisation",
+                "authorizing_client": "Vous êtes sur le point de donner accès à {clientId} à votre instance de Home Assistant.",
+                "logging_in_with": "Se connecter avec **{authProviderName}**.",
+                "pick_auth_provider": "Ou connectez-vous avec",
+                "abort_intro": "Connexion interrompue",
+                "form": {
+                    "working": "Veuillez patienter",
+                    "unknown_error": "Quelque chose a mal tourné",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'utilisateur",
+                                        "password": "Mot de passe"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Code d'authentification à deux facteurs"
+                                    },
+                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'utilisateur ou mot de passe invalide",
+                                "invalid_code": "Code d'authentification invalide"
+                            },
+                            "abort": {
+                                "login_expired": "Session expirée, veuillez vous connecter à nouveau."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Mot de passe API"
+                                    },
+                                    "description": "Veuillez saisir le mot de passe API dans votre configuration http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Code d'authentification à deux facteurs"
+                                    },
+                                    "description": "Ouvrez le ** {mfa_module_name} ** sur votre appareil pour afficher votre code d'authentification à deux facteurs et vérifier votre identité:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Mot de passe API invalide",
+                                "invalid_code": "Code d'authentification invalide"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Vous n'avez pas de mot de passe API configuré.",
+                                "login_expired": "Session expirée, veuillez vous connecter à nouveau."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Utilisateur"
+                                    },
+                                    "description": "Sélectionnez l'utilisateur avec lequel vous souhaitez vous connecter :"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Votre ordinateur n'est pas en liste blanche."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Êtes-vous prêt à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs?",
+                "user": {
+                    "intro": "Commençons par créer un compte utilisateur.",
+                    "required_field": "Requis",
+                    "data": {
+                        "name": "Nom",
+                        "username": "Nom d'utilisateur",
+                        "password": "Mot de passe"
+                    },
+                    "create_account": "Créer un compte",
+                    "error": {
+                        "required_fields": "Remplissez tous les champs requis"
+                    }
                 }
             }
         },
@@ -512,12 +648,14 @@
         "duration": {
             "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
             "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}",
-            "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}"
+            "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
+            "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
+            "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}"
         },
         "login-form": {
             "password": "Mot de passe",
             "remember": "Se rappeler",
-            "log_in": "Identifiant"
+            "log_in": "Connexion"
         },
         "card": {
             "camera": {
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Ignorer"
+            },
+            "scene": {
+                "activate": "Activer"
+            },
+            "script": {
+                "execute": "Exécuter"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pression atmosphérique",
+                    "humidity": "Humidité",
+                    "temperature": "Température",
+                    "visibility": "Visibilité",
+                    "wind_speed": "Vitesse du vent"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "E-NE",
+                    "ese": "E-SE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "N-NE",
+                    "nw": "NO",
+                    "nnw": "N-NO",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "S-SE",
+                    "ssw": "S-SO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "O-NO",
+                    "wsw": "O-SO"
+                },
+                "forecast": "Prévisions"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Effacer",
+                "disarm": "Désarmer",
+                "arm_home": "Armer (domicile)",
+                "arm_away": "Armer (absent)"
+            },
+            "automation": {
+                "last_triggered": "Dernier déclenchement",
+                "trigger": "Déclencheur"
+            },
+            "cover": {
+                "position": "Emplacement",
+                "tilt_position": "Inclinaison"
+            },
+            "fan": {
+                "speed": "Vitesse",
+                "oscillate": "Osciller",
+                "direction": "Direction"
+            },
+            "light": {
+                "brightness": "Luminosité",
+                "color_temperature": "Température de couleur",
+                "white_value": "Niveau de blanc",
+                "effect": "Effet"
+            },
+            "media_player": {
+                "text_to_speak": "Texte à lire",
+                "source": "Source",
+                "sound_mode": "Mode sonore"
+            },
+            "climate": {
+                "currently": "Actuellement",
+                "on_off": "Allumé \/ Éteint",
+                "target_temperature": "Température cible",
+                "target_humidity": "Humidité cible",
+                "operation": "Opération",
+                "fan_mode": "Mode de ventilation",
+                "swing_mode": "Mode de balancement",
+                "away_mode": "Mode \"Absent\"",
+                "aux_heat": "Chauffage d'appoint"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Verrouiller",
+                "unlock": "Déverrouiller"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reprendre le nettoyage",
+                    "return_to_base": "Retourner à la base",
+                    "start_cleaning": "Commencer à nettoyer",
+                    "turn_on": "Allumer",
+                    "turn_off": "Éteindre"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "relative_time": {
+                "past": "{time} auparavant",
+                "future": "Dans {time}",
+                "never": "Jamais",
+                "duration": {
+                    "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
+                    "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Chargement de l'historique des valeurs ...",
+                "no_history_found": "Aucun historique des valeurs trouvé."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Allumage de \"{entity}\".",
+            "entity_turned_off": "Extinction de \"{entity}\".",
+            "service_called": "Service \"{service}\" appelé.",
+            "service_call_failed": "Échec d'appel du service \"{service}\".",
+            "connection_lost": "Connexion perdue. Reconnexion en cours ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Sauvegarder",
+                "name": "Nom",
+                "entity_id": "ID de l'entité"
+            }
+        },
+        "auth_store": {
+            "ask": "Voulez-vous enregistrer cette connexion?",
+            "decline": "Non merci",
+            "confirm": "Enregistrer la connexion"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Cliquez sur le bouton pour configurer {entity}",
+            "empty": "Aucune notification",
+            "title": "Notifications"
         }
     },
     "domain": {
@@ -550,7 +818,7 @@
         "cover": "Volets",
         "device_tracker": "Dispositif de suivi",
         "fan": "Ventilateur",
-        "history_graph": "Graphe de l’historique",
+        "history_graph": "Graphique historique",
         "group": "Groupe",
         "image_processing": "Traitement d’image",
         "input_boolean": "Entrée logique",
@@ -562,10 +830,10 @@
         "lock": "Verrou",
         "mailbox": "Boites aux lettres",
         "media_player": "Lecteur multimédia",
-        "notify": "Aviser",
+        "notify": "Notifier",
         "plant": "Plante",
         "proximity": "Proximité",
-        "remote": "Distant",
+        "remote": "Télécommande",
         "scene": "Scène",
         "script": "Script",
         "sensor": "Capteur",
@@ -573,7 +841,8 @@
         "switch": "Interrupteur",
         "updater": "Mise à jour",
         "weblink": "Lien",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspirateur"
     },
     "attribute": {
         "weather": {

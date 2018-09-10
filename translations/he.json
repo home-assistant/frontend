@@ -12,7 +12,8 @@
         "dev-events": "אירועים",
         "dev-templates": "תבניות",
         "dev-mqtt": "MQTT",
-        "dev-info": "מידע"
+        "dev-info": "מידע",
+        "calendar": "לוח שנה"
     },
     "state": {
         "default": {
@@ -113,6 +114,10 @@
             "window": {
                 "off": "סגור",
                 "on": "פתוח"
+            },
+            "lock": {
+                "off": "נעול",
+                "on": "לא נעול"
             }
         },
         "calendar": {
@@ -232,6 +237,32 @@
                 "initializing": "מאתחל ({query_stage})",
                 "dead": "מת ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "לילה בהיר",
+            "cloudy": "מעונן",
+            "fog": "ערפל",
+            "hail": "ברד",
+            "lightning": "ברק",
+            "lightning-rainy": "ברק, גשום",
+            "partlycloudy": "מעונן חלקית",
+            "pouring": "גשום",
+            "rainy": "גשום",
+            "snowy": "מושלג",
+            "snowy-rainy": "מושלג, גשום",
+            "sunny": "שמשי",
+            "windy": "סוער",
+            "windy-variant": "סוער"
+        },
+        "vacuum": {
+            "cleaning": "מנקה",
+            "docked": "בעגינה",
+            "error": "שגיאה",
+            "idle": "ממתין",
+            "off": "מכובה",
+            "on": "מופעל",
+            "paused": "מושהה",
+            "returning": "חזור לעגינה"
         }
     },
     "state_badge": {
@@ -277,22 +308,243 @@
                 "delete_button": "מחיקה"
             },
             "config": {
-                "zwave": {
-                    "caption": "Z-Wave"
+                "header": "הגדר את Home Assistant",
+                "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה Home Assistant. לא הכל ניתן להגדיר את ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
+                "core": {
+                    "caption": "כללי",
+                    "description": "בדיקת קובץ הקונפיגורציה שלך ושליטה על השרת",
+                    "section": {
+                        "core": {
+                            "header": "שליטה על הקונפיגורציה ועל השרת",
+                            "introduction": "שינוי התצורה שלך יכול להיות תהליך מייגע. אנחנו יודעים. חלק זה ינסה להפוך את החיים שלך קצת יותר קלים.",
+                            "validation": {
+                                "heading": "בדיקת הקונפיגורציה",
+                                "introduction": "אמת את הקונפיגורציה שלך אם ביצעת לאחרונה שינויים מסוימים וברצונך לוודא שהיא תקניה",
+                                "check_config": "בדיקת הקונפיגורציה",
+                                "valid": "קונפיגורציה תקינה!",
+                                "invalid": "קונפיגורציה לא תקנית"
+                            },
+                            "reloading": {
+                                "heading": "טען מחדש קונפיגורציה",
+                                "introduction": "חלקים מסוימים של Home Assistant יכולים להיטען מחדש ללא צורך בהפעלה מחדש.\nטעינה מחדש תשנה את הקונפיגורציה הנוכחית ותטען קונפיגורציה חדשה.",
+                                "core": "טען מחדש את הליבה",
+                                "group": "טען מחדש קבוצות",
+                                "automation": "טען מחדש אוטומציות",
+                                "script": "טען מחדש סקריפטים"
+                            },
+                            "server_management": {
+                                "heading": "ניהול שרת",
+                                "introduction": "לשלוט על שרת הHome Assistant שלך... מHome Assistant.",
+                                "restart": "הפעלה מחדש",
+                                "stop": "עצור"
+                            }
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "התאמה אישית",
+                    "description": "התאם אישית את הישויות שלך"
                 },
                 "automation": {
+                    "caption": "אוטומציה",
+                    "description": "צור וערוך אוטומציות",
+                    "picker": {
+                        "header": "עורך אוטומציה",
+                        "introduction": "עורך אוטומציה מאפשר לך ליצור ולערוך אוטומציה. אנא קרא את [ההוראות] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) כדי לוודא שהגדרת את ה - Home Assistant כהלכה.",
+                        "pick_automation": "בחר אוטומציה לעריכה",
+                        "no_automations": "לא הצלחנו למצוא שום אוטומציה הניתנת לעריכה",
+                        "add_automation": "הוסף אוטומציה"
+                    },
                     "editor": {
-                        "actions": {
+                        "introduction": "השתמש אוטומציות להביא את החיים לבית שלך",
+                        "default_name": "אוטומציה חדשה",
+                        "save": "שמור",
+                        "unsaved_confirm": "יש לך שינויים שלא נשמרו. אתה בטוח שאתה רוצה לעזוב?",
+                        "alias": "שם",
+                        "triggers": {
+                            "header": "טריגרים",
+                            "introduction": "טריגרים הם מה שמתחיל כל אוטומציה. ניתן לציין מספר טריגרים עבור אותו כלל. לאחר הפעלת טריגר, ה - Assistant Assistant יאמת את התנאים, אם קיימים, ויקרא לפעולה. \n\n [למידע נוסף על גורמים טריגרים.) (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "add": "הוספת טריגר",
+                            "duplicate": "שכפל",
+                            "delete": "מחק",
+                            "delete_confirm": "האם אתה בטוח שברצונך למחוק?",
+                            "unsupported_platform": "פלטפורמה לא נתמכת: {platform}",
+                            "type_select": "סוג מפעיל",
                             "type": {
+                                "event": {
+                                    "label": "אירוע",
+                                    "event_type": "סוג אירוע",
+                                    "event_data": "נתוני אירוע"
+                                },
+                                "state": {
+                                    "label": "מצב",
+                                    "from": "מ",
+                                    "to": "ל"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "event": "אירוע:",
+                                    "start": "התחל",
+                                    "shutdown": "כיבוי"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "נושא",
+                                    "payload": "Payload (אופציונלי)"
+                                },
+                                "numeric_state": {
+                                    "label": "מצב מספרי",
+                                    "above": "מעל",
+                                    "below": "מתחת",
+                                    "value_template": "תבנית ערך (אופציונלי)"
+                                },
+                                "sun": {
+                                    "label": "שמש",
+                                    "event": "אירוע",
+                                    "sunrise": "זריחה",
+                                    "sunset": "שקיעה",
+                                    "offset": "שקיעה (אופציונלי)"
+                                },
+                                "template": {
+                                    "label": "תבנית",
+                                    "value_template": "תבנית ערך"
+                                },
+                                "time": {
+                                    "label": "זמן",
+                                    "at": "ב"
+                                },
+                                "zone": {
+                                    "label": "אזור",
+                                    "entity": "ישות עם מיקום",
+                                    "zone": "אזור",
+                                    "event": "אירוע:",
+                                    "enter": "כניסה",
+                                    "leave": "יציאה"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "תנאים",
+                            "introduction": "התנאים הם חלק אופציונלי של כלל אוטומציה, וניתן להשתמש בהם כדי למנוע פעולה כלשהי בעת הפעלתה. התנאים נראים דומים מאוד לטריגרים אך הם שונים מאוד. הטריגר יסתכל על האירועים המתרחשים במערכת בעוד תנאי רק מסתכל על איך המערכת נראית עכשיו. הטריגר יכול שמתג נדלק. תנאי יכול לראות רק אם מתג מופעל או כבוי. \n\n [למידע נוסף על תנאים.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "add": "הוסף תנאי",
+                            "duplicate": "שכפל",
+                            "delete": "מחק",
+                            "delete_confirm": "אתה בטוח שאתה רוצה למחוק?",
+                            "unsupported_condition": "תנאי לא נתמך: {condition}",
+                            "type_select": "סוג תנאי",
+                            "type": {
+                                "state": {
+                                    "label": "מצב",
+                                    "state": "מצב"
+                                },
+                                "numeric_state": {
+                                    "label": "מצב מספרי",
+                                    "above": "מעל",
+                                    "below": "מתחת",
+                                    "value_template": "ערך תבנית (אופציונלי)"
+                                },
+                                "sun": {
+                                    "label": "שמש",
+                                    "before": "לפני:",
+                                    "after": "לאחר:",
+                                    "before_offset": "לפני השקיעה (אופציונלי)",
+                                    "after_offset": "לאחר השקיעה (אופציונלי)",
+                                    "sunrise": "זריחה",
+                                    "sunset": "שקיעה"
+                                },
+                                "template": {
+                                    "label": "תבנית",
+                                    "value_template": "ערך תבנית"
+                                },
+                                "time": {
+                                    "label": "זמן",
+                                    "after": "אחרי",
+                                    "before": "לפני"
+                                },
+                                "zone": {
+                                    "label": "אזור",
+                                    "entity": "ישות עם מיקום",
+                                    "zone": "אזור"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "פעולות",
+                            "introduction": "הפעולות הן מה שHome Assistant יעשה כאשר אוטומציה מופעלת. \n\n [למידע נוסף על פעולות.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "add": "הוסף פעולה",
+                            "duplicate": "שכפל",
+                            "delete": "מחק",
+                            "delete_confirm": "האם אתה בטוח שאתה רוצה למחוק?",
+                            "unsupported_action": "פעולה לא נתמכת: {action}",
+                            "type_select": "סוג פעולה",
+                            "type": {
+                                "service": {
+                                    "label": "קריאה לשירות",
+                                    "service_data": "נתוני שירות"
+                                },
+                                "delay": {
+                                    "label": "עיכוב",
+                                    "delay": "עיקוב"
+                                },
+                                "wait_template": {
+                                    "label": "לחכות",
+                                    "wait_template": "תבנית זמן",
+                                    "timeout": "זמן קצוב (אופציונלי)"
+                                },
                                 "condition": {
                                     "label": "תנאי"
                                 },
                                 "event": {
-                                    "event": "ארוע"
+                                    "label": "אירוע אש",
+                                    "event": "ארוע",
+                                    "service_data": "נתוני שירות"
                                 }
                             }
                         }
                     }
+                },
+                "script": {
+                    "caption": "סקריפט",
+                    "description": "צור וערוך סקריפטים"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "נהל את רשת ה- Z-Wave שלך"
+                },
+                "users": {
+                    "caption": "משתמשים",
+                    "description": "ניהול משתמשים",
+                    "picker": {
+                        "title": "משתמשים"
+                    },
+                    "editor": {
+                        "rename_user": "שנה שם משתמש",
+                        "change_password": "שינוי סיסמה",
+                        "activate_user": "הפעל משתמש",
+                        "deactivate_user": "בטל את המשתמש",
+                        "delete_user": "מחיקת משתמש"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "הודעות דחיפה",
+                    "description": "שלח התראות למכשיר זה",
+                    "error_load_platform": "הגדר את notify.html5.",
+                    "error_use_https": "נדרש SSL מופעל עבור הממשק.",
+                    "push_notifications": "הודעות דחיפה",
+                    "link_promo": "למד עוד"
+                },
+                "language": {
+                    "header": "שפה",
+                    "link_promo": "עזור לתרגם",
+                    "dropdown_label": "שפה"
+                },
+                "themes": {
+                    "header": "ערכת נושא",
+                    "error_no_theme": "אין ערכות נושא זמינות.",
+                    "link_promo": "למד אודות ערכות נושא",
+                    "dropdown_label": "ערכת נושא"
                 }
             }
         },
@@ -304,10 +556,160 @@
             "loading": "טוען",
             "cancel": "ביטול"
         },
+        "duration": {
+            "day": "יום ימים",
+            "week": "שבוע שבועות",
+            "second": "שניה שניות",
+            "minute": "דקה דקות",
+            "hour": "שעה שעות"
+        },
         "login-form": {
             "password": "סיסמה",
             "remember": "זכור",
             "log_in": "התחבר"
+        },
+        "card": {
+            "camera": {
+                "not_available": "התמונה אינה זמינה"
+            },
+            "persistent_notification": {
+                "dismiss": "בטל"
+            },
+            "scene": {
+                "activate": "הפעל"
+            },
+            "script": {
+                "execute": "ביצוע"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "לחץ אוויר",
+                    "humidity": "לחות",
+                    "temperature": "טמפרטורה",
+                    "visibility": "ראות",
+                    "wind_speed": "מהירות הרוח"
+                },
+                "cardinal_direction": {
+                    "e": "מזרח",
+                    "ene": " צפון מזרח",
+                    "ese": " דרום מזרח",
+                    "n": "צפון",
+                    "ne": "צפון מזרח",
+                    "nne": "צפון מזרח",
+                    "nw": "צפון מערב",
+                    "nnw": "צפון מערב",
+                    "s": "דרום",
+                    "se": "דרום מזרח",
+                    "sse": "דרום מזרח",
+                    "ssw": "דרום מערב",
+                    "sw": "דרום מערב",
+                    "w": "מערב",
+                    "wnw": "צפון מערב",
+                    "wsw": "דרום מערב"
+                },
+                "forecast": "תחזית"
+            },
+            "alarm_control_panel": {
+                "code": "קוד",
+                "clear_code": "נקה",
+                "disarm": "לא דרוך",
+                "arm_home": "דרוך בבית",
+                "arm_away": "דרוך לא בבית"
+            },
+            "automation": {
+                "last_triggered": "הפעלה אחרונה",
+                "trigger": "מפעיל"
+            },
+            "cover": {
+                "position": "מיקום",
+                "tilt_position": "הטיה"
+            },
+            "fan": {
+                "speed": "מהירות",
+                "oscillate": "נעים",
+                "direction": "כיוון"
+            },
+            "light": {
+                "brightness": "בהירות",
+                "color_temperature": "טמפרטורת הצבע",
+                "white_value": "לבן",
+                "effect": "אפקט"
+            },
+            "media_player": {
+                "text_to_speak": "טקסט לדיבור",
+                "source": "מקור",
+                "sound_mode": "מצב קול"
+            },
+            "climate": {
+                "currently": "כעת",
+                "on_off": "הפעלה \/ כיבוי",
+                "target_temperature": "טמפרטורת היעד",
+                "target_humidity": "לחות היעד",
+                "operation": "סוג",
+                "fan_mode": "מצב מאורר",
+                "swing_mode": "מצב נדנוד",
+                "away_mode": "מצב מחוץ לבית",
+                "aux_heat": "מסייע חום"
+            },
+            "lock": {
+                "code": "קוד",
+                "lock": "נעילה",
+                "unlock": "ביטול נעילה"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "לחדש את הניקוי",
+                    "return_to_base": "חזור לעגינה",
+                    "start_cleaning": "התחל לנקות",
+                    "turn_on": "הדלק",
+                    "turn_off": "כבה"
+                }
+            }
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "ישות"
+                }
+            },
+            "service-picker": {
+                "service": "שירות"
+            },
+            "relative_time": {
+                "past": "מלפני {time}",
+                "future": "ב{time}",
+                "never": "אף פעם לא",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {שנייה}\n  other {שניות}\n}",
+                    "minute": "{count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
+                    "hour": "{count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
+                    "day": "{count} {count, plural,\n  one {יום}\n  other {ימים}\n}",
+                    "week": "{count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "טוען היסטוריה...",
+                "no_history_found": "לא נמצאה היסטוריה"
+            }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} נדלק.",
+            "entity_turned_off": "{entity} נכבה.",
+            "service_called": "השירות {service} נקרא.",
+            "service_call_failed": "נכשלה הקריאה לשירות {service} .",
+            "connection_lost": "החיבור אבד. מתחבר מחדש..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "שמור",
+                "name": "שם",
+                "entity_id": "מזהה ישות"
+            }
+        },
+        "auth_store": {
+            "ask": "האם ברצונך לשמור את ההתחברות הזו?",
+            "decline": "לא תודה",
+            "confirm": "שמור התחברות"
         }
     },
     "domain": {
@@ -345,6 +747,14 @@
         "switch": "מתג",
         "updater": "המעדכן",
         "weblink": "קישור",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "שואב אבק"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "לחות",
+            "visibility": "ראות",
+            "wind_speed": "מהירות הרוח"
+        }
     }
 }

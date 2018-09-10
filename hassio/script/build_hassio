@@ -1,0 +1,14 @@
+#!/bin/sh
+# Builds the Hass.io app for production
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+OUTPUT_DIR=build
+
+rm -rf $OUTPUT_DIR
+
+node script/gen-icons.js
+NODE_ENV=production ../node_modules/.bin/webpack -p --config webpack.config.js

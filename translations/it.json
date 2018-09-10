@@ -12,7 +12,8 @@
         "dev-events": "Eventi",
         "dev-templates": "Modelli",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informazioni"
+        "dev-info": "Informazioni",
+        "calendar": "Calendario"
     },
     "state": {
         "default": {
@@ -157,7 +158,7 @@
         },
         "device_tracker": {
             "home": "A casa",
-            "not_home": "Fuori Casa"
+            "not_home": "Fuori"
         },
         "fan": {
             "off": "Spento",
@@ -167,7 +168,7 @@
             "off": "Spento",
             "on": "Acceso",
             "home": "A casa",
-            "not_home": "Fuori casa",
+            "not_home": "Fuori",
             "open": "Aperto",
             "opening": "Apertura",
             "closed": "Chiuso",
@@ -236,6 +237,32 @@
                 "initializing": "Inizializzazione ({query_stage})",
                 "dead": "Terminato ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Sereno, notte",
+            "cloudy": "Nuvoloso",
+            "fog": "Nebbia",
+            "hail": "Grandine",
+            "lightning": "Temporali",
+            "lightning-rainy": "Temporali, piovoso",
+            "partlycloudy": "Parzialmente nuvoloso",
+            "pouring": "Piogge intense",
+            "rainy": "Piovoso",
+            "snowy": "Nevoso",
+            "snowy-rainy": "Nevoso, piovoso",
+            "sunny": "Soleggiato",
+            "windy": "Ventoso",
+            "windy-variant": "Ventoso"
+        },
+        "vacuum": {
+            "cleaning": "Pulendo",
+            "docked": "In base",
+            "error": "Errore",
+            "idle": "Sconosciuto",
+            "off": "Spento",
+            "on": "Acceso",
+            "paused": "In pausa",
+            "returning": "Ritornando alla base"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "Riavviare",
                                 "stop": "Stop"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configura le notifiche push",
-                            "introduction": "Abilita questa impostazione per ricevere notifiche push su questo dispositivo",
-                            "push_notifications": "Notifiche push"
-                        },
-                        "translation": {
-                            "header": "Scegli una lingua",
-                            "introduction": "Scegli una lingua per l'interfaccia Home Assistant su questo dispositivo",
-                            "language": "Lingua"
-                        },
-                        "themes": {
-                            "header": "Imposta un tema",
-                            "introduction": "\nScegli \"Backend-selected\" per utilizzare qualunque tema il programma scelga o scegli un tema per questo dispositivo",
-                            "theme": "Tema"
                         }
                     }
                 },
@@ -338,20 +350,20 @@
                     "description": "Crea e modifica automazioni",
                     "picker": {
                         "header": "Editor automazione",
-                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi [le istruzioni] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assicurarti di aver configurato correttamente Home Assistant.",
+                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi [le istruzioni](https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assicurarti di aver configurato correttamente Home Assistant.",
                         "pick_automation": "Scegli l'automazione da modificare",
-                        "no_automations": "Nessuna automazioni modificabili trovata",
+                        "no_automations": "Nessuna automazione modificabile trovata",
                         "add_automation": "Aggiungi automazione"
                     },
                     "editor": {
                         "introduction": "Usa le automazioni per rendere viva la tua casa",
                         "default_name": "Nuova automazione",
                         "save": "Salva",
-                        "unsaved_confirm": "Hai modifiche non salvate. Sei sicuro di voler uscire?",
+                        "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?",
                         "alias": "Nome",
                         "triggers": {
                             "header": "Triggers",
-                            "introduction": "I trigger sono ciò che avvia l'elaborazione di una regola di automazione. È possibile specificare più trigger per la stessa regola. Una volta avviato il trigger, Home Assistant convaliderà le condizioni, se presenti, e chiamerà l'azione. \n\n [Ulteriori informazioni sui trigger.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "I trigger sono ciò che avvia l'elaborazione di una regola di automazione. È possibile specificare più trigger per la stessa regola. Una volta avviato il trigger, Home Assistant convaliderà le condizioni, se presenti, e chiamerà l'azione. \n\n [Ulteriori informazioni sui trigger.](Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Aggiungi trigger",
                             "duplicate": "Duplica",
                             "delete": "Cancella",
@@ -413,12 +425,12 @@
                         },
                         "conditions": {
                             "header": "Condizioni",
-                            "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \n\n [Ulteriori informazioni sulle condizioni.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \n\n [Ulteriori informazioni sulle condizioni.](Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Aggiungi condizione",
                             "duplicate": "Duplica",
                             "delete": "Cancella",
                             "delete_confirm": "Sicuro di voler eliminare?",
-                            "unsupported_condition": "Condizione non supportata: {condizione}",
+                            "unsupported_condition": "Condizione non supportata: {condition}",
                             "type_select": "Tipo di condizione",
                             "type": {
                                 "state": {
@@ -458,12 +470,12 @@
                         },
                         "actions": {
                             "header": "Azioni",
-                            "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.](Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Aggiungi azione",
                             "duplicate": "Duplica",
                             "delete": "Cancella",
                             "delete_confirm": "Sicuro di voler eliminare?",
-                            "unsupported_action": "Azione non supportata: {azione}",
+                            "unsupported_action": "Azione non supportata: {action}",
                             "type_select": "Tipo di azione",
                             "type": {
                                 "service": {
@@ -483,7 +495,7 @@
                                     "label": "Condizione"
                                 },
                                 "event": {
-                                    "label": "Evento incendio",
+                                    "label": "Scatena Evento",
                                     "event": "Evento:",
                                     "service_data": "Dato servizio"
                                 }
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gestisci la tua rete Z-Wave"
+                },
+                "users": {
+                    "caption": "Utenti",
+                    "description": "Gestisci gli utenti",
+                    "picker": {
+                        "title": "Utenti"
+                    },
+                    "editor": {
+                        "rename_user": "Rinomina utente",
+                        "change_password": "Cambia password",
+                        "activate_user": "Attiva utente",
+                        "deactivate_user": "Disattiva utente",
+                        "delete_user": "Elimina utente"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notifiche push",
+                    "description": "Invia notifiche a questo dispositivo.",
+                    "error_load_platform": "Configura notify.html5.",
+                    "error_use_https": "Richiede SSL abilitato per il frontend.",
+                    "push_notifications": "Notifiche push",
+                    "link_promo": "Per saperne di più"
+                },
+                "language": {
+                    "header": "Lingua",
+                    "link_promo": "Aiuta a tradurre",
+                    "dropdown_label": "Lingua"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Nessun tema disponibile.",
+                    "link_promo": "Per saperne di più sui temi",
+                    "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Inizializzazione",
+                "authorizing_client": "Stai per dare accesso {clientId} alla tua istanza di Assistente Home.",
+                "logging_in_with": "Accesso con ** {authProviderName} **.",
+                "pick_auth_provider": "Oppure accedi con",
+                "abort_intro": "Login interrotto",
+                "form": {
+                    "working": "Attendere prego",
+                    "unknown_error": "Qualcosa è andato storto",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nome utente",
+                                        "password": "Password"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codice di autenticazione a due fattori"
+                                    },
+                                    "description": "Apri ** {mfa_module_name} ** sul tuo dispositivo per visualizzare il codice di autenticazione a due fattori e verificare la tua identità:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nome utente o password errati",
+                                "invalid_code": "Codice di autenticazione non valido"
+                            },
+                            "abort": {
+                                "login_expired": "Sessione scaduta, effettua nuovamente il login."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Password API"
+                                    },
+                                    "description": "Inserisci l'API password nella configurazione http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codice di autenticazione a due fattori"
+                                    },
+                                    "description": "Apri il **{mfa_module_name}** sul tuo dispositivo per vedere il codice di autenticazione a due fattori (2FA) e verifica la tua identità:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Password API non valida",
+                                "invalid_code": "Codice di autenticazione non valido"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Non hai una password API configurata.",
+                                "login_expired": "Sessione scaduta, effettua nuovamente l'accesso."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Utente"
+                                    },
+                                    "description": "Perfavore, scegli l'utente con cui vuoi effettuare l'accesso:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Il tuo computer non è nella whitelist."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Sei pronto per risvegliare la tua casa, reclamare la tua privacy e far parte di una comunità mondiale di smanettoni?",
+                "user": {
+                    "intro": "Cominciamo con la creazione di un account utente.",
+                    "required_field": "Necessario",
+                    "data": {
+                        "name": "Nome",
+                        "username": "Nome utente",
+                        "password": "Password"
+                    },
+                    "create_account": "Crea un Account",
+                    "error": {
+                        "required_fields": "Compila tutti i campi richiesti"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {giorno}\nother {giorni}\n}",
             "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}",
-            "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}"
+            "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
+            "minute": "{count} {count, plural,\none {minuto}\nother {minuti}\n}",
+            "hour": "{count} {count, plural,\none {ora}\nother {ore}\n}"
         },
         "login-form": {
             "password": "Password",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Rimuovi"
+            },
+            "scene": {
+                "activate": "Attiva"
+            },
+            "script": {
+                "execute": "Esegui"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pressione atmosferica",
+                    "humidity": "Umidità",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilità",
+                    "wind_speed": "Velocità del vento"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Previsioni"
+            },
+            "alarm_control_panel": {
+                "code": "Codice",
+                "clear_code": "Canc",
+                "disarm": "Disattivato",
+                "arm_home": "Attivo in casa",
+                "arm_away": "Attiva Fuori Casa"
+            },
+            "automation": {
+                "last_triggered": "Ultima attivazione",
+                "trigger": "Attiva"
+            },
+            "cover": {
+                "position": "Posizione",
+                "tilt_position": "Inclinazione"
+            },
+            "fan": {
+                "speed": "Velocità",
+                "oscillate": "Oscillante",
+                "direction": "Direzione"
+            },
+            "light": {
+                "brightness": "Luminosità",
+                "color_temperature": "Temperatura colore",
+                "white_value": "Valore bianco",
+                "effect": "Effetto"
+            },
+            "media_player": {
+                "text_to_speak": "Testo da leggere",
+                "source": "Fonte",
+                "sound_mode": "Modalità Audio"
+            },
+            "climate": {
+                "currently": "Attuale",
+                "on_off": "Acceso \/ Spento",
+                "target_temperature": "Temperatura di riferimento",
+                "target_humidity": "Umidità di riferimento",
+                "operation": "Operazione",
+                "fan_mode": "Ventilazione",
+                "swing_mode": "Modo oscillazione",
+                "away_mode": "Modalità Assente",
+                "aux_heat": "Riscaldamento ausiliario"
+            },
+            "lock": {
+                "code": "Codice",
+                "lock": "Blocco",
+                "unlock": "Sbloccato"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Riprendere la pulizia",
+                    "return_to_base": "Ritornare alla base",
+                    "start_cleaning": "Iniziare la pulizia",
+                    "turn_on": "Accendere",
+                    "turn_off": "Spegnere"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Servizio"
+            },
+            "relative_time": {
+                "past": "{time} fa",
+                "future": "mancano {time}",
+                "never": "Mai",
+                "duration": {
+                    "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
+                    "minute": "{count} {count, plural,\none {minuto}\nother {minuti}\n}",
+                    "hour": "{count} {count, plural,\none {ora}\nother {ore}\n}",
+                    "day": "{count} {count, plural,\none {giorno}\nother {giorni}\n}",
+                    "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Caricamento storico",
+                "no_history_found": "Nesuno storico trovato"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Accesa {entity}.",
+            "entity_turned_off": "Spenta {entity}.",
+            "service_called": "Servizio {service} chiamato.",
+            "service_call_failed": "Fallita chiamata a servizio {service} .",
+            "connection_lost": "Connessione persa. Riconnessione..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Salve",
+                "name": "Nome",
+                "entity_id": "ID Entità"
+            }
+        },
+        "auth_store": {
+            "ask": "Vuoi salvare questo login?",
+            "decline": "No grazie",
+            "confirm": "Salva login"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Fare clic sul pulsante per configurare {entity}",
+            "empty": "Nessuna notifica",
+            "title": "Notifiche"
         }
     },
     "domain": {
@@ -547,7 +815,7 @@
         "climate": "Termostato",
         "configurator": "Configuratore",
         "conversation": "Conversazione",
-        "cover": "Copertura",
+        "cover": "Tapparella",
         "device_tracker": "Tracking dispositivo",
         "fan": "Ventilatore",
         "history_graph": "Storico",
@@ -573,7 +841,8 @@
         "switch": "Interruttore",
         "updater": "Updater",
         "weblink": "Link Web",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspirapolvere"
     },
     "attribute": {
         "weather": {

@@ -12,7 +12,8 @@
         "dev-events": "Udalosti",
         "dev-templates": "Šablóny",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalendár"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "Inicializácia ({query_stage})",
                 "dead": "Nereaguje ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Jasno, v noci",
+            "cloudy": "Zamračené",
+            "fog": "Hmla",
+            "hail": "Krupobitie",
+            "lightning": "Blesky",
+            "lightning-rainy": "Blesky, daždivo",
+            "partlycloudy": "Čiastočne zamračené",
+            "pouring": "Lejúco",
+            "rainy": "Daždivo",
+            "snowy": "Zasneženo",
+            "snowy-rainy": "Zasneženo, daždivo",
+            "sunny": "slnečno",
+            "windy": "Veterno",
+            "windy-variant": "Veterno"
+        },
+        "vacuum": {
+            "cleaning": "Čistí",
+            "docked": "V doku",
+            "error": "Chyba",
+            "idle": "Nečinný",
+            "off": "Vypnutý",
+            "on": "Zapnutý",
+            "paused": "Pozastavený",
+            "returning": "Vracia sa do doku"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "Reštartovať",
                                 "stop": "Zastaviť"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurujte upozornenia push",
-                            "introduction": "Aktivujte toto nastavenie, aby ste v tomto zariadení dostávali upozornenia push",
-                            "push_notifications": "Push upozornenia"
-                        },
-                        "translation": {
-                            "header": "Vyberte jazyk",
-                            "introduction": "Vyberte jazyk pre rozhranie Home Assistant na tomto zariadení",
-                            "language": "Jazyk"
-                        },
-                        "themes": {
-                            "header": "Nastavte tému",
-                            "introduction": "Vyberte možnosť \"Backend-selected\", aby ste použili akúkoľvek tému, ktorú zvolí backend, alebo vyberte tému pre toto zariadenie",
-                            "theme": "Téma"
                         }
                     }
                 },
@@ -338,7 +350,7 @@
                     "description": "Vytvárajte a upravujte skripty",
                     "picker": {
                         "header": "Editor automatizácií",
-                        "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
+                        "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
                         "pick_automation": "Vyberte automatizáciu, ktorú chcete upraviť",
                         "no_automations": "Nepodarilo sa nájsť žiadne editovateľné automatizácie",
                         "add_automation": "Pridať automatizáciu"
@@ -351,7 +363,7 @@
                         "alias": "Názov",
                         "triggers": {
                             "header": "Spúšťače",
-                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \n\n [Viac informácií o spúšťačov.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \n\n [Viac informácií o spúšťačov.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Pridať spúšťač",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
@@ -413,7 +425,7 @@
                         },
                         "conditions": {
                             "header": "Podmienky",
-                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \n\n [Viac informácií o podmienkach.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \n\n [Viac informácií o podmienkach.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Pridať podmienku",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
@@ -458,7 +470,7 @@
                         },
                         "actions": {
                             "header": "Akcie",
-                            "introduction": "Akcie, ktoré vykoná domáci asistent, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcie, ktoré vykoná domáci asistent, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Pridať akciu",
                             "duplicate": "Duplikovať",
                             "delete": "Odstrániť",
@@ -498,6 +510,54 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Spravujte svoju Z-Wave sieť"
+                },
+                "users": {
+                    "caption": "Používatelia",
+                    "description": "Správa používateľov",
+                    "picker": {
+                        "title": "Používatelia"
+                    },
+                    "editor": {
+                        "rename_user": "Premenovať používateľa",
+                        "change_password": "Zmeniť heslo",
+                        "activate_user": "Aktivovať používateľa",
+                        "deactivate_user": "Deaktivovať používateľa",
+                        "delete_user": "Vymazať používateľa"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push upozornenia",
+                    "description": "Posielať upozornenia na toto zariadenie.",
+                    "error_load_platform": "Konfigurujte upozornenia notify.html5.",
+                    "error_use_https": "Vyžaduje zapnuté SSL pre rozhranie.",
+                    "push_notifications": "Push upozornenia",
+                    "link_promo": "Viac informácií"
+                },
+                "language": {
+                    "header": "Jazyk",
+                    "link_promo": "Pomôžte s prekladom",
+                    "dropdown_label": "Jazyk"
+                },
+                "themes": {
+                    "header": "Téma",
+                    "error_no_theme": "Nie sú k dispozícii žiadne témy.",
+                    "link_promo": "Získajte viac informácií o témach",
+                    "dropdown_label": "Téma"
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "description": "Välj en användare att logga in som:"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -512,7 +572,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {deň}\nfew {dni}\nother {dní}\n}",
             "week": "{count} {count, plural,\none {týždeň}\nfew {týždne}\nother {týždňov}\n}",
-            "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekúnd}\n}"
+            "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekúnd}\n}",
+            "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
+            "hour": "{count} {count, plural,\n  one {hodina}\n  other {hodiny}\n}"
         },
         "login-form": {
             "password": "Heslo",
@@ -525,6 +587,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Zrušiť"
+            },
+            "scene": {
+                "activate": "Aktivovať"
+            },
+            "script": {
+                "execute": "Vykonať"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Tlak vzduchu",
+                    "humidity": "Vlhkosť",
+                    "temperature": "Teplota",
+                    "visibility": "Viditeľnosť",
+                    "wind_speed": "Rýchlosť vetra"
+                },
+                "cardinal_direction": {
+                    "e": "V",
+                    "ene": "VSV",
+                    "ese": "VJV",
+                    "n": "S",
+                    "ne": "SV",
+                    "nne": "SSV",
+                    "nw": "SZ",
+                    "nnw": "SSZ",
+                    "s": "J",
+                    "se": "JV",
+                    "sse": "JJV",
+                    "ssw": "JJZ",
+                    "sw": "JZ",
+                    "w": "Z",
+                    "wnw": "ZSZ",
+                    "wsw": "ZJZ"
+                },
+                "forecast": "Predpoveď"
+            },
+            "alarm_control_panel": {
+                "code": "Kód",
+                "clear_code": "Zrušiť",
+                "disarm": "Odkódovať",
+                "arm_home": "Zakódovať doma",
+                "arm_away": "Zakódovať odchod"
+            },
+            "automation": {
+                "last_triggered": "Naposledy spustené",
+                "trigger": "Spustiť"
+            },
+            "cover": {
+                "position": "Poloha",
+                "tilt_position": "Poloha sklonu"
+            },
+            "fan": {
+                "speed": "Rýchlosť",
+                "oscillate": "Pohyblivý smer",
+                "direction": "Smer"
+            },
+            "light": {
+                "brightness": "Jas",
+                "color_temperature": "Teplota farby",
+                "white_value": "Hodnota bielej",
+                "effect": "Efekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text, ktorý chcete hovoriť",
+                "source": "Zdroj",
+                "sound_mode": "Režim zvuku"
+            },
+            "climate": {
+                "currently": "Aktuálne",
+                "on_off": "Zapnúť \/ vypnúť",
+                "target_temperature": "Cieľová teplota",
+                "target_humidity": "Cieľová vlhkosť",
+                "operation": "Prevádzka",
+                "fan_mode": "Režim ventilátora",
+                "swing_mode": "Vejárový režim",
+                "away_mode": "Režim neprítomnosti",
+                "aux_heat": "Prídavné kúrenie"
+            },
+            "lock": {
+                "code": "Kód",
+                "lock": "Zamknúť",
+                "unlock": "Odomknúť"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Pokračovať v čistení",
+                    "return_to_base": "Návrat do doku",
+                    "start_cleaning": "Začať čistenie",
+                    "turn_on": "Zapnúť",
+                    "turn_off": "Vypnúť"
+                }
             }
         },
         "components": {
@@ -535,7 +687,42 @@
             },
             "service-picker": {
                 "service": "Služba"
+            },
+            "relative_time": {
+                "past": "Pred {time}",
+                "future": "O {time}",
+                "never": "Nikdy",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekunda}\nother {sekúnd}\n}",
+                    "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
+                    "hour": "{count} {count, plural,\n  one {hodina}\n  other {hodiny}\n}",
+                    "day": "{count} {count, plural,\none {deň}\nother {dní}\n}",
+                    "week": "{count} {count, plural,\none {týždeň}\nother {týždne}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Načítavam históriu stavov",
+                "no_history_found": "Nenašla sa žiadna história stavov"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Zapnuté {entity}.",
+            "entity_turned_off": "Vypnuté {entity}.",
+            "service_called": "Služba {service} zavolaná.",
+            "service_call_failed": "Nepodarilo sa zavolať službu {service}.",
+            "connection_lost": "Prerušené spojenie. Opätovné pripájanie..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Uložiť",
+                "name": "Názov",
+                "entity_id": "Entity ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Chcete tieto prihlasovacie údaje uložiť?",
+            "decline": "Nie ďakujem",
+            "confirm": "Uložiť prihlasovacie údaje"
         }
     },
     "domain": {
@@ -556,7 +743,7 @@
         "input_boolean": "Logický vstup",
         "input_datetime": "Vstupný dátum a čas",
         "input_select": "Výber z možností",
-        "input_number": "Vstupné číslo",
+        "input_number": "Číselný vstup",
         "input_text": "Vstupný text",
         "light": "Svetlo",
         "lock": "Zámok",
@@ -573,7 +760,8 @@
         "switch": "Prepínač",
         "updater": "Aktualizátor",
         "weblink": "Webový odkaz",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Vysávač"
     },
     "attribute": {
         "weather": {

@@ -1,0 +1,12 @@
+#!/bin/sh
+# Run the Hass.io development server
+
+# Stop on errors
+set -e
+
+OUTPUT_DIR=build
+
+rm -rf $OUTPUT_DIR
+mkdir $OUTPUT_DIR
+node script/gen-icons.js
+../node_modules/.bin/webpack --watch --progress

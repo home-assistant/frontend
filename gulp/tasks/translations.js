@@ -22,7 +22,10 @@ const TRANSLATION_FRAGMENTS = [
   'history',
   'logbook',
   'mailbox',
+  'profile',
   'shopping-list',
+  'page-authorize',
+  'page-onboarding',
 ];
 
 const tasks = [];
@@ -248,8 +251,7 @@ gulp.task(taskName, ['build-translation-fingerprints'], function () {
       fragments: TRANSLATION_FRAGMENTS,
       translations: data,
     })))
-    .pipe(insert.wrap('<script>\nwindow.translationMetadata = ', ';\n</script>'))
-    .pipe(rename('translationMetadata.html'))
+    .pipe(rename('translationMetadata.json'))
     .pipe(gulp.dest(workDir));
 });
 tasks.push(taskName);

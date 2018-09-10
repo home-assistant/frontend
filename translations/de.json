@@ -12,7 +12,8 @@
         "dev-events": "Ereignisse",
         "dev-templates": "Templates",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -116,7 +117,7 @@
             },
             "lock": {
                 "off": "Verriegelt",
-                "on": "nicht gesperrt"
+                "on": "Entriegelt"
             }
         },
         "calendar": {
@@ -236,6 +237,32 @@
                 "initializing": "Initialisiere ({query_stage})",
                 "dead": "Nicht erreichbar ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Klare Nacht",
+            "cloudy": "Bewölkt",
+            "fog": "Nebel",
+            "hail": "Hagel",
+            "lightning": "Gewitter",
+            "lightning-rainy": "Gewitter, regnerisch",
+            "partlycloudy": "Teilweise bewölkt",
+            "pouring": "Strömend",
+            "rainy": "Regnerisch",
+            "snowy": "Verschneit",
+            "snowy-rainy": "Verschneit, regnerisch",
+            "sunny": "Sonnig",
+            "windy": "Windig",
+            "windy-variant": "Windig"
+        },
+        "vacuum": {
+            "cleaning": "Reinigen",
+            "docked": "Angedockt",
+            "error": "Fehler",
+            "idle": "Standby",
+            "off": "Aus",
+            "on": "An",
+            "paused": "Pausiert",
+            "returning": "Rückkehr zur Dockingstation"
         }
     },
     "state_badge": {
@@ -256,7 +283,7 @@
             "armed_custom_bypass": "Aktiv"
         },
         "device_tracker": {
-            "home": "Daheim",
+            "home": "Z. Hause",
             "not_home": "Abwes."
         }
     },
@@ -282,7 +309,7 @@
             },
             "config": {
                 "header": "Home Assistant konfigurieren",
-                "introduction": "Hier ist es möglich deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
+                "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
                     "description": "Überprüfe deine Konfigurationsdatei und steuer den Server",
@@ -311,21 +338,6 @@
                                 "restart": "Neu starten",
                                 "stop": "Stoppen"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Push-Benachrichtigungen konfigurieren",
-                            "introduction": "Push-Benachrichtigungen für dieses Gerät aktivieren",
-                            "push_notifications": "Push-Benachrichtigungen"
-                        },
-                        "translation": {
-                            "header": "Wähle eine Sprache",
-                            "introduction": "Wähle eine Sprache für Home Assistant auf diesem Gerät",
-                            "language": "Sprache"
-                        },
-                        "themes": {
-                            "header": "Aussehen festlegen",
-                            "introduction": "Wähle \"Backend-selected\" für die Vorgabe vom Backend oder wähle ein Thema für dieses Gerät",
-                            "theme": "Aussehen"
                         }
                     }
                 },
@@ -338,7 +350,7 @@
                     "description": "Automatisierungen erstellen und bearbeiten",
                     "picker": {
                         "header": "Automatisierungseditor",
-                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte lies [die Anleitungen](https:\/\/home-assistant.io\/docs\/automation\/editor\/), um sicherzustellen, dass du den Home Assistant richtig konfiguriert hast.",
+                        "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte lies [die Anleitungen](https:\/\/home-assistant.io\/docs\/automation\/editor\/), um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
                         "add_automation": "Automatisierung hinzufügen"
@@ -351,7 +363,7 @@
                         "alias": "Name",
                         "triggers": {
                             "header": "Auslöser",
-                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist mögliche mehrere Auslöser für die selbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Auslöser starten automatisierte Abläufe. Es ist mögliche, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.\n\n[Erfahre mehr über Auslöser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Auslöser hinzufügen",
                             "duplicate": "Duplizieren",
                             "delete": "Löschen",
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave-Netzwerk verwalten"
+                },
+                "users": {
+                    "caption": "Benutzer",
+                    "description": "Benutzer verwalten",
+                    "picker": {
+                        "title": "Benutzer"
+                    },
+                    "editor": {
+                        "rename_user": "Benutzer umbenennen",
+                        "change_password": "Passwort ändern",
+                        "activate_user": "Benutzer aktivieren",
+                        "deactivate_user": "Benutzer deaktivieren",
+                        "delete_user": "Benutzer löschen"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push-Benachrichtigungen",
+                    "description": "Sende Benachrichtigungen an dieses Gerät.",
+                    "error_load_platform": "Konfiguriere notify.html5.",
+                    "error_use_https": "Erfordert aktiviertes SSL für das Frontend.",
+                    "push_notifications": "Push-Benachrichtigungen",
+                    "link_promo": "Mehr erfahren"
+                },
+                "language": {
+                    "header": "Sprache",
+                    "link_promo": "Hilf beim Übersetzen",
+                    "dropdown_label": "Sprache"
+                },
+                "themes": {
+                    "header": "Thema",
+                    "error_no_theme": "Keine Themen verfügbar.",
+                    "link_promo": "Erfahre mehr über Themen",
+                    "dropdown_label": "Thema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initialisieren",
+                "authorizing_client": "Du bist dabei, {clientId} Zugriff auf deine Home Assistant Instanz zu gewähren.",
+                "logging_in_with": "Anmeldung mit **{authProviderName}**.",
+                "pick_auth_provider": "Oder melde dich an mit",
+                "abort_intro": "Anmeldung abgebrochen",
+                "form": {
+                    "working": "Bitte warten",
+                    "unknown_error": "Etwas lief schief",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Benutzername",
+                                        "password": "Passwort"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwei-Faktor Authentifizierungscode"
+                                    },
+                                    "description": "Öffne das **{mfa_module_name}** auf deinem Gerät um den 2-Faktor Authentifizierungscode zu sehen und deine Identität zu bestätigen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ungültiger Benutzername oder Passwort",
+                                "invalid_code": "Ungültiger Authentifizierungscode"
+                            },
+                            "abort": {
+                                "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-Passwort"
+                                    },
+                                    "description": "Bitte gib das API-Passwort deiner http-Konfiguration ein:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Zwei-Faktor Authentifizierungscode"
+                                    },
+                                    "description": "Öffne das **{mfa_module_name}** auf deinem Gerät um den 2-Faktor Authentifizierungscode zu sehen und deine Identität zu bestätigen:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ungültiges API-Passwort",
+                                "invalid_code": "Ungültiger Authentifizierungscode"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du hast kein API-Passwort konfiguriert.",
+                                "login_expired": "Sitzung abgelaufen, bitte erneut anmelden."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Benutzer"
+                                    },
+                                    "description": "Bitte wähle einen Benutzer aus, mit dem du dich anmelden möchtest:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Dein Computer ist nicht auf der Whitelist."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Bist du bereit, dein Zuhause zu erwecken, deine Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
+                "user": {
+                    "intro": "Beginnen wir mit dem Erstellen eines Benutzerkontos.",
+                    "required_field": "Erforderlich",
+                    "data": {
+                        "name": "Name",
+                        "username": "Benutzername",
+                        "password": "Passwort"
+                    },
+                    "create_account": "Benutzerkonto anlegen",
+                    "error": {
+                        "required_fields": "Fülle alle Pflichtfelder aus."
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {Tag}\nother {Tage}\n}",
             "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}",
-            "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}"
+            "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+            "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+            "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}"
         },
         "login-form": {
             "password": "Passwort",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Ausblenden"
+            },
+            "scene": {
+                "activate": "Aktivieren"
+            },
+            "script": {
+                "execute": "Ausführen"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Luftdruck",
+                    "humidity": "Luftfeuchtigkeit",
+                    "temperature": "Temperatur",
+                    "visibility": "Sichtweite",
+                    "wind_speed": "Windgeschwindigkeit"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Prognose"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Löschen",
+                "disarm": "Deaktivieren",
+                "arm_home": "Aktivieren, Zuhause",
+                "arm_away": "Aktivieren, unterwegs"
+            },
+            "automation": {
+                "last_triggered": "Zuletzt ausgelöst",
+                "trigger": "Auslösen"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Kippstellung"
+            },
+            "fan": {
+                "speed": "Geschwindigkeit",
+                "oscillate": "Oszillieren",
+                "direction": "Richtung"
+            },
+            "light": {
+                "brightness": "Helligkeit",
+                "color_temperature": "Farbtemperatur",
+                "white_value": "Weißwert",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text zum Sprechen",
+                "source": "Quelle",
+                "sound_mode": "Sound-Modus"
+            },
+            "climate": {
+                "currently": "Aktuell",
+                "on_off": "An \/ aus",
+                "target_temperature": "Soll-Temperatur",
+                "target_humidity": "Soll-Luftfeuchtigkeit",
+                "operation": "Aktion",
+                "fan_mode": "Ventilator-Modus",
+                "swing_mode": "Schwenk-Modus",
+                "away_mode": "Abwesenheitsmodus",
+                "aux_heat": "Hilfswärme"
+            },
+            "lock": {
+                "code": "Code",
+                "lock": "Verriegeln",
+                "unlock": "Entriegeln"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Fortsetzen der Reinigung",
+                    "return_to_base": "Zurück zur Dockingstation",
+                    "start_cleaning": "Beginn der Reinigung",
+                    "turn_on": "Einschalten",
+                    "turn_off": "Ausschalten"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Dienst"
+            },
+            "relative_time": {
+                "past": "Vor {time}",
+                "future": "In {time}",
+                "never": "Noch nie",
+                "duration": {
+                    "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+                    "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+                    "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}",
+                    "day": "{count} {count, plural,\none {Tag}\nother {Tagen}\n}",
+                    "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Lade Zustandsverlauf...",
+                "no_history_found": "Kein Zustandsverlauf gefunden."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} eingeschaltet.",
+            "entity_turned_off": "{entity} ausgeschaltet.",
+            "service_called": "Dienst {service} aufgerufen.",
+            "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
+            "connection_lost": "Verbindung getrennt. Verbinde erneut..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Speichern",
+                "name": "Name",
+                "entity_id": "Entitäts-ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Möchtest du diesen Login speichern?",
+            "decline": "Nein Danke",
+            "confirm": "Login speichern"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klicke auf die Schaltfläche, um {entity} zu konfigurieren.",
+            "empty": "Keine Benachrichtigungen",
+            "title": "Benachrichtigungen"
         }
     },
     "domain": {
@@ -556,7 +824,7 @@
         "input_boolean": "Boolsche Eingabe",
         "input_datetime": "Eingabe Datum\/Uhrzeit",
         "input_select": "Auswahlfeld",
-        "input_number": "Nummerische Eingabe",
+        "input_number": "Numerische Eingabe",
         "input_text": "Texteingabe",
         "light": "Licht",
         "lock": "Schloss",
@@ -573,7 +841,8 @@
         "switch": "Schalter",
         "updater": "Updater",
         "weblink": "Weblink",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Staubsauger"
     },
     "attribute": {
         "weather": {

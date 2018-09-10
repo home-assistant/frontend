@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel='preload' href='<%= coreJS %>' as='script'/>
+    <link rel='preload' href='/static/fonts/roboto/Roboto-Regular.ttf' as='font' crossorigin />
+    <link rel='preload' href='/static/fonts/roboto/Roboto-Medium.ttf' as='font' crossorigin />
+    <%= require('raw-loader!./_header.html.template') %>
+    <title>Home Assistant</title>
+    <link rel='apple-touch-icon' sizes='180x180'
+          href='/static/icons/favicon-apple-180x180.png'>
+    <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#3fbbf4">
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+    <meta name="msapplication-square70x70logo" content="/static/icons/tile-win-70x70.png"/>
+    <meta name="msapplication-square150x150logo" content="/static/icons/tile-win-150x150.png"/>
+    <meta name="msapplication-wide310x150logo" content="/static/icons/tile-win-310x150.png"/>
+    <meta name="msapplication-square310x310logo" content="/static/icons/tile-win-310x310.png"/>
+    <meta name="msapplication-TileColor" content="#3fbbf4ff"/>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='referrer' content='same-origin'>
+    <meta name='theme-color' content='{{ theme_color }}'>
+    <style>
+      #ha-init-skeleton::before {
+        display: block;
+        content: "";
+        height: 112px;
+        background-color: {{ theme_color }};
+      }
+    </style>
+    <script>
+      window.customPanelJS = '<%= customPanelJS %>';
+      window.noAuth = '{{ no_auth }}';
+      window.useOAuth = '{{ use_oauth }}'
+      window.Polymer = {
+        lazyRegister: true,
+        useNativeCSSProperties: true,
+        dom: 'shadow',
+        suppressTemplateNotifications: true,
+        suppressBindingNotifications: true,
+      };
+    </script>
+  </head>
+  <body>
+    <home-assistant>
+      <div id='ha-init-skeleton'></div>
+    </home-assistant>
+    <% if (!latestBuild) { %>
+      <script src="/static/custom-elements-es5-adapter.js"></script>
+      <script src="<%= compatibility %>"></script>
+    <% } %>
+    <script>
+      var webComponentsSupported = (
+        'customElements' in window &&
+        'content' in document.createElement('template'));
+      if (!webComponentsSupported) {
+        (function() {
+          var e = document.createElement('script');
+          e.src = '/static/webcomponents-bundle.js';
+          document.write(e.outerHTML);
+        }());
+      }
+    </script>
+    <script src='<%= coreJS %>'></script>
+    <script src='<%= appJS %>'></script>
+    <script src='<%= hassIconsJS %>' async></script>
+    {% for extra_url in extra_urls -%}
+      <link rel='import' href='{{ extra_url }}' async>
+    {% endfor -%}
+  </body>
+</html>

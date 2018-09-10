@@ -12,7 +12,8 @@
         "dev-events": "이벤트",
         "dev-templates": "템플릿",
         "dev-mqtt": "MQTT",
-        "dev-info": "정보"
+        "dev-info": "정보",
+        "calendar": "캘린더"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "초기화중 ({query_stage})",
                 "dead": "응답없음 ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "맑은 밤",
+            "cloudy": "흐림",
+            "fog": "안개",
+            "hail": "우박",
+            "lightning": "번개",
+            "lightning-rainy": "뇌우",
+            "partlycloudy": "대체로 흐림",
+            "pouring": "호우",
+            "rainy": "비",
+            "snowy": "눈",
+            "snowy-rainy": "진눈개비",
+            "sunny": "맑음",
+            "windy": "바람",
+            "windy-variant": "잦은바람"
+        },
+        "vacuum": {
+            "cleaning": "청소중",
+            "docked": "충전중",
+            "error": "작동 에러",
+            "idle": "대기중",
+            "off": "꺼짐",
+            "on": "켜짐",
+            "paused": "일시 중지됨",
+            "returning": "충전 복귀 중"
         }
     },
     "state_badge": {
@@ -265,7 +292,7 @@
             "shopping-list": {
                 "clear_completed": "완료항목삭제",
                 "add_item": "항목추가",
-                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말하세요"
+                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말해보세요"
             },
             "history": {
                 "showing_entries": "다음 날짜의 항목을 표시",
@@ -311,21 +338,6 @@
                                 "restart": "재시작",
                                 "stop": "중지"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "푸시 알림 설정",
-                            "introduction": "이 장치에서 푸시 알림을 받으려면 이 항목을 활성화 합니다",
-                            "push_notifications": "푸시 알림"
-                        },
-                        "translation": {
-                            "header": "언어 선택",
-                            "introduction": "이 장치의 Home Assistant 인터페이스 언어를 선택합니다",
-                            "language": "언어"
-                        },
-                        "themes": {
-                            "header": "테마 설정",
-                            "introduction": "백엔드에서 선택한 테마를 사용하거나 이 장치의 테마를 선택하려면 '백엔드-선택'을 선택합니다",
-                            "theme": "테마"
                         }
                     }
                 },
@@ -338,7 +350,7 @@
                     "description": "자동화를 만들고 편집합니다",
                     "picker": {
                         "header": "자동화 편집기",
-                        "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집 할 수 있습니다. [안내] (https:\/\/home-assistant.io\/docs\/automation\/editor\/)를 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
+                        "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집 할 수 있습니다. [안내](https:\/\/home-assistant.io\/docs\/automation\/editor\/) 를 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "pick_automation": "편집할 자동화 선택",
                         "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
                         "add_automation": "자동화 추가하기"
@@ -351,7 +363,7 @@
                         "alias": "이름",
                         "triggers": {
                             "header": "트리거",
-                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다. \n\n [트리거에 대해 자세히 알아보기] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant는 조건을 확인하고 동작을 호출합니다. \n\n [트리거에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "트리거 추가",
                             "duplicate": "복제",
                             "delete": "삭제",
@@ -384,7 +396,7 @@
                                     "label": "수치 상태",
                                     "above": "이상",
                                     "below": "이하",
-                                    "value_template": "템플릿 값 (선택 사항)"
+                                    "value_template": "값 템플릿 (선택 사항)"
                                 },
                                 "sun": {
                                     "label": "태양",
@@ -395,7 +407,7 @@
                                 },
                                 "template": {
                                     "label": "템플릿",
-                                    "value_template": "템플릿 값"
+                                    "value_template": "값 템플릿"
                                 },
                                 "time": {
                                     "label": "시간",
@@ -413,7 +425,7 @@
                         },
                         "conditions": {
                             "header": "조건",
-                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다. \n\n [조건에 대해 자세히 알아보기] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다. \n\n [조건에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "조건 추가",
                             "duplicate": "복제",
                             "delete": "삭제",
@@ -429,7 +441,7 @@
                                     "label": "수치 상태",
                                     "above": "이상",
                                     "below": "이하",
-                                    "value_template": "템플릿 값 (선택 사항)"
+                                    "value_template": "값 템플릿 (선택 사항)"
                                 },
                                 "sun": {
                                     "label": "태양",
@@ -442,7 +454,7 @@
                                 },
                                 "template": {
                                     "label": "템플릿",
-                                    "value_template": "템플릿 값"
+                                    "value_template": "값 템플릿"
                                 },
                                 "time": {
                                     "label": "시간",
@@ -458,7 +470,7 @@
                         },
                         "actions": {
                             "header": "동작",
-                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant가 수행할 작업입니다.\n\n [동작에 대해 자세히 알아보기] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant가 수행할 작업입니다.\n\n [동작에 대해 자세히 알아보기](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "동작 추가",
                             "duplicate": "복제",
                             "delete": "삭제",
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave 네트워크를 관리합니다"
+                },
+                "users": {
+                    "caption": "사용자",
+                    "description": "사용자 관리",
+                    "picker": {
+                        "title": "사용자"
+                    },
+                    "editor": {
+                        "rename_user": "사용자 이름 변경",
+                        "change_password": "비밀번호 변경",
+                        "activate_user": "사용자 활성화",
+                        "deactivate_user": "사용자 비활성화",
+                        "delete_user": "사용자 삭제"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "푸시 알림",
+                    "description": "이 기기에 알림 보내기",
+                    "error_load_platform": "notify.html5 를 구성해주세요.",
+                    "error_use_https": "SSL 을 통한 보안연결된 환경이 필요합니다.",
+                    "push_notifications": "푸시 알림",
+                    "link_promo": "더 알아보기"
+                },
+                "language": {
+                    "header": "언어",
+                    "link_promo": "번역 도와주기",
+                    "dropdown_label": "언어"
+                },
+                "themes": {
+                    "header": "테마",
+                    "error_no_theme": "사용할 수 있는 테마가 없습니다.",
+                    "link_promo": "테마에 대해 알아보기",
+                    "dropdown_label": "테마"
+                }
+            },
+            "page-authorize": {
+                "initializing": "초기화 중",
+                "authorizing_client": "{clientId} 에 Home Assistant 인스턴스에 대한 액세스 권한을 부여하려고 합니다.",
+                "logging_in_with": "**{authProviderName}** 로(으로) 로그인 합니다.",
+                "pick_auth_provider": "또는 다음으로 로그인하세요",
+                "abort_intro": "로그인이 중단되었습니다",
+                "form": {
+                    "working": "잠시 기다려주세요",
+                    "unknown_error": "문제가 발생했습니다",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "사용자 이름",
+                                        "password": "비밀번호"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2 단계 인증 코드"
+                                    },
+                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 ** {mfa_module_name} ** 을(를) 열어주세요:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
+                            },
+                            "abort": {
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API 비밀번호"
+                                    },
+                                    "description": "http config 에 API 암호를 입력해주세요:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2 단계 인증 코드"
+                                    },
+                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 ** {mfa_module_name} ** 을(를) 열어주세요:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "API 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
+                            },
+                            "abort": {
+                                "no_api_password_set": "API 비밀번호를 구성하지 않았습니다.",
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "사용자"
+                                    },
+                                    "description": "로그인하려는 사용자를 선택해주세요:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "이 컴퓨터는 허용 목록에 등록되지 않았습니다."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "잠들어 있는 집을 깨우고 개인정보를 보호하며 전세계의 공돌이 커뮤니티에 가입 할 준비가 되셨나요?",
+                "user": {
+                    "intro": "사용자 계정을 만들어 시작합니다.",
+                    "required_field": "필수 요소",
+                    "data": {
+                        "name": "이름",
+                        "username": "사용자 이름",
+                        "password": "비밀번호"
+                    },
+                    "create_account": "계정 만들기",
+                    "error": {
+                        "required_fields": "필수 입력란을 모두 채워주세요"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {일}\nother {일}\n}",
             "week": "{count} {count, plural,\none {주}\nother {주}\n}",
-            "second": "{count} {count, plural,\none {초}\nother {초}\n}"
+            "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+            "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+            "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}"
         },
         "login-form": {
             "password": "비밀번호",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "해제"
+            },
+            "scene": {
+                "activate": "활성화"
+            },
+            "script": {
+                "execute": "실행"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "기압",
+                    "humidity": "습도",
+                    "temperature": "기온",
+                    "visibility": "시정",
+                    "wind_speed": "풍속"
+                },
+                "cardinal_direction": {
+                    "e": "동",
+                    "ene": "동북동",
+                    "ese": "동남동",
+                    "n": "북",
+                    "ne": "북동",
+                    "nne": "북북동",
+                    "nw": "북서",
+                    "nnw": "북북서",
+                    "s": "남",
+                    "se": "남동",
+                    "sse": "남남동",
+                    "ssw": "남남서",
+                    "sw": "남서",
+                    "w": "서",
+                    "wnw": "서북서",
+                    "wsw": "서남서"
+                },
+                "forecast": "일기 예보"
+            },
+            "alarm_control_panel": {
+                "code": "비밀번호",
+                "clear_code": "지움",
+                "disarm": "경비 해제",
+                "arm_home": "재실 경비",
+                "arm_away": "외출 경비"
+            },
+            "automation": {
+                "last_triggered": "최근 트리거 됨",
+                "trigger": "트리거"
+            },
+            "cover": {
+                "position": "위치",
+                "tilt_position": "기울기"
+            },
+            "fan": {
+                "speed": "속도",
+                "oscillate": "회전",
+                "direction": "방향"
+            },
+            "light": {
+                "brightness": "밝기",
+                "color_temperature": "색온도",
+                "white_value": "흰색 값",
+                "effect": "효과"
+            },
+            "media_player": {
+                "text_to_speak": "음성합성 내용 입력 (TTS)",
+                "source": "입력 소스",
+                "sound_mode": "사운드 모드"
+            },
+            "climate": {
+                "currently": "현재 온도",
+                "on_off": "켜기 \/ 끄기",
+                "target_temperature": "희망 온도",
+                "target_humidity": "희망 습도",
+                "operation": "운전 모드",
+                "fan_mode": "송풍 모드",
+                "swing_mode": "회전 모드",
+                "away_mode": "외출 모드",
+                "aux_heat": "보조 히터"
+            },
+            "lock": {
+                "code": "비밀번호",
+                "lock": "잠금",
+                "unlock": "잠금 해제"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "청소 재개",
+                    "return_to_base": "충전 복귀",
+                    "start_cleaning": "청소 시작",
+                    "turn_on": "끄기",
+                    "turn_off": "켜기"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "서비스"
+            },
+            "relative_time": {
+                "past": "{time} 전",
+                "future": "{time} 후",
+                "never": "해당없음",
+                "duration": {
+                    "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+                    "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+                    "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+                    "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+                    "week": "{count} {count, plural,\none {주}\nother {주}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "히스토리 읽는 중...",
+                "no_history_found": "히스토리 내용이 없습니다."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": " {entity}이(가) 켜졌습니다.",
+            "entity_turned_off": " {entity}이(가) 꺼졌습니다.",
+            "service_called": "{service} 서비스가 호출되었습니다.",
+            "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
+            "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "저장",
+                "name": "이름",
+                "entity_id": "구성요소 ID"
+            }
+        },
+        "auth_store": {
+            "ask": "현재 로그인을 저장 하시겠습니까?",
+            "decline": "아니요, 괜찮습니다",
+            "confirm": "로그인 저장하기"
+        },
+        "notification_drawer": {
+            "click_to_configure": "버튼을 클릭하여 구성하세요 {entity}",
+            "empty": "알림 없음",
+            "title": "알림"
         }
     },
     "domain": {
@@ -573,12 +841,13 @@
         "switch": "스위치",
         "updater": "업데이터",
         "weblink": "웹링크",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "청소기"
     },
     "attribute": {
         "weather": {
             "humidity": "습도",
-            "visibility": "가시성",
+            "visibility": "시정",
             "wind_speed": "풍속"
         }
     }

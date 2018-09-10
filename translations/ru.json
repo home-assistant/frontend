@@ -12,7 +12,8 @@
         "dev-events": "События",
         "dev-templates": "Шаблоны",
         "dev-mqtt": "MQTT",
-        "dev-info": "Информация"
+        "dev-info": "Информация",
+        "calendar": "Календарь"
     },
     "state": {
         "default": {
@@ -25,7 +26,7 @@
             "armed": "Под охраной",
             "disarmed": "Снято с охраны",
             "armed_home": "Охрана (дома)",
-            "armed_away": "Охрана (вне дома)",
+            "armed_away": "Охрана (не дома)",
             "armed_night": "Охрана (ночь)",
             "pending": "Переход на охрану",
             "arming": "Постановка на охрану",
@@ -79,7 +80,7 @@
                 "on": "Небезопасно"
             },
             "presence": {
-                "off": "Вне дома",
+                "off": "Не дома",
                 "on": "Дома"
             },
             "battery": {
@@ -157,7 +158,7 @@
         },
         "device_tracker": {
             "home": "Дома",
-            "not_home": "Нет дома"
+            "not_home": "Отсутствует"
         },
         "fan": {
             "off": "Выключен",
@@ -167,7 +168,7 @@
             "off": "Выключено",
             "on": "Включено",
             "home": "Дома",
-            "not_home": "Нет дома",
+            "not_home": "Отсутствует",
             "open": "Открыто",
             "opening": "Открывается",
             "closed": "Закрыто",
@@ -236,6 +237,32 @@
                 "initializing": "Инициализация ({query_stage})",
                 "dead": "Неисправен ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Ясно, ночь",
+            "cloudy": "Облачно",
+            "fog": "Туман",
+            "hail": "Град",
+            "lightning": "Молния",
+            "lightning-rainy": "Молния, дождь",
+            "partlycloudy": "Переменная облачность",
+            "pouring": "Ливень",
+            "rainy": "Дождь",
+            "snowy": "Снег",
+            "snowy-rainy": "Снег с дождем",
+            "sunny": "Ясно",
+            "windy": "Ветрено",
+            "windy-variant": "Ветрено"
+        },
+        "vacuum": {
+            "cleaning": "Уборка",
+            "docked": "У док-станции",
+            "error": "Ошибка",
+            "idle": "Бездействие",
+            "off": "Выключен",
+            "on": "Включен",
+            "paused": "Приостановлен",
+            "returning": "Возвращается к док-станции"
         }
     },
     "state_badge": {
@@ -257,7 +284,7 @@
         },
         "device_tracker": {
             "home": "Дома",
-            "not_home": "Нет дома"
+            "not_home": "Не дома"
         }
     },
     "ui": {
@@ -311,21 +338,6 @@
                                 "restart": "Перезапустить",
                                 "stop": "Остановить"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Настройка push-уведомлений",
-                            "introduction": "Включите этот параметр, чтобы получать push-уведомления на этом устройстве",
-                            "push_notifications": "Push-уведомления"
-                        },
-                        "translation": {
-                            "header": "Выбор языка",
-                            "introduction": "Выберите язык интерфейса Home Assistant на этом устройстве",
-                            "language": "Язык"
-                        },
-                        "themes": {
-                            "header": "Установка темы",
-                            "introduction": "Выберите «Backend-selected», чтобы использовать любую тему, которую выбирает сервер системы, или выберите тему для этого устройства",
-                            "theme": "Тема"
                         }
                     }
                 },
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Управляйте Вашей сетью Z-Wave"
+                },
+                "users": {
+                    "caption": "Пользователи",
+                    "description": "Управление пользователями",
+                    "picker": {
+                        "title": "Пользователи"
+                    },
+                    "editor": {
+                        "rename_user": "Изменить имя пользователя",
+                        "change_password": "Изменить пароль",
+                        "activate_user": "Активировать пользователя",
+                        "deactivate_user": "Деактивировать пользователя",
+                        "delete_user": "Удалить пользователя"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Push-уведомления",
+                    "description": "Отправлять уведомления на это устройство",
+                    "error_load_platform": "Настроить notify.html5.",
+                    "error_use_https": "Требуется SSL для веб-интерфейса.",
+                    "push_notifications": "Push-уведомления",
+                    "link_promo": "Узнать больше"
+                },
+                "language": {
+                    "header": "Язык",
+                    "link_promo": "Помочь в переводе",
+                    "dropdown_label": "Язык"
+                },
+                "themes": {
+                    "header": "Тема",
+                    "error_no_theme": "Нет доступных тем.",
+                    "link_promo": "Узнать о темах",
+                    "dropdown_label": "Тема"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Инициализация",
+                "authorizing_client": "Вы собираетесь предоставить доступ {clientId} к вашему Home Assistant.",
+                "logging_in_with": "Вход с помощью **{authProviderName}**.",
+                "pick_auth_provider": "Или войти с помощью",
+                "abort_intro": "Вход прерван",
+                "form": {
+                    "working": "Пожалуйста, подождите",
+                    "unknown_error": "Что-то пошло не так",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Имя пользователя",
+                                        "password": "Пароль"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Код двухфакторной аутентификации"
+                                    },
+                                    "description": "Откройте **{mfa_module_name}** на вашем устройстве для просмотра кода двухфакторной аутентификации и введите его для подтверждения:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Неверное имя пользователя или пароль",
+                                "invalid_code": "Неверный код аутентификации"
+                            },
+                            "abort": {
+                                "login_expired": "Время сеанса истекло, пожалуйста войдите в систему снова."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Пароль API"
+                                    },
+                                    "description": "Пожалуйста, введите пароль API, указанный в Вашей конфигурации http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Код двухфакторной аутентификации"
+                                    },
+                                    "description": "Откройте **{mfa_module_name}** на вашем устройстве для просмотра кода двухфакторной аутентификации и введите его для подтверждения:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Неверный пароль API",
+                                "invalid_code": "Неверный код аутентификации"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Вы не настроили пароль для API.",
+                                "login_expired": "Время сеанса истекло, пожалуйста войдите в систему снова."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Пользователь"
+                                    },
+                                    "description": "Пожалуйста, выберите пользователя для авторизации:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Ваш компьютер не включён в белый список."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Готовы ли вы разбудить свой дом, восстановить свою конфиденциальность и присоединиться к всемирному сообществу?",
+                "user": {
+                    "intro": "Давайте начнём с создания учётной записи пользователя.",
+                    "required_field": "Обязательное поле",
+                    "data": {
+                        "name": "Имя",
+                        "username": "Имя пользователя",
+                        "password": "Пароль"
+                    },
+                    "create_account": "Создать учетную запись",
+                    "error": {
+                        "required_fields": "Заполните все обязательные поля"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {д.}\nother {д.}\n}",
             "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}",
-            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}"
+            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+            "minute": "{count} {count, plural,\none {мин.}\nother {мин.}\n}",
+            "hour": "{count} {count, plural,\none {ч.}\nother {ч.}\n}"
         },
         "login-form": {
             "password": "Пароль",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Отклонить"
+            },
+            "scene": {
+                "activate": "Активировать"
+            },
+            "script": {
+                "execute": "Выполнить"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Давление",
+                    "humidity": "Влажность",
+                    "temperature": "Температура",
+                    "visibility": "Видимость",
+                    "wind_speed": "Ветер"
+                },
+                "cardinal_direction": {
+                    "e": "В",
+                    "ene": "ВСВ",
+                    "ese": "ВЮВ",
+                    "n": "С",
+                    "ne": "СВ",
+                    "nne": "ССВ",
+                    "nw": "СЗ",
+                    "nnw": "ССЗ",
+                    "s": "Ю",
+                    "se": "ЮВ",
+                    "sse": "ЮЮВ",
+                    "ssw": "ЮЮЗ",
+                    "sw": "ЮЗ",
+                    "w": "З",
+                    "wnw": "ЗСЗ",
+                    "wsw": "ЗЮЗ"
+                },
+                "forecast": "Прогноз"
+            },
+            "alarm_control_panel": {
+                "code": "Код",
+                "clear_code": "Очистить",
+                "disarm": "Без охраны",
+                "arm_home": "Охрана (дома)",
+                "arm_away": "Охрана (не дома)"
+            },
+            "automation": {
+                "last_triggered": "Последний запуск",
+                "trigger": "Запуск"
+            },
+            "cover": {
+                "position": "Положение",
+                "tilt_position": "Положение наклона"
+            },
+            "fan": {
+                "speed": "Скорость",
+                "oscillate": "Колебания",
+                "direction": "Направление"
+            },
+            "light": {
+                "brightness": "Яркость",
+                "color_temperature": "Цветовая температура",
+                "white_value": "Значение для белого цвета",
+                "effect": "Эффект"
+            },
+            "media_player": {
+                "text_to_speak": "Воспроизвести текст",
+                "source": "Источник",
+                "sound_mode": "Режим звука"
+            },
+            "climate": {
+                "currently": "Сейчас",
+                "on_off": "Вкл \/ выкл",
+                "target_temperature": "Заданная температура",
+                "target_humidity": "Заданная влажность",
+                "operation": "Операция",
+                "fan_mode": "Режим вентилятора",
+                "swing_mode": "Режим качания",
+                "away_mode": "Режим ожидания",
+                "aux_heat": "Дополнительный нагрев"
+            },
+            "lock": {
+                "code": "Код",
+                "lock": "Закрыть",
+                "unlock": "Открыть"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Продолжить уборку",
+                    "return_to_base": "Вернуться к док-станции",
+                    "start_cleaning": "Начать уборку",
+                    "turn_on": "Включить",
+                    "turn_off": "Выключить"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "Служба"
+            },
+            "relative_time": {
+                "past": "{time} назад",
+                "future": "через {time}",
+                "never": "Никогда",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+                    "minute": "{count} {count, plural,\none {мин.}\nother {мин.}\n}",
+                    "hour": "{count} {count, plural,\none {ч.}\nother {ч.}\n}",
+                    "day": "{count} {count, plural,\none {д.}\nother {д.}\n}",
+                    "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Загрузка истории...",
+                "no_history_found": "История не найдена."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "{entity} включение.",
+            "entity_turned_off": "{entity} выключение.",
+            "service_called": "Вызов службы {service}.",
+            "service_call_failed": "Не удалось вызвать службу {service}.",
+            "connection_lost": "Соединение потеряно. Переподключение ..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Сохранить",
+                "name": "Название",
+                "entity_id": "ID объекта"
+            }
+        },
+        "auth_store": {
+            "ask": "Вы хотите сохранить этот логин?",
+            "decline": "Нет, спасибо",
+            "confirm": "Сохранить логин"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Нажмите кнопку, чтобы настроить {entity}",
+            "empty": "Нет уведомлений",
+            "title": "Уведомления"
         }
     },
     "domain": {
@@ -573,7 +841,8 @@
         "switch": "Выключатель",
         "updater": "Обновление",
         "weblink": "Интернет-ссылка",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Пылесос"
     },
     "attribute": {
         "weather": {

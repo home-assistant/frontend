@@ -12,7 +12,8 @@
         "dev-events": "Händelser",
         "dev-templates": "Mallar",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalender"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "Initierar ({query_stage})",
                 "dead": "Död ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Klart, natt",
+            "cloudy": "Molnigt",
+            "fog": "Dimma",
+            "hail": "Hagel",
+            "lightning": "Åska",
+            "lightning-rainy": "Åska, regnigt",
+            "partlycloudy": "Delvis molnigt",
+            "pouring": "Ösregn",
+            "rainy": "Regnigt",
+            "snowy": "Snöigt",
+            "snowy-rainy": "Snöigt, regnigt",
+            "sunny": "Soligt",
+            "windy": "Blåsigt",
+            "windy-variant": "Blåsigt"
+        },
+        "vacuum": {
+            "cleaning": "Städar",
+            "docked": "Dockad",
+            "error": "Fel",
+            "idle": "Inaktiv",
+            "off": "Av",
+            "on": "På",
+            "paused": "Pausad",
+            "returning": "Återgår till docka"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "Starta om",
                                 "stop": "Stoppa"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Konfigurera push-notiser",
-                            "introduction": "Aktivera den här inställningen för att ta emot push-notiser på den här enheten",
-                            "push_notifications": "Push-notiser"
-                        },
-                        "translation": {
-                            "header": "Välj ett språk",
-                            "introduction": "Välj ett språk för Home Assistants gränssnitt på denna enhet",
-                            "language": "Språk"
-                        },
-                        "themes": {
-                            "header": "Välj ett tema",
-                            "introduction": "Välj \"Backend-selected\" för att använda det tema som \"backend\" väljer, eller välj ett tema att använda på den här enheten.",
-                            "theme": "Tema"
                         }
                     }
                 },
@@ -498,6 +510,125 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Hantera ditt Z-Wave-nätverk"
+                },
+                "users": {
+                    "caption": "Användare",
+                    "description": "Hantera användare",
+                    "picker": {
+                        "title": "Användare"
+                    },
+                    "editor": {
+                        "rename_user": "Byt namn på användare",
+                        "change_password": "Ändra lösenord",
+                        "activate_user": "Aktivera användare",
+                        "deactivate_user": "Avaktivera användare",
+                        "delete_user": "Ta bort användare"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Pushmeddelanden",
+                    "description": "Skicka meddelanden till den här enheten",
+                    "error_load_platform": "Konfigurera notify.html5.",
+                    "error_use_https": "Kräver att SSL aktiverat för frontend.",
+                    "push_notifications": "Pushmeddelanden",
+                    "link_promo": "Läs mer"
+                },
+                "language": {
+                    "header": "Språk",
+                    "link_promo": "Hjälp till att översätta",
+                    "dropdown_label": "Språk"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Inga teman finns tillgängliga.",
+                    "link_promo": "Läs mer om teman",
+                    "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Initierar",
+                "authorizing_client": "Du håller på att ge {clientid} behörighet till din Home Assistant.",
+                "logging_in_with": "Loggar in med **{authProviderName}**.",
+                "pick_auth_provider": "Eller logga in med",
+                "abort_intro": "Login avbruten",
+                "form": {
+                    "working": "Vänligen vänta",
+                    "unknown_error": "Något gick fel",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Användarnamn",
+                                        "password": "Lösenord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Tvåfaktorsautentiseringskod"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Felaktigt användarnamn eller lösenord",
+                                "invalid_code": "Ogiltig autentiseringskod"
+                            },
+                            "abort": {
+                                "login_expired": "Sessionen avslutades. Logga in igen."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-lösenord"
+                                    },
+                                    "description": "Lägg in ett API-lösenord i din http konfig:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Tvåfaktorsautentiseringskod:"
+                                    },
+                                    "description": "Öppna **(mfa_module_name)** på din enhet för att se din tvåfaktorsautentiseringskod och verifiera din identitet:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ogiltigt API-lösenord",
+                                "invalid_code": "Felaktig autentiserings kod"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du har inget API lösenord konfigurerat",
+                                "login_expired": "Sessionen avslutades, logga in igen."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Användare"
+                                    },
+                                    "description": "Välj den användare du vill logga in som:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Din dator är inte vitlistad"
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "Låt oss börja med att skapa ett användarkonto",
+                    "required_field": "Krävs",
+                    "data": {
+                        "name": "Namn",
+                        "username": "Användarnamn",
+                        "password": "Lösenord"
+                    },
+                    "create_account": "Skapa konto"
                 }
             }
         },
@@ -512,7 +643,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
             "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}",
-            "second": "{count} {count, plural,\nen {sekund}\nflera {sekunder}\n}"
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+            "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}"
         },
         "login-form": {
             "password": "Lösenord",
@@ -525,6 +658,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Avfärda"
+            },
+            "scene": {
+                "activate": "Aktivera"
+            },
+            "script": {
+                "execute": "Kör"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Lufttryck",
+                    "humidity": "Luftfuktighet",
+                    "temperature": "Temperatur",
+                    "visibility": "Sikt",
+                    "wind_speed": "Vindhastighet"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NV",
+                    "nnw": "NNV",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSV",
+                    "sw": "SV",
+                    "w": "V",
+                    "wnw": "VNV",
+                    "wsw": "VSV"
+                },
+                "forecast": "Prognos"
+            },
+            "alarm_control_panel": {
+                "code": "Kod",
+                "clear_code": "Rensa",
+                "disarm": "Larma från",
+                "arm_home": "Larma hemmaläge",
+                "arm_away": "Larma bortaläge"
+            },
+            "automation": {
+                "last_triggered": "Utlöstes senast",
+                "trigger": "Aktivera"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Tilt position"
+            },
+            "fan": {
+                "speed": "Hastighet",
+                "oscillate": "Pendlar",
+                "direction": "Riktning"
+            },
+            "light": {
+                "brightness": "Ljusstyrka",
+                "color_temperature": "Färgtemperatur",
+                "white_value": "Vitt värde",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Text till tal",
+                "source": "Källa",
+                "sound_mode": "Ljudläge"
+            },
+            "climate": {
+                "currently": "För närvarande",
+                "on_off": "På \/ av",
+                "target_temperature": "Måltemperatur",
+                "target_humidity": "Målluftfuktighet",
+                "operation": "Läge",
+                "fan_mode": "Fläktläge",
+                "swing_mode": "Svepläge",
+                "away_mode": "Bortaläge",
+                "aux_heat": "Underhållsvärme"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "Lås",
+                "unlock": "Lås upp"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Fortsätt städning",
+                    "return_to_base": "Återgå till docka",
+                    "start_cleaning": "Börja städning",
+                    "turn_on": "Starta",
+                    "turn_off": "Stäng av"
+                }
             }
         },
         "components": {
@@ -535,7 +758,47 @@
             },
             "service-picker": {
                 "service": "Tjänst"
+            },
+            "relative_time": {
+                "past": "{time} sedan",
+                "future": "Om {time}",
+                "never": "Aldrig",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+                    "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+                    "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Laddar historik...",
+                "no_history_found": "Ingen historik hittad."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Slog på {entity}.",
+            "entity_turned_off": "Stängde av {entity}.",
+            "service_called": "Tjänsten {service} anropad.",
+            "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
+            "connection_lost": "Anslutning tappad. Ansluter igen..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Spara",
+                "name": "Namn",
+                "entity_id": "Enhets-ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Vill du spara den här inloggningen?",
+            "decline": "Nej tack",
+            "confirm": "Spara inloggning"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klicka på knappen för att konfigurera {entity}",
+            "empty": "Ingra notiser",
+            "title": "Notiser"
         }
     },
     "domain": {
@@ -573,7 +836,8 @@
         "switch": "Kontakt",
         "updater": "Uppdaterare",
         "weblink": "Webblänk",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Dammsugare"
     },
     "attribute": {
         "weather": {

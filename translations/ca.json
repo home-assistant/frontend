@@ -12,7 +12,8 @@
         "dev-events": "Esdeveniments",
         "dev-templates": "Plantilles",
         "dev-mqtt": "MQTT",
-        "dev-info": "Informació"
+        "dev-info": "Informació",
+        "calendar": "Calendari"
     },
     "state": {
         "default": {
@@ -22,16 +23,16 @@
             "unavailable": "No disponible"
         },
         "alarm_control_panel": {
-            "armed": "Armada",
-            "disarmed": "Desarmada",
-            "armed_home": "Armada a casa",
-            "armed_away": "Armada fora de casa",
-            "armed_night": "Armada a la nit",
+            "armed": "Activada",
+            "disarmed": "Desactivada",
+            "armed_home": "Activada, casa",
+            "armed_away": "Activada, fora",
+            "armed_night": "Activada, nit",
             "pending": "Pendent",
-            "arming": "Armant",
-            "disarming": "Desarmant",
+            "arming": "Activant",
+            "disarming": "Desactivant",
             "triggered": "Disparada",
-            "armed_custom_bypass": "Armada Zona Específica"
+            "armed_custom_bypass": "Activada, bypass personalitzat"
         },
         "automation": {
             "off": "Desactivat",
@@ -125,7 +126,7 @@
         },
         "camera": {
             "recording": "Enregistrant",
-            "streaming": "Enviant video",
+            "streaming": "Transmetent vídeo",
             "idle": "Inactiu"
         },
         "climate": {
@@ -136,7 +137,7 @@
             "idle": "Inactiu",
             "auto": "Automàtic",
             "dry": "Assecar",
-            "fan_only": "Ventilador només",
+            "fan_only": "Només ventilador",
             "eco": "Econòmic",
             "electric": "Elèctric",
             "performance": "Rendiment",
@@ -236,24 +237,50 @@
                 "initializing": "Inicialitzant ({query_stage})",
                 "dead": "No disponible ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Serè, nit",
+            "cloudy": "Ennuvolat",
+            "fog": "Boira",
+            "hail": "Calamarsa",
+            "lightning": "Llamps",
+            "lightning-rainy": "Tempesta",
+            "partlycloudy": "Parcialment ennuvolat",
+            "pouring": "Pluja",
+            "rainy": "Plujós",
+            "snowy": "Neu",
+            "snowy-rainy": "Aiguaneu",
+            "sunny": "Assolellat",
+            "windy": "Ventós",
+            "windy-variant": "Ventós"
+        },
+        "vacuum": {
+            "cleaning": "Netejant",
+            "docked": "Aparcat",
+            "error": "Error",
+            "idle": "Inactiu",
+            "off": "Off",
+            "on": "On",
+            "paused": "Aturat",
+            "returning": "Retornant a la base"
         }
     },
     "state_badge": {
         "default": {
             "unknown": "Desc",
-            "unavailable": "Indisp"
+            "unavailable": "No disp."
         },
         "alarm_control_panel": {
-            "armed": "Armada",
-            "disarmed": "Desarm",
-            "armed_home": "Armada",
-            "armed_away": "Armada",
-            "armed_night": "Armada",
-            "pending": "Pend",
-            "arming": "Armant",
-            "disarming": "Desarm",
+            "armed": "Activada",
+            "disarmed": "Desactiv.",
+            "armed_home": "Activ.",
+            "armed_away": "Activ.",
+            "armed_night": "Activ.",
+            "pending": "Pend.",
+            "arming": "Activant",
+            "disarming": "Desactiv.",
             "triggered": "Alarma",
-            "armed_custom_bypass": "Armada"
+            "armed_custom_bypass": "Activada"
         },
         "device_tracker": {
             "home": "A casa",
@@ -263,7 +290,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Treure completats",
+                "clear_completed": "Esborrar completats",
                 "add_item": "Afegir element",
                 "microphone_tip": "Toqueu el micròfon a la part superior dreta i dieu \"Add candy to my shopping list\""
             },
@@ -275,7 +302,7 @@
                 "showing_entries": "S'estan mostrant entrades per a"
             },
             "mailbox": {
-                "empty": "No teniu cap missatge",
+                "empty": "No teniu missatges",
                 "playback_title": "Reproducció de missatges",
                 "delete_prompt": "Vols suprimir aquest missatge?",
                 "delete_button": "Suprimir"
@@ -307,25 +334,10 @@
                             },
                             "server_management": {
                                 "heading": "Gestió del servidor",
-                                "introduction": "Controlar el servidor de Home Assistant... desde Home Assistant.",
+                                "introduction": "Controlar el servidor de Home Assistant... des de Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Aturar"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "Configurar notificacions push",
-                            "introduction": "Habiliteu aquesta opció per rebre notificacions push en aquest dispositiu",
-                            "push_notifications": "Notificacions push"
-                        },
-                        "translation": {
-                            "header": "Triar una llengua",
-                            "introduction": "Trieu una llengua per a la interfície de Home Assistant en aquest dispositiu",
-                            "language": "Llengua"
-                        },
-                        "themes": {
-                            "header": "Estableix un tema",
-                            "introduction": "Trieu 'Backend-selected' per utilitzar el tema per defecte o trieu un tema desitjat per a aquest dispositiu",
-                            "theme": "Tema"
                         }
                     }
                 },
@@ -334,7 +346,7 @@
                     "description": "Personalitza les teves entitats (customization)"
                 },
                 "automation": {
-                    "caption": "Automatismes",
+                    "caption": "Automatisme",
                     "description": "Crear i editar automatismes",
                     "picker": {
                         "header": "Editor d'automatismes",
@@ -344,7 +356,7 @@
                         "add_automation": "Afegir automatisme"
                     },
                     "editor": {
-                        "introduction": "Useu automatismes per donar vida a la vostra casa",
+                        "introduction": "Utilitzeu els automatismes per donar vida a la vostra casa",
                         "default_name": "Nou automatisme",
                         "save": "Desar",
                         "unsaved_confirm": "Hi han canvis no desats. Segur que voleu sortir?",
@@ -355,8 +367,8 @@
                             "add": "Afegir activador",
                             "duplicate": "Duplicar",
                             "delete": "Suprimir",
-                            "delete_confirm": "Segur que voleu suprimir?",
-                            "unsupported_platform": "Plataforma no suportada: {platform}",
+                            "delete_confirm": "Segur que voleu suprimir-ho?",
+                            "unsupported_platform": "Plataforma {platform} no suportada.",
                             "type_select": "Tipus d'activador",
                             "type": {
                                 "event": {
@@ -372,8 +384,8 @@
                                 "homeassistant": {
                                     "label": "Home Assistant",
                                     "event": "Esdeveniment:",
-                                    "start": "Inici",
-                                    "shutdown": "Aturada"
+                                    "start": "Iniciar",
+                                    "shutdown": "Aturar"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -384,7 +396,7 @@
                                     "label": "Estat numèric",
                                     "above": "Per sobre de",
                                     "below": "Per sota de",
-                                    "value_template": "Plantilla (opcional)"
+                                    "value_template": "Plantilla de valor (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
@@ -395,7 +407,7 @@
                                 },
                                 "template": {
                                     "label": "Plantilla",
-                                    "value_template": "Plantilla de condició"
+                                    "value_template": "Plantilla de valor"
                                 },
                                 "time": {
                                     "label": "Temps",
@@ -417,8 +429,8 @@
                             "add": "Afegir condició",
                             "duplicate": "Duplicar",
                             "delete": "Suprimir",
-                            "delete_confirm": "Segur que voleu suprimir?",
-                            "unsupported_condition": "Condició no suportada: {condition}",
+                            "delete_confirm": "Segur que voleu suprimir-ho?",
+                            "unsupported_condition": "Condició {condition} no suportada.",
                             "type_select": "Tipus de condició",
                             "type": {
                                 "state": {
@@ -429,20 +441,20 @@
                                     "label": "Estat numèric",
                                     "above": "Per sobre de",
                                     "below": "Per sota de",
-                                    "value_template": "Plantilla (opcional)"
+                                    "value_template": "Plantilla de valor (opcional)"
                                 },
                                 "sun": {
                                     "label": "Sol",
                                     "before": "Abans:",
                                     "after": "Després:",
-                                    "before_offset": "Diferencial (opcional)",
-                                    "after_offset": "Diferencial (opcional)",
+                                    "before_offset": "Diferencial previ (opcional)",
+                                    "after_offset": "Diferencial posterior (opcional)",
                                     "sunrise": "Alba",
                                     "sunset": "Capvespre"
                                 },
                                 "template": {
                                     "label": "Plantilla",
-                                    "value_template": "Plantilla de condició"
+                                    "value_template": "Plantilla de valor"
                                 },
                                 "time": {
                                     "label": "Temps",
@@ -462,8 +474,8 @@
                             "add": "Afegir acció",
                             "duplicate": "Duplicar",
                             "delete": "Suprimir",
-                            "delete_confirm": "Segur que voleu suprimir?",
-                            "unsupported_action": "Acció no suportada: {action}",
+                            "delete_confirm": "Segur que voleu suprimir-ho?",
+                            "unsupported_action": "Acció {action} no suportada.",
                             "type_select": "Tipus d'acció",
                             "type": {
                                 "service": {
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gestiona la teva xarxa Z-Wave"
+                },
+                "users": {
+                    "caption": "Usuaris",
+                    "description": "Gestionar els usuaris",
+                    "picker": {
+                        "title": "Usuaris"
+                    },
+                    "editor": {
+                        "rename_user": "Canviar el nom d'usuari",
+                        "change_password": "Canviar contrasenya",
+                        "activate_user": "Activar usuari",
+                        "deactivate_user": "Desactivar usuari",
+                        "delete_user": "Eliminar usuari"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificacions push",
+                    "description": "Envia notificacions a aquest dispositiu",
+                    "error_load_platform": "Configurar notify.html5.",
+                    "error_use_https": "Requereix tenir SSL habilitat a la interfície (frontend).",
+                    "push_notifications": "Notificacions push",
+                    "link_promo": "Més informació"
+                },
+                "language": {
+                    "header": "Idioma",
+                    "link_promo": "Ajuda a traduir",
+                    "dropdown_label": "Idioma"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "No hi ha temes disponibles.",
+                    "link_promo": "Més informació sobre temes",
+                    "dropdown_label": "Tema"
+                }
+            },
+            "page-authorize": {
+                "initializing": "S'està inicialitzant",
+                "authorizing_client": "Esteu a punt de permetre l'accés a la vostra instància de Home Assistant al client {clientId}.",
+                "logging_in_with": "Iniciant sessió amb **{authProviderName}**.",
+                "pick_auth_provider": "O bé inicieu sessió amb",
+                "abort_intro": "S'ha avortat l'inici de sessió",
+                "form": {
+                    "working": "Si us plau, espereu",
+                    "unknown_error": "Alguna cosa no ha anat bé",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nom d'usuari",
+                                        "password": "Contrasenya"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codi de verificació en dos passos"
+                                    },
+                                    "description": "Obriu el **{mfa_module_name}** al vostre dispositiu per veure el codi de verificació en dos passos i verificar la vostra identitat:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Nom d'usuari o contrasenya incorrectes",
+                                "invalid_code": "El codi d'autenticació no és vàlid"
+                            },
+                            "abort": {
+                                "login_expired": "La sessió ha caducat, torneu a iniciar la sessió."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Contrasenya API"
+                                    },
+                                    "description": "Introduïu la contrasenya API en la vostra configuració http:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Codi de verificació en dos passos"
+                                    },
+                                    "description": "Obriu el **{mfa_module_name}** al vostre dispositiu per veure el codi de verificació en dos passos i verificar la vostra identitat:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Contrasenya API no vàlida",
+                                "invalid_code": "El codi d'autenticació no és vàlid"
+                            },
+                            "abort": {
+                                "no_api_password_set": "No teniu una contrasenya API configurada.",
+                                "login_expired": "La sessió ha caducat, torneu a iniciar la sessió."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Usuari"
+                                    },
+                                    "description": "Seleccioneu l'usuari amb el qual iniciar la sessió:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "El teu ordinador no es troba accessible a la llista."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
+                "user": {
+                    "intro": "Comencem creant un nou compte d'usuari.",
+                    "required_field": "Obligatori",
+                    "data": {
+                        "name": "Nom",
+                        "username": "Nom d'usuari",
+                        "password": "Contrasenya"
+                    },
+                    "create_account": "Crear un compte",
+                    "error": {
+                        "required_fields": "Ompliu tots els camps obligatoris"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dia}\nother {dies}\n}",
             "week": "{count} {count, plural,\none {setmana}\nother {setmanes}\n}",
-            "second": "{count} {count, plural, one {segon} other {segons}}"
+            "second": "{count} {count, plural,\none {segon}\nother {segons}\n}",
+            "minute": "{count} {count, plural,\none {minut}\nother {minuts}\n}",
+            "hour": "{count} {count, plural,\none {hora}\nother {hores}\n}"
         },
         "login-form": {
             "password": "Contrasenya",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Desestimar"
+            },
+            "scene": {
+                "activate": "Activar"
+            },
+            "script": {
+                "execute": "Executar"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Pressió atmosfèrica",
+                    "humidity": "Humitat",
+                    "temperature": "Temperatura",
+                    "visibility": "Visibilitat",
+                    "wind_speed": "Velocitat del vent"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NO",
+                    "nnw": "NNO",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
+                },
+                "forecast": "Previsió"
+            },
+            "alarm_control_panel": {
+                "code": "Codi",
+                "clear_code": "Esborrar",
+                "disarm": "Desactivar",
+                "arm_home": "Activar a casa",
+                "arm_away": "Activar a fora"
+            },
+            "automation": {
+                "last_triggered": "Última activació",
+                "trigger": "Activar"
+            },
+            "cover": {
+                "position": "Posició",
+                "tilt_position": "Inclinació"
+            },
+            "fan": {
+                "speed": "Velocitat",
+                "oscillate": "Oscil·lar",
+                "direction": "Direcció"
+            },
+            "light": {
+                "brightness": "Brillantor",
+                "color_temperature": "Temperatura de color",
+                "white_value": "Valor del blanc",
+                "effect": "Efecte"
+            },
+            "media_player": {
+                "text_to_speak": "Text a veu",
+                "source": "Entrada",
+                "sound_mode": "Mode de so"
+            },
+            "climate": {
+                "currently": "Actual",
+                "on_off": "On \/ Off",
+                "target_temperature": "Temperatura desitjada",
+                "target_humidity": "Humitat desitjada",
+                "operation": "Funcionament",
+                "fan_mode": "Mode ventilació",
+                "swing_mode": "Mode oscil·lació",
+                "away_mode": "Mode absent",
+                "aux_heat": "Calefactor auxiliar"
+            },
+            "lock": {
+                "code": "Codi",
+                "lock": "Bloquejar",
+                "unlock": "Desbloquejar"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Reprendre neteja",
+                    "return_to_base": "Retornar a la base",
+                    "start_cleaning": "Començar neteja",
+                    "turn_on": "Encendre",
+                    "turn_off": "Apagar"
+                }
             }
         },
         "components": {
@@ -535,13 +763,53 @@
             },
             "service-picker": {
                 "service": "Servei"
+            },
+            "relative_time": {
+                "past": "Fa {time}",
+                "future": "D'aquí {time}",
+                "never": "Mai",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {segon}\n  other {segons}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuts}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {hores}\n}",
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+                    "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Carregant historial d'estats...",
+                "no_history_found": "No s'ha trobat cap historial d'estats."
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "S'ha engegat {entity}.",
+            "entity_turned_off": "S'ha apagat {entity}.",
+            "service_called": "S'ha cridat el servei {service}.",
+            "service_call_failed": "Ha fallat la crida al servei {service}.",
+            "connection_lost": "Connexió perduda. Tornant a connectar..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Desa",
+                "name": "Nom",
+                "entity_id": "ID de l'entitat"
+            }
+        },
+        "auth_store": {
+            "ask": "Voleu desar aquest inici de sessió?",
+            "decline": "No, gràcies",
+            "confirm": "Desar inici de sessió"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Prem el botó per configurar {entity}",
+            "empty": "No hi ha notificacions",
+            "title": "Notificacions"
         }
     },
     "domain": {
-        "alarm_control_panel": "Panell d'alarmes",
-        "automation": "Automatismes",
-        "binary_sensor": "Sensors binaris",
+        "alarm_control_panel": "Panell d'alarma",
+        "automation": "Automatisme",
+        "binary_sensor": "Sensor binari",
         "calendar": "Calendari",
         "camera": "Càmera",
         "climate": "Climatització",
@@ -558,22 +826,23 @@
         "input_select": "Entrada de selecció",
         "input_number": "Entrada numèrica",
         "input_text": "Entrada de text",
-        "light": "Llums",
-        "lock": "Panys",
+        "light": "Llum",
+        "lock": "Pany",
         "mailbox": "Bústia",
-        "media_player": "Reproductors de medis",
+        "media_player": "Reproductor",
         "notify": "Notificacions",
-        "plant": "Plantes",
+        "plant": "Planta",
         "proximity": "Proximitat",
         "remote": "Comandaments",
         "scene": "Escenes",
-        "script": "Programes",
+        "script": "Programa",
         "sensor": "Sensors",
         "sun": "Sol",
         "switch": "Interruptor",
         "updater": "Actualitzador",
         "weblink": "Enllaç web",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Aspiradora"
     },
     "attribute": {
         "weather": {

@@ -1,17 +1,20 @@
 # Home Assistant Polymer [![Build Status](https://travis-ci.org/home-assistant/home-assistant-polymer.svg?branch=master)](https://travis-ci.org/home-assistant/home-assistant-polymer)
 
-This is the repository for the official [Home Assistant](https://home-assistant.io) frontend. The frontend is built on top of the following technologies:
-
- * [Websockets](https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API)
- * [Polymer](https://www.polymer-project.org/)
- * [Rollup](http://rollupjs.org/) to package Home Assistant JS
- * [Bower](https://bower.io) for Polymer package management
+This is the repository for the official [Home Assistant](https://home-assistant.io) frontend.
 
 [![Screenshot of the frontend](https://raw.githubusercontent.com/home-assistant/home-assistant-polymer/master/docs/screenshot.png)](https://home-assistant.io/demo/)
 
-[View demo of the Polymer frontend](https://home-assistant.io/demo/)  
-[More information about Home Assistant](https://home-assistant.io)  
-[Frontend development instructions](https://home-assistant.io/developers/frontend/)
+- [View demo of the Polymer frontend](https://home-assistant.io/demo/)
+- [More information about Home Assistant](https://home-assistant.io)
+- [Frontend development instructions](https://developers.home-assistant.io/docs/en/frontend_index.html)
+
+## Development
+
+- Initial setup: `script/setup`
+- Development: [Instructions](https://developers.home-assistant.io/docs/en/frontend_development.html)
+- Production build: `script/build_frontend`
+- Gallery: `cd gallery && script/develop_gallery`
+- Hass.io: [Instructions](https://developers.home-assistant.io/docs/en/hassio_hass.html)
 
 ## Frontend development
 
@@ -26,4 +29,5 @@ It is possible to compile the project and/or run commands in the development env
 **Note**: if you have installed `npm` in addition to the `docker`, you can use the commands `npm run docker_build` and `npm run bash` to get a full build or bash as explained above
 
 ## License
+
 Home Assistant is open-source and Apache 2 licensed. Feel free to browse the repository, learn and reuse parts in your own projects.

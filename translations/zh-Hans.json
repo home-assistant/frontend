@@ -12,7 +12,8 @@
         "dev-events": "事件",
         "dev-templates": "模板",
         "dev-mqtt": "MQTT",
-        "dev-info": "信息"
+        "dev-info": "信息",
+        "calendar": "日历"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "初始化 ({query_stage})",
                 "dead": "断线 ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "夜间晴朗",
+            "cloudy": "多云",
+            "fog": "雾",
+            "hail": "冰雹",
+            "lightning": "雷电",
+            "lightning-rainy": "雷阵雨",
+            "partlycloudy": "局部多云",
+            "pouring": "暴雨",
+            "rainy": "雨",
+            "snowy": "雪",
+            "snowy-rainy": "雨夹雪",
+            "sunny": "晴",
+            "windy": "有风",
+            "windy-variant": "有风"
+        },
+        "vacuum": {
+            "cleaning": "正在清扫",
+            "docked": "停靠",
+            "error": "错误",
+            "idle": "空闲",
+            "off": "关闭",
+            "on": "开启",
+            "paused": "已暂停",
+            "returning": "正在返回"
         }
     },
     "state_badge": {
@@ -311,21 +338,6 @@
                                 "restart": "重启服务",
                                 "stop": "停止服务"
                             }
-                        },
-                        "push_notifications": {
-                            "header": "设置通知推送",
-                            "introduction": "启用此项以在本设备接受通知推送",
-                            "push_notifications": "通知推送"
-                        },
-                        "translation": {
-                            "header": "选择语言",
-                            "introduction": "选择 Home Assistant 在本设备显示的语言",
-                            "language": "语言"
-                        },
-                        "themes": {
-                            "header": "设定主题",
-                            "introduction": "为本设备选择一个主题，或选择 “Backend-selected” 使用后端默认主题",
-                            "theme": "主题"
                         }
                     }
                 },
@@ -413,7 +425,7 @@
                         },
                         "conditions": {
                             "header": "环境条件",
-                            "introduction": "环境条件是自动化流程中的可选条件，可用于避免触发条件满足时动作的执行。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统的状态。例如，“灯被打开”这个事件属于触发条件，“灯是开着的”这个状态就属于环境条件。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "环境条件是自动化流程中的可选条件，它可用于避免触发条件满足时动作的执行。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统的状态。例如，“灯被打开”这个事件属于触发条件，“灯是开着的”这个状态就属于环境条件。\n\n[了解更多内容](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "添加环境条件",
                             "duplicate": "复制",
                             "delete": "删除",
@@ -498,6 +510,130 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "管理 Z-Wave 网络"
+                },
+                "users": {
+                    "caption": "用户",
+                    "description": "管理用户",
+                    "picker": {
+                        "title": "用户"
+                    },
+                    "editor": {
+                        "rename_user": "重命名用户",
+                        "change_password": "更改密码",
+                        "activate_user": "激活用户",
+                        "deactivate_user": "停用用户",
+                        "delete_user": "删除用户"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "通知推送",
+                    "description": "向本设备发送通知",
+                    "error_load_platform": "请配置 notify.html5。",
+                    "error_use_https": "需要为前端启用 SSL。",
+                    "push_notifications": "通知推送",
+                    "link_promo": "了解更多信息"
+                },
+                "language": {
+                    "header": "语言",
+                    "link_promo": "帮助翻译",
+                    "dropdown_label": "语言"
+                },
+                "themes": {
+                    "header": "主题",
+                    "error_no_theme": "没有可用的主题。",
+                    "link_promo": "了解主题",
+                    "dropdown_label": "主题"
+                }
+            },
+            "page-authorize": {
+                "initializing": "正在初始化",
+                "authorizing_client": "您即将授权 {clientId} 访问 Home Assistant 实例。",
+                "logging_in_with": "正在用 **{authProviderName}** 登录。",
+                "pick_auth_provider": "或者用以下方式登录",
+                "abort_intro": "登录中断",
+                "form": {
+                    "working": "请稍候",
+                    "unknown_error": "出现了一些问题",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "用户名",
+                                        "password": "密码"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "双重认证口令"
+                                    },
+                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "无效的用户名或密码",
+                                "invalid_code": "无效口令"
+                            },
+                            "abort": {
+                                "login_expired": "会话已过期，请重新登录。"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API 密码"
+                                    },
+                                    "description": "请输入 http 配置中的 API 密码:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "双重认证口令"
+                                    },
+                                    "description": "在设备上打开 **{mfa_module_name}** 来查看双重认证口令以验证您的身份:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "无效的 API 密码",
+                                "invalid_code": "无效口令"
+                            },
+                            "abort": {
+                                "no_api_password_set": "您还没有配置 API 密码。",
+                                "login_expired": "会话已过期，请重新登录。"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "用户"
+                                    },
+                                    "description": "请选择要登录的用户:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "您的电脑不在白名单内。"
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "准备好唤醒你的家、找回你的隐私，并加入世界级的极客社区了吗？",
+                "user": {
+                    "intro": "让我们从创建用户帐户开始吧。",
+                    "required_field": "必填",
+                    "data": {
+                        "name": "姓名",
+                        "username": "用户名",
+                        "password": "密码"
+                    },
+                    "create_account": "创建帐户",
+                    "error": {
+                        "required_fields": "请填写所有必填字段"
+                    }
                 }
             }
         },
@@ -512,7 +648,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",
             "week": "{count} {count, plural,\none {周}\nother {周}\n}",
-            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}"
+            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
+            "minute": "{count} {count, plural,\none {分钟}\nother {分钟}\n}",
+            "hour": "{count} {count, plural,\none {小时}\nother {小时}\n}"
         },
         "login-form": {
             "password": "密码",
@@ -525,6 +663,96 @@
             },
             "persistent_notification": {
                 "dismiss": "忽略"
+            },
+            "scene": {
+                "activate": "激活"
+            },
+            "script": {
+                "execute": "执行"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "气压",
+                    "humidity": "湿度",
+                    "temperature": "温度",
+                    "visibility": "能见度",
+                    "wind_speed": "风速"
+                },
+                "cardinal_direction": {
+                    "e": "东",
+                    "ene": "东北偏东",
+                    "ese": "东南偏东",
+                    "n": "北",
+                    "ne": "东北",
+                    "nne": "东北偏北",
+                    "nw": "西北",
+                    "nnw": "西北偏北",
+                    "s": "南",
+                    "se": "东南",
+                    "sse": "东南偏南",
+                    "ssw": "西南偏南",
+                    "sw": "西南",
+                    "w": "西",
+                    "wnw": "西北偏西",
+                    "wsw": "西南偏西"
+                },
+                "forecast": "预报"
+            },
+            "alarm_control_panel": {
+                "code": "密码",
+                "clear_code": "清除",
+                "disarm": "解除警戒",
+                "arm_home": "在家警戒",
+                "arm_away": "离家警戒"
+            },
+            "automation": {
+                "last_triggered": "上次触发",
+                "trigger": "触发"
+            },
+            "cover": {
+                "position": "位置",
+                "tilt_position": "倾斜位置"
+            },
+            "fan": {
+                "speed": "风速",
+                "oscillate": "摇头",
+                "direction": "方向"
+            },
+            "light": {
+                "brightness": "亮度",
+                "color_temperature": "色温",
+                "white_value": "白度值",
+                "effect": "效果"
+            },
+            "media_player": {
+                "text_to_speak": "要朗读的文本",
+                "source": "信号源",
+                "sound_mode": "声音模式"
+            },
+            "climate": {
+                "currently": "当前",
+                "on_off": "开\/关",
+                "target_temperature": "设定温度",
+                "target_humidity": "设定湿度",
+                "operation": "运行模式",
+                "fan_mode": "风速",
+                "swing_mode": "扫风模式",
+                "away_mode": "离开模式",
+                "aux_heat": "辅热"
+            },
+            "lock": {
+                "code": "密码",
+                "lock": "锁定",
+                "unlock": "解锁"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "恢复清扫",
+                    "return_to_base": "返回底座",
+                    "start_cleaning": "开始清扫",
+                    "turn_on": "打开",
+                    "turn_off": "关闭"
+                }
             }
         },
         "components": {
@@ -535,7 +763,47 @@
             },
             "service-picker": {
                 "service": "服务"
+            },
+            "relative_time": {
+                "past": "{time}前",
+                "future": "{time}后",
+                "never": "从未",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "minute": "{count} {count, plural,\n  one {分钟}\n  other {分钟}\n}",
+                    "hour": "{count} {count, plural,\n  one {小时}\n  other {小时}\n}",
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}",
+                    "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "正在加载历史状态...",
+                "no_history_found": "没有找到历史状态。"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "已打开 {entity}。",
+            "entity_turned_off": "已关闭 {entity}。",
+            "service_called": "服务 {service} 已调用。 ",
+            "service_call_failed": "调用服务 {service} 失败。",
+            "connection_lost": "连接中断。正在重新连接..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "保存",
+                "name": "名称",
+                "entity_id": "设备\/实体 ID"
+            }
+        },
+        "auth_store": {
+            "ask": "是否保存本次登录？",
+            "decline": "不，谢谢",
+            "confirm": "保存"
+        },
+        "notification_drawer": {
+            "click_to_configure": "单击按钮可以配置{entity}",
+            "empty": "没有任何通知",
+            "title": "通知"
         }
     },
     "domain": {
@@ -573,7 +841,8 @@
         "switch": "开关",
         "updater": "更新提示",
         "weblink": "网址",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "扫地机"
     },
     "attribute": {
         "weather": {

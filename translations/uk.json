@@ -7,13 +7,17 @@
         "history": "Історія",
         "mailbox": "Поштова скринька",
         "shopping_list": "Список покупок",
-        "dev-mqtt": "MQTT"
+        "dev-services": "Послуги",
+        "dev-events": "Події",
+        "dev-templates": "Шаблони",
+        "dev-mqtt": "MQTT",
+        "dev-info": "Інформація"
     },
     "state": {
         "default": {
             "off": "Вимкнено",
             "on": "Увімкнено",
-            "unknown": "Невідомий",
+            "unknown": "Невідомо",
             "unavailable": "Недоступний"
         },
         "alarm_control_panel": {
@@ -45,8 +49,8 @@
                 "on": "Виявлено"
             },
             "motion": {
-                "off": "Чисто",
-                "on": "Виявлено"
+                "off": "Немає руху",
+                "on": "Виявлено рух"
             },
             "occupancy": {
                 "off": "Чисто",
@@ -65,12 +69,16 @@
                 "on": "Виявлено"
             },
             "opening": {
-                "off": "Закриття",
-                "on": "Відкриття"
+                "off": "Закритий",
+                "on": "Відкритий"
             },
             "safety": {
                 "off": "Безпека",
                 "on": "Небезпечно"
+            },
+            "problem": {
+                "off": "ОК",
+                "on": "Проблема"
             }
         },
         "calendar": {
@@ -215,17 +223,139 @@
     },
     "ui": {
         "sidebar": {
-            "log_out": "Вийти"
+            "log_out": "Вийти",
+            "developer_tools": "Інструменти для розробників"
+        },
+        "common": {
+            "cancel": "Скасувати"
         },
         "panel": {
+            "mailbox": {
+                "empty": "У вас немає повідомлень",
+                "delete_prompt": "Видалити це повідомлення?",
+                "delete_button": "Видалити"
+            },
             "config": {
+                "header": "Налаштуваня Home Assistant",
+                "core": {
+                    "caption": "Основні",
+                    "section": {
+                        "core": {
+                            "validation": {
+                                "check_config": "Перевірте конфігурацію",
+                                "valid": "Конфігурація дійсна!",
+                                "invalid": "Конфігурація недійсна"
+                            },
+                            "reloading": {
+                                "core": "Перезавантажити ядро",
+                                "group": "Перезавантажити групи",
+                                "automation": "Перезавантажити автоматизації",
+                                "script": "Перезавантажити скрипти"
+                            },
+                            "server_management": {
+                                "heading": "Управління сервером",
+                                "restart": "Перезапустити",
+                                "stop": "Зупинити"
+                            }
+                        }
+                    }
+                },
+                "automation": {
+                    "caption": "Автоматизація"
+                },
+                "script": {
+                    "caption": "Сценарій"
+                },
                 "zwave": {
                     "caption": "Z-Wave"
                 }
             }
+        },
+        "card": {
+            "camera": {
+                "not_available": "Зображення недоступне"
+            },
+            "persistent_notification": {
+                "dismiss": "Відхилити"
+            },
+            "scene": {
+                "activate": "Активувати"
+            },
+            "script": {
+                "execute": "Виконати"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Тиск повітря",
+                    "humidity": "Вологість",
+                    "temperature": "Температура"
+                }
+            },
+            "automation": {
+                "last_triggered": "Спрацьовано",
+                "trigger": "Тригер"
+            },
+            "light": {
+                "brightness": "Яскравість",
+                "color_temperature": "Температура кольору"
+            },
+            "media_player": {
+                "text_to_speak": "Текст для відтворення",
+                "source": "Джерело",
+                "sound_mode": "Режим звуку"
+            },
+            "climate": {
+                "currently": "В даний час",
+                "on_off": "Вкл \/ викл"
+            }
+        },
+        "components": {
+            "relative_time": {
+                "past": "{time} тому",
+                "future": "В {time}",
+                "never": "Ніколи"
+            },
+            "history_charts": {
+                "loading_history": "Завантаження історії стану ...",
+                "no_history_found": "Немає історії станів."
+            }
+        },
+        "notification_toast": {
+            "service_called": "Служба {service} викликається.",
+            "service_call_failed": "Не вдалося викликати службу {service}.",
+            "connection_lost": "З'єднання втрачено. Повторне підключення..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Зберегти"
+            }
         }
     },
     "domain": {
+        "automation": "Автоматизація",
+        "binary_sensor": "Бінарний датчик",
+        "calendar": "Календар",
+        "camera": "Камера",
+        "climate": "Клімат",
+        "device_tracker": "Трекер пристрою",
+        "fan": "Вентилятор",
+        "history_graph": "Графік історії ",
+        "group": "Група",
+        "light": "Освітлення",
+        "media_player": "Медіа плеєр",
+        "notify": "Повідомлення",
+        "plant": "Рослини",
+        "scene": "Сцена",
+        "script": "Сценарій",
+        "sensor": "Датчик",
+        "switch": "Перемикач",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "Вологість",
+            "visibility": "Видимість",
+            "wind_speed": "Швидкість вітру"
+        }
     }
 }

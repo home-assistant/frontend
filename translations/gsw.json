@@ -7,7 +7,9 @@
         "history": "Vrlouf",
         "mailbox": "Postigang",
         "shopping_list": "Ichoufsliste",
-        "dev-mqtt": "MQTT"
+        "dev-mqtt": "MQTT",
+        "dev-info": "Info",
+        "calendar": "Kaländer"
     },
     "state": {
         "default": {
@@ -71,6 +73,21 @@
             "safety": {
                 "off": "Sicher",
                 "on": "Unsicher"
+            },
+            "battery": {
+                "off": "Normau",
+                "on": "Nidrig"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Problem"
+            },
+            "connectivity": {
+                "off": "Trennt",
+                "on": "Verbunge"
+            },
+            "heat": {
+                "on": "Heiss"
             }
         },
         "calendar": {
@@ -190,6 +207,22 @@
                 "initializing": "Inizialisiärä ({query_stage})",
                 "dead": "Tod ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Klar, Nacht",
+            "cloudy": "Bedeckt",
+            "fog": "Näbu",
+            "hail": "Hägu",
+            "lightning": "Blitzä",
+            "lightning-rainy": "Blitzä, Räge",
+            "partlycloudy": "Teilwis bedeckt",
+            "pouring": "Schütte",
+            "rainy": "Rägnärisch",
+            "snowy": "Schneie",
+            "snowy-rainy": "Schneie, rägnerisch",
+            "sunny": "sunnig",
+            "windy": "windig",
+            "windy-variant": "windig"
         }
     },
     "state_badge": {
@@ -217,15 +250,241 @@
         "sidebar": {
             "log_out": "Uslogge"
         },
+        "common": {
+            "loading": "Lade"
+        },
         "panel": {
+            "history": {
+                "period": "Periode"
+            },
+            "mailbox": {
+                "delete_button": "Lösche"
+            },
             "config": {
+                "core": {
+                    "section": {
+                        "core": {
+                            "server_management": {
+                                "restart": "Neustart",
+                                "stop": "Stop"
+                            }
+                        }
+                    }
+                },
+                "automation": {
+                    "caption": "Automation",
+                    "editor": {
+                        "default_name": "Nöii Automation",
+                        "save": "Spichere",
+                        "alias": "Name",
+                        "triggers": {
+                            "header": "Uslöser",
+                            "add": "Uslöser hinzuäfüäge",
+                            "duplicate": "Kopie",
+                            "type": {
+                                "event": {
+                                    "label": "Event"
+                                },
+                                "state": {
+                                    "label": "Zuästand",
+                                    "from": "Vo",
+                                    "to": "Für"
+                                },
+                                "homeassistant": {
+                                    "label": "Home Assistant",
+                                    "start": "Starte",
+                                    "shutdown": "Abefahre"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Topic"
+                                },
+                                "numeric_state": {
+                                    "label": "Nummerische Zuästand",
+                                    "above": "Über",
+                                    "below": "Unger"
+                                },
+                                "sun": {
+                                    "label": "Sunne",
+                                    "sunrise": "Sunneungergang",
+                                    "sunset": "Sunneufgang"
+                                },
+                                "template": {
+                                    "label": "Vorlag",
+                                    "value_template": "Wärt-Vorlag"
+                                },
+                                "time": {
+                                    "label": "Zyt"
+                                },
+                                "zone": {
+                                    "label": "Zone",
+                                    "enter": "Inecho",
+                                    "leave": "Verla"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "header": "Bedingig",
+                            "type": {
+                                "sun": {
+                                    "before": "Vorhär:",
+                                    "after": "Nachhär:",
+                                    "sunrise": "Sunneungergang",
+                                    "sunset": "Sunneufgang"
+                                },
+                                "time": {
+                                    "after": "Nachhär",
+                                    "before": "Vorhär"
+                                }
+                            }
+                        },
+                        "actions": {
+                            "header": "Aktione",
+                            "type": {
+                                "delay": {
+                                    "label": "Vrzögerig"
+                                },
+                                "wait_template": {
+                                    "label": "Warte"
+                                },
+                                "condition": {
+                                    "label": "Bedingig"
+                                },
+                                "event": {
+                                    "label": "Event uslöse"
+                                }
+                            }
+                        }
+                    }
+                },
                 "zwave": {
                     "caption": "Z-Wave"
                 }
             }
+        },
+        "login-form": {
+            "password": "Passwort"
+        },
+        "components": {
+            "service-picker": {
+                "service": "Service"
+            },
+            "relative_time": {
+                "never": "Niä"
+            }
+        },
+        "card": {
+            "scene": {
+                "activate": "Aktiviere"
+            },
+            "script": {
+                "execute": "Usfüähre"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Luftdruck",
+                    "humidity": "Feuchtigkeit",
+                    "temperature": "Temperatur",
+                    "visibility": "Sichtwithi",
+                    "wind_speed": "Windgschwindigkeit"
+                },
+                "cardinal_direction": {
+                    "e": "O",
+                    "ene": "ONO",
+                    "ese": "OSO",
+                    "n": "N",
+                    "ne": "NO",
+                    "nne": "NNO",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SO",
+                    "sse": "SSO",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Vorhärsag"
+            },
+            "alarm_control_panel": {
+                "code": "Code",
+                "clear_code": "Lösche"
+            },
+            "automation": {
+                "trigger": "Uslöser"
+            },
+            "cover": {
+                "position": "Position",
+                "tilt_position": "Kipp-Position"
+            },
+            "fan": {
+                "speed": "Geschwindigkeit",
+                "oscillate": "Ozilliere",
+                "direction": "Richtig"
+            },
+            "light": {
+                "brightness": "Häuigkeit",
+                "color_temperature": "Farb-Temperatur",
+                "white_value": "Wiss-Wärt",
+                "effect": "Effekt"
+            },
+            "climate": {
+                "currently": "Aktuell",
+                "on_off": "I \/ us",
+                "target_temperature": "Ziu-Temperatur",
+                "target_humidity": "Ziu-Fuächtigkeit",
+                "operation": "Aktion",
+                "fan_mode": "Ventilator-Modus",
+                "swing_mode": "Schwing-Modus",
+                "away_mode": "Wäg-Modus"
+            },
+            "lock": {
+                "lock": "Zuätuä",
+                "unlock": "Uftuä"
+            },
+            "media_player": {
+                "source": "Quelle",
+                "sound_mode": "Sound-Modus"
+            }
+        },
+        "notification_toast": {
+            "connection_lost": "Vrbindig vrlore. Neu verbinde..."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Spichere",
+                "name": "Name"
+            }
         }
     },
     "domain": {
+        "automation": "Automation",
+        "binary_sensor": "Binäre Sensor",
+        "calendar": "Kaländer",
+        "camera": "Kamera",
+        "climate": "Klima",
+        "configurator": "Configurator",
+        "conversation": "Gspräch",
+        "cover": "Roulade",
+        "group": "Gruppe",
+        "light": "Liächt",
+        "lock": "Schloss",
+        "plant": "Pflanze",
+        "remote": "Entfernt",
+        "scene": "Szene",
+        "script": "Skript",
+        "sensor": "Sensor",
+        "sun": "Sunne",
+        "switch": "Schauter",
+        "updater": "Updater",
+        "weblink": "Weblink",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "wind_speed": "Windgschwindigkeit"
+        }
     }
 }
