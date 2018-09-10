@@ -6561,9 +6561,9 @@ hoek@4.x.x:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.1.tgz#9634502aa12c445dd5a7c5734b572bb8738aacbb"
 
-home-assistant-js-websocket@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.1.1.tgz#264f9efdafdff1053294b07bcaa5629e51a22b73"
+home-assistant-js-websocket@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-3.1.2.tgz#c82e79eb644eac0206cd9c07d10c83c7d052c2b7"
 
 home-or-tmp@^2.0.0:
   version "2.0.0"
