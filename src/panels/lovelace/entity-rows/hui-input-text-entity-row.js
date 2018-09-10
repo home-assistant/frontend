@@ -11,18 +11,24 @@ class HuiInputTextEntityRow extends PolymerElement {
         hass="[[hass]]"
         config="[[_config]]"
       >
-        <paper-input
-          no-label-float
-          minlength="[[_stateObj.attributes.min]]"
-          maxlength="[[_stateObj.attributes.max]]"
-          value="{{_value}}"
-          auto-validate="[[_stateObj.attributes.pattern]]"
-          pattern="[[_stateObj.attributes.pattern]]"
-          type="[[_stateObj.attributes.mode]]"
-          on-change="_selectedValueChanged"
-          placeholder="(empty value)"
-        ></paper-input>
+        ${this.inputTextControlTemplate}
       </hui-generic-entity-row>
+    `;
+  }
+
+  static get inputTextControlTemplate() {
+    return html`
+      <paper-input
+        no-label-float
+        minlength="[[_stateObj.attributes.min]]"
+        maxlength="[[_stateObj.attributes.max]]"
+        value="{{_value}}"
+        auto-validate="[[_stateObj.attributes.pattern]]"
+        pattern="[[_stateObj.attributes.pattern]]"
+        type="[[_stateObj.attributes.mode]]"
+        on-change="_selectedValueChanged"
+        placeholder="(empty value)"
+      ></paper-input>
     `;
   }
 

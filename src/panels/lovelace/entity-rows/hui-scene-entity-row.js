@@ -12,6 +12,18 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 class HuiSceneEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        ${this.sceneControlTemplate}
+      </hui-generic-entity-row>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         paper-button {
           color: var(--primary-color);
@@ -19,14 +31,14 @@ class HuiSceneEntityRow extends LocalizeMixin(PolymerElement) {
           margin-right: -.57em;
         }
       </style>
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
-        <paper-button on-click="_callService">
-          [[localize('ui.card.scene.activate')]]
-        </paper-button>
-      </hui-generic-entity-row>
+    `;
+  }
+
+  static get sceneControlTemplate() {
+    return html`
+      <paper-button on-click="_callService">
+        [[localize('ui.card.scene.activate')]]
+      </paper-button>
     `;
   }
 

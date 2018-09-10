@@ -8,6 +8,19 @@ import callService from '../common/call-service.js';
 class HuiCallServiceRow extends PolymerElement {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <ha-icon icon="[[_config.icon]]"></ha-icon>
+      <div class="flex">
+        <div>
+          [[_config.name]]
+        </div>
+        <paper-button on-click="_callService">[[_config.action_name]]</paper-button>
+      </div>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         :host {
           display: flex;
@@ -36,13 +49,6 @@ class HuiCallServiceRow extends PolymerElement {
           margin-right: -.57em;
         }
       </style>
-      <ha-icon icon="[[_config.icon]]"></ha-icon>
-      <div class="flex">
-        <div>
-          [[_config.name]]
-        </div>
-        <paper-button on-click="_callService">[[_config.action_name]]</paper-button>
-      </div>
     `;
   }
 

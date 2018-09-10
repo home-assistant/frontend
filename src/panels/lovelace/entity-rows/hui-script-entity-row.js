@@ -13,6 +13,18 @@ import LocalizeMixin from '../../../mixins/localize-mixin.js';
 class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        ${this.scriptControlTemplate}
+      </hui-generic-entity-row>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         paper-button {
           color: var(--primary-color);
@@ -20,17 +32,17 @@ class HuiScriptEntityRow extends LocalizeMixin(PolymerElement) {
           margin-right: -.57em;
         }
       </style>
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
-        <template is="dom-if" if="[[_stateObj.attributes.can_cancel]]">
-          <ha-entity-toggle state-obj="[[_stateObj]]" hass="[[hass]]"></ha-entity-toggle>
-        </template>
-        <template is="dom-if" if="[[!_stateObj.attributes.can_cancel]]">
-          <paper-button on-click="_callService">[[localize('ui.card.script.execute')]]</paper-button>
-        </template>
-      </hui-generic-entity-row>
+    `;
+  }
+
+  static get scriptControlTemplate() {
+    return html`
+      <template is="dom-if" if="[[_stateObj.attributes.can_cancel]]">
+        <ha-entity-toggle state-obj="[[_stateObj]]" hass="[[hass]]"></ha-entity-toggle>
+      </template>
+      <template is="dom-if" if="[[!_stateObj.attributes.can_cancel]]">
+        <paper-button on-click="_callService">[[localize('ui.card.script.execute')]]</paper-button>
+      </template>
     `;
   }
 

@@ -6,6 +6,18 @@ import '../../../components/ha-icon.js';
 class HuiWeblinkRow extends PolymerElement {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <a href="[[_config.url]]">
+        <ha-icon icon="[[_config.icon]]"></ha-icon>
+        <div>
+          [[_config.name]]
+        </div>
+      </a>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         a {
           display: flex;
@@ -24,12 +36,6 @@ class HuiWeblinkRow extends PolymerElement {
           margin-left: 16px;
         }
       </style>
-      <a href="[[_config.url]]">
-        <ha-icon icon="[[_config.icon]]"></ha-icon>
-        <div>
-          [[_config.name]]
-        </div>
-      </a>
     `;
   }
 
