@@ -155,32 +155,13 @@ function createConfig(isProdBuild, latestBuild) {
           /hass-icons.js$/,
           /\.chunk\.js$/,
         ],
-        // Static assets get cached during runtime. But these we want to explicitly cache
-        // Need to be done using templatedUrls because prefix is /static
-        globDirectory: '.',
-        globIgnores: [],
-        modifyUrlPrefix: {
-          'hass_frontend': '/static'
-        },
         templatedUrls: {
-          [`/static/translations/${translationMetadata['translations']['en']['fingerprints']['en']}`]: [
-            'build-translations/output/en.json'
-          ],
-          '/static/icons/favicon-192x192.png': [
-            'public/icons/favicon-192x192.png'
-          ],
-          '/static/fonts/roboto/Roboto-Light.ttf': [
-            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf'
-          ],
-          '/static/fonts/roboto/Roboto-Medium.ttf': [
-            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf'
-          ],
-          '/static/fonts/roboto/Roboto-Regular.ttf': [
-            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf'
-          ],
-          '/static/fonts/roboto/Roboto-Bold.ttf': [
-            'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf'
-          ],
+          [`/static/translations/${translationMetadata['translations']['en']['fingerprints']['en']}`]: 'build-translations/output/en.json',
+          '/static/icons/favicon-192x192.png': 'public/icons/favicon-192x192.png',
+          '/static/fonts/roboto/Roboto-Light.ttf': 'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Light.ttf',
+          '/static/fonts/roboto/Roboto-Medium.ttf': 'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Medium.ttf',
+          '/static/fonts/roboto/Roboto-Regular.ttf': 'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Regular.ttf',
+          '/static/fonts/roboto/Roboto-Bold.ttf': 'node_modules/@polymer/font-roboto-local/fonts/roboto/Roboto-Bold.ttf',
         }
       }),
       new HtmlWebpackPlugin({
