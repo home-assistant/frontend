@@ -9,6 +9,7 @@ import EventsMixin from '../../mixins/events-mixin.js';
 import LocalizeMixin from '../../mixins/localize-mixin.js';
 
 import computeStateName from '../../common/entity/compute_state_name.js';
+import computeDomain from '../../common/entity/compute_domain.js';
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
 
 /*
@@ -44,7 +45,10 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
     <app-toolbar>
       <paper-icon-button icon="hass:arrow-left" on-click="_backTapped"></paper-icon-button>
       <div main-title="">[[_computeStateName(stateObj)]]</div>
-      <paper-button on-click="_save">[[localize('ui.dialogs.more_info_settings.save')]]</paper-button>
+      <paper-button
+        on-click="_save"
+        disabled='[[_computeInvalid(_entityId)]]'
+      >[[localize('ui.dialogs.more_info_settings.save')]]</paper-button>
     </app-toolbar>
 
     <div class="form">
@@ -55,6 +59,8 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <paper-input
         value="{{_entityId}}"
         label="[[localize('ui.dialogs.more_info_settings.entity_id')]]"
+        error-message="Domain needs to stay the same"
+        invalid='[[_computeInvalid(_entityId)]]'
       ></paper-input>
     </div>
 `;
@@ -88,6 +94,10 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _computeComponentLoaded(hass) {
     return isComponentLoaded(hass, 'config.entity_registry');
+  }
+
+  _computeInvalid(entityId) {
+    return computeDomain(this.stateObj.entity_id) !== computeDomain(entityId);
   }
 
   _registryInfoChanged(newVal) {
