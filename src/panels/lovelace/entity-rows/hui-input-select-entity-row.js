@@ -16,21 +16,7 @@ import EventsMixin from '../../../mixins/events-mixin.js';
 class HuiInputSelectEntityRow extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-      <style>
-        :host {
-          display: flex;
-          align-items: center;
-        }
-        paper-dropdown-menu {
-          margin-left: 16px;
-          flex: 1;
-        }
-        .not-found {
-          flex: 1;
-          background-color: yellow;
-          padding: 8px;
-        }
-      </style>
+      ${this.styleTemplate}
       <template is="dom-if" if="[[_stateObj]]">
         <state-badge state-obj="[[_stateObj]]"></state-badge>
         <paper-dropdown-menu on-click="_stopPropagation" selected-item-label="{{_selected}}" label="[[_computeName(_config.name, _stateObj)]]">
@@ -46,6 +32,26 @@ class HuiInputSelectEntityRow extends EventsMixin(PolymerElement) {
           Entity not available: [[_config.entity]]
         </div>
       </template>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
+      <style>
+        :host {
+          display: flex;
+          align-items: center;
+        }
+        paper-dropdown-menu {
+          margin-left: 16px;
+          flex: 1;
+        }
+        .not-found {
+          flex: 1;
+          background-color: yellow;
+          padding: 8px;
+        }
+      </style>
     `;
   }
 

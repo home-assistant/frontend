@@ -10,6 +10,19 @@ import '../components/hui-generic-entity-row.js';
 class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], PolymerElement) {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+        id="input_number_card"
+      >
+        ${this.inputNumberControlTemplate}
+      </hui-generic-entity-row>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         .flex {
           display: flex;
@@ -23,41 +36,40 @@ class HuiInputNumberEntityRow extends mixinBehaviors([IronResizableBehavior], Po
           text-align: right;
         }
       </style>
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-        id="input_number_card"
-      >
-        <div>
-          <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'slider')]]">
-            <div class="flex">
-              <paper-slider
-                min="[[_min]]"
-                max="[[_max]]"
-                value="{{_value}}"
-                step="[[_step]]"
-                pin
-                on-change="_selectedValueChanged"
-                ignore-bar-touch
-              ></paper-slider>
-              <span class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</span>
-            </div>
-          </template>
-          <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'box')]]">
-            <paper-input
-              no-label-float
-              auto-validate
-              pattern="[0-9]+([\\.][0-9]+)?"
-              step="[[_step]]"
+    `;
+  }
+
+  static get inputNumberControlTemplate() {
+    return html`
+      <div>
+        <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'slider')]]">
+          <div class="flex">
+            <paper-slider
               min="[[_min]]"
               max="[[_max]]"
               value="{{_value}}"
-              type="number"
+              step="[[_step]]"
+              pin
               on-change="_selectedValueChanged"
-            ></paper-input>
-          </template>
-        </div>
-      </hui-generic-entity-row>
+              ignore-bar-touch
+            ></paper-slider>
+            <span class="state">[[_value]] [[_stateObj.attributes.unit_of_measurement]]</span>
+          </div>
+        </template>
+        <template is="dom-if" if="[[_equals(_stateObj.attributes.mode, 'box')]]">
+          <paper-input
+            no-label-float
+            auto-validate
+            pattern="[0-9]+([\\.][0-9]+)?"
+            step="[[_step]]"
+            min="[[_min]]"
+            max="[[_max]]"
+            value="{{_value}}"
+            type="number"
+            on-change="_selectedValueChanged"
+          ></paper-input>
+        </template>
+      </div>
     `;
   }
 
