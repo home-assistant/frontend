@@ -569,7 +569,7 @@
                                     "data": {
                                         "code": "2 단계 인증 코드"
                                     },
-                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 ** {mfa_module_name} ** 을(를) 열어주세요:"
+                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
                                 }
                             },
                             "error": {
@@ -586,13 +586,13 @@
                                     "data": {
                                         "password": "API 비밀번호"
                                     },
-                                    "description": "http config 에 API 암호를 입력해주세요:"
+                                    "description": "configuration.yaml 에 설정한 api_password 를 입력해주세요:"
                                 },
                                 "mfa": {
                                     "data": {
                                         "code": "2 단계 인증 코드"
                                     },
-                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 ** {mfa_module_name} ** 을(를) 열어주세요:"
+                                    "description": "2 단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
                                 }
                             },
                             "error": {
@@ -600,8 +600,8 @@
                                 "invalid_code": "잘못된 인증 코드"
                             },
                             "abort": {
-                                "no_api_password_set": "API 비밀번호를 구성하지 않았습니다.",
-                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요"
+                                "no_api_password_set": "API 비밀번호를 설정하지 않았습니다.",
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
                             }
                         },
                         "trusted_networks": {

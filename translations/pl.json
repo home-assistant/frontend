@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "Inicjowanie",
                 "authorizing_client": "Czy na pewno chcesz dać dostęp {clientId} do Twojej instancji Home Assistant.",
-                "logging_in_with": "Logowanie za pomocą ** {authProviderName} **.",
+                "logging_in_with": "Logowanie za pomocą **{authProviderName}**.",
                 "pick_auth_provider": "Lub zaloguj się za pomocą",
                 "abort_intro": "Logowanie przerwane",
                 "form": {
@@ -569,7 +569,7 @@
                                     "data": {
                                         "code": "Dwuskładnikowy kod uwierzytelniający"
                                     },
-                                    "description": "Otwórz ** {mfa_module_name} ** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
+                                    "description": "Otwórz **{mfa_module_name}** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
                                 }
                             },
                             "error": {
@@ -592,7 +592,7 @@
                                     "data": {
                                         "code": "Dwuskładnikowy kod uwierzytelniający"
                                     },
-                                    "description": "Otwórz ** {mfa_module_name} ** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
+                                    "description": "Otwórz **{mfa_module_name}** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
                                 }
                             },
                             "error": {

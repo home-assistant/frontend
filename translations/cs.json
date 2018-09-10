@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "Inicializuji",
                 "authorizing_client": "Chystáte se dát {clientId} práva pro Home Assistant instanci.",
-                "logging_in_with": "Přihlásit se pomocí ** {authProviderName} **.",
+                "logging_in_with": "Přihlásit se pomocí **{authProviderName}**.",
                 "pick_auth_provider": "Nebo se přihlaste s",
                 "abort_intro": "Přihlášení bylo zrušeno",
                 "form": {

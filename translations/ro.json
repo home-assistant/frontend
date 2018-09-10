@@ -526,11 +526,53 @@
                     }
                 }
             },
+            "profile": {
+                "push_notifications": {
+                    "header": "Notificări",
+                    "description": "Trimiteți notificări către acest dispozitiv.",
+                    "error_load_platform": "Configurați notify.html5.",
+                    "error_use_https": "Necesită SSL activat pentru interfaţă.",
+                    "push_notifications": "Notificări",
+                    "link_promo": "Aflați mai multe"
+                },
+                "language": {
+                    "header": "Limba",
+                    "link_promo": "Ajută la traducere",
+                    "dropdown_label": "Limba"
+                },
+                "themes": {
+                    "header": "Temă",
+                    "error_no_theme": "Nu există teme disponibile.",
+                    "link_promo": "Aflați mai multe despre teme",
+                    "dropdown_label": "Temă"
+                }
+            },
             "page-authorize": {
+                "initializing": "Inițializează",
+                "logging_in_with": "Conectare cu **{authProviderName}**.",
+                "pick_auth_provider": "Sau conectați-vă cu",
+                "abort_intro": "Conectare intrerupta",
                 "form": {
+                    "working": "Te rog așteaptă",
+                    "unknown_error": "Ceva n-a mers bine",
                     "providers": {
                         "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nume de utilizator",
+                                        "password": "Parola"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Autentificare cu doi factori"
+                                    },
+                                    "description": "Deschideti **{mfa_module_name}** pe dispozitivul d-voastra pentru a vedea codul de 'two-factor authentication' si a va verifica indentitatea:"
+                                }
+                            },
                             "error": {
+                                "invalid_auth": "nume de utilizator sau parola incorecte",
                                 "invalid_code": "Codul 'Two-factor Authentication' invalid"
                             },
                             "abort": {
@@ -540,29 +582,55 @@
                         "legacy_api_password": {
                             "step": {
                                 "init": {
+                                    "data": {
+                                        "password": "Parola API"
+                                    },
                                     "description": "Introduceti parola API in http config:"
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Codul 'Two-factor Authentication'"
+                                        "code": "Autentificare cu doi factori"
                                     },
                                     "description": "Deschideti **{mfa_module_name}** pe dispozitivul d-voastra pentru a vedea codul de 'two-factor authentication' si a va verifica indentitatea:"
                                 }
                             },
                             "error": {
-                                "invalid_code": "Cod de autentificare invalid"
+                                "invalid_auth": "Parola API nevalidă",
+                                "invalid_code": "Codul 'Two-factor Authentication' invalid"
                             },
                             "abort": {
-                                "login_expired": "Sesiune expirata, e nevoie sa va logati din nou."
+                                "no_api_password_set": "Nu aveți o parolă API configurată.",
+                                "login_expired": "Sesiunea a expirat, va rugam logati-va din nou."
                             }
                         },
                         "trusted_networks": {
                             "step": {
                                 "init": {
+                                    "data": {
+                                        "user": "Utilizator"
+                                    },
                                     "description": "Selectati utilizatorul cu care doriti sa va logati:"
                                 }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Calculatorul dvs. nu este pe lista albă."
                             }
                         }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "Să începem prin crearea unui cont de utilizator.",
+                    "required_field": "Necesar",
+                    "data": {
+                        "name": "Nume",
+                        "username": "Nume de utilizator",
+                        "password": "Parola"
+                    },
+                    "create_account": "Creează cont",
+                    "error": {
+                        "required_fields": "Completați toate câmpurile obligatorii"
                     }
                 }
             }
@@ -724,6 +792,16 @@
                 "name": "Nume",
                 "entity_id": "ID-ul entității"
             }
+        },
+        "auth_store": {
+            "ask": "Doriți să salvați aceste date de conectare?",
+            "decline": "Nu, mulţumesc",
+            "confirm": "Salvați datele de conectare"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Faceți clic pe buton pentru a configura {entity}",
+            "empty": "Nicio notificare",
+            "title": "Notificări"
         }
     },
     "domain": {
