@@ -13,10 +13,16 @@ class HuiTimerEntityRow extends PolymerElement {
         hass="[[hass]]"
         config="[[_config]]"
       >
-        <div>
-          [[_computeDisplay(_stateObj, _timeRemaining)]]
-        </div>
+        ${this.timerControlTemplate}
       </hui-generic-entity-row>
+    `;
+  }
+
+  static get timerControlTemplate() {
+    return html`
+      <div>
+        [[_computeDisplay(_stateObj, _timeRemaining)]]
+      </div>
     `;
   }
 

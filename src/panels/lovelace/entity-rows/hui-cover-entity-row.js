@@ -9,23 +9,35 @@ import CoverEntity from '../../../util/cover-model.js';
 class HuiCoverEntityRow extends PolymerElement {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        ${this.coverControlTemplate}
+      </hui-generic-entity-row>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         ha-cover-controls,
         ha-cover-tilt-controls {
           margin-right: -.57em;
         }
       </style>
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
-        <template is="dom-if" if="[[!_entityObj.isTiltOnly]]">
-          <ha-cover-controls hass="[[hass]]" state-obj="[[_stateObj]]"></ha-cover-controls>
-        </template>
-        <template is="dom-if" if="[[_entityObj.isTiltOnly]]">
-          <ha-cover-tilt-controls hass="[[hass]]" state-obj="[[_stateObj]]"></ha-cover-tilt-controls>
-        </template>
-      </hui-generic-entity-row>
+    `;
+  }
+
+  static get coverControlTemplate() {
+    return html`
+      <template is="dom-if" if="[[!_entityObj.isTiltOnly]]">
+        <ha-cover-controls hass="[[hass]]" state-obj="[[_stateObj]]"></ha-cover-controls>
+      </template>
+      <template is="dom-if" if="[[_entityObj.isTiltOnly]]">
+        <ha-cover-tilt-controls hass="[[hass]]" state-obj="[[_stateObj]]"></ha-cover-tilt-controls>
+      </template>
     `;
   }
 

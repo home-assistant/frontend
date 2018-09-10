@@ -18,18 +18,24 @@ class HuiToggleEntityRow extends LocalizeMixin(PolymerElement) {
         hass="[[hass]]"
         config="[[_config]]"
       >
-        <template is="dom-if" if="[[_canToggle]]">
-          <ha-entity-toggle
-            hass="[[hass]]"
-            state-obj="[[_stateObj]]"
-          ></ha-entity-toggle>
-        </template>
-        <template is="dom-if" if="[[!_canToggle]]">
-          <div>
-            [[_computeState(_stateObj)]]
-          </div>
-        </template>
+        ${this.toggleControlTemplate}
       </hui-generic-entity-row>
+    `;
+  }
+
+  static get toggleControlTemplate() {
+    return html`
+      <template is="dom-if" if="[[_canToggle]]">
+        <ha-entity-toggle
+          hass="[[hass]]"
+          state-obj="[[_stateObj]]"
+        ></ha-entity-toggle>
+      </template>
+      <template is="dom-if" if="[[!_canToggle]]">
+        <div>
+          [[_computeState(_stateObj)]]
+        </div>
+      </template>
     `;
   }
 
