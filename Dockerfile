@@ -1,25 +1,31 @@
-FROM node:8.2.1-alpine
+FROM node:8.9-alpine
 
 # install yarn
 ENV PATH /root/.yarn/bin:$PATH
 
+## Install/force base tools
 RUN apk update \
-  && apk add curl bash binutils tar git python3 \
+  && apk add make g++ curl bash binutils tar git python2 python3 \
   && rm -rf /var/cache/apk/* \
   && /bin/bash \
-  && touch ~/.bashrc \
-  && curl -o- -L https://yarnpkg.com/install.sh | bash
+  && touch ~/.bashrc
 
+## Install yarn
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash
+
+## Setup the project
 RUN mkdir -p /frontend
+
 WORKDIR /frontend
 
-ENV NODE_ENV production
+COPY package.json yarn.lock ./
 
-COPY package.json ./
-RUN yarn
-
-COPY bower.json ./
-RUN ./node_modules/.bin/bower install --allow-root
+RUN yarn install --frozen-lockfile
 
 COPY . .
-CMD [ "/bin/bash", "./script/build_frontend" ]
+
+COPY script/docker_entrypoint.sh /usr/bin/docker_entrypoint.sh
+
+RUN chmod +x /usr/bin/docker_entrypoint.sh
+
+CMD [ "docker_entrypoint.sh" ]
