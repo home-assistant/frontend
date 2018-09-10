@@ -36,7 +36,7 @@ class OzwLog extends PolymerElement {
           </paper-input>
         </div>
         <div class="card-actions">
-          <paper-button raised="true" on-click="_loadLog">Load</paper-button>   
+          <paper-button raised="true" on-click="_openLogWindow">Load</paper-button>   
           <paper-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</paper-button>
       </paper-card>
     </ha-config-section>
@@ -69,22 +69,19 @@ class OzwLog extends PolymerElement {
     };
   }
 
-  async _loadLog() {
-    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
-    this.setProperties({ _ozwLogs: info });
-    const ozwWindow = window.open('', 'OpenZwave internal log', 'toolbar');
-    ozwWindow.document.title = 'OpenZwave internal logfile';
-    ozwWindow.document.body.innerText = this._ozwLogs;
-  }
-
   async _tailLog() {
-    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
-    this.setProperties({ _ozwLogs: info });
-    const ozwWindow = window.open('', 'OpenZwave internal log', 'toolbar');
-    ozwWindow.document.title = 'OpenZwave internal logfile';
-    ozwWindow.document.body.innerText = this._ozwLogs;
+    const ozwWindow = await this._openLogWindow();
     this.setProperties({
       _intervalId: setInterval(() => { this._refreshLog(ozwWindow); }, 1500) });
+  }
+
+  async _openLogWindow() {
+    const info = await this.hass.callApi('GET', 'zwave/ozwlog?lines=' + this._numLogLines);
+    this.setProperties({ _ozwLogs: info });
+    const ozwWindow = window.open('', 'OpenZwave internal log', 'toolbar');
+    ozwWindow.document.title = 'OpenZwave internal logfile';
+    ozwWindow.document.body.innerText = this._ozwLogs;
+    return ozwWindow;
   }
 
   async _refreshLog(ozwWindow) {
