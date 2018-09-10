@@ -10,6 +10,24 @@ import computeStateName from '../../../common/entity/compute_state_name.js';
 class HuiGenericEntityRow extends PolymerElement {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <template is="dom-if" if="[[_stateObj]]">
+        ${this.stateBadgeTemplate}
+        <div class="flex">
+          ${this.infoTemplate}
+          <slot></slot>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!_stateObj]]">
+        <div class="not-found">
+          Entity not available: [[config.entity]]
+        </div>
+      </template>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         :host {
           display: flex;
@@ -50,36 +68,36 @@ class HuiGenericEntityRow extends PolymerElement {
           flex: 0 0 40px;
         }
       </style>
-      <template is="dom-if" if="[[_stateObj]]">
-        <state-badge
-          state-obj="[[_stateObj]]"
-          override-icon="[[config.icon]]"
-        ></state-badge>
-        <div class="flex">
-          <div class="info">
-            [[_computeName(config.name, _stateObj)]]
-            <template is="dom-if" if="[[config.secondary_info]]">
-              <template is="dom-if" if="[[_equals(config.secondary_info, 'entity-id')]]">
-                <div class="secondary">
-                  [[_stateObj.entity_id]]
-                </div>
-              </template>
-              <template is="dom-if" if="[[_equals(config.secondary_info, 'last-changed')]]">
-                <ha-relative-time
-                  hass="[[hass]]"
-                  datetime="[[_stateObj.last_changed]]"
-                ></ha-relative-time>
-              </template>
-            </template>
-          </div>
-          <slot></slot>
-        </div>
-      </template>
-      <template is="dom-if" if="[[!_stateObj]]">
-        <div class="not-found">
-          Entity not available: [[config.entity]]
-        </div>
-      </template>
+    `;
+  }
+
+  static get stateBadgeTemplate() {
+    return html`
+      <state-badge
+        state-obj="[[_stateObj]]"
+        override-icon="[[config.icon]]"
+      ></state-badge>
+    `;
+  }
+
+  static get infoTemplate() {
+    return html`
+      <div class="info">
+        [[_computeName(config.name, _stateObj)]]
+        <template is="dom-if" if="[[config.secondary_info]]">
+          <template is="dom-if" if="[[_equals(config.secondary_info, 'entity-id')]]">
+            <div class="secondary">
+              [[_stateObj.entity_id]]
+            </div>
+          </template>
+          <template is="dom-if" if="[[_equals(config.secondary_info, 'last-changed')]]">
+            <ha-relative-time
+              hass="[[hass]]"
+              datetime="[[_stateObj.last_changed]]"
+            ></ha-relative-time>
+          </template>
+        </template>
+      </div>
     `;
   }
 
