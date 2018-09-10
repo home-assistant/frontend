@@ -7,7 +7,6 @@ build-hassio/*
 node_modules/*
 bower_components/*
 npm-debug.log
-package-lock.json
 .DS_Store
 hass_frontend/*
 hass_frontend_es5/*
