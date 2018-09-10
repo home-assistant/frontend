@@ -1,8 +1,7 @@
 import computeDomain from '../../../common/entity/compute_domain.js';
 
 const NOTIFICATION_DOMAINS = [
-  'configurator',
-  'persistent_notification'
+  'configurator'
 ];
 
 export default function computeNotifications(states) {

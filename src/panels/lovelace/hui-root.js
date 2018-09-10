@@ -29,6 +29,7 @@ import './hui-view.js';
 import debounce from '../../common/util/debounce.js';
 
 import createCardElement from './common/create-card-element.js';
+import computeNotifications from './common/compute-notifications';
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -76,6 +77,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <hui-notification-drawer
       hass="[[hass]]"
+      notifications="[[notifications]]"
       open="{{notificationsOpen}}"
       narrow="[[narrow]]"
     ></hui-notification-drawer>
@@ -87,6 +89,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           <hui-notifications-button
             hass="[[hass]]"
             notifications-open="{{notificationsOpen}}"
+            notifications="[[notifications]]"
           ></hui-notifications-button>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
           <paper-menu-button
@@ -156,6 +159,10 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         value: false,
       },
 
+      notifications: {
+        type: Array
+      },
+
       routeData: Object,
     };
   }
@@ -163,6 +170,27 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   constructor() {
     super();
     this._debouncedConfigChanged = debounce(() => this._selectView(this._curView), 100);
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+    this._updateNotifications();
+    this._unsubNotifications = await this.hass.connection
+      .subscribeEvents(() => this._updateNotifications(), 'persistent_notifications_updated');
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (typeof this._unsubNotifications === 'function') {
+      this._unsubNotifications();
+    }
+  }
+
+  async _updateNotifications() {
+    if (!this.hass) return;
+    const persistentNotifications = await this.hass.callWS({ type: 'persistent_notification/get' });
+    const configurator = computeNotifications(this.hass.states);
+    this.notifications = persistentNotifications.concat(configurator);
   }
 
   _routeChanged(route) {
@@ -260,6 +288,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   _hassChanged(hass) {
     if (!this.$.view.lastChild) return;
     this.$.view.lastChild.hass = hass;
+    this._updateNotifications();
   }
 
   _configChanged(config) {
