@@ -550,7 +550,7 @@
             "page-authorize": {
                 "initializing": "Initialiserer",
                 "authorizing_client": "Du er i ferd med å gi {clientId} tilgang til din Home Assistant",
-                "logging_in_with": "Logg inn med ** {authProviderName} **.",
+                "logging_in_with": "Logg inn med **{authProviderName}**.",
                 "pick_auth_provider": "Eller logg inn med",
                 "abort_intro": "Innlogging avbrutt",
                 "form": {
@@ -569,7 +569,7 @@
                                     "data": {
                                         "code": "To-faktor autentiseringskode"
                                     },
-                                    "description": "Åpne ** {mfa_module_name} ** på enheten din for å se din tofaktors autentiseringskode og bekrefte identiteten din:"
+                                    "description": "Åpne **{mfa_module_name}** på enheten din for å se din tofaktors autentiseringskode og bekrefte identiteten din:"
                                 }
                             },
                             "error": {
@@ -592,7 +592,7 @@
                                     "data": {
                                         "code": "To-faktor autentiseringskode"
                                     },
-                                    "description": "Åpne **{mfa_module_name}** på din enhet for å vise to-faktor autentiseringkode og vertifiser din identitet."
+                                    "description": "Åpne **{mfa_module_name}** på enheten din for å se din tofaktors autentiseringskode og bekrefte identiteten din:"
                                 }
                             },
                             "error": {
@@ -601,7 +601,7 @@
                             },
                             "abort": {
                                 "no_api_password_set": "Du har ikke konfigurert et API-passord.",
-                                "login_expired": "Sesjonen har utløpt, vennligst logg inn igjen: "
+                                "login_expired": "Økten er utløpt, vennligst logg inn på nytt"
                             }
                         },
                         "trusted_networks": {

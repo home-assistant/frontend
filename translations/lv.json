@@ -64,9 +64,12 @@
             "not_home": "Prom"
         },
         "media_player": {
+            "off": "Izslēgts",
+            "on": "Ieslēgts",
             "playing": "Atskaņo",
             "paused": "Apturēts",
-            "idle": "Dīkstāvē"
+            "idle": "Dīkstāvē",
+            "standby": "Gaidīšanas režīmā"
         },
         "plant": {
             "ok": "Labi",
