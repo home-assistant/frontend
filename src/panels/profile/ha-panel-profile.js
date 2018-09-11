@@ -15,6 +15,9 @@ import EventsMixin from '../../mixins/events-mixin.js';
 
 import './ha-change-password-card.js';
 import './ha-mfa-modules-card.js';
+import './ha-refresh-tokens-card.js';
+import './ha-long-lived-access-tokens-card.js';
+
 import './ha-pick-language-row.js';
 import './ha-pick-theme-row.js';
 import './ha-push-notifications-row.js';
@@ -84,7 +87,22 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
           <ha-change-password-card hass="[[hass]]"></ha-change-password-card>
         </template>
 
-        <ha-mfa-modules-card hass='[[hass]]' mfa-modules='[[hass.user.mfa_modules]]'></ha-mfa-modules-card>
+        <ha-mfa-modules-card
+          hass='[[hass]]'
+          mfa-modules='[[hass.user.mfa_modules]]'
+        ></ha-mfa-modules-card>
+
+        <ha-refresh-tokens-card
+          hass='[[hass]]'
+          refresh-tokens='[[_refreshTokens]]'
+          on-hass-refresh-tokens='_refreshRefreshTokens'
+        ></ha-refresh-tokens-card>
+
+        <ha-long-lived-access-tokens-card
+          hass='[[hass]]'
+          refresh-tokens='[[_refreshTokens]]'
+          on-hass-refresh-tokens='_refreshRefreshTokens'
+        ></ha-long-lived-access-tokens-card>
       </div>
     </app-header-layout>
     `;
@@ -95,7 +113,19 @@ class HaPanelProfile extends EventsMixin(PolymerElement) {
       hass: Object,
       narrow: Boolean,
       showMenu: Boolean,
+      _refreshTokens: Array,
     };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._refreshRefreshTokens();
+  }
+
+  async _refreshRefreshTokens() {
+    this._refreshTokens = await this.hass.callWS({
+      type: 'auth/refresh_tokens'
+    });
   }
 
   _handleLogOut() {
