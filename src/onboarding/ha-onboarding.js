@@ -140,6 +140,7 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
     try {
       const response = await fetch('/api/onboarding/users', {
         method: 'POST',
+        credentials: 'same-origin',
         body: JSON.stringify({
           name: this._name,
           username: this._username,
