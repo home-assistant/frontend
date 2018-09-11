@@ -1,52 +1,57 @@
-export default function hassCallApi(host, auth, method, path, parameters) {
-  var url = host + '/api/' + path;
+import { fetchWithAuth } from './fetch-with-auth.js';
 
-  return new Promise(function (resolve, reject) {
-    var req = new XMLHttpRequest();
-    req.open(method, url, true);
-    req.setRequestHeader('authorization', `Bearer ${auth.accessToken}`);
+/* eslint-disable no-throw-literal */
 
-    req.onload = function () {
-      let body = req.responseText;
-      const contentType = req.getResponseHeader('content-type');
+export default async function hassCallApi(auth, method, path, parameters) {
+  const url = `${auth.data.hassUrl}/api/${path}`;
 
-      if (contentType && contentType.indexOf('application/json') !== -1) {
-        try {
-          body = JSON.parse(req.responseText);
-        } catch (err) {
-          reject({
-            error: 'Unable to parse JSON response',
-            status_code: req.status,
-            body: body,
-          });
-          return;
-        }
-      }
+  const init = {
+    method: method,
+    headers: {},
+  };
 
-      if (req.status > 199 && req.status < 300) {
-        resolve(body);
-      } else {
-        reject({
-          error: 'Response error: ' + req.status,
-          status_code: req.status,
-          body: body
-        });
-      }
+  if (parameters) {
+    init.headers['Content-Type'] = 'application/json;charset=UTF-8';
+    init.body = JSON.stringify(parameters);
+  }
+
+  let response;
+
+  try {
+    response = await fetchWithAuth(auth, url, init);
+  } catch (err) {
+    throw {
+      error: 'Request error',
+      status_code: undefined,
+      body: undefined,
     };
+  }
 
-    req.onerror = function () {
-      reject({
-        error: 'Request error',
-        status_code: req.status,
-        body: req.responseText,
-      });
-    };
+  let body = null;
 
-    if (parameters) {
-      req.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-      req.send(JSON.stringify(parameters));
-    } else {
-      req.send();
+  const contentType = response.headers.get('content-type');
+
+  if (contentType && contentType.includes('application/json')) {
+    try {
+      body = await response.json();
+    } catch (err) {
+      throw {
+        error: 'Unable to parse JSON response',
+        status_code: err.status,
+        body: null,
+      };
     }
-  });
+  } else {
+    body = await response.text();
+  }
+
+  if (!response.ok) {
+    throw {
+      error: `Response error: ${response.status}`,
+      status_code: response.status,
+      body: body
+    };
+  }
+
+  return body;
 }
