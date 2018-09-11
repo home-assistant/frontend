@@ -152,7 +152,7 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
         // eslint-disable-next-line
         throw {
           message: `Bad response from server: ${response.status}`
-        }
+        };
       }
 
       document.location = '/';
