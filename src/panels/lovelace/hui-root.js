@@ -159,8 +159,14 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         value: false,
       },
 
+      _persistentNotifications: {
+        type: Array,
+        value: []
+      },
+
       notifications: {
-        type: Array
+        type: Array,
+        computed: '_updateNotifications(hass.states, _persistentNotifications)'
       },
 
       routeData: Object,
@@ -174,9 +180,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   async connectedCallback() {
     super.connectedCallback();
-    this._updateNotifications();
-    this._unsubNotifications = await this.hass.connection
-      .subscribeEvents(() => this._updateNotifications(), 'persistent_notifications_updated');
+    this._fetchPersistentNotifications();
+    this._unsubNotifications = await this.hass.connection.subscribeEvents(
+      () => this._fetchPersistentNotifications(),
+      'persistent_notifications_updated'
+    );
   }
 
   disconnectedCallback() {
@@ -186,11 +194,15 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     }
   }
 
-  async _updateNotifications() {
-    if (!this.hass) return;
-    const persistentNotifications = await this.hass.callWS({ type: 'persistent_notification/get' });
-    const configurator = computeNotifications(this.hass.states);
-    this.notifications = persistentNotifications.concat(configurator);
+  async _fetchPersistentNotifications() {
+    this._persistentNotifications = await this.hass.callWS({ type: 'persistent_notification/get' });
+  }
+
+  _updateNotifications(states, persistent) {
+    if (!states) return persistent;
+
+    const configurator = computeNotifications(states);
+    return persistent.concat(configurator);
   }
 
   _routeChanged(route) {
@@ -288,7 +300,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   _hassChanged(hass) {
     if (!this.$.view.lastChild) return;
     this.$.view.lastChild.hass = hass;
-    this._updateNotifications();
+    this._configuratorNotifications = computeNotifications(hass.states);
   }
 
   _configChanged(config) {
