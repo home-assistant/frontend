@@ -756,8 +756,8 @@
           "delete_failed": "Failed to delete the refresh token."
         },
         "long_lived_access_tokens": {
-          "header": "Long Lived Access Tokens",
-          "description": "Create long lived access tokens to allow your scripts to interact with your Home Assistant instance. The following long lived access tokens are currently active:",
+          "header": "Long-Lived Access Tokens",
+          "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. The following long-lived access tokens are currently active:",
           "created_at": "Created at {date}",
           "confirm_delete": "Are you sure you want to delete the access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
@@ -765,7 +765,7 @@
           "create_failed": "Failed to create the access token.",
           "prompt_name": "Name?",
           "prompt_copy_token": "Copy your access token",
-          "empty_state": "You have no long lived access tokens yet."
+          "empty_state": "You have no long-lived access tokens yet."
         }
       },
       "shopping-list": {
