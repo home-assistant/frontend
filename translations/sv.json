@@ -621,6 +621,7 @@
                 }
             },
             "page-onboarding": {
+                "intro": "Är du redo att väcka ditt hem, återta din integritet och gå med i en världsomspännande gemenskap av hemmafixare?",
                 "user": {
                     "intro": "Låt oss börja med att skapa ett användarkonto",
                     "required_field": "Krävs",
