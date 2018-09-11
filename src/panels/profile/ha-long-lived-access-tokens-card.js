@@ -1,0 +1,127 @@
+import '@polymer/paper-button/paper-button.js';
+
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
+import EventsMixin from '../../mixins/events-mixin.js';
+import LocalizeMixin from '../../mixins/localize-mixin.js';
+import formatDateTime from '../../common/datetime/format_date_time.js';
+
+import '../../resources/ha-style.js';
+
+import './ha-settings-row.js';
+
+/*
+ * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
+ */
+class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
+  static get template() {
+    return html`
+    <style include="ha-style">
+      paper-card {
+        display: block;
+      }
+      .card-content {
+        margin: -1em 0;
+      }
+      a {
+        color: var(--primary-color);
+      }
+      paper-icon-button {
+        color: var(--primary-text-color);
+      }
+    </style>
+    <paper-card heading="[[localize('ui.panel.profile.long_lived_access_tokens.header')]]">
+      <div class="card-content">
+        <p>
+          [[localize('ui.panel.profile.long_lived_access_tokens.description')]]
+          <a href='https://developers.home-assistant.io/docs/en/auth_api.html#making-authenticated-requests' target='_blank'>
+            [[localize('ui.panel.profile.long_lived_access_tokens.learn_auth_requests')]]
+          </a>
+        </p>
+        <template is='dom-if' if='[[!_tokens.length]]'>
+          <p>[[localize('ui.panel.profile.long_lived_access_tokens.empty_state')]]</p>
+        </template>
+      </div>
+      <template is='dom-repeat' items='[[_tokens]]'>
+        <ha-settings-row>
+          <span slot='heading'>[[item.client_name]]</span>
+          <span slot='description'>[[_formatCreatedAt(item.created_at)]]</span>
+          <paper-icon-button icon="hass:delete" on-click='_handleDelete'></paper-icon-button>
+        </ha-settings-row>
+      </template>
+      <div class='card-actions'>
+        <paper-button on-click='_handleCreate'>
+          [[localize('ui.panel.profile.long_lived_access_tokens.create')]]
+        </paper-button>
+      </div>
+    </paper-card>
+    `;
+  }
+
+  static get properties() {
+    return {
+      hass: Object,
+      refreshTokens: Array,
+      _tokens: {
+        type: Array,
+        computed: '_computeTokens(refreshTokens)'
+      }
+    };
+  }
+
+  _computeTokens(refreshTokens) {
+    return refreshTokens.filter(tkn => tkn.type === 'long_lived_access_token').reverse();
+  }
+
+  _formatTitle(name) {
+    return this.localize(
+      'ui.panel.profile.long_lived_access_tokens.token_title',
+      'name', name
+    );
+  }
+
+  _formatCreatedAt(created) {
+    return this.localize(
+      'ui.panel.profile.long_lived_access_tokens.created_at',
+      'date', formatDateTime(new Date(created))
+    );
+  }
+
+  async _handleCreate() {
+    const name = prompt(this.localize('ui.panel.profile.long_lived_access_tokens.prompt_name'));
+    if (!name) return;
+    try {
+      const token = await this.hass.callWS({
+        type: 'auth/long_lived_access_token',
+        lifespan: 3650,
+        client_name: name,
+      });
+      prompt(this.localize('ui.panel.profile.long_lived_access_tokens.prompt_copy_token'), token);
+      this.fire('hass-refresh-tokens');
+    } catch (err) {
+      // eslint-disable-next-line
+      console.error(err);
+      alert(this.localize('ui.panel.profile.long_lived_access_tokens.create_failed'));
+    }
+  }
+
+  async _handleDelete(ev) {
+    if (!confirm(this.localize('ui.panel.profile.long_lived_access_tokens.confirm_delete', 'name', ev.model.item.client_name))) {
+      return;
+    }
+    try {
+      await this.hass.callWS({
+        type: 'auth/delete_refresh_token',
+        refresh_token_id: ev.model.item.id,
+      });
+      this.fire('hass-refresh-tokens');
+    } catch (err) {
+      // eslint-disable-next-line
+      console.error(err);
+      alert(this.localize('ui.panel.profile.long_lived_access_tokens.delete_failed'));
+    }
+  }
+}
+
+customElements.define('ha-long-lived-access-tokens-card', HaLongLivedTokens);
