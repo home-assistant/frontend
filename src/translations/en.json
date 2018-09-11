@@ -765,7 +765,7 @@
           "create": "Create Token",
           "create_failed": "Failed to create the access token.",
           "prompt_name": "Name?",
-          "prompt_copy_token": "Copy your access token",
+          "prompt_copy_token": "Copy your access token. It will not be shown again.",
           "empty_state": "You have no long-lived access tokens yet."
         }
       },
