@@ -144,6 +144,19 @@ export default class MediaPlayerEntity {
     return this._attr.source_list;
   }
 
+  get channel() {
+    if (this._attr.media_content_type === 'channel') {
+      return this._attr.media_title;
+    }
+
+    return '';
+  }
+
+  get channelList() {
+    return this._attr.channel_list;
+  }
+
+
   get soundMode() {
     return this._attr.sound_mode;
   }
@@ -205,6 +218,10 @@ export default class MediaPlayerEntity {
 
   selectSource(source) {
     this.callService('select_source', { source });
+  }
+
+  selectChannel(channel) {
+    this.callService('play_media', { media_content_id: channel, media_content_type: 'channel' });
   }
 
   selectSoundMode(soundMode) {
