@@ -4,10 +4,7 @@ import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-button/paper-button.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import hassCallApi from '../util/hass-call-api.js';
 import localizeLiteMixin from '../mixins/localize-lite-mixin.js';
-
-const callApi = (method, path, data) => hassCallApi('', {}, method, path, data);
 
 class HaOnboarding extends localizeLiteMixin(PolymerElement) {
   static get template() {
@@ -141,11 +138,21 @@ class HaOnboarding extends localizeLiteMixin(PolymerElement) {
     this._errorMsg = '';
 
     try {
-      await callApi('post', 'onboarding/users', {
-        name: this._name,
-        username: this._username,
-        password: this._password,
+      const response = await fetch('/api/onboarding/users', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: this._name,
+          username: this._username,
+          password: this._password,
+        })
       });
+
+      if (!response.ok) {
+        // eslint-disable-next-line
+        throw {
+          message: `Bad response from server: ${response.status}`
+        }
+      }
 
       document.location = '/';
     } catch (err) {
