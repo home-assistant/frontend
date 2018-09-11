@@ -746,6 +746,27 @@
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme"
+        },
+        "refresh_tokens": {
+          "header": "Refresh Tokens",
+          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. Below a list of refresh tokens that are currently active for your account.",
+          "token_title": "Refresh token for {clientId}",
+          "created_at": "Created at {date}",
+          "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
+          "delete_failed": "Failed to delete the refresh token."
+        },
+        "long_lived_access_tokens": {
+          "header": "Long-Lived Access Tokens",
+          "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
+          "learn_auth_requests": "Learn how to make authenticated requests.",
+          "created_at": "Created at {date}",
+          "confirm_delete": "Are you sure you want to delete the access token for {name}?",
+          "delete_failed": "Failed to delete the access token.",
+          "create": "Create Token",
+          "create_failed": "Failed to create the access token.",
+          "prompt_name": "Name?",
+          "prompt_copy_token": "Copy your access token. It will not be shown again.",
+          "empty_state": "You have no long-lived access tokens yet."
         }
       },
       "shopping-list": {
