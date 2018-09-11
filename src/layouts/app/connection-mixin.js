@@ -90,14 +90,9 @@ export default superClass =>
             throw err;
           }
         },
-        callApi: async (method, path, parameters) => {
-          const host = window.location.protocol + '//' + window.location.host;
-          return await hassCallApi(host, auth, method, path, parameters);
-        },
-        fetchWithAuth: async (path, init) => {
-          const host = window.location.protocol + '//' + window.location.host;
-          return await fetchWithAuth(auth, `${host}/api/${path}`, init);
-        },
+        callApi: async (method, path, parameters) =>
+          hassCallApi(auth, method, path, parameters),
+        fetchWithAuth: (path, init) => fetchWithAuth(auth, `${auth.data.hassUrl}${path}`, init),
         // For messages that do not get a response
         sendWS: (msg) => {
           // eslint-disable-next-line

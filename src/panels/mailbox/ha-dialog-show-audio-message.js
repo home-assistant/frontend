@@ -102,7 +102,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     const platform = message.platform;
     const mp3 = this.$.mp3;
     mp3.src = null;
-    const url = `mailbox/media/${platform}/${message.sha}`;
+    const url = `/api/mailbox/media/${platform}/${message.sha}`;
     this.hass.fetchWithAuth(url)
       .then((response) => {
         if (response.ok) {
