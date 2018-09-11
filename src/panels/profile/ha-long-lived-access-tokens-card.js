@@ -24,13 +24,21 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
       .card-content {
         margin: -1em 0;
       }
+      a {
+        color: var(--primary-color);
+      }
       paper-icon-button {
         color: var(--primary-text-color);
       }
     </style>
     <paper-card heading="[[localize('ui.panel.profile.long_lived_access_tokens.header')]]">
       <div class="card-content">
-        <p>[[localize('ui.panel.profile.long_lived_access_tokens.description')]]</p>
+        <p>
+          [[localize('ui.panel.profile.long_lived_access_tokens.description')]]
+          <a href='https://developers.home-assistant.io/docs/en/auth_api.html#making-authenticated-requests' target='_blank'>
+            [[localize('ui.panel.profile.long_lived_access_tokens.learn_auth_requests')]]
+          </a>
+        </p>
         <template is='dom-if' if='[[!_tokens.length]]'>
           <p>[[localize('ui.panel.profile.long_lived_access_tokens.empty_state')]]</p>
         </template>
