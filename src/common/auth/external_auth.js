@@ -24,7 +24,7 @@ export default class ExternalAuth extends Auth {
 
   async refreshAccessToken() {
     const responseProm = new Promise((resolve, reject) => {
-      window[CALLBACK_SET_TOKEN] = (success, data) => success ? resolve(data) : reject(data);
+      window[CALLBACK_SET_TOKEN] = (success, data) => (success ? resolve(data) : reject(data));
     });
 
     // Allow promise to set resolve on window object.
@@ -51,7 +51,7 @@ export default class ExternalAuth extends Auth {
 
   async revoke() {
     const responseProm = new Promise((resolve, reject) => {
-      window[CALLBACK_REVOKE_TOKEN] = (success, data) => success ? resolve(data) : reject(data);
+      window[CALLBACK_REVOKE_TOKEN] = (success, data) => (success ? resolve(data) : reject(data));
     });
 
     // Allow promise to set resolve on window object.
