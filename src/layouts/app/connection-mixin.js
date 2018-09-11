@@ -13,6 +13,7 @@ import EventsMixin from '../../mixins/events-mixin.js';
 
 import { getState } from '../../util/ha-pref-storage.js';
 import { getActiveTranslation } from '../../util/hass-translation.js';
+import { fetchWithAuth } from '../../util/fetch-with-auth.js';
 import hassCallApi from '../../util/hass-call-api.js';
 import computeStateName from '../../common/entity/compute_state_name.js';
 import { subscribePanels } from '../../data/ws-panels';
@@ -89,22 +90,13 @@ export default superClass =>
             throw err;
           }
         },
-        callApi: async (method, path, parameters, responseType) => {
+        callApi: async (method, path, parameters) => {
           const host = window.location.protocol + '//' + window.location.host;
-
-          try {
-            if (auth.expired) await auth.refreshAccessToken();
-          } catch (err) {
-            if (err === ERR_INVALID_AUTH) {
-              // Trigger auth flow
-              location.reload();
-              // ensure further JS is not executed
-              await new Promise(() => {});
-            }
-            throw err;
-          }
-
-          return await hassCallApi(host, auth, method, path, parameters, responseType);
+          return await hassCallApi(host, auth, method, path, parameters);
+        },
+        fetchWithAuth: async (path, init) => {
+          const host = window.location.protocol + '//' + window.location.host;
+          return await fetchWithAuth(auth, `${host}/api/${path}`, init);
         },
         // For messages that do not get a response
         sendWS: (msg) => {

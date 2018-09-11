@@ -103,7 +103,16 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
     const mp3 = this.$.mp3;
     mp3.src = null;
     const url = `mailbox/media/${platform}/${message.sha}`;
-    this.hass.callApi('GET', url, '', 'blob')
+    this.hass.fetchWithAuth(url)
+      .then((response) => {
+        if (response.ok) {
+          return response.blob();
+        }
+        return Promise.reject({
+          status: response.status,
+          statusText: response.statusText
+        });
+      })
       .then((blob) => {
         this._loading = false;
         mp3.src = window.URL.createObjectURL(blob);
@@ -111,7 +120,7 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
       })
       .catch((err) => {
         this._loading = false;
-        this._errorMsg = `Error loading audio: ${err.error}`;
+        this._errorMsg = `Error loading audio: ${err.statusText}`;
       });
   }
 
