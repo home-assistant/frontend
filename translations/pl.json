@@ -18,7 +18,7 @@
     "state": {
         "default": {
             "off": "wyłączony",
-            "on": "włączony",
+            "on": "Włączony",
             "unknown": "nieznany",
             "unavailable": "niedostępny"
         },
@@ -41,7 +41,7 @@
         "binary_sensor": {
             "default": {
                 "off": "wyłączony",
-                "on": "włączony"
+                "on": "Włączony"
             },
             "moisture": {
                 "off": "sucho",
@@ -122,7 +122,7 @@
         },
         "calendar": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "Włączony"
         },
         "camera": {
             "recording": "nagrywanie",
@@ -131,7 +131,7 @@
         },
         "climate": {
             "off": "wyłączony",
-            "on": "włączony",
+            "on": "Włączony",
             "heat": "ogrzewanie",
             "cool": "chłodzenie",
             "idle": "nieaktywny",
@@ -162,7 +162,7 @@
         },
         "fan": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "Włączony"
         },
         "group": {
             "off": "wyłączony",
@@ -181,7 +181,7 @@
         },
         "input_boolean": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "Włączony"
         },
         "light": {
             "off": "wyłączony",
@@ -193,7 +193,7 @@
         },
         "media_player": {
             "off": "wyłączony",
-            "on": "włączony",
+            "on": "Włączony",
             "playing": "odtwarzanie",
             "paused": "pauza",
             "idle": "nieaktywny",
@@ -205,37 +205,37 @@
         },
         "remote": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "Włączony"
         },
         "scene": {
             "scening": "sceny"
         },
         "script": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "Włączony"
         },
         "sensor": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "Włączony"
         },
         "sun": {
-            "above_horizon": "powyżej horyzontu",
-            "below_horizon": "poniżej horyzontu"
+            "above_horizon": "Powyżej horyzontu",
+            "below_horizon": "Poniżej horyzontu"
         },
         "switch": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "Wyłączony",
+            "on": "Włączony"
         },
         "zwave": {
             "default": {
-                "initializing": "inicjalizacja",
-                "dead": "martwy",
-                "sleeping": "uśpiony",
-                "ready": "gotowy"
+                "initializing": "Inicjalizacja",
+                "dead": "Nieaktywny",
+                "sleeping": "Uśpiony",
+                "ready": "Gotowy"
             },
             "query_stage": {
                 "initializing": "inicjalizacja ({query_stage})",
-                "dead": "martwy ({query_stage})"
+                "dead": "Nieaktywny ({query_stage})"
             }
         },
         "weather": {
@@ -610,7 +610,7 @@
                                     "data": {
                                         "user": "Użytkownik"
                                     },
-                                    "description": "Proszę wybrać użytkownika, na którego chcesz się zalogować jako:"
+                                    "description": "Proszę wybrać użytkownika, na którego chcesz się zalogować:"
                                 }
                             },
                             "abort": {
@@ -621,7 +621,7 @@
                 }
             },
             "page-onboarding": {
-                "intro": "Czy jesteś gotowy, aby obudzić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
+                "intro": "Czy jesteś gotowy, aby ożywić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
                 "user": {
                     "intro": "Zacznijmy od utworzenia konta użytkownika.",
                     "required_field": "Wymagane",
