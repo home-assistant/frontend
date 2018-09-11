@@ -1,5 +1,7 @@
 import { fetchWithAuth } from './fetch-with-auth.js';
 
+/* eslint-disable no-throw-literal */
+
 export default async function hassCallApi(auth, method, path, parameters) {
   const url = `${auth.data.hassUrl}/api/${path}`;
 
