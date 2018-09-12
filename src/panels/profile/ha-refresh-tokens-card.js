@@ -1,4 +1,5 @@
 import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-tooltip/paper-tooltip.js';
 
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -29,10 +30,22 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     <paper-card heading="[[localize('ui.panel.profile.refresh_tokens.header')]]">
       <div class="card-content">[[localize('ui.panel.profile.refresh_tokens.description')]]</div>
       <template is='dom-repeat' items='[[_computeTokens(refreshTokens)]]'>
-        <ha-settings-row>
+        <ha-settings-row three-line>
           <span slot='heading'>[[_formatTitle(item.client_id)]]</span>
-          <span slot='description'>[[_formatCreatedAt(item.created_at)]]</span>
-          <paper-icon-button icon="hass:delete" on-click='_handleDelete' disabled="[[item.is_current]]"></paper-icon-button>
+          <div slot='description'>[[_formatCreatedAt(item.created_at)]]</div>
+          <div slot='description'>[[_formatLastUsed(item)]]</div>
+          <div>
+            <template is='dom-if' if='[[item.is_current]]'>
+              <paper-tooltip
+                position="left"
+              >[[localize('ui.panel.profile.refresh_tokens.current_token_tooltip')]]</paper-tooltip>
+            </template>
+            <paper-icon-button
+              icon="hass:delete"
+              on-click='_handleDelete'
+              disabled="[[item.is_current]]"
+            ></paper-icon-button>
+          </div>
         </ha-settings-row>
       </template>
     </paper-card>
@@ -62,6 +75,14 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
       'ui.panel.profile.refresh_tokens.created_at',
       'date', formatDateTime(new Date(created))
     );
+  }
+
+  _formatLastUsed(item) {
+    return item.last_used_at ? this.localize(
+      'ui.panel.profile.refresh_tokens.last_used',
+      'date', formatDateTime(new Date(item.last_used_at)),
+      'location', item.last_used_ip
+    ) : this.localize('ui.panel.profile.refresh_tokens.not_used');
   }
 
   async _handleDelete(ev) {

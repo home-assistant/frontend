@@ -22,7 +22,7 @@ class HaSettingsRow extends PolymerElement {
         padding-right: 16px;
       }
     </style>
-    <paper-item-body two-line>
+    <paper-item-body two-line$='[[!threeLine]]' three-line$='[[threeLine]]'>
       <slot name="heading"></slot>
       <div secondary><slot name="description"></slot></div>
     </paper-item-body>
@@ -35,6 +35,10 @@ class HaSettingsRow extends PolymerElement {
       narrow: {
         type: Boolean,
         reflectToAttribute: true,
+      },
+      threeLine: {
+        type: Boolean,
+        value: false,
       }
     };
   }
