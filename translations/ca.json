@@ -545,6 +545,27 @@
                     "error_no_theme": "No hi ha temes disponibles.",
                     "link_promo": "Més informació sobre temes",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Refresca els testimonis d'autenticació",
+                    "description": "Cada testimoni d'autenticació d'actualització representa un inici de sessió diferent. Els testimonis d'autenticació d'actualització s'eliminaran automàticament quan tanqueu la sessió. A sota hi ha una llista de testimonis d'autenticació d'actualització que estan actius actualment al vostre compte.",
+                    "token_title": "Refresca el testimoni d'autenticació del {clientId}",
+                    "created_at": "Creat el {date}",
+                    "confirm_delete": "Esteu segur que voleu suprimir el testimoni d'autenticació d'actualització per {name}?",
+                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització."
+                },
+                "long_lived_access_tokens": {
+                    "header": "Testimonis d'autenticació d'accés de llarga durada",
+                    "description": "Creeu testimonis d'autenticació d'accés de llarga durada per permetre als vostres programes (scripts) interactuar amb la vostra instància de Home Assistant. Cada testimoni d'autenticació serà vàlid durant deu anys després de la seva creació. Els següents testimoni d'autenticació d'accés de llarga durada estan actius actualment.",
+                    "learn_auth_requests": "Apren a fer sol·licituds autenticades.",
+                    "created_at": "Creat el {date}",
+                    "confirm_delete": "Esteu segur que voleu suprimir el testimoni d'autenticació d'accés per {name}?",
+                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'accés.",
+                    "create": "Crea un testimoni d'autenticació",
+                    "create_failed": "No s'ha pogut crear el testimoni d'autenticació d'accés.",
+                    "prompt_name": "Nom?",
+                    "prompt_copy_token": "Copieu el testimoni d'autenticació (token) d'accés. No es tornarà a mostrar més endavant.",
+                    "empty_state": "Encara no tens testimonis d'autenticaciós d'accés de llarga durada."
                 }
             },
             "page-authorize": {
