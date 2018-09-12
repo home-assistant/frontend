@@ -22,6 +22,7 @@ import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import '../../components/ha-icon.js';
 import { loadModule, loadCSS, loadJS } from '../../common/dom/load_resource.js';
+import { subscribeNotifications } from '../../data/ws-notifications';
 import './components/notifications/hui-notification-drawer.js';
 import './components/notifications/hui-notifications-button.js';
 import './hui-unused-entities.js';
@@ -77,7 +78,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <hui-notification-drawer
       hass="[[hass]]"
-      notifications="[[notifications]]"
+      notifications="[[_notifications]]"
       open="{{notificationsOpen}}"
       narrow="[[narrow]]"
     ></hui-notification-drawer>
@@ -89,7 +90,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           <hui-notifications-button
             hass="[[hass]]"
             notifications-open="{{notificationsOpen}}"
-            notifications="[[notifications]]"
+            notifications="[[_notifications]]"
           ></hui-notifications-button>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
           <paper-menu-button
@@ -164,7 +165,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         value: []
       },
 
-      notifications: {
+      _notifications: {
         type: Array,
         computed: '_updateNotifications(hass.states, _persistentNotifications)'
       },
@@ -178,13 +179,11 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     this._debouncedConfigChanged = debounce(() => this._selectView(this._curView), 100);
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     super.connectedCallback();
-    this._fetchPersistentNotifications();
-    this._unsubNotifications = await this.hass.connection.subscribeEvents(
-      () => this._fetchPersistentNotifications(),
-      'persistent_notifications_updated'
-    );
+    this._unsubNotifications = subscribeNotifications(this.hass.connection, (notifications) => {
+      this._persistentNotifications = notifications;
+    });
   }
 
   disconnectedCallback() {
@@ -192,10 +191,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     if (typeof this._unsubNotifications === 'function') {
       this._unsubNotifications();
     }
-  }
-
-  async _fetchPersistentNotifications() {
-    this._persistentNotifications = await this.hass.callWS({ type: 'persistent_notification/get' });
   }
 
   _updateNotifications(states, persistent) {
@@ -300,7 +295,6 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   _hassChanged(hass) {
     if (!this.$.view.lastChild) return;
     this.$.view.lastChild.hass = hass;
-    this._configuratorNotifications = computeNotifications(hass.states);
   }
 
   _configChanged(config) {
