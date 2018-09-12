@@ -641,6 +641,10 @@
   version "3.0.0-pre.19"
   resolved "https://registry.yarnpkg.com/@polymer/font-roboto/-/font-roboto-3.0.0-pre.19.tgz#d67384a000eebb2632c00c268182a8528aca4a7c"
 
+"@polymer/font-roboto@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@polymer/font-roboto/-/font-roboto-3.0.1.tgz#0f3e184ce1c09e132653e34cbbbf1014164a986c"
+
 "@polymer/iron-a11y-announcer@^3.0.0-pre.12", "@polymer/iron-a11y-announcer@^3.0.0-pre.19":
   version "3.0.0-pre.19"
   resolved "https://registry.yarnpkg.com/@polymer/iron-a11y-announcer/-/iron-a11y-announcer-3.0.0-pre.19.tgz#6a3b724df1e1cfda6f1270c359136d3e55ed7363"
@@ -701,6 +705,12 @@
 "@polymer/iron-flex-layout@^3.0.0-pre.19":
   version "3.0.0-pre.19"
   resolved "https://registry.yarnpkg.com/@polymer/iron-flex-layout/-/iron-flex-layout-3.0.0-pre.19.tgz#35f633ab4d4e14e44650722729128e4f5968c1e9"
+  dependencies:
+    "@polymer/polymer" "^3.0.0"
+
+"@polymer/iron-flex-layout@^3.0.0-pre.25":
+  version "3.0.0-pre.26"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-flex-layout/-/iron-flex-layout-3.0.0-pre.26.tgz#5b73eeafa63bcd5cfe4916a6beb8d39b32414e0e"
   dependencies:
     "@polymer/polymer" "^3.0.0"
 
@@ -1058,6 +1068,14 @@
     "@polymer/iron-flex-layout" "^3.0.0-pre.19"
     "@polymer/polymer" "^3.0.0"
 
+"@polymer/paper-styles@^3.0.0-pre.25":
+  version "3.0.0-pre.26"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-styles/-/paper-styles-3.0.0-pre.26.tgz#301c8d98505f5abf1cd8afed38936f7c112ab76c"
+  dependencies:
+    "@polymer/font-roboto" "^3.0.1"
+    "@polymer/iron-flex-layout" "^3.0.0-pre.25"
+    "@polymer/polymer" "^3.0.0"
+
 "@polymer/paper-tabs@^3.0.0-pre.19":
   version "3.0.0-pre.19"
   resolved "https://registry.yarnpkg.com/@polymer/paper-tabs/-/paper-tabs-3.0.0-pre.19.tgz#c758179061d713d830b4d77e2b5fa640508b2a18"
@@ -1089,6 +1107,13 @@
     "@polymer/iron-checked-element-behavior" "^3.0.0-pre.19"
     "@polymer/paper-behaviors" "^3.0.0-pre.19"
     "@polymer/paper-styles" "^3.0.0-pre.19"
+    "@polymer/polymer" "^3.0.0"
+
+"@polymer/paper-tooltip@^3.0.0-pre.26":
+  version "3.0.0-pre.26"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-tooltip/-/paper-tooltip-3.0.0-pre.26.tgz#1fe5009df63df8a12784426f77f57cf0f249bd8e"
+  dependencies:
+    "@polymer/paper-styles" "^3.0.0-pre.25"
     "@polymer/polymer" "^3.0.0"
 
 "@polymer/polymer@^3.0.0", "@polymer/polymer@^3.0.0-pre.13", "@polymer/polymer@^3.0.2":
