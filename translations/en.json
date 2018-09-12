@@ -552,7 +552,10 @@
                     "token_title": "Refresh token for {clientId}",
                     "created_at": "Created at {date}",
                     "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
-                    "delete_failed": "Failed to delete the refresh token."
+                    "delete_failed": "Failed to delete the refresh token.",
+                    "last_used": "Last used at {date} from {location}",
+                    "not_used": "Has never been used",
+                    "current_token_tooltip": "Unable to delete current refresh token"
                 },
                 "long_lived_access_tokens": {
                     "header": "Long-Lived Access Tokens",
@@ -565,7 +568,9 @@
                     "create_failed": "Failed to create the access token.",
                     "prompt_name": "Name?",
                     "prompt_copy_token": "Copy your access token. It will not be shown again.",
-                    "empty_state": "You have no long-lived access tokens yet."
+                    "empty_state": "You have no long-lived access tokens yet.",
+                    "last_used": "Last used at {date} from {location}",
+                    "not_used": "Has never been used"
                 }
             },
             "page-authorize": {
