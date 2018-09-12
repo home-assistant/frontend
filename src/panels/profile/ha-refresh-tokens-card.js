@@ -22,6 +22,9 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
       paper-icon-button {
         color: var(--primary-text-color);
       }
+      paper-icon-button[disabled] {
+        color: var(--disabled-text-color);
+      }
     </style>
     <paper-card heading="[[localize('ui.panel.profile.refresh_tokens.header')]]">
       <div class="card-content">[[localize('ui.panel.profile.refresh_tokens.description')]]</div>
@@ -29,7 +32,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <ha-settings-row>
           <span slot='heading'>[[_formatTitle(item.client_id)]]</span>
           <span slot='description'>[[_formatCreatedAt(item.created_at)]]</span>
-          <paper-icon-button icon="hass:delete" on-click='_handleDelete'></paper-icon-button>
+          <paper-icon-button icon="hass:delete" on-click='_handleDelete' disabled="[[item.is_current]]"></paper-icon-button>
         </ha-settings-row>
       </template>
     </paper-card>
