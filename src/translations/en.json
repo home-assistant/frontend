@@ -749,7 +749,7 @@
         },
         "refresh_tokens": {
           "header": "Refresh Tokens",
-          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. Below a list of refresh tokens that are currently active for your account.",
+          "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
           "token_title": "Refresh token for {clientId}",
           "created_at": "Created at {date}",
           "last_used": "Last used at {date} from {location}",
