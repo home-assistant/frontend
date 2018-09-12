@@ -44,9 +44,10 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
         </template>
       </div>
       <template is='dom-repeat' items='[[_tokens]]'>
-        <ha-settings-row>
+        <ha-settings-row three-line>
           <span slot='heading'>[[item.client_name]]</span>
-          <span slot='description'>[[_formatCreatedAt(item.created_at)]]</span>
+          <div slot='description'>[[_formatCreatedAt(item.created_at)]]</div>
+          <div slot='description'>[[_formatLastUsed(item)]]</div>
           <paper-icon-button icon="hass:delete" on-click='_handleDelete'></paper-icon-button>
         </ha-settings-row>
       </template>
@@ -86,6 +87,14 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
       'ui.panel.profile.long_lived_access_tokens.created_at',
       'date', formatDateTime(new Date(created))
     );
+  }
+
+  _formatLastUsed(item) {
+    return item.last_used_at ? this.localize(
+      'ui.panel.profile.refresh_tokens.last_used',
+      'date', formatDateTime(new Date(item.last_used_at)),
+      'location', item.last_used_ip
+    ) : this.localize('ui.panel.profile.refresh_tokens.not_used');
   }
 
   async _handleCreate() {
