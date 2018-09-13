@@ -236,7 +236,7 @@ class HaConfigFlow extends
         if ('default' in field) {
           data[field.name] = field.default;
         }
-      })
+      });
       this._stepData = data;
     }
   }
