@@ -231,6 +231,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                service="refresh_entity"
                hidden$="[[!showHelp]]">
              </ha-service-description>
+             <paper-button on-click="_entityMoreInfo">Entity Information</paper-button>
            </div>
            <div class="form-group">
              <paper-checkbox checked="{{entityIgnored}}" class="form-control">
@@ -252,18 +253,6 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                service-data="[[computePollIntensityServiceData(entityPollingIntensity)]]">
                Save
              </ha-call-service-button>
-           </div>
-           <div class="content">
-             <div class="card-actions">
-               <paper-button toggles="" raised="" noink="" active="{{entityInfoActive}}">Entity Attributes</paper-button>
-             </div>
-             <template is="dom-if" if="{{entityInfoActive}}">
-               <template is="dom-repeat" items="[[selectedEntityAttrs]]" as="state">
-                 <div class="node-info">
-                   <span>[[state]]</span>
-                 </div>
-               </template>
-             </template>
            </div>
 
            </template>
@@ -561,6 +550,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _nodeMoreInfo() {
     this.fire('hass-more-info', { entityId: this.nodes[this.selectedNode].entity_id });
+  }
+  _entityMoreInfo() {
+    this.fire('hass-more-info', { entityId: this.entities[this.selectedEntity].entity_id });
   }
 
   _saveEntity() {
