@@ -122,7 +122,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   _onImageError() {
     this._imageSrc = null;
     this.$.image.classList.add('hidden');
-    if (!this.$wrapper.classList.contains('ratio')) {
+    if (!this.$.wrapper.classList.contains('ratio')) {
       this.$.brokenImage.style.setProperty('height', `${this._lastImageHeight || '100'}px`);
     }
     this.$.brokenImage.classList.remove('hidden');
@@ -131,7 +131,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   _onImageLoad() {
     this.$.image.classList.remove('hidden');
     this.$.brokenImage.classList.add('hidden');
-    if (!this.$wrapper.classList.contains('ratio')) {
+    if (!this.$.wrapper.classList.contains('ratio')) {
       this._lastImageHeight = this.$.image.offsetHeight;
     }
   }
