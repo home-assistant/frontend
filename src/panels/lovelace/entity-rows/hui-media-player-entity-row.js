@@ -17,39 +17,51 @@ const OFF_STATES = ['off', 'idle'];
 class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <hui-generic-entity-row
+        hass="[[hass]]"
+        config="[[_config]]"
+      >
+        ${this.mediaPlayerControlTemplate}
+      </hui-generic-entity-row>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
         .controls {
           white-space: nowrap;
         }
       </style>
-      <hui-generic-entity-row
-        hass="[[hass]]"
-        config="[[_config]]"
-      >
-        <template is="dom-if" if="[[!_isOff(_stateObj.state)]]">
-          <div class="controls">
-            <template is="dom-if" if="[[_computeControlIcon(_stateObj)]]">
-              <paper-icon-button
-                icon="[[_computeControlIcon(_stateObj)]]"
-                on-click="_playPause"
-              ></paper-icon-button>
-            </template>
-            <template is="dom-if" if="[[_supportsNext(_stateObj)]]">
-              <paper-icon-button
-                icon="hass:skip-next"
-                on-click="_nextTrack"
-              ></paper-icon-button>
-            </template>
-          </div>
-        </template>
-        <template is="dom-if" if="[[_isOff(_stateObj.state)]]">
-          <div>[[_computeState(_stateObj.state)]]</div>
-        </template> 
- 
-        <div slot="secondary">
-          [[_computeMediaTitle(_stateObj)]]
+    `;
+  }
+
+  static get mediaPlayerControlTemplate() {
+    return html`
+      <template is="dom-if" if="[[!_isOff(_stateObj.state)]]">
+        <div class="controls">
+          <template is="dom-if" if="[[_computeControlIcon(_stateObj)]]">
+            <paper-icon-button
+              icon="[[_computeControlIcon(_stateObj)]]"
+              on-click="_playPause"
+            ></paper-icon-button>
+          </template>
+          <template is="dom-if" if="[[_supportsNext(_stateObj)]]">
+            <paper-icon-button
+              icon="hass:skip-next"
+              on-click="_nextTrack"
+            ></paper-icon-button>
+          </template>
         </div>
-      </hui-generic-entity-row>
+      </template>
+      <template is="dom-if" if="[[_isOff(_stateObj.state)]]">
+        <div>[[_computeState(_stateObj.state)]]</div>
+      </template> 
+
+      <div slot="secondary">
+        [[_computeMediaTitle(_stateObj)]]
+      </div>
     `;
   }
 
