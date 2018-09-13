@@ -1,6 +1,7 @@
 import '@polymer/paper-button/paper-button.js';
 import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable.js';
 import '@polymer/paper-dialog/paper-dialog.js';
+import '@polymer/paper-tooltip/paper-tooltip.js';
 import '@polymer/paper-spinner/paper-spinner.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -76,6 +77,7 @@ class HaConfigFlow extends
 
             <ha-form
               data="{{_stepData}}"
+              on-data-changed='_increaseCounter'
               schema="[[_step.data_schema]]"
               error="[[_step.errors]]"
               compute-label="[[_computeLabelCallback(localize, _step)]]"
@@ -96,7 +98,17 @@ class HaConfigFlow extends
             <div class='submit-spinner'><paper-spinner active></paper-spinner></div>
           </template>
           <template is="dom-if" if="[[!_loading]]">
-            <paper-button on-click="_submitStep">Submit</paper-button>
+            <div>
+              <paper-button
+                on-click="_submitStep"
+                disabled='[[!_canSubmit]]'
+              >Submit</paper-button>
+              <template is='dom-if' if='[[!_canSubmit]]'>
+                <paper-tooltip position="left">
+                  Not all required fields are filled in.
+                </paper-tooltip>
+              </template>
+            </div>
           </template>
         </template>
       </div>
@@ -118,6 +130,17 @@ class HaConfigFlow extends
       // Error message when can't talk to server etc
       _errorMsg: String,
 
+      _canSubmit: {
+        type: Boolean,
+        computed: '_computeCanSubmit(_step, _stepData, _counter)'
+      },
+
+      // Bogus counter because observing of `_stepData` doesn't seem to work
+      _counter: {
+        type: Number,
+        value: 0,
+      },
+
       _opened: {
         type: Boolean,
         value: false,
@@ -131,7 +154,10 @@ class HaConfigFlow extends
       /*
        * Store user entered data.
        */
-      _stepData: Object,
+      _stepData: {
+        type: Object,
+        value: null,
+      }
     };
   }
 
@@ -175,7 +201,17 @@ class HaConfigFlow extends
 
     const curInstance = this._instance;
 
-    this.hass.callApi('post', `config/config_entries/flow/${this._step.flow_id}`, this._stepData)
+    const data = {};
+    Object.keys(this._stepData).forEach((key) => {
+      const value = this._stepData[key];
+      const isEmpty = [undefined, ''].includes(value);
+
+      if (!isEmpty) {
+        data[key] = value;
+      }
+    });
+
+    this.hass.callApi('post', `config/config_entries/flow/${this._step.flow_id}`, data)
       .then(
         (step) => {
           if (curInstance !== this._instance) return;
@@ -194,8 +230,14 @@ class HaConfigFlow extends
     if (!step.errors) step.errors = {};
     this._step = step;
     // We got a new form if there are no errors.
-    if (Object.keys(step.errors).length === 0) {
-      this._stepData = {};
+    if (step.type === 'form' && Object.keys(step.errors).length === 0) {
+      const data = {};
+      step.data_schema.forEach((field) => {
+        if ('default' in field) {
+          data[field.name] = field.default;
+        }
+      })
+      this._stepData = data;
     }
   }
 
@@ -254,6 +296,17 @@ class HaConfigFlow extends
   _computeErrorCallback(localize, step) {
     // Returns a callback for ha-form to calculate error messages
     return error => localize(`component.${step.handler}.config.error.${error}`);
+  }
+
+  _computeCanSubmit(step, stepData) {
+    // We can submit if all required fields are filled in
+    return step !== null && step.type === 'form' && stepData !== null &&
+      step.data_schema.every(field =>
+        field.optional || !['', undefined].includes(stepData[field.name]));
+  }
+
+  _increaseCounter() {
+    this._counter += 1;
   }
 }
 
