@@ -345,17 +345,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         computed: 'computeEntities(selectedNode)',
       },
 
-      entityInfoActive: Boolean,
-
       selectedEntity: {
         type: Number,
         value: -1,
         observer: 'selectedEntityChanged',
-      },
-
-      selectedEntityAttrs: {
-        type: Array,
-        computed: 'computeSelectedEntityAttrs(selectedEntity)'
       },
 
       values: {
@@ -492,16 +485,6 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           entityPollingIntensity: this.values[valueIndex].value.poll_intensity
         });
       });
-  }
-
-  computeSelectedEntityAttrs(selectedEntity) {
-    if (selectedEntity === -1) return 'No entity selected';
-    const entityAttrs = this.entities[selectedEntity].attributes;
-    const att = [];
-    Object.keys(entityAttrs).forEach((key) => {
-      att.push(key + ': ' + entityAttrs[key]);
-    });
-    return att.sort();
   }
 
   computeSelectCaption(stateObj) {
