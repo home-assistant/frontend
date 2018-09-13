@@ -126,6 +126,7 @@ class HaPanelDevInfo extends PolymerElement {
           </p>
           <p>
             Path to configuration.yaml: [[hass.config.config_dir]]
+            <br><a href="#" on-click="_showComponents">[[loadedComponents.length]] Loaded Components</a>
           </p>
           <p class='develop'>
             <a href='https://www.home-assistant.io/developers/credits/' target='_blank'>
@@ -220,6 +221,18 @@ class HaPanelDevInfo extends PolymerElement {
         </template>
       </paper-dialog-scrollable>
     </paper-dialog>
+
+    <paper-dialog with-backdrop id="showcomponents">
+      <h2>Loaded Components</h2>
+      <paper-dialog-scrollable id="scrollable">
+       <p>The following components are currently loaded:</p>
+       <ul>
+        <template is='dom-repeat' items='[[loadedComponents]]'>
+          <li>[[item]]</li>
+        </template>
+       </ul>
+      </paper-dialog-scrollable>
+    </paper-dialog>
     `;
   }
 
@@ -263,6 +276,11 @@ class HaPanelDevInfo extends PolymerElement {
         type: Array,
         value: window.CUSTOM_UI_LIST || [],
       },
+
+      loadedComponents: {
+        type: Array,
+        value: [],
+      }
     };
   }
 
@@ -271,6 +289,11 @@ class HaPanelDevInfo extends PolymerElement {
     this.addEventListener('hass-service-called', ev => this.serviceCalled(ev));
     // Fix for overlay showing on top of dialog.
     this.$.showlog.addEventListener('iron-overlay-opened', (ev) => {
+      if (ev.target.withBackdrop) {
+        ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
+      }
+    });
+    this.$.showcomponents.addEventListener('iron-overlay-opened', (ev) => {
       if (ev.target.withBackdrop) {
         ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
       }
@@ -291,6 +314,7 @@ class HaPanelDevInfo extends PolymerElement {
     super.connectedCallback();
     this.$.scrollable.dialogElement = this.$.showlog;
     this._fetchData();
+    this.loadedComponents = this._computeLoadedComponents();
     if (!window.CUSTOM_UI_LIST) {
       // Give custom UI an opportunity to load.
       setTimeout(() => {
@@ -350,6 +374,14 @@ class HaPanelDevInfo extends PolymerElement {
       localStorage.defaultPage = 'lovelace';
     }
     this.$.love.innerText = this._defaultPageText();
+  }
+
+  _computeLoadedComponents() {
+    return this.hass.config.components.sort();
+  }
+
+  _showComponents() {
+    this.$.showcomponents.open();
   }
 }
 
