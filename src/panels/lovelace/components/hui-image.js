@@ -14,7 +14,6 @@ const DEFAULT_FILTER = 'grayscale(100%)';
  * @appliesMixin LocalizeMixin
  */
 class HuiImage extends LocalizeMixin(PolymerElement) {
-
   static get template() {
     return html`
       ${this.styleTemplate}
@@ -104,8 +103,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 
   _configChanged(image, stateImage, cameraImage, aspectRatio) {
-
-    let ratio = parseAspectRatio(aspectRatio);
+    const ratio = parseAspectRatio(aspectRatio);
 
     if (ratio && ratio.w > 0 && ratio.h > 0) {
       this.$.wrapper.style.paddingBottom = `${((100 * ratio.h) / ratio.w).toFixed(2)}%`;
