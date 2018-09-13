@@ -5,6 +5,8 @@ import '@polymer/paper-toggle-button/paper-toggle-button.js';
 import { STATES_OFF } from '../../../common/const.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
 
+import parseAspectRatio from '../../../common/util/parse-aspect-ratio.js';
+
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = 'grayscale(100%)';
 
@@ -12,9 +14,25 @@ const DEFAULT_FILTER = 'grayscale(100%)';
  * @appliesMixin LocalizeMixin
  */
 class HuiImage extends LocalizeMixin(PolymerElement) {
+
   static get template() {
     return html`
+      ${this.styleTemplate}
+      <div id="wrapper">
+        <img
+          id="image"
+          src="[[_imageSrc]]"
+          on-error="_onImageError"
+          on-load="_onImageLoad" />
+        <div id="brokenImage"></div>
+      </div>
+    `;
+  }
+
+  static get styleTemplate() {
+    return html`
       <style>
+
         img {
           display: block;
           height: auto;
@@ -30,19 +48,26 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
           display: none;
         }
 
+        .ratio {
+          position: relative;
+          width: 100%;
+          height: 0
+        }
+
+        .ratio img, .ratio div {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+
         #brokenImage {
           background: grey url('/static/images/image-broken.svg') center/36px no-repeat;
         }
 
       </style>
-
-      <img
-        id="image"
-        src="[[_imageSrc]]"
-        on-error="_onImageError"
-        on-load="_onImageLoad" />
-      <div id="brokenImage"></div>
-`;
+    `;
   }
 
   static get properties() {
@@ -55,6 +80,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
       image: String,
       stateImage: Object,
       cameraImage: String,
+      aspectRatio: String,
       filter: String,
       stateFilter: Object,
       _imageSrc: String
@@ -62,7 +88,7 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   }
 
   static get observers() {
-    return ['_configChanged(image, stateImage, cameraImage)'];
+    return ['_configChanged(image, stateImage, cameraImage, aspectRatio)'];
   }
 
   connectedCallback() {
@@ -77,7 +103,15 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
     clearInterval(this.timer);
   }
 
-  _configChanged(image, stateImage, cameraImage) {
+  _configChanged(image, stateImage, cameraImage, aspectRatio) {
+
+    let ratio = parseAspectRatio(aspectRatio);
+
+    if (ratio && ratio.w > 0 && ratio.h > 0) {
+      this.$.wrapper.style.paddingBottom = `${((100 * ratio.h) / ratio.w).toFixed(2)}%`;
+      this.$.wrapper.classList.add('ratio');
+    }
+
     if (cameraImage) {
       this._updateCameraImageSrc();
     } else if (image && !stateImage) {
@@ -88,14 +122,18 @@ class HuiImage extends LocalizeMixin(PolymerElement) {
   _onImageError() {
     this._imageSrc = null;
     this.$.image.classList.add('hidden');
-    this.$.brokenImage.style.setProperty('height', `${this._lastImageHeight || '100'}px`);
+    if (!this.$wrapper.classList.contains('ratio')) {
+      this.$.brokenImage.style.setProperty('height', `${this._lastImageHeight || '100'}px`);
+    }
     this.$.brokenImage.classList.remove('hidden');
   }
 
   _onImageLoad() {
     this.$.image.classList.remove('hidden');
     this.$.brokenImage.classList.add('hidden');
-    this._lastImageHeight = this.$.image.offsetHeight;
+    if (!this.$wrapper.classList.contains('ratio')) {
+      this._lastImageHeight = this.$.image.offsetHeight;
+    }
   }
 
   _hassChanged(hass) {

@@ -58,6 +58,7 @@ class HuiPictureEntityCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           state-image="[[_config.state_image]]"
           camera-image="[[_getCameraImage(_config)]]"
           entity="[[_config.entity]]"
+          aspect-ratio="[[_config.aspect_ratio]]"
         ></hui-image>
         <template is="dom-if" if="[[_showNameAndState(_config)]]">
           <div class="footer both">
