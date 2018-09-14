@@ -18,7 +18,8 @@ class HaConfigOverview extends
   static get template() {
     return html`
     <style>
-      .content {
+      a {
+        color: var(--primary-color);
       }
       paper-card {
         display: block;
@@ -63,6 +64,13 @@ class HaConfigOverview extends
     </style>
     <hass-subpage header="Overview">
       <div class='content'>
+        <template is='dom-if' if='[[!_configs.length]]'>
+          <paper-card heading='No integrations'>
+            <div class='card-content'>
+              No integrations found. <a href='/config/integrations'>Configure an integration</a>
+            </div>
+          </paper-card>
+        </template>
         <template is='dom-repeat' items='[[_configs]]' as='configEntry'>
           <paper-card heading='[[configEntry.title]]'>
             <div class='card-content'>
