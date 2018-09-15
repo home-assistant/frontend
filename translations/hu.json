@@ -151,9 +151,9 @@
         },
         "cover": {
             "open": "Nyitva",
-            "opening": "Nyitás",
+            "opening": "Nyílik",
             "closed": "Zárva",
-            "closing": "Zárás",
+            "closing": "Záródik",
             "stopped": "Megállítva"
         },
         "device_tracker": {
@@ -170,9 +170,9 @@
             "home": "Otthon",
             "not_home": "Távol",
             "open": "Nyitva",
-            "opening": "Nyitás",
+            "opening": "Nyílik",
             "closed": "Zárva",
-            "closing": "Zárás",
+            "closing": "Záródik",
             "stopped": "Megállítva",
             "locked": "Bezárva",
             "unlocked": "Kinyitva",
@@ -230,7 +230,7 @@
             "default": {
                 "initializing": "Inicializálás",
                 "dead": "Halott",
-                "sleeping": "Alvás",
+                "sleeping": "Alvó",
                 "ready": "Kész"
             },
             "query_stage": {
@@ -815,7 +815,7 @@
         "climate": "Hűtés\/fűtés",
         "configurator": "Konfigurátor",
         "conversation": "Beszélgetés",
-        "cover": "Borító",
+        "cover": "Redőny",
         "device_tracker": "Készülék nyomkövető",
         "fan": "Ventilátor",
         "history_graph": "Előzmény grafikon",
