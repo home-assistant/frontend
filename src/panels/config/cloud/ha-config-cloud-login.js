@@ -28,6 +28,9 @@ class HaConfigCloudLogin extends
       .content {
         padding-bottom: 24px;
       }
+      [slot=introduction] {
+        margin: -1em 0;
+      }
       [slot=introduction] a {
         color: var(--primary-color);
       }
@@ -69,10 +72,18 @@ class HaConfigCloudLogin extends
       <div class="content">
         <ha-config-section is-wide="[[isWide]]">
           <span slot="header">Home Assistant Cloud</span>
-          <span slot="introduction">
-            The Home Assistant Cloud allows your local Home Assistant instance to connect with cloud-only services like Amazon Alexa.
-            <p><a href="https://www.home-assistant.io/components/cloud/" target="_blank">Learn more</a></p>
-          </span>
+          <div slot="introduction">
+            <p>
+              Home Assistant Cloud connects your local instance securely to cloud-only services Amazon Alexa and Google Assistant.
+            </p>
+            <p>
+              This service is run by our partner <a href='https://www.nabucasa.com' target='_blank'>Nabu&nbsp;Casa,&nbsp;Inc</a>, a company founded by the founders of Home Assistant and Hass.io.
+            </p>
+            <p>
+              Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.
+            </p>
+            <p><a href="https://www.nabucasa.com/cloud/" target="_blank">Learn more about Home Assistant Cloud</a></p>
+          </div>
 
           <paper-card hidden$="[[!flashMessage]]">
             <div class="card-content flash-msg">
@@ -98,8 +109,8 @@ class HaConfigCloudLogin extends
           <paper-card>
             <paper-item on-click="_handleRegister">
               <paper-item-body two-line="">
-                Create Account
-                <div secondary="">Get up and running quickly.</div>
+                Start your free 1 month trial
+                <div secondary="">No payment information necessary</div>
               </paper-item-body>
               <iron-icon icon="hass:chevron-right"></iron-icon>
             </paper-item>
