@@ -121,7 +121,10 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
       hass: Object,
       narrow: Boolean,
       showMenu: Boolean,
-      account: Object,
+      account: {
+        type: Object,
+        value: null,
+      },
 
       route: {
         type: Object,
@@ -143,7 +146,8 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
   ready() {
     super.ready();
     if (isComponentLoaded(this.hass, 'cloud')) {
-      this.hass.callApi('get', 'cloud/account').then((account) => { this.account = account; });
+      this.hass.callApi('get', 'cloud/account')
+        .then((account) => { this.account = account; }, () => {});
     }
     this.addEventListener('ha-account-refreshed', (ev) => {
       this.account = ev.detail.account;
