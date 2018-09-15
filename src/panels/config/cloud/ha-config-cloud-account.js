@@ -20,6 +20,12 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
+      [slot=introduction] {
+        margin: -1em 0;
+      }
+      [slot=introduction] a {
+        color: var(--primary-color);
+      }
       .content {
         padding-bottom: 24px;
       }
@@ -56,15 +62,17 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
         color: var(--primary-color);
       }
     </style>
-    <hass-subpage header="Cloud Account">
+    <hass-subpage header="Home Assistant Cloud">
       <div class="content">
         <ha-config-section is-wide="[[isWide]]">
           <span slot="header">Home Assistant Cloud</span>
-          <span slot="introduction">
-            Thank you for supporting Home Assistant. It's because of people like you that we are able to run this project and make a great home automation experience for everyone. Thank you!
-          </span>
+          <div slot="introduction">
+            <p>
+              Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!
+            </p>
+          </div>
 
-          <paper-card heading="Account">
+          <paper-card heading="Nabu Casa Account">
             <div class="account-row">
               <paper-item-body two-line="">
                 [[account.email]]
@@ -73,7 +81,6 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
                   <span class="nowrap">[[_formatExpiration(account.sub_exp)]]</span>
                 </div>
               </paper-item-body>
-              <paper-button on-click="handleLogout">Sign out</paper-button>
             </div>
 
             <div class="account-row">
@@ -82,15 +89,24 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
               </paper-item-body>
               <div class="status">[[account.cloud]]</div>
             </div>
+
+            <div class='card-actions'>
+              <a href='https://account.nabucasa.com' target='_blank'><paper-button>Manage Account</paper-button></a>
+              <paper-button style='float: right' on-click="handleLogout">Sign out</paper-button>
+            </div>
           </paper-card>
         </ha-config-section>
 
         <ha-config-section is-wide="[[isWide]]">
           <span slot="header">Integrations</span>
-          <span slot="introduction">
-            Integrations for Home Assistant Cloud allow you to connect with services in the cloud
-            without having to expose your Home Assistant instance publicly on the internet.
-          </span>
+          <div slot="introduction">
+            <p>
+              Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.
+            </p>
+            <p>
+              Check the website for <a href='https://www.nabucasa.com/cloud/' target='_blank'>all available features</a>.
+            </p>
+          </div>
 
           <paper-card heading="Alexa">
             <div class="card-content">

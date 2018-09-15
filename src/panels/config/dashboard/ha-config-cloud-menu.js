@@ -29,7 +29,7 @@ class HaConfigCloudMenu extends NavigateMixin(PolymerElement) {
             <div secondary="">Logged in as [[account.email]]</div>
           </template>
           <template is="dom-if" if="[[!account]]">
-            <div secondary="">Not logged in</div>
+            <div secondary="">Connect with Google Home and Amazon Alexa</div>
           </template>
         </paper-item-body>
         <iron-icon icon="hass:chevron-right"></iron-icon>
