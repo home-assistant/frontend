@@ -545,6 +545,24 @@
                     "error_no_theme": "Žádné motivy nejsou k dispozici.",
                     "link_promo": "Další info o motivech",
                     "dropdown_label": "Motiv"
+                },
+                "long_lived_access_tokens": {
+                    "learn_auth_requests": "Naučte se, jak posílat ověřené requesty.",
+                    "created_at": "Vytvořeno {date}",
+                    "confirm_delete": "Opravdu chcete smazat přístupový token pro {name} ?",
+                    "delete_failed": "Nepodařilo se odstranit přístupový token.",
+                    "create": "Vytvořte token",
+                    "create_failed": "Nepodařilo se vytvořit přístupový token.",
+                    "prompt_name": "Název?",
+                    "prompt_copy_token": "Zkopírujte přístupový token. Už nikdy nebude znovu zobrazen.",
+                    "empty_state": "Zatím nemáte žádné dlouhodobé přístupové tokeny.",
+                    "last_used": "Naposledy použito {date} z {location}",
+                    "not_used": "Nikdy nebylo použito"
+                },
+                "refresh_tokens": {
+                    "last_used": "Naposledy použito {date} z {location}",
+                    "not_used": "Nikdy nebylo použito",
+                    "current_token_tooltip": "Nelze odstranit aktuální obnovení tokenu"
                 }
             },
             "page-authorize": {

@@ -545,6 +545,50 @@
                     "error_no_theme": "אין ערכות נושא זמינות.",
                     "link_promo": "למד אודות ערכות נושא",
                     "dropdown_label": "ערכת נושא"
+                },
+                "refresh_tokens": {
+                    "header": "רענן אסימונים",
+                    "not_used": "לא היה בשימוש"
+                },
+                "long_lived_access_tokens": {
+                    "create": "צור אסימון",
+                    "prompt_name": "שֵׁם?"
+                }
+            },
+            "page-authorize": {
+                "initializing": "מאתחל",
+                "form": {
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "סיסמה"
+                                    }
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "מִשׁתַמֵשׁ"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "בואו נתחיל על ידי יצירת חשבון משתמש.",
+                    "required_field": "נדרש",
+                    "data": {
+                        "name": "שם",
+                        "username": "שם משתמש",
+                        "password": "סיסמה"
+                    }
                 }
             }
         },
