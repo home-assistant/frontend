@@ -545,6 +545,10 @@
                     "error_no_theme": "No hay temas disponibles",
                     "link_promo": "Aprenda sobre los temas",
                     "dropdown_label": "Tema"
+                },
+                "long_lived_access_tokens": {
+                    "last_used": "Ultimo uso {fecha} desde {lugar}",
+                    "not_used": "Nunca ha sido usado"
                 }
             },
             "page-authorize": {
@@ -592,7 +596,7 @@
                                     "data": {
                                         "code": "Código de autenticado de dos factores"
                                     },
-                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código autenticado de dos factores y verificar su identidad:"
+                                    "description": "Abra el ** {mfa_module_name} ** en su dispositivo para ver su código de autenticación de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {

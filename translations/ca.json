@@ -552,7 +552,10 @@
                     "token_title": "Refresca el testimoni d'autenticació del {clientId}",
                     "created_at": "Creat el {date}",
                     "confirm_delete": "Esteu segur que voleu suprimir el testimoni d'autenticació d'actualització per {name}?",
-                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització."
+                    "delete_failed": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització.",
+                    "last_used": "Darrer ús el {date} des de {location}",
+                    "not_used": "Mai no s'ha utilitzat",
+                    "current_token_tooltip": "No s'ha pogut suprimir el testimoni d'autenticació d'actualització."
                 },
                 "long_lived_access_tokens": {
                     "header": "Testimonis d'autenticació d'accés de llarga durada",
@@ -565,7 +568,9 @@
                     "create_failed": "No s'ha pogut crear el testimoni d'autenticació d'accés.",
                     "prompt_name": "Nom?",
                     "prompt_copy_token": "Copieu el testimoni d'autenticació (token) d'accés. No es tornarà a mostrar més endavant.",
-                    "empty_state": "Encara no tens testimonis d'autenticaciós d'accés de llarga durada."
+                    "empty_state": "Encara no tens testimonis d'autenticaciós d'accés de llarga durada.",
+                    "last_used": "Darrer ús el {date} des de {location}",
+                    "not_used": "Mai no s'ha utilitzat"
                 }
             },
             "page-authorize": {
