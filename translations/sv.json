@@ -545,6 +545,10 @@
                     "error_no_theme": "Inga teman finns tillgängliga.",
                     "link_promo": "Läs mer om teman",
                     "dropdown_label": "Tema"
+                },
+                "long_lived_access_tokens": {
+                    "last_used": "Användes senast den {date} från {location} ",
+                    "not_used": "Har aldrig använts"
                 }
             },
             "page-authorize": {

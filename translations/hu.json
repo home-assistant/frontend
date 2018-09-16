@@ -545,6 +545,13 @@
                     "error_no_theme": "Nincsenek elérhető témák.",
                     "link_promo": "Tudj meg többet a témákról",
                     "dropdown_label": "Téma"
+                },
+                "refresh_tokens": {
+                    "not_used": "Sosem használt",
+                    "current_token_tooltip": "Nem lehet törölni az aktuális frissítési tokent"
+                },
+                "long_lived_access_tokens": {
+                    "not_used": "Sosem használt"
                 }
             },
             "page-authorize": {

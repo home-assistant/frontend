@@ -8,10 +8,12 @@
         "mailbox": "Поштова скринька",
         "shopping_list": "Список покупок",
         "dev-services": "Послуги",
+        "dev-states": "Стан",
         "dev-events": "Події",
         "dev-templates": "Шаблони",
         "dev-mqtt": "MQTT",
-        "dev-info": "Інформація"
+        "dev-info": "Інформація",
+        "calendar": "Календар"
     },
     "state": {
         "default": {
@@ -79,6 +81,30 @@
             "problem": {
                 "off": "ОК",
                 "on": "Проблема"
+            },
+            "connectivity": {
+                "off": "Відключено",
+                "on": "Підключено"
+            },
+            "cold": {
+                "off": "Норма",
+                "on": "Охолодження"
+            },
+            "door": {
+                "off": "Зачинено",
+                "on": "Відкрито"
+            },
+            "garage_door": {
+                "off": "Зачинено",
+                "on": "Відкрито"
+            },
+            "window": {
+                "off": "Зачинено",
+                "on": "Відкрито"
+            },
+            "lock": {
+                "off": "Заблоковано",
+                "on": "Розблоковано"
             }
         },
         "calendar": {
@@ -227,26 +253,50 @@
             "developer_tools": "Інструменти для розробників"
         },
         "common": {
+            "loading": "Завантаження",
             "cancel": "Скасувати"
         },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+            "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}",
+            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+            "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+            "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}"
+        },
         "panel": {
+            "history": {
+                "showing_entries": "Показані записи для",
+                "period": "Період"
+            },
+            "logbook": {
+                "showing_entries": "Відображення записів за"
+            },
             "mailbox": {
                 "empty": "У вас немає повідомлень",
+                "playback_title": "Відтворення повідомлення",
                 "delete_prompt": "Видалити це повідомлення?",
                 "delete_button": "Видалити"
             },
             "config": {
                 "header": "Налаштуваня Home Assistant",
+                "introduction": "Тут можна налаштувати свої компоненти та Home Assistant. Не все можна налаштувати з інтерфейсу користувача, але ми працюємо над цим.",
                 "core": {
                     "caption": "Основні",
+                    "description": "Перевірити ваш файл конфігурації і управління сервером",
                     "section": {
                         "core": {
+                            "header": "Конфігурація та керування сервером",
+                            "introduction": "Зміна вашої конфігурації може бути неабияким процесом. Ми знаємо. Цей розділ намагатиметься полегшити ваше життя.",
                             "validation": {
+                                "heading": "Перевірка конфігурації",
+                                "introduction": "Перевірте вашу конфігурацію, якщо ви нещодавно внесли деякі зміни у вашу конфігурацію та хочете переконатися, що вона є дійсною",
                                 "check_config": "Перевірте конфігурацію",
                                 "valid": "Конфігурація дійсна!",
                                 "invalid": "Конфігурація недійсна"
                             },
                             "reloading": {
+                                "heading": "Перезавантаження конфігурації",
+                                "introduction": "Деякі частини Home Assistant можна оновити без необхідності перезавантаження. Натискання перезавантаження вивантажить поточну конфігурацію та завантажить нову.",
                                 "core": "Перезавантажити ядро",
                                 "group": "Перезавантажити групи",
                                 "automation": "Перезавантажити автоматизації",
@@ -254,22 +304,127 @@
                             },
                             "server_management": {
                                 "heading": "Управління сервером",
+                                "introduction": "Контролюйте сервер Home Assistant ... з Home Assistant",
                                 "restart": "Перезапустити",
                                 "stop": "Зупинити"
                             }
                         }
                     }
                 },
+                "customize": {
+                    "caption": "Налаштування",
+                    "description": "Налаштуйте свої об'єкти"
+                },
                 "automation": {
-                    "caption": "Автоматизація"
+                    "caption": "Автоматизація",
+                    "description": "Створення та редагування автоматизації",
+                    "picker": {
+                        "header": "Редактор автоматизації",
+                        "pick_automation": "Виберіть автоматизацію для редагування",
+                        "add_automation": "Додати автоматизацію"
+                    },
+                    "editor": {
+                        "default_name": "Нова автоматизація",
+                        "save": "Зберегти",
+                        "unsaved_confirm": "У вас є незбережені зміни. Ви впевнені, що хочете вийти?",
+                        "alias": "Назва",
+                        "triggers": {
+                            "header": "Тригери"
+                        }
+                    }
                 },
                 "script": {
-                    "caption": "Сценарій"
+                    "caption": "Сценарій",
+                    "description": "Створення та редагування скриптів"
                 },
                 "zwave": {
                     "caption": "Z-Wave"
                 }
+            },
+            "profile": {
+                "push_notifications": {
+                    "link_promo": "Дізнатися більше"
+                },
+                "language": {
+                    "header": "Мова",
+                    "link_promo": "Допомога в перекладі",
+                    "dropdown_label": "Мова"
+                },
+                "themes": {
+                    "header": "Тема",
+                    "error_no_theme": "Немає доступних тем.",
+                    "link_promo": "Дізнайтеся про теми",
+                    "dropdown_label": "Тема"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Ініціалізація",
+                "pick_auth_provider": "Або увійти з",
+                "form": {
+                    "working": "Будь ласка, зачекайте",
+                    "unknown_error": "Щось пішло не так",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Ім'я користувача",
+                                        "password": "Пароль"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Двофакторний ідентифікаційний код"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Неправильне ім'я користувача або пароль"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Пароль API"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Невірний пароль API "
+                            },
+                            "abort": {
+                                "no_api_password_set": "Ви не маєте налаштованого пароля API."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Користувач"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Ваш комп'ютер не включений в білий список."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "create_account": "Створити обліковий запис",
+                    "error": {
+                        "required_fields": "Заповніть усі необхідні поля"
+                    }
+                }
             }
+        },
+        "login-form": {
+            "password": "Пароль",
+            "remember": "Запам'ятати",
+            "log_in": "Ввійти"
         },
         "card": {
             "camera": {
@@ -306,14 +461,31 @@
             },
             "climate": {
                 "currently": "В даний час",
-                "on_off": "Вкл \/ викл"
+                "on_off": "Вкл \/ викл",
+                "target_temperature": "Цільова температура",
+                "target_humidity": "Цільова вологість"
             }
         },
         "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Об'єкт"
+                }
+            },
+            "service-picker": {
+                "service": "Сервіс"
+            },
             "relative_time": {
                 "past": "{time} тому",
                 "future": "В {time}",
-                "never": "Ніколи"
+                "never": "Ніколи",
+                "duration": {
+                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+                    "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+                    "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
+                    "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+                    "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
+                }
             },
             "history_charts": {
                 "loading_history": "Завантаження історії стану ...",
@@ -321,14 +493,27 @@
             }
         },
         "notification_toast": {
+            "entity_turned_on": "Увімкнено {entity}.",
+            "entity_turned_off": "Вимкнено {entity}.",
             "service_called": "Служба {service} викликається.",
             "service_call_failed": "Не вдалося викликати службу {service}.",
             "connection_lost": "З'єднання втрачено. Повторне підключення..."
         },
         "dialogs": {
             "more_info_settings": {
-                "save": "Зберегти"
+                "save": "Зберегти",
+                "name": "Назва"
             }
+        },
+        "auth_store": {
+            "ask": "Ви хочете зберегти цей логін?",
+            "decline": "Ні, дякую",
+            "confirm": "Зберегти логін"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Натисніть кнопку, щоб налаштувати {entity}",
+            "empty": "Немає сповіщень",
+            "title": "Сповіщення"
         }
     },
     "domain": {
@@ -337,18 +522,26 @@
         "calendar": "Календар",
         "camera": "Камера",
         "climate": "Клімат",
+        "configurator": "Конфігуратор",
+        "conversation": "Розмова",
         "device_tracker": "Трекер пристрою",
         "fan": "Вентилятор",
         "history_graph": "Графік історії ",
         "group": "Група",
         "light": "Освітлення",
+        "lock": "Замок",
         "media_player": "Медіа плеєр",
         "notify": "Повідомлення",
         "plant": "Рослини",
+        "proximity": "Близькість",
+        "remote": "Пульт ДУ",
         "scene": "Сцена",
         "script": "Сценарій",
         "sensor": "Датчик",
+        "sun": "Сонце",
         "switch": "Перемикач",
+        "updater": "Оновлювач",
+        "weblink": "Посилання",
         "zwave": "Z-Wave"
     },
     "attribute": {

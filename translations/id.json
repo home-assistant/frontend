@@ -235,6 +235,7 @@
         },
         "vacuum": {
             "cleaning": "Membersihkan",
+            "docked": "Berlabuh",
             "error": "Kesalahan",
             "idle": "Siaga",
             "paused": "Berhenti",
@@ -242,6 +243,14 @@
         }
     },
     "state_badge": {
+        "default": {
+            "unknown": "Tak Tahu",
+            "unavailable": "Tak Ada"
+        },
+        "alarm_control_panel": {
+            "pending": "Tunda",
+            "triggered": "Picu"
+        },
         "device_tracker": {
             "home": "Rumah",
             "not_home": "Keluar"
@@ -276,7 +285,7 @@
                     "section": {
                         "core": {
                             "header": "Konfigurasi dan kontrol server",
-                            "introduction": "Mengubah konfigurasi anda bisa menjadi proses yang melelahkan. Kita tahu. Bagian ini akan mencoba membuat hidup anda menjadi sedikit lebih mudah.",
+                            "introduction": "Merubah konfigurasi bisa menjadi proses yang melelahkan. Kami tahu. Bagian ini akan mencoba membuatnya menjadi sedikit lebih mudah.",
                             "validation": {
                                 "heading": "Validasi konfigurasi",
                                 "introduction": "Validasikan konfigurasi anda jika anda baru saja membuat beberapa perubahan pada konfigurasi anda dan ingin memastikan semuanya valid",
@@ -377,7 +386,7 @@
                                     "label": "Zona",
                                     "entity": "Entiti dengan lokasi",
                                     "zone": "Zona",
-                                    "event": "Event",
+                                    "event": "Event:",
                                     "enter": "Masuk",
                                     "leave": "Keluar"
                                 }
@@ -505,6 +514,32 @@
                     "error_no_theme": "Tidak ada tema yang tersedia.",
                     "link_promo": "Pelajari tentang tema",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Token baru",
+                    "description": "Setiap token baru mewakili sesi login. Membuat token baru akan dihapus secara otomatis saat Anda mengeklik keluar. Token baru berikut saat ini aktif untuk akun Anda.",
+                    "token_title": "Buat token baru untuk {clientId}",
+                    "created_at": "Dibuat pada {date}",
+                    "confirm_delete": "Anda yakin ingin menghapus token baru untuk {name} ?",
+                    "delete_failed": "Gagal menghapus token baru.",
+                    "last_used": "Terakhir digunakan pada {date} di {location}",
+                    "not_used": "Belum pernah digunakan",
+                    "current_token_tooltip": "Tidak dapat menghapus token baru saat ini"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Token Akses yang berumur panjang",
+                    "description": "Buat token akses yang berumur panjang untuk memungkinkan skrip Anda berinteraksi dengan Home Assistant. Setiap token akan berlaku selama 10 tahun sejak pembuatan. Berikut Token akses yang berumur panjang yang saat ini aktif.",
+                    "learn_auth_requests": "Pelajari cara membuat permintaan yang diautentikasi.",
+                    "created_at": "Dibuat pada {date}",
+                    "confirm_delete": "Anda yakin ingin menghapus token akses untuk {name}?",
+                    "delete_failed": "Gagal menghapus token akses.",
+                    "create": "Buat Token",
+                    "create_failed": "Gagal membuat token akses.",
+                    "prompt_name": "Nama?",
+                    "prompt_copy_token": "Salin token akses Anda. Ini tidak akan ditampilkan lagi.",
+                    "empty_state": "Anda belum memiliki token akses yang berumur panjang.",
+                    "last_used": "Terakhir digunakan pada {date} di {location}",
+                    "not_used": "Belum pernah digunakan"
                 }
             },
             "page-authorize": {
@@ -598,11 +633,11 @@
             "cancel": "Batalkan"
         },
         "duration": {
-            "day": "{count}{count, plural,\n  one {hari}\n  other {hari}\n}",
-            "week": "{count}{count, plural,\n  one {minggu}\n  other {minggu}\n}",
-            "second": "{count}{count, plural,\n  one {detik}\n  other {detik}\n}",
-            "minute": "{count} {count, plural,\n  one {menit}\n  other {menit}\n}",
-            "hour": "{count} {count, plural,\n  one {jam}\n  other {jam}\n}"
+            "day": "{count}{count, plural,\n  one { hari }\n  other { hari }\n}",
+            "week": "{count}{count, plural,\n  one { minggu }\n  other { minggu }\n}",
+            "second": "{count}{count, plural,\n  one { detik }\n  other { detik }\n}",
+            "minute": "{count} {count, plural,\n  one { menit }\n  other { menit }\n}",
+            "hour": "{count} {count, plural,\n  one { jam }\n  other { jam }\n}"
         },
         "login-form": {
             "password": "Kata sandi",
@@ -620,7 +655,7 @@
                 "activate": "Aktifkan"
             },
             "script": {
-                "execute": "Menjalankan"
+                "execute": "Jalankan"
             },
             "weather": {
                 "attributes": {
@@ -699,14 +734,14 @@
             },
             "relative_time": {
                 "past": "lalu",
-                "future": "dalam",
+                "future": "dalam {time}",
                 "never": "Tak pernah",
                 "duration": {
-                    "second": "{count} {count, plural,\n  one {detik}\n  other {detik}\n}",
-                    "minute": "{count} {count, plural,\n  one {menit}\n  other {menit}\n}",
-                    "hour": "{count} {count, plural,\n  one {jam}\n  other {jam}\n}",
-                    "day": "{count} {count, plural,\n  one {hari}\n  other {hari}\n}",
-                    "week": "{count} {count, plural,\n  one {minggu}\n  other {minggu}\n}"
+                    "second": "{count} {count, plural,\n  one { detik }\n  other { detik }\n}",
+                    "minute": "{count} {count, plural,\n  one { menit }\n  other { menit }\n}",
+                    "hour": "{count} {count, plural,\n  one { jam }\n  other { jam }\n}",
+                    "day": "{count} {count, plural,\n  one { hari }\n  other { hari }\n}",
+                    "week": "{count} {count, plural,\n  one { minggu }\n  other { minggu }\n}"
                 }
             },
             "history_charts": {
@@ -754,10 +789,10 @@
         "history_graph": "Riwayat Grafik",
         "group": "Grup",
         "image_processing": "Pengolahan gambar",
-        "input_boolean": "Masukan boolean",
-        "input_datetime": "Masukkan tanggal waktu",
+        "input_boolean": "Input boolean",
+        "input_datetime": "Input tanggal waktu",
         "input_select": "Input Pilihan",
-        "input_number": "Masukkan angka",
+        "input_number": "Input angka",
         "input_text": "Input Text",
         "light": "Lampu",
         "lock": "Kunci",
@@ -765,6 +800,7 @@
         "media_player": "Pemutar media",
         "notify": "Pemberitahuan",
         "plant": "Tanaman",
+        "remote": "Remot",
         "scene": "Scene",
         "script": "Script",
         "sensor": "Sensor",
