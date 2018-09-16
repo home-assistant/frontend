@@ -63,8 +63,6 @@ function _createErrorElement(error, config) {
 }
 
 export default function createRowElement(config) {
-  let tag;
-
   if (!config || typeof config !== 'object' || (!config.entity && !config.type)) {
     return _createErrorElement('Invalid config given.', config);
   }
@@ -74,22 +72,22 @@ export default function createRowElement(config) {
     return _createElement(`hui-${type}-row`, config);
   }
 
+  const domain = config.entity.split('.', 1)[0];
+  const tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
+
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    tag = type.substr(CUSTOM_TYPE_PREFIX.length);
+    const custom_tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
-    if (customElements.get(tag)) {
-      return _createElement(tag, config);
+    if (customElements.get(custom_tag)) {
+      return _createElement(custom_tag, config);
     }
-    const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
+    const element = _createElement(tag, config);
 
-    customElements.whenDefined(tag)
+    customElements.whenDefined(custom_tag)
       .then(() => fireEvent(element, 'rebuild-view'));
 
     return element;
   }
-
-  const domain = config.entity.split('.', 1)[0];
-  tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
 
   return _createElement(tag, config);
 }

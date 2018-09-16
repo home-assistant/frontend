@@ -46,8 +46,7 @@ export default function createHuiElement(config) {
     if (customElements.get(tag)) {
       return _createElement(tag, config);
     }
-
-    const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
+    const element = _createElement(`hui-${config.type}-element`, config);
 
     customElements.whenDefined(tag)
       .then(() => fireEvent(element, 'rebuild-view'));
