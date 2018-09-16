@@ -76,14 +76,14 @@ export default function createRowElement(config) {
   const tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
 
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    const custom_tag = type.substr(CUSTOM_TYPE_PREFIX.length);
+    const customTag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
-    if (customElements.get(custom_tag)) {
-      return _createElement(custom_tag, config);
+    if (customElements.get(customTag)) {
+      return _createElement(customTag, config);
     }
     const element = _createElement(tag, config);
 
-    customElements.whenDefined(custom_tag)
+    customElements.whenDefined(customTag)
       .then(() => fireEvent(element, 'rebuild-view'));
 
     return element;
