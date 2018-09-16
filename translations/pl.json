@@ -545,6 +545,32 @@
                     "error_no_theme": "Brak dostępnych motywów.",
                     "link_promo": "Dowiedz się więcej o motywch",
                     "dropdown_label": "Motyw"
+                },
+                "refresh_tokens": {
+                    "header": "Tokeny",
+                    "description": "Każdy token reprezentuje sesję logowania. Tokeny zostaną automatycznie usunięte po wylogowaniu. Następujące tokeny są obecnie aktywne dla Twojego konta.",
+                    "token_title": "Odśwież token dla {clientId}",
+                    "created_at": "Utworzony {date}",
+                    "confirm_delete": "Czy na pewno chcesz usunąć token dla {name}?",
+                    "delete_failed": "Nie udało się usunąć tokena.",
+                    "last_used": "Ostatnio używany {date} z {location}",
+                    "not_used": "Nigdy nie był używany",
+                    "current_token_tooltip": "Nie można usunąć bieżącego tokena"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Tokeny dostępu",
+                    "description": "Długoterminowe tokeny dostępu umożliwiają skryptom interakcję z Home Assistant. Każdy token będzie ważny przez 10 lat od utworzenia. Następujące tokeny są obecnie aktywne.",
+                    "learn_auth_requests": "Dowiedz się, jak tworzyć uwierzytelnione żądania.",
+                    "created_at": "Utworzony {date}",
+                    "confirm_delete": "Czy na pewno chcesz usunąć token dla {name}?",
+                    "delete_failed": "Nie udało się usunąć tokena.",
+                    "create": "Utwórz token",
+                    "create_failed": "Nie udało się utworzyć tokena.",
+                    "prompt_name": "Nazwa?",
+                    "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
+                    "empty_state": "Nie masz jeszcze żadnych żadnych tokenów.",
+                    "last_used": "Ostatnio używany {date} z {location}",
+                    "not_used": "Nigdy nie był używany"
                 }
             },
             "page-authorize": {

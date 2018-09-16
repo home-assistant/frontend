@@ -545,6 +545,32 @@
                     "error_no_theme": "사용할 수 있는 테마가 없습니다.",
                     "link_promo": "테마에 대해 알아보기",
                     "dropdown_label": "테마"
+                },
+                "refresh_tokens": {
+                    "header": "갱신 토큰",
+                    "description": "각 갱신 토큰은 로그인 세션을 나타냅니다. 로그 아웃을 클릭하면 갱신 토큰이 자동으로 제거됩니다. 다음의 갱신 토큰이 현재 당신의 계정에 대해 활성화 되어 있습니다.",
+                    "token_title": "{clientId} 의 갱신 토큰",
+                    "created_at": "{date} 에 생성 됨",
+                    "confirm_delete": "{name} 의 갱신 토큰을 삭제 하시겠습니까?",
+                    "delete_failed": "갱신 토큰을 삭제할 수 없음",
+                    "last_used": "{date}에  {location} 에서 마지막으로 사용됨",
+                    "not_used": "사용된 적이 없음",
+                    "current_token_tooltip": "현재 갱신 토큰을 삭제할 수 없음"
+                },
+                "long_lived_access_tokens": {
+                    "header": "장기 접속 토큰",
+                    "description": "스크립트가 Home Assistant 인스턴스와 상호 작용할 수 있도록 장기 접속 토큰을 생성하세요. 각 토큰은 생성 후 10년 동안 유효합니다. 다음의 장기 접속 토큰은 현재 활성 상태입니다.",
+                    "learn_auth_requests": "인증된 요청을 생성하는 방법에 대해 알아 보세요.",
+                    "created_at": "{date} 에 생성 됨",
+                    "confirm_delete": "{name} 의 접속 토큰을 삭제 하시겠습니까?",
+                    "delete_failed": "접속 토큰을 삭제할 수 없음",
+                    "create": "토큰 만들기",
+                    "create_failed": "접속 토큰을 생성을 할 수 없음",
+                    "prompt_name": "명칭?",
+                    "prompt_copy_token": "접속 토큰을 복사하세요. 그것은 다시 표시되지 않습니다.",
+                    "empty_state": "당신은 장기 접속 토큰이 아직 없습니다.",
+                    "last_used": "{date}에  {location} 에서 마지막으로 사용됨",
+                    "not_used": "사용된 적이 없음"
                 }
             },
             "page-authorize": {

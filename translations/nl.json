@@ -545,6 +545,32 @@
                     "error_no_theme": "Geen thema's beschikbaar.",
                     "link_promo": "Meer informatie over thema's",
                     "dropdown_label": "Thema"
+                },
+                "refresh_tokens": {
+                    "header": "Tokens vernieuwen",
+                    "description": "Elk toegangstoken vertegenwoordigt een inlogsessie. Toegangstokens worden automatisch verwijderd wanneer u op Uitloggen klikt. De volgende toegangstokens zijn momenteel actief voor uw account.",
+                    "token_title": "Token voor {clientId}",
+                    "created_at": "Gemaakt op {date}",
+                    "confirm_delete": "Weet u zeker dat u de toegangstoken voor {name} wilt verwijderen?",
+                    "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
+                    "last_used": "Laatst gebruikt op {date} vanaf {location}",
+                    "not_used": "Is nooit gebruikt",
+                    "current_token_tooltip": "Kan huidige verversingstoken niet verwijderen"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Toegangtokens met lange levensduur",
+                    "description": "Maak toegangstokens met een lange levensduur zodat uw scripts kunnen communiceren met uw Home Assistant instantie. Elk token is tien jaar geldig vanaf creatiedatum. De volgende langlevende toegangstokens zijn momenteel actief.",
+                    "learn_auth_requests": "Leer hoe u geverifieerde verzoeken kunt indienen.",
+                    "created_at": "Gemaakt op {date}",
+                    "confirm_delete": "Weet u zeker dat u de toegangstoken voor {name} wilt verwijderen?",
+                    "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
+                    "create": "Token aanmaken",
+                    "create_failed": "De toegangstoken kon niet worden aangemaakt.",
+                    "prompt_name": "Naam?",
+                    "prompt_copy_token": "Kopieer je toegangstoken. Het wordt niet meer getoond.",
+                    "empty_state": "Je hebt nog geen langdurige toegangstokens.",
+                    "last_used": "Laatst gebruikt op {date} vanaf {location}",
+                    "not_used": "Is nooit gebruikt"
                 }
             },
             "page-authorize": {
