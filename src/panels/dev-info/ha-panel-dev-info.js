@@ -17,7 +17,11 @@ import '../../resources/ha-style.js';
 import formatDateTime from '../../common/datetime/format_date_time.js';
 import formatTime from '../../common/datetime/format_time.js';
 
-class HaPanelDevInfo extends PolymerElement {
+import EventsMixin from '../../mixins/events-mixin.js';
+
+let registeredDialog = false;
+
+class HaPanelDevInfo extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-positioning ha-style">
@@ -221,18 +225,6 @@ class HaPanelDevInfo extends PolymerElement {
         </template>
       </paper-dialog-scrollable>
     </paper-dialog>
-
-    <paper-dialog with-backdrop id="showcomponents">
-      <h2>Loaded Components</h2>
-      <paper-dialog-scrollable id="scrollable">
-       <p>The following components are currently loaded:</p>
-       <ul>
-        <template is='dom-repeat' items='[[loadedComponents]]'>
-          <li>[[item]]</li>
-        </template>
-       </ul>
-      </paper-dialog-scrollable>
-    </paper-dialog>
     `;
   }
 
@@ -293,11 +285,6 @@ class HaPanelDevInfo extends PolymerElement {
         ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
       }
     });
-    this.$.showcomponents.addEventListener('iron-overlay-opened', (ev) => {
-      if (ev.target.withBackdrop) {
-        ev.target.parentNode.insertBefore(ev.target.backdropElement, ev.target);
-      }
-    });
   }
 
   serviceCalled(ev) {
@@ -314,7 +301,17 @@ class HaPanelDevInfo extends PolymerElement {
     super.connectedCallback();
     this.$.scrollable.dialogElement = this.$.showlog;
     this._fetchData();
-    this.loadedComponents = this._computeLoadedComponents();
+    this.loadedComponents = this.hass.config.components;
+
+    if (!registeredDialog) {
+      registeredDialog = true;
+      this.fire('register-dialog', {
+        dialogShowEvent: 'show-loaded-components',
+        dialogTag: 'ha-loaded-components',
+        dialogImport: () => import('./ha-loaded-components.js'),
+      });
+    }
+
     if (!window.CUSTOM_UI_LIST) {
       // Give custom UI an opportunity to load.
       setTimeout(() => {
@@ -376,12 +373,10 @@ class HaPanelDevInfo extends PolymerElement {
     this.$.love.innerText = this._defaultPageText();
   }
 
-  _computeLoadedComponents() {
-    return this.hass.config.components.sort();
-  }
-
   _showComponents() {
-    this.$.showcomponents.open();
+    this.fire('show-loaded-components', {
+      hass: this.hass
+    });
   }
 }
 
