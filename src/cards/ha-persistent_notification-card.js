@@ -8,6 +8,7 @@ import '../components/ha-markdown.js';
 
 import computeStateName from '../common/entity/compute_state_name.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
+import computeObjectId from '../common/entity/compute_object_id';
 
 /*
  * @appliesMixin LocalizeMixin
@@ -65,7 +66,9 @@ class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
 
   dismissTap(ev) {
     ev.preventDefault();
-    this.hass.callApi('DELETE', 'states/' + this.stateObj.entity_id);
+    this.hass.callService('persistent_notification', 'dismiss', {
+      notification_id: computeObjectId(this.stateObj.entity_id)
+    });
   }
 }
 customElements.define('ha-persistent_notification-card', HaPersistentNotificationCard);
