@@ -54,6 +54,9 @@ class HuiGenericEntityRow extends PolymerElement {
           margin-left: 8px;
           min-width: 0;
         }
+        .flex ::slotted([slot=secondary]) {
+          margin-left: 0;
+        }
         .secondary,
         ha-relative-time {
           display: block;
@@ -84,19 +87,22 @@ class HuiGenericEntityRow extends PolymerElement {
     return html`
       <div class="info">
         [[_computeName(config.name, _stateObj)]]
-        <template is="dom-if" if="[[config.secondary_info]]">
-          <template is="dom-if" if="[[_equals(config.secondary_info, 'entity-id')]]">
-            <div class="secondary">
+        <div class="secondary">
+          <template is="dom-if" if="[[showSecondary]]">
+            <template is="dom-if" if="[[_equals(config.secondary_info, 'entity-id')]]">
               [[_stateObj.entity_id]]
-            </div>
+            </template>
+            <template is="dom-if" if="[[_equals(config.secondary_info, 'last-changed')]]">
+              <ha-relative-time
+                hass="[[hass]]"
+                datetime="[[_stateObj.last_changed]]"
+              ></ha-relative-time>
+            </template>
           </template>
-          <template is="dom-if" if="[[_equals(config.secondary_info, 'last-changed')]]">
-            <ha-relative-time
-              hass="[[hass]]"
-              datetime="[[_stateObj.last_changed]]"
-            ></ha-relative-time>
+          <template is="dom-if" if="[[!showSecondary]">
+            <slot name="secondary"></slot>
           </template>
-        </template>
+        </div>
       </div>
     `;
   }
@@ -108,6 +114,10 @@ class HuiGenericEntityRow extends PolymerElement {
       _stateObj: {
         type: Object,
         computed: '_computeStateObj(hass.states, config.entity)'
+      },
+      showSecondary: {
+        type: Boolean,
+        value: true
       }
     };
   }

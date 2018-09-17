@@ -7,6 +7,7 @@ import '../entity-rows/hui-input-number-entity-row.js';
 import '../entity-rows/hui-input-select-entity-row.js';
 import '../entity-rows/hui-input-text-entity-row.js';
 import '../entity-rows/hui-lock-entity-row.js';
+import '../entity-rows/hui-media-player-entity-row.js';
 import '../entity-rows/hui-scene-entity-row.js';
 import '../entity-rows/hui-script-entity-row.js';
 import '../entity-rows/hui-text-entity-row.js';
@@ -36,6 +37,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   input_select: 'input-select',
   input_text: 'input-text',
   light: 'toggle',
+  media_player: 'media-player',
   lock: 'lock',
   scene: 'scene',
   script: 'script',
