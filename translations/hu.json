@@ -547,10 +547,29 @@
                     "dropdown_label": "Téma"
                 },
                 "refresh_tokens": {
+                    "header": "Frissítési Tokenek",
+                    "description": "Minden frissítési token egy bejelentkezési munkamenetet képvisel. A frissítési tokenek automatikusan eltávolításra kerülnek, amikor a kijelentkezésre kattintasz. Jelenleg a következő frissítési tokenek aktívak a fiókodban.",
+                    "token_title": "{clientId} frissítési tokenje",
+                    "created_at": "Létrehozva: {date}",
+                    "confirm_delete": "Biztosan törlöd {name} frissítési tokenjét?",
+                    "delete_failed": "Nem sikerült törölni a frissítési tokent.",
+                    "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt",
                     "current_token_tooltip": "Nem lehet törölni az aktuális frissítési tokent"
                 },
                 "long_lived_access_tokens": {
+                    "header": "Hosszú Életű Hozzáférési Tokenek",
+                    "description": "Hosszú életű hozzáférési tokenek létrehozásával engedélyezheted a szkriptjeid számára, hogy csatlakozzanak a Home Assistant példányodhoz. Minden token 10 évig érvényes a létrehozástól számítva. Jelenleg a következő hosszú életű hozzáférési tokenek aktívak.",
+                    "learn_auth_requests": "Tudj meg többet a hitelesített kérelmek létrehozásáról.",
+                    "created_at": "Létrehozva: {date}",
+                    "confirm_delete": "Biztosan törlöd {name} hozzáférési tokenjét?",
+                    "delete_failed": "Nem sikerült törölni a hozzáférési tokent.",
+                    "create": "Token Létrehozása",
+                    "create_failed": "Nem sikerült létrehozni a hozzáférési tokent.",
+                    "prompt_name": "Név?",
+                    "prompt_copy_token": "Másold a hozzáférési tokent. Nem fog újra megjelenni.",
+                    "empty_state": "Még nincsenek hosszú életű hozzáférési tokenjeid.",
+                    "last_used": "Utolsó használat ideje: {date}, helye: {location}",
                     "not_used": "Sosem használt"
                 }
             },

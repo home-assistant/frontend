@@ -558,8 +558,8 @@
                     "current_token_tooltip": "不能删除当前使用的刷新令牌"
                 },
                 "long_lived_access_tokens": {
-                    "header": "长效访问令牌",
-                    "description": "创建长效访问令牌以允许脚本与 Home Assistant 实例进行交互。每个令牌在创建后有效期为10年。以下长效访问令牌处于激活状态。",
+                    "header": "长期访问令牌",
+                    "description": "创建长期访问令牌以允许脚本与 Home Assistant 实例进行交互。每个令牌在创建后有效期为 10 年。以下是处于激活状态的长期访问令牌。",
                     "learn_auth_requests": "了解如何创建经过身份验证的请求。",
                     "created_at": "创建于 {date}",
                     "confirm_delete": "确定要删除 {name} 的访问令牌吗？",
@@ -568,7 +568,7 @@
                     "create_failed": "无法创建访问令牌。",
                     "prompt_name": "名称？",
                     "prompt_copy_token": "请复制你的访问令牌。它不会再显示出来。",
-                    "empty_state": "你还没有长期访问令牌。",
+                    "empty_state": "您还没有长期访问令牌。",
                     "last_used": "上次使用于 {date} 来自 {location}",
                     "not_used": "从未使用过"
                 }
@@ -636,7 +636,7 @@
                                     "data": {
                                         "user": "用户"
                                     },
-                                    "description": "请选择要登录的用户:"
+                                    "description": "请选择要登录的用户："
                                 }
                             },
                             "abort": {
