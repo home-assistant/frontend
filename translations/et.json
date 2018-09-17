@@ -545,6 +545,32 @@
                     "error_no_theme": "Teemasid pole saadaval.",
                     "link_promo": "Lisateave teemade kohta",
                     "dropdown_label": "Teema"
+                },
+                "refresh_tokens": {
+                    "header": "Ajutised juurdepääsutõendid",
+                    "description": "Iga ajutine juurdepääsutõend kehtib ühe seansi jaoks. Ajutised juurdepääsutõendid kustutatakse automaatselt pärast välja logimist. Sinu konto jaoks on praegu aktiivsed järgmised ajutised juurdepääsutõendid.",
+                    "token_title": "Ajutine juurdepääsutõend {clientId} jaoks",
+                    "created_at": "Loodud {date}",
+                    "confirm_delete": "Oled kindel, et soovid kustutada ajutise juurdepääsutõendi {nimi} jaoks?",
+                    "delete_failed": "Ajutise juurdepääsutõendi kustutamine ebaõnnestus.",
+                    "last_used": "Viimati kasutatud {date} asukohast {location}",
+                    "not_used": "Pole kunagi kasutatud",
+                    "current_token_tooltip": "Ei saa kustutada seda ajutist juurdepääsutõendit"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Pikaajalised juurdepääsutõendid",
+                    "description": "Loo pikaajalised juurdepääsutõendid, mis võimaldavad sinu skriptidel suhelda sinu Home Assistant serveriga. Iga juurdepääsutõend kehtib kümme aastat loomisest alates. Praegu on aktiivsed järgmised pikaajalised juurdepääsutõendid.",
+                    "learn_auth_requests": "Loe, kuidas teha tõendatud päringuid.",
+                    "created_at": "Loodud {date}",
+                    "confirm_delete": "Oled kindel, et soovid kustutada juurdepääsutõendi {nimi} jaoks?",
+                    "delete_failed": "Juurdepääsutõendi kustutamine ebaõnnestus.",
+                    "create": "Loo juurdepääsutõend",
+                    "create_failed": "Juurdepääsutõendi loomine ebaõnnestus.",
+                    "prompt_name": "Nimi?",
+                    "prompt_copy_token": "Kopeeri oma juurdepääsutõend. Seda ei näidata rohkem.",
+                    "empty_state": "Sul pole veel pikaajalisi juurdepääsutõendeid.",
+                    "last_used": "Viimati kasutatud {date} asukohast {location}",
+                    "not_used": "Pole kunagi kasutatud"
                 }
             },
             "page-authorize": {
