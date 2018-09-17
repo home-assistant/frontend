@@ -4,17 +4,13 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../layouts/hass-subpage.js';
 
-import EventsMixin from '../../../mixins/events-mixin.js';
-import LocalizeMixin from '../../../mixins/localize-mixin.js';
 import computeStateName from '../../../common/entity/compute_state_name.js';
 import '../../../components/entity/state-badge.js';
 
-/*
- * @appliesMixin LocalizeMixin
- * @appliesMixin EventsMixin
- */
-class HaConfigOverview extends
-  LocalizeMixin(EventsMixin(PolymerElement)) {
+import './ha-overview-device-row.js';
+import compare from '../../../common/string/compare.js';
+
+class HaConfigOverview extends PolymerElement {
   static get template() {
     return html`
     <style>
@@ -43,7 +39,9 @@ class HaConfigOverview extends
       .device .name {
         font-weight: bold;
       }
-      .device .model, .device .manuf {
+      .device .model,
+      .device .manuf,
+      .device .hub {
         color: var(--secondary-text-color);
       }
       .entity-rows {
@@ -77,27 +75,12 @@ class HaConfigOverview extends
               <!-- <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1> -->
 
               <template is='dom-repeat' items='[[_computeConfigEntryDevices(configEntry, _devices)]]' as='device'>
-                <div class='device-row'>
-                  <div class='device'>
-                    <div class='name'>[[device.name]]</div>
-                    <div class='model'>[[device.model]]</div>
-                    <div class='manuf'>by [[device.manufacturer]]</div>
-                  </div>
-
-                  <div class='entity-rows'>
-                    <template is='dom-repeat' items='[[_computeDeviceEntities(device, _entities)]]' as='entity'>
-                      <div class='entity-row'>
-                        <state-badge
-                          state-obj="[[_computeStateObj(entity, hass)]]"
-                        ></state-badge>
-                        <div>
-                          <div class='name'>[[_computeEntityName(entity, hass)]]</div>
-                          <div class='entity-id'>[[entity.entity_id]]</div>
-                        </div>
-                      </div class='entity-row'>
-                    </template>
-                  </div>
-                </div>
+                <ha-overview-device-row
+                  hass='[[hass]]'
+                  devices='[[_devices]]'
+                  device='[[device]]'
+                  entities='[[_entities]]'
+                ></ha-overview-device-row>
               </template>
             </div>
           </paper-card>
@@ -150,7 +133,10 @@ class HaConfigOverview extends
     this.hass.callWS({ type: 'config/device_registry/list' })
       .then((devices) => { this._devices = devices; });
     this.hass.callApi('get', 'config/config_entries/entry')
-      .then((configs) => { this._configs = configs; });
+      .then((configs) => {
+        this._configs = configs.sort(
+          (conf1, conf2) => compare(conf1.title, conf2.title));
+      });
   }
 
   _computeLoading(configs, devices, entities) {
@@ -162,7 +148,10 @@ class HaConfigOverview extends
   }
 
   _computeConfigEntryDevices(configEntry, devices) {
-    return devices.filter(device => device.config_entries.includes(configEntry.entry_id));
+    return devices.filter(device =>
+      device.config_entries.includes(configEntry.entry_id) &&
+      !device.hub_device_id
+    ).sort((dev1, dev2) => compare(dev1.name, dev2.name));
   }
 
   _computeDeviceEntities(device, entities) {
@@ -179,7 +168,12 @@ class HaConfigOverview extends
     if (state) {
       return computeStateName(state);
     }
-    return `${entity.name || entity.entity_id} (unavailable)`;
+    return `${entity.name || ''} (entity unavailable)`;
+  }
+
+  _computeDeviceName(devices, device_id) {
+    const device = devices.find(device => device.id === device_id);
+    return device ? device.name : '(device unavailable)';
   }
 }
 
