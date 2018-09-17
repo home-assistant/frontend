@@ -10,10 +10,8 @@ import '../../../components/entity/state-badge.js';
 import compare from '../../../common/string/compare.js';
 
 function computeEntityName(hass, entity) {
-  if (entity.name) return enitiy.name;
-
+  if (entity.name) return entity.name;
   const state = hass.states[entity.entity_id];
-
   return state ? computeStateName(state) : null;
 }
 
@@ -121,7 +119,8 @@ class HaDeviceRow extends EventsMixin(PolymerElement) {
       .filter(entity => entity.device_id === device.id)
       .sort((ent1, ent2) => compare(
         computeEntityName(hass, ent1) || `zzz${ent1.entity_id}`,
-        computeEntityName(hass, ent2) || `zzz${ent2.entity_id}`));
+        computeEntityName(hass, ent2) || `zzz${ent2.entity_id}`
+      ));
   }
 
   _computeStateObj(entity, hass) {
@@ -132,8 +131,8 @@ class HaDeviceRow extends EventsMixin(PolymerElement) {
     return computeEntityName(hass, entity) || '(entity unavailable)';
   }
 
-  _computeDeviceName(devices, device_id) {
-    const device = devices.find(device => device.id === device_id);
+  _computeDeviceName(devices, deviceId) {
+    const device = devices.find(dev => dev.id === deviceId);
     return device ? device.name : '(device unavailable)';
   }
 

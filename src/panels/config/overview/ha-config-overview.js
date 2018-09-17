@@ -134,8 +134,7 @@ class HaConfigOverview extends PolymerElement {
       .then((devices) => { this._devices = devices; });
     this.hass.callApi('get', 'config/config_entries/entry')
       .then((configs) => {
-        this._configs = configs.sort(
-          (conf1, conf2) => compare(conf1.title, conf2.title));
+        this._configs = configs.sort((conf1, conf2) => compare(conf1.title, conf2.title));
       });
   }
 
@@ -150,8 +149,7 @@ class HaConfigOverview extends PolymerElement {
   _computeConfigEntryDevices(configEntry, devices) {
     return devices.filter(device =>
       device.config_entries.includes(configEntry.entry_id) &&
-      !device.hub_device_id
-    ).sort((dev1, dev2) => compare(dev1.name, dev2.name));
+      !device.hub_device_id).sort((dev1, dev2) => compare(dev1.name, dev2.name));
   }
 
   _computeDeviceEntities(device, entities) {
@@ -171,8 +169,8 @@ class HaConfigOverview extends PolymerElement {
     return `${entity.name || ''} (entity unavailable)`;
   }
 
-  _computeDeviceName(devices, device_id) {
-    const device = devices.find(device => device.id === device_id);
+  _computeDeviceName(devices, deviceId) {
+    const device = devices.find(dev => dev.id === deviceId);
     return device ? device.name : '(device unavailable)';
   }
 }
