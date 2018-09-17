@@ -21,6 +21,7 @@ class HuiMediaPlayerEntityRow extends LocalizeMixin(PolymerElement) {
       <hui-generic-entity-row
         hass="[[hass]]"
         config="[[_config]]"
+        show-secondary="false"
       >
         ${this.mediaPlayerControlTemplate}
       </hui-generic-entity-row>
