@@ -1,29 +1,38 @@
 import '@polymer/app-layout/app-header-layout/app-header-layout.js';
 import '@polymer/app-layout/app-header/app-header.js';
 import '@polymer/app-layout/app-toolbar/app-toolbar.js';
+import '@polymer/iron-icon/iron-icon.js';
+import '@polymer/paper-card/paper-card.js';
+import '@polymer/paper-item/paper-item-body.js';
+import '@polymer/paper-item/paper-item.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../components/ha-menu-button.js';
 
 import '../ha-config-section.js';
-import './ha-config-cloud-menu.js';
-import './ha-config-entries-menu.js';
-import './ha-config-users-menu.js';
 import './ha-config-navigation.js';
 
 import isComponentLoaded from '../../../common/config/is_component_loaded.js';
 import LocalizeMixin from '../../../mixins/localize-mixin.js';
+import NavigateMixin from '../../../mixins/navigate-mixin.js';
 
 /*
  * @appliesMixin LocalizeMixin
  */
-class HaConfigDashboard extends LocalizeMixin(PolymerElement) {
+class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
       .content {
         padding-bottom: 32px;
+      }
+      paper-card {
+        display: block;
+      }
+      a {
+        text-decoration: none;
+        color: var(--primary-text-color);
       }
     </style>
 
@@ -41,16 +50,57 @@ class HaConfigDashboard extends LocalizeMixin(PolymerElement) {
           <span slot="introduction">[[localize('ui.panel.config.introduction')]]</span>
 
           <template is="dom-if" if="[[computeIsLoaded(hass, 'cloud')]]">
-            <ha-config-cloud-menu hass="[[hass]]" account="[[account]]"></ha-config-cloud-menu>
+            <paper-card>
+              <a href='/config/cloud' tabindex="-1">
+                <paper-item on-click="_navigate">
+                  <paper-item-body two-line="">
+                    Home Assistant Cloud
+                    <template is="dom-if" if="[[account]]">
+                      <div secondary="">Logged in as [[account.email]]</div>
+                    </template>
+                    <template is="dom-if" if="[[!account]]">
+                      <div secondary="">Not logged in</div>
+                    </template>
+                  </paper-item-body>
+                  <iron-icon icon="hass:chevron-right"></iron-icon>
+                </paper-item>
+              </paper-card>
+            </a>
           </template>
 
-          <template is="dom-if" if="[[computeIsLoaded(hass, 'config.config_entries')]]">
-            <ha-config-entries-menu hass="[[hass]]"></ha-config-entries-menu>
-          </template>
+          <paper-card>
+            <a href='/config/overview' tabindex="-1">
+              <paper-item>
+                <paper-item-body two-line>
+                  Overview
+                  <div secondary>Find out how your config, devices and entities relate</div>
+                </paper-item-body>
+                <iron-icon icon="hass:chevron-right"></iron-icon>
+              </paper-item>
+            </a>
 
-          <template is="dom-if" if="[[hass.user.is_owner]]">
-            <ha-config-users-menu hass="[[hass]]"></ha-config-users-menu>
-          </template>
+            <a href='/config/integrations' tabindex="-1">
+              <paper-item>
+                <paper-item-body two-line>
+                  Integrations
+                  <div secondary>Manage connected devices and services</div>
+                </paper-item-body>
+                <iron-icon icon="hass:chevron-right"></iron-icon>
+              </paper-item>
+            </a>
+
+            <a href='/config/users' tabindex="-1">
+              <paper-item>
+                <paper-item-body two-line>
+                  [[localize('ui.panel.config.users.caption')]]
+                  <div secondary>
+                    [[localize('ui.panel.config.users.description')]]
+                  </div>
+                </paper-item-body>
+                <iron-icon icon="hass:chevron-right"></iron-icon>
+              </paper-item>
+            </a>
+          </paper-card>
 
           <ha-config-navigation hass="[[hass]]"></ha-config-navigation>
         </ha-config-section>
