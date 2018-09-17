@@ -43,6 +43,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   switch: 'toggle',
   vacuum: 'toggle'
 };
+const TIMEOUT = 2000;
 
 function _createElement(tag, config) {
   const element = document.createElement(tag);
@@ -62,7 +63,14 @@ function _createErrorElement(error, config) {
   return _createElement('hui-error-card', createErrorCardConfig(error, config));
 }
 
+function _hideErrorElement(element) {
+  element.style.display = 'None';
+  return window.setTimeout(() => { element.style.display = ''; }, TIMEOUT);
+}
+
 export default function createRowElement(config) {
+  let tag;
+
   if (!config || typeof config !== 'object' || (!config.entity && !config.type)) {
     return _createErrorElement('Invalid config given.', config);
   }
@@ -72,22 +80,25 @@ export default function createRowElement(config) {
     return _createElement(`hui-${type}-row`, config);
   }
 
-  const domain = config.entity.split('.', 1)[0];
-  const tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
-
   if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    const customTag = type.substr(CUSTOM_TYPE_PREFIX.length);
+    tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
-    if (customElements.get(customTag)) {
-      return _createElement(customTag, config);
+    if (customElements.get(tag)) {
+      return _createElement(tag, config);
     }
-    const element = _createElement(tag, config);
+    const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
+    const timer = _hideErrorElement(element);
 
-    customElements.whenDefined(customTag)
-      .then(() => fireEvent(element, 'rebuild-view'));
+    customElements.whenDefined(tag).then(() => {
+      clearTimeout(timer);
+      fireEvent(element, 'rebuild-view');
+    });
 
     return element;
   }
+
+  const domain = config.entity.split('.', 1)[0];
+  tag = `hui-${DOMAIN_TO_ELEMENT_TYPE[domain] || 'text'}-entity-row`;
 
   return _createElement(tag, config);
 }
