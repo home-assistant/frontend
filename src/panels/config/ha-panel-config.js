@@ -5,18 +5,19 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../layouts/hass-error-screen.js';
 
-import './automation/ha-config-automation.js';
-import './cloud/ha-config-cloud.js';
-import './config-entries/ha-config-entries.js';
-import './core/ha-config-core.js';
-import './customize/ha-config-customize.js';
-import './dashboard/ha-config-dashboard.js';
-import './script/ha-config-script.js';
-import './users/ha-config-users.js';
-import './zwave/ha-config-zwave.js';
-
 import isComponentLoaded from '../../common/config/is_component_loaded.js';
 import NavigateMixin from '../../mixins/navigate-mixin.js';
+
+import(/* webpackChunkName: "panel-config-automation" */ './automation/ha-config-automation.js');
+import(/* webpackChunkName: "panel-config-cloud" */ './cloud/ha-config-cloud.js');
+import(/* webpackChunkName: "panel-config-config" */ './config-entries/ha-config-entries.js');
+import(/* webpackChunkName: "panel-config-core" */ './core/ha-config-core.js');
+import(/* webpackChunkName: "panel-config-customize" */ './customize/ha-config-customize.js');
+import(/* webpackChunkName: "panel-config-dashboard" */ './dashboard/ha-config-dashboard.js');
+import(/* webpackChunkName: "panel-config-script" */ './script/ha-config-script.js');
+import(/* webpackChunkName: "panel-config-users" */ './users/ha-config-users.js');
+import(/* webpackChunkName: "panel-config-zwave" */ './zwave/ha-config-zwave.js');
+import(/* webpackChunkName: "panel-config-overview" */ './overview/ha-config-overview.js');
 
 /*
  * @appliesMixin NavigateMixin
@@ -112,6 +113,14 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
         route='[[route]]'
         hass='[[hass]]'
       ></ha-config-users>
+    </template>
+
+    <template is="dom-if" if='[[_equals(_routeData.page, "overview")]]' restamp>
+      <ha-config-overview
+        page-name='overview'
+        route='[[route]]'
+        hass='[[hass]]'
+      ></ha-config-overview>
     </template>
     `;
   }
