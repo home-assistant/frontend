@@ -41,6 +41,9 @@ class HaConfigManager extends
       display: flex;
       padding: 0 16px;
     }
+    ha-state-icon {
+      cursor: pointer;
+    }
   </style>
 
   <hass-subpage header="Integrations">
@@ -78,7 +81,7 @@ class HaConfigManager extends
               <div secondary>
                 <template is='dom-repeat' items='[[_computeConfigEntryEntities(hass, item, _entities)]]'>
                   <span>
-                    <ha-state-icon state-obj='[[item]]'></ha-state-icon>
+                    <ha-state-icon state-obj='[[item]]' on-click='_handleMoreInfo'></ha-state-icon>
                     <paper-tooltip position="bottom">[[_computeStateName(item)]]</paper-tooltip>
                   </span>
                 </template>
@@ -226,6 +229,10 @@ class HaConfigManager extends
 
   _computeStateName(stateObj) {
     return computeStateName(stateObj);
+  }
+
+  _handleMoreInfo(ev) {
+    this.fire('hass-more-info', { entityId: ev.model.item.entity_id });
   }
 }
 
