@@ -22,6 +22,7 @@ import '../../layouts/ha-app-layout.js';
 import '../../components/ha-start-voice-button.js';
 import '../../components/ha-icon.js';
 import { loadModule, loadCSS, loadJS } from '../../common/dom/load_resource.js';
+import { subscribeNotifications } from '../../data/ws-notifications';
 import './components/notifications/hui-notification-drawer.js';
 import './components/notifications/hui-notifications-button.js';
 import './hui-unused-entities.js';
@@ -29,6 +30,7 @@ import './hui-view.js';
 import debounce from '../../common/util/debounce.js';
 
 import createCardElement from './common/create-card-element.js';
+import computeNotifications from './common/compute-notifications';
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
@@ -76,6 +78,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
     <app-route route="[[route]]" pattern="/:view" data="{{routeData}}"></app-route>
     <hui-notification-drawer
       hass="[[hass]]"
+      notifications="[[_notifications]]"
       open="{{notificationsOpen}}"
       narrow="[[narrow]]"
     ></hui-notification-drawer>
@@ -87,6 +90,7 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
           <hui-notifications-button
             hass="[[hass]]"
             notifications-open="{{notificationsOpen}}"
+            notifications="[[_notifications]]"
           ></hui-notifications-button>
           <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
           <paper-menu-button
@@ -156,6 +160,16 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
         value: false,
       },
 
+      _persistentNotifications: {
+        type: Array,
+        value: []
+      },
+
+      _notifications: {
+        type: Array,
+        computed: '_updateNotifications(hass.states, _persistentNotifications)'
+      },
+
       routeData: Object,
     };
   }
@@ -163,6 +177,27 @@ class HUIRoot extends NavigateMixin(EventsMixin(PolymerElement)) {
   constructor() {
     super();
     this._debouncedConfigChanged = debounce(() => this._selectView(this._curView), 100);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._unsubNotifications = subscribeNotifications(this.hass.connection, (notifications) => {
+      this._persistentNotifications = notifications;
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (typeof this._unsubNotifications === 'function') {
+      this._unsubNotifications();
+    }
+  }
+
+  _updateNotifications(states, persistent) {
+    if (!states) return persistent;
+
+    const configurator = computeNotifications(states);
+    return persistent.concat(configurator);
   }
 
   _routeChanged(route) {
