@@ -19,13 +19,13 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(LocalizeMixin(P
     <hui-notification-item-template>
       <span slot="header">[[localize('domain.configurator')]]</span>
       
-      <div>[[_getMessage(stateObj)]]</div> 
+      <div>[[_getMessage(notification)]]</div> 
       
       <paper-button 
         slot="actions" 
         class="primary" 
         on-click="_handleClick"
-      >[[_localizeState(stateObj.state)]]</paper-button>
+      >[[_localizeState(notification.state)]]</paper-button>
     </hui-notification-item-template>
     `;
   }
@@ -33,20 +33,20 @@ export class HuiConfiguratorNotificationItem extends EventsMixin(LocalizeMixin(P
   static get properties() {
     return {
       hass: Object,
-      stateObj: Object
+      notification: Object
     };
   }
 
   _handleClick() {
-    this.fire('hass-more-info', { entityId: this.stateObj.entity_id });
+    this.fire('hass-more-info', { entityId: this.notification.entity_id });
   }
 
   _localizeState(state) {
     return this.localize(`state.configurator.${state}`);
   }
 
-  _getMessage(stateObj) {
-    const friendlyName = stateObj.attributes.friendly_name;
+  _getMessage(notification) {
+    const friendlyName = notification.attributes.friendly_name;
     return this.localize('ui.notification_drawer.click_to_configure', 'entity', friendlyName);
   }
 }
