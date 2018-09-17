@@ -13,11 +13,11 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
     return html`
       <style>
         :host(.clickable) {
-          cursor: pointer; 
-        } 
+          cursor: pointer;
+        }
         hui-image {
           overflow-y: hidden;
-        } 
+        }
       </style>
       <hui-image
         hass="[[hass]]"
@@ -28,6 +28,7 @@ class HuiImageElement extends ElementClickMixin(PolymerElement) {
         filter="[[_config.filter]]"
         state-filter="[[_config.state_filter]]"
         title$="[[computeTooltip(hass, _config)]]"
+        aspect-ratio="[[_config.aspect_ratio]]"
       ></hui-image>
     `;
   }
