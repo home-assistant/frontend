@@ -78,6 +78,7 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
           state-image="[[_config.state_image]]"
           camera-image="[[_config.camera_image]]"
           entity="[[_config.entity]]"
+          aspect-ratio="[[_config.aspect_ratio]]"
         ></hui-image>
         <div class="box">
           <template is="dom-if" if="[[_config.title]]">
