@@ -100,7 +100,7 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
 
   _loadData() {
     this.hass.callApi('get', 'config/config_entries/entry').then((entries) => {
-       this._entries = entries.sort((conf1, conf2) => compare(conf1.title, conf2.title))
+      this._entries = entries.sort((conf1, conf2) => compare(conf1.title, conf2.title));
     });
 
     this.hass.callApi('get', 'config/config_entries/flow')
@@ -114,13 +114,11 @@ class HaConfigEntries extends NavigateMixin(PolymerElement) {
 
     this.hass.callWS({ type: 'config/device_registry/list' })
       .then((devices) => { this._devices = devices; });
-
   }
 
   _computeConfigEntry(routeData, entries) {
     return !!entries && !!routeData && entries.find(ent => ent.entry_id === routeData.page);
   }
-
 }
 
 customElements.define('ha-config-entries', HaConfigEntries);

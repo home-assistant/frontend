@@ -4,7 +4,6 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 import '../../../layouts/hass-subpage.js';
 
-import computeStateName from '../../../common/entity/compute_state_name.js';
 import '../../../components/entity/state-badge.js';
 import compare from '../../../common/string/compare.js';
 
@@ -82,14 +81,13 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
   _computeConfigEntryDevices(configEntry, devices) {
     if (!devices) return [];
     return devices.filter(device =>
-      device.config_entries.includes(configEntry.entry_id)
-    ).sort((dev1, dev2) =>
+      device.config_entries.includes(configEntry.entry_id)).sort((dev1, dev2) =>
       // Put hub devices first, then sort by name
       (!!dev1.hub_device_id - !!dev2.hub_device_id) ||
       compare(dev1.name, dev2.name));
   }
 
-  _removeEntry(ev) {
+  _removeEntry() {
     if (!confirm('Are you sure you want to delete this integration?')) return;
 
     const entryId = this.configEntry.entry_id;
