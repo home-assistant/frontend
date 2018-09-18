@@ -1,3 +1,5 @@
+import '@polymer/paper-item/paper-icon-item.js';
+import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/paper-card/paper-card.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
@@ -18,12 +20,13 @@ function computeEntityName(hass, entity) {
 /*
  * @appliesMixin EventsMixin
  */
-class HaDeviceRow extends EventsMixin(PolymerElement) {
+class HaDeviceCard extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style>
-      :host {
+      paper-card {
         display: block;
+        padding-bottom: 8px;
       }
       .device-row {
         display: flex;
@@ -40,58 +43,46 @@ class HaDeviceRow extends EventsMixin(PolymerElement) {
       .device .manuf {
         color: var(--secondary-text-color);
       }
-      .entity-rows {
-        padding-top: 12px;
-        margin-left: 8px;
+      .hub-info {
+        margin-top: 8px;
       }
-      .entity-row {
-        margin: 8px 0;
-        display: flex;
-        flex-direction: row;
-      }
-      state-badge {
-        margin-right: 8px;
+      paper-icon-item {
         cursor: pointer;
       }
-      .entity-row .entity-id {
+      .manuf,
+      .entity-id {
         color: var(--secondary-text-color);
       }
-      ha-overview-device-row {
-        margin-left: 16px;
-      }
     </style>
-    <div>
-      <div class='device-row'>
-      <div class='device'>
-        <div class='name'>[[device.name]]</div>
-        <div class='model'>[[device.model]]</div>
-        <div class='manuf'>by [[device.manufacturer]]</div>
-      </div>
-
-      <div class='entity-rows'>
-        <template is='dom-repeat' items='[[_computeDeviceEntities(hass, device, entities)]]' as='entity'>
-          <div class='entity-row'>
-            <state-badge
-              state-obj="[[_computeStateObj(entity, hass)]]"
-              on-click='_openMoreInfo'
-            ></state-badge>
-            <div>
-              <div class='name'>[[_computeEntityName(entity, hass)]]</div>
-              <div class='entity-id'>[[entity.entity_id]]</div>
-            </div>
-          </div class='entity-row'>
+    <paper-card heading='[[device.name]]'>
+      <div class='card-content'>
+      <!-- <h1>[[configEntry.title]] ([[_computeIntegrationTitle(localize, configEntry.domain)]])</h1> -->
+        <div class='info'>
+          <div class='model'>[[device.model]]</div>
+          <div class='manuf'>by [[device.manufacturer]]</div>
+        </div>
+        <template is='dom-if' if='[[device.hub_device_id]]'>
+          <div class='hub-info'>
+            Connected via
+            <span class='hub'>[[_computeDeviceName(devices, device.hub_device_id)]]</span>
+          </div>
         </template>
       </div>
-      </div>
-      <template is='dom-repeat' items='[[_childDevices]]' as='device'>
-        <ha-overview-device-row
-          hass='[[hass]]'
-          devices='[[devices]]'
-          device='[[device]]'
-          entities='[[entities]]'
-        ></ha-overview-device-row>
+
+      <template is='dom-repeat' items='[[_computeDeviceEntities(hass, device, entities)]]' as='entity'>
+        <paper-icon-item on-click='_openMoreInfo'>
+          <state-badge
+            state-obj="[[_computeStateObj(entity, hass)]]"
+            slot='item-icon'
+          ></state-badge>
+          <paper-item-body>
+            <div class='name'>[[_computeEntityName(entity, hass)]]</div>
+            <div class='secondary entity-id'>[[entity.entity_id]]</div>
+          </paper-item-body>
+        </paper-icon-item>
       </template>
-    </div>
+    </paper-card>
+
     `;
   }
 
@@ -141,4 +132,4 @@ class HaDeviceRow extends EventsMixin(PolymerElement) {
   }
 }
 
-customElements.define('ha-overview-device-row', HaDeviceRow);
+customElements.define('ha-device-card', HaDeviceCard);
