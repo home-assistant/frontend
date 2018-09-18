@@ -17,7 +17,11 @@ import '../../resources/ha-style.js';
 import formatDateTime from '../../common/datetime/format_date_time.js';
 import formatTime from '../../common/datetime/format_time.js';
 
-class HaPanelDevInfo extends PolymerElement {
+import EventsMixin from '../../mixins/events-mixin.js';
+
+let registeredDialog = false;
+
+class HaPanelDevInfo extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
     <style include="iron-positioning ha-style">
@@ -126,6 +130,7 @@ class HaPanelDevInfo extends PolymerElement {
           </p>
           <p>
             Path to configuration.yaml: [[hass.config.config_dir]]
+            <br><a href="#" on-click="_showComponents">[[loadedComponents.length]] Loaded Components</a>
           </p>
           <p class='develop'>
             <a href='https://www.home-assistant.io/developers/credits/' target='_blank'>
@@ -263,6 +268,11 @@ class HaPanelDevInfo extends PolymerElement {
         type: Array,
         value: window.CUSTOM_UI_LIST || [],
       },
+
+      loadedComponents: {
+        type: Array,
+        value: [],
+      }
     };
   }
 
@@ -291,6 +301,17 @@ class HaPanelDevInfo extends PolymerElement {
     super.connectedCallback();
     this.$.scrollable.dialogElement = this.$.showlog;
     this._fetchData();
+    this.loadedComponents = this.hass.config.components;
+
+    if (!registeredDialog) {
+      registeredDialog = true;
+      this.fire('register-dialog', {
+        dialogShowEvent: 'show-loaded-components',
+        dialogTag: 'ha-loaded-components',
+        dialogImport: () => import('./ha-loaded-components.js'),
+      });
+    }
+
     if (!window.CUSTOM_UI_LIST) {
       // Give custom UI an opportunity to load.
       setTimeout(() => {
@@ -350,6 +371,12 @@ class HaPanelDevInfo extends PolymerElement {
       localStorage.defaultPage = 'lovelace';
     }
     this.$.love.innerText = this._defaultPageText();
+  }
+
+  _showComponents() {
+    this.fire('show-loaded-components', {
+      hass: this.hass
+    });
   }
 }
 
