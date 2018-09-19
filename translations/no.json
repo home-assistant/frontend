@@ -545,6 +545,32 @@
                     "error_no_theme": "Ingen temaer er tilgjengelig.",
                     "link_promo": "Lær om temaer",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Oppdater Tokens",
+                    "description": "Hver oppdateringstoken representerer en innloggingsøkt. Oppdateringstoken blir automatisk fjernet når du klikker på logg ut. Følgende oppdateringstoken er for tiden aktiv for kontoen din.",
+                    "token_title": "Oppdateringstoken for {clientId}",
+                    "created_at": "Opprettet den {date}",
+                    "confirm_delete": "Er du sikker på at du vil slette oppdateringstoken for {name}?",
+                    "delete_failed": "Kunne ikke slette oppdateringstoken.",
+                    "last_used": "Sist brukt den {date} fra {location}",
+                    "not_used": "Har aldri blitt brukt",
+                    "current_token_tooltip": "Kan ikke slette gjeldende oppdateringstoken"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Varige tilgangstokener",
+                    "description": "Opprett langvarige tilgangstokener slik at skriptene dine kan samhandle med din Home Assistant instans. Hver token vil være gyldig i 10 år fra opprettelsen. Følgende langvarige tilgangstokener er for tiden aktive.",
+                    "learn_auth_requests": "Lær hvordan du lager godkjente forespørsler.",
+                    "created_at": "Opprettet den {date}",
+                    "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
+                    "delete_failed": "Kan ikke slette tilgangstokenet.",
+                    "create": "Opprett Token",
+                    "create_failed": "Kunne ikke opprette tilgangstoken.",
+                    "prompt_name": "Navn?",
+                    "prompt_copy_token": "Kopier tilgangstoken. Det blir ikke vist igjen.",
+                    "empty_state": "Du har ingen langvarige tilgangstokener ennå.",
+                    "last_used": "Sist brukt den {date} fra {location}",
+                    "not_used": "Har aldri blitt brukt"
                 }
             },
             "page-authorize": {

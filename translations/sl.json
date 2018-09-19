@@ -545,6 +545,32 @@
                     "error_no_theme": "Teme niso na voljo.",
                     "link_promo": "Preberite več o temah",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Osvežilni žetoni",
+                    "description": "Vsak osvežilni žeton predstavlja sejo za prijavo. Osvežilni žetoni se samodejno odstranijo, ko kliknete odjava. Za vaš račun so trenutno aktivni naslednji žetoni za osveževanje.",
+                    "token_title": "Žeton za osveževanje za {clientId}",
+                    "created_at": "Ustvarjen na {date}",
+                    "confirm_delete": "Ali ste prepričani, da želite izbrisati žeton za osveževanje za {name} ?",
+                    "delete_failed": "Žetonov za osveževanje ni bilo mogoče izbrisati.",
+                    "last_used": "Nazadnje uporabljen {date} iz {location}",
+                    "not_used": "Nikoli ni bil uporabljen",
+                    "current_token_tooltip": "Trenutni  žeton ni mogoče izbrisati"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Dolgotrajni dostopni žetoni",
+                    "description": "Ustvarite dolgožive žetone dostopa, s katerimi lahko skripte komunicirajo z vašim primerkom Home Assistenta. Vsak žeton bo veljaven 10 let od nastanka. Trenutno so aktivni naslednji dolgotrajni dostopni žetoni.",
+                    "learn_auth_requests": "Naučite se, kako naredite preverjene zahteve.",
+                    "created_at": "Ustvarjen na {date}",
+                    "confirm_delete": "Ali ste prepričani, da želite izbrisati žeton za dostop za {name} ?",
+                    "delete_failed": "Ni bilo mogoče ustvariti žetona za dostop.",
+                    "create": "Ustvari žeton",
+                    "create_failed": "Ni bilo mogoče ustvariti žetona za dostop.",
+                    "prompt_name": "Ime?",
+                    "prompt_copy_token": "Kopirate žeton za dostop. Ta ne bo prikazan znova.",
+                    "empty_state": "Nimate dostopnih žetonov z daljšim rokom trajanja.",
+                    "last_used": "Nazadnje uporabljen {date} iz {location}",
+                    "not_used": "Nikoli ni bil uporabljen"
                 }
             },
             "page-authorize": {
