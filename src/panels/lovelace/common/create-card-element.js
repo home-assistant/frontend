@@ -61,11 +61,6 @@ function _createErrorElement(error, config) {
   return _createElement('hui-error-card', createErrorCardConfig(error, config));
 }
 
-function _hideErrorElement(element) {
-  element.style.display = 'None';
-  return window.setTimeout(() => { element.style.display = ''; }, TIMEOUT);
-}
-
 export default function createCardElement(config) {
   if (!config || typeof config !== 'object' || !config.type) {
     return _createErrorElement('No card type configured.', config);
@@ -78,7 +73,8 @@ export default function createCardElement(config) {
       return _createElement(tag, config);
     }
     const element = _createErrorElement(`Custom element doesn't exist: ${tag}.`, config);
-    const timer = _hideErrorElement(element);
+    element.style.display = 'None';
+    const timer = window.setTimeout(() => { element.style.display = ''; }, TIMEOUT);
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);

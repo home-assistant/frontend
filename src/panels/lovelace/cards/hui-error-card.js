@@ -7,9 +7,10 @@ class HuiErrorCard extends PolymerElement {
       <style>
         :host {
           display: block;
-          background-color: red;
+          background-color: #ef5350;
           color: white;
           padding: 8px;
+          font-weight: 500;
         }
       </style>
       [[_config.error]]
