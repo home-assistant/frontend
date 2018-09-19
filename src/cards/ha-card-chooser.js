@@ -58,8 +58,7 @@ class HaCardChooser extends PolymerElement {
     if (!newData) return;
     // ha-entities-card is exempt from observer as it doesn't load heavy resources.
     // and usually doesn't load external resources (except for entity_picture).
-    const eligibleToObserver =
-      (window.IntersectionObserver && newData.cardType !== 'entities');
+    const eligibleToObserver = (window.IntersectionObserver && newData.cardType !== 'entities');
     if (!eligibleToObserver) {
       if (this.observer) {
         this.observer.unobserve(this);

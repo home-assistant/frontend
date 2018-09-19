@@ -145,8 +145,8 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
   _showHardware() {
     this.hass.callApi('get', 'hassio/hardware/info')
       .then(
-        resp => this._objectToMarkdown(resp.data)
-        , () => 'Error getting hardware info'
+        resp => this._objectToMarkdown(resp.data),
+        () => 'Error getting hardware info'
       ).then((content) => {
         this.fire('hassio-markdown-dialog', {
           title: 'Hardware',

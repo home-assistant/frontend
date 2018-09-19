@@ -17,8 +17,9 @@ export default function splitByGroups(entities) {
     }
   });
 
-  groups.forEach(group =>
-    group.attributes.entity_id.forEach((entityId) => { delete ungrouped[entityId]; }));
+  groups.forEach(group => group.attributes.entity_id.forEach((entityId) => {
+    delete ungrouped[entityId];
+  }));
 
   return { groups, ungrouped };
 }

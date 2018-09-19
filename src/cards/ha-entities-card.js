@@ -134,8 +134,8 @@ class HaEntitiesCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   showGroupToggle(groupEntity, states) {
-    if (!groupEntity || !states || groupEntity.attributes.control === 'hidden' ||
-        (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
+    if (!groupEntity || !states || groupEntity.attributes.control === 'hidden'
+        || (groupEntity.state !== 'on' && groupEntity.state !== 'off')) {
       return false;
     }
 

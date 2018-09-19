@@ -19,7 +19,7 @@ const domainIcons = {
 export default function stateIcon(state) {
   if (!state) {
     return DEFAULT_DOMAIN_ICON;
-  } else if (state.attributes.icon) {
+  } if (state.attributes.icon) {
     return state.attributes.icon;
   }
 

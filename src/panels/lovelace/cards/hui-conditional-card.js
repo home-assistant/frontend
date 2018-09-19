@@ -32,8 +32,8 @@ class HuiConditionalCard extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config || !config.card || !Array.isArray(config.conditions) ||
-        !config.conditions.every(c => c.entity && (c.state || c.state_not))) {
+    if (!config || !config.card || !Array.isArray(config.conditions)
+        || !config.conditions.every(c => c.entity && (c.state || c.state_not))) {
       throw new Error('Error in card configuration.');
     }
 

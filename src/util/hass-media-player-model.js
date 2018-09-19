@@ -44,17 +44,17 @@ export default class MediaPlayerEntity {
 
   get showProgress() {
     return (
-      (this.isPlaying || this.isPaused) &&
-      'media_duration' in this.stateObj.attributes &&
-      'media_position' in this.stateObj.attributes &&
-      'media_position_updated_at' in this.stateObj.attributes);
+      (this.isPlaying || this.isPaused)
+      && 'media_duration' in this.stateObj.attributes
+      && 'media_position' in this.stateObj.attributes
+      && 'media_position_updated_at' in this.stateObj.attributes);
   }
 
   get currentProgress() {
     var progress = this._attr.media_position;
     if (this.isPlaying) {
-      progress += (Date.now() -
-                  new Date(this._attr.media_position_updated_at).getTime()) / 1000.0;
+      progress += (Date.now()
+                  - new Date(this._attr.media_position_updated_at).getTime()) / 1000.0;
     }
     return progress;
   }
@@ -118,7 +118,7 @@ export default class MediaPlayerEntity {
   get secondaryTitle() {
     if (this.isMusic) {
       return this._attr.media_artist;
-    } else if (this.isTVShow) {
+    } if (this.isTVShow) {
       var text = this._attr.media_series_title;
 
       if (this._attr.media_season) {
@@ -130,7 +130,7 @@ export default class MediaPlayerEntity {
       }
 
       return text;
-    } else if (this._attr.app_name) {
+    } if (this._attr.app_name) {
       return this._attr.app_name;
     }
     return '';

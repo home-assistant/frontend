@@ -38,25 +38,31 @@ class HaCoverControls extends PolymerElement {
       },
     };
   }
+
   computeEntityObj(hass, stateObj) {
     return new CoverEntity(hass, stateObj);
   }
+
   computeOpenDisabled(stateObj, entityObj) {
     var assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyOpen || entityObj.isOpening) && !assumedState;
   }
+
   computeClosedDisabled(stateObj, entityObj) {
     var assumedState = (stateObj.attributes.assumed_state === true);
     return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
   }
+
   onOpenTap(ev) {
     ev.stopPropagation();
     this.entityObj.openCover();
   }
+
   onCloseTap(ev) {
     ev.stopPropagation();
     this.entityObj.closeCover();
   }
+
   onStopTap(ev) {
     ev.stopPropagation();
     this.entityObj.stopCover();

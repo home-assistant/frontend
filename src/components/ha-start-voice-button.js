@@ -32,8 +32,8 @@ class HaStartVoiceButton extends EventsMixin(PolymerElement) {
   }
 
   computeCanListen(hass) {
-    return ('webkitSpeechRecognition' in window &&
-           isComponentLoaded(hass, 'conversation'));
+    return ('webkitSpeechRecognition' in window
+           && isComponentLoaded(hass, 'conversation'));
   }
 
   handleListenClick() {

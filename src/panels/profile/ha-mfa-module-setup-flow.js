@@ -156,12 +156,12 @@ class HaMfaModuleSetupFlow extends
     this._loading = true;
     this._opened = true;
 
-    const fetchStep = continueFlowId ?
-      this.hass.callWS({
+    const fetchStep = continueFlowId
+      ? this.hass.callWS({
         type: 'auth/setup_mfa',
         flow_id: continueFlowId,
-      }) :
-      this.hass.callWS({
+      })
+      : this.hass.callWS({
         type: 'auth/setup_mfa',
         mfa_module_id: mfaModuleId,
       });

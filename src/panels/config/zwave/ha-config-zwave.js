@@ -421,10 +421,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         if (ent.attributes.node_id === undefined) {
           return false;
         }
-        return (!ent.attributes.hidden &&
-                'node_id' in ent.attributes &&
-                ent.attributes.node_id === nodeid &&
-                (!(ent.entity_id).match('zwave[.]')));
+        return (!ent.attributes.hidden
+                && 'node_id' in ent.attributes
+                && ent.attributes.node_id === nodeid
+                && (!(ent.entity_id).match('zwave[.]')));
       })
       .sort(sortByName);
   }
@@ -488,9 +488,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeSelectCaption(stateObj) {
-    return computeStateName(stateObj) + ' (Node:' +
-      stateObj.attributes.node_id + ' ' +
-      stateObj.attributes.query_stage + ')';
+    return computeStateName(stateObj) + ' (Node:'
+      + stateObj.attributes.node_id + ' '
+      + stateObj.attributes.query_stage + ')';
   }
 
   computeSelectCaptionEnt(stateObj) {
@@ -534,6 +534,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   _nodeMoreInfo() {
     this.fire('hass-more-info', { entityId: this.nodes[this.selectedNode].entity_id });
   }
+
   _entityMoreInfo() {
     this.fire('hass-more-info', { entityId: this.entities[this.selectedEntity].entity_id });
   }

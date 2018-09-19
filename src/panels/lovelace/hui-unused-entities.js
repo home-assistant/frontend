@@ -37,8 +37,7 @@ class HuiUnusedEntities extends PolymerElement {
     const root = this.$.root;
     if (root.lastChild) root.removeChild(root.lastChild);
 
-    const entities = computeUnusedEntities(this.hass, config).map(entity =>
-      ({ entity, secondary_info: 'entity-id' }));
+    const entities = computeUnusedEntities(this.hass, config).map(entity => ({ entity, secondary_info: 'entity-id' }));
     const cardConfig = {
       type: 'entities',
       title: 'Unused entities',

@@ -123,9 +123,9 @@ class HuiPictureGlanceCard extends NavigateMixin(LocalizeMixin(EventsMixin(Polym
   }
 
   setConfig(config) {
-    if (!config || !config.entities || !Array.isArray(config.entities) ||
-      !(config.image || config.camera_image || config.state_image) ||
-      (config.state_image && !config.entity)) {
+    if (!config || !config.entities || !Array.isArray(config.entities)
+      || !(config.image || config.camera_image || config.state_image)
+      || (config.state_image && !config.entity)) {
       throw new Error('Invalid card configuration');
     }
     const entities = processConfigEntities(config.entities);

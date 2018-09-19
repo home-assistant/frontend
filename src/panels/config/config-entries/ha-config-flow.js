@@ -178,9 +178,9 @@ class HaConfigFlow extends
     this._loading = true;
     this._opened = true;
 
-    const fetchStep = continueFlowId ?
-      this.hass.callApi('get', `config/config_entries/flow/${continueFlowId}`) :
-      this.hass.callApi('post', 'config/config_entries/flow', { handler: newFlowForHandler });
+    const fetchStep = continueFlowId
+      ? this.hass.callApi('get', `config/config_entries/flow/${continueFlowId}`)
+      : this.hass.callApi('post', 'config/config_entries/flow', { handler: newFlowForHandler });
 
     const curInstance = this._instance;
 
@@ -300,9 +300,8 @@ class HaConfigFlow extends
 
   _computeCanSubmit(step, stepData) {
     // We can submit if all required fields are filled in
-    return step !== null && step.type === 'form' && stepData !== null &&
-      step.data_schema.every(field =>
-        field.optional || !['', undefined].includes(stepData[field.name]));
+    return step !== null && step.type === 'form' && stepData !== null
+      && step.data_schema.every(field => field.optional || !['', undefined].includes(stepData[field.name]));
   }
 
   _increaseCounter() {
