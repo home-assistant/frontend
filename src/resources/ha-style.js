@@ -44,8 +44,7 @@ documentContainer.innerHTML = `<custom-style>
       --sidebar-text-color: var(--primary-text-color);
       --sidebar-background-color: var(--paper-listbox-background-color); /* backward compatible with existing themes */
       --sidebar-icon-color: rgba(0, 0, 0, 0.5);
-      --sidebar-selected-text-color: var(--primary-text-color);
-      /* --sidebar-selected-background-color: rgba(30,30,30,0.1); */
+      --sidebar-selected-text-color: var(--primary-color);
       --sidebar-selected-icon-color: var(--primary-color);
 
       /* controls */
