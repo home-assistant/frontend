@@ -44,17 +44,15 @@ const PRIORITY = {
   mailbox: 7,
 };
 
-const getPriority = domain =>
-  ((domain in PRIORITY) ? PRIORITY[domain] : 100);
+const getPriority = domain => ((domain in PRIORITY) ? PRIORITY[domain] : 100);
 
-const sortPriority = (domainA, domainB) =>
-  domainA.priority - domainB.priority;
+const sortPriority = (domainA, domainB) => domainA.priority - domainB.priority;
 
 const entitySortBy = (entityA, entityB) => {
-  const nameA = (entityA.attributes.friendly_name ||
-               entityA.entity_id).toLowerCase();
-  const nameB = (entityB.attributes.friendly_name ||
-               entityB.entity_id).toLowerCase();
+  const nameA = (entityA.attributes.friendly_name
+               || entityA.entity_id).toLowerCase();
+  const nameB = (entityB.attributes.friendly_name
+               || entityB.entity_id).toLowerCase();
 
   if (nameA < nameB) {
     return -1;
@@ -187,7 +185,7 @@ class HaCards extends PolymerElement {
         this.$.main.parentNode.removeChild(this.$.main);
       }
       return;
-    } else if (!this.$.main.parentNode && this.$.main._parentNode) {
+    } if (!this.$.main.parentNode && this.$.main._parentNode) {
       this.$.main._parentNode.appendChild(this.$.main);
     }
     this._debouncer = Debouncer.debounce(
@@ -284,8 +282,8 @@ class HaCards extends PolymerElement {
 
     const splitted = splitByGroups(states);
     if (orderedGroupEntities) {
-      splitted.groups.sort((gr1, gr2) => orderedGroupEntities[gr1.entity_id] -
-        orderedGroupEntities[gr2.entity_id]);
+      splitted.groups.sort((gr1, gr2) => orderedGroupEntities[gr1.entity_id]
+        - orderedGroupEntities[gr2.entity_id]);
     } else {
       splitted.groups.sort((gr1, gr2) => gr1.attributes.order - gr2.attributes.order);
     }
@@ -332,8 +330,8 @@ class HaCards extends PolymerElement {
           cards.badges.push.apply(cards.badges, domain.states);
         });
 
-      cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id] -
-        orderedGroupEntities[e2.entity_id]);
+      cards.badges.sort((e1, e2) => orderedGroupEntities[e1.entity_id]
+        - orderedGroupEntities[e2.entity_id]);
     } else {
       iterateDomainSorted(badgesColl, (domain) => {
         cards.badges.push.apply(cards.badges, domain.states);

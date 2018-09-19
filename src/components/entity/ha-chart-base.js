@@ -219,12 +219,14 @@ class HaChartBase extends mixinBehaviors([
       this._resizeTimer = undefined;
     }
   }
+
   onPropsChange() {
     if (!this._isAttached || !this.ChartClass || !this.data) {
       return;
     }
     this.drawChart();
   }
+
   _customTooltips(tooltip) {
     // Hide if no tooltip
     if (tooltip.opacity === 0) {
@@ -285,18 +287,18 @@ class HaChartBase extends mixinBehaviors([
     this.set(['metas', index, 'hidden'], this._chart.isDatasetVisible(index) ? null : 'hidden');
     this._chart.update();
   }
+
   _drawLegend() {
     const chart = this._chart;
     // New data for old graph. Keep metadata.
-    const preserveVisibility =
-        this._oldIdentifier && this.identifier === this._oldIdentifier;
+    const preserveVisibility = this._oldIdentifier && this.identifier === this._oldIdentifier;
     this._oldIdentifier = this.identifier;
     this.set('metas', this._chart.data.datasets.map((x, i) => ({
       label: x.label,
       color: x.color,
       bgColor: x.backgroundColor,
-      hidden: preserveVisibility && i < this.metas.length ?
-        this.metas[i].hidden : !chart.isDatasetVisible(i),
+      hidden: preserveVisibility && i < this.metas.length
+        ? this.metas[i].hidden : !chart.isDatasetVisible(i),
     })));
     let updateNeeded = false;
     if (preserveVisibility) {
@@ -311,6 +313,7 @@ class HaChartBase extends mixinBehaviors([
     }
     this.unit = this.data.unit;
   }
+
   _formatTickValue(value, index, values) {
     if (values.length === 0) {
       return value;
@@ -318,6 +321,7 @@ class HaChartBase extends mixinBehaviors([
     const date = new Date(values[index].value);
     return formatTime(date);
   }
+
   drawChart() {
     const data = this.data.data;
     const ctx = this.$.chartCanvas;
@@ -493,6 +497,7 @@ class HaChartBase extends mixinBehaviors([
     }
     return result;
   }
+
   static getColorGenerator(staticColors, startIndex) {
     // Known colors for static data,
     // should add for very common state string manually.

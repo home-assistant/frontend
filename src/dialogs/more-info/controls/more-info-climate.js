@@ -267,8 +267,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // force polymer to recognize selected item change (to update actual label)
     this.operationIndex = -1;
     if (this.stateObj.attributes.operation_list) {
-      this.operationIndex =
-          this.stateObj.attributes.operation_list.indexOf(this.stateObj.attributes.operation_mode);
+      this.operationIndex = (
+        this.stateObj.attributes.operation_list.indexOf(this.stateObj.attributes.operation_mode)
+      );
     }
   }
 
@@ -276,8 +277,9 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // force polymer to recognize selected item change (to update actual label)
     this.swingIndex = -1;
     if (this.stateObj.attributes.swing_list) {
-      this.swingIndex =
-          this.stateObj.attributes.swing_list.indexOf(this.stateObj.attributes.swing_mode);
+      this.swingIndex = (
+        this.stateObj.attributes.swing_list.indexOf(this.stateObj.attributes.swing_mode)
+      );
     }
   }
 
@@ -285,23 +287,24 @@ class MoreInfoClimate extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // force polymer to recognize selected item change (to update actual label)
     this.fanIndex = -1;
     if (this.stateObj.attributes.fan_list) {
-      this.fanIndex =
-          this.stateObj.attributes.fan_list.indexOf(this.stateObj.attributes.fan_mode);
+      this.fanIndex = (
+        this.stateObj.attributes.fan_list.indexOf(this.stateObj.attributes.fan_mode)
+      );
     }
   }
 
   computeTemperatureStepSize(hass, stateObj) {
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
-    } else if (hass.config.unit_system.temperature.indexOf('F') !== -1) {
+    } if (hass.config.unit_system.temperature.indexOf('F') !== -1) {
       return 1;
     }
     return 0.5;
   }
 
   supportsTemperatureControls(stateObj) {
-    return this.supportsTemperature(stateObj) ||
-      this.supportsTemperatureRange(stateObj);
+    return this.supportsTemperature(stateObj)
+      || this.supportsTemperatureRange(stateObj);
   }
 
   supportsTemperature(stateObj) {

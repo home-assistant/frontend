@@ -42,6 +42,7 @@ class StateHistoryChartLine extends PolymerElement {
       }
     };
   }
+
   static get observers() {
     return ['dataChanged(data, endTime, isSingleDevice)'];
   }
@@ -85,9 +86,11 @@ class StateHistoryChartLine extends PolymerElement {
       return isFinite(parsed) ? parsed : null;
     }
 
-    endTime = this.endTime ||
-      new Date(Math.max.apply(null, deviceStates.map(states =>
-        new Date(states.states[states.states.length - 1].last_changed))));
+
+    endTime = this.endTime
+      // Get the highest date from the last date of each device
+      || new Date(Math.max.apply(null, deviceStates.map(devSts =>
+        new Date(devSts.states[devSts.states.length - 1].last_changed))));
     if (endTime > new Date()) {
       endTime = new Date();
     }
@@ -138,8 +141,8 @@ class StateHistoryChartLine extends PolymerElement {
         // range versus ones that have just a target temperature
 
         // Using step chart by step-before so manually interpolation not needed.
-        const hasTargetRange = states.states.some(state => state.attributes &&
-          state.attributes.target_temp_high !== state.attributes.target_temp_low);
+        const hasTargetRange = states.states.some(state => state.attributes
+          && state.attributes.target_temp_high !== state.attributes.target_temp_low);
         const hasHeat = states.states.some(state => state.state === 'heat');
         const hasCool = states.states.some(state => state.state === 'cool');
 
@@ -208,8 +211,8 @@ class StateHistoryChartLine extends PolymerElement {
             const dateTime = date.getTime();
             const lastNullDateTime = lastNullDate.getTime();
             const lastDateTime = lastDate.getTime();
-            const tmpValue = ((value - lastValue) *
-              ((lastNullDateTime - lastDateTime) / (dateTime - lastDateTime))) + lastValue;
+            const tmpValue = ((value - lastValue)
+              * ((lastNullDateTime - lastDateTime) / (dateTime - lastDateTime))) + lastValue;
             pushData(lastNullDate, [tmpValue]);
             pushData(new Date(lastNullDateTime + 1), [null]);
             pushData(date, [value]);

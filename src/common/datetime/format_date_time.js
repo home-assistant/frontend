@@ -10,8 +10,8 @@ function toLocaleStringSupportsOptions() {
   return false;
 }
 
-export default (toLocaleStringSupportsOptions() ?
-  function (dateObj, locales) {
+export default (toLocaleStringSupportsOptions()
+  ? function (dateObj, locales) {
     return dateObj.toLocaleString(locales, {
       year: 'numeric',
       month: 'long',

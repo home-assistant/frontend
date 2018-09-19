@@ -71,15 +71,15 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
   computeTarget(hass, stateObj) {
     if (!hass || !stateObj) return null;
     // We're using "!= null" on purpose so that we match both null and undefined.
-    if (stateObj.attributes.target_temp_low != null &&
-        stateObj.attributes.target_temp_high != null) {
+    if (stateObj.attributes.target_temp_low != null
+        && stateObj.attributes.target_temp_high != null) {
       return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${hass.config.unit_system.temperature}`;
-    } else if (stateObj.attributes.temperature != null) {
+    } if (stateObj.attributes.temperature != null) {
       return `${stateObj.attributes.temperature} ${hass.config.unit_system.temperature}`;
-    } else if (stateObj.attributes.target_humidity_low != null &&
-               stateObj.attributes.target_humidity_high != null) {
+    } if (stateObj.attributes.target_humidity_low != null
+               && stateObj.attributes.target_humidity_high != null) {
       return `${stateObj.attributes.target_humidity_low} - ${stateObj.attributes.target_humidity_high} %`;
-    } else if (stateObj.attributes.humidity != null) {
+    } if (stateObj.attributes.humidity != null) {
       return `${stateObj.attributes.humidity} %`;
     }
 

@@ -65,15 +65,15 @@ class HuiLockEntityRow extends LocalizeMixin(PolymerElement) {
   }
 
   _computeButtonTitle(state) {
-    return state === 'locked' ?
-      this.localize('ui.card.lock.unlock') : this.localize('ui.card.lock.lock');
+    return state === 'locked'
+      ? this.localize('ui.card.lock.unlock') : this.localize('ui.card.lock.lock');
   }
 
   _callService(ev) {
     ev.stopPropagation();
     const stateObj = this._stateObj;
-    this.hass.callService('lock', stateObj.state === 'locked' ?
-      'unlock' : 'lock', { entity_id: stateObj.entity_id });
+    this.hass.callService('lock', stateObj.state === 'locked'
+      ? 'unlock' : 'lock', { entity_id: stateObj.entity_id });
   }
 }
 customElements.define('hui-lock-entity-row', HuiLockEntityRow);

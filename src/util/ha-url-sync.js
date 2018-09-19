@@ -23,7 +23,7 @@ class HaUrlSync extends EventsMixin(PolymerElement) {
       if (DEBUG) console.log('ignore hasschange');
       this.ignoreNextHassChange = false;
       return;
-    } else if (!oldHass || oldHass.moreInfoEntityId === newHass.moreInfoEntityId) {
+    } if (!oldHass || oldHass.moreInfoEntityId === newHass.moreInfoEntityId) {
       return;
     }
 

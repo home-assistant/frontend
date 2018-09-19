@@ -227,9 +227,9 @@ class HaScriptEditor extends
   }
 
   backTapped() {
-    if (this.dirty &&
+    if (this.dirty
         // eslint-disable-next-line
-        !confirm('You have unsaved changes. Are you sure you want to leave?')) {
+        && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
       return;
     }
     history.back();
@@ -251,8 +251,8 @@ class HaScriptEditor extends
   }
 
   saveScript() {
-    var id = this.creatingNew ?
-      '' + Date.now() : computeObjectId(this.script.entity_id);
+    var id = this.creatingNew
+      ? '' + Date.now() : computeObjectId(this.script.entity_id);
     this.hass.callApi('post', 'config/script/config/' + id, this.config).then(() => {
       this.dirty = false;
 

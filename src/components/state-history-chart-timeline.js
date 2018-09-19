@@ -83,8 +83,8 @@ class StateHistoryChartTimeline extends PolymerElement {
     ));
 
     // end time is Math.max(startTime, last_event)
-    let endTime = this.endTime ||
-      new Date(stateHistory.reduce((maxTime, stateInfo) => Math.max(
+    let endTime = this.endTime
+      || new Date(stateHistory.reduce((maxTime, stateInfo) => Math.max(
         maxTime,
         new Date(stateInfo.data[stateInfo.data.length - 1].last_changed)
       ), startTime));

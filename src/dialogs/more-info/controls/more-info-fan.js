@@ -103,8 +103,8 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (newVal) {
       this.setProperties({
         oscillationToggleChecked: newVal.attributes.oscillating,
-        speedIndex: newVal.attributes.speed_list ?
-          newVal.attributes.speed_list.indexOf(newVal.attributes.speed) : -1,
+        speedIndex: newVal.attributes.speed_list
+          ? newVal.attributes.speed_list.indexOf(newVal.attributes.speed) : -1,
       });
     }
 

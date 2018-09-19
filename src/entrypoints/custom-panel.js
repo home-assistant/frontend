@@ -4,9 +4,9 @@ import createCustomPanelElement from '../util/custom-panel/create-custom-panel-e
 import setCustomPanelProperties from '../util/custom-panel/set-custom-panel-properties.js';
 
 const webComponentsSupported = (
-  'customElements' in window &&
-  'import' in document.createElement('link') &&
-  'content' in document.createElement('template'));
+  'customElements' in window
+  && 'import' in document.createElement('link')
+  && 'content' in document.createElement('template'));
 
 let es5Loaded = null;
 

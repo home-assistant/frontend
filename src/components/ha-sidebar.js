@@ -6,7 +6,7 @@ import '@polymer/paper-item/paper-item.js';
 import '@polymer/paper-listbox/paper-listbox.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import '../components/ha-icon.js';
+import './ha-icon.js';
 
 import '../util/hass-translation.js';
 import LocalizeMixin from '../mixins/localize-mixin.js';
@@ -283,9 +283,9 @@ class HaSidebar extends LocalizeMixin(PolymerElement) {
 
       if (aBuiltIn && bBuiltIn) {
         return sortValue[a.component_name] - sortValue[b.component_name];
-      } else if (aBuiltIn) {
+      } if (aBuiltIn) {
         return -1;
-      } else if (bBuiltIn) {
+      } if (bBuiltIn) {
         return 1;
       }
       // both not built in, sort by title

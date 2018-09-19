@@ -80,11 +80,10 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
 
   _computeConfigEntryDevices(configEntry, devices) {
     if (!devices) return [];
-    return devices.filter(device =>
-      device.config_entries.includes(configEntry.entry_id)).sort((dev1, dev2) =>
-      // Put hub devices first, then sort by name
-      (!!dev1.hub_device_id - !!dev2.hub_device_id) ||
-      compare(dev1.name, dev2.name));
+    return devices
+      .filter(device => device.config_entries.includes(configEntry.entry_id))
+      .sort((dev1, dev2) => (!!dev1.hub_device_id - !!dev2.hub_device_id)
+            || compare(dev1.name, dev2.name));
   }
 
   _removeEntry() {
@@ -104,4 +103,3 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
 }
 
 customElements.define('ha-config-entry-page', HaConfigEntryPage);
-

@@ -231,9 +231,9 @@ class HaAutomationEditor extends
   }
 
   backTapped() {
-    if (this.dirty &&
+    if (this.dirty
         // eslint-disable-next-line
-        !confirm(this.localize('ui.panel.config.automation.editor.unsaved_confirm'))) {
+        && !confirm(this.localize('ui.panel.config.automation.editor.unsaved_confirm'))) {
       return;
     }
     history.back();

@@ -71,8 +71,8 @@ export default function domainIcon(domain, state) {
       return state && state === 'unlocked' ? 'hass:lock-open' : 'hass:lock';
 
     case 'media_player':
-      return state && state !== 'off' && state !== 'idle' ?
-        'hass:cast-connected' : 'hass:cast';
+      return state && state !== 'off' && state !== 'idle'
+        ? 'hass:cast-connected' : 'hass:cast';
 
     case 'zwave':
       switch (state) {
