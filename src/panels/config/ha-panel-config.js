@@ -150,18 +150,15 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
       this._updateCloudStatus();
     }
     this.addEventListener(
-      'ha-refresh-cloud-status', () => this._updateCloudStatus())
+      'ha-refresh-cloud-status', () => this._updateCloudStatus()
+    );
   }
 
   async _updateCloudStatus() {
-    let first = true;
-    while (!this._cloudStatus || this._cloudStatus.cloud == 'connecting') {
-      if (first) {
-        first = false;
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 5000));
-      }
-      this._cloudStatus = await this.hass.callWS({type: 'cloud/status'});
+    this._cloudStatus = await this.hass.callWS({ type: 'cloud/status' });
+
+    if (this._cloudStatus.cloud === 'connecting') {
+      setTimeout(() => this._updateCloudStatus(), 5000);
     }
   }
 

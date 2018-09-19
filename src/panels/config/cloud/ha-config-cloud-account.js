@@ -169,7 +169,7 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
   }
 
   async _fetchSubscriptionInfo() {
-    this._subscription = await this.hass.callWS({type: 'cloud/subscription'})
+    this._subscription = await this.hass.callWS({ type: 'cloud/subscription' });
   }
 
   handleLogout() {
@@ -181,22 +181,23 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
     if (subInfo === null) {
       return 'Fetching subscription…';
     }
+    /* eslint-disable camelcase */
     const { subscription, source, customer_exists } = subInfo;
 
     // Check if we're before Oct 17.
     const beforeOct17 = Date.now() < 1539734400000;
 
     if (!customer_exists) {
-      return `Legacy user. Subscription expire${beforeOct17 ? 's':'d'} Oct 17, 2018.`
+      return `Legacy user. Subscription expire${beforeOct17 ? 's' : 'd'} Oct 17, 2018.`;
     }
-    if (!subscription || subscription.status == 'canceled') {
+    if (!subscription || subscription.status === 'canceled') {
       return 'No subscription';
     }
 
-    const periodExpires = formatDateTime(new Date(subscription.current_period_end * 1000))
+    const periodExpires = formatDateTime(new Date(subscription.current_period_end * 1000));
 
     if (subscription.status === 'trialing' && !source) {
-      return `Trial user. Trial expires ${periodExpires}.`
+      return `Trial user. Trial expires ${periodExpires}.`;
     }
 
     if (subscription.status === 'trialing') {
@@ -211,7 +212,7 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
       return `Active user. You will be charged on ${periodExpires}.`;
     }
 
-    return `Unable to determine subscription status.`;
+    return 'Unable to determine subscription status.';
   }
 }
 

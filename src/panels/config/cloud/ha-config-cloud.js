@@ -92,7 +92,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
   static get observers() {
     return [
-      '_checkRoute(route, account)'
+      '_checkRoute(route, cloudStatus)'
     ];
   }
 
