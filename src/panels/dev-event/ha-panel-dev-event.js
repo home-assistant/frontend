@@ -124,8 +124,8 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
   }
 
   computeFormClasses(narrow) {
-    return narrow ?
-      'content fit' : 'content fit layout horizontal';
+    return narrow
+      ? 'content fit' : 'content fit layout horizontal';
   }
 }
 

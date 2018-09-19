@@ -7,9 +7,9 @@ export default function secondsToDuration(d) {
 
   if (h > 0) {
     return `${h}:${leftPad(m)}:${leftPad(s)}`;
-  } else if (m > 0) {
+  } if (m > 0) {
     return `${m}:${leftPad(s)}`;
-  } else if (s > 0) {
+  } if (s > 0) {
     return '' + s;
   }
   return null;

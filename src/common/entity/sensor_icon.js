@@ -13,7 +13,7 @@ export default function sensorIcon(state) {
 
   if (dclass in fixedDeviceClassIcons) {
     return fixedDeviceClassIcons[dclass];
-  } else if (dclass === 'battery') {
+  } if (dclass === 'battery') {
     if (isNaN(state.state)) {
       return 'hass:battery-unknown';
     }

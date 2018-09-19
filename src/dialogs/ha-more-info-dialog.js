@@ -145,8 +145,8 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
       this.opened = true;
     }));
 
-    if (!isComponentLoaded(this.hass, 'config.entity_registry') ||
-        (oldVal && oldVal.entity_id === newVal.entity_id)) {
+    if (!isComponentLoaded(this.hass, 'config.entity_registry')
+        || (oldVal && oldVal.entity_id === newVal.entity_id)) {
       return;
     }
 

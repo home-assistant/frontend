@@ -60,8 +60,8 @@ class HuiCallServiceRow extends PolymerElement {
   }
 
   setConfig(config) {
-    if (!config || !config.icon || !config.name || !config.action_name ||
-        !config.service || !config.service_data) {
+    if (!config || !config.icon || !config.name || !config.action_name
+        || !config.service || !config.service_data) {
       throw new Error('Error in card configuration.');
     }
     this._config = config;

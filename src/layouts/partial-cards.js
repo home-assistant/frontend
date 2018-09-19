@@ -284,8 +284,8 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
   }
 
   isView(currentView, defaultView) {
-    return (currentView || defaultView) &&
-      this.hass.states[currentView || DEFAULT_VIEW_ENTITY_ID];
+    return (currentView || defaultView)
+      && this.hass.states[currentView || DEFAULT_VIEW_ENTITY_ID];
   }
 
   _defaultViewFilter(hass, entityId) {

@@ -43,11 +43,11 @@ class HassioAddonStore extends PolymerElement {
   sortRepos(a, b) {
     if (a.slug === 'local') {
       return -1;
-    } else if (b.slug === 'local') {
+    } if (b.slug === 'local') {
       return 1;
-    } else if (a.slug === 'core') {
+    } if (a.slug === 'core') {
       return -1;
-    } else if (b.slug === 'core') {
+    } if (b.slug === 'core') {
       return 1;
     }
     return a.name < b.name ? -1 : 1;

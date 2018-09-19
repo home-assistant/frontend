@@ -60,8 +60,8 @@ class HaPersistentNotificationCard extends LocalizeMixin(PolymerElement) {
   }
 
   computeTitle(stateObj) {
-    return (stateObj.attributes.title ||
-            computeStateName(stateObj));
+    return (stateObj.attributes.title
+            || computeStateName(stateObj));
   }
 
   dismissTap(ev) {

@@ -63,9 +63,9 @@ class MoreInfoCamera extends EventsMixin(PolymerElement) {
   computeCameraImageUrl(hass, stateObj, isVisible) {
     if (hass.demo) {
       return '/demo/webcam.jpg';
-    } else if (stateObj && isVisible) {
-      return '/api/camera_proxy_stream/' + stateObj.entity_id +
-             '?token=' + stateObj.attributes.access_token;
+    } if (stateObj && isVisible) {
+      return '/api/camera_proxy_stream/' + stateObj.entity_id
+             + '?token=' + stateObj.attributes.access_token;
     }
     // Return an empty image if no stateObj (= dialog not open) or in cleanup mode.
     return emptyImageBase64;

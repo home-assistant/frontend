@@ -54,7 +54,7 @@ function createConfig(isProdBuild, latestBuild) {
 
   return {
     mode: isProdBuild ? 'production' : 'development',
-    devtool: isProdBuild ? 'source-map ' : 'inline-source-map',
+    devtool: isProdBuild ? 'cheap-source-map ' : 'inline-cheap-module-source-map',
     entry,
     module: {
       rules: [

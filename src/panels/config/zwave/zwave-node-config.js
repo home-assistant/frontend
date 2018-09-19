@@ -206,8 +206,8 @@ class ZwaveNodeConfig extends PolymerElement {
   _nodesChanged() {
     if (!this.nodes) return;
     this.setProperties({ _selectedConfigParameter: -1 });
-    this._wakeupNode = (this.nodes[this.selectedNode].attributes.wake_up_interval === 0 ||
-      this.nodes[this.selectedNode].attributes.wake_up_interval);
+    this._wakeupNode = (this.nodes[this.selectedNode].attributes.wake_up_interval === 0
+      || this.nodes[this.selectedNode].attributes.wake_up_interval);
     if (this._wakeupNode) {
       if (this.nodes[this.selectedNode].attributes.wake_up_interval === 0) this.setProperties({ _wakeupInput: '' });
       else {
@@ -218,8 +218,8 @@ class ZwaveNodeConfig extends PolymerElement {
   }
 
   _computeGetWakeupValue(selectedNode) {
-    if (this.selectedNode === -1 ||
-      !this.nodes[selectedNode].attributes.wake_up_interval) return 'unknown';
+    if (this.selectedNode === -1
+      || !this.nodes[selectedNode].attributes.wake_up_interval) return 'unknown';
     return (this.nodes[selectedNode].attributes.wake_up_interval);
   }
 

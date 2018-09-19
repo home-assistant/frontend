@@ -113,7 +113,7 @@ class HaPlantCard extends EventsMixin(PolymerElement) {
     if (attr === 'battery') {
       if (batLvl <= 5) {
         return `${icon}-alert`;
-      } else if (batLvl < 95) {
+      } if (batLvl < 95) {
         return `${icon}-${Math.round((batLvl / 10) - 0.01) * 10}`;
       }
     }

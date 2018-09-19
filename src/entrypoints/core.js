@@ -15,10 +15,10 @@ import { subscribeUser } from '../data/ws-user.js';
 const hassUrl = `${location.protocol}//${location.host}`;
 const isExternal = location.search.includes('external_auth=1');
 
-const authProm = isExternal ?
-  () => import('../common/auth/external_auth.js')
-    .then(mod => new mod.default(hassUrl)) :
-  () => getAuth({
+const authProm = isExternal
+  ? () => import('../common/auth/external_auth.js')
+    .then(mod => new mod.default(hassUrl))
+  : () => getAuth({
     hassUrl,
     saveTokens,
     loadTokens: () => Promise.resolve(loadTokens()),

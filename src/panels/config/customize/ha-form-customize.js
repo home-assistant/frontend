@@ -195,17 +195,16 @@ class HaFormCustomize extends PolymerElement {
   }
 
   getNewAttributesOptions(localAttributes, globalAttributes, existingAttributes, newAttributes) {
-    const knownKeys =
-        Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES)
-          .filter((key) => {
-            const conf = hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
-            return conf && (!conf.domains || !this.entity ||
-                              conf.domains.includes(computeStateDomain(this.entity)));
-          })
-          .filter(this.filterFromAttributes(localAttributes))
-          .filter(this.filterFromAttributes(globalAttributes))
-          .filter(this.filterFromAttributes(existingAttributes))
-          .filter(this.filterFromAttributes(newAttributes));
+    const knownKeys = Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES)
+      .filter((key) => {
+        const conf = hassAttributeUtil.LOGIC_STATE_ATTRIBUTES[key];
+        return conf && (!conf.domains || !this.entity
+                              || conf.domains.includes(computeStateDomain(this.entity)));
+      })
+      .filter(this.filterFromAttributes(localAttributes))
+      .filter(this.filterFromAttributes(globalAttributes))
+      .filter(this.filterFromAttributes(existingAttributes))
+      .filter(this.filterFromAttributes(newAttributes));
     return knownKeys.sort().concat('Other');
   }
 
@@ -249,14 +248,14 @@ class HaFormCustomize extends PolymerElement {
   }
 
   attributesObserver() {
-    this.hasLocalAttributes =
-        this.localAttributes && this.localAttributes.some(attr => !attr.closed);
-    this.hasGlobalAttributes =
-        this.globalAttributes && this.globalAttributes.some(attr => !attr.closed);
-    this.hasExistingAttributes =
-        this.existingAttributes && this.existingAttributes.some(attr => !attr.closed);
-    this.hasNewAttributes =
-        this.newAttributes && this.newAttributes.some(attr => !attr.closed);
+    this.hasLocalAttributes = (this.localAttributes
+                               && this.localAttributes.some(attr => !attr.closed));
+    this.hasGlobalAttributes = (this.globalAttributes
+                                && this.globalAttributes.some(attr => !attr.closed));
+    this.hasExistingAttributes = (this.existingAttributes
+                                  && this.existingAttributes.some(attr => !attr.closed));
+    this.hasNewAttributes = (this.newAttributes
+                             && this.newAttributes.some(attr => !attr.closed));
     this.newAttributesOptions = this.getNewAttributesOptions(
       this.localAttributes,
       this.globalAttributes,

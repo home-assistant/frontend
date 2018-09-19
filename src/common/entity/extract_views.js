@@ -14,7 +14,7 @@ export default function extractViews(entities) {
   views.sort((view1, view2) => {
     if (view1.entity_id === DEFAULT_VIEW_ENTITY_ID) {
       return -1;
-    } else if (view2.entity_id === DEFAULT_VIEW_ENTITY_ID) {
+    } if (view2.entity_id === DEFAULT_VIEW_ENTITY_ID) {
       return 1;
     }
     return view1.attributes.order - view2.attributes.order;

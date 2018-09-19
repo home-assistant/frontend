@@ -231,8 +231,8 @@ class ZwaveGroups extends PolymerElement {
   }
 
   _computeAssocServiceData(selectedGroup, type) {
-    if (!this.groups === -1 || selectedGroup === -1 ||
-        this.selectedNode === -1 || this._selectedTargetNode === -1) return -1;
+    if (!this.groups === -1 || selectedGroup === -1
+        || this.selectedNode === -1 || this._selectedTargetNode === -1) return -1;
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       association: type,

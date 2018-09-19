@@ -5,14 +5,13 @@ import EventsMixin from './events-mixin';
  * @polymerMixin
  * @appliesMixin EventsMixin
  */
-export default dedupingMixin(superClass =>
-  class extends EventsMixin(superClass) {
-    navigate(path, replace = false) {
-      if (replace) {
-        history.replaceState(null, null, path);
-      } else {
-        history.pushState(null, null, path);
-      }
-      this.fire('location-changed');
+export default dedupingMixin(superClass => class extends EventsMixin(superClass) {
+  navigate(path, replace = false) {
+    if (replace) {
+      history.replaceState(null, null, path);
+    } else {
+      history.pushState(null, null, path);
     }
-  });
+    this.fire('location-changed');
+  }
+});
