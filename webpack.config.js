@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const BabelMinifyPlugin = require('babel-minify-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin");
@@ -92,6 +92,28 @@ function createConfig(isProdBuild, latestBuild) {
         }
       ]
     },
+    optimization: {
+      minimizer: [
+        // Took options from Polymer build tool
+        // https://github.com/Polymer/tools/blob/master/packages/build/src/js-transform.ts
+        new BabelMinifyPlugin({
+          // Disable the minify-constant-folding plugin because it has a bug relating to
+          // invalid substitution of constant values into export specifiers:
+          // https://github.com/babel/minify/issues/820
+          evaluate: false,
+
+          // TODO(aomarks) Find out why we disabled this plugin.
+          simplifyComparisons: false,
+
+          // Disable the simplify plugin because it can eat some statements preceeding
+          // loops. https://github.com/babel/minify/issues/824
+          simplify: false,
+
+          // This is breaking ES6 output. https://github.com/Polymer/tools/issues/261
+          mangle: false,
+        }, {}),
+      ]
+    },
     plugins: [
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(!isProdBuild),
@@ -124,14 +146,6 @@ function createConfig(isProdBuild, latestBuild) {
         /@polymer\/font-roboto\/roboto\.js$/,
         path.resolve(__dirname, 'src/util/empty.js')
       ),
-      isProdBuild && new UglifyJsPlugin({
-        extractComments: true,
-        sourceMap: true,
-        uglifyOptions: {
-          // Disabling because it broke output
-          mangle: false,
-        }
-      }),
       isProdBuild && new CompressionPlugin({
         cache: true,
         exclude: [
