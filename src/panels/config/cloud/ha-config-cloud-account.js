@@ -104,7 +104,7 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
               Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.
             </p>
             <p>
-              Check the website for <a href='https://www.nabucasa.com/cloud/' target='_blank'>all available features</a>.
+              Check the website for <a href='https://www.nabucasa.com' target='_blank'>all available features</a>.
             </p>
           </div>
 

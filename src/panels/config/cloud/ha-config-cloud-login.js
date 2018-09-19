@@ -82,7 +82,7 @@ class HaConfigCloudLogin extends
             <p>
               Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.
             </p>
-            <p><a href="https://www.nabucasa.com/cloud/" target="_blank">Learn more about Home Assistant Cloud</a></p>
+            <p><a href="https://www.nabucasa.com" target="_blank">Learn more about Home Assistant Cloud</a></p>
           </div>
 
           <paper-card hidden$="[[!flashMessage]]">
