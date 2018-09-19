@@ -178,7 +178,7 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
         this._accountUpdater = null;
       }
       return;
-    } else if (this._accountUpdater) {
+    } if (this._accountUpdater) {
       return;
     }
     setTimeout(() => {

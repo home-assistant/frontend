@@ -155,9 +155,8 @@ class HaConfigCloudLogin extends
     super.connectedCallback();
     if (this.flashMessage) {
       // Wait for DOM to be drawn
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() =>
-          this.$.flashRipple.simulatedRipple()));
+      requestAnimationFrame(() => requestAnimationFrame(() =>
+        this.$.flashRipple.simulatedRipple()));
     }
   }
 

@@ -128,9 +128,9 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
   }
 
   _computeShowHistoryComponent(hass, stateObj) {
-    return hass && stateObj &&
-      isComponentLoaded(hass, 'history') &&
-      !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
+    return hass && stateObj
+      && isComponentLoaded(hass, 'history')
+      && !DOMAINS_MORE_INFO_NO_HISTORY.includes(computeStateDomain(stateObj));
   }
 
   _computeDomain(stateObj) {

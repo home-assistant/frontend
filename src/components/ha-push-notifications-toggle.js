@@ -5,10 +5,10 @@ import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import EventsMixin from '../mixins/events-mixin.js';
 
 export const pushSupported = (
-  'serviceWorker' in navigator && 'PushManager' in window &&
-  (document.location.protocol === 'https:' ||
-    document.location.hostname === 'localhost' ||
-    document.location.hostname === '127.0.0.1'));
+  'serviceWorker' in navigator && 'PushManager' in window
+  && (document.location.protocol === 'https:'
+    || document.location.hostname === 'localhost'
+    || document.location.hostname === '127.0.0.1'));
 
 /*
  * @appliesMixin EventsMixin

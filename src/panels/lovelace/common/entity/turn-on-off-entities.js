@@ -6,8 +6,8 @@ export default function turnOnOffEntities(hass, entityIds, turnOn = true) {
   entityIds.forEach((entityId) => {
     if ((STATES_OFF.includes(hass.states[entityId].state)) === turnOn) {
       const stateDomain = computeDomain(entityId);
-      const serviceDomain = ['cover', 'lock'].includes(stateDomain) ?
-        stateDomain : 'homeassistant';
+      const serviceDomain = ['cover', 'lock'].includes(stateDomain)
+        ? stateDomain : 'homeassistant';
 
       if (!(serviceDomain in domainsToCall)) domainsToCall[serviceDomain] = [];
       domainsToCall[serviceDomain].push(entityId);

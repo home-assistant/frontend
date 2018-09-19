@@ -102,11 +102,11 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       var entity = hass.states[entityId];
       var title = computeStateName(entity);
 
-      if ((entity.attributes.hidden &&
-          computeStateDomain(entity) !== 'zone') ||
-          entity.state === 'home' ||
-          !('latitude' in entity.attributes) ||
-          !('longitude' in entity.attributes)) {
+      if ((entity.attributes.hidden
+          && computeStateDomain(entity) !== 'zone')
+          || entity.state === 'home'
+          || !('latitude' in entity.attributes)
+          || !('longitude' in entity.attributes)) {
         return;
       }
 

@@ -76,9 +76,9 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
 
   stateObjObserver(stateObj) {
     if (!stateObj) return;
-    if (this.cacheConfig.cacheKey !== stateObj.entity_id ||
-        this.cacheConfig.refresh !== (stateObj.attributes.refresh || 0) ||
-        this.cacheConfig.hoursToShow !== (stateObj.attributes.hours_to_show || 24)) {
+    if (this.cacheConfig.cacheKey !== stateObj.entity_id
+        || this.cacheConfig.refresh !== (stateObj.attributes.refresh || 0)
+        || this.cacheConfig.hoursToShow !== (stateObj.attributes.hours_to_show || 24)) {
       this.cacheConfig = Object.assign({}, {
         refresh: stateObj.attributes.refresh || 0,
         cacheKey: stateObj.entity_id,

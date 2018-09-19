@@ -125,9 +125,9 @@ class HaEntityConfig extends PolymerElement {
   }
 
   computeSelectCaption(stateObj) {
-    return this.config.computeSelectCaption ?
-      this.config.computeSelectCaption(stateObj) :
-      computeStateName(stateObj);
+    return this.config.computeSelectCaption
+      ? this.config.computeSelectCaption(stateObj)
+      : computeStateName(stateObj);
   }
 
   computeShowNoDevices(formState) {
@@ -156,7 +156,7 @@ class HaEntityConfig extends PolymerElement {
     if (entities.length === 0) {
       this.formState = 'no-devices';
       return;
-    } else if (!oldEntities) {
+    } if (!oldEntities) {
       this.selectedEntity = 0;
       return;
     }

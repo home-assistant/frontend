@@ -84,9 +84,9 @@ class HassioMain extends NavigateMixin(PolymerElement) {
   }
 
   computeIsLoaded(supervisorInfo, hostInfo, hassInfo) {
-    return (supervisorInfo !== null &&
-            hostInfo !== null &&
-            hassInfo !== null);
+    return (supervisorInfo !== null
+            && hostInfo !== null
+            && hassInfo !== null);
   }
 
   routeChanged(route) {

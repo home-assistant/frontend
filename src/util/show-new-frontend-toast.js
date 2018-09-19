@@ -8,8 +8,7 @@ export default (installingWorker) => {
   toast.duration = 0;
 
   const button = document.createElement('paper-button');
-  button.addEventListener('click', () =>
-    installingWorker.postMessage({ type: 'skipWaiting' }));
+  button.addEventListener('click', () => installingWorker.postMessage({ type: 'skipWaiting' }));
   button.style.color = 'var(--primary-color)';
   button.style.fontWeight = 'bold';
   button.innerHTML = 'reload';

@@ -114,8 +114,8 @@ class HaConfigCloudForgotPassword extends EventsMixin(PolymerElement) {
       });
     }, err => this.setProperties({
       _requestInProgress: false,
-      _error: err && err.body && err.body.message ?
-        err.body.message : 'Unknown error',
+      _error: err && err.body && err.body.message
+        ? err.body.message : 'Unknown error',
     }));
   }
 }

@@ -79,20 +79,19 @@ export function getTranslation(fragment, translationInput) {
 
   // Create a promise to fetch translation from the server
   if (!translations[translationFingerprint]) {
-    translations[translationFingerprint] =
-      fetch(`/static/translations/${translationFingerprint}`, { credentials: 'same-origin' })
-        .then(response => response.json()).then(data => ({
-          language: translation,
-          data: data,
-        }))
-        .catch((error) => {
-          delete translations[translationFingerprint];
-          if (translationInput !== 'en') {
-            // Couldn't load selected translation. Try a fall back to en before failing.
-            return getTranslation(fragment, 'en');
-          }
-          return Promise.reject(error);
-        });
+    translations[translationFingerprint] = fetch(`/static/translations/${translationFingerprint}`, { credentials: 'same-origin' })
+      .then(response => response.json()).then(data => ({
+        language: translation,
+        data: data,
+      }))
+      .catch((error) => {
+        delete translations[translationFingerprint];
+        if (translationInput !== 'en') {
+          // Couldn't load selected translation. Try a fall back to en before failing.
+          return getTranslation(fragment, 'en');
+        }
+        return Promise.reject(error);
+      });
   }
   return translations[translationFingerprint];
 }

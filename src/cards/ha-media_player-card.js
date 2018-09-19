@@ -219,7 +219,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     if (picture !== oldPicture && !picture) {
       this.$.cover.style.backgroundImage = '';
       return;
-    } else if (picture === oldPicture) {
+    } if (picture === oldPicture) {
       return;
     }
 
@@ -275,7 +275,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computePlaybackControlIcon(playerObj) {
     if (playerObj.isPlaying) {
       return playerObj.supportsPause ? 'hass:pause' : 'hass:stop';
-    } else if (playerObj.hasMediaControl || playerObj.isOff || playerObj.isIdle) {
+    } if (playerObj.hasMediaControl || playerObj.isOff || playerObj.isIdle) {
       if (playerObj.hasMediaControl && playerObj.supportsPause && !playerObj.isPaused) {
         return 'hass:play-pause';
       }

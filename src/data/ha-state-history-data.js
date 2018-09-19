@@ -236,8 +236,8 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       const oldLine = cacheLines.find(cacheLine => cacheLine.unit === unit);
       if (oldLine) {
         line.data.forEach((entity) => {
-          const oldEntity =
-              oldLine.data.find(cacheEntity => entity.entity_id === cacheEntity.entity_id);
+          const oldEntity = oldLine.data.find(cacheEntity =>
+            entity.entity_id === cacheEntity.entity_id);
           if (oldEntity) {
             oldEntity.states = oldEntity.states.concat(entity.states);
           } else {
@@ -252,8 +252,8 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
 
   mergeTimeline(historyTimelines, cacheTimelines) {
     historyTimelines.forEach((timeline) => {
-      const oldTimeline =
-          cacheTimelines.find(cacheTimeline => cacheTimeline.entity_id === timeline.entity_id);
+      const oldTimeline = cacheTimelines.find(cacheTimeline =>
+        cacheTimeline.entity_id === timeline.entity_id);
       if (oldTimeline) {
         oldTimeline.data = oldTimeline.data.concat(timeline.data);
       } else {

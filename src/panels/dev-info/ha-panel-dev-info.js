@@ -341,8 +341,8 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
     const dateTime = new Date(date * 1000);
     const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
 
-    return dateTimeDay < today ?
-      formatDateTime(dateTime) : formatTime(dateTime);
+    return dateTimeDay < today
+      ? formatDateTime(dateTime) : formatTime(dateTime);
   }
 
   openLog(event) {
@@ -360,8 +360,8 @@ class HaPanelDevInfo extends EventsMixin(PolymerElement) {
   }
 
   _defaultPageText() {
-    return `>> ${localStorage.defaultPage === 'lovelace' ?
-      'Remove' : 'Set'} lovelace as default page on this device <<`;
+    return `>> ${localStorage.defaultPage === 'lovelace'
+      ? 'Remove' : 'Set'} lovelace as default page on this device <<`;
   }
 
   _toggleDefaultPage() {
