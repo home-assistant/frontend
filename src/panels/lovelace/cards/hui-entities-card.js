@@ -134,8 +134,7 @@ class HuiEntitiesCard extends EventsMixin(PolymerElement) {
   }
 
   _filterEntities(items) {
-    return items.filter(item => (typeof item === 'string' || item.entity)).map(item =>
-      (typeof item === 'string' ? item : item.entity));
+    return items.filter(item => (typeof item === 'string' || item.entity)).map(item => (typeof item === 'string' ? item : item.entity));
   }
 }
 

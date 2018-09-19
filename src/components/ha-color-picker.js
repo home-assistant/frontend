@@ -302,9 +302,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
 
   applyHsColor(hs) {
     // do nothing is we already have the same color
-    if (this.hsColor &&
-        this.hsColor.h === hs.h &&
-        this.hsColor.s === hs.s) {
+    if (this.hsColor
+        && this.hsColor.h === hs.h
+        && this.hsColor.s === hs.s) {
       return;
     }
     this.setMarkerOnColor(hs); // marker is always set on 'raw' hs position

@@ -67,9 +67,9 @@ class StateHistoryCharts extends LocalizeMixin(PolymerElement) {
   }
 
   _computeIsEmpty(isLoadingData, historyData) {
-    const historyDataEmpty = (!historyData || !historyData.timeline || !historyData.line ||
-                              (historyData.timeline.length === 0 &&
-                              historyData.line.length === 0));
+    const historyDataEmpty = (!historyData || !historyData.timeline || !historyData.line
+                              || (historyData.timeline.length === 0
+                              && historyData.line.length === 0));
     return !isLoadingData && historyDataEmpty;
   }
 

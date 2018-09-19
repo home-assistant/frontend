@@ -32,10 +32,10 @@ export default dedupingMixin(superClass =>
       }
 
       if (!this.translationFragment) {
-        // In dev mode, we will issue a warning if after a second we are still
-        // not configured correctly.
+      // In dev mode, we will issue a warning if after a second we are still
+      // not configured correctly.
         if (__DEV__) {
-          // eslint-disable-next-line
+        // eslint-disable-next-line
           setTimeout(() => !this.resources && console.error(
             'Forgot to pass in resources or set translationFragment for',
             this.nodeName

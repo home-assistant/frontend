@@ -11,8 +11,8 @@ export default function stateCardType(hass, stateObj) {
 
   if (DOMAINS_WITH_CARD.includes(domain)) {
     return domain;
-  } else if (canToggleState(hass, stateObj) &&
-             stateObj.attributes.control !== 'hidden') {
+  } if (canToggleState(hass, stateObj)
+             && stateObj.attributes.control !== 'hidden') {
     return 'toggle';
   }
   return 'display';

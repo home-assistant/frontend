@@ -10,8 +10,8 @@ function toLocaleTimeStringSupportsOptions() {
   return false;
 }
 
-export default (toLocaleTimeStringSupportsOptions() ?
-  function (dateObj, locales) {
+export default (toLocaleTimeStringSupportsOptions()
+  ? function (dateObj, locales) {
     return dateObj.toLocaleTimeString(
       locales,
       { hour: 'numeric', minute: '2-digit' }

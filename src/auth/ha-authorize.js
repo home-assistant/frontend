@@ -7,7 +7,7 @@ import '../components/ha-markdown.js';
 
 import LocalizeLiteMixin from '../mixins/localize-lite-mixin.js';
 
-import '../auth/ha-auth-flow.js';
+import './ha-auth-flow.js';
 
 class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   static get template() {
@@ -125,15 +125,14 @@ class HaAuthorize extends LocalizeLiteMixin(PolymerElement) {
   }
 
   _computeInactiveProvders(curProvider, providers) {
-    return providers.filter(prv =>
-      prv.type !== curProvider.type || prv.id !== curProvider.id);
+    return providers.filter(prv => prv.type !== curProvider.type || prv.id !== curProvider.id);
   }
 
   _computeIntro(localize, clientId, authProvider) {
     return (
-      localize('ui.panel.page-authorize.authorizing_client', 'clientId', clientId) +
-      '\n\n' +
-      localize('ui.panel.page-authorize.logging_in_with', 'authProviderName', authProvider.name)
+      localize('ui.panel.page-authorize.authorizing_client', 'clientId', clientId)
+      + '\n\n'
+      + localize('ui.panel.page-authorize.logging_in_with', 'authProviderName', authProvider.name)
     );
   }
 }

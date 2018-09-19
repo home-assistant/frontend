@@ -152,4 +152,3 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   from HTML and may be out of place here. Review them and
   then delete this comment!
 */
-

@@ -76,17 +76,17 @@ class HaConfigAutomation extends PolymerElement {
     Object.keys(hass.states).forEach(function (key) {
       var entity = hass.states[key];
 
-      if (computeStateDomain(entity) === 'automation' &&
-          'id' in entity.attributes) {
+      if (computeStateDomain(entity) === 'automation'
+          && 'id' in entity.attributes) {
         automations.push(entity);
       }
     });
 
     return automations.sort(function entitySortBy(entityA, entityB) {
-      var nameA = (entityA.attributes.alias ||
-                   entityA.entity_id).toLowerCase();
-      var nameB = (entityB.attributes.alias ||
-                   entityB.entity_id).toLowerCase();
+      var nameA = (entityA.attributes.alias
+                   || entityA.entity_id).toLowerCase();
+      var nameB = (entityB.attributes.alias
+                   || entityB.entity_id).toLowerCase();
 
       if (nameA < nameB) {
         return -1;

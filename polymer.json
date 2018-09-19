@@ -24,7 +24,7 @@
   ],
   "lint": {
     "rules": ["polymer-3"],
-    "ignoreWarnings": ["could-not-resolve-reference"],
+    "ignoreWarnings": ["could-not-resolve-reference", "could-not-load"],
     "filesToIgnore": [
       "**/*.html",
       "**/src/panels/config/js/**/*.js",

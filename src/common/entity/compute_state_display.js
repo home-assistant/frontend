@@ -9,8 +9,7 @@ export default function computeStateDisplay(localize, stateObj, language) {
     if (domain === 'binary_sensor') {
       // Try device class translation, then default binary sensor translation
       if (stateObj.attributes.device_class) {
-        stateObj._stateDisplay =
-          localize(`state.${domain}.${stateObj.attributes.device_class}.${stateObj.state}`);
+        stateObj._stateDisplay = localize(`state.${domain}.${stateObj.attributes.device_class}.${stateObj.state}`);
       }
       if (!stateObj._stateDisplay) {
         stateObj._stateDisplay = localize(`state.${domain}.default.${stateObj.state}`);
