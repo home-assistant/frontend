@@ -17,7 +17,6 @@ import(/* webpackChunkName: "panel-config-dashboard" */ './dashboard/ha-config-d
 import(/* webpackChunkName: "panel-config-script" */ './script/ha-config-script.js');
 import(/* webpackChunkName: "panel-config-users" */ './users/ha-config-users.js');
 import(/* webpackChunkName: "panel-config-zwave" */ './zwave/ha-config-zwave.js');
-import(/* webpackChunkName: "panel-config-overview" */ './overview/ha-config-overview.js');
 
 /*
  * @appliesMixin NavigateMixin
@@ -101,6 +100,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
 
     <template is="dom-if" if='[[_equals(_routeData.page, "integrations")]]' restamp>
       <ha-config-entries
+        route='[[route]]'
         page-name='integrations'
         hass='[[hass]]'
         is-wide='[[isWide]]'
@@ -113,14 +113,6 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
         route='[[route]]'
         hass='[[hass]]'
       ></ha-config-users>
-    </template>
-
-    <template is="dom-if" if='[[_equals(_routeData.page, "overview")]]' restamp>
-      <ha-config-overview
-        page-name='overview'
-        route='[[route]]'
-        hass='[[hass]]'
-      ></ha-config-overview>
     </template>
     `;
   }
