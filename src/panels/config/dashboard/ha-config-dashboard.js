@@ -69,17 +69,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
           </template>
 
           <paper-card>
-            <a href='/config/overview' tabindex="-1">
-              <paper-item>
-                <paper-item-body two-line>
-                  Overview
-                  <div secondary>Find out how your config, devices and entities relate</div>
-                </paper-item-body>
-                <iron-icon icon="hass:chevron-right"></iron-icon>
-              </paper-item>
-            </a>
-
-            <a href='/config/integrations' tabindex="-1">
+            <a href='/config/integrations/dashboard' tabindex="-1">
               <paper-item>
                 <paper-item-body two-line>
                   Integrations
