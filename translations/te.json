@@ -12,7 +12,8 @@
         "dev-events": "సంఘటనలు",
         "dev-templates": "టెంప్లేట్లు",
         "dev-mqtt": "MQTT",
-        "dev-info": "సమాచారం"
+        "dev-info": "సమాచారం",
+        "calendar": "క్యాలెండర్"
     },
     "state": {
         "default": {
@@ -24,7 +25,7 @@
         "alarm_control_panel": {
             "armed": "భద్రత వుంది",
             "disarmed": "భద్రత లేదు",
-            "armed_home": "ఇంటి భద్రత",
+            "armed_home": "సెక్యూరిటీ సిస్టమ్ ఆన్ చేయబడింది",
             "armed_away": "ఇంట బయట భద్రత",
             "armed_night": "రాత్రి పూట భద్రత",
             "pending": "పెండింగ్",
@@ -112,6 +113,10 @@
             "window": {
                 "off": "మూసుకుంది",
                 "on": "తెరిచివుంది"
+            },
+            "lock": {
+                "off": "లాక్ చేయబడింది",
+                "on": "లాక్ చేయబడలేదు"
             }
         },
         "calendar": {
@@ -231,6 +236,24 @@
                 "initializing": "మొదటి దశ ({query_stage})",
                 "dead": "మృత స్థితి ({query_stage})"
             }
+        },
+        "weather": {
+            "cloudy": "మేఘావృతం",
+            "fog": "పొగమంచు",
+            "hail": "వడగళ్ళు",
+            "lightning": "మెరుపులు",
+            "lightning-rainy": "మెరుపు, వర్షం",
+            "partlycloudy": "పాక్షికంగా మేఘావృతం",
+            "pouring": "కుంభవృష్టి",
+            "rainy": "వర్షం",
+            "snowy": "మంచు",
+            "snowy-rainy": "మంచు, వర్షం",
+            "sunny": "ఎండ",
+            "windy": "గాలులతో",
+            "windy-variant": "గాలులతో"
+        },
+        "vacuum": {
+            "cleaning": "శుభ్రపరుచుతోంది"
         }
     },
     "state_badge": {
@@ -282,6 +305,7 @@
                                 "invalid": "చెల్లని కాన్ఫిగరేషన్"
                             },
                             "reloading": {
+                                "heading": "మీ కాన్ఫిగరేషన్ రీలోడ్ అవుతోంది",
                                 "core": "రీలోడ్ కోర్",
                                 "group": "గ్రూప్స్  మళ్లీ లోడ్ చేయండి",
                                 "automation": "ఆటోమేషన్లను మళ్లీ లోడ్ చేయండి",
@@ -314,6 +338,7 @@
                         "triggers": {
                             "add": "క్రొత్తది జోడించు",
                             "duplicate": "నకిలీ",
+                            "delete": "తొలగించు",
                             "delete_confirm": "ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?",
                             "type_select": "ట్రిగ్గర్ రకం",
                             "type": {
@@ -329,7 +354,8 @@
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
-                                    "event": "ఈవెంట్"
+                                    "event": "ఈవెంట్",
+                                    "start": "ప్రారంభం"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -351,14 +377,25 @@
                                 "time": {
                                     "label": "సమయం",
                                     "at": "At"
+                                },
+                                "zone": {
+                                    "enter": "\nప్రవేశించు"
                                 }
                             }
                         },
                         "conditions": {
                             "add": "అంశాన్ని జోడించు",
+                            "duplicate": "నకిలీ",
+                            "delete": "తీసివేయి",
+                            "delete_confirm": "ఇది మీరు delete చేయాలని అనుకుంటున్నారా?",
                             "type_select": "కండిషన్ రకం",
                             "type": {
+                                "numeric_state": {
+                                    "above": "పైన",
+                                    "below": "కింద"
+                                },
                                 "sun": {
+                                    "label": "సూర్యుడు",
                                     "before": "ముందు",
                                     "after": "తరువాత",
                                     "before_offset": "ఆఫ్సెట్కు ముందు (ఐచ్ఛికం)",
@@ -382,6 +419,7 @@
                                     "label": "ఆలస్యము"
                                 },
                                 "wait_template": {
+                                    "label": "వేచిచూడండి",
                                     "timeout": "సమయం ముగిసింది (ఐచ్ఛికం)"
                                 },
                                 "condition": {
@@ -399,7 +437,85 @@
                     "description": "స్క్రిప్ట్లను సృష్టించండి మరియు సవరించండి"
                 },
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "description": "మీ Z- వేవ్ నెట్వర్క్ని నిర్వహించండి"
+                },
+                "users": {
+                    "caption": "వినియోగదారులు",
+                    "picker": {
+                        "title": "వినియోగదారులు"
+                    },
+                    "editor": {
+                        "change_password": "పాస్ వర్డ్ ను మార్చండి"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "description": "ఈ పరికరానికి ప్రకటనలను పంపండి.",
+                    "link_promo": "మరింత తెలుసుకోండి"
+                },
+                "language": {
+                    "header": "భాషా",
+                    "link_promo": "అనువాదకు సహాయం చెయ్యండి",
+                    "dropdown_label": "భాష"
+                },
+                "refresh_tokens": {
+                    "header": "రిఫ్రెష్ టోకెన్లు"
+                },
+                "long_lived_access_tokens": {
+                    "created_at": "{date} లో రూపొందించబడింది",
+                    "prompt_name": "పేరు?",
+                    "not_used": "ఎప్పుడూ ఉపయోగించలేదు"
+                }
+            },
+            "page-authorize": {
+                "initializing": "ప్రారంభమవుతోంది",
+                "abort_intro": "లాగిన్ ప్రక్రియ ఆపివేయపడింది",
+                "form": {
+                    "working": "దయచేసి వేచి ఉండండి",
+                    "unknown_error": "ఎక్కడో తేడ జరిగింది",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "యూజర్ పేరు",
+                                        "password": "పాస్వర్డ్"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "తప్పు యూజర్ పేరు లేదా తప్పు పాస్ వర్డ్"
+                            },
+                            "abort": {
+                                "login_expired": "సెషన్ గడువు ముగిసింది, మళ్ళీ లాగిన్ అవ్వండి."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "యూజర్"
+                                    }
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "మీ కంప్యూటర్ అనుమతి జాబితాలో లేదు."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "వినియోగదారు ఖాతాను సృష్టించడం ద్వారా ప్రారంభిద్దాం.",
+                    "required_field": "ఇది అవసరం",
+                    "data": {
+                        "name": "పేరు",
+                        "username": "యూజర్ పేరు",
+                        "password": "పాస్ వర్డ్"
+                    }
                 }
             }
         },
@@ -422,12 +538,82 @@
             },
             "persistent_notification": {
                 "dismiss": "తొలగించు"
+            },
+            "scene": {
+                "activate": "యాక్టివేట్"
+            },
+            "script": {
+                "execute": "అమలు చేయండి"
+            },
+            "weather": {
+                "attributes": {
+                    "visibility": "కనిపించే దూరం",
+                    "wind_speed": "గాలి వేగం"
+                },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nw": "NW",
+                    "nnw": "NNW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "వాతావరణ సూచన"
+            },
+            "alarm_control_panel": {
+                "code": "కోడ్",
+                "clear_code": "Clear"
+            },
+            "automation": {
+                "last_triggered": "ఎప్పుడు మొదలెయ్యంది"
+            },
+            "fan": {
+                "speed": "స్పీడ్"
+            },
+            "lock": {
+                "unlock": "అన్లాక్"
+            },
+            "media_player": {
+                "sound_mode": "ధ్వని రీతి"
+            },
+            "vacuum": {
+                "actions": {
+                    "start_cleaning": "శుభ్రపరచడం ప్రారంభించండి",
+                    "turn_off": "ఆపివేయండి"
+                }
             }
         },
         "components": {
             "service-picker": {
                 "service": "సర్వీస్"
+            },
+            "relative_time": {
+                "never": "ఎన్నడూ జరగలేదు"
             }
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "సేవ్"
+            }
+        },
+        "auth_store": {
+            "ask": "మీరు ఈ లాగిన్ సేవ్ చేయాలనుకుంటున్నారా?",
+            "decline": "అక్కర్లేదు",
+            "confirm": "లాగిన్ సేవ్ చేయండి"
+        },
+        "notification_drawer": {
+            "empty": "ప్రకటనలు లేవు",
+            "title": "ప్రకటనలు"
         }
     },
     "domain": {

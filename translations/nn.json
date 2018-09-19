@@ -12,7 +12,8 @@
         "dev-events": "Hendingar",
         "dev-templates": "Malar",
         "dev-mqtt": "MQTT",
-        "dev-info": "Info"
+        "dev-info": "Info",
+        "calendar": "Kalendrar"
     },
     "state": {
         "default": {
@@ -236,6 +237,32 @@
                 "initializing": "Initialiserer ({query_stage})",
                 "dead": "Død ({query_stage})"
             }
+        },
+        "weather": {
+            "clear-night": "Klart, natt",
+            "cloudy": "Overskya",
+            "fog": "Tåke",
+            "hail": "Hagl",
+            "lightning": "Lyn",
+            "lightning-rainy": "Lyn, regn",
+            "partlycloudy": "Delvis overskya",
+            "pouring": "Pøsande",
+            "rainy": "Regn",
+            "snowy": "Snø",
+            "snowy-rainy": "Snø, regn",
+            "sunny": "Mykje sol",
+            "windy": "Vind",
+            "windy-variant": "Vind"
+        },
+        "vacuum": {
+            "cleaning": "Reingjer",
+            "docked": "Parkert",
+            "error": "Feil",
+            "idle": "Tomgang",
+            "off": "Av",
+            "on": "På",
+            "paused": "Pausa",
+            "returning": "Gå tilbake til ladestasjonen"
         }
     },
     "state_badge": {
@@ -483,6 +510,156 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Administrer Z-Wave-nettverket ditt"
+                },
+                "users": {
+                    "caption": "Brukarar",
+                    "description": "Administrer brukarar",
+                    "picker": {
+                        "title": "Brukar"
+                    },
+                    "editor": {
+                        "rename_user": "Gi nytt namn til brukaren",
+                        "change_password": "Bytt passord",
+                        "activate_user": "Aktiver brukaren",
+                        "deactivate_user": "Deaktiver brukaren",
+                        "delete_user": "Slett brukar"
+                    }
+                }
+            },
+            "profile": {
+                "push_notifications": {
+                    "header": "Pushvarslar",
+                    "description": "Send varslar til denne einiga",
+                    "error_load_platform": "Konfigurer notify.html5",
+                    "error_use_https": "Krev SSL-aktivert til frontend",
+                    "push_notifications": "Pushvarslar",
+                    "link_promo": "Lær meir"
+                },
+                "language": {
+                    "header": "Språk",
+                    "link_promo": "Hjelp å oversette",
+                    "dropdown_label": "Språk"
+                },
+                "themes": {
+                    "header": "Tema",
+                    "error_no_theme": "Ingen tema tilgjengeleg",
+                    "link_promo": "Lær om temaer",
+                    "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Oppdateringstokenar",
+                    "description": "Kvar oppdateringstoken representerer ei innloggingsøkt. Oppdateringstokenane vil autoamtisk bli fjerna når du loggar ut. Dei fylgande oppdateringstokenane er aktive på kontoen din.",
+                    "token_title": "Oppdater token for {clientId}",
+                    "created_at": "Laga den {date}",
+                    "confirm_delete": "Er du sikker på at du vil slette oppdateringstoken for {name}?",
+                    "delete_failed": "Kunne ikkje slette oppdateringstoken",
+                    "last_used": "Sist brukt den {date} frå {location}",
+                    "not_used": "Har aldri vore brukt",
+                    "current_token_tooltip": "Kan ikkje slette gjeldande oppdateringstoken"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Langtidslevande tilgangstokenar",
+                    "description": "Lag ein langtidslevande tilgangstoken som tillet skripta dine å samhandle med Home Assistant-instansen. Kvar token vil vere gyldig i 10 år etter oppretting. Dei fylgande langtidslevande tokenane er for tida aktive.",
+                    "learn_auth_requests": "Lær korleis du lagar ein autentisert førespurnad.",
+                    "created_at": "Oppretta den {date}",
+                    "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
+                    "delete_failed": "Klarte ikkje å slette tilgangstoken",
+                    "create": "Lag token",
+                    "create_failed": "Klarte ikkje å lage tilgangstoken.",
+                    "prompt_name": "Namn?",
+                    "prompt_copy_token": "Kopier tilgangstoken. Den vil ikkje visast igjen.",
+                    "empty_state": "Du har ikkje langtidslevande tilgangstoken endå.",
+                    "last_used": "Sist brukt den {date} frå {location}",
+                    "not_used": "Har aldri vore brukt"
+                }
+            },
+            "page-authorize": {
+                "initializing": "Set i gang",
+                "authorizing_client": "Du held på å gi {clientId} tilgang til Home Assistant-instansen din.",
+                "logging_in_with": "Loggar inn med **{authProviderName}**",
+                "pick_auth_provider": "Eller logg inn med",
+                "abort_intro": "Innlogging avbrote",
+                "form": {
+                    "working": "Ver vennleg og vent",
+                    "unknown_error": "Noko gjekk gale",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Brukarnamn",
+                                        "password": "Passord"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor-autentiseringskode"
+                                    },
+                                    "description": "Opne **{mfa_module_name}** på eininga di for å sjå to-faktor-autentiseringskoda og verifiser identiteten din:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig brukarnamn eller passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
+                            },
+                            "abort": {
+                                "login_expired": "Økt utløpt. Ver vennleg og logg inn igjen."
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-passord"
+                                    },
+                                    "description": "Ver vennleg og skriv inn API-passordet i HTTP-konfigurasjonen din:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "To-faktor-autentiseringskode"
+                                    },
+                                    "description": "Opne **{mfa_module_name}** på eininga di for å sjå to-faktor-autentiseringskoda og verifiser identiteten din:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Ugyldig API-passord",
+                                "invalid_code": "Ugyldig autentiseringskode"
+                            },
+                            "abort": {
+                                "no_api_password_set": "Du har ikkje laga til eit API-passord",
+                                "login_expired": "Økt utløpt. Ver vennleg å logg inn igjen."
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Brukar"
+                                    },
+                                    "description": "Ver vennleg og vel ein brukar du vil logge inn som:"
+                                }
+                            },
+                            "abort": {
+                                "not_whitelisted": "Datamaskina di er ikkje kvitelista."
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "intro": "Er du klar til å vekke heimen din til liv, vinne tilbake privatlivet ditt og vli med i eit verdsomspennande samfunn av tinkerers?",
+                "user": {
+                    "intro": "Lat oss begynne med å opprette ein brukarkonto.",
+                    "required_field": "Krav",
+                    "data": {
+                        "name": "Namn",
+                        "username": "Brukarnamn",
+                        "password": "Passord"
+                    },
+                    "create_account": "Lag konto",
+                    "error": {
+                        "required_fields": "Fyll ut dei nødvendige felta"
+                    }
                 }
             }
         },
@@ -497,7 +674,9 @@
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
             "week": "{count} {count, plural,\none {veke}\nother {veker}\n}",
-            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}"
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "minute": "{count} {count, plural,\none {minutt}\nother {minutt}\n}",
+            "hour": "{count} {count, plural,\none {time}\nother {timar}\n}"
         },
         "login-form": {
             "password": "Passord",
@@ -510,6 +689,96 @@
             },
             "persistent_notification": {
                 "dismiss": "Avvis"
+            },
+            "scene": {
+                "activate": "Aktiver"
+            },
+            "script": {
+                "execute": "Utfør"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Lufttrykk",
+                    "humidity": "Fuktigheit",
+                    "temperature": "Temperatur",
+                    "visibility": "Sikt",
+                    "wind_speed": "Vindfart"
+                },
+                "cardinal_direction": {
+                    "e": "Ø",
+                    "ene": "ØNØ",
+                    "ese": "ØSØ",
+                    "n": "N",
+                    "ne": "NØ",
+                    "nne": "NNØ",
+                    "nw": "NV",
+                    "nnw": "NNV",
+                    "s": "S",
+                    "se": "SØ",
+                    "sse": "SSØ",
+                    "ssw": "SSV",
+                    "sw": "SV",
+                    "w": "V",
+                    "wnw": "VNV",
+                    "wsw": "VSV"
+                },
+                "forecast": "Vêrmelding"
+            },
+            "alarm_control_panel": {
+                "code": "Kode",
+                "clear_code": "Slett alt",
+                "disarm": "Skru av",
+                "arm_home": "Heimemodus",
+                "arm_away": "Bortemodus"
+            },
+            "automation": {
+                "last_triggered": "Sist utløyst",
+                "trigger": "Utløysar"
+            },
+            "cover": {
+                "position": "Posisjon",
+                "tilt_position": "Tiltposisjon"
+            },
+            "fan": {
+                "speed": "Fart",
+                "oscillate": "Sving",
+                "direction": "Retning"
+            },
+            "light": {
+                "brightness": "Lysstyrke",
+                "color_temperature": "Fargetemperatur",
+                "white_value": "Kvitverdi",
+                "effect": "Effekt"
+            },
+            "media_player": {
+                "text_to_speak": "Tekst til tale",
+                "source": "Kjelde",
+                "sound_mode": "Lydmodus"
+            },
+            "climate": {
+                "currently": "Akkuratt no",
+                "on_off": "På \/ av",
+                "target_temperature": "Temperaturmål",
+                "target_humidity": "Fuktigheitsmål",
+                "operation": "Operasjon",
+                "fan_mode": "Viftemodus",
+                "swing_mode": "Svingmodus",
+                "away_mode": "Bortemodus",
+                "aux_heat": "Aux-varme"
+            },
+            "lock": {
+                "code": "Kode",
+                "lock": "Lås",
+                "unlock": "Lås opp"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Fortsett reingjeringa",
+                    "return_to_base": "Gå tilbake til ladestasjonen",
+                    "start_cleaning": "Start reingjering",
+                    "turn_on": "Skru på",
+                    "turn_off": "Skru av"
+                }
             }
         },
         "components": {
@@ -520,7 +789,47 @@
             },
             "service-picker": {
                 "service": "Teneste"
+            },
+            "relative_time": {
+                "past": "{time} sidan",
+                "future": "Om {time}",
+                "never": "Aldri",
+                "duration": {
+                    "second": "{count} {count, plural,\none {sekund}\nother {sekundar}\n}",
+                    "minute": "{count} {count, plural,\none {minutt}\nother {minutt}\n}",
+                    "hour": "{count} {count, plural,\none {time}\nother {timar}\n}",
+                    "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+                    "week": "{count} {count, plural,\none {veke}\nother {veker}\n}"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Lastar tilstandshistoria...",
+                "no_history_found": "Inga tilstandshistorie funne"
             }
+        },
+        "notification_toast": {
+            "entity_turned_on": "Skrudde på {entity}.",
+            "entity_turned_off": "Skrudde av {entity}.",
+            "service_called": "Tenesten {service} tilkalla",
+            "service_call_failed": "Klarte ikkje å kalle tenesten {serivce}.",
+            "connection_lost": "Tilkopling mista. Prøver å kople til på nytt.."
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "save": "Lagre",
+                "name": "Namn",
+                "entity_id": "Einings-ID"
+            }
+        },
+        "auth_store": {
+            "ask": "Vil du lagre denne pålogginga?",
+            "decline": "Nei takk",
+            "confirm": "Lagre innlogging"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Klikk på knappen for å konfigurere {entity}",
+            "empty": "Ingen varslar",
+            "title": "Varsler"
         }
     },
     "domain": {
@@ -558,7 +867,8 @@
         "switch": "Brytar",
         "updater": "Oppdateringar",
         "weblink": "Nettlenke",
-        "zwave": "Z-Wave"
+        "zwave": "Z-Wave",
+        "vacuum": "Støvsugar"
     },
     "attribute": {
         "weather": {
