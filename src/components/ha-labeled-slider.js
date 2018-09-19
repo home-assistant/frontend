@@ -10,7 +10,6 @@ class HaLabeledSlider extends PolymerElement {
     <style>
       :host {
         display: block;
-        padding-bottom: 16px;
       }
 
       .title {

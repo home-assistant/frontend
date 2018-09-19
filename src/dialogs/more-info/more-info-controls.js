@@ -55,8 +55,12 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
       }
     }
 
+    paper-dialog-scrollable {
+      padding-bottom: 16px;
+    }
+
     :host([domain=camera]) paper-dialog-scrollable {
-      margin: 0 -24px -5px;
+      margin: 0 -24px -21px;
     }
   </style>
 
