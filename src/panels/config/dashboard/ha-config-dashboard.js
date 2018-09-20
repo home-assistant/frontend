@@ -55,10 +55,10 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                 <paper-item on-click="_navigate">
                   <paper-item-body two-line="">
                     Home Assistant Cloud
-                    <template is="dom-if" if="[[account]]">
-                      <div secondary="">Logged in as [[account.email]]</div>
+                    <template is="dom-if" if="[[cloudStatus.logged_in]]">
+                      <div secondary="">Logged in as [[cloudStatus.email]]</div>
                     </template>
-                    <template is="dom-if" if="[[!account]]">
+                    <template is="dom-if" if="[[!cloudStatus.logged_in]]">
                       <div secondary="">Not logged in</div>
                     </template>
                   </paper-item-body>
@@ -103,7 +103,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
     return {
       hass: Object,
       isWide: Boolean,
-      account: Object,
+      cloudStatus: Object,
       narrow: Boolean,
       showMenu: Boolean,
     };

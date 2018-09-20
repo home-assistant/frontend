@@ -199,8 +199,8 @@ class HaConfigCloudLogin extends
     this.hass.callApi('post', 'cloud/login', {
       email: this.email,
       password: this._password,
-    }).then((account) => {
-      this.fire('ha-account-refreshed', { account: account });
+    }).then(() => {
+      this.fire('ha-refresh-cloud-status');
       this.setProperties({
         email: '',
         _password: '',

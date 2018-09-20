@@ -49,7 +49,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
         route='[[route]]'
         hass='[[hass]]'
         is-wide='[[isWide]]'
-        account='[[account]]'
+        cloud-status='[[_cloudStatus]]'
       ></ha-config-cloud>
     </template>
 
@@ -58,7 +58,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
         page-name='dashboard'
         hass='[[hass]]'
         is-wide='[[isWide]]'
-        account='[[account]]'
+        cloud-status='[[_cloudStatus]]'
         narrow='[[narrow]]'
         show-menu='[[showMenu]]'
       ></ha-config-dashboard>
@@ -122,7 +122,7 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
       hass: Object,
       narrow: Boolean,
       showMenu: Boolean,
-      account: {
+      _cloudStatus: {
         type: Object,
         value: null,
       },
@@ -147,12 +147,19 @@ class HaPanelConfig extends NavigateMixin(PolymerElement) {
   ready() {
     super.ready();
     if (isComponentLoaded(this.hass, 'cloud')) {
-      this.hass.callApi('get', 'cloud/account')
-        .then((account) => { this.account = account; }, () => {});
+      this._updateCloudStatus();
     }
-    this.addEventListener('ha-account-refreshed', (ev) => {
-      this.account = ev.detail.account;
-    });
+    this.addEventListener(
+      'ha-refresh-cloud-status', () => this._updateCloudStatus()
+    );
+  }
+
+  async _updateCloudStatus() {
+    this._cloudStatus = await this.hass.callWS({ type: 'cloud/status' });
+
+    if (this._cloudStatus.cloud === 'connecting') {
+      setTimeout(() => this._updateCloudStatus(), 5000);
+    }
   }
 
   computeIsWide(showMenu, wideSidebar, wide) {
