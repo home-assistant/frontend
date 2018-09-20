@@ -176,7 +176,7 @@ class HaWeatherCard extends
       cloudy: 'hass:weather-cloudy',
       fog: 'hass:weather-fog',
       hail: 'hass:weather-hail',
-      lightning: 'mid:weather-lightning',
+      lightning: 'hass:weather-lightning',
       'lightning-rainy': 'hass:weather-lightning-rainy',
       partlycloudy: 'hass:weather-partlycloudy',
       pouring: 'hass:weather-pouring',
