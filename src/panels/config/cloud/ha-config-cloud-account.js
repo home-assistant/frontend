@@ -178,41 +178,11 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
   }
 
   _formatSubscription(subInfo) {
-    if (subInfo === null) {
-      return 'Fetching subscription…';
-    }
-    /* eslint-disable camelcase */
-    const { subscription, source, customer_exists } = subInfo;
-
-    // Check if we're before Oct 17.
-    const beforeOct17 = Date.now() < 1539734400000;
-
-    if (!customer_exists) {
-      return `Legacy user. Subscription expire${beforeOct17 ? 's' : 'd'} Oct 17, 2018.`;
-    }
-    if (!subscription || subscription.status === 'canceled') {
-      return 'No subscription';
-    }
-
-    const periodExpires = formatDateTime(new Date(subscription.current_period_end * 1000));
-
-    if (subscription.status === 'trialing' && !source) {
-      return `Trial user. Trial expires ${periodExpires}.`;
-    }
-
-    if (subscription.status === 'trialing') {
-      return `Active user. You will be charged on ${periodExpires}.`;
-    }
-
-    if (subscription.status === 'active' && subscription.cancel_at_period_end) {
-      return `Active user. Scheduled to cancel on ${periodExpires}`;
-    }
-
-    if (subscription.status === 'active') {
-      return `Active user. You will be charged on ${periodExpires}.`;
-    }
-
-    return 'Unable to determine subscription status.';
+    return subInfo === null ?
+      'Fetching subscription…' :
+      subInfo.human_description.replace(
+        '{periodEnd}', formatDateTime(new Date(subInfo.subscription.current_period_end * 1000))
+      );
   }
 }
 
