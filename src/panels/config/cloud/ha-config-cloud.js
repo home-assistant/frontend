@@ -30,19 +30,38 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
   <app-route route="[[route]]" pattern="/cloud/:page" data="{{_routeData}}" tail="{{_routeTail}}"></app-route>
 
   <template is="dom-if" if="[[_equals(_routeData.page, &quot;account&quot;)]]" restamp="">
-    <ha-config-cloud-account hass="[[hass]]" account="[[account]]" is-wide="[[isWide]]"></ha-config-cloud-account>
+    <ha-config-cloud-account
+      hass="[[hass]]"
+      cloud-status="[[cloudStatus]]"
+      is-wide="[[isWide]]"
+    ></ha-config-cloud-account>
   </template>
 
   <template is="dom-if" if="[[_equals(_routeData.page, &quot;login&quot;)]]" restamp="">
-    <ha-config-cloud-login page-name="login" hass="[[hass]]" is-wide="[[isWide]]" email="{{_loginEmail}}" flash-message="{{_flashMessage}}"></ha-config-cloud-login>
+    <ha-config-cloud-login
+      page-name="login"
+      hass="[[hass]]"
+      is-wide="[[isWide]]"
+      email="{{_loginEmail}}"
+      flash-message="{{_flashMessage}}"
+    ></ha-config-cloud-login>
   </template>
 
   <template is="dom-if" if="[[_equals(_routeData.page, &quot;register&quot;)]]" restamp="">
-    <ha-config-cloud-register page-name="register" hass="[[hass]]" is-wide="[[isWide]]" email="{{_loginEmail}}"></ha-config-cloud-register>
+    <ha-config-cloud-register
+      page-name="register"
+      hass="[[hass]]"
+      is-wide="[[isWide]]"
+      email="{{_loginEmail}}"
+    ></ha-config-cloud-register>
   </template>
 
   <template is="dom-if" if="[[_equals(_routeData.page, &quot;forgot-password&quot;)]]" restamp="">
-    <ha-config-cloud-forgot-password page-name="forgot-password" hass="[[hass]]" email="{{_loginEmail}}"></ha-config-cloud-forgot-password>
+    <ha-config-cloud-forgot-password
+      page-name="forgot-password"
+      hass="[[hass]]"
+      email="{{_loginEmail}}"
+    ></ha-config-cloud-forgot-password>
   </template>
 `;
   }
@@ -55,7 +74,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
         type: Boolean,
         value: false
       },
-      account: {
+      cloudStatus: {
         type: Object,
       },
       _flashMessage: {
@@ -73,7 +92,7 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
 
   static get observers() {
     return [
-      '_checkRoute(route, account)'
+      '_checkRoute(route, cloudStatus)'
     ];
   }
 
@@ -92,9 +111,9 @@ class HaConfigCloud extends NavigateMixin(PolymerElement) {
       this._debouncer,
       timeOut.after(0),
       () => {
-        if (!this.account && !NOT_LOGGED_IN_URLS.includes(route.path)) {
+        if (!this.cloudStatus.logged_in && !NOT_LOGGED_IN_URLS.includes(route.path)) {
           this.navigate('/config/cloud/login', true);
-        } else if (this.account && !LOGGED_IN_URLS.includes(route.path)) {
+        } else if (this.cloudStatus.logged_in && !LOGGED_IN_URLS.includes(route.path)) {
           this.navigate('/config/cloud/account', true);
         }
       }
