@@ -29,9 +29,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return html`
   <style include="iron-flex"></style>
   <style>
-    .effect_list {
-      padding-bottom: 16px;
-    }
 
     .effect_list, .brightness, .color_temp, .white_value {
       max-height: 0px;
@@ -61,6 +58,18 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
       max-height: 84px;
     }
 
+    .has-brightness
+    .has-color_temp.is-on,
+    .has-white_value.is-on {
+      margin-top: -16px;
+    }
+
+    .has-brightness .brightness,
+    .has-color_temp.is-on .color_temp,
+    .has-white_value.is-on .white_value {
+      padding-top: 16px;
+    }
+
     .has-color.is-on ha-color-picker {
       max-height: 500px;
       overflow: visible;
@@ -78,6 +87,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
     paper-item {
       cursor: pointer;
     }
+
   </style>
 
   <div class$="[[computeClassNames(stateObj)]]">
