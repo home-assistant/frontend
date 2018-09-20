@@ -75,10 +75,9 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
           <paper-card heading="Nabu Casa Account">
             <div class="account-row">
               <paper-item-body two-line="">
-                [[account.email]]
+                [[cloudStatus.email]]
                 <div secondary="" class="wrap">
-                  <span class="nowrap">Subscription expires on </span>
-                  <span class="nowrap">[[_formatExpiration(account.sub_exp)]]</span>
+                  [[_formatSubscription(_subscription)]]
                 </div>
               </paper-item-body>
             </div>
@@ -87,7 +86,7 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
               <paper-item-body>
                 Cloud connection status
               </paper-item-body>
-              <div class="status">[[account.cloud]]</div>
+              <div class="status">[[cloudStatus.cloud]]</div>
             </div>
 
             <div class='card-actions'>
@@ -156,36 +155,64 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
     return {
       hass: Object,
       isWide: Boolean,
-      account: {
+      cloudStatus: Object,
+      _subscription: {
         type: Object,
-        observer: '_accountChanged',
-      },
+        value: null,
+      }
     };
   }
 
+  ready() {
+    super.ready();
+    this._fetchSubscriptionInfo();
+  }
+
+  async _fetchSubscriptionInfo() {
+    this._subscription = await this.hass.callWS({ type: 'cloud/subscription' });
+  }
+
   handleLogout() {
-    this.hass.callApi('post', 'cloud/logout').then(() => this.fire('ha-account-refreshed', { account: null }));
+    this.hass.callApi('post', 'cloud/logout')
+      .then(() => this.fire('ha-refresh-cloud-status'));
   }
 
-  _formatExpiration(date) {
-    return formatDateTime(new Date(date));
-  }
-
-  _accountChanged(newAccount) {
-    if (!newAccount || newAccount.cloud !== 'connecting') {
-      if (this._accountUpdater) {
-        clearTimeout(this._accountUpdater);
-        this._accountUpdater = null;
-      }
-      return;
-    } if (this._accountUpdater) {
-      return;
+  _formatSubscription(subInfo) {
+    if (subInfo === null) {
+      return 'Fetching subscription…';
     }
-    setTimeout(() => {
-      this._accountUpdater = null;
-      this.hass.callApi('get', 'cloud/account')
-        .then(account => this.fire('ha-account-refreshed', { account }));
-    }, 5000);
+    /* eslint-disable camelcase */
+    const { subscription, source, customer_exists } = subInfo;
+
+    // Check if we're before Oct 17.
+    const beforeOct17 = Date.now() < 1539734400000;
+
+    if (!customer_exists) {
+      return `Legacy user. Subscription expire${beforeOct17 ? 's' : 'd'} Oct 17, 2018.`;
+    }
+    if (!subscription || subscription.status === 'canceled') {
+      return 'No subscription';
+    }
+
+    const periodExpires = formatDateTime(new Date(subscription.current_period_end * 1000));
+
+    if (subscription.status === 'trialing' && !source) {
+      return `Trial user. Trial expires ${periodExpires}.`;
+    }
+
+    if (subscription.status === 'trialing') {
+      return `Active user. You will be charged on ${periodExpires}.`;
+    }
+
+    if (subscription.status === 'active' && subscription.cancel_at_period_end) {
+      return `Active user. Scheduled to cancel on ${periodExpires}`;
+    }
+
+    if (subscription.status === 'active') {
+      return `Active user. You will be charged on ${periodExpires}.`;
+    }
+
+    return 'Unable to determine subscription status.';
   }
 }
 
