@@ -44,8 +44,9 @@ class HaConfigManagerDashboard extends
     ha-state-icon {
       cursor: pointer;
     }
-    a paper-item {
+    .configured a {
       color: var(--primary-text-color);
+      text-decoration: none;
     }
   </style>
 
@@ -66,7 +67,7 @@ class HaConfigManagerDashboard extends
       </ha-config-section>
     </template>
 
-    <ha-config-section>
+    <ha-config-section class='configured'>
       <span slot="header">Configured</span>
       <paper-card>
         <template is="dom-if" if="[[!entries.length]]">
