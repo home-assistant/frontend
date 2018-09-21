@@ -6,6 +6,8 @@ import '@polymer/paper-card/paper-card.js';
 import '@polymer/paper-input/paper-textarea.js';
 import '@polymer/paper-item/paper-item-body.js';
 import '@polymer/paper-item/paper-item.js';
+import '@polymer/paper-tabs/paper-tab.js';
+import '@polymer/paper-tabs/paper-tabs.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
@@ -81,6 +83,19 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
           <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
           <div main-title>[[localize('panel.mailbox')]]</div>
         </app-toolbar>
+        <div sticky hidden$='[[areTabsHidden(platforms)]]'>
+          <paper-tabs
+            scrollable
+            selected='[[_currentPlatform]]'
+            on-iron-activate='handlePlatformSelected'
+          >
+            <template is='dom-repeat' items='[[platforms]]'>
+              <paper-tab data-entity='[[item]]' >
+                [[getPlatformName(item)]]
+              </paper-tab>
+            </template>
+          </paper-tabs>
+        </div>
       </app-header>
       <div class='content'>
         <paper-card>
@@ -131,6 +146,11 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
       _messages: {
         type: Array,
       },
+
+      _currentPlatform: {
+        type: Number,
+        value: 0,
+      },
     };
   }
 
@@ -175,26 +195,22 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
   }
 
   getMessages() {
-    const items = this.platforms.map(function (platform) {
-      return this.hass.callApi('GET', `mailbox/messages/${platform}`).then(function (values) {
-        const platformItems = [];
-        const arrayLength = values.length;
-        for (let i = 0; i < arrayLength; i++) {
-          const datetime = formatDateTime(new Date(values[i].info.origtime * 1000));
-          platformItems.push({
-            timestamp: datetime,
-            caller: values[i].info.callerid,
-            message: values[i].text,
-            sha: values[i].sha,
-            duration: values[i].info.duration,
-            platform: platform
-          });
-        }
-        return platformItems;
-      });
-    }.bind(this));
-    return Promise.all(items).then(function (platformItems) {
-      return [].concat(...platformItems).sort(function (a, b) {
+    const platform = this.platforms[this._currentPlatform];
+    return this.hass.callApi('GET', `mailbox/messages/${platform.name}`).then(function (values) {
+      const platformItems = [];
+      const arrayLength = values.length;
+      for (let i = 0; i < arrayLength; i++) {
+        const datetime = formatDateTime(new Date(values[i].info.origtime * 1000));
+        platformItems.push({
+          timestamp: datetime,
+          caller: values[i].info.callerid,
+          message: values[i].text,
+          sha: values[i].sha,
+          duration: values[i].info.duration,
+          platform: platform
+        });
+      }
+      return platformItems.sort(function (a, b) {
         return new Date(b.timestamp) - new Date(a.timestamp);
       });
     });
@@ -202,6 +218,24 @@ class HaPanelMailbox extends LocalizeMixin(PolymerElement) {
 
   computePlatforms() {
     return this.hass.callApi('GET', 'mailbox/platforms');
+  }
+
+  handlePlatformSelected(ev) {
+    const newPlatform = ev.detail.selected;
+    if (newPlatform !== this._currentPlatform) {
+      this._currentPlatform = newPlatform;
+      this.hassChanged();
+    }
+  }
+
+  areTabsHidden(platforms) {
+    return !platforms || platforms.length < 2;
+  }
+
+  getPlatformName(item) {
+    const entity = `mailbox.${item.name}`;
+    const stateObj = this.hass.states[entity.toLowerCase()];
+    return stateObj.attributes.friendly_name;
   }
 }
 
