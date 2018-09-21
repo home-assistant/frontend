@@ -178,9 +178,9 @@ class HaConfigCloudAccount extends EventsMixin(PolymerElement) {
   }
 
   _formatSubscription(subInfo) {
-    return subInfo === null ?
-      'Fetching subscription…' :
-      subInfo.human_description.replace(
+    return subInfo === null
+      ? 'Fetching subscription…'
+      : subInfo.human_description.replace(
         '{periodEnd}', formatDateTime(new Date(subInfo.subscription.current_period_end * 1000))
       );
   }
