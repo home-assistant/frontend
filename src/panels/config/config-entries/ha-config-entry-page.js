@@ -43,7 +43,10 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
       on-click='_removeEntry'
     ></paper-icon-button>
     <div class='content'>
-      <template is='dom-repeat' items='[[_computeConfigEntryDevices(configEntry, devices)]]' as='device'>
+      <template is='dom-if' if='[[!configEntryDevices.length]]'>
+        <p>This integration has no devices.</p>
+      </template>
+      <template is='dom-repeat' items='[[configEntryDevices]]' as='device'>
         <ha-device-card
           hass='[[hass]]'
           devices='[[devices]]'
@@ -60,21 +63,30 @@ class HaConfigEntryPage extends NavigateMixin(EventsMixin(PolymerElement)) {
     return {
       hass: Object,
       isWide: Boolean,
-
       configEntry: {
         type: Object,
         value: null,
       },
 
+      configEntryDevices: {
+        type: Array,
+        computed: '_computeConfigEntryDevices(configEntry, devices)'
+      },
+
+      /**
+       * Device registry entries
+       */
+      devices: Array,
+
       /**
        * Existing entries.
        */
-      _entries: Array,
+      entries: Array,
 
       /**
        * Entity Registry entries.
        */
-      _entities: Array,
+      entities: Array,
     };
   }
 
