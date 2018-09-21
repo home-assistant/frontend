@@ -43,11 +43,13 @@ class HaDeviceCard extends EventsMixin(PolymerElement) {
       .device .manuf {
         color: var(--secondary-text-color);
       }
-      .hub-info {
+      .extra-info {
         margin-top: 8px;
       }
       paper-icon-item {
         cursor: pointer;
+        padding-top: 4px;
+        padding-bottom: 4px;
       }
       .manuf,
       .entity-id {
@@ -62,9 +64,14 @@ class HaDeviceCard extends EventsMixin(PolymerElement) {
           <div class='manuf'>by [[device.manufacturer]]</div>
         </div>
         <template is='dom-if' if='[[device.hub_device_id]]'>
-          <div class='hub-info'>
+          <div class='extra-info'>
             Connected via
             <span class='hub'>[[_computeDeviceName(devices, device.hub_device_id)]]</span>
+          </div>
+        </template>
+        <template is='dom-if' if='[[device.sw_version]]'>
+          <div class='extra-info'>
+            Firmware: [[device.sw_version]]
           </div>
         </template>
       </div>
