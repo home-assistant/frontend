@@ -23,8 +23,16 @@
             "unavailable": "Tidak tersedia"
         },
         "alarm_control_panel": {
+            "armed": "Bersenjata",
+            "disarmed": "Dilucuti",
+            "armed_home": "Armed home",
+            "armed_away": "Armed away",
+            "armed_night": "Armed night",
             "pending": "Tertunda",
-            "triggered": "Terpicu"
+            "arming": "Mempersenjatai",
+            "disarming": "Melucuti",
+            "triggered": "Terpicu",
+            "armed_custom_bypass": "Armed custom bypass"
         },
         "automation": {
             "off": "Off",
@@ -126,10 +134,15 @@
             "on": "On",
             "heat": "Panas",
             "cool": "Sejuk",
+            "idle": "Siaga",
             "auto": "Auto",
             "dry": "Kering",
+            "fan_only": "Hanya kipas",
             "eco": "Eco",
             "electric": "Petir",
+            "performance": "Kinerja",
+            "high_demand": "Permintaan yang tinggi",
+            "heat_pump": "Pompa pemanas",
             "gas": "Gas"
         },
         "configurator": {
@@ -194,6 +207,9 @@
             "off": "Off",
             "on": "On"
         },
+        "scene": {
+            "scening": "Scening"
+        },
         "script": {
             "off": "Off",
             "on": "On"
@@ -216,6 +232,10 @@
                 "dead": "Mati",
                 "sleeping": "Tidur",
                 "ready": "Siap"
+            },
+            "query_stage": {
+                "initializing": "Menginisialisasi ({query_stage})",
+                "dead": "Padam ({query_stage})"
             }
         },
         "weather": {
@@ -231,13 +251,16 @@
             "snowy": "Bersalju",
             "snowy-rainy": "Bersalju, hujan",
             "sunny": "Cerah",
-            "windy": "Berangin"
+            "windy": "Berangin",
+            "windy-variant": "Berangin"
         },
         "vacuum": {
             "cleaning": "Membersihkan",
             "docked": "Berlabuh",
             "error": "Kesalahan",
             "idle": "Siaga",
+            "off": "Padam",
+            "on": "Menyala",
             "paused": "Berhenti",
             "returning": "Kembali ke dock"
         }
@@ -248,8 +271,16 @@
             "unavailable": "Tak Ada"
         },
         "alarm_control_panel": {
+            "armed": "Armed",
+            "disarmed": "Disarm",
+            "armed_home": "Armed",
+            "armed_away": "Armed",
+            "armed_night": "Armed",
             "pending": "Tunda",
-            "triggered": "Picu"
+            "arming": "Arming",
+            "disarming": "Disarm",
+            "triggered": "Picu",
+            "armed_custom_bypass": "Armed"
         },
         "device_tracker": {
             "home": "Rumah",
@@ -259,7 +290,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Hapus yang sudah",
+                "clear_completed": "Hapus selesai",
                 "add_item": "Tambah item",
                 "microphone_tip": "Sentuh mikrofon di kanan atas dan ucapkan \"Tambahkan permen ke daftar belanjaku\""
             },
@@ -278,7 +309,7 @@
             },
             "config": {
                 "header": "Mengkonfigurasi Home Assistant",
-                "introduction": "Di sini memungkinkan untuk mengkonfigurasi komponen dan Home Assistant. Belum semua dapat dikonfigurasikan dari UI, tapi kami sedang mengusahakannya.",
+                "introduction": "Di sini memungkinkan untuk mengkonfigurasi komponen dan Home Assistant. Meskipun semuanya belum dapat dikonfigurasikan melalui UI, akan tetapi kami sedang mengusahakannya.",
                 "core": {
                     "caption": "Umum",
                     "description": "Memvalidasi file konfigurasi anda dan mengontrol server",
@@ -299,13 +330,13 @@
                                 "core": "Muat ulang core",
                                 "group": "Muat ulang grup",
                                 "automation": "Muat ulang otomasi",
-                                "script": "Muat ulang script"
+                                "script": "Muat ulang skrip"
                             },
                             "server_management": {
                                 "heading": "Pengelolaan server",
                                 "introduction": "Kontrol server Home Assistant anda ... dari Home Assistant.",
                                 "restart": "Ulang kembali",
-                                "stop": "Stop"
+                                "stop": "Berhenti"
                             }
                         }
                     }
@@ -319,7 +350,7 @@
                     "description": "Buat dan edit otomasi",
                     "picker": {
                         "header": "Editor otomasi",
-                        "introduction": "Editor otomasi memungkinkan Anda untuk membuat dan mengedit otomasi. Silakan baca [petunjuk] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) untuk memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
+                        "introduction": "Editor otomasi memungkinkan Anda untuk membuat dan mengedit otomasi. Silakan baca [petunjuk](https:\/\/home-assistant.io\/docs\/automation\/editor\/) untuk memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
                         "pick_automation": "Pilih otomasi untuk diedit",
                         "no_automations": "Kami tidak dapat menemukan otomasi yang dapat diedit",
                         "add_automation": "Tambah otomasi"
@@ -337,7 +368,7 @@
                             "duplicate": "Gandakan",
                             "delete": "Hapus",
                             "delete_confirm": "Anda yakin ingin menghapus?",
-                            "unsupported_platform": "Platform tidak terdukung",
+                            "unsupported_platform": "Platform tidak didukung: {platform}",
                             "type_select": "Jenis pemicu",
                             "type": {
                                 "event": {
@@ -394,7 +425,7 @@
                         },
                         "conditions": {
                             "header": "Kondisi",
-                            "introduction": "Kondisi merupakan bagian opsional dari aturan otomasi dan dapat digunakan untuk mencegah Event terjadi saat dipicu. Kondisi terlihat sangat mirip dengan pemicu tetapi sangat berbeda. Pemicu akan melihat peristiwa yang terjadi di sistem sementara kondisi hanya melihat bagaimana sistem terlihat sekarang. Pemicu dapat mengamati bahwa saklar sedang dinyalakan. Suatu kondisi hanya dapat melihat apakah switch sedang aktif atau tidak aktif. ",
+                            "introduction": "Kondisi merupakan bagian opsional dari aturan otomasi dan dapat digunakan untuk mencegah Event terjadi saat dipicu. Kondisi terlihat sangat mirip dengan pemicu tetapi sangat berbeda. Pemicu akan melihat peristiwa yang terjadi di sistem sementara kondisi hanya melihat bagaimana sistem terlihat sekarang. Pemicu dapat mengamati bahwa saklar sedang dinyalakan. Suatu kondisi hanya dapat melihat apakah switch sedang aktif atau tidak aktif. \n\n[Pelajari lebih lanjut tentang kondisi.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Tambah kondisi",
                             "duplicate": "Gandakan",
                             "delete": "Hapus",
@@ -439,7 +470,7 @@
                         },
                         "actions": {
                             "header": "Aksi",
-                            "introduction": "Aksi adalah apa yang Home Assistant akan lakukan ketika otomasi terpicu",
+                            "introduction": "Aksi adalah apa yang Home Assistant akan lakukan ketika otomasi terpicu.\n\n[Pelajari lebih lanjut tentang aksi.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Tambah aksi",
                             "duplicate": "Gandakan",
                             "delete": "Hapus",
@@ -473,7 +504,7 @@
                     }
                 },
                 "script": {
-                    "caption": "Script",
+                    "caption": "Skrip",
                     "description": "Buat dan edit script"
                 },
                 "zwave": {
@@ -582,13 +613,21 @@
                                         "password": "Kata Sandi API"
                                     },
                                     "description": "Silakan masukkan kata sandi API di konfigurasi http Anda:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Kode Autentikasi Dua Faktor"
+                                    },
+                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode otentikasi dua-faktor Anda dan verifikasi identitas Anda:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Kata sandi API tidak valid"
+                                "invalid_auth": "Kata sandi API tidak valid",
+                                "invalid_code": "Kode autentikasi tidak valid"
                             },
                             "abort": {
-                                "no_api_password_set": "Anda tidak memiliki kata sandi API yang dikonfigurasi."
+                                "no_api_password_set": "Anda tidak memiliki kata sandi API yang dikonfigurasi.",
+                                "login_expired": "Sesi kadaluwarsa, silahkan masuk kembali."
                             }
                         },
                         "trusted_networks": {
@@ -642,7 +681,7 @@
         "login-form": {
             "password": "Kata sandi",
             "remember": "Ingat",
-            "log_in": "Log in"
+            "log_in": "Masuk"
         },
         "card": {
             "camera": {
@@ -667,19 +706,30 @@
                 },
                 "cardinal_direction": {
                     "e": "T",
+                    "ene": "TTL",
+                    "ese": "TMg",
                     "n": "U",
-                    "ne": "Timur Laut",
-                    "nw": "Barat Laut",
+                    "ne": "TL",
+                    "nne": "UTL",
+                    "nw": "BL",
+                    "nnw": "UBL",
                     "s": "S",
-                    "se": "Tenggara",
-                    "sw": "Barat Daya",
-                    "w": "B"
+                    "se": "TG",
+                    "sse": "SMg",
+                    "ssw": "SBD",
+                    "sw": "BD",
+                    "w": "B",
+                    "wnw": "BBL",
+                    "wsw": "BBD"
                 },
                 "forecast": "Ramalan cuaca"
             },
             "alarm_control_panel": {
                 "code": "Kode",
-                "clear_code": "Hapus"
+                "clear_code": "Hapus",
+                "disarm": "Lucuti",
+                "arm_home": "Lengan rumah",
+                "arm_away": "Angkat tangan"
             },
             "automation": {
                 "last_triggered": "Terakhir terpicu",
@@ -691,6 +741,7 @@
             },
             "fan": {
                 "speed": "Kecepatan",
+                "oscillate": "Terombang-ambing",
                 "direction": "Arah"
             },
             "light": {
@@ -699,19 +750,26 @@
                 "white_value": "Nilai putih",
                 "effect": "Efek"
             },
+            "media_player": {
+                "text_to_speak": "Teks untuk berbicara",
+                "source": "Sumber",
+                "sound_mode": "Mode suara"
+            },
             "climate": {
+                "currently": "Saat ini",
                 "on_off": "Hidup \/ mati",
                 "target_temperature": "Target suhu",
                 "target_humidity": "Target kelembaban",
-                "swing_mode": "Mode ayunan"
+                "operation": "Operasi",
+                "fan_mode": "Mode kipas",
+                "swing_mode": "Mode ayunan",
+                "away_mode": "Mode jauh",
+                "aux_heat": "Aux panas"
             },
             "lock": {
+                "code": "Kode",
                 "lock": "Kunci",
                 "unlock": "Membuka"
-            },
-            "media_player": {
-                "source": "Sumber",
-                "sound_mode": "Mode suara"
             },
             "vacuum": {
                 "actions": {
@@ -733,7 +791,7 @@
                 "service": "Layanan"
             },
             "relative_time": {
-                "past": "lalu",
+                "past": "{time} lalu",
                 "future": "dalam {time}",
                 "never": "Tak pernah",
                 "duration": {
@@ -754,7 +812,7 @@
             "entity_turned_off": "{entity} sudah dimatikan.",
             "service_called": "Layanan {service} dipanggil.",
             "service_call_failed": "Gagal memanggil layanan {service} .",
-            "connection_lost": "Koneksi terputus. Menghubungan kembali ..."
+            "connection_lost": "Koneksi terputus. Menghubungkan kembali ..."
         },
         "dialogs": {
             "more_info_settings": {
@@ -777,13 +835,13 @@
     "domain": {
         "alarm_control_panel": "Kontrol panel alarm",
         "automation": "Otomasi",
-        "binary_sensor": "Sensor binary",
+        "binary_sensor": "Sensor biner",
         "calendar": "Kalender",
         "camera": "Kamera",
         "climate": "Cuaca",
         "configurator": "Konfigurator",
         "conversation": "Percakapan",
-        "cover": "Jendela",
+        "cover": "Penutup",
         "device_tracker": "Pelacak perangkat",
         "fan": "Kipas angin",
         "history_graph": "Riwayat Grafik",
@@ -792,21 +850,23 @@
         "input_boolean": "Input boolean",
         "input_datetime": "Input tanggal waktu",
         "input_select": "Input Pilihan",
-        "input_number": "Input angka",
-        "input_text": "Input Text",
+        "input_number": "Masukkan angka",
+        "input_text": "Input teks",
         "light": "Lampu",
         "lock": "Kunci",
         "mailbox": "Kotak pesan",
         "media_player": "Pemutar media",
         "notify": "Pemberitahuan",
         "plant": "Tanaman",
+        "proximity": "Kedekatan",
         "remote": "Remot",
         "scene": "Scene",
-        "script": "Script",
+        "script": "Skrip",
         "sensor": "Sensor",
         "sun": "Matahari",
         "switch": "Sakelar",
         "updater": "Updater",
+        "weblink": "Tautan web",
         "zwave": "Z-Wave",
         "vacuum": "Vakum"
     },

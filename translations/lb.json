@@ -548,6 +548,7 @@
                 },
                 "refresh_tokens": {
                     "header": "Tokeny Odświeżenia",
+                    "description": "All Sessioun Token representéiert eng Login Sessioun. Sessioun's Token ginn automatesch gelëscht wann dir op auslogge klickt. Folgend Sessioun's Token si fir de Moment fir Ären Account aktiv.",
                     "token_title": "Token odświeżenia dla {clientId}",
                     "created_at": "Utworzono {date}",
                     "confirm_delete": "Jesteś pewien że chcesz usunąć token odświeżenia dla {name}?",
@@ -557,6 +558,8 @@
                     "current_token_tooltip": "Nie można usunąć obecnego tokena odświeżenia."
                 },
                 "long_lived_access_tokens": {
+                    "header": "Lang gëlteg Access Token",
+                    "description": "Erstellt laang gëlteg Access Token déi et äre Skripten erlabe mat ärem Home Assistant z'interagéieren. All eenzelen Token ass gëlteg fir 10 Joer. Folgend Access Token sinn am Moment aktiv.",
                     "learn_auth_requests": "Naucz się robić uwierzytelnione żądania.",
                     "created_at": "Utworzono {date}",
                     "confirm_delete": "Jesteś pewien że chcesz usunąć token dostępu dla {name}?",

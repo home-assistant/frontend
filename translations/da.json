@@ -545,6 +545,32 @@
                     "error_no_theme": "Ingen temaer til rådighed.",
                     "link_promo": "Lær om temaer",
                     "dropdown_label": "Tema"
+                },
+                "refresh_tokens": {
+                    "header": "Opdater tokens",
+                    "description": "Hver opdateringstoken repræsenterer en login session. Tokens fjernes automatisk, når du klikker på log ud. Følgende opdateringstoken er aktuelt aktiv for din konto.",
+                    "token_title": "Opdater token for {clientId}",
+                    "created_at": "Oprettet den {date}",
+                    "confirm_delete": "Er du sikker på, at du vil slette adgangstoken til {name} ?",
+                    "delete_failed": "Kan ikke slette adgangstokenet.",
+                    "last_used": "Sidst anvendt den {date} af {location}",
+                    "not_used": "Har aldrig været brugt",
+                    "current_token_tooltip": "Kan ikke slette nuværende opdateringstoken"
+                },
+                "long_lived_access_tokens": {
+                    "header": "Langtids Access Tokens",
+                    "description": "Opret langtids adgangstokener, så dine scripts kan forbinde med din Home Assistant instans. Hver token er gyldig i 10 år fra oprettelsen. Følgende langtids adgangstokener er i øjeblikket aktive.",
+                    "learn_auth_requests": "Lær, hvordan du laver godkendte forespørgsler.",
+                    "created_at": "Oprettet den {date}",
+                    "confirm_delete": "Er du sikker på, at du vil slette adgangstoken til {name} ?",
+                    "delete_failed": "Kan ikke slette adgangstokenet.",
+                    "create": "Opret Token",
+                    "create_failed": "Kunne ikke oprette adgangstoken.",
+                    "prompt_name": "Navn?",
+                    "prompt_copy_token": "Kopier din adgangstoken. Den vil ikke blive vist igen.",
+                    "empty_state": "Du har ingen langtids adgangstokens endnu.",
+                    "last_used": "Sidst anvendt den {date} af {location}",
+                    "not_used": "Har aldrig været brugt"
                 }
             },
             "page-authorize": {

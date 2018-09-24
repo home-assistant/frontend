@@ -546,7 +546,29 @@
                     "link_promo": "Aprenda sobre los temas",
                     "dropdown_label": "Tema"
                 },
+                "refresh_tokens": {
+                    "header": "Actualizar tokens",
+                    "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente cuando haga clic en Cerrar sesión. Los siguientes tokens de actualización están actualmente activos para su cuenta.",
+                    "token_title": "Actualizar token para {clientId}",
+                    "created_at": "Creado en {date}",
+                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {name}?",
+                    "delete_failed": "Error al eliminar el token de acceso.",
+                    "last_used": "Ultimo uso {fecha} desde {lugar}",
+                    "not_used": "Nunca ha sido usado",
+                    "current_token_tooltip": "No se puede eliminar el token actual"
+                },
                 "long_lived_access_tokens": {
+                    "header": "Tokens de acceso de larga duración",
+                    "description": "Crea tokens de acceso de larga duración para permitir que tus scripts interactúen con tu Home Assistant. Cada token será válido por 10 años desde la creación. Los siguientes tokens de acceso de larga duración están actualmente activos.",
+                    "learn_auth_requests": "Aprenda a realizar solicitudes autenticadas.",
+                    "created_at": "Creado en {fecha}",
+                    "confirm_delete": "¿Está seguro de que desea eliminar el token de acceso para {nombre}?",
+                    "delete_failed": "Error al eliminar el token de acceso.",
+                    "create": "Crear Token",
+                    "create_failed": "No se ha podido crear el token de acceso.",
+                    "prompt_name": "¿Nombre?",
+                    "prompt_copy_token": "Copie su token de acceso. No se volverá a mostrar.",
+                    "empty_state": "Aún no tienes tokens de acceso de larga duración.",
                     "last_used": "Ultimo uso {fecha} desde {lugar}",
                     "not_used": "Nunca ha sido usado"
                 }
