@@ -30,6 +30,12 @@ class HaConfigFlow extends
       paper-dialog {
         max-width: 500px;
       }
+      ha-markdown {
+        word-break: break-word;
+      }
+      ha-markdown a {
+        color: var(--primary-color);
+      }
       ha-markdown img:first-child:last-child {
         display: block;
         margin: 0 auto;
@@ -62,19 +68,15 @@ class HaConfigFlow extends
           <div class='init-spinner'><paper-spinner active></paper-spinner></div>
         </template>
         <template is="dom-if" if="[[_step]]">
-          <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
-            <ha-markdown content="[[_computeStepAbortedReason(localize, _step)]]"></ha-markdown>
-          </template>
-
           <template is="dom-if" if="[[_equals(_step.type, 'create_entry')]]">
             <p>Created config for [[_step.title]]</p>
           </template>
 
-          <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
-            <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
-              <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
-            </template>
+          <template is="dom-if" if="[[_computeStepDescription(localize, _step)]]">
+            <ha-markdown content="[[_computeStepDescription(localize, _step)]]" allow-svg></ha-markdown>
+          </template>
 
+          <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
             <ha-form
               data="{{_stepData}}"
               on-data-changed='_increaseCounter'
@@ -270,21 +272,26 @@ class HaConfigFlow extends
     }
   }
 
-  _computeStepAbortedReason(localize, step) {
-    return localize(`component.${step.handler}.config.abort.${step.reason}`);
-  }
-
   _computeStepTitle(localize, step) {
     return localize(`component.${step.handler}.config.step.${step.step_id}.title`);
   }
 
   _computeStepDescription(localize, step) {
-    const args = [`component.${step.handler}.config.step.${step.step_id}.description`];
+    const args = [];
+    if (step.type === 'form') {
+      args.push(`component.${step.handler}.config.step.${step.step_id}.description`)
+    } else if (step.type === 'abort') {
+      args.push(`component.${step.handler}.config.abort.${step.reason}`);
+    } else  if (step.type === 'create_entry') {
+      args.push(`component.${step.handler}.config.create_entry.${step.description || 'default'}`);
+    }
+
     const placeholders = step.description_placeholders || {};
     Object.keys(placeholders).forEach((key) => {
       args.push(key);
       args.push(placeholders[key]);
     });
+
     return localize(...args);
   }
 
