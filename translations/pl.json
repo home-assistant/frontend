@@ -549,7 +549,7 @@
                 "refresh_tokens": {
                     "header": "Tokeny",
                     "description": "Każdy token reprezentuje sesję logowania. Tokeny zostaną automatycznie usunięte po wylogowaniu. Następujące tokeny są obecnie aktywne dla Twojego konta.",
-                    "token_title": "Odśwież token dla {clientId}",
+                    "token_title": "Token dla {clientId}",
                     "created_at": "Utworzony {date}",
                     "confirm_delete": "Czy na pewno chcesz usunąć token dla {name}?",
                     "delete_failed": "Nie udało się usunąć tokena.",

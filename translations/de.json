@@ -560,7 +560,7 @@
                 "long_lived_access_tokens": {
                     "header": "Langlebige Zugangs-Token",
                     "description": "Erstelle langlebige Zugriffstoken, damit deine Skripte mit deiner Home Assistant-Instanz interagieren können. Jedes Token ist ab der Erstellung für 10 Jahre gültig. Die folgenden langlebigen Zugriffstoken sind derzeit aktiv.",
-                    "learn_auth_requests": "Erfahre, wie du authentifizierte Anfragen stellen können.",
+                    "learn_auth_requests": "Erfahre, wie du authentifizierte Anfragen stellen kannst.",
                     "created_at": "Erstellt am {date}",
                     "confirm_delete": "Möchtest du den Zugriffs-Token für {name} wirklich löschen?",
                     "delete_failed": "Fehler beim Löschen des Zugriffs-Tokens.",
@@ -773,9 +773,9 @@
             },
             "vacuum": {
                 "actions": {
-                    "resume_cleaning": "Fortsetzen der Reinigung",
+                    "resume_cleaning": "Reinigung fortsetzen",
                     "return_to_base": "Zurück zur Dockingstation",
-                    "start_cleaning": "Beginn der Reinigung",
+                    "start_cleaning": "Reinigung starten",
                     "turn_on": "Einschalten",
                     "turn_off": "Ausschalten"
                 }

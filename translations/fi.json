@@ -130,7 +130,7 @@
             "idle": "Lepotilassa"
         },
         "climate": {
-            "off": "Pois päältä",
+            "off": "Pois",
             "on": "Päällä",
             "heat": "Lämmitys",
             "cool": "Jäähdytys",
@@ -161,11 +161,11 @@
             "not_home": "Poissa"
         },
         "fan": {
-            "off": "Sammutettu",
-            "on": "Käynnissä"
+            "off": "Pois",
+            "on": "Päällä"
         },
         "group": {
-            "off": "Suljettu",
+            "off": "Pois",
             "on": "Päällä",
             "home": "Kotona",
             "not_home": "Poissa",
@@ -176,11 +176,11 @@
             "stopped": "Pysäytetty",
             "locked": "Lukittu",
             "unlocked": "Avattu",
-            "ok": "OK",
+            "ok": "Ok",
             "problem": "Ongelma"
         },
         "input_boolean": {
-            "off": "Kiinni",
+            "off": "Pois",
             "on": "Päällä"
         },
         "light": {
@@ -192,7 +192,7 @@
             "unlocked": "Auki"
         },
         "media_player": {
-            "off": "Sammutettu",
+            "off": "Pois",
             "on": "Päällä",
             "playing": "Toistaa",
             "paused": "Pysäytetty",
@@ -204,18 +204,18 @@
             "problem": "Ongelma"
         },
         "remote": {
-            "off": "Pois päältä",
+            "off": "Pois",
             "on": "Päällä"
         },
         "scene": {
             "scening": "Skenehallinta"
         },
         "script": {
-            "off": "Pois päältä",
+            "off": "Pois",
             "on": "Päällä"
         },
         "sensor": {
-            "off": "Pois päältä",
+            "off": "Pois",
             "on": "Päällä"
         },
         "sun": {
@@ -529,7 +529,7 @@
             "profile": {
                 "push_notifications": {
                     "header": "Notifikaatiot",
-                    "description": "Tilaa notifikaatiot tälle laitteelle",
+                    "description": "Lähetä ilmoitukset tälle laitteelle.",
                     "error_load_platform": "Konfiguroi notify.html5 komponentti",
                     "error_use_https": "Vaatii SSL suojauksen",
                     "push_notifications": "Notifikaatiot",
@@ -545,6 +545,71 @@
                     "error_no_theme": "Ei teemoja käytettävissä.",
                     "link_promo": "Lisätietoja teemoista",
                     "dropdown_label": "Teema"
+                },
+                "refresh_tokens": {
+                    "created_at": "Luotu {date}",
+                    "last_used": "Viimeksi käytetty {date} sijainnista {location}",
+                    "not_used": "Ei ole koskaan käytetty"
+                },
+                "long_lived_access_tokens": {
+                    "created_at": "Luotu {date}",
+                    "prompt_name": "Nimi?",
+                    "prompt_copy_token": "Kopioi käyttöoikeuskoodi. Sitä ei näytetä uudelleen."
+                }
+            },
+            "page-authorize": {
+                "initializing": "Alustetaan",
+                "abort_intro": "Kirjautuminen on keskeytetty",
+                "form": {
+                    "working": "Ole hyvä ja odota",
+                    "unknown_error": "Jotain meni pieleen",
+                    "providers": {
+                        "homeassistant": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Käyttäjätunnus",
+                                        "password": "Salasana"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Virheellinen käyttäjätunnus tai salasana"
+                            }
+                        },
+                        "legacy_api_password": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API-salasana"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Virheellinen API-salasana"
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Käyttäjä"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "intro": "Aloitetaan luomalla käyttäjätili.",
+                    "required_field": "Edellytetään",
+                    "data": {
+                        "name": "Nimi",
+                        "username": "Käyttäjätunnus",
+                        "password": "Salasana"
+                    }
                 }
             }
         },
@@ -698,6 +763,16 @@
                 "name": "Nimi",
                 "entity_id": "Kohde ID"
             }
+        },
+        "auth_store": {
+            "ask": "Haluatko tallentaa tämän käyttäjätunnuksen?",
+            "decline": "Ei kiitos",
+            "confirm": "Tallenna käyttäjätunnus"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Napsauta painiketta määrittääksesi {entity}",
+            "empty": "Ei ilmoituksia",
+            "title": "Ilmoitukset"
         }
     },
     "domain": {

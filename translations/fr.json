@@ -566,7 +566,7 @@
                     "delete_failed": "Impossible de supprimer le jeton d'accès.",
                     "create": "Créer un jeton",
                     "create_failed": "Impossible de créer le jeton d'accès.",
-                    "prompt_name": "Nom?",
+                    "prompt_name": "Nom ?",
                     "prompt_copy_token": "Copiez votre jeton d'accès. Il ne sera plus affiché à nouveau.",
                     "empty_state": "Vous n'avez pas encore de jetons d'accès longue durée.",
                     "last_used": "Dernière utilisation le {date} à partir de {location}",
