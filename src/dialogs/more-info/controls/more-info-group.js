@@ -6,7 +6,6 @@ import '../../../state-summary/state-card-content.js';
 
 import computeStateDomain from '../../../common/entity/compute_state_domain';
 import dynamicContentUpdater from '../../../common/dom/dynamic_content_updater.js';
-import stateMoreInfoType from '../../../common/entity/state_more_info_type.js';
 
 class MoreInfoGroup extends PolymerElement {
   static get template() {
@@ -70,10 +69,11 @@ class MoreInfoGroup extends PolymerElement {
 
   statesChanged(stateObj, states) {
     let groupDomainStateObj = false;
+    let groupDomain = false;
 
     if (states && states.length > 0) {
       const baseStateObj = states.find(s => s.state === 'on') || states[0];
-      const groupDomain = computeStateDomain(baseStateObj);
+      groupDomain = computeStateDomain(baseStateObj);
 
       // Groups need to be filtered out or we'll show content of
       // first child above the children of the current group
@@ -100,7 +100,7 @@ class MoreInfoGroup extends PolymerElement {
     } else {
       dynamicContentUpdater(
         this.$.groupedControlDetails,
-        'MORE-INFO-' + stateMoreInfoType(groupDomainStateObj).toUpperCase(),
+        'MORE-INFO-' + groupDomain.toUpperCase(),
         { stateObj: groupDomainStateObj, hass: this.hass }
       );
     }
