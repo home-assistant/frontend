@@ -78,7 +78,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
   <paper-dialog-scrollable dialog-element="[[dialogElement]]">
     <template is="dom-if" if="[[_computeShowHistoryComponent(hass, stateObj)]]" restamp="">
       <ha-state-history-data hass="[[hass]]" filter-type="recent-entity" entity-id="[[stateObj.entity_id]]" data="{{_stateHistory}}" is-loading="{{_stateHistoryLoading}}" cache-config="[[_cacheConfig]]"></ha-state-history-data>
-      <state-history-charts hass="[[hass]]" history-data="[[_stateHistory]]" is-loading-data="[[_stateHistoryLoading]]" up-to-now no-single="[[large]]"></state-history-charts>
+      <state-history-charts hass="[[hass]]" history-data="[[_stateHistory]]" is-loading-data="[[_stateHistoryLoading]]" up-to-now></state-history-charts>
     </template>
     <more-info-content state-obj="[[stateObj]]" hass="[[hass]]"></more-info-content>
   </paper-dialog-scrollable>
