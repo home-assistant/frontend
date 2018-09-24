@@ -577,7 +577,7 @@
                 "initializing": "Inicializálás",
                 "authorizing_client": "Éppen a {clientId} számára készülsz hozzáférést biztosítani a Home Assistant példányodhoz.",
                 "logging_in_with": "Bejelentkezés **{authProviderName}** használatával.",
-                "pick_auth_provider": "Vagy válassz a következő bejelentkezési módok közül:",
+                "pick_auth_provider": "Vagy válassz a következő bejelentkezési módok közül",
                 "abort_intro": "Bejelentkezés megszakítva",
                 "form": {
                     "working": "Kérlek várj",
