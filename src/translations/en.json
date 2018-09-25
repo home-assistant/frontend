@@ -400,6 +400,13 @@
           "turn_off": "Turn off"
         }
       },
+      "water_heater": {
+        "currently": "Currently",
+        "on_off": "On / off",
+        "target_temperature": "Target temperature",
+        "operation": "Operation",
+        "away_mode": "Away mode"
+      },
       "weather": {
         "attributes": {
           "air_pressure": "Air pressure",

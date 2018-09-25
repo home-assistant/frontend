@@ -10,7 +10,7 @@ import LocalizeMixin from '../mixins/localize-mixin.js';
 
 const RECENT_THRESHOLD = 60000; // 1 minute
 const RECENT_CACHE = {};
-const DOMAINS_USE_LAST_UPDATED = ['thermostat', 'climate'];
+const DOMAINS_USE_LAST_UPDATED = ['thermostat', 'climate', 'water_heater'];
 const LINE_ATTRIBUTES_TO_KEEP = ['temperature', 'current_temperature', 'target_temp_low', 'target_temp_high'];
 const stateHistoryCache = {};
 
@@ -32,6 +32,8 @@ function computeHistory(hass, stateHistory, localize, language) {
     if (stateWithUnit) {
       unit = stateWithUnit.attributes.unit_of_measurement;
     } else if (computeStateDomain(stateInfo[0]) === 'climate') {
+      unit = hass.config.unit_system.temperature;
+    } else if (computeStateDomain(stateInfo[0]) === 'water_heater') {
       unit = hass.config.unit_system.temperature;
     }
 
@@ -236,8 +238,8 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
       const oldLine = cacheLines.find(cacheLine => cacheLine.unit === unit);
       if (oldLine) {
         line.data.forEach((entity) => {
-          const oldEntity =
-              oldLine.data.find(cacheEntity => entity.entity_id === cacheEntity.entity_id);
+          const oldEntity = oldLine.data.find(cacheEntity =>
+            entity.entity_id === cacheEntity.entity_id);
           if (oldEntity) {
             oldEntity.states = oldEntity.states.concat(entity.states);
           } else {
@@ -252,8 +254,8 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
 
   mergeTimeline(historyTimelines, cacheTimelines) {
     historyTimelines.forEach((timeline) => {
-      const oldTimeline =
-          cacheTimelines.find(cacheTimeline => cacheTimeline.entity_id === timeline.entity_id);
+      const oldTimeline = cacheTimelines.find(cacheTimeline =>
+        cacheTimeline.entity_id === timeline.entity_id);
       if (oldTimeline) {
         oldTimeline.data = oldTimeline.data.concat(timeline.data);
       } else {
